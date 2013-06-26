@@ -1,4 +1,3 @@
-
 LIBS = -Llib -lGLEW -lglut -lGLU -lGL -lm 
 #LIBS = -framework OpenGL -framework GLUT -framework Cocoa
 
@@ -8,21 +7,31 @@ CXXFLAGS = -O3 -std=c++0x -DLINUX $(INCS)
 
 CXX = g++
 
-OBJS = main.o Window.o ArcballWindow.o PlannerWindow.o pl.o \
-       plVector3.o plVector4.o plString.o plMath.o plDraw.o plMesh.o plColourMesh.o plColourMap.o plProjection.o plState.o \
-       plMatrix44.o plPickingTexture.o plTriangle.o plModel.o plGraft.o plTransform.o plPlan.o plBoundary.o plSpline.o plCSV.o \
-       plCamera.o plRenderable.o
+OBJECTS = $(patsubst %.cpp,objects/%.o,$(SOURCES))
+
+SOURCES = main.cpp Window.cpp ArcballWindow.cpp PlannerWindow.cpp pl.cpp \
+	plVector3.cpp plVector4.cpp plString.cpp plMath.cpp plDraw.cpp plMesh.cpp \
+	plColourMesh.cpp plColourMap.cpp plProjection.cpp plState.cpp \
+	plMatrix44.cpp plPickingTexture.cpp plTriangle.cpp plModel.cpp plGraft.cpp \
+	plTransform.cpp plPlan.cpp plBoundary.cpp plSpline.cpp plCSV.cpp \
+	plCamera.cpp plRenderable.cpp
        
 EXE  = planner
 
-Window:	$(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJS) $(LIBS)
+Window:	$(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJECTS) $(LIBS)
 
-.C.o:
-	$(CXX) $(CXXFLAGS) -c $<
+$(OBJECTS): | objects
+
+objects:
+	@mkdir -p $@
+
+objects/%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 
 clean:
-	rm -f *.o *~ core $(EXE) Makefile.bak
+	rm -f objects/*.o *~ core $(EXE) Makefile.bak
 
 depend:	
 	makedepend -Y *.h *.cpp
