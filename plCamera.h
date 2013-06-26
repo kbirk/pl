@@ -24,7 +24,7 @@ class plCamera
         void setFocus   ( const plVector3 lookat)   { _lookat = lookat;     }
         void setUp      ( const plVector3 up)       { _up = up;             }
 
-        void reset( const plVector3 &min, const plVector3 &max );
+        void reset    ( const plVector3 &min, const plVector3 &max );
               
         void exportViewParams( std::string filename );
         void importViewParams( std::string filename );
