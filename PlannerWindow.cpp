@@ -92,13 +92,6 @@ void PlannerWindow::userKeyAction( unsigned char key, int x, int y )
             plPlanExport("exportPlan");            
             break;
         
-//        case 'O':			// output plan 0
-//        
-//            m_plan.outputForManuela();
-//            std::cout << "Saved plan in Manuela's format." << std::endl;
-//            break;
-//       
-//       /* 
 //        case 'n':			// new plug
 
 //            {

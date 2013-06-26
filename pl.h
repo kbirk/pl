@@ -153,8 +153,6 @@ class plMesh;
 extern plMesh                         *_plSphere;
 extern plMesh                         *_plCylinder;
 extern plMesh                         *_plDisk;
-//extern plMesh                         *_plArrowCone;
-//extern plMesh                         *_plArrowDisk;
 
 extern plState                        *_plState;
 extern plMinimalShader                *_plMinimalShader;
