@@ -128,8 +128,8 @@ void plMesh::draw(const std::vector<plOrderPair> &order) const
 	glBindVertexArray(0); 
 }
 
-
-void plMesh::generateSphere(float radius, int slices, int stacks) 
+// sphere
+plMesh::plMesh(float radius, int slices, int stacks) 
 {
     float rho, drho, theta, dtheta;
     float x, y, z;
@@ -237,8 +237,8 @@ void plMesh::generateSphere(float radius, int slices, int stacks)
     setBuffers(interleaved_vertices, indices);
 }
 
-
-void plMesh::generateCylinder(float baseRadius, float topRadius, float height, int slices, int stacks) 
+// cylinder
+plMesh::plMesh(float baseRadius, float topRadius, float height, int slices, int stacks) 
 {
  
     float da, r, dr, dz;
@@ -300,7 +300,8 @@ void plMesh::generateCylinder(float baseRadius, float topRadius, float height, i
     setBuffers(interleaved_vertices, indices);
 }       
 
-void plMesh::generateDisk(float innerRadius, float outerRadius, int slices, int loops, bool up)
+// disk
+plMesh::plMesh(float innerRadius, float outerRadius, int slices, int loops, bool up)
 {
     float da, dr;
 

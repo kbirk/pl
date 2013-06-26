@@ -405,7 +405,7 @@ void plPlan::outputForManuela()
 
 //////////////////////////////////////
 
-void plPlanImport ( plString plan_file )
+void plPlanImport( plString plan_file )
 {
     delete _plPlan;
     _plPlan = new plPlan( plan_file );

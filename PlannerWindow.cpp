@@ -54,17 +54,17 @@ void PlannerWindow::userKeyAction( unsigned char key, int x, int y )
 
     switch (key) 
     {   
-        case 'b':   plModelBoneToggleVisibility(0);         break;            
-        case 'c':   plModelCartilageToggleVisibility(0);    break;      
-        case 'p':   plPlanToggleVisibility();               break;    
-        case 'z':   plCameraResetToModel(0);                break;          
-        case 't':   plGraftSetTranslateMode();              break; 
-        case 'r':   plGraftSetRotateMode();                 break;     
-        case 'l':   plGraftSetLengthMode();                 break; 
-        case 'g':   plGraftToggleVisibilityAll();           break;
-        case 's':   plDefectSplineToggleVisibilityAll();    break; 
-        case 'd':   plDonorRegionToggleVisibilityAll();     break;         
-        case 'q':   plDefectSplineCornersToggleVisibilityAll(); break;
+        case 'b':   plModelBoneToggleVisibility(0);              break;            
+        case 'c':   plModelCartilageToggleVisibility(0);         break;      
+        case 'p':   plPlanToggleVisibility();                    break;    
+        case 'z':   plCameraResetToModel(0);                     break;          
+        case 't':   plGraftSetTranslateMode();                   break; 
+        case 'r':   plGraftSetRotateMode();                      break;     
+        case 'l':   plGraftSetLengthMode();                      break; 
+        case 'g':   plGraftToggleVisibilityAll();                break;
+        case 's':   plDefectSplineToggleVisibilityAll();         break; 
+        case 'd':   plDonorRegionToggleVisibilityAll();          break;         
+        case 'q':   plDefectSplineCornersToggleVisibilityAll();  break;
         case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;
         
 //       

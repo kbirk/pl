@@ -34,11 +34,7 @@ class ArcballWindow : public Window
                 
     protected:
           
-        //Camera  m_camera; 
-		PLuint	_cameraMode;
-        
-    //private: 
-    
+		PLuint	   _cameraMode;
         plVector3  _previousMouse;	// last mouse position
         PLint      _button;		    // which button is currently down, must be stored for glutMouseMotion 
 

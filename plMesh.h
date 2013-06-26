@@ -17,14 +17,19 @@ class plMesh
 		plMesh();		
 		plMesh(const plSeq<plTriangle> &triangles);        
         plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<unsigned int> &indices);
-
+        plMesh(float radius, int slices, int stacks);                                           // sphere
+        plMesh(float baseRadius, float topRadius, float height, int slices, int stacks);        // cylinder
+        plMesh(float innerRadius, float outerRadius, int slices, int loops, bool up = true);    // disk
+        
         void triangleToInterleaved(const plSeq<plTriangle> &triangles);
         void destroy();
-
-        void generateSphere(float radius, int slices, int stacks);
+        
+        /*
+        void generateSphere  (float radius, int slices, int stacks);
         void generateCylinder(float baseRadius, float topRadius, float height, int slices, int stacks);
-        void generateDisk(float innerRadius, float outerRadius, int slices, int loops, bool up = true);
-
+        void generateDisk    (float innerRadius, float outerRadius, int slices, int loops, bool up = true);
+        */
+        
         virtual void setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<unsigned int> &indices);
 
         void draw() const;		

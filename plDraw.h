@@ -16,6 +16,5 @@ void plDrawSetProjectionMatrix();
 
 void _plDrawPicking();
 void _plDrawArrowCone(float scale);
-void _plDrawArrowDisk(float scale);
 
 #endif

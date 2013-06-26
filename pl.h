@@ -36,13 +36,10 @@
 #define PL_GRAFT_SELECTED_IS_DONOR               (_plState->graftSelectedIndex == PL_PICKING_INDEX_GRAFT_DONOR)
 #define PL_GRAFT_IS_DEFECT                       (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DEFECT)
 #define PL_GRAFT_IS_DONOR                        (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DONOR) 
-/* 
-#define PL_GRAFT_EDIT_ROTATE_OR_TRANSLATE        (_plState->graftEditMode == PL_GRAFT_EDIT_MODE_TRANSLATE || \
-                                                  _plState->graftEditMode == PL_GRAFT_EDIT_MODE_ROTATE)  
-*/ 
-#define PL_GRAFT_EDIT_SHOW_Y_HANDLE              ( (_plState->graftEditMode      == PL_GRAFT_EDIT_MODE_ROTATE && \
+
+#define PL_GRAFT_EDIT_SHOW_Y_HANDLE              ( (_plState->graftEditMode      == PL_GRAFT_EDIT_MODE_ROTATE &&      \
                                                     _plState->graftSelectedIndex == PL_PICKING_INDEX_GRAFT_DEFECT) || \
-                                                   (_plState->graftEditMode      == PL_GRAFT_EDIT_MODE_TRANSLATE && \
+                                                   (_plState->graftEditMode      == PL_GRAFT_EDIT_MODE_TRANSLATE &&   \
                                                     _plState->graftSelectedIndex == PL_PICKING_INDEX_GRAFT_DEFECT) )
                                                                                                
 #define PL_GRAFT_HANDLES_ENABLED                 (_plState->graftHandlesEnabled)
@@ -156,8 +153,8 @@ class plMesh;
 extern plMesh                         *_plSphere;
 extern plMesh                         *_plCylinder;
 extern plMesh                         *_plDisk;
-extern plMesh                         *_plArrowCone;
-extern plMesh                         *_plArrowDisk;
+//extern plMesh                         *_plArrowCone;
+//extern plMesh                         *_plArrowDisk;
 
 extern plState                        *_plState;
 extern plMinimalShader                *_plMinimalShader;
@@ -373,9 +370,6 @@ extern PLbool           plErrorIsGraftSelected      ( plString function_name );
 extern PLbool           plErrorIsBoundarySelected   ( plString function_name );
 extern PLbool           plErrorIsBoundaryPointSelected( PLuint index, plString function_name );
 extern PLbool           plErrorIsDefectSplineSelected ( PLuint index, plString function_name );
-
-//extern PLbool           plErrorCheckBoundaryBounds  (PLuint type, PLuint id, plString function_name ); 
-//extern PLbool           plErrorCheckBoundaryPointBounds(PLuint type, PLuint id, PLuint index, plString function_name ); 
 
 
 //////////////////////////////////////////////////////////////////////////////

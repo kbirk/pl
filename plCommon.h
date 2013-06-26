@@ -1,10 +1,6 @@
 #ifndef _PL_GLOBAL_HEADERS_H__
 #define _PL_GLOBAL_HEADERS_H__
-/*
-#ifndef PL_PI
-    #define PL_PI 3.14159
-#endif   
-*/
+
 #ifdef WIN32
     #include <windows.h>  
 #endif

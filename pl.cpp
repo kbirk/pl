@@ -16,8 +16,6 @@
 plMesh                        *_plSphere;
 plMesh                        *_plCylinder;
 plMesh                        *_plDisk;
-plMesh                        *_plArrowCone;
-plMesh                        *_plArrowDisk;
 
 plState                       *_plState;
 
@@ -50,13 +48,12 @@ void plInit()
     _plModelMatrixStack = new plMatrixStack();
     _plPlan             = new plPlan();
 
-    _plSphere           = new plMesh();     _plSphere->generateSphere(1, 20, 20);
-    _plCylinder         = new plMesh();     _plCylinder->generateCylinder(1.0f, 1.0f, 1.0f, 30, 1);    
-    _plDisk             = new plMesh();     _plDisk->generateDisk(0.0f, 1.0f, 20, 20);   
-    _plArrowCone        = new plMesh();     _plArrowCone->generateCylinder(PL_HEAD_RADIUS, 0.0f, PL_ARROW_LENGTH, 30, 1);
-    _plArrowDisk        = new plMesh();     _plArrowDisk->generateDisk(PL_HANDLE_RADIUS, PL_HEAD_RADIUS, 20, 20);
-    
+    _plSphere           = new plMesh(1, 20, 20);
+    _plCylinder         = new plMesh(1.0f, 1.0f, 1.0f, 30, 1);    
+    _plDisk             = new plMesh(0.0f, 1.0f, 20, 20);   
 }
+
+///////////////////////////////////////////////////////
 
 PLbool plErrorCheckGraftBounds(PLuint index, plString function_name)
 {
@@ -142,85 +139,4 @@ PLbool plErrorCheckDefectSplineBounds(PLuint index, plString function_name)
 	}
 	return false;
 } 
-
-
-/*
-PLbool plErrorCheckBoundaryPointBounds(PLuint type, PLuint id, PLuint index, plString function_name )
-{
-    plBoundary *boundary;
-    
-    switch (type)
-    {    
-        case PL_PICKING_TYPE_DEFECT_CORNERS:
-        
-            boundary = &_plPlan->_defectSplines[id].corners;
-            break;
-            
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-        
-            boundary = &_plPlan->_defectSplines.boundary;
-            break;
-            
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:
-        
-            boundary = &_plPlan->_donorRegions;
-            break;
-            
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
-        
-            boundary = &_plPlan->_iGuides;
-            break;
-    
-    if (id < 0 && id > boundary->size())
-    {
-		std::cerr << function_name << " error: invalid boundary id" << std::endl;
-		return true;  
-	}
-	
-	if (index < 0 && index > boundaray[id].size())
-    {
-		std::cerr << function_name << " error: invalid boundary point id" << std::endl;
-		return true;  
-	}
-	
-	return false;
-}
-
-PLbool plErrorCheckBoundaryBounds(PLuint type, PLuint id, plString function_name )
-{
-
-    plBoundary *boundary;
-    
-    switch (type)
-    {
-    
-        case PL_PICKING_TYPE_DEFECT_CORNERS:
-        
-            boundary = &_plPlan->_defectSplines.corners;
-            break;
-            
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-        
-            boundary = &_plPlan->_defectSplines.boundary;
-            break;
-            
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:
-        
-            boundary = &_plPlan->_donorRegions;
-            break;
-            
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
-        
-            boundary = &_plPlan->_iGuides;
-            break;
-    
-    if (id < 0 && id > boundary->size())
-    {
-		std::cerr << function_name << " error: invalid boundary id" << std::endl;
-		return true;  
-	}
-	
-	return false;
-}
-*/
 

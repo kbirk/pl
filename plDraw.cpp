@@ -1,5 +1,7 @@
 #include "plDraw.h"
 
+
+
 void plDrawSetViewingMatrix()
 {
     glMatrixMode(GL_MODELVIEW);
@@ -113,7 +115,7 @@ void plDrawArrow( const plVector3 &origin, const plVector3 &direction, PLfloat l
 void plDrawArrow( const plVector3 &direction, PLfloat length, PLfloat scale)
 {
     plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
-    
+       
     glPushMatrix();
     {               
         // set to direction
@@ -121,7 +123,7 @@ void plDrawArrow( const plVector3 &direction, PLfloat length, PLfloat scale)
         plDrawCylinder(scale*PL_HANDLE_RADIUS, length);
         glTranslatef( 0, 0, length );
         _plDrawArrowCone(scale);
-        _plDrawArrowDisk(scale);
+        plDrawDisk(scale*PL_HEAD_RADIUS);
     } 
     glPopMatrix();   
 }
@@ -156,6 +158,7 @@ void plDrawSphere(float radius)
     glPopMatrix();
 }
 
+
 void plDrawSphere(const plVector3 &origin, float radius)
 {
     glPushMatrix();
@@ -166,6 +169,7 @@ void plDrawSphere(const plVector3 &origin, float radius)
     }
     glPopMatrix();
 }
+
 
 void plDrawCylinder(float radius, float height)
 {
@@ -190,24 +194,14 @@ void plDrawDisk(float radius)
 
 void _plDrawArrowCone(float scale)
 {
+    static plMesh cone(PL_HEAD_RADIUS, 0.0f, PL_ARROW_LENGTH, 30, 1);
+    
     glPushMatrix();
     {
         glScalef(scale, scale, scale);        
-        _plArrowCone->draw();
+        cone.draw();
     }
     glPopMatrix();
 }
-
-
-void _plDrawArrowDisk(float scale)
-{
-    glPushMatrix();
-    {
-        glScalef(scale, scale, scale);        
-        _plArrowDisk->draw();
-    }
-    glPopMatrix();
-}
-
 
 
