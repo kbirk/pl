@@ -83,7 +83,7 @@ class plGraft : public plRenderable
         void spinMark( PLfloat degrees );
     
         plCap findCap ( const plSeq<plTriangle> &triangles, const plVector3 &up );
-        void setCaps  ( const plSeq<plTriangle> &cartilageTriangles, const plSeq<plTriangle> &boneTriangles );
+        void  setCaps ( const plSeq<plTriangle> &cartilageTriangles, const plSeq<plTriangle> &boneTriangles );
         
         void updateCartilageMesh();
         void updateBoneMesh();

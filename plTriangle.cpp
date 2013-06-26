@@ -112,7 +112,7 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
     } 
     else 
     {
-        // Read RAW STL (CURRENTLY DOES NOT WORK!!) 
+        // Read RAW STL 
         if (sizeof(PLuint) != 4) 
         {
           std::cerr << "Expected PLuint to be 4 bytes, but it is " 
@@ -149,11 +149,11 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
         {
             PLushort nAttr;
             
-            infile.read(reinterpret_cast<PLchar*>(&n.x),  sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&p1.x), sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&p2.x), sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&p3.x), sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&nAttr), sizeof(PLushort));
+            infile.read( reinterpret_cast<PLchar*>(&n.x),  sizeof(PLfloat)*3);
+            infile.read( reinterpret_cast<PLchar*>(&p1.x), sizeof(PLfloat)*3);
+            infile.read( reinterpret_cast<PLchar*>(&p2.x), sizeof(PLfloat)*3);
+            infile.read( reinterpret_cast<PLchar*>(&p3.x), sizeof(PLfloat)*3);
+            infile.read( reinterpret_cast<PLchar*>(&nAttr), sizeof(PLushort));
 
             plCheckAndFixNormal( n, p1, p2, p3 );
            

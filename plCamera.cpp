@@ -17,7 +17,6 @@ void plCamera::defaultInit()
 	_position = plVector3(0,0,50);    
 	_lookat   = plVector3(0,0,0);
 	_up       = plVector3(0,1,0);
-
 }  
     
 plMatrix44 plCamera::getMatrix() const 
