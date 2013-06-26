@@ -54,8 +54,8 @@ void PlannerWindow::userKeyAction( unsigned char key, int x, int y )
 
     switch (key) 
     {   
-        case 'b':   plModelToggleBone(0);                   break;            
-        case 'c':   plModelToggleCartilage(0);              break;      
+        case 'b':   plModelBoneToggleVisibility(0);         break;            
+        case 'c':   plModelCartilageToggleVisibility(0);    break;      
         case 'p':   plPlanToggleVisibility();               break;    
         case 'z':   plCameraResetToModel(0);                break;          
         case 't':   plGraftSetTranslateMode();              break; 
@@ -187,30 +187,24 @@ bool PlannerWindow::userMouseAction( int button, int state, int x, int y )
         {
             // add boundary point
             PLint new_index = plBoundaryPointAdd(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
-            if (new_index > 0)
+            if (new_index > 0)  // may not always add a new point (ex. selecting over bone)
             {
                 plBoundaryPointSelect(new_index);
             } 
             glutPostRedisplay();   
             return true;                               
         }
-
-        PLint type = plPickingGetType(x, glutGet(GLUT_WINDOW_HEIGHT)-y);
+        
+        PLint type = plPickingSelect(x, glutGet(GLUT_WINDOW_HEIGHT)-y);
 
         switch (type)
         {
             case PL_PICKING_TYPE_NONE:
-                plPickingSelect(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
+            {
                 glutPostRedisplay();
                 return false; 
-                
-            case PL_PICKING_TYPE_GRAFT:
-            {
-                plPickingSelect(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
-                glutPostRedisplay();
-                return true; 
             }
-        
+            
             case PL_PICKING_TYPE_GRAFT_HANDLE_X:
             case PL_PICKING_TYPE_GRAFT_HANDLE_Y:
             case PL_PICKING_TYPE_GRAFT_HANDLE_Z:
@@ -226,19 +220,10 @@ bool PlannerWindow::userMouseAction( int button, int state, int x, int y )
             case PL_PICKING_TYPE_DONOR_BOUNDARY:
             case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
             {
-                plPickingSelect(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
                 _currentDragee = DRAGEE_BOUNDARY_POINT;
                 glutPostRedisplay();
                 return true; 
             } 
-            
-            case PL_PICKING_TYPE_DEFECT_SPLINE:
-            {
-                plPickingSelect(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
-                glutPostRedisplay();
-                return true;    
-            }
-            
             
             case PL_PICKING_TYPE_DEFECT_HANDLE_0:
             case PL_PICKING_TYPE_DEFECT_HANDLE_1:
@@ -246,12 +231,16 @@ bool PlannerWindow::userMouseAction( int button, int state, int x, int y )
             case PL_PICKING_TYPE_DEFECT_HANDLE_3:
             case PL_PICKING_TYPE_DEFECT_HANDLE_C:
             {
-                glutPostRedisplay();
-                return true;    
+                   
             }
+            
+            default:
+            {
+                glutPostRedisplay();
+                return true; 
+            }            
         }
     }
-
 
     return false; 
 }
@@ -280,8 +269,6 @@ bool PlannerWindow::userMouseMotion( int x, int y )
             glutPostRedisplay();
             return true;
         }
-
-    
     }
 
     return false;

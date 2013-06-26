@@ -10,8 +10,9 @@
 #include "plState.h"
 #include "plMesh.h"
 
-#define PL_BOUNDARY_MESH_HEIGHT     3.0f
-#define PL_BOUNDARY_MESH_WIDTH_HALF 0.25f
+#define PL_BOUNDARY_MESH_HEIGHT         3.0f
+#define PL_BOUNDARY_MESH_WIDTH_HALF     0.25f
+#define PL_BOUNDARY_MESH_CURVE_HEIGHT   0.2f
 
 class plBoundary : public plRenderable
 {
@@ -24,6 +25,8 @@ class plBoundary : public plRenderable
         
         plVector3 getAvgNormal() const;
         PLuint    size() const;
+        void      toggleVisibility();
+        
         PLuint    addPointAndNormal(const plVector3 &point, const plVector3 &normal);
         void      updateMesh(); 
         void      draw() const;     
@@ -31,7 +34,7 @@ class plBoundary : public plRenderable
     private:
     
         plMesh _mesh;    
-                           
+        PLbool _showWalls;                   
 };
 
 #endif

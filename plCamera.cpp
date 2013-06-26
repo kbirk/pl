@@ -208,6 +208,21 @@ plVector3 plCameraGetPosition()
     return _plCamera->getPosition();
 }
 
+void plCameraSetPosition(const plVector3 &position)
+{
+    _plCamera->setPosition(position);
+}
+
+void plCameraSetFocus( const plVector3 &focus)
+{
+    _plCamera->setFocus(focus);
+}
+
+void plCameraSetUp( const plVector3 up)
+{
+    _plCamera->setUp(up);
+}
+
 void plCameraTranslate(PLint x, PLint y)
 {
 	_plCamera->translate(x, y);

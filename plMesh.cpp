@@ -69,6 +69,7 @@ void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plS
 	const GLuint NOR_SIZE = sizeof(GLfloat)*3;
     const GLuint TOTAL_SIZE = POS_SIZE + NOR_SIZE ;  
     const GLuint ARRAY_SIZE = TOTAL_SIZE * interleaved_vertices.size()/2;
+    
     // create and bind VAO
 	glGenVertexArrays(1, &_vertexArrayObject);     
 	glBindVertexArray(_vertexArrayObject);
@@ -135,8 +136,8 @@ void plMesh::generateSphere(float radius, int slices, int stacks)
     int imin, imax;
     PLint base;
 
-    drho = M_PI / stacks;
-    dtheta = 2.0f * M_PI / slices;
+    drho = PL_PI / stacks;
+    dtheta = 2.0f * PL_PI / slices;
     
     plSeq<plVector3> interleaved_vertices; 
     plSeq<unsigned int> indices;
@@ -210,7 +211,7 @@ void plMesh::generateSphere(float radius, int slices, int stacks)
     interleaved_vertices.add( plVector3(0.0f, 0.0f, -radius));   // position
     interleaved_vertices.add( plVector3(0.0f, 0.0f, -1.0f));     // normal
 
-    rho = M_PI - drho;
+    rho = PL_PI - drho;
 
     for (int j = slices; j >= 0; j--) 
     {
@@ -243,7 +244,7 @@ void plMesh::generateCylinder(float baseRadius, float topRadius, float height, i
     float da, r, dr, dz;
     float x, y, z, nz;
 
-    da = 2.0f * M_PI / slices;
+    da = 2.0f * PL_PI / slices;
     dr = (topRadius - baseRadius) / stacks;
     dz = height / stacks;
     nz = (baseRadius - topRadius) / height;
@@ -305,7 +306,7 @@ void plMesh::generateDisk(float innerRadius, float outerRadius, int slices, int 
 
     plVector3 normal = (up) ? plVector3(0.0f, 0.0f, 1.0f) : plVector3(0.0f, 0.0f, -1.0f);
 
-    da = 2.0f * M_PI / slices;
+    da = 2.0f * PL_PI / slices;
     dr = (outerRadius - innerRadius) /  loops;
 
     float sa, ca;

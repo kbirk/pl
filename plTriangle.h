@@ -1,13 +1,9 @@
 #ifndef __PL_TRIANGLE_H__
 #define	__PL_TRIANGLE_H__
 
-// STL
-#include <algorithm>
-#include <sstream>
-
 // PLANNER
 #include "pl.h"
-#include "stringhelper.h"
+#include "plString.h"
 #include "plVector3.h"
 #include "plSeq.h"
 

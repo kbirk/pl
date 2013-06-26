@@ -15,13 +15,10 @@ class plSpline : public plRenderable
 {
     public:
 
-        plBoundary    corners;
-        plBoundary    boundary;
-  
-        plSeq<plVector3>    s;
-        plSeq<plVector3>    t;
-  
-        plSpline() {}
+        plBoundary          boundary, corners; 
+        plSeq<plVector3>    s, t;
+        
+        plSpline();
 
         void draw() const;
         void drawCornersSelectionInterface() const;

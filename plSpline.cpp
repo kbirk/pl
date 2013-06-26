@@ -1,5 +1,9 @@
 #include "plSpline.h" 
 
+plSpline::plSpline() 
+{
+}
+
 void plSpline::draw() const
 {      
     if (!_isVisible)
@@ -12,6 +16,7 @@ void plSpline::draw() const
     // draw spline corners
     _plPickingState->type = PL_PICKING_TYPE_DEFECT_CORNERS;
     corners.draw();
+    
     // draw spline corner axes
     if (PL_BOUNDARY_CURRENT_IS_SELECTED && corners.isVisibile())
     {
@@ -166,7 +171,7 @@ void plSpline::computeHermiteSpline()
     st.add( (s[3]*n32) / (s[3]*p32) * (p[3]-p[2]).length() ); 
     tt.add( (t[3]*n03) / (t[3]*p03) * (p[0]-p[3]).length() ); 
 
-    const PLfloat inc = 0.01f;
+    const PLfloat inc = 0.05f;
  
     plSeq<plVector3>    interleaved_vertices( ((1.0 / inc) + 1) * 4 * 3 );
     plSeq<unsigned int> indices             ( ((1.0 / inc) + 1) * 6 );
@@ -291,7 +296,7 @@ void plSpline::drawSplineSelectionInterface() const
     n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[3], corners.normals[3]) );   
        
     glPushMatrix();
-    for (PLint i = 0; i < corners.size(); i++)
+    for (PLuint i = 0; i < corners.size(); i++)
     {      
         _plPickingState->type = PL_PICKING_TYPE_DEFECT_HANDLE_0 + i; 
         _plPickingShader->setPickingUniforms(_plPickingState);
@@ -299,7 +304,6 @@ void plSpline::drawSplineSelectionInterface() const
         plDrawArrow(corners.points[i], n[i]);
     }
     glPopMatrix();
-
 }
 
 ////////////////////////////////////////////////

@@ -9,7 +9,7 @@
 #include "plModel.h"
 #include "plBoundary.h"
 #include "plSpline.h"
-#include "stringhelper.h"
+#include "plString.h"
 
 class plKWire 
 {

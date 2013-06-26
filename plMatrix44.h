@@ -219,25 +219,25 @@ class plMatrix44
 		inline plMatrix44 operator+(const plMatrix44 &m) const 
 		{
 			return plMatrix44(_data[0] + m._data[0], _data[1] + m._data[1], _data[2] + m._data[2], _data[3] + m._data[3],
-							_data[4] + m._data[4], _data[5] + m._data[5], _data[6] + m._data[6], _data[7] + m._data[7],
-							_data[8] + m._data[8], _data[9] + m._data[9], _data[10] + m._data[10], _data[11] + m._data[11],
-							_data[12] + m._data[12], _data[13] + m._data[13], _data[14] + m._data[14], _data[15] + m._data[15]);
+							  _data[4] + m._data[4], _data[5] + m._data[5], _data[6] + m._data[6], _data[7] + m._data[7],
+						      _data[8] + m._data[8], _data[9] + m._data[9], _data[10] + m._data[10], _data[11] + m._data[11],
+							  _data[12] + m._data[12], _data[13] + m._data[13], _data[14] + m._data[14], _data[15] + m._data[15]);
 		}
 		// subtraction
 		inline plMatrix44 operator-(const plMatrix44 &m) const 
 		{
-			return plMatrix44(_data[0] - m._data[0], _data[1] - m._data[1], _data[2] - m._data[2], _data[3] - m._data[3],
-							_data[4] - m._data[4], _data[5] - m._data[5], _data[6] - m._data[6], _data[7] - m._data[7],
-							_data[8] - m._data[8], _data[9] - m._data[9], _data[10] - m._data[10], _data[11] - m._data[11],
-							_data[12] - m._data[12], _data[13] - m._data[13], _data[14] - m._data[14], _data[15] - m._data[15]);
+			return plMatrix44(_data[0] - m._data[0],   _data[1] - m._data[1],   _data[2] - m._data[2],   _data[3] - m._data[3],
+							  _data[4] - m._data[4],   _data[5] - m._data[5],   _data[6] - m._data[6],   _data[7] - m._data[7],
+							  _data[8] - m._data[8],   _data[9] - m._data[9],   _data[10] - m._data[10], _data[11] - m._data[11],
+							  _data[12] - m._data[12], _data[13] - m._data[13], _data[14] - m._data[14], _data[15] - m._data[15]);
 		}
 		// scalar multiplication
 		inline plMatrix44 operator*(PLfloat s) const 
 		{
 			return plMatrix44(_data[0] * s, _data[1] * s, _data[2] * s,  _data[3] * s,
-							_data[4] * s, _data[5] * s, _data[6] * s,  _data[7] * s,
-							_data[8] * s, _data[9] * s, _data[10] * s, _data[11] * s,
-							_data[12],	   _data[13],    _data[14],     _data[15]);
+							  _data[4] * s, _data[5] * s, _data[6] * s,  _data[7] * s,
+							  _data[8] * s, _data[9] * s, _data[10] * s, _data[11] * s,
+							  _data[12],	   _data[13],    _data[14],     _data[15]);
 
 		}
 		inline plMatrix44 &operator*=(PLfloat s)  

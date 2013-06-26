@@ -13,7 +13,10 @@ class plProjection
 		plProjection(PLfloat fov, PLfloat aspect_ratio, PLfloat near_plane, PLfloat far_plane);		
 		
 		plMatrix44 getMatrix();	
-	
+		
+	    void setFOV(PLfloat fov);	
+	    void setNear(PLfloat nearPlane);	
+	    void setFar(PLfloat farPlane);	    
 	    void setAspectRatio(PLfloat aspect_ratio);
 	    
 	

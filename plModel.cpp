@@ -80,7 +80,7 @@ plVector3 plModel::getAverageNormal( PLfloat radius, const plVector3 &origin, co
 }
 
 
-PLbool compareOrderPairs( const plOrderPair &a, const plOrderPair &b )
+PLbool _compareOrderPairs( const plOrderPair &a, const plOrderPair &b )
 {
     return (a.distance > b.distance);
 }
@@ -102,11 +102,11 @@ void plModel::draw() const
         
         std::vector<plOrderPair> order;
         order.reserve(_triangles.size());              
-        for (unsigned int i=0; i<_triangles.size(); i++) 
+        for (PLint i=0; i<_triangles.size(); i++) 
         {
             order.push_back( plOrderPair(i, _triangles[i].centroid * viewDir) );
         }
-        std::sort(order.begin(), order.end(), compareOrderPairs);
+        std::sort(order.begin(), order.end(), _compareOrderPairs);
         
         _mesh.draw(order);
     }
@@ -287,7 +287,7 @@ void plModelSelect(PLuint model_id)
 }
 
 
-void plModelToggleBone( PLuint model_id )
+void plModelBoneToggleVisibility( PLuint model_id )
 {
 	if (plErrorCheckModelBounds(model_id, "plModelToggleBone"))
         return;
@@ -296,7 +296,7 @@ void plModelToggleBone( PLuint model_id )
 }
 
 
-void plModelToggleCartilage( PLuint model_id )
+void plModelCartilageToggleVisibility( PLuint model_id )
 {
     if (plErrorCheckModelBounds(model_id, "plModelToggleCartilage"))
         return;
@@ -304,7 +304,7 @@ void plModelToggleCartilage( PLuint model_id )
 	_plBoneAndCartilageModels[model_id]->toggleCartilageVisibility();
 }
 
-
+/*
 void plModelDraw( PLuint model_id )
 {
     if (plErrorCheckModelBounds(model_id, "plModelDraw"))
@@ -316,12 +316,12 @@ void plModelDraw( PLuint model_id )
 
 void plModelDrawAll()
 {
-	for (PLint i = 0; i < plModelGetCount(); i++)
+	for (PLuint i = 0; i < plModelGetCount(); i++)
 	{
 		plModelDraw(i);
 	}	
 }
-
+*/
 
 PLbool plModelBoneIntersect(plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
 {

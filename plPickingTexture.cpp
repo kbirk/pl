@@ -78,7 +78,7 @@ plPickingInfo plPickingTexture::readPixel(PLuint x, PLuint y)
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     
-    std::cout << "picking: " << pi.type << " " << pi.id << " " << pi.index << "\n"; 
+    //std::cout << "picking: " << pi.type << " " << pi.id << " " << pi.index << "\n"; 
     
     return pi;
 }
@@ -100,25 +100,28 @@ PLfloat plPickingTexture::readDepth(PLuint x, PLuint y)
 
 ///////////////////////////////////
 
-PLfloat plPickingReadDepth(PLuint x, PLuint y)
+PLfloat plPickingGetDepth(PLuint x, PLuint y)
 {
-    PLfloat depth = _plPickingTexture->readDepth(x,y);
-    
-    std::cout << "depth: " << depth << "\n"; 
-    
-    return depth;
+    return _plPickingTexture->readDepth(x,y);
 }
 
 
 PLint plPickingGetType(PLuint x, PLuint y)
 {
-   plPickingInfo pi = _plPickingTexture->readPixel(x,y);
-   
-   return pi.type;
+   return _plPickingTexture->readPixel(x,y).type;
 }
 
+PLint plPickingGetID(PLuint x, PLuint y)
+{
+   return _plPickingTexture->readPixel(x,y).id;
+}
 
-void plPickingSelect(PLuint x, PLuint y)
+PLint plPickingGetIndex(PLuint x, PLuint y)
+{
+   return _plPickingTexture->readPixel(x,y).index;
+}
+
+PLint plPickingSelect(PLuint x, PLuint y)
 {
     plPickingInfo pi = _plPickingTexture->readPixel(x,y);
 
@@ -127,7 +130,7 @@ void plPickingSelect(PLuint x, PLuint y)
         case PL_PICKING_TYPE_BONE:   
         case PL_PICKING_TYPE_CARTILAGE:
             
-            _plState->selectModel(pi.id);              
+            _plState->selectModel(pi.id);             
             break;  
             
         case PL_PICKING_TYPE_GRAFT:
@@ -158,15 +161,13 @@ void plPickingSelect(PLuint x, PLuint y)
         case PL_PICKING_TYPE_DEFECT_HANDLE_2:
         case PL_PICKING_TYPE_DEFECT_HANDLE_3:
         case PL_PICKING_TYPE_DEFECT_HANDLE_C:
-        {
-            
+        {           
             break;    
         }    
     }
+    
+    return pi.type; 
 }
-
-
-
 
 
 

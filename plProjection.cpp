@@ -15,12 +15,48 @@ plMatrix44 plProjection::getMatrix()
 	return plMatrix44( _fov, _aspect, _near, _far );
 }		
 
+void plProjection::setFOV(PLfloat fov)
+{
+    _fov = fov;
+}
+
+void plProjection::setNear(PLfloat near_plane)
+{
+    _near = near_plane;
+}
+
+void plProjection::setFar(PLfloat far_plane)
+{
+    _far = far_plane;
+}
+
 void plProjection::setAspectRatio(PLfloat aspect_ratio)
 {
     _aspect = aspect_ratio;
 }
 				
 /////////////////////////////////////////////////////////
+
+
+void plProjectionSetAspect(PLfloat aspect_ratio)
+{
+    _plProjection->setAspectRatio(aspect_ratio);
+}
+
+void plProjectionSetFOV(PLfloat fov)
+{
+    _plProjection->setFOV(fov);
+}
+
+void plProjectionSetNear(PLfloat near_plane)
+{
+    _plProjection->setNear(near_plane);
+}
+
+void plProjectionSetFar(PLfloat far_plane)
+{
+    _plProjection->setFar(far_plane);
+}
 
 void plProjectionSetPerspective(PLfloat fov, PLfloat aspect, PLfloat near_plane, PLfloat far_plane)
 {
@@ -36,6 +72,7 @@ void plWindowReshape(PLuint width, PLuint height)
     _plPickingTexture = new plPickingTexture(width, height);
 }
 
+/////////////////////////////////////////////////////////
 
 plVector3 plWindowGetMouseToWorldPos(PLint x, PLint y, PLint z)
 {

@@ -3,7 +3,7 @@
 
 #include "pl.h"
 #include "plSeq.h"
-#include "stringhelper.h"
+#include "plString.h"
 
 class plCSV 
 {

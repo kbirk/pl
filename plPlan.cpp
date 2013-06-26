@@ -87,15 +87,15 @@ void plPlan::readFile( plString filename )
     {
         plString field = csv.data[i][0];
 
-        if (compareCaseInsensitive(field, "date") )
+        if (plCompareCaseInsensitive(field, "date") )
         {
             date = csv.data[i][1];
         }
-        else if (compareCaseInsensitive(field, "directory") ) 
+        else if (plCompareCaseInsensitive(field, "directory") ) 
         {
             directory = csv.data[i][1];
         } 
-        else if (compareCaseInsensitive(field, "spline corners") ) // read before boundary
+        else if (plCompareCaseInsensitive(field, "spline corners") ) // read before boundary
         {
             _defectSplines.add( plSpline() );           
             plBoundary &corners = _defectSplines.back().corners;
@@ -106,7 +106,7 @@ void plPlan::readFile( plString filename )
                 corners.normals.add( plVector3( csv.data[i][j+1]) );
             }
         } 
-        else if (compareCaseInsensitive(field, "spline boundary" ) )
+        else if (plCompareCaseInsensitive(field, "spline boundary" ) )
         {
             plBoundary &boundary = _defectSplines.back().boundary;
 
@@ -117,7 +117,7 @@ void plPlan::readFile( plString filename )
             }
 
         } 
-        else if (compareCaseInsensitive(field, "donor boundary" ) ) 
+        else if (plCompareCaseInsensitive(field, "donor boundary" ) ) 
         {                
             _donorRegions.add( plBoundary() );
                        
@@ -130,7 +130,7 @@ void plPlan::readFile( plString filename )
             }    
 
         } 
-        else if (compareCaseInsensitive(field, "graft" ) ) 
+        else if (plCompareCaseInsensitive(field, "graft" ) ) 
         {        
             // Find the graft            
             int j = atoi( csv.data[i][1].c_str() );
@@ -145,43 +145,43 @@ void plPlan::readFile( plString filename )
             // Fill in the field            
             plString subfield = csv.data[i][2];
             
-            if (compareCaseInsensitive(subfield, "height offset") )
+            if (plCompareCaseInsensitive(subfield, "height offset") )
                 graft.height_offset = atof( csv.data[i][3].c_str() );
                                
-            else if (compareCaseInsensitive(subfield, "radius") )
+            else if (plCompareCaseInsensitive(subfield, "radius") )
                 graft.radius = atof( csv.data[i][3].c_str() );
                 
-            else if (compareCaseInsensitive(subfield, "length") )
+            else if (plCompareCaseInsensitive(subfield, "length") )
                 graft.length = atof( csv.data[i][3].c_str() );
                
-            else if (compareCaseInsensitive(subfield, "mark direction") )
+            else if (plCompareCaseInsensitive(subfield, "mark direction") )
                 graft.markDirection = plVector3( csv.data[i][3].c_str() ).normalize();
                 
-            else if (compareCaseInsensitive(subfield, "recipient origin") )
+            else if (plCompareCaseInsensitive(subfield, "recipient origin") )
                 graft.recipientTransform.origin = plVector3( csv.data[i][3].c_str() );
             
-            else if (compareCaseInsensitive(subfield, "recipient x") )            
+            else if (plCompareCaseInsensitive(subfield, "recipient x") )            
                 graft.recipientTransform.x = plVector3( csv.data[i][3].c_str() ).normalize();
 
-            else if (compareCaseInsensitive(subfield, "recipient y") )
+            else if (plCompareCaseInsensitive(subfield, "recipient y") )
                 graft.recipientTransform.y = plVector3( csv.data[i][3].c_str() ).normalize();
                  
-            else if (compareCaseInsensitive(subfield, "harvest origin") )
+            else if (plCompareCaseInsensitive(subfield, "harvest origin") )
                 graft.harvestTransform.origin = plVector3( csv.data[i][3].c_str() );
             
-            else if (compareCaseInsensitive(subfield, "harvest x") )
+            else if (plCompareCaseInsensitive(subfield, "harvest x") )
                 graft.harvestTransform.x = plVector3( csv.data[i][3].c_str() ).normalize();
 
-            else if (compareCaseInsensitive(subfield, "harvest y") )
+            else if (plCompareCaseInsensitive(subfield, "harvest y") )
                 graft.harvestTransform.y = plVector3( csv.data[i][3].c_str() ).normalize();
             else
                 std::cerr << "Error in '" << filename << "': Unrecognized word '" << subfield << "' in third column." << std::endl;
 
         } 
-        else if (compareCaseInsensitive(field, "iguide" ) ) 
+        else if (plCompareCaseInsensitive(field, "iguide" ) ) 
         {       
             // Find the iguide            
-            unsigned int j = atoi( csv.data[i][1].c_str() );
+            PLuint j = atoi( csv.data[i][1].c_str() );
         
             while (_iGuides.size()-1 < j)
             {
@@ -194,7 +194,7 @@ void plPlan::readFile( plString filename )
             plString subfield = csv.data[i][2];
 
             
-            if (compareCaseInsensitive(subfield, "outline points") )
+            if (plCompareCaseInsensitive(subfield, "outline points") )
             {                    
                 iguide.boundary.points.clear();
                 for (int j=3; j < csv.data[i].size(); j++)
@@ -202,7 +202,7 @@ void plPlan::readFile( plString filename )
                     iguide.boundary.points.add( plVector3( csv.data[i][j] ) );
                 }       
             } 
-            else if (compareCaseInsensitive(subfield, "outline normals") ) 
+            else if (plCompareCaseInsensitive(subfield, "outline normals") ) 
             {        
                 iguide.boundary.normals.clear();
                 for (int j=3; j < csv.data[i].size(); j++)
@@ -210,7 +210,7 @@ void plPlan::readFile( plString filename )
                     iguide.boundary.normals.add( plVector3( csv.data[i][j] ) );
                 }  
             } 
-            else if (compareCaseInsensitive(subfield, "graft indices") ) 
+            else if (plCompareCaseInsensitive(subfield, "graft indices") ) 
             {
                 iguide.graftIndices.clear();
                 for (int j=3; j < csv.data[i].size(); j++)
@@ -282,10 +282,10 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
     out << std::endl;
 
     // splines
-    for (int i=0; i<p._defectSplines.size(); i++) 
+    for (PLint i=0; i<p._defectSplines.size(); i++) 
     {
         out << "spline corners";
-        for (int j=0; j<p._defectSplines[i].corners.size(); j++)
+        for (PLuint j=0; j<p._defectSplines[i].corners.size(); j++)
         {
             out << "," << p._defectSplines[i].corners.points[j];
             out << "," << p._defectSplines[i].corners.normals[j];
@@ -988,4 +988,17 @@ void plDefectSplineSetDragOrigin ( PLint x, PLint y )
     _plState->graftScreenAxis = _plGraftGetScreenAxis(_plState->graftEditAxis, _plState->graftInitialTransform.origin);      
     */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

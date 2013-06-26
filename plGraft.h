@@ -74,11 +74,7 @@ class plGraft : public plRenderable
   
         plGraft();
 
-        void computeTransforms() 
-        {
-            recipientTransform.compute();
-            harvestTransform.compute();
-        }
+        void computeTransforms();
         
         void draw() const;
         void drawGraft() const;

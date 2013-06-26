@@ -8,6 +8,7 @@ void plDrawSetViewingMatrix()
     glMultMatrixf( (GLfloat*)(&viewingMatrix) );
 }
 
+
 void plDrawSetProjectionMatrix()
 {
     glMatrixMode(GL_PROJECTION);
@@ -15,6 +16,7 @@ void plDrawSetProjectionMatrix()
     plMatrix44 projectionMatrix = _plProjection->getMatrix();
     glMultMatrixf( (GLfloat*)(&projectionMatrix) );  
 }
+
 
 void plDraw()
 {
@@ -51,6 +53,7 @@ void plDraw()
     _plDrawPicking();
 }
 
+
 void _plDrawPicking()
 {
     glDisable( GL_BLEND );
@@ -68,6 +71,7 @@ void _plDrawPicking()
     // CAMERA
     plDrawSetViewingMatrix
     */   
+    
     // stencil testing used to allow user to click on plan components through transparent bone/cartilage
 	glEnable( GL_STENCIL_TEST );						// need stencil testing enabled  					
 	glStencilFunc( GL_ALWAYS, 0xFF, 0xFF );             // replace where rendered 		
@@ -172,18 +176,6 @@ void plDrawCylinder(float radius, float height)
     }
     glPopMatrix();
 }
-
-
-void plDrawCone(float radius, float height)
-{
-    glPushMatrix();
-    {
-        glScalef(radius, radius, 1);      
-        _plArrowCone->draw();
-    }
-    glPopMatrix();
-}
-
 
 void plDrawDisk(float radius)
 {

@@ -2,7 +2,27 @@
 
 plBoundary::plBoundary()
 {
+    _showWalls = true;
 }
+
+
+void plBoundary::toggleVisibility()
+{
+    if (_isVisible && _showWalls)
+    {
+        _showWalls = false;
+    } 
+    else if (_isVisible && !_showWalls)
+    {
+        _isVisible = false;
+    }
+    else
+    {
+        _isVisible = true;
+        _showWalls = true;
+    }
+}
+
 
 plVector3 plBoundary::getAvgNormal() const
 {
@@ -14,22 +34,12 @@ plVector3 plBoundary::getAvgNormal() const
     return n.normalize();
 }
 
+
 PLuint plBoundary::size() const
 {
     return points.size();
 }
 
-plVector3 _plClosestPointOnLineSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b)
-{
-    plVector3 ab = b - a;
-    // Project c onto ab, computing parameterized position d(t) = a + t*(b – a)
-    PLfloat t = ((point - a) * ab) / (ab * ab);
-    // If outside segment, clamp t (and therefore d) to the closest endpoint
-    if (t < 0.0f) t = 0.0f;
-    if (t > 1.0f) t = 1.0f;
-    // Compute projected position from the clamped t
-    return a + t * ab;
-}
 
 PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
 {
@@ -149,14 +159,13 @@ void _plSetBoundaryColour()
     }
 }
 
+
 void plBoundary::updateMesh()
 {
     plVector3 n = getAvgNormal();
-    
-    //plSeq<plTriangle> triangles( points.size()*6 );
 
-    plSeq<plVector3>    interleaved_vertices( points.size() * 4 * 3 );
-    plSeq<unsigned int> indices             ( points.size() * 6 * 3 );
+    plSeq<plVector3>    interleaved_vertices( points.size() * 10 );
+    plSeq<unsigned int> indices             ( points.size() * 6 * 4 );
 
     for (PLint i = 0; i < points.size(); i++)
     {        
@@ -185,6 +194,7 @@ void plBoundary::updateMesh()
 
         PLuint base = interleaved_vertices.size()/2;
 
+        // "right" quad
         interleaved_vertices.add(a);    // position
         interleaved_vertices.add(t1);   // normal
         
@@ -196,19 +206,15 @@ void plBoundary::updateMesh()
         
         interleaved_vertices.add(d);    // position
         interleaved_vertices.add(t1);   // normal
-        //
-        interleaved_vertices.add(d);    // position
+        
+        // top ridge 
+        interleaved_vertices.add(0.5 * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
         interleaved_vertices.add(n);    // normal
         
-        interleaved_vertices.add(c);    // position
-        interleaved_vertices.add(n);    // normal
-        
-        interleaved_vertices.add(g);    // position
-        interleaved_vertices.add(n);    // normal
-        
-        interleaved_vertices.add(h);    // position
-        interleaved_vertices.add(n);    // normal        
-        //
+        interleaved_vertices.add(0.5 * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
+        interleaved_vertices.add(n);    // normal       
+         
+        // "left" quad
         interleaved_vertices.add(e);    // position
         interleaved_vertices.add(-t1);  // normal
         
@@ -221,18 +227,22 @@ void plBoundary::updateMesh()
         interleaved_vertices.add(h);    // position
         interleaved_vertices.add(-t1);  // normal
 
+        // triangle indices
         indices.add(base+0);    indices.add(base+1);    indices.add(base+2);
         indices.add(base+0);    indices.add(base+2);    indices.add(base+3);
         
-        indices.add(base+4);    indices.add(base+5);    indices.add(base+6);
-        indices.add(base+4);    indices.add(base+6);    indices.add(base+7);
+        indices.add(base+3);    indices.add(base+2);    indices.add(base+5);
+        indices.add(base+3);    indices.add(base+5);    indices.add(base+4);
         
-        indices.add(base+9);    indices.add(base+8);    indices.add(base+11);
-        indices.add(base+9);    indices.add(base+11);   indices.add(base+10);        
+        indices.add(base+4);    indices.add(base+5);    indices.add(base+8);
+        indices.add(base+4);    indices.add(base+8);    indices.add(base+9);
+        
+        indices.add(base+7);    indices.add(base+6);    indices.add(base+9);
+        indices.add(base+7);    indices.add(base+9);   indices.add(base+8);   
+  
     }
 
     _mesh.destroy();
-    //_mesh = plMesh(triangles);
     _mesh = plMesh(interleaved_vertices, indices);
 }
 
@@ -244,12 +254,17 @@ void plBoundary::draw() const
 
     if (points.size() > 0) 
     {
-        _plPickingState->index = -1;  // draw walls with index of -1
-        _plPickingShader->setPickingUniforms(_plPickingState);
-              
         _plSetBoundaryColour();
-        _mesh.draw();
-
+        
+        // draw walls
+        if (_showWalls)
+        {
+            _plPickingState->index = -1;  // draw walls with index of -1
+            _plPickingShader->setPickingUniforms(_plPickingState);
+            _mesh.draw();
+        }
+        
+        // draw points
         for (PLint i=0; i<points.size(); i++) 
         {
             _plPickingState->index = i; 

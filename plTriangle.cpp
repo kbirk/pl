@@ -62,7 +62,7 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
     // First line: ASCII or RAW?
     plString line;
     std::getline(infile, line);
-    bool isAscii = compareCaseInsensitive(line, "solid", 5);
+    bool isAscii = plCompareCaseInsensitive(line, "solid", 5);
 
     if (isAscii) 
     {      
@@ -73,12 +73,12 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
         {
             
             std::getline(infile, line);            
-            if (compareCaseInsensitive(line, "facet", 5)) 
+            if (plCompareCaseInsensitive(line, "facet", 5)) 
             {   
                 // normal   
                 sscanf(line.c_str(), "%s %s %f %f %f", filler, filler, &n.x, &n.y, &n.z);
             } 
-            else if (compareCaseInsensitive(line, "vertex", 6)) 
+            else if (plCompareCaseInsensitive(line, "vertex", 6)) 
             {
                 // vertex 1
                 sscanf(line.c_str(), "%s %f %f %f", filler, &p1.x, &p1.y, &p1.z);
@@ -89,7 +89,7 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
                 std::getline(infile, line); // read next vertex line
                 sscanf(line.c_str(), "%s %f %f %f", filler, &p3.x, &p3.y, &p3.z);
             } 
-            else if (compareCaseInsensitive(line, "endfacet", 8))
+            else if (plCompareCaseInsensitive(line, "endfacet", 8))
             {
                 // end of face, build triangle
                 triangles.add( plTriangle(n,p1,p2,p3) );
@@ -99,7 +99,7 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
     } 
     else 
     {
-        // Read RAW STL
+        // Read RAW STL (CURRENTLY DOES NOT WORK!!) 
         if (sizeof(PLuint) != 4) 
         {
           std::cerr << "Expected PLuint to be 4 bytes, but it is " 

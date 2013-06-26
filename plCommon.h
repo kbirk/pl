@@ -1,10 +1,10 @@
 #ifndef _PL_GLOBAL_HEADERS_H__
 #define _PL_GLOBAL_HEADERS_H__
-
-#ifndef M_PI
-    #define M_PI 3.14159
+/*
+#ifndef PL_PI
+    #define PL_PI 3.14159
 #endif   
-
+*/
 #ifdef WIN32
     #include <windows.h>  
 #endif
@@ -16,7 +16,7 @@
 #endif
 
 #ifdef __APPLE_CC__
-    #include <glew.h>   // include before gl.h
+    #include <glew.h>    // include before gl.h
     #include <OpenGL/gl.h>
     #include <OpenGL/glu.h>
     #include <GLUT/glut.h>
@@ -31,6 +31,8 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
+#include <algorithm>
+#include <cctype>
 #include <cstring>
 #include <cfloat>
 #include <cmath>

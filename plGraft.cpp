@@ -5,6 +5,12 @@ plGraft::plGraft()
 
 }
 
+void plGraft::computeTransforms() 
+{
+    recipientTransform.compute();
+    harvestTransform.compute();
+}
+        
 void plGraft::drawSelectionInterface() const
 {
     if (!PL_GRAFT_HANDLES_ENABLED)
@@ -213,9 +219,10 @@ void plGraft::drawGraft() const
 
 void plGraft::setCaps( const plSeq<plTriangle> &cartilageTriangles, const plSeq<plTriangle> &boneTriangles  )
 {
+    // generate cap polygons
     cartilageCap = findCap( cartilageTriangles, harvestTransform.y);
     boneCap      = findCap( boneTriangles,      harvestTransform.y);
-       
+    // generate meshes   
     updateCartilageMesh();   
     updateBoneMesh();      
 }
@@ -286,7 +293,7 @@ void plGraft::updateCartilageMesh()
                 if (c == cartilageCap.perimeter.size()) 
                 {
                     c = 0;
-                    cOffset = 2 * M_PI;
+                    cOffset = 2 * PL_PI;
                 }
         
                 indices.add(interleaved_vertices.size()/2);
@@ -300,7 +307,7 @@ void plGraft::updateCartilageMesh()
                 if (b == boneCap.perimeter.size()) 
                 {
                     b = 0;
-                    bOffset = 2 * M_PI;
+                    bOffset = 2 * PL_PI;
                 }
         
                 indices.add(interleaved_vertices.size()/2);
@@ -463,7 +470,7 @@ plCap plGraft::findCap( const plSeq<plTriangle> &triangles, const plVector3 &up 
      
         cap.perimeter.add( plPointAndAngle( angles[0].angle, angles[0].point ) );
           
-        for (PLint i=1; i<angles.size(); i++) 
+        for (PLuint i=1; i<angles.size(); i++) 
         {
             if ( (angles[i].point - angles[i-1].point).squaredLength() > 0.01f)
             {

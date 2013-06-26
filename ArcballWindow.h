@@ -12,11 +12,6 @@
 #define CAMERA_ROTATION_MODE 		1
 #define CAMERA_TRANSLATION_MODE 	2
 
-#define DRAGEE_NONE 		       -1
-#define DRAGEE_GRAFT_HANDLE         1
-#define DRAGEE_BOUNDARY_POINT 	    2
-#define DRAGEE_SPLINE_HANDLE        3
-
 class ArcballWindow : public Window 
 {
     public:
