@@ -80,7 +80,7 @@ class plGraft : public plRenderable
         void drawGraft() const;
         void drawSelectionInterface() const;
 
-        //void spinMark( PLfloat degrees );
+        void spinMark( PLfloat degrees );
     
         plCap findCap ( const plSeq<plTriangle> &triangles, const plVector3 &up );
         void setCaps  ( const plSeq<plTriangle> &cartilageTriangles, const plSeq<plTriangle> &boneTriangles );

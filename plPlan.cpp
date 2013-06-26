@@ -869,9 +869,26 @@ void plGraftDragEdit( PLint x, PLint y )
             
             PLfloat length_delta = screenDragVector * (_plState->graftScreenAxis).normalize(); 
             graft.length -= length_delta/10;                
-            
+
             if (graft.length < 0)
                 graft.length = 0;
+            
+            graft.updateCartilageMesh();
+            graft.updateBoneMesh();
+
+            break;
+        }
+        
+        case PL_GRAFT_EDIT_MODE_MARKER:
+        {
+            // marker
+            
+            plVector3 screenAxisNormal(-_plState->graftScreenAxis.y, _plState->graftScreenAxis.x, 0 );
+
+            PLfloat angle = -(screenDragVector * screenAxisNormal);
+            
+            plGraftSpinMarker( angle );
+            
 
             break;
         }
@@ -943,6 +960,19 @@ void plGraftRotate( PLuint graft_id, const plVector3 &axis, PLfloat angle_degree
         graft.setCaps( _plBoneAndCartilageModels[0]->getCartilageTriangles(),
                        _plBoneAndCartilageModels[0]->getBoneTriangles() );     
     }
+}
+
+void plGraftSpinMarker( PLfloat angle_degrees )
+{
+    if (plErrorIsGraftSelected("plGraftSpinMarker"))
+        return;
+    
+    plGraftSpinMarker( _plState->graftSelectedID, angle_degrees);
+}
+
+void plGraftSpinMarker( PLuint graft_id, PLfloat angle_degrees )
+{
+    _plPlan->_grafts[graft_id].spinMark(angle_degrees);
 }
 
 //////////////////////////////////////////////////

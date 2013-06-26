@@ -50,7 +50,7 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
     // just in case, clear seq
     triangles.clear();
 
-    std::ifstream infile (filename);
+    std::ifstream infile (filename.c_str());
     if (!infile.good())
     {
         std::cerr << "STL file could not be opened \n";
@@ -119,8 +119,11 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
           exit(1);
         }
 
+        // reset file position to beginning
+        infile.seekg(0);
+        
         // Skip 80-byte header       
-        plSeq<PLchar> first80(80); // create a buffer
+        PLchar first80[80]; // create a buffer
         infile.read( &first80[0], sizeof(PLchar)*80); // read to buffer
         
         // get number of faces

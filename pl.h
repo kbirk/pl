@@ -29,6 +29,7 @@
 #define PL_GRAFT_EDIT_MODE_TRANSLATE             1
 #define PL_GRAFT_EDIT_MODE_ROTATE                2 
 #define PL_GRAFT_EDIT_MODE_LENGTH                3
+#define PL_GRAFT_EDIT_MODE_MARKER                4
  
 #define PL_GRAFT_NONE_SELECTED                   (_plState->graftSelectedID == -1)
 #define PL_GRAFT_CURRENT_IS_SELECTED             (_plPickingState->id == _plState->graftSelectedID)
@@ -226,6 +227,7 @@ extern void             plDrawSetProjectionMatrix();
 
 extern void             plDrawArrow              ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
 extern void             plDrawArrow              ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
+extern void             plDrawCircleArrow        ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
 extern void             plDrawCircleArrow        ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
 extern void             plDrawSphere             ( float radius);
 extern void             plDrawSphere             ( const plVector3 &origin, float radius);
@@ -276,6 +278,7 @@ extern void             plGraftDisableHandles   ();
 extern void             plGraftSetRotateMode    ();
 extern void             plGraftSetTranslateMode ();
 extern void             plGraftSetLengthMode    ();
+extern void             plGraftSetMarkerMode    ();
 
 extern void             plGraftTranslate        ( PLuint graft_id, const plVector3 &translation );
 extern void             plGraftTranslate        ( const plVector3 &translation );
@@ -283,6 +286,9 @@ extern void             plGraftSurfaceTranslate ( PLuint graft_id, PLuint graft_
 extern void             plGraftSurfaceTranslate ( const plVector3 &translation );
 extern void             plGraftRotate           ( PLuint graft_id, const plVector3 &axis, PLfloat angle_degrees );
 extern void             plGraftRotate           ( const plVector3 &axis, PLfloat angle_degrees );
+extern void             plGraftSpinMarker       ( PLuint graft_id, PLfloat angle_degrees );
+extern void             plGraftSpinMarker       ( PLfloat angle_degrees );
+
 extern plTransform      plGraftGetHarvestTransform   ( PLuint graft_id );
 extern plTransform      plGraftGetRecipientTransform ( PLuint graft_id );
 

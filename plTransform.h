@@ -8,7 +8,7 @@ class plTransform
 {
     public:
 
-        PLfloat transform[16];
+        PLfloat   transform[16];
         plVector3 x,y,z;
         plVector3 origin; 
 

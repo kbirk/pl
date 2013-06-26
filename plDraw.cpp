@@ -129,6 +129,18 @@ void plDrawArrow( const plVector3 &direction, PLfloat length, PLfloat scale)
 }
 
 
+void plDrawCircleArrow( const plVector3 &origin, const plVector3 &direction, PLfloat length, PLfloat scale)
+{
+    glPushMatrix();
+    {
+        // set to origin
+        glTranslatef( origin.x, origin.y, origin.z );
+        plDrawCircleArrow( direction, length, scale);
+    }
+    glPopMatrix();   
+}
+
+
 void plDrawCircleArrow(const plVector3 &direction, PLfloat length, PLfloat scale)
 {
     plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());

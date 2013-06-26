@@ -176,6 +176,8 @@ void plSpline::computeHermiteSpline()
     plSeq<plVector3>    interleaved_vertices( ((1.0 / inc) + 1) * 4 * 3 );
     plSeq<unsigned int> indices             ( ((1.0 / inc) + 1) * 6 );
 
+    PLfloat percent = 0;
+
     for (PLfloat v=0.0; v < 1.0; v+=inc)
     {        
         for (PLfloat u=0.0; u < 1.0; u+=inc)
@@ -274,6 +276,10 @@ void plSpline::computeHermiteSpline()
             indices.add(base+0);
             indices.add(base+2);
             indices.add(base+3);
+           
+            percent += inc / (1.0f/inc)*(1.0f/inc);
+           
+            std::cout << "\r" << (PLint)percent << "% spline calculation";
            
         }
         

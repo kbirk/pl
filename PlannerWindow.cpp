@@ -61,32 +61,13 @@ void PlannerWindow::userKeyAction( unsigned char key, int x, int y )
         case 't':   plGraftSetTranslateMode();                   break; 
         case 'r':   plGraftSetRotateMode();                      break;     
         case 'l':   plGraftSetLengthMode();                      break; 
+        case 'm':   plGraftSetMarkerMode();                      break; 
         case 'g':   plGraftToggleVisibilityAll();                break;
         case 's':   plDefectSplineToggleVisibilityAll();         break; 
         case 'd':   plDonorRegionToggleVisibilityAll();          break;         
         case 'q':   plDefectSplineCornersToggleVisibilityAll();  break;
         case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;
         
-//       
-//       /*
-//        case '+':
-//        case '=':
-//            
-//            if (m_state.graftEditMode == SPIN_MARK)
-//            {
-//                m_plan.grafts[m_state.selectedGraft].spinMark( +3 );
-//            }
-//            break;
-//        
-//        case '-':
-//        case '_':
-//        
-//            if (m_state.graftEditMode == SPIN_MARK)
-//            {
-//                m_plan.grafts[m_state.selectedGraft].spinMark( -3 );
-//            }
-//            break;
-//        */
         case 'O':			// output plan 0
         
             plPlanExport("exportPlan");            

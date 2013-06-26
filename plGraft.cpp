@@ -59,19 +59,38 @@ void plGraft::drawSelectionInterface() const
             break;
         }
         case PL_GRAFT_EDIT_MODE_LENGTH:
-        {       
-            glColor3f( 0.2, 1.0, 0.2 ); 
-
+        {     
+            glColor3f( 0.2, 0.2, 0.2 ); 
+            glPushMatrix();
+                glTranslatef( 0, PL_HANDLE_LENGTH/2.0, 0 );
+                plDrawSphere( 1.5 );
+            glPopMatrix();
+                    
             _plPickingState->type = PL_PICKING_TYPE_GRAFT_HANDLE_Y;
             _plPickingShader->setPickingUniforms(_plPickingState);
-
+            glColor3f( 0.2, 1.0, 0.2 ); 
             plDrawArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH-1, 0), plVector3(0,1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);            
             plDrawArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH, 0), plVector3(0,-1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);
 
             break;     
         }
-
         
+        case PL_GRAFT_EDIT_MODE_MARKER:
+        {
+            glColor3f( 0.2, 0.2, 0.2 ); 
+            glPushMatrix();
+                glTranslatef( 0, PL_HANDLE_LENGTH/2.0, 0 );
+                plDrawSphere( 1.5 );
+            glPopMatrix();
+
+            _plPickingState->type = PL_PICKING_TYPE_GRAFT_HANDLE_Y;
+            _plPickingShader->setPickingUniforms(_plPickingState);
+            glColor3f( 0.2, 1.0, 0.2 ); 
+            plDrawCircleArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH-1, 0), plVector3(0,1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);            
+            plDrawCircleArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH, 0), plVector3(0,-1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);
+           
+            break;
+        }
     }
     glPopMatrix();
 }
@@ -648,11 +667,17 @@ float plGraft::angleOfPoint( const plVector3 &v ) const
 }
 
 
-plVector3 plGraft::pointAtAngle( float theta ) const
+plVector3 plGraft::pointAtAngle( PLfloat theta ) const
 {
     return cos(theta) * harvestTransform.z + sin(theta) * harvestTransform.x;
 }
 
+void plGraft::spinMark( PLfloat degrees )
+{
+    plVector3 axis(0,1,0);
+    plMatrix44 rot; rot.setRotationD( degrees, axis );     
+    markDirection = (rot * markDirection).normalize();
+}
 
 /////////////////////////////////////////
 
@@ -708,6 +733,10 @@ void plGraftSetLengthMode()
     _plState->graftEditMode = PL_GRAFT_EDIT_MODE_LENGTH;
 }
 
+void plGraftSetMarkerMode()
+{
+    _plState->graftEditMode = PL_GRAFT_EDIT_MODE_MARKER;
+}
 
 
 
