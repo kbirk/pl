@@ -3,13 +3,13 @@
 
 #include <algorithm>
 #include "pl.h"
+#include "plError.h"
 #include "plRenderable.h"
 #include "plTriangle.h"
 #include "plCamera.h"
 #include "plGraft.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
-
 #include "plMesh.h"
 
 class plModel : public plRenderable

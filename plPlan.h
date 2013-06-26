@@ -2,6 +2,7 @@
 #define __PL_PLAN_H__
 
 #include "pl.h"
+#include "plError.h"
 #include "plVector3.h"
 #include "plCSV.h"
 #include "plGraft.h"

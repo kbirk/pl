@@ -45,6 +45,17 @@ std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
     return stream;
 }
 
+
+// if the normal is zero, compute it from the three points
+void plCheckAndFixNormal(plVector3 &n, plVector3 &p1, plVector3 &p2, plVector3 &p3) 
+{
+    if (n.x == 0. && n.y == 0. && n.z == 0.) 
+    {
+        n = ((p2-p1)^(p3-p1)).normalize();
+    }
+}
+
+
 void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
 {
     // just in case, clear seq
@@ -91,6 +102,8 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
             } 
             else if (plCompareCaseInsensitive(line, "endfacet", 8))
             {
+                plCheckAndFixNormal( n, p1, p2, p3 );
+
                 // end of face, build triangle
                 triangles.add( plTriangle(n,p1,p2,p3) );
             }
@@ -121,7 +134,7 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
 
         // reset file position to beginning
         infile.seekg(0);
-        
+
         // Skip 80-byte header       
         PLchar first80[80]; // create a buffer
         infile.read( &first80[0], sizeof(PLchar)*80); // read to buffer
@@ -141,6 +154,8 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
             infile.read(reinterpret_cast<PLchar*>(&p2.x), sizeof(PLfloat)*3);
             infile.read(reinterpret_cast<PLchar*>(&p3.x), sizeof(PLfloat)*3);
             infile.read(reinterpret_cast<PLchar*>(&nAttr), sizeof(PLushort));
+
+            plCheckAndFixNormal( n, p1, p2, p3 );
            
             triangles.add( plTriangle( n, p1, p2, p3) ); 
             
@@ -148,8 +163,6 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
 
     }
 }
-
-
 
 
 

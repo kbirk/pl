@@ -277,14 +277,12 @@ void plSpline::computeHermiteSpline()
             indices.add(base+2);
             indices.add(base+3);
            
-            percent += inc / (1.0f/inc)*(1.0f/inc);
-           
-            std::cout << "\r" << (PLint)percent << "% spline calculation";
-           
+            percent += 1 / ((1.0f/inc)*(1.0f/inc));
+            std::cout << "\r" << (PLint)(percent*100) << "% spline calculation";           
         }
         
     }    
-    
+    std::cout << "\r100% spline calculation\n"; 
     _mesh.destroy();
     _mesh = plColourMesh(interleaved_vertices, indices);
 }

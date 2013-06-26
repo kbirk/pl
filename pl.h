@@ -3,8 +3,6 @@
 
 #include "plCommon.h"
   
- 
-  
 // MODEL MACROS  
             
 #define PL_MODEL_BONE_COLOUR                     0.80, 0.80, 0.80

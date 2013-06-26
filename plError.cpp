@@ -10,7 +10,6 @@ PLbool plErrorCheckGraftBounds(PLuint index, plString function_name)
 	return false;
 } 
 
-   
 PLbool plErrorCheckModelBounds(PLuint index, plString function_name)
 {
     if (index < 0 && index > _plBoneAndCartilageModels.size())
