@@ -417,7 +417,7 @@ void plPlanExport ( plString plan_file )
 
     std::stringstream filename;
     filename << plan_file << "-" << planNum << ".csv";
-    std::ofstream out( filename.str());
+    std::ofstream out( filename.str().c_str());
         
     if (!out)
     {

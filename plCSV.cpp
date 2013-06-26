@@ -9,7 +9,7 @@ plCSV::plCSV( plString fn )
 
 void plCSV::readFile( plString filename, PLbool verbose )
 {
-    std::ifstream infile(filename);
+    std::ifstream infile(filename.c_str());
 
     // make sure import file opens correctly
     if (!infile.good())

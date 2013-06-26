@@ -59,7 +59,7 @@ void plCamera::reset(const plVector3 &min, const plVector3 &max)
 
 void plCamera::exportViewParams( std::string filename )
 {
-    std::ofstream out( filename );
+    std::ofstream out( filename.c_str() );
 
     if (!out) 
     {
@@ -76,7 +76,7 @@ void plCamera::exportViewParams( std::string filename )
 
 void plCamera::importViewParams( std::string filename )
 {
-    std::ifstream in( filename );
+    std::ifstream in( filename.c_str() );
 
     if (!in) 
     {
