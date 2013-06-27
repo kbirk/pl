@@ -2,7 +2,7 @@
 
 PLbool plErrorCheckGraftBounds(PLuint index, plString function_name)
 {
-    if (index < 0 && index > _plPlan->_grafts.size())
+    if (index < 0 && index > plGraftCount() )
     {
 		std::cerr << function_name << " error: invalid graft id" << std::endl;
 		return true;  
@@ -12,7 +12,7 @@ PLbool plErrorCheckGraftBounds(PLuint index, plString function_name)
 
 PLbool plErrorCheckModelBounds(PLuint index, plString function_name)
 {
-    if (index < 0 && index > _plBoneAndCartilageModels.size())
+    if (index < 0 && index > plModelCount() )
     {
 		std::cerr << function_name << " error: invalid model id" << std::endl;
 		return true;  
@@ -66,7 +66,7 @@ PLbool plErrorIsDefectSplineSelected( plString function_name )
 
 PLbool plErrorCheckDonorRegionBounds(PLuint index, plString function_name)
 {
-    if (index < 0 && index > _plPlan->_donorRegions.size())
+    if (index < 0 && index > plDonorRegionCount() )
     {
 		std::cerr << function_name << " error: invalid donor region id" << std::endl;
 		return true;  
@@ -76,10 +76,11 @@ PLbool plErrorCheckDonorRegionBounds(PLuint index, plString function_name)
 
 PLbool plErrorCheckDefectSplineBounds(PLuint index, plString function_name)
 {
-    if (index < 0 && index > _plPlan->_defectSplines.size())
+    if (index < 0 && index > plDefectSplineCount() )
     {
 		std::cerr << function_name << " error: invalid defect spline id" << std::endl;
 		return true;  
 	}
 	return false;
 } 
+

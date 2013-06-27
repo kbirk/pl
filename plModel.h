@@ -1,13 +1,10 @@
 #ifndef __PL_MODEL_H__
 #define __PL_MODEL_H__
 
-#include <algorithm>
 #include "pl.h"
 #include "plError.h"
 #include "plRenderable.h"
 #include "plTriangle.h"
-#include "plCamera.h"
-#include "plGraft.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plMesh.h"
@@ -64,10 +61,12 @@ class plBoneAndCartilage
 		
         void draw() const;
 
-        void   getMinMax(plVector3 &min, plVector3 &max) const;           
+        void getMinMax(plVector3 &min, plVector3 &max) const;   
+                
         PLbool rayIntersectBone     ( plVector3 &intPoint, plVector3 &intNorm, 
                                       const plVector3 &start, const plVector3 &dir, 
                                       PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
+                                      
 		PLbool rayIntersectCartilage( plVector3 &intPoint, plVector3 &intNorm, 
 		                              const plVector3 &start, const plVector3 &dir, 
 		                              PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;

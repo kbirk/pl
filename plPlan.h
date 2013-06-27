@@ -48,12 +48,7 @@ class plPlan : public plRenderable
 
         plString         date;
         plString         directory; 
-        
-        plSeq<plSpline>   _defectSplines;        
-        plSeq<plBoundary> _donorRegions;
-        plSeq<plIGuide>   _iGuides;                
-        plSeq<plGraft>    _grafts;      
-               
+   
         plPlan();
         plPlan( plString filename );
 
@@ -65,6 +60,13 @@ class plPlan : public plRenderable
         void draw();
         
         //void outputForManuela();
+        
+    //private: eventually make these member variables private
+    
+        plSeq<plSpline>   _defectSplines;        
+        plSeq<plBoundary> _donorRegions;
+        plSeq<plIGuide>   _iGuides;                
+        plSeq<plGraft>    _grafts;      
 };
 
 std::ostream& operator << ( std::ostream& out, plPlan const &p );

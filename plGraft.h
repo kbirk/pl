@@ -5,6 +5,7 @@
 #include "plRenderable.h"
 #include "plVector3.h"
 #include "plTriangle.h"
+#include "plModel.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plState.h"
@@ -83,7 +84,7 @@ class plGraft : public plRenderable
         void spinMark( PLfloat degrees );
     
         plCap findCap ( const plSeq<plTriangle> &triangles, const plVector3 &up );
-        void  setCaps ( const plSeq<plTriangle> &cartilageTriangles, const plSeq<plTriangle> &boneTriangles );
+        void  setCaps ();
         
         void updateCartilageMesh();
         void updateBoneMesh();

@@ -237,11 +237,11 @@ void plGraft::drawGraft() const
 }
 
 
-void plGraft::setCaps( const plSeq<plTriangle> &cartilageTriangles, const plSeq<plTriangle> &boneTriangles  )
+void plGraft::setCaps()
 {
     // generate cap polygons
-    cartilageCap = findCap( cartilageTriangles, harvestTransform.y);
-    boneCap      = findCap( boneTriangles,      harvestTransform.y);
+    cartilageCap = findCap( _plBoneAndCartilageModels[harvestModelID]->getCartilageTriangles(), harvestTransform.y);
+    boneCap      = findCap( _plBoneAndCartilageModels[harvestModelID]->getBoneTriangles(),      harvestTransform.y);
     // generate meshes   
     updateCartilageMesh();   
     updateBoneMesh();      

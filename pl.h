@@ -239,7 +239,7 @@ extern void             plDrawDisk               ( float scale );
 //////////////////////////////////////////////////////////////////////////////
 extern void             plModelAdd              ( plString bone_file, plString cartilage_file );
 extern void             plModelRemove           ( PLuint model_id );
-extern PLuint			plModelGetCount			();
+extern PLuint			plModelCount			();
 extern void             plModelSelect           ( PLuint model_id );
 extern PLint            plModelGetSelectedID    ();
 extern void             plModelBoneToggleVisibility       ( PLuint model_id );
@@ -267,6 +267,7 @@ extern void             plPlanToggleVisibility  ();
 //////////////////////////////////////////////////////////////////////////////
 // GRAFT
 //////////////////////////////////////////////////////////////////////////////
+extern PLuint			plGraftCount			();
 extern void             plGraftSelectRecipient  ( PLuint graft_id );
 extern void             plGraftSelectHarvest    ( PLuint graft_id );
 extern PLbool           plGraftIsSelected       ();
@@ -312,6 +313,7 @@ extern void             plGraftToggleVisibilityAll();
 //////////////////////////////////////////////////////////////////////////////
 extern void             plDonorRegionAdd        ();
 extern void             plDonorRegionRemove     ( PLuint region_id );
+extern PLuint			plDonorRegionCount		();
 extern void             plDonorRegionToggleVisibility( PLuint region_id );
 extern void             plDonorRegionToggleVisibilityAll();
 
@@ -320,6 +322,7 @@ extern void             plDonorRegionToggleVisibilityAll();
 //////////////////////////////////////////////////////////////////////////////
 extern void             plDefectSplineAdd       ();
 extern void             plDefectSplineRemove    ();
+extern PLuint			plDefectSplineCount		();
 extern void             plDefectSplineToggleVisibility           ( PLuint spline_id );
 extern void             plDefectSplineToggleVisibilityAll        ();
 extern void             plDefectSplineCornersToggleVisibility    ( PLuint spline_id );

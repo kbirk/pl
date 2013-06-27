@@ -262,7 +262,7 @@ plVector3 plBoneAndCartilage::getCartilageAverageNormal( PLfloat radius, const p
     return _cartilage.getAverageNormal(radius, origin, up);
 }
 
-///////////////////////////////
+///////////////////////////////////////////
 
 void plModelAdd( plString bone_file, plString cartilage_file )
 {
@@ -280,7 +280,7 @@ void plModelRemove( PLuint model_id )
 }
 
 
-PLuint plModelGetCount()
+PLuint plModelCount()
 {
 	return _plBoneAndCartilageModels.size();
 }

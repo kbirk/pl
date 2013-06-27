@@ -3,6 +3,7 @@
 
 #include "pl.h"
 #include "plProjection.h"
+#include "plCamera.h"
 #include "plModel.h"
 #include "plPlan.h"
 #include "plSeq.h"

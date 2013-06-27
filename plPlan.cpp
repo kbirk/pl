@@ -250,8 +250,7 @@ void plPlan::readFile( plString filename )
         // Compute transforms for OpenGL                       
         _grafts[i].computeTransforms();        
         // Compute cartilage and bone caps
-        _grafts[i].setCaps( _plBoneAndCartilageModels[0]->getCartilageTriangles(),
-                            _plBoneAndCartilageModels[0]->getBoneTriangles() );
+        _grafts[i].setCaps();
         // Make markDirection perpendicular to axis
         _grafts[i].markDirection = _grafts[i].markDirection - (_grafts[i].markDirection*axis)*axis;
     }
@@ -585,6 +584,11 @@ void plBoundaryPointRemove( PLuint point_index )
     _plState->boundarySelectedPointID = -1;  
 }
 
+PLuint plDonorRegionCount()
+{
+    return _plPlan->_donorRegions.size();
+}
+
 void plDonorRegionToggleVisibility( PLuint region_id )
 {
     if (plErrorCheckDonorRegionBounds(region_id, "plDonorRegionToggleVisibility"))
@@ -592,6 +596,12 @@ void plDonorRegionToggleVisibility( PLuint region_id )
         
     _plPlan->_donorRegions[region_id].toggleVisibility();    
 }
+
+PLuint plDefectSplineCount()
+{
+    return _plPlan->_donorRegions.size();
+}
+
 
 void plDonorRegionToggleVisibilityAll()
 {
@@ -650,6 +660,11 @@ void plDefectSplineBoundaryToggleVisibilityAll()
 } 
  
 ////////////////////////////////
+
+PLuint plGraftCount()
+{
+    return _plPlan->_donorRegions.size();
+}
 
 plTransform plGraftGetHarvestTransform( PLuint graft_id )
 {
@@ -867,8 +882,7 @@ void plGraftDragEdit( PLint x, PLint y )
                 
                 if (PL_GRAFT_SELECTED_IS_DONOR)
                 {
-                    graft.setCaps( _plBoneAndCartilageModels[0]->getCartilageTriangles(),
-                                   _plBoneAndCartilageModels[0]->getBoneTriangles() );
+                    graft.setCaps();
                 }
             }
                     
@@ -952,8 +966,8 @@ void plGraftSurfaceTranslate( PLuint graft_id, PLuint graft_index, const plVecto
 
         if (graft_index == PL_PICKING_INDEX_GRAFT_DONOR)
         {
-            graft.setCaps( _plBoneAndCartilageModels[0]->getCartilageTriangles(),
-                           _plBoneAndCartilageModels[0]->getBoneTriangles() );
+            // harvest, re-compute cap  
+            graft.setCaps();
         }
     }
 }
@@ -981,8 +995,7 @@ void plGraftRotate( PLuint graft_id, const plVector3 &axis, PLfloat angle_degree
     if (PL_GRAFT_SELECTED_IS_DONOR)
     {
         // harvest, re-compute cap      
-        graft.setCaps( _plBoneAndCartilageModels[0]->getCartilageTriangles(),
-                       _plBoneAndCartilageModels[0]->getBoneTriangles() );     
+        graft.setCaps();    
     }
 }
 
