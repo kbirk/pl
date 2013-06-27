@@ -37,12 +37,12 @@ bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2)
     return true;   
 }
 
-void plStringStripQuotations(plString &s)
+void plStringStripQuotations( plString &s)
 {
     s.erase( std::remove( s.begin(), s.end(), '\"'), s.end() ); 
 }  
 
-void plStringStripPreceedingWhitespace(plString &s)
+void plStringStripPreceedingWhitespace( plString &s)
 {
     size_t startpos = s.find_first_not_of(" \t");
     if (startpos < s.length())

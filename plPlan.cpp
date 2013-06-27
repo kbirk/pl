@@ -135,7 +135,7 @@ void plPlan::readFile( plString filename )
             // Find the graft            
             int j = atoi( csv.data[i][1].c_str() );
             
-            while (_grafts.size()-1 < j)
+            while (_grafts.size() < j+1)
             {
                 _grafts.add( plGraft() );
             }

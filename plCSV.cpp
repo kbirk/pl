@@ -26,7 +26,7 @@ void plCSV::readFile( plString filename, PLbool verbose )
         
         std::getline(infile, line);    
         std::stringstream lineStream(line);
-        
+
         // parse each comma seperated value
         while(std::getline(lineStream, entry,','))
         {
