@@ -389,6 +389,7 @@ extern bool             plCompareCaseInsensitive    ( plString str1, plString st
 extern void             plStripQuotations           ( plString &s);
 extern bool             plOnlyWhitespace            ( plString s);
 
+
 //////////////////////////////////////////////////////////////////////////////
 // OTHER
 ////////////////////////////////////////////////////////////////////////////// 
