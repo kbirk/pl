@@ -19,6 +19,8 @@ class plModel : public plRenderable
         plModel() {}
         plModel( std::string filename );
 
+        ~plModel()
+
         bool isTransparent() const                    { return _isTransparent; }                
         const plSeq<plTriangle> &getTriangles() const { return _triangles; }
         
