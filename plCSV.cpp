@@ -9,7 +9,7 @@ plCSV::plCSV( plString fn )
 
 void plCSV::readFile( plString filename, PLbool verbose )
 {
-    std::ifstream infile(filename.c_str());
+    std::ifstream infile( filename.c_str() );
 
     // make sure import file opens correctly
     if (!infile.good())
@@ -36,8 +36,9 @@ void plCSV::readFile( plString filename, PLbool verbose )
             {
                 lineData.add(entry);
             }
-        }  
-        if (lineData.size() > 0)            // ignore any empty rows
+        }
+          
+        if (lineData.size() > 0)                    // ignore any empty rows
         {
             data.add(lineData);
         }

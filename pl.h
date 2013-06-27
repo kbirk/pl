@@ -320,11 +320,11 @@ extern void             plDonorRegionToggleVisibilityAll();
 //////////////////////////////////////////////////////////////////////////////
 extern void             plDefectSplineAdd       ();
 extern void             plDefectSplineRemove    ();
-extern void             plDefectSplineToggleVisibility( PLuint spline_id );
-extern void             plDefectSplineToggleVisibilityAll();
-extern void             plDefectSplineCornersToggleVisibility( PLuint spline_id );
-extern void             plDefectSplineCornersToggleVisibilityAll();
-extern void             plDefectSplineBoundaryToggleVisibility( PLuint spline_id );
+extern void             plDefectSplineToggleVisibility           ( PLuint spline_id );
+extern void             plDefectSplineToggleVisibilityAll        ();
+extern void             plDefectSplineCornersToggleVisibility    ( PLuint spline_id );
+extern void             plDefectSplineCornersToggleVisibilityAll ();
+extern void             plDefectSplineBoundaryToggleVisibility   ( PLuint spline_id );
 extern void             plDefectSplineBoundaryToggleVisibilityAll();
 extern PLbool           plDefectSplineIsSelected();
 extern void             plDefectSplineSetDragOrigin( PLint x, PLint y );
@@ -385,10 +385,12 @@ extern plVector3        plClosestPointOnLineSegment ( const plVector3 &point, co
 //////////////////////////////////////////////////////////////////////////////
 // STRING
 ////////////////////////////////////////////////////////////////////////////// 
-extern bool             plStringCompareCaseInsensitive    ( plString str1, plString str2, unsigned int num);
-extern bool             plStringCompareCaseInsensitive    ( plString str1, plString str2);
+extern bool             plStringCompareCaseInsensitive    ( const plString &str1, const plString &str2, unsigned int num);
+extern bool             plStringCompareCaseInsensitive    ( const plString &str1, const plString &str2);
+extern void             plStringStripPreceedingWhitespace ( plString &s);
 extern void             plStringStripQuotations           ( plString &s);
-extern bool             plStringOnlyWhitespace            ( plString s);
+extern bool             plStringOnlyWhitespace            ( const plString &s);
+
 
 //////////////////////////////////////////////////////////////////////////////
 // STL
@@ -397,10 +399,11 @@ extern void             plSTLImportFile             ( plSeq<plTriangle> &triangl
 extern void             plSTLExportFileBinary       ( const plSeq<plTriangle> &triangles, plString filename );
 extern void             plSTLExportFileASCII        ( const plSeq<plTriangle> &triangles, plString filename );
 
+
 //////////////////////////////////////////////////////////////////////////////
 // OTHER
 ////////////////////////////////////////////////////////////////////////////// 
-extern plVector3        plColourMap                 (PLfloat i); //, PLfloat max);
+extern plVector3        plColourMap                 ( PLfloat i); //, PLfloat max);
 
 
 

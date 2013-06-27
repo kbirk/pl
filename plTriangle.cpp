@@ -68,12 +68,15 @@ void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
     if (isAscii) 
     {      
         PLchar filler[1024];	// for reading filler text
-   
+
         // Read ASCII STL
         while (!infile.eof()) 
         {
             
-            std::getline(infile, line);            
+            std::getline(infile, line);    
+            
+            plStringStripPreceedingWhitespace( line );
+       
             if (plStringCompareCaseInsensitive(line, "facet", 5)) 
             {   
                 // normal   
@@ -96,6 +99,7 @@ void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
 
                 // end of face, build triangle
                 triangles.add( plTriangle(n,p1,p2,p3) );
+                
             }
         }
 
