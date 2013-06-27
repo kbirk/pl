@@ -53,7 +53,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
     else if (points.size() == 3) 
     {
         // 2 points, ensure third is counter clockwise
-        if (((points[1] - points[0]) ^ (point - points[0])) * normal > 0)
+        if ( ((points[1] - points[0]) ^ (point - points[0])) * normal > 0)
         {
             // already counter clockwise
             points.add( point );
@@ -72,7 +72,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
     } 
     else 
     {    
-        // Find the closest edge to the intPoint        
+        // Find the closest edge to the new point        
         PLfloat minDist = FLT_MAX;
         PLint shift_i = 0;
         

@@ -69,7 +69,8 @@ void plGraft::drawSelectionInterface() const
             _plPickingState->type = PL_PICKING_TYPE_GRAFT_HANDLE_Y;
             _plPickingShader->setPickingUniforms(_plPickingState);
             glColor3f( 0.2, 1.0, 0.2 ); 
-            plDrawArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH-1, 0), plVector3(0,1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);            
+            plDrawArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH-1, 0), plVector3(0,1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);    
+            glColor3f( 1.0, 0.2, 0.2 );         
             plDrawArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH, 0), plVector3(0,-1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);
 
             break;     

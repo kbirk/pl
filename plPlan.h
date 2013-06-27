@@ -52,8 +52,7 @@ class plPlan : public plRenderable
         
         plSeq<plSpline>   _defectSplines;        
         plSeq<plBoundary> _donorRegions;
-        plSeq<plIGuide>   _iGuides;
-                
+        plSeq<plIGuide>   _iGuides;                
         plSeq<plGraft>    _grafts;      
                
         plPlan();

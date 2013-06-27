@@ -74,7 +74,7 @@ class plTriangle
 
 std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
 
-void plSTLImportFile  ( plSeq<plTriangle> &triangles, plString filename );
+void plSTLImportFile      ( plSeq<plTriangle> &triangles, plString filename );
 void plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filename );
 void plSTLExportFileASCII ( const plSeq<plTriangle> &triangles , plString filename );
 void _plCheckIOTypeSizes ();

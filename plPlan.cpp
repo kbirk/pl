@@ -449,8 +449,7 @@ void plBoundaryPointSelect(PLuint index)
     if (plErrorIsBoundarySelected("plBoundaryPointSelect"))
         return;
 
-    _plState->selectBoundaryPoint(index);
-     
+    _plState->selectBoundaryPoint(index);     
 }
 
 void plBoundaryPointMove(const plVector3 &point, const plVector3 &normal)

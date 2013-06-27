@@ -49,7 +49,7 @@ void plSpline::drawCornersSelectionInterface() const
         
     plVector3 nm = corners.getAvgNormal();
     
-    glColor3f( 1, 0, 0 );
+    glColor3f( 1.0, 0.2, 0.2 );
     for (PLint i = 0; i < s.size(); i++)
     {
         glPushMatrix();
@@ -58,7 +58,7 @@ void plSpline::drawCornersSelectionInterface() const
         glPopMatrix();
     }
 
-    glColor3f( 0, 0, 1);
+    glColor3f( 0.2, 0.2, 1.0);
     for (PLint i = 0; i < t.size(); i++)
     {
         glPushMatrix();
@@ -67,7 +67,7 @@ void plSpline::drawCornersSelectionInterface() const
         glPopMatrix();        
     }
   
-    glColor3f( 0, 1, 0 );
+    glColor3f( 0.2, 1.0, 0.2 );
     for (PLint i = 0; i < n.size(); i++)
     {
         glPushMatrix();
