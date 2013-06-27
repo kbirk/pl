@@ -21,7 +21,7 @@ class plBoundary : public plRenderable
         plSeq<plVector3> points;
         plSeq<plVector3> normals;
         
-        plBoundary();
+        plBoundary();       
         
         plVector3 getAvgNormal() const;
         PLuint    size() const;

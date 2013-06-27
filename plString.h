@@ -3,9 +3,9 @@
 
 #include "pl.h"
 
-bool plCompareCaseInsensitive( plString str1, plString str2, unsigned int num);
-bool plCompareCaseInsensitive( plString str1, plString str2);
-void plStripQuotations       ( plString &s);
-bool plOnlyWhitespace        ( plString s);
+bool plStringCompareCaseInsensitive( plString str1, plString str2, unsigned int num);
+bool plStringCompareCaseInsensitive( plString str1, plString str2);
+void plStringStripQuotations       ( plString &s);
+bool plStringOnlyWhitespace        ( plString s);
 
 #endif

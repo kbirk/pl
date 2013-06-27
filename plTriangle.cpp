@@ -63,7 +63,7 @@ void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
     // First line: ASCII or RAW?
     plString line;
     std::getline(infile, line);
-    bool isAscii = plCompareCaseInsensitive(line, "solid", 5);
+    bool isAscii = plStringCompareCaseInsensitive(line, "solid", 5);
 
     if (isAscii) 
     {      
@@ -74,12 +74,12 @@ void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
         {
             
             std::getline(infile, line);            
-            if (plCompareCaseInsensitive(line, "facet", 5)) 
+            if (plStringCompareCaseInsensitive(line, "facet", 5)) 
             {   
                 // normal   
                 sscanf(line.c_str(), "%s %s %f %f %f", filler, filler, &n.x, &n.y, &n.z);
             } 
-            else if (plCompareCaseInsensitive(line, "vertex", 6)) 
+            else if (plStringCompareCaseInsensitive(line, "vertex", 6)) 
             {
                 // vertex 1
                 sscanf(line.c_str(), "%s %f %f %f", filler, &p1.x, &p1.y, &p1.z);
@@ -90,7 +90,7 @@ void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
                 std::getline(infile, line); // read next vertex line
                 sscanf(line.c_str(), "%s %f %f %f", filler, &p3.x, &p3.y, &p3.z);
             } 
-            else if (plCompareCaseInsensitive(line, "endfacet", 8))
+            else if (plStringCompareCaseInsensitive(line, "endfacet", 8))
             {
                 _plCheckAndFixNormal( n, p1, p2, p3 );
 

@@ -385,17 +385,17 @@ extern plVector3        plClosestPointOnLineSegment ( const plVector3 &point, co
 //////////////////////////////////////////////////////////////////////////////
 // STRING
 ////////////////////////////////////////////////////////////////////////////// 
-extern bool             plCompareCaseInsensitive    ( plString str1, plString str2, unsigned int num);
-extern bool             plCompareCaseInsensitive    ( plString str1, plString str2);
-extern void             plStripQuotations           ( plString &s);
-extern bool             plOnlyWhitespace            ( plString s);
+extern bool             plStringCompareCaseInsensitive    ( plString str1, plString str2, unsigned int num);
+extern bool             plStringCompareCaseInsensitive    ( plString str1, plString str2);
+extern void             plStringStripQuotations           ( plString &s);
+extern bool             plStringOnlyWhitespace            ( plString s);
 
 //////////////////////////////////////////////////////////////////////////////
 // STL
 //////////////////////////////////////////////////////////////////////////////
-extern void             plSTLImportFile  ( plSeq<plTriangle> &triangles, plString filename );
-extern void             plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filename );
-extern void             plSTLExportFileASCII ( const plSeq<plTriangle> &triangles , plString filename );
+extern void             plSTLImportFile             ( plSeq<plTriangle> &triangles, plString filename );
+extern void             plSTLExportFileBinary       ( const plSeq<plTriangle> &triangles, plString filename );
+extern void             plSTLExportFileASCII        ( const plSeq<plTriangle> &triangles, plString filename );
 
 //////////////////////////////////////////////////////////////////////////////
 // OTHER

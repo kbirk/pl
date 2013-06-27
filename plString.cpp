@@ -1,6 +1,6 @@
 #include "plString.h"
 
-bool plCompareCaseInsensitive(plString str1, plString str2, unsigned int num)
+bool plStringCompareCaseInsensitive(plString str1, plString str2, unsigned int num)
 {
     // Convert both strings to upper case by transfrom() before compare.
     if (num > str1.length() || num > str2.length())
@@ -19,7 +19,7 @@ bool plCompareCaseInsensitive(plString str1, plString str2, unsigned int num)
     return true; 
 }
 
-bool plCompareCaseInsensitive(plString str1, plString str2)
+bool plStringCompareCaseInsensitive(plString str1, plString str2)
 {
     if (str1.length() != str2.length())
     {
@@ -37,12 +37,12 @@ bool plCompareCaseInsensitive(plString str1, plString str2)
     return true;   
 }
 
-void plStripQuotations(plString &s)
+void plStringStripQuotations(plString &s)
 {
     s.erase( std::remove( s.begin(), s.end(), '\"'), s.end() ); 
 }  
 
-bool plOnlyWhitespace(plString s)
+bool plStringOnlyWhitespace(plString s)
 {
     return (s.length() == 0) || (s.find_first_not_of("\t\n\r ") == plString::npos);
 } 
