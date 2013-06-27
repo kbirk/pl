@@ -14,7 +14,7 @@ plModel::plModel( std::string filename )
         return;
     }
 
-    plReadSTLFile( _triangles, filename );
+    plSTLImportFile( _triangles, filename );
 
     _mesh = plMesh(_triangles);
     

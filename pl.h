@@ -148,6 +148,7 @@ class plPickingInfo;
 class plState;
 class plTransform;
 class plMesh;
+class plTriangle;
 
 extern plMesh                         *_plSphere;
 extern plMesh                         *_plCylinder;
@@ -389,6 +390,12 @@ extern bool             plCompareCaseInsensitive    ( plString str1, plString st
 extern void             plStripQuotations           ( plString &s);
 extern bool             plOnlyWhitespace            ( plString s);
 
+//////////////////////////////////////////////////////////////////////////////
+// STL
+//////////////////////////////////////////////////////////////////////////////
+extern void             plSTLImportFile  ( plSeq<plTriangle> &triangles, plString filename );
+extern void             plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filename );
+extern void             plSTLExportFileASCII ( const plSeq<plTriangle> &triangles , plString filename );
 
 //////////////////////////////////////////////////////////////////////////////
 // OTHER

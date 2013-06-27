@@ -46,17 +46,7 @@ std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 }
 
 
-// if the normal is zero, compute it from the three points
-void plCheckAndFixNormal(plVector3 &n, plVector3 &p1, plVector3 &p2, plVector3 &p3) 
-{
-    if (n.x == 0. && n.y == 0. && n.z == 0.) 
-    {
-        n = ((p2-p1)^(p3-p1)).normalize();
-    }
-}
-
-
-void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
+void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
 {
     // just in case, clear seq
     triangles.clear();
@@ -102,7 +92,7 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
             } 
             else if (plCompareCaseInsensitive(line, "endfacet", 8))
             {
-                plCheckAndFixNormal( n, p1, p2, p3 );
+                _plCheckAndFixNormal( n, p1, p2, p3 );
 
                 // end of face, build triangle
                 triangles.add( plTriangle(n,p1,p2,p3) );
@@ -112,32 +102,14 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
     } 
     else 
     {
-        // Read RAW STL 
-        if (sizeof(PLuint) != 4) 
-        {
-          std::cerr << "Expected PLuint to be 4 bytes, but it is " 
-                    << sizeof( PLuint ) << ".  Fix this." << std::endl;
-          exit(1);
-        }
-        if (sizeof(PLushort) != 2) 
-        {
-          std::cerr << "Expected PLushort to be 2 bytes, but it is " 
-                    << sizeof( PLushort ) << ".  Fix this." << std::endl;
-          exit(1);
-        }
-        if (sizeof(PLfloat) != 4) 
-        {
-          std::cerr << "Expected PLfloat to be 4 bytes, but it is " 
-                    << sizeof( PLfloat ) << ".  Fix this." << std::endl;
-          exit(1);
-        }
+        _plCheckIOTypeSizes();
 
         // reset file position to beginning
         infile.seekg(0);
 
         // Skip 80-byte header       
         PLchar first80[80]; // create a buffer
-        infile.read( &first80[0], sizeof(PLchar)*80); // read to buffer
+        infile.read( &first80[0], sizeof(PLchar)*80 ); // read to buffer
         
         // get number of faces
         PLuint numTriangles;
@@ -149,21 +121,116 @@ void plReadSTLFile( plSeq<plTriangle>  &triangles, plString filename)
         {
             PLushort nAttr;
             
-            infile.read( reinterpret_cast<PLchar*>(&n.x),  sizeof(PLfloat)*3);
-            infile.read( reinterpret_cast<PLchar*>(&p1.x), sizeof(PLfloat)*3);
-            infile.read( reinterpret_cast<PLchar*>(&p2.x), sizeof(PLfloat)*3);
-            infile.read( reinterpret_cast<PLchar*>(&p3.x), sizeof(PLfloat)*3);
-            infile.read( reinterpret_cast<PLchar*>(&nAttr), sizeof(PLushort));
+            infile.read(reinterpret_cast<PLchar*>(&n.x),  sizeof(PLfloat)*3);
+            infile.read(reinterpret_cast<PLchar*>(&p1.x), sizeof(PLfloat)*3);
+            infile.read(reinterpret_cast<PLchar*>(&p2.x), sizeof(PLfloat)*3);
+            infile.read(reinterpret_cast<PLchar*>(&p3.x), sizeof(PLfloat)*3);
+            infile.read(reinterpret_cast<PLchar*>(&nAttr), sizeof(PLushort));
 
-            plCheckAndFixNormal( n, p1, p2, p3 );
+            _plCheckAndFixNormal( n, p1, p2, p3 );
            
-            triangles.add( plTriangle( n, p1, p2, p3) ); 
-            
+            triangles.add( plTriangle( n, p1, p2, p3) );
         }
+    }
 
+}
+
+
+void plSTLExportFileASCII( const plSeq<plTriangle> &triangles , plString filename )
+{
+    std::ofstream outfile ( filename.c_str() );
+    if ( !outfile.good() )
+    {
+        std::cerr << "STL file could not be written \n";
+        exit(1);
+    }
+
+    outfile << "solid\n";
+
+    for (PLint i=0; i<triangles.size(); i++) 
+    {
+        outfile << "  facet normal " << triangles[i].normal.x << " " << triangles[i].normal.y << " " << triangles[i].normal.z << "\n" <<
+                   "    outer loop\n" <<
+                   "      vertex " << triangles[i].point1.x << " " << triangles[i].point1.y << " " << triangles[i].point1.z << "\n" <<
+                   "      vertex " << triangles[i].point2.x << " " << triangles[i].point2.y << " " << triangles[i].point2.z << "\n" <<
+                   "      vertex " << triangles[i].point3.x << " " << triangles[i].point3.y << " " << triangles[i].point3.z << "\n" <<
+                   "    endloop\n" <<
+                   "  endfacet\n";
+    }
+
+    outfile <<"endsolid\n";
+
+    outfile.close();
+}
+
+
+void plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filename )
+{
+    _plCheckIOTypeSizes();
+
+    std::ofstream outfile ( filename.c_str(), std::ios::trunc | std::ios::out | std::ios::binary );
+    if ( !outfile.good() )
+    {
+        std::cerr << "STL file could not be written \n";
+        exit(1);
+    }
+
+    // 80 byte header
+    PLchar header[80];
+    for (PLuint i=0; i<80; i++) 
+    {
+        header[i] = (PLchar)(0);
+    }
+    outfile.write( reinterpret_cast<PLchar*>(header), sizeof(PLchar)*80 );
+
+    // 4 byte size
+    PLuint size = triangles.size();
+    outfile.write( reinterpret_cast<PLchar*>(&size) , sizeof(PLuint) );
+
+    // for each facet, 50 bytes
+    PLushort zeroPLushort(0); // at the end of every facet
+    for (PLint i=0; i<triangles.size(); i++) 
+    {
+        outfile.write( reinterpret_cast<PLchar*>(&triangles[i].normal.x) , sizeof(PLfloat)*3 );
+        outfile.write( reinterpret_cast<PLchar*>(&triangles[i].point1.x) , sizeof(PLfloat)*3 );
+        outfile.write( reinterpret_cast<PLchar*>(&triangles[i].point2.x) , sizeof(PLfloat)*3 );
+        outfile.write( reinterpret_cast<PLchar*>(&triangles[i].point3.x) , sizeof(PLfloat)*3 );
+        outfile.write( reinterpret_cast<PLchar*>(&zeroPLushort)          , sizeof(PLushort)  );
+    }
+
+    outfile.close();
+}
+
+
+void _plCheckIOTypeSizes()
+{
+    // check to ensure compiler designates compatible bytes to each type
+    if (sizeof(PLuint) != 4)
+    {
+      std::cerr << "Expected PLuint to be 4 bytes, but it is "
+                << sizeof( PLuint ) << ".  Fix this." << std::endl;
+      exit(1);
+    }
+    if (sizeof(PLushort) != 2)
+    {
+      std::cerr << "Expected PLushort to be 2 bytes, but it is "
+                << sizeof( PLushort ) << ".  Fix this." << std::endl;
+      exit(1);
+    }
+    if (sizeof(PLfloat) != 4)
+    {
+      std::cerr << "Expected PLfloat to be 4 bytes, but it is "
+                << sizeof( PLfloat ) << ".  Fix this." << std::endl;
+      exit(1);
     }
 }
 
 
-
-
+// if the normal is zero, compute it from the three points
+void _plCheckAndFixNormal(plVector3 &n, const plVector3 &p1, const plVector3 &p2, const plVector3 &p3)
+{
+    if (n.x == 0.0f && n.y == 0.0f && n.z == 0.0f) 
+    {
+        n = ((p2-p1)^(p3-p1)).normalize();
+    }
+}
