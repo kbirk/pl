@@ -144,8 +144,7 @@ class plShader
             // set source code of shader object
 			glShaderSource(shader, 1, &shaderSource, NULL);
             delete [] shaderSource;                                     // deallocate memory from shaderSource
-            // return shader object
-            
+            // return shader object            
             return shader;          
         }
         

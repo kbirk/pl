@@ -56,15 +56,15 @@ class plGraft : public plRenderable
 
     public:
 
-        PLfloat   height_offset;
+        PLfloat   heightOffset;
         PLfloat   radius;
         PLfloat   length;
         plVector3 markDirection;
 
         plTransform recipientTransform;
-        //PLuint    recipientModelID;
+        PLuint      recipientModelID;
         plTransform harvestTransform;
-        //PLuint    harvestModelID;
+        PLuint      harvestModelID;
     
         plCap cartilageCap;
         plCap boneCap;

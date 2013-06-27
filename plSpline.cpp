@@ -278,6 +278,7 @@ void plSpline::computeHermiteSpline()
             indices.add(base+3);
            
             percent += 1 / ((1.0f/inc)*(1.0f/inc));
+            
             std::cout << "\r" << (PLint)(percent*100) << "% spline calculation";           
         }
         

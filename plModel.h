@@ -21,6 +21,7 @@ class plModel : public plRenderable
 
         bool isTransparent() const                    { return _isTransparent; }                
         const plSeq<plTriangle> &getTriangles() const { return _triangles; }
+        plString getFilename()                        { return _filename; }
         
         void toggleVisibility();
         
@@ -38,7 +39,7 @@ class plModel : public plRenderable
 		plMesh                _mesh;
         plSeq<plTriangle>     _triangles;
         PLbool                _isTransparent;
-		
+		plString              _filename;
 };
 
 
@@ -49,6 +50,12 @@ class plBoneAndCartilage
         plBoneAndCartilage() {};
         plBoneAndCartilage( plString bone_file, plString cartilage_file);
 
+        void readBoneFile     ( plString bone_file );
+        void readCartilageFile( plString cartilage_file );
+
+        plString getBoneFilename()      { return _bone.getFilename(); }
+        plString getCartilageFilename() { return _cartilage.getFilename(); }
+        
         const plSeq<plTriangle> &getBoneTriangles()      const { return _bone.getTriangles(); }
         const plSeq<plTriangle> &getCartilageTriangles() const { return _cartilage.getTriangles(); }
 

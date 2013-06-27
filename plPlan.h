@@ -47,8 +47,7 @@ class plPlan : public plRenderable
     public:
 
         plString         date;
-        plString         directory;
-        plString         baseFilename;   
+        plString         directory; 
         
         plSeq<plSpline>   _defectSplines;        
         plSeq<plBoundary> _donorRegions;

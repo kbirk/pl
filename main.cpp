@@ -5,7 +5,7 @@
 int main( int argc, char **argv )
 {   
     // check command line argument count
-    if (argc < 3)
+    if (argc < 2)
     {
         std::cerr << "Required file inputs not provided, aborting" << std::endl;
         abort();

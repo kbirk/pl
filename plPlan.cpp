@@ -7,7 +7,6 @@ plPlan::plPlan()
 
 plPlan::plPlan( plString filename ) 
 {      
-
     if (filename.compare(filename.size()-4, 4, ".csv") != 0)
     {
         std::cerr << "Unrecognized suffix on filename '" << filename 
@@ -16,28 +15,12 @@ plPlan::plPlan( plString filename )
         return;
     }
 
-    date = directory = "";
-    baseFilename = filename;
-    
-    //strdup(filename);
-    /*
-    char *p = strstr( baseFilename, ".csv" );
-    if (p != NULL)
-    {
-        *p = '\0';
-    }
-    */
-
-    readFile( filename );  
-    
+    readFile( filename );     
 }
 
 void plPlan::defaultInit()
 {
-    date = directory = "";
-    baseFilename = "unnamed";    
-    //defectSplines.push_back( Spline() );
-    //donorRegions.push_back( Boundary() );
+    date = directory = "";   
 }
 
 void plPlan::draw()
@@ -95,6 +78,31 @@ void plPlan::readFile( plString filename )
         {
             directory = csv.data[i][1];
         } 
+
+        
+        else if (plStringCompareCaseInsensitive(field, "model") )     
+        {
+            // Find the model number            
+            int j = atoi( csv.data[i][1].c_str() );
+            
+            while (_plBoneAndCartilageModels.size() < j+1)
+            {
+                _plBoneAndCartilageModels.add( new plBoneAndCartilage() );
+            }
+        
+            plBoneAndCartilage &model = *_plBoneAndCartilageModels[j];
+
+            // Fill in the field            
+            plString subfield = csv.data[i][2];
+            
+            if (plStringCompareCaseInsensitive(subfield, "bone file") )
+                model.readBoneFile( csv.data[i][3] );
+                               
+            else if (plStringCompareCaseInsensitive(subfield, "cartilage file") )               
+                model.readCartilageFile( csv.data[i][3] );
+   
+        }
+        
         else if (plStringCompareCaseInsensitive(field, "spline corners") ) // read before boundary
         {
             _defectSplines.add( plSpline() );           
@@ -132,7 +140,7 @@ void plPlan::readFile( plString filename )
         } 
         else if (plStringCompareCaseInsensitive(field, "graft" ) ) 
         {        
-            // Find the graft            
+            // Find the graft number           
             int j = atoi( csv.data[i][1].c_str() );
             
             while (_grafts.size() < j+1)
@@ -145,8 +153,14 @@ void plPlan::readFile( plString filename )
             // Fill in the field            
             plString subfield = csv.data[i][2];
             
-            if (plStringCompareCaseInsensitive(subfield, "height offset") )
-                graft.height_offset = atof( csv.data[i][3].c_str() );
+            if (plStringCompareCaseInsensitive(subfield, "harvest model") )
+                graft.harvestModelID = atof( csv.data[i][3].c_str() );
+                               
+            else if (plStringCompareCaseInsensitive(subfield, "recipient model") )
+                graft.recipientModelID = atof( csv.data[i][3].c_str() );
+
+            else if (plStringCompareCaseInsensitive(subfield, "height offset") )
+                graft.heightOffset = atof( csv.data[i][3].c_str() );
                                
             else if (plStringCompareCaseInsensitive(subfield, "radius") )
                 graft.radius = atof( csv.data[i][3].c_str() );
@@ -229,7 +243,7 @@ void plPlan::readFile( plString filename )
         }
     }
 
-    // Init all grafts    
+    // init all grafts    
     for ( PLint i = 0; i < _grafts.size(); i++) 
     {
         plVector3 axis(0,1,0);
@@ -277,10 +291,18 @@ plBoundary &plPlan::getBoundaryReference(PLuint type, PLuint id)
 std::ostream& operator << ( std::ostream& out, plPlan const &p )
 {
     // date / directory
-    out << "date,\"" << p.date << "\"" << std::endl;
-    out << "directory,\"" << p.directory << "\"" << std::endl;
+    out << "date," << p.date << std::endl;
+    out << "directory," << p.directory << std::endl;
     out << std::endl;
 
+    // models
+    for (PLint i=0; i<_plBoneAndCartilageModels.size(); i++) 
+    {
+        out << "model," << i << ",bone file,"      << _plBoneAndCartilageModels[i]->getBoneFilename()        << std::endl;
+        out << "model," << i << ",cartilage file," << _plBoneAndCartilageModels[i]->getCartilageFilename()   << std::endl;
+        out << std::endl;
+    }
+    
     // splines
     for (PLint i=0; i<p._defectSplines.size(); i++) 
     {
@@ -317,7 +339,10 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
     for (int i=0; i<p._grafts.size(); i++) 
     {
         plGraft &graft = p._grafts[i];
-        out << "graft," << i << ",height offset,"         << graft.height_offset                  << std::endl;
+        
+        out << "graft," << i << ",harvest model,"         << graft.harvestModelID                 << std::endl;
+        out << "graft," << i << ",recipient model,"       << graft.recipientModelID               << std::endl;       
+        out << "graft," << i << ",height offset,"         << graft.heightOffset                   << std::endl;
         out << "graft," << i << ",radius,"                << graft.radius                         << std::endl;
         out << "graft," << i << ",length,"                << graft.length                         << std::endl;
         out << "graft," << i << ",mark direction,"        << graft.markDirection                  << std::endl;
@@ -798,7 +823,7 @@ void plGraftDragEdit( PLint x, PLint y )
             if (_plState->graftEditAxis == transform.y)  
             {
                 // translating along y
-                graft.height_offset += distOnAxis;  
+                graft.heightOffset += distOnAxis;  
                 break;              
             }
             

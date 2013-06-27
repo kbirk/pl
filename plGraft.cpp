@@ -180,7 +180,7 @@ void plGraft::draw() const
     glPushMatrix();
     {
         recipientTransform.apply();
-        glTranslatef( 0, height_offset, 0 );
+        glTranslatef( 0, heightOffset, 0 );
         _plPickingState->index = PL_PICKING_INDEX_GRAFT_DEFECT;
         _plPickingShader->setPickingUniforms(_plPickingState);
         drawGraft();

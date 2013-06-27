@@ -388,7 +388,7 @@ extern plVector3        plClosestPointOnLineSegment ( const plVector3 &point, co
 extern bool             plStringCompareCaseInsensitive    ( const plString &str1, const plString &str2, unsigned int num);
 extern bool             plStringCompareCaseInsensitive    ( const plString &str1, const plString &str2);
 extern void             plStringStripPreceedingWhitespace ( plString &s);
-extern void             plStringStripQuotations           ( plString &s);
+extern void             plStringStripCharacter            ( plString &s, char c);
 extern bool             plStringOnlyWhitespace            ( const plString &s);
 
 

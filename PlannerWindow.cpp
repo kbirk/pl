@@ -8,16 +8,29 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
     
     plInit();
     plCameraImportView(".view0");	
-    plModelAdd( argv[1], argv[2] );
 
     // check if plan file provided
-    if (argc > 3)
+    if (argc == 2)
     {
         // load plan CSV file
-        plPlanImport( argv[3] );
+        plPlanImport( argv[1] );
+        
     }
     else
-    {    
+    {
+        // check model count
+        if ( (argc-1) % 2 != 0)  
+        {
+            std::cerr << "Model files must be submitted in twos (bone and cartilage)\n";
+        }
+        
+        // load models
+        for (PLint i = 1; i < argc; i+=2)
+        {
+            // model formats submitted bone, cartilage, bone, cartilage, etc...
+            plModelAdd( argv[i], argv[i+1] ); 
+        }
+        
         // create empty plan
         plPlanCreateNew();
     }
@@ -66,15 +79,11 @@ void PlannerWindow::userKeyAction( unsigned char key, int x, int y )
         case 's':   plDefectSplineToggleVisibilityAll();         break; 
         case 'd':   plDonorRegionToggleVisibilityAll();          break;         
         case 'q':   plDefectSplineCornersToggleVisibilityAll();  break;
-        case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;
-        
-        case 'O':			// output plan 0
-        
-            plPlanExport("exportPlan");            
-            break;
+        case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;        
+        case 'O':   plPlanExport("exportPlan");                  break;
 
         case 127:	 // delete 
-           
+        {   
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
 	        {
                 // delete group 
@@ -86,7 +95,7 @@ void PlannerWindow::userKeyAction( unsigned char key, int x, int y )
                 plBoundaryPointRemove();         	            
 	        }
             break;
-         
+        }  
     }   
       
     glutPostRedisplay();

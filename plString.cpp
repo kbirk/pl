@@ -37,9 +37,9 @@ bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2)
     return true;   
 }
 
-void plStringStripQuotations( plString &s)
+void plStringStripCharacter( plString &s, char c)
 {
-    s.erase( std::remove( s.begin(), s.end(), '\"'), s.end() ); 
+    s.erase( std::remove( s.begin(), s.end(), c), s.end() ); 
 }  
 
 void plStringStripPreceedingWhitespace( plString &s)

@@ -6,18 +6,17 @@
 
 plModel::plModel( std::string filename )
 {
-
     if (filename.compare(filename.length()-4, 4, ".stl") != 0)
     {
-        std::cerr << "plModel error: Unrecognized suffix on filename '" << filename 
+        std::cout << "plModel error: Unrecognized suffix on filename '"
                   << "'. plModel filenames should have suffix .stl" << std::endl;  		
         return;
     }
-
+   
     plSTLImportFile( _triangles, filename );
 
     _mesh = plMesh(_triangles);
-    
+    _filename = filename;
     _isTransparent = false;
     _isVisible = true;
 }
@@ -167,6 +166,15 @@ plBoneAndCartilage::plBoneAndCartilage( plString bone_file, plString cartilage_f
 {
 }
 
+void plBoneAndCartilage::readBoneFile( plString bone_file )
+{
+    _bone = plModel(bone_file);
+}
+
+void plBoneAndCartilage::readCartilageFile( plString cartilage_file )
+{
+    _cartilage = plModel(cartilage_file);
+}
 
 void plBoneAndCartilage::toggleBoneVisibility()
 {
