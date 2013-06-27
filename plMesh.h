@@ -22,13 +22,7 @@ class plMesh
         plMesh(float innerRadius, float outerRadius, int slices, int loops, bool up = true);    // disk
         
         void triangleToInterleaved(const plSeq<plTriangle> &triangles);
-        void destroy();
-        
-        /*
-        void generateSphere  (float radius, int slices, int stacks);
-        void generateCylinder(float baseRadius, float topRadius, float height, int slices, int stacks);
-        void generateDisk    (float innerRadius, float outerRadius, int slices, int loops, bool up = true);
-        */
+        void destroy();       
         
         virtual void setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<unsigned int> &indices);
 

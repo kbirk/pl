@@ -11,9 +11,9 @@ template<class T>
 class plSeq 
 {
 
-	PLint    storageSize;
-	PLint    numElements;
-	T  		*data;
+	PLuint    storageSize;
+	PLuint    numElements;
+	T  		 *data;
 
 	public:
 
@@ -25,15 +25,15 @@ class plSeq
 	
 		void add( const T &x );
 		void remove();
-		void remove( PLint i );
-		void shift( PLint i );
+		void remove( PLuint i );
+		void shift( PLuint i );
 		void compress();
 		void clear(); 
-		void reserve(PLint size);
-		PLint size() const; 
+		void reserve(PLuint size);
+		PLuint size() const; 
 
         T & back();
-		T & operator [] ( PLint i ) const; 
+		T & operator [] ( PLuint i ) const; 
 		plSeq<T> &operator = (const plSeq<T> &source); 
 
 		PLint findIndex( const T &x );
@@ -107,7 +107,7 @@ void plSeq<T>::remove()
 
 // Shift a suffix of the plSequence to the left by one
 template<class T>
-void plSeq<T>::remove( PLint i )
+void plSeq<T>::remove( PLuint i )
 {
 	if (i < 0 || i >= numElements) 
 	{
@@ -124,7 +124,7 @@ void plSeq<T>::remove( PLint i )
 
 // Shift a suffix of the plSequence to the right by one
 template<class T>
-void plSeq<T>::shift( PLint i )
+void plSeq<T>::shift( PLuint i )
 {
 	if (i < 0 || i >= numElements) 
 	{
@@ -173,7 +173,7 @@ void plSeq<T>::clear()
 
 
 template<class T>
-void plSeq<T>::reserve(PLint size)
+void plSeq<T>::reserve(PLuint size)
 {
     if (size < storageSize)
     {
@@ -193,7 +193,7 @@ void plSeq<T>::reserve(PLint size)
 
 
 template<class T>
-PLint plSeq<T>::size() const 
+PLuint plSeq<T>::size() const 
 {
 	return numElements;
 }
@@ -211,7 +211,7 @@ T & plSeq<T>::back()
 
 
 template<class T>
-T & plSeq<T>::operator [] ( PLint i ) const 
+T & plSeq<T>::operator [] ( PLuint i ) const 
 {
 	if (i >= numElements || i < 0) 
 	{
