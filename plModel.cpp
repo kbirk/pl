@@ -42,7 +42,7 @@ void plModel::getMinMax(plVector3 &min, plVector3 &max) const
 }
 
 
-plVector3 plModel::getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up )
+plVector3 plModel::getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const
 {
     plVector3 normal(0,0,0);
     PLint count = 0;
@@ -133,28 +133,33 @@ void plModel::toggleVisibility()
 }
 
 
-PLbool plModel::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
-        
+//PLbool plModel::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
 {
     PLfloat min = FLT_MAX;
 
-    plVector3 p, n;
-    PLfloat t;
+    //plVector3 p, n;
+    //PLfloat t;
+    
+    plIntersection closest_intersection(false);
 
     for ( PLuint i = 0; i < _triangles.size(); i++)
     {  
-        if (_triangles[i].rayIntersect( p, n, t, start, dir, ignoreBehindRay, backFaceCull))
+        plIntersection intersection = _triangles[i].rayIntersect( start, dir, ignoreBehindRay, backFaceCull);
+        
+        if (intersection.exists) //_triangles[i].rayIntersect( p, n, t, start, dir, ignoreBehindRay, backFaceCull))
         {
-            if (fabs(t) < min) 
+            if ( fabs(intersection.t) < min) //fabs(t) < min) 
             {
-                min = fabs(t);
-                intPoint = p;
-                intNorm = n;
+                min = intersection.t; //fabs(t);
+                closest_intersection = intersection;
+                //intPoint = p;
+                //intNorm = n;
             }
         }
 
     }
-    return (min < FLT_MAX);
+    return closest_intersection; //(min < FLT_MAX);
 }
 
 ////////////////////////////////////////////////////////
@@ -238,26 +243,28 @@ void plBoneAndCartilage::getMinMax(plVector3 &min, plVector3 &max) const
 }     
    
    
-PLbool plBoneAndCartilage::rayIntersectBone( plVector3 &intPoint, plVector3 &intNorm, const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+//PLbool plBoneAndCartilage::rayIntersectBone( plVector3 &intPoint, plVector3 &intNorm, const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+plIntersection plBoneAndCartilage::rayIntersectBone( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull) const
 {
-    return _bone.rayIntersect(intPoint, intNorm, start, dir, ignoreBehindRay, backFaceCull);   
+    return _bone.rayIntersect(start, dir, ignoreBehindRay, backFaceCull);   
 }
 
 
-PLbool plBoneAndCartilage::rayIntersectCartilage( plVector3 &intPoint, plVector3 &intNorm, const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+//PLbool plBoneAndCartilage::rayIntersectCartilage( plVector3 &intPoint, plVector3 &intNorm, const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+plIntersection plBoneAndCartilage::rayIntersectCartilage( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 {
-    return _cartilage.rayIntersect(intPoint, intNorm, start, dir, ignoreBehindRay, backFaceCull);     
+    return _cartilage.rayIntersect(start, dir, ignoreBehindRay, backFaceCull);     
 }
 
 
-plVector3 plBoneAndCartilage::getBoneAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up )
+plVector3 plBoneAndCartilage::getBoneAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const
 
 {
     return _bone.getAverageNormal(radius, origin, up);
 }
 
 
-plVector3 plBoneAndCartilage::getCartilageAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up )
+plVector3 plBoneAndCartilage::getCartilageAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const
 {
     return _cartilage.getAverageNormal(radius, origin, up);
 }
@@ -331,21 +338,23 @@ void plModelDrawAll()
 }
 */
 
-PLbool plModelBoneIntersect(plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
+//PLbool plModelBoneIntersect(plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
+plIntersection plModelBoneIntersect(PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
 {
     if (plErrorCheckModelBounds(model_id, "plModelBoneIntersect"))
         return false;
         
-    return _plBoneAndCartilageModels[model_id]->rayIntersectBone(point, normal, ray_origin, direction, ignore_behind_ray, backface_cull);
+    return _plBoneAndCartilageModels[model_id]->rayIntersectBone(ray_origin, direction, ignore_behind_ray, backface_cull);
 }
 
 
-PLbool plModelCartilageIntersect(plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
+//PLbool plModelCartilageIntersect(plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
+plIntersection plModelCartilageIntersect(PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
 {
     if (plErrorCheckModelBounds(model_id, "plModelCartilageIntersect"))
         return false;
         
-    return _plBoneAndCartilageModels[model_id]->rayIntersectCartilage(point, normal, ray_origin, direction, ignore_behind_ray, backface_cull);
+    return _plBoneAndCartilageModels[model_id]->rayIntersectCartilage(ray_origin, direction, ignore_behind_ray, backface_cull);
 }
 	
 	

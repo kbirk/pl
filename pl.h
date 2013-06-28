@@ -152,6 +152,7 @@ class plState;
 class plTransform;
 class plMesh;
 class plTriangle;
+class plIntersection;
 
 extern plMesh                         *_plSphere;
 extern plMesh                         *_plCylinder;
@@ -249,8 +250,10 @@ extern PLint            plModelGetSelectedID    ();
 extern void             plModelBoneToggleVisibility       ( PLuint model_id );
 extern void             plModelCartilageToggleVisibility  ( PLuint model_id );
 
-extern PLbool           plModelBoneIntersect      ( plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray = false, PLbool backface_cull = false);
-extern PLbool           plModelCartilageIntersect ( plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray = false, PLbool backface_cull = false);
+//extern PLbool           plModelBoneIntersect      ( plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray = false, PLbool backface_cull = false);
+//extern PLbool           plModelCartilageIntersect ( plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray = false, PLbool backface_cull = false);
+extern plIntersection   plModelBoneIntersect     (PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray=false, PLbool backface_cull=false );
+extern plIntersection   plModelCartilageIntersect(PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray=false, PLbool backface_cull=false );
                         
 extern plVector3        plModelBoneGetAvgNormal      ( PLuint model_id, PLfloat radius, const plVector3 &origin, const plVector3 &up );
 extern plVector3        plModelCartilageGetAvgNormal ( PLuint model_id, PLfloat radius, const plVector3 &origin, const plVector3 &up );

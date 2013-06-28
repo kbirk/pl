@@ -50,22 +50,23 @@ void plTriangle::_recalculate()
 
 // Compute plane/ray intersection, and then the local coordinates to
 // see whether the intersection point is inside.
-bool plTriangle::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, PLfloat &t, const plVector3 &rayStart, const plVector3 &rayDir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+//bool plTriangle::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, PLfloat &t, const plVector3 &rayStart, const plVector3 &rayDir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVector3 &rayDir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 {
     // Compute ray/plane intersection
     PLfloat dn = rayDir * _normal;
 
     if (dn == 0 || (backFaceCull &&  dn > 0) )
-        return false;		// ray is parallel to plane    
+        return plIntersection(false); //false;		// ray is parallel to plane    
 
     PLfloat dist = _point0 * _normal;
 
-    t = (dist - rayStart*_normal) / dn;
+    PLfloat t = (dist - rayStart*_normal) / dn;
     
     if (ignoreBehindRay && t < 0) 
-        return false;       // plane is behind ray
+        return plIntersection(false);  //false;       // plane is behind ray
 
-    intPoint = rayStart + t * rayDir;
+    plVector3 intPoint = rayStart + t * rayDir;
 
     // Compute barycentric coords
     PLfloat totalArea = ((_point1-_point0) ^ (_point2-_point0)) * _normal;
@@ -74,12 +75,12 @@ bool plTriangle::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, PLfloat 
 
     // Reject if outside triangle
     if (u < 0 || v < 0 || u + v > 1)
-        return false;
+        return plIntersection(false); //false;
 
     // Return int point and normal and parameter
-    intNorm = _normal;
+    //intNorm = _normal;
 
-    return true;
+    return plIntersection(intPoint, _normal, t); //true;
 }
 
 

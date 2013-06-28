@@ -7,6 +7,7 @@
 #include "plVector3.h"
 #include "plSeq.h"
 
+// used to order triangles for drawing transparent meshes
 class plOrderPair
 {
     public:
@@ -15,11 +16,32 @@ class plOrderPair
         float distance;
 
         plOrderPair (int i, float d)
+            : index(i), distance(d)
         {
-            index = i;
-            distance = d;
         }
     
+};
+
+class plIntersection
+{
+    public:
+        
+        PLbool    exists;
+        plVector3 point;
+        plVector3 normal;
+        PLfloat   t;
+        
+        plIntersection( PLbool e)
+            : exists(e)
+        {            
+        }
+        
+        plIntersection( const plVector3 &p, const plVector3 &n, PLfloat tt)
+            : exists(true), point(p), normal(n), t(tt)
+        {            
+        }
+        
+
 };
 
 class plTriangle 
@@ -39,7 +61,13 @@ class plTriangle
         void  point0( const plVector3 &point );                     
 		void  point1( const plVector3 &point );
 		void  point2( const plVector3 &point );
-
+         
+        plIntersection rayIntersect( const plVector3 &rayStart, 
+		                             const plVector3 &rayDir, 
+		                             PLbool ignoreBehindRay = false, 
+		                             PLbool backFaceCull = false ) const; 
+            
+        /*    
 		PLbool rayIntersect( plVector3 &intPoint, 
 		                     plVector3 &intNorm, 
 		                     PLfloat &t, 
@@ -47,7 +75,7 @@ class plTriangle
 		                     const plVector3 &rayDir, 
 		                     PLbool ignoreBehindRay = false, 
 		                     PLbool backFaceCull = false ) const;
-
+        */
     private:
     
         plVector3 _normal;

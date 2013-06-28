@@ -496,13 +496,13 @@ void plBoundaryPointMove( PLuint x, PLuint y )
     plVector3 mouseInWorld = plWindowGetMouseToWorldPos(x, y, 0);
     plVector3 rayOrigin = plCameraGetPosition();
     plVector3 rayDirection = (mouseInWorld - rayOrigin).normalize();
-    plVector3 point, normal;
+    //plVector3 point, normal;
     
-    PLbool found = plModelCartilageIntersect(point, normal, 0, rayOrigin, rayDirection);
+    plIntersection intersection = plModelCartilageIntersect(0, rayOrigin, rayDirection);
 
-    if (found) 
+    if (intersection.exists) 
     {     
-        plBoundaryPointMove(point, normal);
+        plBoundaryPointMove(intersection.point, intersection.normal);
     }
 
     if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS &&
@@ -521,14 +521,23 @@ PLint plBoundaryPointAdd( PLuint x, PLuint y )
     plVector3 mouseInWorld = plWindowGetMouseToWorldPos(x, y,0);
     plVector3 rayOrigin = plCameraGetPosition();
     plVector3 rayDirection = (mouseInWorld - rayOrigin).normalize();
-    plVector3 point, normal;
+    //plVector3 point, normal;
     
+    plIntersection intersection = plModelCartilageIntersect(0, rayOrigin, rayDirection);
+
+    if (intersection.exists) 
+    {     
+        plBoundaryPointAdd(intersection.point, intersection.normal);
+    }
+    
+    /*
     PLbool found = plModelCartilageIntersect(point, normal, 0, rayOrigin, rayDirection);
     
     if (found)
     {
         return plBoundaryPointAdd(point, normal);           
     }
+    */
     return -1;  // no cartilage at point
 }
 
@@ -843,15 +852,15 @@ void plGraftDragEdit( PLint x, PLint y )
 
             plVector3 rayOrigin = _plState->graftInitialTransform.origin + (distOnAxis * _plState->graftEditAxis);
 
-            plVector3 point, normal;
-            PLbool found = plModelBoneIntersect(point, normal, 0, rayOrigin, -transform.y);
+            //plVector3 point, normal;
+            plIntersection intersection = plModelBoneIntersect(0, rayOrigin, -transform.y);
 
-            if (found)
+            if (intersection.exists)
             {   
-                _plState->graftInitialTransform.origin = point; //update
+                _plState->graftInitialTransform.origin = intersection.point; //update
                 
-                PLfloat normalRad = 6.0f;
-                normal = plModelBoneGetAvgNormal( 0, normalRad, transform.origin, transform.y);
+                PLfloat normalRadius = 6.0f;
+                plVector3 normal = plModelBoneGetAvgNormal( 0, normalRadius, transform.origin, transform.y);
                 
                 if (_plState->graftEditAxis == transform.x)  
                 {
@@ -871,7 +880,7 @@ void plGraftDragEdit( PLint x, PLint y )
 
                 } 
 
-                transform.origin = point;                   
+                transform.origin = intersection.point;                   
                 graft.computeTransforms();
                 
                 if (PL_GRAFT_SELECTED_IS_DONOR)
@@ -945,17 +954,17 @@ void plGraftSurfaceTranslate( PLuint graft_id, PLuint graft_index, const plVecto
     plTransform &transform = (graft_index == PL_PICKING_INDEX_GRAFT_DONOR) ? graft.harvestTransform : graft.recipientTransform;
 
     plVector3 point, normal;
-    PLbool found = plModelBoneIntersect(point, normal, 0, transform.origin + translation, -transform.y);
+    plIntersection intersection = plModelBoneIntersect( 0, transform.origin + translation, -transform.y);
 
-    if (found)
+    if (intersection.exists)
     {   
-        PLfloat normalRad = 6.0f;
-        normal = plModelBoneGetAvgNormal( 0, normalRad, transform.origin, transform.y);
+        PLfloat normalRadius = 6.0f;
+        plVector3 normal = plModelBoneGetAvgNormal( 0, normalRadius, transform.origin, transform.y);
         
         // translate
         transform.y      = normal.normalize();
         transform.x      = (transform.y ^ transform.z).normalize();                       
-        transform.origin = point;    
+        transform.origin = intersection.point;    
         graft.computeTransforms();
 
         if (graft_index == PL_PICKING_INDEX_GRAFT_DONOR)

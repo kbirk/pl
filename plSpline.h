@@ -5,6 +5,7 @@
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plBoundary.h"
+#include "plTriangle.h"
 #include "plColourMesh.h"
 #include "plRenderable.h"
 #include "plPickingShader.h"

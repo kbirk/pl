@@ -20,12 +20,12 @@ class plBoundary : public plRenderable
 
         plBoundary();       
         
-        plVector3 getAvgNormal() const;
-        PLuint    size() const;
-        const plVector3 &points ( PLuint index ) const { return _points[index];  }
-        const plVector3 &normals( PLuint index ) const { return _normals[index]; }
-        const plSeq<plVector3> &points () const        { return _points;  }
-        const plSeq<plVector3> &normals() const        { return _normals; }
+        plVector3               getAverageNormal() const;
+        PLuint                  size() const;
+        const plVector3        &points ( PLuint index ) const { return _points[index];  }
+        const plVector3        &normals( PLuint index ) const { return _normals[index]; }
+        const plSeq<plVector3> &points ()               const { return _points;  }
+        const plSeq<plVector3> &normals()               const { return _normals; }
          
         void   toggleVisibility();
         

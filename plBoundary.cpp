@@ -24,7 +24,7 @@ void plBoundary::toggleVisibility()
 }
 
 
-plVector3 plBoundary::getAvgNormal() const
+plVector3 plBoundary::getAverageNormal() const
 {
     plVector3 n(0,0,0);
     for (PLuint i=0; i < _normals.size(); i++)
@@ -91,26 +91,47 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         for (PLuint i = 0; i < _points.size(); i++)
         {
             PLint j = (i+1) % _points.size();   // next point
-
+            // get closest point on current edge
             plVector3 closest = plClosestPointOnLineSegment(point, _points[i], _points[j]);
-
+            // compare distance to current minimum distance
             PLfloat distSquared = (closest - point).squaredLength();
-
+            
+            // check if same point as previous edge, occurs when edges are at acute angles, making a pointy "v"
             if ( fabs(distSquared - minDist) < EPSILON )
             {
-                // same point as previous edge, (occur when edges are at acute angles), get wall tangent                
-                plVector3 tangent  = (_points[j] - _points[i]) ^ (0.5f * (_normals[j] + _normals[i]));
-                
-                if ((point - closest) * tangent  > 0 )
+                // same point as previous edge,                
+                int h = (i == 0) ? _points.size()-1 : i-1; // previous index                      
+                // get current and previous wall segments        
+                plVector3 previous_segment = (_points[i] - _points[h]); 
+                plVector3 current_segment  = (_points[j] - _points[i]);     
+                // get current wall tangent                        
+                plVector3 current_tangent  = current_segment ^ (0.5f * (_normals[j] + _normals[i]));
+                 
+                // check if current "v" shape is pointing inwards or outwards 
+                if ( (current_segment ^ previous_segment) * _normals[i] < 0)
                 {
-                    //not behind previous edge
-                    minDist = distSquared;
-                    shift_i = j;
+                    // outward pointing "v"
+                    if ((point - closest) * current_tangent  > 0 )
+                    {
+                        // not behind previous edge
+                        minDist = distSquared;
+                        shift_i = j;
+                    } 
                 }
-                
+                else
+                {
+                    // inward pointing "v"
+                    if ((point - closest) * current_tangent  < 0 )
+                    {
+                        // in front of current edge
+                        minDist = distSquared;
+                        shift_i = j;
+                    }
+                }
             }
             else if (distSquared < minDist)
             {
+                // new minimum, store index
                 minDist = distSquared;
                 shift_i = j;
             }
@@ -194,7 +215,7 @@ void _plSetBoundaryColour()
 
 void plBoundary::updateMesh()
 {
-    plVector3 n = getAvgNormal();
+    plVector3 n = getAverageNormal();
 
     plSeq<plVector3> interleaved_vertices( _points.size() * 10 );
     plSeq<PLuint>    indices             ( _points.size() * 6 * 4 );

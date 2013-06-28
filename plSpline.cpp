@@ -47,7 +47,7 @@ void plSpline::drawCornersSelectionInterface() const
     n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[2], corners.normals(2)) );
     n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[3], corners.normals(3)) );
         
-    plVector3 nm = corners.getAvgNormal();
+    plVector3 nm = corners.getAverageNormal();
     
     glColor3f( 1.0, 0.2, 0.2 );
     for (PLuint i = 0; i < _s.size(); i++)
@@ -174,7 +174,7 @@ void plSpline::computeHermiteSpline()
     const PLfloat inc = 0.05f;
  
     plSeq<plVector3>    interleaved_vertices( ((1.0 / inc) + 1) * 4 * 3 );
-    plSeq<PLuint> indices             ( ((1.0 / inc) + 1) * 6 );
+    plSeq<PLuint>       indices             ( ((1.0 / inc) + 1) * 6 );
 
     PLfloat percent = 0;
 
@@ -226,28 +226,34 @@ void plSpline::computeHermiteSpline()
             // quad
             plVector3 faceNorm = ((pos1 - pos0) ^ (pos3 - pos0)).normalize();
                
-            plVector3 point, filler;
+            //plVector3 point, filler;
             plVector3 col0, col1, col2, col3;
             const PLfloat FURTHEST_DISTANCE = 1.0f;
-               
+             
+            plIntersection intersection(false); 
+              
             // colour map values      
-            if (plModelCartilageIntersect(point, filler, 0, pos0+(10*faceNorm), -faceNorm, false, true))
-                col0 = plColourMap( (point - pos0).squaredLength()/FURTHEST_DISTANCE );
+            intersection = plModelCartilageIntersect(0, pos0+(10*faceNorm), -faceNorm, false, true);
+            if (intersection.exists)
+                col0 = plColourMap( (intersection.point - pos0).squaredLength()/FURTHEST_DISTANCE );
             else 
                 col0 = plVector3(0.2, 0.2, 0.2); 
                                 
-            if (plModelCartilageIntersect(point, filler, 0, pos1+(10*faceNorm), -faceNorm, false, true))
-                col1 = plColourMap((point - pos1).squaredLength()/FURTHEST_DISTANCE);
+            intersection = plModelCartilageIntersect(0, pos1+(10*faceNorm), -faceNorm, false, true);
+            if (intersection.exists)
+                col1 = plColourMap((intersection.point - pos1).squaredLength()/FURTHEST_DISTANCE);
             else 
                 col1 = plVector3(0.2, 0.2, 0.2);
                 
-            if (plModelCartilageIntersect(point, filler, 0, pos2+(10*faceNorm), -faceNorm, false, true))
-                col2 = plColourMap((point - pos2).squaredLength()/FURTHEST_DISTANCE);
+            intersection = plModelCartilageIntersect(0, pos2+(10*faceNorm), -faceNorm, false, true);
+            if (intersection.exists)
+                col2 = plColourMap((intersection.point - pos2).squaredLength()/FURTHEST_DISTANCE);
             else 
                 col2 = plVector3(0.2, 0.2, 0.2);
                 
-            if (plModelCartilageIntersect(point, filler, 0, pos3+(10*faceNorm), -faceNorm, false, true))
-                col3 = plColourMap((point - pos3).squaredLength()/FURTHEST_DISTANCE);
+            intersection = plModelCartilageIntersect(0, pos3+(10*faceNorm), -faceNorm, false, true);
+            if (intersection.exists)
+                col3 = plColourMap((intersection.point - pos3).squaredLength()/FURTHEST_DISTANCE);
             else 
                 col3 = plVector3(0.2, 0.2, 0.2);        
                                                    
