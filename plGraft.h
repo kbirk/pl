@@ -61,7 +61,8 @@ class plGraft : public plRenderable
         PLfloat   radius;
         PLfloat   length;
         plVector3 markDirection;
-
+        plVector3 markPosition;
+        
         plTransform recipientTransform;
         PLuint      recipientModelID;
         plTransform harvestTransform;
@@ -88,7 +89,8 @@ class plGraft : public plRenderable
         
         void updateCartilageMesh();
         void updateBoneMesh();
-
+        void updateMarkPosition();
+        
         bool      triangleIntersection( const plTriangle &tri, plPoly &p ) const;
         plVector3 pointAtAngle( PLfloat theta ) const;
         PLfloat   angleOfPoint( const plVector3 &v ) const;

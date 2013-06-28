@@ -21,7 +21,7 @@ Window::Window( int x, int y, int width, int height, std::string title )
     glutDisplayFunc( GLUTdisplay );
     glutReshapeFunc( GLUTreshape );
     glutMouseFunc( GLUTmouseAction );
-    glutMotionFunc( GLUTmouseMotion );
+    glutMotionFunc( GLUTactiveMouseMotion );
     glutPassiveMotionFunc( GLUTpassiveMouseMotion );
     glutKeyboardFunc( GLUTkeyAction );
 }
@@ -63,9 +63,9 @@ void GLUTmouseAction( int button, int state, int x, int y )
 }
 
 
-void GLUTmouseMotion( int x, int y ) 
+void GLUTactiveMouseMotion( int x, int y ) 
 {
-    windows[ glutGetWindow() ]->mouseMotion( x, y );
+    windows[ glutGetWindow() ]->activeMouseMotion( x, y );
     windows[ glutGetWindow() ]->setCursor(x, y);
 }
 

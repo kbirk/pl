@@ -2,7 +2,7 @@
 
 plCamera::plCamera()
 {
-	defaultInit();
+	_defaultInit();
 }
 
 plCamera::plCamera( std::string filename)
@@ -11,7 +11,7 @@ plCamera::plCamera( std::string filename)
 	importViewParams( filename );
 }
   
-void plCamera::defaultInit()
+void plCamera::_defaultInit()
 {
 	// set default position
 	_position = plVector3(0,0,50);    
@@ -80,7 +80,7 @@ void plCamera::importViewParams( std::string filename )
     if (!in) 
     {
         std::cerr << "plCamera readViewParams error: Failed to open the input file\n";
-        defaultInit();
+        _defaultInit();
     }
     else 
     {

@@ -10,16 +10,11 @@
 template<class T> 
 class plSeq 
 {
-
-	PLuint    storageSize;
-	PLuint    numElements;
-	T  		 *data;
-
 	public:
 
 		plSeq();
 		plSeq( PLint n );
-		plSeq( const plSeq<T> & source );
+		plSeq( const plSeq<T> &source );
 		
 		~plSeq();
 	
@@ -39,37 +34,43 @@ class plSeq
 		PLint findIndex( const T &x );
 		bool exists( const T &x );
 
+    private:
+    
+        PLuint    _storageSize;
+	    PLuint    _numElements;
+	    T  		 *_data;
+
 };
 
 
 template<class T>
 plSeq<T>::plSeq() 
 {			
-	storageSize = PL_SEQ_INITIAL_SIZE;
-	numElements = 0;
-	data = new T[ storageSize ];
+	_storageSize = PL_SEQ_INITIAL_SIZE;
+	_numElements = 0;
+	_data = new T[ _storageSize ];
 }
 
 
 template<class T>
 plSeq<T>::plSeq( PLint n ) 
 {		
-	storageSize = n;
-	numElements = 0;
-	data = new T[ storageSize ];
+	_storageSize = n;
+	_numElements = 0;
+	_data = new T[ _storageSize ];
 }
 
 
 template<class T>
 plSeq<T>::plSeq( const plSeq<T> &source ) 
 { 
-	storageSize = source.storageSize;
-	numElements = source.numElements;
-	data = new T[ storageSize ];
+	_storageSize = source._storageSize;
+	_numElements = source._numElements;
+	_data = new T[ _storageSize ];
 	
-	for (PLuint i=0; i<numElements; i++)
+	for (PLuint i=0; i<_numElements; i++)
 	{
-		data[i] = source.data[i];
+		_data[i] = source._data[i];
 	}	
 }
 
@@ -77,7 +78,7 @@ plSeq<T>::plSeq( const plSeq<T> &source )
 template<class T>
 plSeq<T>::~plSeq() 
 {		
-	delete [] data;
+	delete [] _data;
 }
 
 
@@ -85,23 +86,23 @@ template<class T>
 void plSeq<T>::add( const T &x )
 {
     // No storage left?  If so, double the storage
-	if (numElements == storageSize) 
+	if (_numElements == _storageSize) 
 	{
-	    reserve(storageSize*2);
+	    reserve(_storageSize*2);
 	}
 	// Store the element in the next available position
-	data[ numElements ] = x;
-	numElements++;
+	_data[ _numElements ] = x;
+	_numElements++;
 }
 
 template<class T>	
 void plSeq<T>::remove() 
 {
-	if (numElements == 0) 
+	if (_numElements == 0) 
 	{
 		std::cerr << "plSeq remove: Tried to remove element from empty plSequence\n";
 	}
-	numElements -= 1;
+	_numElements -= 1;
 }
 
 
@@ -109,16 +110,16 @@ void plSeq<T>::remove()
 template<class T>
 void plSeq<T>::remove( PLuint i )
 {
-	if (i < 0 || i >= numElements) 
+	if (i < 0 || i >= _numElements) 
 	{
 		std::cerr << "plSeq remove: Tried to remove element " << i
-				  << " from a plSequence of " << numElements << " elements \n";
+				  << " from a plSequence of " << _numElements << " elements \n";
 	}
 
-	for (PLuint j=i; j<numElements-1; j++)
-		data[j] = data[j+1];
+	for (PLuint j=i; j<_numElements-1; j++)
+		_data[j] = _data[j+1];
 
-	numElements--;
+	_numElements--;
 }
 
 
@@ -126,23 +127,23 @@ void plSeq<T>::remove( PLuint i )
 template<class T>
 void plSeq<T>::shift( PLuint i )
 {
-	if (i < 0 || i >= numElements) 
+	if (i < 0 || i >= _numElements) 
 	{
 		std::cerr << "plSeq shift: Tried to shift element " << i
-				  << " from a plSequence of " << numElements << " elements \n";
+				  << " from a plSequence of " << _numElements << " elements \n";
 	}
 
-	if (numElements == storageSize) 
+	if (_numElements == _storageSize) 
 	{
-        reserve(storageSize*2);
+        reserve(_storageSize*2);
 	}
 
-	for (PLuint j=numElements; j>i; j--)
+	for (PLuint j=_numElements; j>i; j--)
     {
-		data[j] = data[j-1];
+		_data[j] = _data[j-1];
     }
 
-	numElements++;
+	_numElements++;
 }
 
 
@@ -150,91 +151,91 @@ void plSeq<T>::shift( PLuint i )
 template<class T>
 void plSeq<T>::compress()
 {
-	T *newData;
+	T *new_data;
 
-	if (numElements == storageSize)
+	if (_numElements == _storageSize)
 		return;
 
-	newData = new T[ numElements ];
-	for (PLint i=0; i<numElements; i++)
-		newData[i] = data[i];
-	storageSize = numElements;
-	delete [] data;
-	data = newData;
+	new_data = new T[ _numElements ];
+	for (PLint i=0; i<_numElements; i++)
+		new_data[i] = _data[i];
+	_storageSize = _numElements;
+	delete [] _data;
+	_data = new_data;
 }
 
 
 template<class T>
 void plSeq<T>::clear() 
 {
-	delete [] data;
-	storageSize = PL_SEQ_INITIAL_SIZE;
-	numElements = 0;
-	data = new T[ storageSize ];
+	delete [] _data;
+	_storageSize = PL_SEQ_INITIAL_SIZE;
+	_numElements = 0;
+	_data = new T[ _storageSize ];
 }
 
 
 template<class T>
 void plSeq<T>::reserve(PLuint size)
 {
-    if (size < storageSize)
+    if (size < _storageSize)
     {
         std::cerr << "plSeq reserve: Attempting to reserve less than current size \n";
         return;
     }
-    T *newData = new T[ size ];
+    T *new_data = new T[ size ];
     
-	for (PLuint i=0; i<numElements; i++)
+	for (PLuint i=0; i<_numElements; i++)
 	{
-		newData[i] = data[i];
+		new_data[i] = _data[i];
     }
-	storageSize = size;
-	delete [] data;
-	data = newData;
+	_storageSize = size;
+	delete [] _data;
+	_data = new_data;
 }
 
 
 template<class T>
 PLuint plSeq<T>::size() const 
 {
-	return numElements;
+	return _numElements;
 }
 
 
 template<class T>
 T & plSeq<T>::back()
 {
-    if (!(numElements > 0)) 
+    if (!(_numElements > 0)) 
 	{
 		std::cerr << "plSeq .back() error: zero elements in sequence\n";
 	}
-	return data[ numElements-1 ];
+	return _data[ _numElements-1 ];
 }
 
 
 template<class T>
 T & plSeq<T>::operator [] ( PLuint i ) const 
 {
-	if (i >= numElements || i < 0) 
+	if (i >= _numElements || i < 0) 
 	{
 		std::cerr << "plSeq [] error: Tried to access an element beyond the range of the plSequence: "
-				  << i << "(numElements = " << numElements << ")\n";
+				  << i << "(_numElements = " << _numElements << ")\n";
 	}
-	return data[ i ];
+	return _data[ i ];
 }
 
 
 template<class T>
 plSeq<T> &plSeq<T>::operator = (const plSeq<T> &source) 
 { 
-	storageSize = source.storageSize;
-	numElements = source.numElements;
-	delete [] data;
-	data = new T[ storageSize ];
+	_storageSize = source._storageSize;
+	_numElements = source._numElements;
+	delete [] _data;
+	_data = new T[ _storageSize ];
 	
-	for (PLuint i=0; i<numElements; i++)
+	for (PLuint i=0; i<_numElements; i++)
 	{
-		data[i] = source.data[i];
+		_data[i] = source._data[i];
 	}
 	
 	return *this;
@@ -245,9 +246,9 @@ plSeq<T> &plSeq<T>::operator = (const plSeq<T> &source)
 template<class T>
 bool plSeq<T>::exists( const T &x )
 {
-	for (PLint i=0; i<numElements; i++)
+	for (PLint i=0; i<_numElements; i++)
 	{
-		if (data[i] == x)
+		if (_data[i] == x)
 		{
 		    return true;
 		}
@@ -260,8 +261,8 @@ bool plSeq<T>::exists( const T &x )
 template<class T>
 PLint plSeq<T>::findIndex( const T &x )
 {
-	for (PLint i=0; i<numElements; i++)
-		if (data[i] == x)
+	for (PLint i=0; i<_numElements; i++)
+		if (_data[i] == x)
 			return i;
 
 	return -1;

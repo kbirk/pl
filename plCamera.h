@@ -16,8 +16,8 @@ class plCamera
         plCamera();
         plCamera( plString filename );
 
-        plVector3 getPosition()         const  { return _position;}      
-        plVector3 getViewingDirection() const  { return (_lookat - _position).normalize(); }
+        plVector3  getPosition()         const  { return _position;}      
+        plVector3  getViewingDirection() const  { return (_lookat - _position).normalize(); }
         plMatrix44 getMatrix() const;
 
         void setPosition( const plVector3 position) { _position = position; }
@@ -39,7 +39,7 @@ class plCamera
         plVector3 _lookat;
         plVector3 _up;	      
         
-        void defaultInit();
+        void _defaultInit();
                
 };
 

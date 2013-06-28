@@ -16,7 +16,7 @@ class plCSV
 
     private:
 
-        void readFile( plString filename, PLbool verbose = false );
+        void _readFile( plString filename, PLbool verbose = false );
 
 };  
 

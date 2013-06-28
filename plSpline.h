@@ -15,9 +15,8 @@ class plSpline : public plRenderable
 {
     public:
 
-        plBoundary          boundary, corners; 
-        plSeq<plVector3>    s, t;
-        
+        plBoundary  boundary, corners; 
+                
         plSpline();
 
         void draw() const;
@@ -28,7 +27,8 @@ class plSpline : public plRenderable
         
     private:
     
-        plColourMesh      _mesh;     
+        plColourMesh      _mesh;   
+        plSeq<plVector3>  _s, _t;  
 };
 
 #endif

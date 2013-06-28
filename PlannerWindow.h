@@ -25,7 +25,7 @@ class PlannerWindow : public ArcballWindow
         
         void userKeyAction( PLbyte key, int x, int y );
         bool userMouseAction( int button, int state, int x, int y );
-        bool userMouseMotion( int x, int y );
+        bool userActiveMouseMotion( int x, int y );
         void userPassiveMouseMotion( int x, int y);
         void userSetCursor( int x, int y);
  

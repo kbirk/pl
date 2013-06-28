@@ -18,7 +18,7 @@ void plSpline::draw() const
     corners.draw();
     
     // draw spline corner axes
-    if (PL_BOUNDARY_CURRENT_IS_SELECTED && corners.isVisibile())
+    if (PL_BOUNDARY_CURRENT_IS_SELECTED && corners.isVisible())
     {
         drawCornersSelectionInterface();
     }    
@@ -40,30 +40,30 @@ void plSpline::draw() const
 
 void plSpline::drawCornersSelectionInterface() const
 {
-    const plSeq<plVector3> &p = corners.points;
+    const plSeq<plVector3> &p = corners.points();
     plSeq<plVector3> n;
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[0], corners.normals[0]) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[1], corners.normals[1]) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[2], corners.normals[2]) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[3], corners.normals[3]) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[0], corners.normals(0)) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[1], corners.normals(1)) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[2], corners.normals(2)) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[3], corners.normals(3)) );
         
     plVector3 nm = corners.getAvgNormal();
     
     glColor3f( 1.0, 0.2, 0.2 );
-    for (PLuint i = 0; i < s.size(); i++)
+    for (PLuint i = 0; i < _s.size(); i++)
     {
         glPushMatrix();
         glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
-        plDrawArrow(p[i], s[i], 4.0f, 0.5f);
+        plDrawArrow(p[i], _s[i], 4.0f, 0.5f);
         glPopMatrix();
     }
 
     glColor3f( 0.2, 0.2, 1.0);
-    for (PLuint i = 0; i < t.size(); i++)
+    for (PLuint i = 0; i < _t.size(); i++)
     {
         glPushMatrix();
         glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
-        plDrawArrow(p[i], t[i], 4.0f, 0.5f);
+        plDrawArrow(p[i], _t[i], 4.0f, 0.5f);
         glPopMatrix();        
     }
   
@@ -86,7 +86,7 @@ PLfloat Q( PLfloat s, PLfloat t, const plSeq<plVector3> &p, const plSeq<PLfloat>
                          1, -2,  1,  0,
                          1, -1,  0,  0 );
                           
-    plMatrix44  qm( 0.0f,   0.0f, tt[0],  tt[3],
+    plMatrix44  q ( 0.0f,   0.0f, tt[0],  tt[3],
                     0.0f,   0.0f, tt[1],  tt[2],
                     st[0], st[3],  0.0f,   0.0f,
                     st[1], st[2],  0.0f,   0.0f );    
@@ -94,20 +94,20 @@ PLfloat Q( PLfloat s, PLfloat t, const plSeq<plVector3> &p, const plSeq<PLfloat>
     plVector4 sc( s*s*s, s*s, s, 1);
     plVector4 tc( t*t*t, t*t, t, 1);  
     
-    return (h * sc) * qm * (h * tc);                         
+    return (h * sc) * q * (h * tc);                         
 }
 
 void plSpline::computeHermiteSpline()
 {    
     // p and n for cleaner code
-    const plSeq<plVector3> &p = corners.points;    
+    const plSeq<plVector3> &p = corners.points();    
     plSeq<plVector3> n;
 
     // compute averages normals
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[0], corners.normals[0]) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[1], corners.normals[1]) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[2], corners.normals[2]) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[3], corners.normals[3]) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[0], corners.normals(0)) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[1], corners.normals(1)) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[2], corners.normals(2)) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[3], corners.normals(3)) );
 
     // get unit directional vectors, (p01 = from p0 to p1)
     plVector3 p01 = (p[1]-p[0]).normalize();
@@ -122,7 +122,7 @@ void plSpline::computeHermiteSpline()
     plVector3 n32 = (0.5*(n[3]+n[2])).normalize();
     
     // clear previous s and t vectors
-    s.clear();  t.clear();
+    _s.clear();  _t.clear();
 
     // normals of planes between each point   
     plVector3   sn, tn;
@@ -131,45 +131,45 @@ void plSpline::computeHermiteSpline()
     sn = ( p01 ^ -n01 ).normalize();
     tn = ( p03 ^ n03 ).normalize();
     
-    s.add( plProjectVectorOnPlane(p03 ^ n[0], sn).normalize() );
-    t.add( plProjectVectorOnPlane(p01 ^ -n[0], tn).normalize() ) ; 
+    _s.add( plProjectVectorOnPlane(p03 ^ n[0], sn).normalize() );
+    _t.add( plProjectVectorOnPlane(p01 ^ -n[0], tn).normalize() ) ; 
 
     // p1 plane normals
     sn = ( p01 ^ -n01 ).normalize();
     tn = ( p12 ^ n12 ).normalize();
     
-    s.add( plProjectVectorOnPlane( p03 ^ n[1], sn).normalize() );
-    t.add( plProjectVectorOnPlane( p01 ^ -n[1], tn).normalize() ) ;
+    _s.add( plProjectVectorOnPlane( p03 ^ n[1], sn).normalize() );
+    _t.add( plProjectVectorOnPlane( p01 ^ -n[1], tn).normalize() ) ;
     
     // p2 plane normals
     sn = ( p32 ^ -n32 ).normalize();
     tn = ( p12 ^ n12 ).normalize();
     
-    s.add( plProjectVectorOnPlane( p12 ^ n[2], sn).normalize() );
-    t.add( plProjectVectorOnPlane( p32 ^ -n[2], tn).normalize() ) ;
+    _s.add( plProjectVectorOnPlane( p12 ^ n[2], sn).normalize() );
+    _t.add( plProjectVectorOnPlane( p32 ^ -n[2], tn).normalize() ) ;
     
     // p3 plane normals
     sn = ( p32 ^ -n32 ).normalize();
     tn = ( p03 ^ n03 ).normalize();
     
-    s.add( plProjectVectorOnPlane( p03 ^ n[3], sn).normalize() );
-    t.add( plProjectVectorOnPlane( p32 ^ -n[3], tn).normalize() ) ;
+    _s.add( plProjectVectorOnPlane( p03 ^ n[3], sn).normalize() );
+    _t.add( plProjectVectorOnPlane( p32 ^ -n[3], tn).normalize() ) ;
 
     // find tangents in the s and t planes
     plSeq<PLfloat>   st(4), tt(4); 
     // find the slope of the line along the plane of the spline boundary wall
     // scale by the length between two points to ensure proper scaling
-    st.add( (s[0]*n01) / (s[0]*p01) * (p[0]-p[1]).length() ); 
-    tt.add( (t[0]*n03) / (t[0]*p03) * (p[0]-p[3]).length() );     
+    st.add( (_s[0]*n01) / (_s[0]*p01) * (p[0]-p[1]).length() ); 
+    tt.add( (_t[0]*n03) / (_t[0]*p03) * (p[0]-p[3]).length() );     
 
-    st.add( (s[1]*n01) / (s[1]*p01) * (p[0]-p[1]).length() ); 
-    tt.add( (t[1]*n12) / (t[1]*p12) * (p[2]-p[1]).length() ); 
+    st.add( (_s[1]*n01) / (_s[1]*p01) * (p[0]-p[1]).length() ); 
+    tt.add( (_t[1]*n12) / (_t[1]*p12) * (p[2]-p[1]).length() ); 
 
-    st.add( (s[2]*n32) / (s[2]*p32) * (p[3]-p[2]).length() ); 
-    tt.add( (t[2]*n12) / (t[2]*p12) * (p[2]-p[1]).length() ); 
+    st.add( (_s[2]*n32) / (_s[2]*p32) * (p[3]-p[2]).length() ); 
+    tt.add( (_t[2]*n12) / (_t[2]*p12) * (p[2]-p[1]).length() ); 
 
-    st.add( (s[3]*n32) / (s[3]*p32) * (p[3]-p[2]).length() ); 
-    tt.add( (t[3]*n03) / (t[3]*p03) * (p[0]-p[3]).length() ); 
+    st.add( (_s[3]*n32) / (_s[3]*p32) * (p[3]-p[2]).length() ); 
+    tt.add( (_t[3]*n03) / (_t[3]*p03) * (p[0]-p[3]).length() ); 
 
     const PLfloat inc = 0.05f;
  
@@ -295,10 +295,10 @@ void plSpline::drawSplineSelectionInterface() const
     _plPickingShader->setPickingUniforms(_plPickingState);
        
     plSeq<plVector3> n; 
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[0], corners.normals[0]) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[1], corners.normals[1]) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[2], corners.normals[2]) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points[3], corners.normals[3]) );   
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points(0), corners.normals(0)) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points(1), corners.normals(1)) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points(2), corners.normals(2)) );
+    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points(3), corners.normals(3)) );   
        
     glPushMatrix();
     for (PLuint i = 0; i < corners.size(); i++)
@@ -306,7 +306,7 @@ void plSpline::drawSplineSelectionInterface() const
         _plPickingState->type = PL_PICKING_TYPE_DEFECT_HANDLE_0 + i; 
         _plPickingShader->setPickingUniforms(_plPickingState);
         glColor3f( 0.2, 1.0, 0.2 ); 
-        plDrawArrow(corners.points[i], n[i]);
+        plDrawArrow(corners.points(i), n[i]);
     }
     glPopMatrix();
 }

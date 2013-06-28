@@ -3,11 +3,11 @@
 plCSV::plCSV( plString fn ) 
 {           
     filename = fn;
-    readFile( fn );
+    _readFile( fn );
 }
 
 
-void plCSV::readFile( plString filename, PLbool verbose )
+void plCSV::_readFile( plString filename, PLbool verbose )
 {
     std::ifstream infile( filename.c_str() );
 

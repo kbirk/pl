@@ -110,8 +110,9 @@ void plPlan::readFile( plString filename )
 
             for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
             {       
-                corners.points.add(  plVector3( csv.data[i][j]) );                  
-                corners.normals.add( plVector3( csv.data[i][j+1]) );
+                corners.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] ); 
+                //corners.points.add(  plVector3( csv.data[i][j]) );                  
+                //corners.normals.add( plVector3( csv.data[i][j+1]) );
             }
         } 
         else if (plStringCompareCaseInsensitive(field, "spline boundary" ) )
@@ -119,9 +120,10 @@ void plPlan::readFile( plString filename )
             plBoundary &boundary = _defectSplines.back().boundary;
 
             for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
-            {                   
-                boundary.points.add(  plVector3( csv.data[i][j]) );                  
-                boundary.normals.add( plVector3( csv.data[i][j+1]) );
+            {      
+                boundary.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] );                         
+                //boundary.points.add(  plVector3( csv.data[i][j]) );                  
+                //boundary.normals.add( plVector3( csv.data[i][j+1]) );
             }
 
         } 
@@ -132,9 +134,10 @@ void plPlan::readFile( plString filename )
             plBoundary &boundary = _donorRegions.back();
 
             for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
-            {       
-                boundary.points.add(  plVector3( csv.data[i][j]) );                  
-                boundary.normals.add( plVector3( csv.data[i][j+1]) );
+            {   
+                boundary.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] );  
+                //boundary.points.add(  plVector3( csv.data[i][j]) );                  
+                //boundary.normals.add( plVector3( csv.data[i][j+1]) );
             }    
 
         } 
@@ -208,21 +211,12 @@ void plPlan::readFile( plString filename )
             plString subfield = csv.data[i][2];
 
             
-            if (plStringCompareCaseInsensitive(subfield, "outline points") )
+            if (plStringCompareCaseInsensitive(subfield, "boundary") )
             {                    
-                iguide.boundary.points.clear();
-                for (PLuint j=3; j < csv.data[i].size(); j++)
+                for (PLuint j=3; j < csv.data[i].size(); j+=2)
                 {
-                    iguide.boundary.points.add( plVector3( csv.data[i][j] ) );
+                    iguide.boundary.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] );
                 }       
-            } 
-            else if (plStringCompareCaseInsensitive(subfield, "outline normals") ) 
-            {        
-                iguide.boundary.normals.clear();
-                for (PLuint j=3; j < csv.data[i].size(); j++)
-                {
-                    iguide.boundary.normals.add( plVector3( csv.data[i][j] ) );
-                }  
             } 
             else if (plStringCompareCaseInsensitive(subfield, "graft indices") ) 
             {
@@ -308,16 +302,16 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
         out << "spline corners";
         for (PLuint j=0; j<p._defectSplines[i].corners.size(); j++)
         {
-            out << "," << p._defectSplines[i].corners.points[j];
-            out << "," << p._defectSplines[i].corners.normals[j];
+            out << "," << p._defectSplines[i].corners.points(j);
+            out << "," << p._defectSplines[i].corners.normals(j);
         }
         out << std::endl << std::endl;
 
         out << "spline boundary";
-        for (PLuint j=0; j<p._defectSplines[i].boundary.points.size(); j++)
+        for (PLuint j=0; j<p._defectSplines[i].boundary.size(); j++)
         {
-            out << "," << p._defectSplines[i].boundary.points[j];
-            out << "," << p._defectSplines[i].boundary.normals[j];
+            out << "," << p._defectSplines[i].boundary.points(j);
+            out << "," << p._defectSplines[i].boundary.normals(j);
         }
         out << std::endl << std::endl;
     }
@@ -326,10 +320,10 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
     for (PLuint i=0; i<p._donorRegions.size(); i++) 
     {
         out << "donor boundary";
-        for (PLuint j=0; j<p._donorRegions[i].points.size(); j++)
+        for (PLuint j=0; j<p._donorRegions[i].size(); j++)
         {
-            out << "," << p._donorRegions[i].points[j];
-            out << "," << p._donorRegions[i].normals[j];
+            out << "," << p._donorRegions[i].points(j);
+            out << "," << p._donorRegions[i].normals(j);
         }
         out << std::endl << std::endl;
     }
@@ -362,10 +356,10 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
         out << std::endl;
 
         out << "iguide," << i << ", boundary";
-        for (PLuint j=0; j<iguide.boundary.points.size(); j++)
+        for (PLuint j=0; j<iguide.boundary.size(); j++)
         {
-            out << "," << iguide.boundary.points[j];
-            out << "," << iguide.boundary.normals[j];
+            out << "," << iguide.boundary.points(j);
+            out << "," << iguide.boundary.normals(j);
         }
         out << std::endl;
 
@@ -487,8 +481,7 @@ void plBoundaryPointMove(const plVector3 &point, const plVector3 &normal)
         return;
 
     plBoundary &boundary = _plPlan->getBoundaryReference(_plState->boundarySelectedType, _plState->boundarySelectedID);
-    boundary.points[_plState->boundarySelectedPointID] = point;    
-    boundary.normals[_plState->boundarySelectedPointID] = normal;
+    boundary.movePointAndNormal(_plState->boundarySelectedPointID, point, normal);    
     boundary.updateMesh();
 }
 
@@ -579,8 +572,7 @@ void plBoundaryPointRemove( PLuint point_index )
         
     plBoundary &boundary = _plPlan->getBoundaryReference(_plState->boundarySelectedType, _plState->boundarySelectedID);
     
-    boundary.points.remove(point_index);
-    boundary.normals.remove(point_index);
+    boundary.removePointAndNormal(point_index);
     boundary.updateMesh();
     
     _plState->boundarySelectedPointID = -1;  
@@ -1012,6 +1004,7 @@ void plGraftSpinMarker( PLfloat angle_degrees )
 void plGraftSpinMarker( PLuint graft_id, PLfloat angle_degrees )
 {
     _plPlan->_grafts[graft_id].spinMark(angle_degrees);
+    _plPlan->_grafts[graft_id].updateMarkPosition();
 }
 
 //////////////////////////////////////////////////

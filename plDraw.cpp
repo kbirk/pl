@@ -1,7 +1,6 @@
 #include "plDraw.h"
 
 
-
 void plDrawSetViewingMatrix()
 {
     glMatrixMode(GL_MODELVIEW);
@@ -54,6 +53,13 @@ void plDraw()
     // PICKING
     _plDrawPicking();
 }
+
+
+
+
+
+
+
 
 
 void _plDrawPicking()

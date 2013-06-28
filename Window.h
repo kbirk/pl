@@ -8,7 +8,7 @@
 void GLUTdisplay();
 void GLUTreshape( int x, int y );
 void GLUTmouseAction( int button, int state, int x, int y );
-void GLUTmouseMotion( int x, int y );
+void GLUTactiveMouseMotion( int x, int y );
 void GLUTpassiveMouseMotion( int x, int y );
 void GLUTkeyAction( unsigned char c, int x, int y );
 
@@ -20,7 +20,7 @@ class Window
 
         virtual void display() = 0;
         virtual void mouseAction( int button, int state, int x, int y ) {};
-        virtual void mouseMotion( int x, int y ) {};
+        virtual void activeMouseMotion( int x, int y ) {};
         virtual void passiveMouseMotion( int x, int y ) {};
         virtual void keyAction( unsigned char key, int x, int y ) {};        
         virtual void reshape( int width, int height );

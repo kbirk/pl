@@ -115,9 +115,9 @@ void ArcballWindow::passiveMouseMotion( int x, int y )
 }
 
 
-void ArcballWindow::mouseMotion( int x, int y )
+void ArcballWindow::activeMouseMotion( int x, int y )
 {    
-    if (userMouseMotion(x,y))
+    if (userActiveMouseMotion(x,y))
         return;
 
     // left mouse button

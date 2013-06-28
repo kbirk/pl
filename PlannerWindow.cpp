@@ -181,7 +181,7 @@ void PlannerWindow::userPassiveMouseMotion(int x, int y)
 }
 
 
-bool PlannerWindow::userMouseMotion( int x, int y )
+bool PlannerWindow::userActiveMouseMotion( int x, int y )
 {   
 
     switch (_currentDragee)

@@ -155,7 +155,7 @@ void _plSetGraftCartilageColour()
 
 void plGraft::draw() const
 {
-    if (!isVisibile())
+    if (!_isVisible)
         return;
 
     // Draw at harvest location
@@ -197,17 +197,38 @@ void plGraft::draw() const
 void plGraft::drawGraft() const
 {
     // draw cartilage cap
-    if (cartilageCap.polys.size() > 0)
+    if (cartilageCap.polys.size() > 0)  // may not always have the cartilage top
     {
         _plSetGraftCartilageColour();
         cartilageMesh.draw();
     }
+    
     // draw bone cap
     _plSetGraftBoneColour();
     boneMesh.draw();
     
+    // draw marker   
+    glColor3f( PL_GRAFT_MARKER_COLOUR );
+    plDrawSphere( markPosition, 0.5 );
+
+}
+
+void plGraft::setCaps()
+{
+    // generate cap polygons
+    cartilageCap = findCap( _plBoneAndCartilageModels[harvestModelID]->getCartilageTriangles(), harvestTransform.y);
+    boneCap      = findCap( _plBoneAndCartilageModels[harvestModelID]->getBoneTriangles(),      harvestTransform.y);
+    // generate meshes   
+    updateCartilageMesh();   
+    updateBoneMesh();  
+    updateMarkPosition();    
+}
+
+
+void plGraft::updateMarkPosition()
+{
     // Mark at tool alignment direction on cartilage
-    plVector3 mark = radius * markDirection;
+    markPosition = radius * markDirection;
 
     // First, find the closest top perimeter point in the mark direction.
     float minDist = FLT_MAX;
@@ -218,7 +239,7 @@ void plGraft::drawGraft() const
     for (PLuint i=0; i<cap.perimeter.size(); i++) 
     {
         const plVector3 &v = cap.perimeter[i].point;
-        float dist = (v.x-mark.x)*(v.x-mark.x) + (v.z-mark.z)*(v.z-mark.z);
+        float dist = (v.x-markPosition.x)*(v.x-markPosition.x) + (v.z-markPosition.z)*(v.z-markPosition.z);
         if (dist < minDist) 
         {
             minDist = dist;
@@ -227,24 +248,7 @@ void plGraft::drawGraft() const
     }
 
     // Draw marker  
-    mark.y = minY;
-
-    glColor3f( PL_GRAFT_MARKER_COLOUR );
-    glPushMatrix();
-    glTranslatef( mark.x, mark.y, mark.z );
-    plDrawSphere( 0.5 );
-    glPopMatrix();
-}
-
-
-void plGraft::setCaps()
-{
-    // generate cap polygons
-    cartilageCap = findCap( _plBoneAndCartilageModels[harvestModelID]->getCartilageTriangles(), harvestTransform.y);
-    boneCap      = findCap( _plBoneAndCartilageModels[harvestModelID]->getBoneTriangles(),      harvestTransform.y);
-    // generate meshes   
-    updateCartilageMesh();   
-    updateBoneMesh();      
+    markPosition.y = minY;
 }
 
 bool _comparePointAndAngle( const plPointAndAngle &a, const plPointAndAngle &b )
@@ -462,7 +466,7 @@ plCap plGraft::findCap( const plSeq<plTriangle> &triangles, const plVector3 &up 
     for (PLuint i=0; i<triangles.size(); i++) 
     {
         plPoly p;
-        if (triangles[i].normal * up > 0 && triangleIntersection( triangles[i], p ))
+        if (triangles[i].normal() * up > 0 && triangleIntersection( triangles[i], p ))
         {
             cap.polys.add( p );
         }
@@ -507,15 +511,15 @@ plCap plGraft::findCap( const plSeq<plTriangle> &triangles, const plVector3 &up 
 // interior of the cylinder.
 
 
-bool plGraft::triangleIntersection( const plTriangle &tri, plPoly &p ) const
+bool plGraft::triangleIntersection( const plTriangle &triangle, plPoly &p ) const
 {
     static float min = FLT_MAX;
 
     float radiusSquared = radius * radius;
 
-    plVector3 point1 = harvestTransform.applyInverse( tri.point1 );
-    plVector3 point2 = harvestTransform.applyInverse( tri.point2 );
-    plVector3 point3 = harvestTransform.applyInverse( tri.point3 );
+    plVector3 point1 = harvestTransform.applyInverse( triangle.point0() );
+    plVector3 point2 = harvestTransform.applyInverse( triangle.point1() );
+    plVector3 point3 = harvestTransform.applyInverse( triangle.point2() );
 
     // Compute distance to graft axis
     float dist1 = harvestTransform.squaredDistToAxis( point1 );
@@ -543,7 +547,7 @@ bool plGraft::triangleIntersection( const plTriangle &tri, plPoly &p ) const
 
     // At least some of the triangle is inside
 
-    p.normal = harvestTransform.applyNormalInverse(tri.normal);
+    p.normal = harvestTransform.applyNormalInverse(triangle.normal());
 
     // If entirely within the graft, accept the whole triangle (this is cheaper).
 

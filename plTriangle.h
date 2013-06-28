@@ -26,41 +26,19 @@ class plTriangle
 { 
     public:
 
-        plVector3 normal;
-        plVector3 point1;
-        plVector3 point2;
-        plVector3 point3;
-        plVector3 centroid;
+        plTriangle();
+        plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 );
+        plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 );
 
-        plTriangle()
-            :   normal(0,0,0),
-                point1(0,0,0),
-                point2(0,0,0),
-                point3(0,0,0),
-                centroid(0,0,0)
-        {
-        }
-
-        plTriangle(const plVector3 &n1, const plVector3 &p1, const plVector3 &p2, const plVector3 &p3 ) 
-            :   normal(n1),
-                point1(p1),
-                point2(p2),
-                point3(p3),
-                centroid(0.3333f * (p1 + p2 + p3))
-        {
-        }
-
-        plTriangle(PLfloat n1, PLfloat n2, PLfloat n3,
-                   PLfloat p1, PLfloat p2, PLfloat p3,
-                   PLfloat p4, PLfloat p5, PLfloat p6,
-                   PLfloat p7, PLfloat p8, PLfloat p9) 
-            :   normal(n1,n2,n3),
-                point1(p1,p2,p3),
-                point2(p4,p5,p6),
-                point3(p7,p8,p9),
-                centroid(0.3333f * (point1 + point2 + point3))           
-        {
-        }
+        const plVector3 &point0()   const { return _point0;   }                      
+		const plVector3 &point1()   const { return _point1;   } 
+		const plVector3 &point2()   const { return _point2;   } 
+		const plVector3 &normal()   const { return _normal;   }
+		const plVector3 &centroid() const { return _centroid; }  
+		                    
+        void  point0( const plVector3 &point );                     
+		void  point1( const plVector3 &point );
+		void  point2( const plVector3 &point );
 
 		PLbool rayIntersect( plVector3 &intPoint, 
 		                     plVector3 &intNorm, 
@@ -69,7 +47,16 @@ class plTriangle
 		                     const plVector3 &rayDir, 
 		                     PLbool ignoreBehindRay = false, 
 		                     PLbool backFaceCull = false ) const;
+
+    private:
+    
+        plVector3 _normal;
+        plVector3 _point0;
+        plVector3 _point1;
+        plVector3 _point2;
+        plVector3 _centroid;
         
+        void _recalculate();
 };
 
 std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
@@ -77,8 +64,7 @@ std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
 void plSTLImportFile      ( plSeq<plTriangle> &triangles, plString filename );
 void plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filename );
 void plSTLExportFileASCII ( const plSeq<plTriangle> &triangles , plString filename );
-void _plCheckIOTypeSizes ();
-void _plCheckAndFixNormal(plVector3 &n, const plVector3 &p1, const plVector3 &p2, const plVector3 &p3);
+void _plCheckTypeSizes    ();
 
 
 #endif

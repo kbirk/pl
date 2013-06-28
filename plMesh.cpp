@@ -43,16 +43,16 @@ void plMesh::triangleToInterleaved(const plSeq<plTriangle> &triangles)
     for (PLuint i = 0; i < triangles.size(); i++) 
     {  
         // p1
-	    interleaved_vertices.add(triangles[i].point1);
-	    interleaved_vertices.add(triangles[i].normal);
+	    interleaved_vertices.add(triangles[i].point0());
+	    interleaved_vertices.add(triangles[i].normal());
 	    indices.add(indexCount++);
 	    // p2
-	    interleaved_vertices.add(triangles[i].point2);
-	    interleaved_vertices.add(triangles[i].normal);
+	    interleaved_vertices.add(triangles[i].point1());
+	    interleaved_vertices.add(triangles[i].normal());
 	    indices.add(indexCount++);
 	    // p3
-	    interleaved_vertices.add(triangles[i].point3);
-	    interleaved_vertices.add(triangles[i].normal);
+	    interleaved_vertices.add(triangles[i].point2());
+	    interleaved_vertices.add(triangles[i].normal());
 	    indices.add(indexCount++);	    
 	}
 

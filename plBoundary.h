@@ -18,23 +18,31 @@ class plBoundary : public plRenderable
 {
     public:
 
-        plSeq<plVector3> points;
-        plSeq<plVector3> normals;
-        
         plBoundary();       
         
         plVector3 getAvgNormal() const;
         PLuint    size() const;
-        void      toggleVisibility();
+        const plVector3 &points ( PLuint index ) const { return _points[index];  }
+        const plVector3 &normals( PLuint index ) const { return _normals[index]; }
+        const plSeq<plVector3> &points () const        { return _points;  }
+        const plSeq<plVector3> &normals() const        { return _normals; }
+         
+        void   toggleVisibility();
         
-        PLuint    addPointAndNormal(const plVector3 &point, const plVector3 &normal);
-        void      updateMesh(); 
-        void      draw() const;     
+        void   loadPointAndNormal(const plString &point, const plString &normal);
+        PLuint addPointAndNormal (const plVector3 &point, const plVector3 &normal);
+        void   movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal);
+        void   removePointAndNormal( PLuint index );
+        void   updateMesh(); 
+        void   draw() const;     
+        void   drawWalls() const;  
         
     private:
     
-        plMesh _mesh;    
-        PLbool _showWalls;                   
+        plSeq<plVector3> _points;
+        plSeq<plVector3> _normals;   
+        plMesh           _mesh;    
+        PLbool           _showWalls;                   
 };
 
 #endif

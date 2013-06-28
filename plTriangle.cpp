@@ -1,18 +1,66 @@
 #include "plTriangle.h"
 
+plTriangle::plTriangle()
+    :   _normal(0,0,0), _point0(0,0,0), _point1(0,0,0), _point2(0,0,0), _centroid(0,0,0)
+{
+}
+
+plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) 
+    :   _point0(p0), _point1(p1), _point2(p2), 
+        _centroid(0.333333f * (p0 + p1 + p2))
+{
+    if (n.x == 0.0f && n.y == 0.0f && n.z == 0.0f) 
+    {
+        _normal = ((p1-p0)^(p2-p0)).normalize();
+    }
+    else
+    {
+        _normal = n;
+    }
+}
+
+plTriangle::plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) 
+    :   _normal(((p1 - p0) ^ (p2 - p0)).normalize()), 
+        _point0(p0), _point1(p1), _point2(p2), 
+        _centroid(0.333333f * (p0 + p1 + p2))
+{
+}
+
+void plTriangle::point0( const plVector3 &point )
+{
+    _point0 = point;
+    _recalculate();
+}                   
+void plTriangle::point1( const plVector3 &point )
+{
+    _point1 = point;
+    _recalculate(); 
+} 
+void plTriangle::point2( const plVector3 &point )
+{
+    _point2 = point;
+    _recalculate();
+} 
+
+void plTriangle::_recalculate()
+{
+   _normal = ((_point1 - _point0) ^ (_point2 - _point0)).normalize();
+   _centroid = 0.333333f * (_point0 + _point1 + _point2);
+} 
+
 // Compute plane/ray intersection, and then the local coordinates to
 // see whether the intersection point is inside.
 bool plTriangle::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, PLfloat &t, const plVector3 &rayStart, const plVector3 &rayDir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 {
     // Compute ray/plane intersection
-    PLfloat dn = rayDir * normal;
+    PLfloat dn = rayDir * _normal;
 
     if (dn == 0 || (backFaceCull &&  dn > 0) )
         return false;		// ray is parallel to plane    
 
-    PLfloat dist = point1 * normal;
+    PLfloat dist = _point0 * _normal;
 
-    t = (dist - rayStart*normal) / dn;
+    t = (dist - rayStart*_normal) / dn;
     
     if (ignoreBehindRay && t < 0) 
         return false;       // plane is behind ray
@@ -20,16 +68,16 @@ bool plTriangle::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, PLfloat 
     intPoint = rayStart + t * rayDir;
 
     // Compute barycentric coords
-    PLfloat totalArea = ((point2-point1) ^ (point3-point1)) * normal;
-    PLfloat u = (((point3-point2) ^ (intPoint - point2)) * normal) / totalArea;
-    PLfloat v = (((point1-point3) ^ (intPoint - point3)) * normal) / totalArea;
+    PLfloat totalArea = ((_point1-_point0) ^ (_point2-_point0)) * _normal;
+    PLfloat u = (((_point2-_point1) ^ (intPoint - _point1)) * _normal) / totalArea;
+    PLfloat v = (((_point0-_point2) ^ (intPoint - _point2)) * _normal) / totalArea;
 
     // Reject if outside triangle
     if (u < 0 || v < 0 || u + v > 1)
         return false;
 
     // Return int point and normal and parameter
-    intNorm = normal;
+    intNorm = _normal;
 
     return true;
 }
@@ -38,15 +86,15 @@ bool plTriangle::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, PLfloat 
 // I/O operators
 std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 {
-    stream << "Normal    = " << p.normal << "\n"
-           << "Vertex 1  = " << p.point1 << "\n"
-           << "Vertex 2  = " << p.point2 << "\n"
-           << "Vertex 3  = " << p.point3 << "\n";
+    stream << "Normal    = " << p.normal() << "\n"
+           << "Vertex 1  = " << p.point0() << "\n"
+           << "Vertex 2  = " << p.point1() << "\n"
+           << "Vertex 3  = " << p.point2() << "\n";
     return stream;
 }
 
 
-void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
+void plSTLImportFile( plSeq<plTriangle> &triangles, plString filename)
 {
     // just in case, clear seq
     triangles.clear();
@@ -58,7 +106,7 @@ void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
         exit(1);
     }
     
-    plVector3 n,p1,p2,p3;
+    plVector3 n,p0,p1,p2;
     
     // First line: ASCII or RAW?
     plString line;
@@ -85,28 +133,25 @@ void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
             else if (plStringCompareCaseInsensitive(line, "vertex", 6)) 
             {
                 // vertex 1
-                sscanf(line.c_str(), "%s %f %f %f", filler, &p1.x, &p1.y, &p1.z);
+                sscanf(line.c_str(), "%s %f %f %f", filler, &p0.x, &p0.y, &p0.z);
                 // vertex 2
                 std::getline(infile, line); // read next vertex line
-                sscanf(line.c_str(), "%s %f %f %f", filler, &p2.x, &p2.y, &p2.z);
+                sscanf(line.c_str(), "%s %f %f %f", filler, &p1.x, &p1.y, &p1.z);
                 // vertex 3
                 std::getline(infile, line); // read next vertex line
-                sscanf(line.c_str(), "%s %f %f %f", filler, &p3.x, &p3.y, &p3.z);
+                sscanf(line.c_str(), "%s %f %f %f", filler, &p2.x, &p2.y, &p2.z);
             } 
             else if (plStringCompareCaseInsensitive(line, "endfacet", 8))
             {
-                _plCheckAndFixNormal( n, p1, p2, p3 );
-
                 // end of face, build triangle
-                triangles.add( plTriangle(n,p1,p2,p3) );
-                
+                triangles.add( plTriangle(n,p0,p1,p2) );                
             }
         }
 
     } 
     else 
     {
-        _plCheckIOTypeSizes();
+        _plCheckTypeSizes();
 
         // reset file position to beginning
         infile.seekg(0);
@@ -125,15 +170,13 @@ void plSTLImportFile( plSeq<plTriangle>  &triangles, plString filename)
         {
             PLushort nAttr;
             
-            infile.read(reinterpret_cast<PLchar*>(&n.x),  sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&p1.x), sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&p2.x), sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&p3.x), sizeof(PLfloat)*3);
+            infile.read(reinterpret_cast<PLchar*>(&n.x),   sizeof(PLfloat)*3);
+            infile.read(reinterpret_cast<PLchar*>(&p0.x),  sizeof(PLfloat)*3);
+            infile.read(reinterpret_cast<PLchar*>(&p1.x),  sizeof(PLfloat)*3);
+            infile.read(reinterpret_cast<PLchar*>(&p2.x),  sizeof(PLfloat)*3);
             infile.read(reinterpret_cast<PLchar*>(&nAttr), sizeof(PLushort));
 
-            _plCheckAndFixNormal( n, p1, p2, p3 );
-           
-            triangles.add( plTriangle( n, p1, p2, p3) );
+            triangles.add( plTriangle( n, p0, p1, p2 ) );
         }
     }
 
@@ -153,11 +196,11 @@ void plSTLExportFileASCII( const plSeq<plTriangle> &triangles , plString filenam
 
     for (PLuint i=0; i<triangles.size(); i++) 
     {
-        outfile << "  facet normal " << triangles[i].normal.x << " " << triangles[i].normal.y << " " << triangles[i].normal.z << "\n" <<
+        outfile << "  facet normal " << triangles[i].normal().x << " " << triangles[i].normal().y << " " << triangles[i].normal().z << "\n" <<
                    "    outer loop\n" <<
-                   "      vertex " << triangles[i].point1.x << " " << triangles[i].point1.y << " " << triangles[i].point1.z << "\n" <<
-                   "      vertex " << triangles[i].point2.x << " " << triangles[i].point2.y << " " << triangles[i].point2.z << "\n" <<
-                   "      vertex " << triangles[i].point3.x << " " << triangles[i].point3.y << " " << triangles[i].point3.z << "\n" <<
+                   "      vertex " << triangles[i].point0().x << " " << triangles[i].point0().y << " " << triangles[i].point0().z << "\n" <<
+                   "      vertex " << triangles[i].point1().x << " " << triangles[i].point1().y << " " << triangles[i].point1().z << "\n" <<
+                   "      vertex " << triangles[i].point2().x << " " << triangles[i].point2().y << " " << triangles[i].point2().z << "\n" <<
                    "    endloop\n" <<
                    "  endfacet\n";
     }
@@ -170,7 +213,7 @@ void plSTLExportFileASCII( const plSeq<plTriangle> &triangles , plString filenam
 
 void plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filename )
 {
-    _plCheckIOTypeSizes();
+    _plCheckTypeSizes();
 
     std::ofstream outfile ( filename.c_str(), std::ios::trunc | std::ios::out | std::ios::binary );
     if ( !outfile.good() )
@@ -195,18 +238,18 @@ void plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filena
     PLushort zeroPLushort(0); // at the end of every facet
     for (PLuint i=0; i<triangles.size(); i++) 
     {
-        outfile.write( reinterpret_cast<PLchar*>(&triangles[i].normal.x) , sizeof(PLfloat)*3 );
-        outfile.write( reinterpret_cast<PLchar*>(&triangles[i].point1.x) , sizeof(PLfloat)*3 );
-        outfile.write( reinterpret_cast<PLchar*>(&triangles[i].point2.x) , sizeof(PLfloat)*3 );
-        outfile.write( reinterpret_cast<PLchar*>(&triangles[i].point3.x) , sizeof(PLfloat)*3 );
-        outfile.write( reinterpret_cast<PLchar*>(&zeroPLushort)          , sizeof(PLushort)  );
+        outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].normal().x) , sizeof(PLfloat)*3 );
+        outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point0().x) , sizeof(PLfloat)*3 );
+        outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point1().x) , sizeof(PLfloat)*3 );
+        outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point2().x) , sizeof(PLfloat)*3 );
+        outfile.write( reinterpret_cast<const PLchar*>(&zeroPLushort)            , sizeof(PLushort)  );
     }
 
     outfile.close();
 }
 
 
-void _plCheckIOTypeSizes()
+void _plCheckTypeSizes()
 {
     // check to ensure compiler designates compatible bytes to each type
     if (sizeof(PLuint) != 4)
@@ -229,12 +272,3 @@ void _plCheckIOTypeSizes()
     }
 }
 
-
-// if the normal is zero, compute it from the three points
-void _plCheckAndFixNormal(plVector3 &n, const plVector3 &p1, const plVector3 &p2, const plVector3 &p3)
-{
-    if (n.x == 0.0f && n.y == 0.0f && n.z == 0.0f) 
-    {
-        n = ((p2-p1)^(p3-p1)).normalize();
-    }
-}

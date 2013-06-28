@@ -27,9 +27,9 @@ void plBoundary::toggleVisibility()
 plVector3 plBoundary::getAvgNormal() const
 {
     plVector3 n(0,0,0);
-    for (PLuint i=0; i < normals.size(); i++)
+    for (PLuint i=0; i < _normals.size(); i++)
     {
-        n = n + normals[i];        
+        n = n + _normals[i];        
     }
     return n.normalize();
 }
@@ -37,36 +37,46 @@ plVector3 plBoundary::getAvgNormal() const
 
 PLuint plBoundary::size() const
 {
-    return points.size();
+    return _points.size();
 }
 
 
+void plBoundary::loadPointAndNormal(const plString &point, const plString &normal)
+{
+    // load in _points from a plan file, this assumes they are counter-clockwise already
+    _points.add(  plVector3( point ) );                  
+    _normals.add( plVector3( normal ) );
+}
+
 PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
 {
-    if (points.size() < 3) 
+    if (_points.size() < 3) 
     {
-        // 0 or 1 points, doesnt matter, just add
-        points.add( point );
-        normals.add( normal );
-        return points.size()-1;
+        // 0 or 1 _points, doesnt matter, just add
+        _points.add( point );
+        _normals.add( normal );
+        return _points.size()-1;
     }
-    else if (points.size() == 3) 
+    else if (_points.size() == 3) 
     {
-        // 2 points, ensure third is counter clockwise
-        if ( ((points[1] - points[0]) ^ (point - points[0])) * normal > 0)
+        // 2 _points, ensure third is counter clockwise
+        plVector3 n = 0.5f * (_normals[1] + _normals[0]);
+        
+        if ( ((_points[1] - _points[0]) ^ (point - _points[0])) * n > 0)
         {
             // already counter clockwise
-            points.add( point );
-            normals.add( normal );
+            _points.add( point );
+            _normals.add( normal );
             return 2;
         }
         else
         {
+            std::cout << "eep\n";
             // clock-wise, add new point between existing two
-            points.shift(1);
-            normals.shift(1);
-            points[1] = point;
-            normals[1] = normal;
+            _points.shift(1);
+            _normals.shift(1);
+            _points[1] = point;
+            _normals[1] = normal;
             return 1;
         }
     } 
@@ -75,35 +85,58 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         // Find the closest edge to the new point        
         PLfloat minDist = FLT_MAX;
         PLint shift_i = 0;
-        
-        for (PLuint i = 0; i < points.size(); i++)
-        {
-            PLint j = (i+1) % points.size();
 
-            plVector3 closest = plClosestPointOnLineSegment(point, points[i], points[j]);
+        const PLfloat EPSILON = 0.000001f;
+               
+        for (PLuint i = 0; i < _points.size(); i++)
+        {
+            PLint j = (i+1) % _points.size();   // next point
+
+            plVector3 closest = plClosestPointOnLineSegment(point, _points[i], _points[j]);
 
             PLfloat distSquared = (closest - point).squaredLength();
 
-            if (distSquared < minDist)
+            if ( fabs(distSquared - minDist) < EPSILON )
+            {
+                // same point as previous edge, (occur when edges are at acute angles), get wall tangent                
+                plVector3 tangent  = (_points[j] - _points[i]) ^ (0.5f * (_normals[j] + _normals[i]));
+                
+                if ((point - closest) * tangent  > 0 )
+                {
+                    //not behind previous edge
+                    minDist = distSquared;
+                    shift_i = j;
+                }
+                
+            }
+            else if (distSquared < minDist)
             {
                 minDist = distSquared;
                 shift_i = j;
             }
         }
+        _normals.shift(shift_i);
+        _normals[shift_i] = normal;
 
-        if (normals.size() == points.size())
-        {
-            normals.shift(shift_i);
-            normals[shift_i] = normal;
-        }
-
-        points.shift(shift_i);
-        points[shift_i] = point;  
+        _points.shift(shift_i);
+        _points[shift_i] = point; 
+         
         return shift_i;  
     }
 
 }
 
+void plBoundary::movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal)
+{
+    _points[index] = point;    
+    _normals[index] = normal;
+}
+
+void plBoundary::removePointAndNormal( PLuint index )
+{
+    _points.remove(index);
+    _normals.remove(index);
+}
 
 void _plSetBoundaryColour()
 {
@@ -159,36 +192,35 @@ void _plSetBoundaryColour()
     }
 }
 
-
 void plBoundary::updateMesh()
 {
     plVector3 n = getAvgNormal();
 
-    plSeq<plVector3>    interleaved_vertices( points.size() * 10 );
-    plSeq<PLuint> indices             ( points.size() * 6 * 4 );
+    plSeq<plVector3> interleaved_vertices( _points.size() * 10 );
+    plSeq<PLuint>    indices             ( _points.size() * 6 * 4 );
 
-    for (PLuint i = 0; i < points.size(); i++)
+    for (PLuint i = 0; i < _points.size(); i++)
     {        
-        int j = (i+1) % points.size();  // next index
-        int k = (i+2) % points.size();  // next next index
-        int l = (i == 0) ? points.size()-1 : i-1; // previous index
+        int j = (i+1) % _points.size();  // next index
+        int k = (i+2) % _points.size();  // next next index
+        int l = (i == 0) ? _points.size()-1 : i-1; // previous index
 
         // tangent vectors of previous, current, and next segments
-        plVector3 t1 = ((points[j] - points[i]) ^ n).normalize();
-        plVector3 t0 = ((points[i] - points[l]) ^ n).normalize();        
-        plVector3 t2 = ((points[k] - points[j]) ^ n).normalize();           
+        plVector3 t1 = ((_points[j] - _points[i]) ^ n).normalize();
+        plVector3 t0 = ((_points[i] - _points[l]) ^ n).normalize();        
+        plVector3 t2 = ((_points[k] - _points[j]) ^ n).normalize();           
 
-        // average tangent vectors of current segment end points
+        // average tangent vectors of current segment end _points
         plVector3 x0 = (t0 + t1).normalize();
         plVector3 x1 = (t1 + t2).normalize();
 
-        plVector3 a = points[i] + PL_BOUNDARY_MESH_WIDTH_HALF * x0;
-        plVector3 b = points[j] + PL_BOUNDARY_MESH_WIDTH_HALF * x1;
+        plVector3 a = _points[i] + PL_BOUNDARY_MESH_WIDTH_HALF * x0;
+        plVector3 b = _points[j] + PL_BOUNDARY_MESH_WIDTH_HALF * x1;
         plVector3 c = b + PL_BOUNDARY_MESH_HEIGHT * n;
         plVector3 d = a + PL_BOUNDARY_MESH_HEIGHT * n;
 
-        plVector3 e = points[i] - PL_BOUNDARY_MESH_WIDTH_HALF * x0;
-        plVector3 f = points[j] - PL_BOUNDARY_MESH_WIDTH_HALF * x1;
+        plVector3 e = _points[i] - PL_BOUNDARY_MESH_WIDTH_HALF * x0;
+        plVector3 f = _points[j] - PL_BOUNDARY_MESH_WIDTH_HALF * x1;
         plVector3 g = f + PL_BOUNDARY_MESH_HEIGHT * n;
         plVector3 h = e + PL_BOUNDARY_MESH_HEIGHT * n;
 
@@ -246,13 +278,17 @@ void plBoundary::updateMesh()
     _mesh = plMesh(interleaved_vertices, indices);
 }
 
+void plBoundary::drawWalls() const
+{  
+    _mesh.draw();
+}
 
 void plBoundary::draw() const
 {        
     if (!_isVisible)
         return;
 
-    if (points.size() > 0) 
+    if (_points.size() > 0) 
     {
         _plSetBoundaryColour();
         
@@ -264,19 +300,19 @@ void plBoundary::draw() const
             _mesh.draw();
         }
         
-        // draw points
-        for (PLuint i=0; i<points.size(); i++) 
+        // draw _points
+        for (PLuint i=0; i<_points.size(); i++) 
         {
             _plPickingState->index = i; 
             _plPickingShader->setPickingUniforms(_plPickingState);
             
             if (PL_BOUNDARY_POINT_CURRENT_IS_SELECTED)
             {
-                plDrawSphere( points[i], 1.5) ;
+                plDrawSphere( _points[i], 1.5) ;
             }
             else
             {
-                plDrawSphere( points[i], 1 );
+                plDrawSphere( _points[i], 1 );
             }
         }
     }

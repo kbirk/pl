@@ -1,8 +1,7 @@
 #include "plColourMap.h"
 
-plVector3 plColourMap(PLfloat k) //, PLfloat max)
+plVector3 plColourMap(PLfloat k)
 {
-    //PLfloat k = (max - n) / max;
     if (k > 1) k = 1;
     if (k < 0) k = 0;
     PLint i = k * (PL_COLOURMAP_SIZE-1);
