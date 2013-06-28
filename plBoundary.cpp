@@ -27,7 +27,7 @@ void plBoundary::toggleVisibility()
 plVector3 plBoundary::getAvgNormal() const
 {
     plVector3 n(0,0,0);
-    for (PLint i=0; i < normals.size(); i++)
+    for (PLuint i=0; i < normals.size(); i++)
     {
         n = n + normals[i];        
     }
@@ -76,7 +76,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         PLfloat minDist = FLT_MAX;
         PLint shift_i = 0;
         
-        for (PLint i = 0; i < points.size(); i++)
+        for (PLuint i = 0; i < points.size(); i++)
         {
             PLint j = (i+1) % points.size();
 
@@ -165,9 +165,9 @@ void plBoundary::updateMesh()
     plVector3 n = getAvgNormal();
 
     plSeq<plVector3>    interleaved_vertices( points.size() * 10 );
-    plSeq<unsigned int> indices             ( points.size() * 6 * 4 );
+    plSeq<PLuint> indices             ( points.size() * 6 * 4 );
 
-    for (PLint i = 0; i < points.size(); i++)
+    for (PLuint i = 0; i < points.size(); i++)
     {        
         int j = (i+1) % points.size();  // next index
         int k = (i+2) % points.size();  // next next index
@@ -265,7 +265,7 @@ void plBoundary::draw() const
         }
         
         // draw points
-        for (PLint i=0; i<points.size(); i++) 
+        for (PLuint i=0; i<points.size(); i++) 
         {
             _plPickingState->index = i; 
             _plPickingShader->setPickingUniforms(_plPickingState);

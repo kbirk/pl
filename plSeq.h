@@ -67,7 +67,7 @@ plSeq<T>::plSeq( const plSeq<T> &source )
 	numElements = source.numElements;
 	data = new T[ storageSize ];
 	
-	for (PLint i=0; i<numElements; i++)
+	for (PLuint i=0; i<numElements; i++)
 	{
 		data[i] = source.data[i];
 	}	
@@ -99,7 +99,7 @@ void plSeq<T>::remove()
 {
 	if (numElements == 0) 
 	{
-		std::cerr << "remove: Tried to remove element from empty plSequence\n";
+		std::cerr << "plSeq remove: Tried to remove element from empty plSequence\n";
 	}
 	numElements -= 1;
 }
@@ -111,11 +111,11 @@ void plSeq<T>::remove( PLuint i )
 {
 	if (i < 0 || i >= numElements) 
 	{
-		std::cerr << "remove: Tried to remove element " << i
+		std::cerr << "plSeq remove: Tried to remove element " << i
 				  << " from a plSequence of " << numElements << " elements \n";
 	}
 
-	for (PLint j=i; j<numElements-1; j++)
+	for (PLuint j=i; j<numElements-1; j++)
 		data[j] = data[j+1];
 
 	numElements--;
@@ -128,7 +128,7 @@ void plSeq<T>::shift( PLuint i )
 {
 	if (i < 0 || i >= numElements) 
 	{
-		std::cerr << "remove: Tried to shift element " << i
+		std::cerr << "plSeq shift: Tried to shift element " << i
 				  << " from a plSequence of " << numElements << " elements \n";
 	}
 
@@ -137,8 +137,10 @@ void plSeq<T>::shift( PLuint i )
         reserve(storageSize*2);
 	}
 
-	for (PLint j=numElements; j>i; j--)
+	for (PLuint j=numElements; j>i; j--)
+    {
 		data[j] = data[j-1];
+    }
 
 	numElements++;
 }
@@ -182,7 +184,7 @@ void plSeq<T>::reserve(PLuint size)
     }
     T *newData = new T[ size ];
     
-	for (PLint i=0; i<numElements; i++)
+	for (PLuint i=0; i<numElements; i++)
 	{
 		newData[i] = data[i];
     }
@@ -230,7 +232,7 @@ plSeq<T> &plSeq<T>::operator = (const plSeq<T> &source)
 	delete [] data;
 	data = new T[ storageSize ];
 	
-	for (PLint i=0; i<numElements; i++)
+	for (PLuint i=0; i<numElements; i++)
 	{
 		data[i] = source.data[i];
 	}

@@ -14,7 +14,7 @@ plMesh::plMesh(const plSeq<plTriangle> &triangles)
 	triangleToInterleaved(triangles);
 }
 
-plMesh::plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<unsigned int> &indices)
+plMesh::plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices)
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {            
 	// set index count
@@ -34,13 +34,13 @@ void plMesh::triangleToInterleaved(const plSeq<plTriangle> &triangles)
 {			
 	// convert to interleaved format
 	plSeq<plVector3> interleaved_vertices;
-	plSeq<unsigned int> indices;
+	plSeq<PLuint> indices;
 	
 	interleaved_vertices.reserve(_numIndices*2);
 	indices.reserve(_numIndices);
 	
     int indexCount = 0;
-    for (PLint i = 0; i < triangles.size(); i++) 
+    for (PLuint i = 0; i < triangles.size(); i++) 
     {  
         // p1
 	    interleaved_vertices.add(triangles[i].point1);
@@ -59,7 +59,7 @@ void plMesh::triangleToInterleaved(const plSeq<plTriangle> &triangles)
     setBuffers(interleaved_vertices, indices);
 }
 
-void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<unsigned int> &indices)
+void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices)
 {
     // destroy previous buffers incase
     //destroy();
@@ -90,7 +90,7 @@ void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plS
     // bind vertex array object
     glGenBuffers(1, &_vertexBufferIndices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*_numIndices, &indices[0], GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PLuint)*_numIndices, &indices[0], GL_STREAM_DRAW);
      
 	// unbind the vertex array object
 	glBindVertexArray(0); 			
@@ -108,10 +108,10 @@ void plMesh::draw() const
 
 void plMesh::draw(const std::vector<plOrderPair> &order) const
 {
-    plSeq<unsigned int> indices;
+    plSeq<PLuint> indices;
 	indices.reserve(_numIndices);
 	
-	for (unsigned int i = 0; i < _numIndices/3; i++)
+	for (PLuint i = 0; i < _numIndices/3; i++)
 	{
 	    indices.add( order[i].index*3 );
 	    indices.add( order[i].index*3+1 );
@@ -121,7 +121,7 @@ void plMesh::draw(const std::vector<plOrderPair> &order) const
     // bind vertex array object
 	glBindVertexArray(_vertexArrayObject);		
     // buffer new index data
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices * sizeof(unsigned int), &indices[0], GL_STREAM_DRAW);        
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices * sizeof(PLuint), &indices[0], GL_STREAM_DRAW);        
 	// draw batch
 	glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0); 
     // unbind VBO
@@ -140,7 +140,7 @@ plMesh::plMesh(float radius, int slices, int stacks)
     dtheta = 2.0f * PL_PI / slices;
     
     plSeq<plVector3> interleaved_vertices; 
-    plSeq<unsigned int> indices;
+    plSeq<PLuint> indices;
 
     // draw +Z end as a triangle fan
     // centre of triangle fan
@@ -255,7 +255,7 @@ plMesh::plMesh(float baseRadius, float topRadius, float height, int slices, int 
     r = baseRadius;
     
     plSeq<plVector3> interleaved_vertices; 
-    plSeq<unsigned int> indices;
+    plSeq<PLuint> indices;
     
     for (int j = 0; j < stacks; j++) 
     {
@@ -314,7 +314,7 @@ plMesh::plMesh(float innerRadius, float outerRadius, int slices, int loops, bool
     float r1 = innerRadius;
 
     plSeq<plVector3> interleaved_vertices; 
-    plSeq<unsigned int> indices;
+    plSeq<PLuint> indices;
 
     for (int l = 0; l < loops; l++) 
     {

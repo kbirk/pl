@@ -50,7 +50,7 @@ void plSpline::drawCornersSelectionInterface() const
     plVector3 nm = corners.getAvgNormal();
     
     glColor3f( 1.0, 0.2, 0.2 );
-    for (PLint i = 0; i < s.size(); i++)
+    for (PLuint i = 0; i < s.size(); i++)
     {
         glPushMatrix();
         glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
@@ -59,7 +59,7 @@ void plSpline::drawCornersSelectionInterface() const
     }
 
     glColor3f( 0.2, 0.2, 1.0);
-    for (PLint i = 0; i < t.size(); i++)
+    for (PLuint i = 0; i < t.size(); i++)
     {
         glPushMatrix();
         glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
@@ -68,7 +68,7 @@ void plSpline::drawCornersSelectionInterface() const
     }
   
     glColor3f( 0.2, 1.0, 0.2 );
-    for (PLint i = 0; i < n.size(); i++)
+    for (PLuint i = 0; i < n.size(); i++)
     {
         glPushMatrix();
         glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
@@ -174,7 +174,7 @@ void plSpline::computeHermiteSpline()
     const PLfloat inc = 0.05f;
  
     plSeq<plVector3>    interleaved_vertices( ((1.0 / inc) + 1) * 4 * 3 );
-    plSeq<unsigned int> indices             ( ((1.0 / inc) + 1) * 6 );
+    plSeq<PLuint> indices             ( ((1.0 / inc) + 1) * 6 );
 
     PLfloat percent = 0;
 

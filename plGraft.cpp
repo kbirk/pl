@@ -215,7 +215,7 @@ void plGraft::drawGraft() const
 
     const plCap &cap = (cartilageCap.polys.size() == 0) ? boneCap : cartilageCap;
 
-    for (int i=0; i<cap.perimeter.size(); i++) 
+    for (PLuint i=0; i<cap.perimeter.size(); i++) 
     {
         const plVector3 &v = cap.perimeter[i].point;
         float dist = (v.x-mark.x)*(v.x-mark.x) + (v.z-mark.z)*(v.z-mark.z);
@@ -257,21 +257,21 @@ void plGraft::updateCartilageMesh()
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
     plSeq<plVector3> interleaved_vertices;
-    plSeq<unsigned int> indices;
+    plSeq<PLuint> indices;
 
     // cartilage top
-    for (int i = 0; i < cartilageCap.polys.size(); i++)
+    for (PLuint i = 0; i < cartilageCap.polys.size(); i++)
     {
         PLint base = interleaved_vertices.size()/2;
         plPoly &p = cartilageCap.polys[i];
-        for (int j = 0; j < p.vertices.size(); j++)
+        for (PLuint j = 0; j < p.vertices.size(); j++)
         {
             plVector3 &v = p.vertices[j];
             interleaved_vertices.add( plVector3( v.x, v.y+0.01f, v.z) );    // position
             interleaved_vertices.add( p.normal );                           // normal
         }
         
-        for (int j = 1; j <= p.vertices.size()-2; j++) 
+        for (PLuint j = 1; j <= p.vertices.size()-2; j++) 
         {
             indices.add(base+0);
             indices.add(base+j); 
@@ -351,23 +351,23 @@ void plGraft::updateBoneMesh()
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
     plSeq<plVector3> interleaved_vertices;
-    plSeq<unsigned int> indices; 
+    plSeq<PLuint> indices; 
        
     // bone top (only if no cartilage top)
     if (cartilageCap.polys.size() == 0)
     {
-        for (int i = 0; i < boneCap.polys.size(); i++)
+        for (PLuint i = 0; i < boneCap.polys.size(); i++)
         {
             PLint base = interleaved_vertices.size()/2;
             plPoly &p = boneCap.polys[i];
-            for (int j = 0; j < p.vertices.size(); j++)
+            for (PLuint j = 0; j < p.vertices.size(); j++)
             {
                 plVector3 &v = p.vertices[j];
                 interleaved_vertices.add( plVector3( v.x, v.y+0.01f, v.z) );        // position
                 interleaved_vertices.add( p.normal );                               // normal
             }
             
-            for (int j = 1; j <= p.vertices.size()-2; j++) 
+            for (PLuint j = 1; j <= p.vertices.size()-2; j++) 
             {
                 indices.add(base+0);
                 indices.add(base+j); 
@@ -401,7 +401,7 @@ void plGraft::updateBoneMesh()
         interleaved_vertices.add( prevBot ); // position 
         interleaved_vertices.add( -y);       // normal
         
-        for (int i=0; i<boneCap.perimeter.size(); i++) 
+        for (PLuint i=0; i<boneCap.perimeter.size(); i++) 
         {
             float theta = boneCap.perimeter[i].angle;
             plVector3 top = boneCap.perimeter[i].point;
@@ -431,7 +431,7 @@ void plGraft::updateBoneMesh()
         interleaved_vertices.add( centreBottom );   // position
         interleaved_vertices.add( -y );             // normal  
         
-        for (int j = 0; j <= boneCap.perimeter.size()*3; j+=3) 
+        for (PLuint j = 0; j <= boneCap.perimeter.size()*3; j+=3) 
         {
             // side t1
             indices.add(base+j);
@@ -459,7 +459,7 @@ plCap plGraft::findCap( const plSeq<plTriangle> &triangles, const plVector3 &up 
     plCap cap;
 
     // Find polygons on top of graft
-    for (PLint i=0; i<triangles.size(); i++) 
+    for (PLuint i=0; i<triangles.size(); i++) 
     {
         plPoly p;
         if (triangles[i].normal * up > 0 && triangleIntersection( triangles[i], p ))
@@ -471,9 +471,9 @@ plCap plGraft::findCap( const plSeq<plTriangle> &triangles, const plVector3 &up 
     // Find vertices of polygons on boundary of graft
     std::vector<plPointAndAngle> angles;
 
-    for (PLint i=0; i<cap.polys.size(); i++) 
+    for (PLuint i=0; i<cap.polys.size(); i++) 
     {
-        for (PLint j=0; j<cap.polys[i].vertices.size(); j++) 
+        for (PLuint j=0; j<cap.polys[i].vertices.size(); j++) 
         {
             plVector3 &v = cap.polys[i].vertices[j];
             

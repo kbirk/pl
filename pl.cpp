@@ -13,6 +13,7 @@
 #include "plState.h"
 #include "plMesh.h"
 
+// all this call be encapsulated in a drawing class/section //
 plMesh                        *_plSphere;
 plMesh                        *_plCylinder;
 plMesh                        *_plDisk;
@@ -28,8 +29,9 @@ plPickingTexture              *_plPickingTexture;
 plCamera					  *_plCamera;
 plProjection			      *_plProjection;
 plMatrixStack			      *_plModelMatrixStack;
-plPlan                        *_plPlan;
+/////////////////////////////////////////////////////////////
 
+plPlan                        *_plPlan;
 plSeq<plBoneAndCartilage*> 	  _plBoneAndCartilageModels;
 
 void plInit()

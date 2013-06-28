@@ -16,7 +16,7 @@ class plMesh
 		
 		plMesh();		
 		plMesh(const plSeq<plTriangle> &triangles);        
-        plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<unsigned int> &indices);
+        plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices);
         plMesh(float radius, int slices, int stacks);                                           // sphere
         plMesh(float baseRadius, float topRadius, float height, int slices, int stacks);        // cylinder
         plMesh(float innerRadius, float outerRadius, int slices, int loops, bool up = true);    // disk
@@ -24,7 +24,7 @@ class plMesh
         void triangleToInterleaved(const plSeq<plTriangle> &triangles);
         void destroy();       
         
-        virtual void setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<unsigned int> &indices);
+        virtual void setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices);
 
         void draw() const;		
 		void draw(const std::vector<plOrderPair> &order) const;

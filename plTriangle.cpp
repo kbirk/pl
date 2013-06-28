@@ -151,7 +151,7 @@ void plSTLExportFileASCII( const plSeq<plTriangle> &triangles , plString filenam
 
     outfile << "solid\n";
 
-    for (PLint i=0; i<triangles.size(); i++) 
+    for (PLuint i=0; i<triangles.size(); i++) 
     {
         outfile << "  facet normal " << triangles[i].normal.x << " " << triangles[i].normal.y << " " << triangles[i].normal.z << "\n" <<
                    "    outer loop\n" <<
@@ -193,7 +193,7 @@ void plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filena
 
     // for each facet, 50 bytes
     PLushort zeroPLushort(0); // at the end of every facet
-    for (PLint i=0; i<triangles.size(); i++) 
+    for (PLuint i=0; i<triangles.size(); i++) 
     {
         outfile.write( reinterpret_cast<PLchar*>(&triangles[i].normal.x) , sizeof(PLfloat)*3 );
         outfile.write( reinterpret_cast<PLchar*>(&triangles[i].point1.x) , sizeof(PLfloat)*3 );

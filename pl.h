@@ -130,7 +130,10 @@ typedef int                 PLint;
 typedef bool                PLbool;     
 typedef std::string         plString;
 
+
+//////////////////////////////////////////////////////////////////////////////
 // GLOBAL OBJECTS
+//////////////////////////////////////////////////////////////////////////////
 
 template<class T> class plSeq;
 class plCamera;
@@ -153,7 +156,6 @@ class plTriangle;
 extern plMesh                         *_plSphere;
 extern plMesh                         *_plCylinder;
 extern plMesh                         *_plDisk;
-
 extern plState                        *_plState;
 extern plMinimalShader                *_plMinimalShader;
 extern plPickingShader                *_plPickingShader;
@@ -163,14 +165,16 @@ extern plPickingTexture               *_plPickingTexture;
 extern plCamera						  *_plCamera;
 extern plProjection			     	  *_plProjection;
 extern plMatrixStack			      *_plModelMatrixStack;
+extern PLuint                         _plColourmap[PL_COLOURMAP_SIZE][4];
+
 extern plPlan                         *_plPlan;
 extern plSeq<plBoneAndCartilage*> 	  _plBoneAndCartilageModels;
 
-extern PLuint                         _plColourmap[PL_COLOURMAP_SIZE][4];
+
 
 
 //////////////////////////////////////////////////////////////////////////////
-// INITIALIZE           pl.h
+// INITIALIZE           pl.cpp
 //////////////////////////////////////////////////////////////////////////////
 extern void             plInit                  ();
 
@@ -388,7 +392,7 @@ extern plVector3        plClosestPointOnLineSegment ( const plVector3 &point, co
 //////////////////////////////////////////////////////////////////////////////
 // STRING
 ////////////////////////////////////////////////////////////////////////////// 
-extern bool             plStringCompareCaseInsensitive    ( const plString &str1, const plString &str2, unsigned int num);
+extern bool             plStringCompareCaseInsensitive    ( const plString &str1, const plString &str2, PLuint num);
 extern bool             plStringCompareCaseInsensitive    ( const plString &str1, const plString &str2);
 extern void             plStringStripPreceedingWhitespace ( plString &s);
 extern void             plStringStripCharacter            ( plString &s, char c);

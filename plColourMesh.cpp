@@ -5,7 +5,7 @@ plColourMesh::plColourMesh() : plMesh()
 }
 
 
-plColourMesh::plColourMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<unsigned int> &indices) : plMesh()
+plColourMesh::plColourMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices) : plMesh()
 {            
 	// set index count
 	_numIndices = indices.size();
@@ -14,7 +14,7 @@ plColourMesh::plColourMesh(const plSeq<plVector3> &interleaved_vertices, const p
 }
 
 
-void plColourMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<unsigned int> &indices)
+void plColourMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices)
 {
     // size of each vertex 
 	const GLuint POS_SIZE = sizeof(GLfloat)*3;
@@ -47,7 +47,7 @@ void plColourMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, con
     // bind vertex array object
     glGenBuffers(1, &_vertexBufferIndices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*_numIndices, &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PLuint)*_numIndices, &indices[0], GL_STATIC_DRAW);
      
 	// unbind the vertex array object
 	glBindVertexArray(0); 			

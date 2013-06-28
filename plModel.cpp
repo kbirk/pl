@@ -27,7 +27,7 @@ void plModel::getMinMax(plVector3 &min, plVector3 &max) const
     min = plVector3(FLT_MAX, FLT_MAX, FLT_MAX);
     max = -1 * min;
 
-    for ( PLint i = 0; i < _triangles.size(); i++)
+    for ( PLuint i = 0; i < _triangles.size(); i++)
     {  
         const plVector3 &v = _triangles[i].centroid;
 
@@ -49,7 +49,7 @@ plVector3 plModel::getAverageNormal( PLfloat radius, const plVector3 &origin, co
     float radiusSquared = radius * radius;  // increasing by factor of two to fruther smooth normal
     
     // Find polygons on top of graft
-    for (PLint i=0; i<_triangles.size(); i++) 
+    for (PLuint i=0; i<_triangles.size(); i++) 
     {
         if (_triangles[i].normal * up > 0.001)
         {        
@@ -101,7 +101,7 @@ void plModel::draw() const
         
         std::vector<plOrderPair> order;
         order.reserve(_triangles.size());              
-        for (PLint i=0; i<_triangles.size(); i++) 
+        for (PLuint i=0; i<_triangles.size(); i++) 
         {
             order.push_back( plOrderPair(i, _triangles[i].centroid * viewDir) );
         }
@@ -141,7 +141,7 @@ PLbool plModel::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, const plV
     plVector3 p, n;
     PLfloat t;
 
-    for ( PLint i = 0; i < _triangles.size(); i++)
+    for ( PLuint i = 0; i < _triangles.size(); i++)
     {  
         if (_triangles[i].rayIntersect( p, n, t, start, dir, ignoreBehindRay, backFaceCull))
         {

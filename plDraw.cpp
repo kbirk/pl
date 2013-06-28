@@ -44,7 +44,7 @@ void plDraw()
     _plPlan->draw();
     
     // MODEL
-    for (PLint i =0; i < _plBoneAndCartilageModels.size(); i++)
+    for (PLuint i =0; i < _plBoneAndCartilageModels.size(); i++)
     {        
         _plBoneAndCartilageModels[i]->draw();
     }
@@ -87,7 +87,7 @@ void _plDrawPicking()
     glStencilFunc( GL_EQUAL, 0x00, 0xFF);               // only render to bits = 0 (have not been written)
     
     // MODEL
-    for (PLint i =0; i < _plBoneAndCartilageModels.size(); i++)
+    for (PLuint i =0; i < _plBoneAndCartilageModels.size(); i++)
     {            
         _plPickingState->id = i;    
         _plBoneAndCartilageModels[i]->draw();

@@ -46,9 +46,9 @@ void plCSV::readFile( plString filename, PLbool verbose )
      
     if (verbose)
     {           
-        for (PLint i = 0; i < data.size(); i++)
+        for (PLuint i = 0; i < data.size(); i++)
         {
-            for (PLint j = 0; j < data[i].size(); j++)
+            for (PLuint j = 0; j < data[i].size(); j++)
             {
                 std::cout << data[i][j] << ", ";
             }

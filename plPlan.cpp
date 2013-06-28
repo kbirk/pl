@@ -29,14 +29,14 @@ void plPlan::draw()
         return;
         
     // Draw defect boundary 
-    for ( PLint i = 0; i < _defectSplines.size(); i++)
+    for ( PLuint i = 0; i < _defectSplines.size(); i++)
     {
         _plPickingState->id = i; 
         _defectSplines[i].draw();
     }
    
     // Draw harvest boundaries   
-    for ( PLint i = 0; i < _donorRegions.size(); i++)
+    for ( PLuint i = 0; i < _donorRegions.size(); i++)
     {
         _plPickingState->type = PL_PICKING_TYPE_DONOR_BOUNDARY; 
         _plPickingState->id = i;        
@@ -44,7 +44,7 @@ void plPlan::draw()
     }    
 
     // Draw grafts
-    for ( PLint i = 0; i < _grafts.size(); i++)
+    for ( PLuint i = 0; i < _grafts.size(); i++)
     {       
         _plPickingState->type = PL_PICKING_TYPE_GRAFT; 
         _plPickingState->id = i; 
@@ -66,7 +66,7 @@ void plPlan::readFile( plString filename )
 {
     plCSV csv( filename );
 
-    for ( PLint i = 0; i < csv.data.size(); i++)
+    for ( PLuint i = 0; i < csv.data.size(); i++)
     {
         plString field = csv.data[i][0];
 
@@ -83,7 +83,7 @@ void plPlan::readFile( plString filename )
         else if (plStringCompareCaseInsensitive(field, "model") )     
         {
             // Find the model number            
-            int j = atoi( csv.data[i][1].c_str() );
+            PLuint j = atoi( csv.data[i][1].c_str() );
             
             while (_plBoneAndCartilageModels.size() < j+1)
             {
@@ -108,7 +108,7 @@ void plPlan::readFile( plString filename )
             _defectSplines.add( plSpline() );           
             plBoundary &corners = _defectSplines.back().corners;
 
-            for ( PLint j = 1; j < csv.data[i].size(); j+=2)
+            for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
             {       
                 corners.points.add(  plVector3( csv.data[i][j]) );                  
                 corners.normals.add( plVector3( csv.data[i][j+1]) );
@@ -118,7 +118,7 @@ void plPlan::readFile( plString filename )
         {
             plBoundary &boundary = _defectSplines.back().boundary;
 
-            for ( PLint j = 1; j < csv.data[i].size(); j+=2)
+            for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
             {                   
                 boundary.points.add(  plVector3( csv.data[i][j]) );                  
                 boundary.normals.add( plVector3( csv.data[i][j+1]) );
@@ -131,7 +131,7 @@ void plPlan::readFile( plString filename )
                        
             plBoundary &boundary = _donorRegions.back();
 
-            for ( PLint j = 1; j < csv.data[i].size(); j+=2)
+            for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
             {       
                 boundary.points.add(  plVector3( csv.data[i][j]) );                  
                 boundary.normals.add( plVector3( csv.data[i][j+1]) );
@@ -141,7 +141,7 @@ void plPlan::readFile( plString filename )
         else if (plStringCompareCaseInsensitive(field, "graft" ) ) 
         {        
             // Find the graft number           
-            int j = atoi( csv.data[i][1].c_str() );
+            PLuint j = atoi( csv.data[i][1].c_str() );
             
             while (_grafts.size() < j+1)
             {
@@ -211,7 +211,7 @@ void plPlan::readFile( plString filename )
             if (plStringCompareCaseInsensitive(subfield, "outline points") )
             {                    
                 iguide.boundary.points.clear();
-                for (int j=3; j < csv.data[i].size(); j++)
+                for (PLuint j=3; j < csv.data[i].size(); j++)
                 {
                     iguide.boundary.points.add( plVector3( csv.data[i][j] ) );
                 }       
@@ -219,7 +219,7 @@ void plPlan::readFile( plString filename )
             else if (plStringCompareCaseInsensitive(subfield, "outline normals") ) 
             {        
                 iguide.boundary.normals.clear();
-                for (int j=3; j < csv.data[i].size(); j++)
+                for (PLuint j=3; j < csv.data[i].size(); j++)
                 {
                     iguide.boundary.normals.add( plVector3( csv.data[i][j] ) );
                 }  
@@ -227,7 +227,7 @@ void plPlan::readFile( plString filename )
             else if (plStringCompareCaseInsensitive(subfield, "graft indices") ) 
             {
                 iguide.graftIndices.clear();
-                for (int j=3; j < csv.data[i].size(); j++)
+                for (PLuint j=3; j < csv.data[i].size(); j++)
                 {
                     iguide.graftIndices.add( atoi( csv.data[i][j].c_str() ) );
                 }  
@@ -244,7 +244,7 @@ void plPlan::readFile( plString filename )
     }
 
     // init all grafts    
-    for ( PLint i = 0; i < _grafts.size(); i++) 
+    for ( PLuint i = 0; i < _grafts.size(); i++) 
     {
         plVector3 axis(0,1,0);
         // Compute transforms for OpenGL                       
@@ -256,12 +256,12 @@ void plPlan::readFile( plString filename )
     }
 
     // generate boundary meshes
-    for ( PLint i = 0; i < _donorRegions.size(); i++) 
+    for ( PLuint i = 0; i < _donorRegions.size(); i++) 
     {
         _donorRegions[i].updateMesh();
     }
 
-    for ( PLint i = 0; i < _defectSplines.size(); i++) 
+    for ( PLuint i = 0; i < _defectSplines.size(); i++) 
     {
         _defectSplines[i].corners.updateMesh();
         _defectSplines[i].boundary.updateMesh();
@@ -295,7 +295,7 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
     out << std::endl;
 
     // models
-    for (PLint i=0; i<_plBoneAndCartilageModels.size(); i++) 
+    for (PLuint i=0; i<_plBoneAndCartilageModels.size(); i++) 
     {
         out << "model," << i << ",bone file,"      << _plBoneAndCartilageModels[i]->getBoneFilename()        << std::endl;
         out << "model," << i << ",cartilage file," << _plBoneAndCartilageModels[i]->getCartilageFilename()   << std::endl;
@@ -303,7 +303,7 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
     }
     
     // splines
-    for (PLint i=0; i<p._defectSplines.size(); i++) 
+    for (PLuint i=0; i<p._defectSplines.size(); i++) 
     {
         out << "spline corners";
         for (PLuint j=0; j<p._defectSplines[i].corners.size(); j++)
@@ -314,7 +314,7 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
         out << std::endl << std::endl;
 
         out << "spline boundary";
-        for (int j=0; j<p._defectSplines[i].boundary.points.size(); j++)
+        for (PLuint j=0; j<p._defectSplines[i].boundary.points.size(); j++)
         {
             out << "," << p._defectSplines[i].boundary.points[j];
             out << "," << p._defectSplines[i].boundary.normals[j];
@@ -323,10 +323,10 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
     }
 
     // donor regions
-    for (int i=0; i<p._donorRegions.size(); i++) 
+    for (PLuint i=0; i<p._donorRegions.size(); i++) 
     {
         out << "donor boundary";
-        for (int j=0; j<p._donorRegions[i].points.size(); j++)
+        for (PLuint j=0; j<p._donorRegions[i].points.size(); j++)
         {
             out << "," << p._donorRegions[i].points[j];
             out << "," << p._donorRegions[i].normals[j];
@@ -335,7 +335,7 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
     }
 
     // grafts
-    for (int i=0; i<p._grafts.size(); i++) 
+    for (PLuint i=0; i<p._grafts.size(); i++) 
     {
         plGraft &graft = p._grafts[i];
         
@@ -351,20 +351,18 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
         out << "graft," << i << ",harvest origin,"        << graft.harvestTransform.origin        << std::endl;
         out << "graft," << i << ",harvest x,"             << graft.harvestTransform.x             << std::endl;
         out << "graft," << i << ",harvest y,"             << graft.harvestTransform.y             << std::endl;
-
-        if (i < p._grafts.size()-1)
-            out << std::endl;
+        out << std::endl;
     }
 
     // iGuides
-    for (int i=0; i<p._iGuides.size(); i++) 
+    for (PLuint i=0; i<p._iGuides.size(); i++) 
     {
         plIGuide &iguide = p._iGuides[i];
 
         out << std::endl;
 
         out << "iguide," << i << ", boundary";
-        for (int j=0; j<iguide.boundary.points.size(); j++)
+        for (PLuint j=0; j<iguide.boundary.points.size(); j++)
         {
             out << "," << iguide.boundary.points[j];
             out << "," << iguide.boundary.normals[j];
@@ -372,12 +370,16 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
         out << std::endl;
 
         out << "iguide," << i << ",graft indices";
-        for (int j=0; j<iguide.graftIndices.size(); j++)
+        for (PLuint j=0; j<iguide.graftIndices.size(); j++)
+        {
             out << "," << iguide.graftIndices[j];
+        }
         out << std::endl;
 
-        for (int j=0; j<iguide.kwires.size(); j++)
+        for (PLuint j=0; j<iguide.kwires.size(); j++)
+        {
             out << "iguide," << i << ",kwire," << j << "," << iguide.kwires[j].position << "," << iguide.kwires[j].direction << std::endl;
+        }
     }
     
     return out;
@@ -605,7 +607,7 @@ PLuint plDefectSplineCount()
 
 void plDonorRegionToggleVisibilityAll()
 {
-    for (PLint i = 0; i < _plPlan->_donorRegions.size(); i++)
+    for (PLuint i = 0; i < _plPlan->_donorRegions.size(); i++)
     {
         _plPlan->_donorRegions[i].toggleVisibility(); 
     }  
@@ -621,7 +623,7 @@ void plDefectSplineToggleVisibility( PLuint region_id )
 
 void plDefectSplineToggleVisibilityAll()
 {
-    for (PLint i = 0; i < _plPlan->_donorRegions.size(); i++)
+    for (PLuint i = 0; i < _plPlan->_donorRegions.size(); i++)
     {
         _plPlan->_defectSplines[i].toggleVisibility(); 
     }  
@@ -637,7 +639,7 @@ void plDefectSplineCornersToggleVisibility( PLuint region_id )
 
 void plDefectSplineCornersToggleVisibilityAll()
 {
-    for (PLint i = 0; i < _plPlan->_defectSplines.size(); i++)
+    for (PLuint i = 0; i < _plPlan->_defectSplines.size(); i++)
     {
         _plPlan->_defectSplines[i].corners.toggleVisibility(); 
     } 
@@ -653,7 +655,7 @@ void plDefectSplineBoundaryToggleVisibility( PLuint region_id )
 
 void plDefectSplineBoundaryToggleVisibilityAll()
 {
-    for (PLint i = 0; i < _plPlan->_defectSplines.size(); i++)
+    for (PLuint i = 0; i < _plPlan->_defectSplines.size(); i++)
     {
         _plPlan->_defectSplines[i].boundary.toggleVisibility(); 
     } 
@@ -756,7 +758,7 @@ void plGraftToggleVisibility( PLuint graft_id )
 
 void plGraftToggleVisibilityAll()
 {
-    for (PLint i = 0; i < _plPlan->_grafts.size(); i++)
+    for (PLuint i = 0; i < _plPlan->_grafts.size(); i++)
     {
         _plPlan->_grafts[i].toggleVisibility(); 
     }    

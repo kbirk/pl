@@ -123,7 +123,7 @@ class plShader
             if (stream.is_open())
             {				
                 std::streamoff size = stream.tellg();
-                string = new char[static_cast<unsigned int>(size)+1];	// ** allocates memory but does NOT deallocate **
+                string = new char[static_cast<PLuint>(size)+1];	// ** allocates memory but does NOT deallocate **
                 stream.seekg(0, std::ios::beg);                         // set position indicator back to beginning of stream
                 stream.read(string, size);
                 stream.close();

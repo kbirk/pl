@@ -1,6 +1,6 @@
 #include "plString.h"
 
-bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2, unsigned int num)
+bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2, PLuint num)
 {
     // Convert both strings to upper case by transfrom() before compare.
     if (num > str1.length() || num > str2.length())
@@ -8,7 +8,7 @@ bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2, 
         return false;
     }
     
-    for (unsigned int i = 0; i < num; i++)
+    for (PLuint i = 0; i < num; i++)
     {
         if (tolower(str1[i]) != tolower(str2[i]))
         {
@@ -26,7 +26,7 @@ bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2)
         return false;
     }
 
-    for (unsigned int i = 0; i < str1.length(); i++)
+    for (PLuint i = 0; i < str1.length(); i++)
     {
         if (tolower(str1[i]) != tolower(str2[i]))
         {
