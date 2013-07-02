@@ -16,23 +16,21 @@ class plCamera
         plCamera();
         plCamera( plString filename );
 
-        plVector3  getPosition()         const  { return _position;}      
-        plVector3  getViewingDirection() const  { return (_lookat - _position).normalize(); }
-        plMatrix44 getMatrix() const;
+        const plVector3 &position()  const  { return _position;}      
+        plVector3        direction() const  { return (_lookat - _position).normalize(); }
+        plMatrix44       matrix()    const;
 
-        void setPosition( const plVector3 position) { _position = position; }
-        void setFocus   ( const plVector3 lookat)   { _lookat = lookat;     }
-        void setUp      ( const plVector3 up)       { _up = up;             }
-
-        void reset    ( const plVector3 &min, const plVector3 &max );
-              
+        void position( const plVector3 &position) { _position = position; }
+        void focus   ( const plVector3 &lookat)   { _lookat = lookat;     }
+        void up      ( const plVector3 &up)       { _up = up;             }
+                     
         void exportViewParams( std::string filename );
         void importViewParams( std::string filename );
 
 		void translate( PLint x, PLint y);
         void rotate   ( PLint x0, PLint y0, PLint x1, PLint y1 );      
         void zoom     ( PLfloat z);
-        
+        void reset    ( const plVector3 &min, const plVector3 &max );
     private:
 
         plVector3 _position; 

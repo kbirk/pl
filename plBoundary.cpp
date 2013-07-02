@@ -48,6 +48,7 @@ void plBoundary::loadPointAndNormal(const plString &point, const plString &norma
     _normals.add( plVector3( normal ) );
 }
 
+
 PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
 {
     if (_points.size() < 3) 
@@ -147,17 +148,20 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
 
 }
 
+
 void plBoundary::movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal)
 {
     _points[index] = point;    
     _normals[index] = normal;
 }
 
+
 void plBoundary::removePointAndNormal( PLuint index )
 {
     _points.remove(index);
     _normals.remove(index);
 }
+
 
 void _plSetBoundaryColour()
 {
@@ -212,6 +216,7 @@ void _plSetBoundaryColour()
         }
     }
 }
+
 
 void plBoundary::updateMesh()
 {
@@ -299,10 +304,12 @@ void plBoundary::updateMesh()
     _mesh = plMesh(interleaved_vertices, indices);
 }
 
+
 void plBoundary::drawWalls() const
 {  
     _mesh.draw();
 }
+
 
 void plBoundary::draw() const
 {        

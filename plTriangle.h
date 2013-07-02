@@ -22,6 +22,7 @@ class plOrderPair
     
 };
 
+
 class plIntersection
 {
     public:
@@ -41,8 +42,8 @@ class plIntersection
         {            
         }
         
-
 };
+
 
 class plTriangle 
 { 
@@ -66,16 +67,7 @@ class plTriangle
 		                             const plVector3 &rayDir, 
 		                             PLbool ignoreBehindRay = false, 
 		                             PLbool backFaceCull = false ) const; 
-            
-        /*    
-		PLbool rayIntersect( plVector3 &intPoint, 
-		                     plVector3 &intNorm, 
-		                     PLfloat &t, 
-		                     const plVector3 &rayStart, 
-		                     const plVector3 &rayDir, 
-		                     PLbool ignoreBehindRay = false, 
-		                     PLbool backFaceCull = false ) const;
-        */
+
     private:
     
         plVector3 _normal;

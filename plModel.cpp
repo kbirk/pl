@@ -133,7 +133,6 @@ void plModel::toggleVisibility()
 }
 
 
-//PLbool plModel::rayIntersect( plVector3 &intPoint, plVector3 &intNorm, const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
 {
     PLfloat min = FLT_MAX;
@@ -243,14 +242,12 @@ void plBoneAndCartilage::getMinMax(plVector3 &min, plVector3 &max) const
 }     
    
    
-//PLbool plBoneAndCartilage::rayIntersectBone( plVector3 &intPoint, plVector3 &intNorm, const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 plIntersection plBoneAndCartilage::rayIntersectBone( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull) const
 {
     return _bone.rayIntersect(start, dir, ignoreBehindRay, backFaceCull);   
 }
 
 
-//PLbool plBoneAndCartilage::rayIntersectCartilage( plVector3 &intPoint, plVector3 &intNorm, const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 plIntersection plBoneAndCartilage::rayIntersectCartilage( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 {
     return _cartilage.rayIntersect(start, dir, ignoreBehindRay, backFaceCull);     
@@ -319,26 +316,7 @@ void plModelCartilageToggleVisibility( PLuint model_id )
 	_plBoneAndCartilageModels[model_id]->toggleCartilageVisibility();
 }
 
-/*
-void plModelDraw( PLuint model_id )
-{
-    if (plErrorCheckModelBounds(model_id, "plModelDraw"))
-        return;
-        
-	_plBoneAndCartilageModels[model_id]->draw();
-}
 
-
-void plModelDrawAll()
-{
-	for (PLuint i = 0; i < plModelGetCount(); i++)
-	{
-		plModelDraw(i);
-	}	
-}
-*/
-
-//PLbool plModelBoneIntersect(plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
 plIntersection plModelBoneIntersect(PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
 {
     if (plErrorCheckModelBounds(model_id, "plModelBoneIntersect"))
@@ -348,7 +326,6 @@ plIntersection plModelBoneIntersect(PLuint model_id, const plVector3 &ray_origin
 }
 
 
-//PLbool plModelCartilageIntersect(plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
 plIntersection plModelCartilageIntersect(PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray, PLbool backface_cull )
 {
     if (plErrorCheckModelBounds(model_id, "plModelCartilageIntersect"))

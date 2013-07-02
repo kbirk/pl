@@ -180,7 +180,7 @@ void plGraft::draw() const
     glPushMatrix();
     {
         recipientTransform.apply();
-        glTranslatef( 0, heightOffset, 0 );
+        glTranslatef( 0, _heightOffset, 0 );
         _plPickingState->index = PL_PICKING_INDEX_GRAFT_DEFECT;
         _plPickingShader->setPickingUniforms(_plPickingState);
         drawGraft();
@@ -197,27 +197,27 @@ void plGraft::draw() const
 void plGraft::drawGraft() const
 {
     // draw cartilage cap
-    if (cartilageCap.polys.size() > 0)  // may not always have the cartilage top
+    if (_cartilageCap.polys.size() > 0)  // may not always have the cartilage top
     {
         _plSetGraftCartilageColour();
-        cartilageMesh.draw();
+        _cartilageMesh.draw();
     }
     
     // draw bone cap
     _plSetGraftBoneColour();
-    boneMesh.draw();
+    _boneMesh.draw();
     
     // draw marker   
     glColor3f( PL_GRAFT_MARKER_COLOUR );
-    plDrawSphere( markPosition, 0.5 );
+    plDrawSphere( _markPosition, 0.5 );
 
 }
 
 void plGraft::setCaps()
 {
     // generate cap polygons
-    cartilageCap = findCap( _plBoneAndCartilageModels[harvestModelID]->getCartilageTriangles(), harvestTransform.y);
-    boneCap      = findCap( _plBoneAndCartilageModels[harvestModelID]->getBoneTriangles(),      harvestTransform.y);
+    _cartilageCap = findCap( _plBoneAndCartilageModels[harvestModelID]->getCartilageTriangles(), harvestTransform.y);
+    _boneCap      = findCap( _plBoneAndCartilageModels[harvestModelID]->getBoneTriangles(),      harvestTransform.y);
     // generate meshes   
     updateCartilageMesh();   
     updateBoneMesh();  
@@ -225,31 +225,7 @@ void plGraft::setCaps()
 }
 
 
-void plGraft::updateMarkPosition()
-{
-    // Mark at tool alignment direction on cartilage
-    markPosition = radius * markDirection;
 
-    // First, find the closest top perimeter point in the mark direction.
-    float minDist = FLT_MAX;
-    float minY;
-
-    const plCap &cap = (cartilageCap.polys.size() == 0) ? boneCap : cartilageCap;
-
-    for (PLuint i=0; i<cap.perimeter.size(); i++) 
-    {
-        const plVector3 &v = cap.perimeter[i].point;
-        float dist = (v.x-markPosition.x)*(v.x-markPosition.x) + (v.z-markPosition.z)*(v.z-markPosition.z);
-        if (dist < minDist) 
-        {
-            minDist = dist;
-            minY = v.y;
-        }
-    }
-
-    // Draw marker  
-    markPosition.y = minY;
-}
 
 bool _comparePointAndAngle( const plPointAndAngle &a, const plPointAndAngle &b )
 {
@@ -264,10 +240,10 @@ void plGraft::updateCartilageMesh()
     plSeq<PLuint> indices;
 
     // cartilage top
-    for (PLuint i = 0; i < cartilageCap.polys.size(); i++)
+    for (PLuint i = 0; i < _cartilageCap.polys.size(); i++)
     {
         PLint base = interleaved_vertices.size()/2;
-        plPoly &p = cartilageCap.polys[i];
+        plPoly &p = _cartilageCap.polys[i];
         for (PLuint j = 0; j < p.vertices.size(); j++)
         {
             plVector3 &v = p.vertices[j];
@@ -284,7 +260,7 @@ void plGraft::updateCartilageMesh()
     }
 
     // cartilage walls
-    if (boneCap.perimeter.size() > 0 && cartilageCap.perimeter.size() > 0) 
+    if (_boneCap.perimeter.size() > 0 && _cartilageCap.perimeter.size() > 0) 
     {
         int c = 0;
         int b = 0;
@@ -292,50 +268,50 @@ void plGraft::updateCartilageMesh()
         float cOffset = 0;
         float bOffset = 0;
 
-        int stepsLeft = cartilageCap.perimeter.size() + boneCap.perimeter.size();
+        int stepsLeft = _cartilageCap.perimeter.size() + _boneCap.perimeter.size();
 
         while (stepsLeft > 0) 
         {
 
-            float cAngle = cartilageCap.perimeter[c].angle + cOffset;
-            float bAngle = boneCap.perimeter[b].angle + bOffset;
+            float cAngle = _cartilageCap.perimeter[c].angle + cOffset;
+            float bAngle = _boneCap.perimeter[b].angle + bOffset;
         
-            plVector3 n = (cartilageCap.perimeter[c].point).normalize();
+            plVector3 n = (_cartilageCap.perimeter[c].point).normalize();
     
             indices.add(interleaved_vertices.size()/2);
-            interleaved_vertices.add( cartilageCap.perimeter[c].point );    // position
+            interleaved_vertices.add( _cartilageCap.perimeter[c].point );    // position
             interleaved_vertices.add( n );                                  // normal
             
             indices.add(interleaved_vertices.size()/2);
-            interleaved_vertices.add( boneCap.perimeter[b].point );         // position
+            interleaved_vertices.add( _boneCap.perimeter[b].point );         // position
             interleaved_vertices.add( n );                                  // normal
         
             if (cAngle < bAngle) 
             {	
                 // advance cartilage
                 c++;
-                if (c == cartilageCap.perimeter.size()) 
+                if (c == _cartilageCap.perimeter.size()) 
                 {
                     c = 0;
                     cOffset = 2 * PL_PI;
                 }
         
                 indices.add(interleaved_vertices.size()/2);
-                interleaved_vertices.add( cartilageCap.perimeter[c].point );    // position
+                interleaved_vertices.add( _cartilageCap.perimeter[c].point );    // position
                 interleaved_vertices.add( n );                                  // normal
             }  
             else 
             {			
                 // advance bone
                 b++;
-                if (b == boneCap.perimeter.size()) 
+                if (b == _boneCap.perimeter.size()) 
                 {
                     b = 0;
                     bOffset = 2 * PL_PI;
                 }
         
                 indices.add(interleaved_vertices.size()/2);
-                interleaved_vertices.add( boneCap.perimeter[b].point );         // position
+                interleaved_vertices.add( _boneCap.perimeter[b].point );         // position
                 interleaved_vertices.add( n );                                  // normal
             }
             stepsLeft--;
@@ -344,8 +320,8 @@ void plGraft::updateCartilageMesh()
        
     if (indices.size() > 0)
     {
-        cartilageMesh.destroy();
-        cartilageMesh = plMesh(interleaved_vertices, indices);  
+        _cartilageMesh.destroy();
+        _cartilageMesh = plMesh(interleaved_vertices, indices);  
     }
 }
 
@@ -358,12 +334,12 @@ void plGraft::updateBoneMesh()
     plSeq<PLuint> indices; 
        
     // bone top (only if no cartilage top)
-    if (cartilageCap.polys.size() == 0)
+    if (_cartilageCap.polys.size() == 0)
     {
-        for (PLuint i = 0; i < boneCap.polys.size(); i++)
+        for (PLuint i = 0; i < _boneCap.polys.size(); i++)
         {
             PLint base = interleaved_vertices.size()/2;
-            plPoly &p = boneCap.polys[i];
+            plPoly &p = _boneCap.polys[i];
             for (PLuint j = 0; j < p.vertices.size(); j++)
             {
                 plVector3 &v = p.vertices[j];
@@ -381,19 +357,19 @@ void plGraft::updateBoneMesh()
     }
 
     // bone walls
-    plVector3 centreBottom = -(length) * y;
+    plVector3 centreBottom = -(_length) * y;
     plVector3 z(0,0,1);
     plVector3 x(1,0,0);
 
-    if (boneCap.perimeter.size() > 0) 
+    if (_boneCap.perimeter.size() > 0) 
     {
         PLint base = interleaved_vertices.size()/2;
 
-        float theta = boneCap.perimeter[0].angle;
+        float theta = _boneCap.perimeter[0].angle;
         plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
 
-        plVector3 prevTop = boneCap.perimeter[0].point;
-        plVector3 prevBot = centreBottom + radius * cos(theta) * z + radius * sin(theta) * x;
+        plVector3 prevTop = _boneCap.perimeter[0].point;
+        plVector3 prevBot = centreBottom + _radius * cos(theta) * z + _radius * sin(theta) * x;
 
         // top side
         interleaved_vertices.add( prevTop ); // position
@@ -405,11 +381,11 @@ void plGraft::updateBoneMesh()
         interleaved_vertices.add( prevBot ); // position 
         interleaved_vertices.add( -y);       // normal
         
-        for (PLuint i=0; i<boneCap.perimeter.size(); i++) 
+        for (PLuint i=0; i<_boneCap.perimeter.size(); i++) 
         {
-            float theta = boneCap.perimeter[i].angle;
-            plVector3 top = boneCap.perimeter[i].point;
-            plVector3 bot = centreBottom + radius * cos(theta) * z + radius * sin(theta) * x;
+            float theta = _boneCap.perimeter[i].angle;
+            plVector3 top = _boneCap.perimeter[i].point;
+            plVector3 bot = centreBottom + _radius * cos(theta) * z + _radius * sin(theta) * x;
 
             plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
             // top side
@@ -435,7 +411,7 @@ void plGraft::updateBoneMesh()
         interleaved_vertices.add( centreBottom );   // position
         interleaved_vertices.add( -y );             // normal  
         
-        for (PLuint j = 0; j <= boneCap.perimeter.size()*3; j+=3) 
+        for (PLuint j = 0; j <= _boneCap.perimeter.size()*3; j+=3) 
         {
             // side t1
             indices.add(base+j);
@@ -453,8 +429,8 @@ void plGraft::updateBoneMesh()
 
     }
 
-    boneMesh.destroy();
-    boneMesh = plMesh(interleaved_vertices, indices);
+    _boneMesh.destroy();
+    _boneMesh = plMesh(interleaved_vertices, indices);
 }
 
 
@@ -472,7 +448,7 @@ plCap plGraft::findCap( const plSeq<plTriangle> &triangles, const plVector3 &up 
         }
     } 
 
-    // Find vertices of polygons on boundary of graft
+    // Find vertices of polygons along perimeter of graft
     std::vector<plPointAndAngle> angles;
 
     for (PLuint i=0; i<cap.polys.size(); i++) 
@@ -481,7 +457,7 @@ plCap plGraft::findCap( const plSeq<plTriangle> &triangles, const plVector3 &up 
         {
             plVector3 &v = cap.polys[i].vertices[j];
             
-            if ((v.x*v.x + v.z*v.z) > 0.97f * radius* radius)
+            if ((v.x*v.x + v.z*v.z) > 0.97f * _radius* _radius)
             {
                 angles.push_back( plPointAndAngle( atan2( v.x, v.z ), v ));
             }
@@ -515,7 +491,7 @@ bool plGraft::triangleIntersection( const plTriangle &triangle, plPoly &p ) cons
 {
     static float min = FLT_MAX;
 
-    float radiusSquared = radius * radius;
+    float radiusSquared = _radius * _radius;
 
     plVector3 point1 = harvestTransform.applyInverse( triangle.point0() );
     plVector3 point2 = harvestTransform.applyInverse( triangle.point1() );
@@ -542,7 +518,7 @@ bool plGraft::triangleIntersection( const plTriangle &triangle, plPoly &p ) cons
 
     float maxProj = PL_MAX_OF_3( proj1, proj2, proj3 );
 
-    if (maxProj < -length)
+    if (maxProj < -_length)
         return false;
 
     // At least some of the triangle is inside
@@ -631,7 +607,7 @@ plVector3 plGraft::pointOnCircumference( const plVector3 &u, const plVector3 &v 
 
     float a = (vProj-uProj)*(vProj-uProj);
     float b = 2*(uProj*(vProj-uProj));
-    float c = uProj*uProj-radius*radius;
+    float c = uProj*uProj-_radius*_radius;
 
     float radical = b*b - 4*a*c;
     
@@ -681,7 +657,34 @@ void plGraft::spinMark( PLfloat degrees )
 {
     plVector3 axis(0,1,0);
     plMatrix44 rot; rot.setRotationD( degrees, axis );     
-    markDirection = (rot * markDirection).normalize();
+    _markDirection = (rot * _markDirection).normalize();    
+    updateMarkPosition();
+}
+
+void plGraft::updateMarkPosition()
+{
+    // Mark at tool alignment direction on cartilage
+    _markPosition = _radius * _markDirection;
+
+    // First, find the closest top perimeter point in the mark direction.
+    float minDist = FLT_MAX;
+    float minY;
+
+    const plCap &cap = (_cartilageCap.polys.size() == 0) ? _boneCap : _cartilageCap;
+
+    for (PLuint i=0; i<cap.perimeter.size(); i++) 
+    {
+        const plVector3 &v = cap.perimeter[i].point;
+        float dist = (v.x-_markPosition.x)*(v.x-_markPosition.x) + (v.z-_markPosition.z)*(v.z-_markPosition.z);
+        if (dist < minDist) 
+        {
+            minDist = dist;
+            minY = v.y;
+        }
+    }
+
+    // Draw marker  
+    _markPosition.y = minY;
 }
 
 /////////////////////////////////////////

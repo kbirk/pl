@@ -5,7 +5,7 @@ void plDrawSetViewingMatrix()
 {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    plMatrix44 viewingMatrix = _plCamera->getMatrix();
+    plMatrix44 viewingMatrix = _plCamera->matrix();
     glMultMatrixf( (GLfloat*)(&viewingMatrix) );
 }
 
@@ -14,7 +14,7 @@ void plDrawSetProjectionMatrix()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();  
-    plMatrix44 projectionMatrix = _plProjection->getMatrix();
+    plMatrix44 projectionMatrix = _plProjection->matrix();
     glMultMatrixf( (GLfloat*)(&projectionMatrix) );  
 }
 

@@ -39,7 +39,7 @@ class plVector3
 };
 
 
-// Scalar/plVector3 multiplication
+// Scalar/Vector multiplication
 
 plVector3 operator * ( PLfloat k, const plVector3 &p );
 

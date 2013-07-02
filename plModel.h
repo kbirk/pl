@@ -31,14 +31,6 @@ class plModel : public plRenderable
                                      const plVector3 &dir, 
                                      PLbool ignoreBehindRay = false, 
                                      PLbool backFaceCull = false ) const;
-        /* 
-        PLbool    rayIntersect( plVector3 &intPoint, 
-                                plVector3 &intNorm, 
-                                const plVector3 &start, 
-                                const plVector3 &dir, 
-                                PLbool ignoreBehindRay = false, 
-                                PLbool backFaceCull = false ) const;
-        */
                 
 	private:
 	
@@ -77,16 +69,7 @@ class plBoneAndCartilage
                                       
 		plIntersection rayIntersectCartilage( const plVector3 &start, const plVector3 &dir, 
 		                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
-        
-        /*        
-        PLbool rayIntersectBone     ( plVector3 &intPoint, plVector3 &intNorm, 
-                                      const plVector3 &start, const plVector3 &dir, 
-                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
-                                      
-		PLbool rayIntersectCartilage( plVector3 &intPoint, plVector3 &intNorm, 
-		                              const plVector3 &start, const plVector3 &dir, 
-		                              PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
-		*/
+
 		plVector3 getBoneAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
         plVector3 getCartilageAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
 

@@ -19,7 +19,7 @@ void plCamera::_defaultInit()
 	_up       = plVector3(0,1,0);
 }  
     
-plMatrix44 plCamera::getMatrix() const 
+plMatrix44 plCamera::matrix() const 
 {			 
     plVector3 x, y, z;
 
@@ -122,7 +122,7 @@ void plCamera::rotate( PLint x0, PLint y0, PLint x1, PLint y1 )
     plMatrix44 qm;  qm.setRotation( quat );
 
     // get current modelview matrix (rotation component only)
-    plMatrix44 m = getMatrix();
+    plMatrix44 m = matrix();
     m(0,3) = 0.0f;
     m(1,3) = 0.0f;
     m(2,3) = 0.0f;
@@ -199,27 +199,27 @@ plVector4 calc_quat(PLint x0, PLint y0, PLint x1, PLint y1)
 
 plVector3 plCameraGetDirection()
 {
-	return _plCamera->getViewingDirection();
+	return _plCamera->direction();
 }
 
 plVector3 plCameraGetPosition()
 {
-    return _plCamera->getPosition();
+    return _plCamera->position();
 }
 
 void plCameraSetPosition(const plVector3 &position)
 {
-    _plCamera->setPosition(position);
+    _plCamera->position(position);
 }
 
 void plCameraSetFocus( const plVector3 &focus)
 {
-    _plCamera->setFocus(focus);
+    _plCamera->focus(focus);
 }
 
 void plCameraSetUp( const plVector3 up)
 {
-    _plCamera->setUp(up);
+    _plCamera->up(up);
 }
 
 void plCameraTranslate(PLint x, PLint y)

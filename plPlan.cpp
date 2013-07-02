@@ -78,8 +78,6 @@ void plPlan::readFile( plString filename )
         {
             directory = csv.data[i][1];
         } 
-
-        
         else if (plStringCompareCaseInsensitive(field, "model") )     
         {
             // Find the model number            
@@ -99,8 +97,7 @@ void plPlan::readFile( plString filename )
                 model.readBoneFile( csv.data[i][3] );
                                
             else if (plStringCompareCaseInsensitive(subfield, "cartilage file") )               
-                model.readCartilageFile( csv.data[i][3] );
-   
+                model.readCartilageFile( csv.data[i][3] );   
         }
         
         else if (plStringCompareCaseInsensitive(field, "spline corners") ) // read before boundary
@@ -111,8 +108,6 @@ void plPlan::readFile( plString filename )
             for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
             {       
                 corners.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] ); 
-                //corners.points.add(  plVector3( csv.data[i][j]) );                  
-                //corners.normals.add( plVector3( csv.data[i][j+1]) );
             }
         } 
         else if (plStringCompareCaseInsensitive(field, "spline boundary" ) )
@@ -122,8 +117,6 @@ void plPlan::readFile( plString filename )
             for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
             {      
                 boundary.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] );                         
-                //boundary.points.add(  plVector3( csv.data[i][j]) );                  
-                //boundary.normals.add( plVector3( csv.data[i][j+1]) );
             }
 
         } 
@@ -136,8 +129,6 @@ void plPlan::readFile( plString filename )
             for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
             {   
                 boundary.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] );  
-                //boundary.points.add(  plVector3( csv.data[i][j]) );                  
-                //boundary.normals.add( plVector3( csv.data[i][j+1]) );
             }    
 
         } 
@@ -163,16 +154,16 @@ void plPlan::readFile( plString filename )
                 graft.recipientModelID = atof( csv.data[i][3].c_str() );
 
             else if (plStringCompareCaseInsensitive(subfield, "height offset") )
-                graft.heightOffset = atof( csv.data[i][3].c_str() );
+                graft.heightOffset( atof( csv.data[i][3].c_str() ) );
                                
             else if (plStringCompareCaseInsensitive(subfield, "radius") )
-                graft.radius = atof( csv.data[i][3].c_str() );
+                graft.radius( atof( csv.data[i][3].c_str() ) );
                 
             else if (plStringCompareCaseInsensitive(subfield, "length") )
-                graft.length = atof( csv.data[i][3].c_str() );
+                graft.length( atof( csv.data[i][3].c_str() ) );
                
             else if (plStringCompareCaseInsensitive(subfield, "mark direction") )
-                graft.markDirection = plVector3( csv.data[i][3].c_str() ).normalize();
+                graft.markDirection( plVector3( csv.data[i][3].c_str() ).normalize() );
                 
             else if (plStringCompareCaseInsensitive(subfield, "recipient origin") )
                 graft.recipientTransform.origin = plVector3( csv.data[i][3].c_str() );
@@ -209,7 +200,6 @@ void plPlan::readFile( plString filename )
 
             // Fill in the field
             plString subfield = csv.data[i][2];
-
             
             if (plStringCompareCaseInsensitive(subfield, "boundary") )
             {                    
@@ -245,8 +235,8 @@ void plPlan::readFile( plString filename )
         _grafts[i].computeTransforms();        
         // Compute cartilage and bone caps
         _grafts[i].setCaps();
-        // Make markDirection perpendicular to axis
-        _grafts[i].markDirection = _grafts[i].markDirection - (_grafts[i].markDirection*axis)*axis;
+        // Make _markDirection perpendicular to axis
+        _grafts[i].markDirection( _grafts[i].markDirection() - (_grafts[i].markDirection()*axis)*axis );
     }
 
     // generate boundary meshes
@@ -335,10 +325,10 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
         
         out << "graft," << i << ",harvest model,"         << graft.harvestModelID                 << std::endl;
         out << "graft," << i << ",recipient model,"       << graft.recipientModelID               << std::endl;       
-        out << "graft," << i << ",height offset,"         << graft.heightOffset                   << std::endl;
-        out << "graft," << i << ",radius,"                << graft.radius                         << std::endl;
-        out << "graft," << i << ",length,"                << graft.length                         << std::endl;
-        out << "graft," << i << ",mark direction,"        << graft.markDirection                  << std::endl;
+        out << "graft," << i << ",height offset,"         << graft.heightOffset()                 << std::endl;
+        out << "graft," << i << ",radius,"                << graft.radius()                       << std::endl;
+        out << "graft," << i << ",length,"                << graft.length()                       << std::endl;
+        out << "graft," << i << ",mark direction,"        << graft.markDirection()                << std::endl;
         out << "graft," << i << ",recipient origin,"      << graft.recipientTransform.origin      << std::endl;
         out << "graft," << i << ",recipient x,"           << graft.recipientTransform.x           << std::endl;
         out << "graft," << i << ",recipient y,"           << graft.recipientTransform.y           << std::endl;       
@@ -399,9 +389,9 @@ void plPlan::outputForManuela()
         }
 
         out << "Height: " << graft_itr->height << std::endl;
-        out << "Radius: " << graft_itr->radius << std::endl;
+        out << "_radius: " << graft_itr->_radius << std::endl;
         out << "Bone height: " << graft_itr->boneHeight << std::endl;
-        out << "LevelDirection: [" << graft_itr->markDirection.x << ", " << graft_itr->markDirection.y << ", " << graft_itr->markDirection.z << "]" << std::endl;
+        out << "LevelDirection: [" << graft_itr->_markDirection.x << ", " << graft_itr->_markDirection.y << ", " << graft_itr->_markDirection.z << "]" << std::endl;
         out << std::endl;
         out << std::endl;
         out << "RecipientSide" << std::endl;
@@ -841,7 +831,7 @@ void plGraftDragEdit( PLint x, PLint y )
             if (_plState->graftEditAxis == transform.y)  
             {
                 // translating along y
-                graft.heightOffset += distOnAxis;  
+                graft.heightOffset( graft.heightOffset() + distOnAxis);  
                 break;              
             }
             
@@ -859,8 +849,8 @@ void plGraftDragEdit( PLint x, PLint y )
             {   
                 _plState->graftInitialTransform.origin = intersection.point; //update
                 
-                PLfloat normalRadius = 6.0f;
-                plVector3 normal = plModelBoneGetAvgNormal( 0, normalRadius, transform.origin, transform.y);
+                PLfloat normal_radius = 6.0f;
+                plVector3 normal = plModelBoneGetAvgNormal( 0, normal_radius, transform.origin, transform.y);
                 
                 if (_plState->graftEditAxis == transform.x)  
                 {
@@ -906,13 +896,10 @@ void plGraftDragEdit( PLint x, PLint y )
         
         case PL_GRAFT_EDIT_MODE_LENGTH:
         {
-            // length
+            // _length
             
-            PLfloat length_delta = screenDragVector * (_plState->graftScreenAxis).normalize(); 
-            graft.length -= length_delta/10;                
-
-            if (graft.length < 0)
-                graft.length = 0;
+            PLfloat _length_delta = screenDragVector * (_plState->graftScreenAxis).normalize(); 
+            graft.length( graft.length() - _length_delta/10) ;                
             
             graft.updateCartilageMesh();
             graft.updateBoneMesh();
@@ -958,8 +945,8 @@ void plGraftSurfaceTranslate( PLuint graft_id, PLuint graft_index, const plVecto
 
     if (intersection.exists)
     {   
-        PLfloat normalRadius = 6.0f;
-        plVector3 normal = plModelBoneGetAvgNormal( 0, normalRadius, transform.origin, transform.y);
+        PLfloat normal_radius = 6.0f;
+        plVector3 normal = plModelBoneGetAvgNormal( 0, normal_radius, transform.origin, transform.y);
         
         // translate
         transform.y      = normal.normalize();
@@ -1013,7 +1000,7 @@ void plGraftSpinMarker( PLfloat angle_degrees )
 void plGraftSpinMarker( PLuint graft_id, PLfloat angle_degrees )
 {
     _plPlan->_grafts[graft_id].spinMark(angle_degrees);
-    _plPlan->_grafts[graft_id].updateMarkPosition();
+    //_plPlan->_grafts[graft_id].updateMarkPosition();
 }
 
 //////////////////////////////////////////////////
