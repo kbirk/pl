@@ -155,6 +155,7 @@ class plTransform;
 class plMesh;
 class plTriangle;
 class plIntersection;
+class plBoundary;
 
 extern plMesh                         *_plSphere;
 extern plMesh                         *_plCylinder;
@@ -228,6 +229,8 @@ extern void 			plPopMatrix			    ();
 extern void             plDraw                   ();
 extern void             plDrawSetViewingMatrix   ();
 extern void             plDrawSetProjectionMatrix();
+
+extern void             plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible); 
 
 extern void             plDrawArrow              ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
 extern void             plDrawArrow              ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
@@ -339,8 +342,9 @@ extern void             plDefectSplineSetDragOrigin( PLint x, PLint y );
 
 
 //////////////////////////////////////////////////////////////////////////////
-// BOUNDARY POINT
+// BOUNDARY 
 //////////////////////////////////////////////////////////////////////////////
+extern plBoundary      &plBoundaryGet           ( PLuint type, PLuint id );
 extern PLint            plBoundaryPointAdd      ( const plVector3 &point, const plVector3 &normal );
 extern PLint            plBoundaryPointAdd      ( PLuint x, PLuint y );
 extern void             plBoundaryPointSelect   ( PLuint index );

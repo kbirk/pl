@@ -19,13 +19,20 @@ void plDrawSetProjectionMatrix()
 }
 
 
-void plDraw()
+void _plSetOpenGLState()
 {
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     glEnable( GL_DEPTH_TEST );
 
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    
+}
+
+void plDraw()
+{
+    _plSetOpenGLState();
 
     glClearColor( 1,1,1,0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -55,10 +62,46 @@ void plDraw()
 }
 
 
+void plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible)
+{
+    _plMinimalShader->bind();   
+    _plMinimalShader->setLightUniform( plVector3(10, 10, 15) );
 
+    // Draw the TA104 arthroscope
+    static plMesh c1(1.5f, 2.0f, 120.0f, 16, 4);
+    static plMesh c2(4.0f, 4.0f, 30.0f, 16, 4);
+    static plMesh c3(8.0f, 8.0f, 60.0f, 16, 4);
+    //static plMesh c4(8.0f, 0.0f, 0.0f, 16, 4);
 
+    if (visible)
+        glColor3f(0.4,0.4,0.4);
+    else
+        glColor3f(1.0,0.25,0.05);
 
+    glPushMatrix();
+    {
+        glTranslatef(pos.x, pos.y, pos.z);
+        glRotatef(rotAngle,rotAxis.x,rotAxis.y,rotAxis.z);
+        c1.draw();
+        glPushMatrix();
+        {
+            glTranslatef(0, 0, 120);
+            c2.draw();
+            glPushMatrix();
+            {
+                glTranslatef(0,0,30);
+                c3.draw();
+                //glTranslatef(0,0,60);
+                //c4.draw();
+            }
+            glPopMatrix();
+        }    
+        glPopMatrix();
+    }
+    glPopMatrix();
 
+    _plMinimalShader->unbind();
+} 
 
 
 

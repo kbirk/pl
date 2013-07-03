@@ -28,7 +28,7 @@ class plPlan : public plRenderable
         void defaultInit();
         void readFile( plString filename );
 
-        plBoundary &getBoundaryReference(PLuint type, PLuint id);
+        //plBoundary &getBoundaryReference(PLuint type, PLuint id);
               
         void draw();
         

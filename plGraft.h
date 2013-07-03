@@ -108,11 +108,11 @@ class plGraft : public plRenderable
         void      _drawGraft() const;
         void      _drawSelectionInterface() const;
         
-        plCap     _findCap             ( const plSeq<plTriangle> &triangles, const plVector3 &up );
-        bool      _triangleIntersection( const plTriangle &tri, plPoly &p ) const;
-        plVector3 _pointAtAngle        ( PLfloat theta ) const;
-        PLfloat   _angleOfPoint        ( const plVector3 &v ) const;
-        plVector3 _pointOnCircumference( const plVector3 &a, const plVector3 &b ) const;
+        plCap     _findCap              ( const plSeq<plTriangle> &triangles, const plVector3 &up );
+        bool      _triangleIntersection ( const plTriangle &tri, plPoly &p ) const;
+        plVector3 _pointAtAngle         ( PLfloat theta ) const;
+        PLfloat   _angleOfPoint         ( const plVector3 &v ) const;
+        plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;
 
 
 };

@@ -26,8 +26,7 @@ class plSpline : public plRenderable
         void computeHermiteSpline();
         
         friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
-        
-        
+                
     private:
     
         PLuint            _modelID;

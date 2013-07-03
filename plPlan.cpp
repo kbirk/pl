@@ -172,15 +172,15 @@ void plPlan::readFile( plString filename )
 }
 
 
-plBoundary &plPlan::getBoundaryReference(PLuint type, PLuint id)
+plBoundary &plBoundaryGet(PLuint type, PLuint id)
 {
     switch (type)
     {
-        case PL_PICKING_TYPE_DEFECT_CORNERS:        return _defectSplines[id].corners;            
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:       return _defectSplines[id].boundary;            
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:        return _donorRegions[id].boundary;            
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:       return _iGuides[id].boundary;
-        default:                                    return _defectSplines[0].corners;  // default
+        case PL_PICKING_TYPE_DEFECT_CORNERS:        return _plPlan->_defectSplines[id].corners;            
+        case PL_PICKING_TYPE_DEFECT_BOUNDARY:       return _plPlan->_defectSplines[id].boundary;            
+        case PL_PICKING_TYPE_DONOR_BOUNDARY:        return _plPlan->_donorRegions[id].boundary;            
+        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:       return _plPlan->_iGuides[id].boundary;
+        default:                                    return _plPlan->_defectSplines[0].corners;  // default
     }
 }
 
@@ -207,24 +207,8 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         
         out << "spline," << i << ",model,"  << spline._modelID << std::endl;        
         out << "spline," << i << ",corners" << spline.corners  << std::endl;  
-        //out << std::endl;
-        /*     
-        for (PLuint j=0; j<spline.corners.size(); j++)
-        {
-            out << "," << spline.corners.points(j);
-            out << "," << spline.corners.normals(j);
-        }
-        out << std::endl << std::endl;*/
-
         out << "spline," << i << ",boundary" << spline.boundary << std::endl;  
         out << std::endl;
-        /*
-        for (PLuint j=0; j<spline.boundary.size(); j++)
-        {
-            out << "," << spline.boundary.points(j);
-            out << "," << spline.boundary.normals(j);
-        }
-        out << std::endl << std::endl; */
     }
 
     // donor regions
@@ -235,13 +219,6 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         out << "donor region," << i << ",model,"   << donor._modelID << std::endl;
         out << "donor region," << i << ",boundary" << donor.boundary << std::endl;  
         out << std::endl;
-        /*
-        for (PLuint j=0; j<donor.boundary.size(); j++)
-        {
-            out << "," << donor.boundary.points(j);
-            out << "," << donor.boundary.normals(j);
-        }
-        out << std::endl << std::endl; */
     }
 
     // grafts
@@ -270,16 +247,7 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         plIGuide &iguide = p._iGuides[i];
 
         out << std::endl;
-
         out << "iguide," << i << ", boundary" << iguide.boundary << std::endl;  
-        /*
-        for (PLuint j=0; j<iguide.boundary.size(); j++)
-        {
-            out << "," << iguide.boundary.points(j);
-            out << "," << iguide.boundary.normals(j);
-        }
-        out << std::endl;*/
-
         out << "iguide," << i << ",graft indices";
         for (PLuint j=0; j<iguide.graftIndices.size(); j++)
         {
@@ -291,6 +259,7 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         {
             out << "iguide," << i << ",kwire," << j << "," << iguide.kwires[j].position << "," << iguide.kwires[j].direction << std::endl;
         }
+        out << std::endl;
     }
     
     return out;
@@ -397,7 +366,7 @@ void plBoundaryPointMove(const plVector3 &point, const plVector3 &normal)
     if (_plState->boundarySelectedPointID < 0)   // wall is selected
         return;
 
-    plBoundary &boundary = _plPlan->getBoundaryReference(_plState->boundarySelectedType, _plState->boundarySelectedID);
+    plBoundary &boundary = plBoundaryGet(_plState->boundarySelectedType, _plState->boundarySelectedID);
     boundary.movePointAndNormal(_plState->boundarySelectedPointID, point, normal);    
     boundary.updateMesh();
 }
@@ -413,8 +382,7 @@ void plBoundaryPointMove( PLuint x, PLuint y )
     plVector3 mouseInWorld = plWindowGetMouseToWorldPos(x, y, 0);
     plVector3 rayOrigin = plCameraGetPosition();
     plVector3 rayDirection = (mouseInWorld - rayOrigin).normalize();
-    //plVector3 point, normal;
-    
+
     plIntersection intersection = plModelCartilageIntersect(0, rayOrigin, rayDirection);
 
     if (intersection.exists) 
@@ -422,8 +390,7 @@ void plBoundaryPointMove( PLuint x, PLuint y )
         plBoundaryPointMove(intersection.point, intersection.normal);
     }
 
-    if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS &&
-        _plPlan->_defectSplines[_plState->boundarySelectedID].corners.size() == 4)
+    if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS && _plPlan->_defectSplines[_plState->boundarySelectedID].corners.size() == 4)
     {
         // recompute hermite spline
         _plPlan->_defectSplines[_plState->boundarySelectedID].computeHermiteSpline();
@@ -438,23 +405,14 @@ PLint plBoundaryPointAdd( PLuint x, PLuint y )
     plVector3 mouseInWorld = plWindowGetMouseToWorldPos(x, y,0);
     plVector3 rayOrigin = plCameraGetPosition();
     plVector3 rayDirection = (mouseInWorld - rayOrigin).normalize();
-    //plVector3 point, normal;
-    
+
     plIntersection intersection = plModelCartilageIntersect(0, rayOrigin, rayDirection);
 
     if (intersection.exists) 
     {     
         return plBoundaryPointAdd(intersection.point, intersection.normal);
     }
-    
-    /*
-    PLbool found = plModelCartilageIntersect(point, normal, 0, rayOrigin, rayDirection);
-    
-    if (found)
-    {
-        return plBoundaryPointAdd(point, normal);           
-    }
-    */
+
     return -1;  // no cartilage at point
 }
 
@@ -464,11 +422,10 @@ PLint plBoundaryPointAdd(const plVector3 &point, const plVector3 &normal)
     if (plErrorIsBoundarySelected( "plBoundaryPointAdd" ))
         return -1;
         
-    plBoundary &boundary = _plPlan->getBoundaryReference(_plState->boundarySelectedType, _plState->boundarySelectedID);
+    plBoundary &boundary = plBoundaryGet(_plState->boundarySelectedType, _plState->boundarySelectedID);
     
     // limit spline corners to 4 points
-    if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS &&
-        _plPlan->_defectSplines[_plState->boundarySelectedID].corners.size() > 3)
+    if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS && boundary.size() > 3)
     {   
         // already 4 corner points    
         return -1;
@@ -477,8 +434,7 @@ PLint plBoundaryPointAdd(const plVector3 &point, const plVector3 &normal)
     PLint ret = boundary.addPointAndNormal(point, normal);
     boundary.updateMesh();
     
-    if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS &&
-        _plPlan->_defectSplines[_plState->boundarySelectedID].corners.size() > 3)
+    if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS && boundary.size() > 3)
     {
         // just added 4th point, compute spline    
         return -1;
@@ -496,7 +452,7 @@ void plBoundaryPointRemove( PLuint point_index )
     if (plErrorIsBoundarySelected( "plBoundaryPointRemove" ))
         return; 
         
-    plBoundary &boundary = _plPlan->getBoundaryReference(_plState->boundarySelectedType, _plState->boundarySelectedID);
+    plBoundary &boundary = plBoundaryGet(_plState->boundarySelectedType, _plState->boundarySelectedID);
     
     boundary.removePointAndNormal(point_index);
     boundary.updateMesh();
