@@ -20,16 +20,16 @@ class plCamera
         plVector3        direction() const  { return (_lookat - _position).normalize(); }
         plMatrix44       matrix()    const;
 
-        void position( const plVector3 &position) { _position = position; }
-        void focus   ( const plVector3 &lookat)   { _lookat = lookat;     }
-        void up      ( const plVector3 &up)       { _up = up;             }
-                     
+        void position( const plVector3 &position ) { _position = position; }
+        void focus   ( const plVector3 &lookat   ) { _lookat = lookat;     }
+        void up      ( const plVector3 &up       ) { _up = up;             }
+        
+        void importViewParams( std::string filename );             
         void exportViewParams( std::string filename );
-        void importViewParams( std::string filename );
-
-		void translate( PLint x, PLint y);
+        
+		void translate( PLint x, PLint y );
         void rotate   ( PLint x0, PLint y0, PLint x1, PLint y1 );      
-        void zoom     ( PLfloat z);
+        void zoom     ( PLfloat z );
         void reset    ( const plVector3 &min, const plVector3 &max );
     private:
 

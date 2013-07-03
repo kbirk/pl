@@ -28,6 +28,7 @@
 #define PL_GRAFT_EDIT_MODE_ROTATE                2 
 #define PL_GRAFT_EDIT_MODE_LENGTH                3
 #define PL_GRAFT_EDIT_MODE_MARKER                4
+
  
 #define PL_GRAFT_NONE_SELECTED                   (_plState->graftSelectedID == -1)
 #define PL_GRAFT_CURRENT_IS_SELECTED             (_plPickingState->id == _plState->graftSelectedID)
@@ -42,6 +43,7 @@
                                                     _plState->graftSelectedIndex == PL_PICKING_INDEX_GRAFT_DEFECT) )
                                                                                                
 #define PL_GRAFT_HANDLES_ENABLED                 (_plState->graftHandlesEnabled)
+
 
 // BOUNDARY MACROS
  
@@ -172,8 +174,6 @@ extern plPlan                         *_plPlan;
 extern plSeq<plBoneAndCartilage*> 	  _plBoneAndCartilageModels;
 
 
-
-
 //////////////////////////////////////////////////////////////////////////////
 // INITIALIZE           pl.cpp
 //////////////////////////////////////////////////////////////////////////////
@@ -250,8 +250,6 @@ extern PLint            plModelGetSelectedID    ();
 extern void             plModelBoneToggleVisibility       ( PLuint model_id );
 extern void             plModelCartilageToggleVisibility  ( PLuint model_id );
 
-//extern PLbool           plModelBoneIntersect      ( plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray = false, PLbool backface_cull = false);
-//extern PLbool           plModelCartilageIntersect ( plVector3 &point, plVector3 &normal, PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray = false, PLbool backface_cull = false);
 extern plIntersection   plModelBoneIntersect     (PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray=false, PLbool backface_cull=false );
 extern plIntersection   plModelCartilageIntersect(PLuint model_id, const plVector3 &ray_origin, const plVector3 &direction, PLbool ignore_behind_ray=false, PLbool backface_cull=false );
                         
@@ -390,7 +388,7 @@ extern PLbool           plErrorIsDefectSplineSelected ( PLuint index, plString f
 //////////////////////////////////////////////////////////////////////////////  
 extern plVector3        plProjectVectorOnPlane      ( const plVector3 &vector, const plVector3 &plane_normal);
 extern plVector3        plClosestPointOnLineSegment ( const plVector3 &point, const plVector3 &a, const plVector3 &b);
-
+extern PLfloat          plClamp                     ( PLfloat val, PLfloat min = -1.0f, PLfloat max = 1.0f);
 
 //////////////////////////////////////////////////////////////////////////////
 // STRING

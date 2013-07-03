@@ -20,17 +20,26 @@ class plSpline : public plRenderable
                 
         plSpline();
 
-        void draw() const;
-        void drawCornersSelectionInterface() const;
-        void drawSplineSelectionInterface() const;
+        void init();
+        void readFromCSV( const plSeq<plString> &row );
+        void draw() const;        
         void computeHermiteSpline();
+        
+        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
         
         
     private:
     
+        PLuint            _modelID;
         plColourMesh      _mesh;   
         plSeq<plVector3>  _s, _t;  
+        
+        void _drawCornersSelectionInterface() const;
+        void _drawSplineSelectionInterface() const;
+        
+                
 };
+
 
 #endif
 

@@ -38,7 +38,7 @@ void plPlan::draw()
     // Draw harvest boundaries   
     for ( PLuint i = 0; i < _donorRegions.size(); i++)
     {
-        _plPickingState->type = PL_PICKING_TYPE_DONOR_BOUNDARY; 
+        //_plPickingState->type = PL_PICKING_TYPE_DONOR_BOUNDARY; 
         _plPickingState->id = i;        
         _donorRegions[i].draw();            
     }    
@@ -61,6 +61,30 @@ void plPlan::draw()
     */
 }
 
+// to remove the dependancy that plan elements are included in sequential order, these functions ensures that indices are
+// consistant between plan files and runtime plans
+template<class T>
+T &plGetImportReference( plSeq<T*> &ts, const plString &index )
+{
+    PLuint j = atoi( index.c_str() );           
+    while (ts.size() < j+1)
+    {
+        ts.add( new T() );   // add new elements until index exists         
+    }
+    return *ts[j];
+
+} 
+
+template<class T>
+T &plGetImportReference( plSeq<T> &ts,  const plString &index )
+{
+    PLuint j = atoi( index.c_str() );           
+    while (ts.size() < j+1)
+    {
+        ts.add( T() );  // add new elements until index exists 
+    }
+    return ts.back();
+}  
 
 void plPlan::readFile( plString filename )
 {
@@ -80,146 +104,46 @@ void plPlan::readFile( plString filename )
         } 
         else if (plStringCompareCaseInsensitive(field, "model") )     
         {
-            // Find the model number            
-            PLuint j = atoi( csv.data[i][1].c_str() );
+            // get reference to model
+            plBoneAndCartilage &model = plGetImportReference( _plBoneAndCartilageModels, csv.data[i][1] ); 
             
-            while (_plBoneAndCartilageModels.size() < j+1)
-            {
-                _plBoneAndCartilageModels.add( new plBoneAndCartilage() );
-            }
-        
-            plBoneAndCartilage &model = *_plBoneAndCartilageModels[j];
-
-            // Fill in the field            
-            plString subfield = csv.data[i][2];
-            
-            if (plStringCompareCaseInsensitive(subfield, "bone file") )
-                model.readBoneFile( csv.data[i][3] );
-                               
-            else if (plStringCompareCaseInsensitive(subfield, "cartilage file") )               
-                model.readCartilageFile( csv.data[i][3] );   
+            // read model attribute from current row
+            model.readFromCSV( csv.data[i] );
         }
         
-        else if (plStringCompareCaseInsensitive(field, "spline corners") ) // read before boundary
+        else if (plStringCompareCaseInsensitive(field, "spline") ) // read before boundary
         {
-            _defectSplines.add( plSpline() );           
-            plBoundary &corners = _defectSplines.back().corners;
-
-            for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
-            {       
-                corners.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] ); 
-            }
+            // get reference to spline
+            plSpline &spline = plGetImportReference( _defectSplines, csv.data[i][1] );
+            
+            // read spline attribute from current row
+            spline.readFromCSV( csv.data[i] );                    
         } 
-        else if (plStringCompareCaseInsensitive(field, "spline boundary" ) )
+        
+        else if (plStringCompareCaseInsensitive(field, "donor region") ) // read before boundary
         {
-            plBoundary &boundary = _defectSplines.back().boundary;
-
-            for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
-            {      
-                boundary.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] );                         
-            }
-
+            // get reference to donor region
+            plDonorSite &donorRegion = plGetImportReference( _donorRegions, csv.data[i][1] ); 
+            
+            // read donor region attribute from current row
+            donorRegion.readFromCSV( csv.data[i] );                  
         } 
-        else if (plStringCompareCaseInsensitive(field, "donor boundary" ) ) 
-        {                
-            _donorRegions.add( plBoundary() );
-                       
-            plBoundary &boundary = _donorRegions.back();
 
-            for ( PLuint j = 1; j < csv.data[i].size(); j+=2)
-            {   
-                boundary.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] );  
-            }    
-
-        } 
         else if (plStringCompareCaseInsensitive(field, "graft" ) ) 
         {        
-            // Find the graft number           
-            PLuint j = atoi( csv.data[i][1].c_str() );
+            // get reference to graft
+            plGraft &graft = plGetImportReference( _grafts, csv.data[i][1] ); 
             
-            while (_grafts.size() < j+1)
-            {
-                _grafts.add( plGraft() );
-            }
-        
-            plGraft &graft = _grafts[j];
-
-            // Fill in the field            
-            plString subfield = csv.data[i][2];
-            
-            if (plStringCompareCaseInsensitive(subfield, "harvest model") )
-                graft.harvestModelID = atof( csv.data[i][3].c_str() );
-                               
-            else if (plStringCompareCaseInsensitive(subfield, "recipient model") )
-                graft.recipientModelID = atof( csv.data[i][3].c_str() );
-
-            else if (plStringCompareCaseInsensitive(subfield, "height offset") )
-                graft.heightOffset( atof( csv.data[i][3].c_str() ) );
-                               
-            else if (plStringCompareCaseInsensitive(subfield, "radius") )
-                graft.radius( atof( csv.data[i][3].c_str() ) );
-                
-            else if (plStringCompareCaseInsensitive(subfield, "length") )
-                graft.length( atof( csv.data[i][3].c_str() ) );
-               
-            else if (plStringCompareCaseInsensitive(subfield, "mark direction") )
-                graft.markDirection( plVector3( csv.data[i][3].c_str() ).normalize() );
-                
-            else if (plStringCompareCaseInsensitive(subfield, "recipient origin") )
-                graft.recipientTransform.origin = plVector3( csv.data[i][3].c_str() );
-            
-            else if (plStringCompareCaseInsensitive(subfield, "recipient x") )            
-                graft.recipientTransform.x = plVector3( csv.data[i][3].c_str() ).normalize();
-
-            else if (plStringCompareCaseInsensitive(subfield, "recipient y") )
-                graft.recipientTransform.y = plVector3( csv.data[i][3].c_str() ).normalize();
-                 
-            else if (plStringCompareCaseInsensitive(subfield, "harvest origin") )
-                graft.harvestTransform.origin = plVector3( csv.data[i][3].c_str() );
-            
-            else if (plStringCompareCaseInsensitive(subfield, "harvest x") )
-                graft.harvestTransform.x = plVector3( csv.data[i][3].c_str() ).normalize();
-
-            else if (plStringCompareCaseInsensitive(subfield, "harvest y") )
-                graft.harvestTransform.y = plVector3( csv.data[i][3].c_str() ).normalize();
-            else
-                std::cerr << "Error in '" << filename << "': Unrecognized word '" << subfield << "' in third column." << std::endl;
-
+            // read graft attribute from row
+            graft.readFromCSV( csv.data[i] );
         } 
         else if (plStringCompareCaseInsensitive(field, "iguide" ) ) 
         {       
-            // Find the iguide            
-            PLuint j = atoi( csv.data[i][1].c_str() );
-        
-            while (_iGuides.size()-1 < j)
-            {
-                _iGuides.add(plIGuide());
-            }
-            
-            plIGuide &iguide = _iGuides[j]; 
+             // get reference to iGuide
+            plIGuide &iguide = plGetImportReference( _iGuides, csv.data[i][1] ); 
 
-            // Fill in the field
-            plString subfield = csv.data[i][2];
-            
-            if (plStringCompareCaseInsensitive(subfield, "boundary") )
-            {                    
-                for (PLuint j=3; j < csv.data[i].size(); j+=2)
-                {
-                    iguide.boundary.loadPointAndNormal( csv.data[i][j], csv.data[i][j+1] );
-                }       
-            } 
-            else if (plStringCompareCaseInsensitive(subfield, "graft indices") ) 
-            {
-                iguide.graftIndices.clear();
-                for (PLuint j=3; j < csv.data[i].size(); j++)
-                {
-                    iguide.graftIndices.add( atoi( csv.data[i][j].c_str() ) );
-                }  
-            } 
-            else
-            {
-                std::cerr << "Error in '" << filename << "': Unrecognized word '" << subfield << "' in third column." << std::endl;
-            }
+            // read iguide attribute from current row
+            iguide.readFromCSV(csv.data[i]);
         } 
         else
         {
@@ -227,32 +151,22 @@ void plPlan::readFile( plString filename )
         }
     }
 
-    // init all grafts    
+    // init grafts    
     for ( PLuint i = 0; i < _grafts.size(); i++) 
-    {
-        plVector3 axis(0,1,0);
-        // Compute transforms for OpenGL                       
-        _grafts[i].computeTransforms();        
-        // Compute cartilage and bone caps
-        _grafts[i].setCaps();
-        // Make _markDirection perpendicular to axis
-        _grafts[i].markDirection( _grafts[i].markDirection() - (_grafts[i].markDirection()*axis)*axis );
+    {                              
+        _grafts[i].init();        
     }
 
-    // generate boundary meshes
+    // init donor regions
     for ( PLuint i = 0; i < _donorRegions.size(); i++) 
     {
-        _donorRegions[i].updateMesh();
+        _donorRegions[i].init(); 
     }
 
+    // init donor regions
     for ( PLuint i = 0; i < _defectSplines.size(); i++) 
-    {
-        _defectSplines[i].corners.updateMesh();
-        _defectSplines[i].boundary.updateMesh();
-        if (_defectSplines[i].corners.size() == 4)
-        {
-            _defectSplines[i].computeHermiteSpline();
-        }
+    {        
+        _defectSplines[i].init(); 
     }
 
 }
@@ -264,14 +178,14 @@ plBoundary &plPlan::getBoundaryReference(PLuint type, PLuint id)
     {
         case PL_PICKING_TYPE_DEFECT_CORNERS:        return _defectSplines[id].corners;            
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:       return _defectSplines[id].boundary;            
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:        return _donorRegions[id];            
+        case PL_PICKING_TYPE_DONOR_BOUNDARY:        return _donorRegions[id].boundary;            
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY:       return _iGuides[id].boundary;
         default:                                    return _defectSplines[0].corners;  // default
     }
 }
 
 
-std::ostream& operator << ( std::ostream& out, plPlan const &p )
+std::ostream& operator << ( std::ostream& out, const plPlan &p )
 {
     // date / directory
     out << "date," << p.date << std::endl;
@@ -281,41 +195,53 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
     // models
     for (PLuint i=0; i<_plBoneAndCartilageModels.size(); i++) 
     {
-        out << "model," << i << ",bone file,"      << _plBoneAndCartilageModels[i]->getBoneFilename()        << std::endl;
-        out << "model," << i << ",cartilage file," << _plBoneAndCartilageModels[i]->getCartilageFilename()   << std::endl;
+        out << "model," << i << ",bone file,"      << _plBoneAndCartilageModels[i]->_bone        << std::endl;
+        out << "model," << i << ",cartilage file," << _plBoneAndCartilageModels[i]->_cartilage   << std::endl;
         out << std::endl;
     }
     
     // splines
     for (PLuint i=0; i<p._defectSplines.size(); i++) 
-    {
-        out << "spline corners";
-        for (PLuint j=0; j<p._defectSplines[i].corners.size(); j++)
+    {    
+        plSpline &spline = p._defectSplines[i];
+        
+        out << "spline," << i << ",model,"  << spline._modelID << std::endl;        
+        out << "spline," << i << ",corners" << spline.corners  << std::endl;  
+        //out << std::endl;
+        /*     
+        for (PLuint j=0; j<spline.corners.size(); j++)
         {
-            out << "," << p._defectSplines[i].corners.points(j);
-            out << "," << p._defectSplines[i].corners.normals(j);
+            out << "," << spline.corners.points(j);
+            out << "," << spline.corners.normals(j);
         }
-        out << std::endl << std::endl;
+        out << std::endl << std::endl;*/
 
-        out << "spline boundary";
-        for (PLuint j=0; j<p._defectSplines[i].boundary.size(); j++)
+        out << "spline," << i << ",boundary" << spline.boundary << std::endl;  
+        out << std::endl;
+        /*
+        for (PLuint j=0; j<spline.boundary.size(); j++)
         {
-            out << "," << p._defectSplines[i].boundary.points(j);
-            out << "," << p._defectSplines[i].boundary.normals(j);
+            out << "," << spline.boundary.points(j);
+            out << "," << spline.boundary.normals(j);
         }
-        out << std::endl << std::endl;
+        out << std::endl << std::endl; */
     }
 
     // donor regions
     for (PLuint i=0; i<p._donorRegions.size(); i++) 
     {
-        out << "donor boundary";
-        for (PLuint j=0; j<p._donorRegions[i].size(); j++)
+        plDonorSite &donor = p._donorRegions[i];
+        
+        out << "donor region," << i << ",model,"   << donor._modelID << std::endl;
+        out << "donor region," << i << ",boundary" << donor.boundary << std::endl;  
+        out << std::endl;
+        /*
+        for (PLuint j=0; j<donor.boundary.size(); j++)
         {
-            out << "," << p._donorRegions[i].points(j);
-            out << "," << p._donorRegions[i].normals(j);
+            out << "," << donor.boundary.points(j);
+            out << "," << donor.boundary.normals(j);
         }
-        out << std::endl << std::endl;
+        out << std::endl << std::endl; */
     }
 
     // grafts
@@ -323,12 +249,12 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
     {
         plGraft &graft = p._grafts[i];
         
-        out << "graft," << i << ",harvest model,"         << graft.harvestModelID                 << std::endl;
-        out << "graft," << i << ",recipient model,"       << graft.recipientModelID               << std::endl;       
-        out << "graft," << i << ",height offset,"         << graft.heightOffset()                 << std::endl;
-        out << "graft," << i << ",radius,"                << graft.radius()                       << std::endl;
-        out << "graft," << i << ",length,"                << graft.length()                       << std::endl;
-        out << "graft," << i << ",mark direction,"        << graft.markDirection()                << std::endl;
+        out << "graft," << i << ",harvest model,"         << graft._harvestModelID                 << std::endl;
+        out << "graft," << i << ",recipient model,"       << graft._recipientModelID               << std::endl;       
+        out << "graft," << i << ",height offset,"         << graft._heightOffset                  << std::endl;
+        out << "graft," << i << ",radius,"                << graft._radius                         << std::endl;
+        out << "graft," << i << ",length,"                << graft._length                         << std::endl;
+        out << "graft," << i << ",mark direction,"        << graft._markDirection                  << std::endl;
         out << "graft," << i << ",recipient origin,"      << graft.recipientTransform.origin      << std::endl;
         out << "graft," << i << ",recipient x,"           << graft.recipientTransform.x           << std::endl;
         out << "graft," << i << ",recipient y,"           << graft.recipientTransform.y           << std::endl;       
@@ -345,13 +271,14 @@ std::ostream& operator << ( std::ostream& out, plPlan const &p )
 
         out << std::endl;
 
-        out << "iguide," << i << ", boundary";
+        out << "iguide," << i << ", boundary" << iguide.boundary << std::endl;  
+        /*
         for (PLuint j=0; j<iguide.boundary.size(); j++)
         {
             out << "," << iguide.boundary.points(j);
             out << "," << iguide.boundary.normals(j);
         }
-        out << std::endl;
+        out << std::endl;*/
 
         out << "iguide," << i << ",graft indices";
         for (PLuint j=0; j<iguide.graftIndices.size(); j++)
@@ -517,7 +444,7 @@ PLint plBoundaryPointAdd( PLuint x, PLuint y )
 
     if (intersection.exists) 
     {     
-        plBoundaryPointAdd(intersection.point, intersection.normal);
+        return plBoundaryPointAdd(intersection.point, intersection.normal);
     }
     
     /*
@@ -831,18 +758,14 @@ void plGraftDragEdit( PLint x, PLint y )
             if (_plState->graftEditAxis == transform.y)  
             {
                 // translating along y
-                graft.heightOffset( graft.heightOffset() + distOnAxis);  
+                graft.adjustHeightOffset(distOnAxis);  
                 break;              
             }
             
-            if (distOnAxis > 1)
-                distOnAxis = 1;
-            else if (distOnAxis < -1)
-                distOnAxis = -1;
+            distOnAxis = plClamp(distOnAxis);
 
             plVector3 rayOrigin = _plState->graftInitialTransform.origin + (distOnAxis * _plState->graftEditAxis);
 
-            //plVector3 point, normal;
             plIntersection intersection = plModelBoneIntersect(0, rayOrigin, -transform.y);
 
             if (intersection.exists)
@@ -887,10 +810,8 @@ void plGraftDragEdit( PLint x, PLint y )
             // rotation
 
             plVector3 screenAxisNormal(-_plState->graftScreenAxis.y, _plState->graftScreenAxis.x, 0 );
-
             PLfloat angle = -(screenDragVector * screenAxisNormal);
-            plGraftRotate(_plState->graftSelectedID, _plState->graftEditAxis, angle);
-          
+            plGraftRotate(_plState->graftSelectedID, _plState->graftEditAxis, angle);          
             break;
         }
         
@@ -898,12 +819,10 @@ void plGraftDragEdit( PLint x, PLint y )
         {
             // _length
             
-            PLfloat _length_delta = screenDragVector * (_plState->graftScreenAxis).normalize(); 
-            graft.length( graft.length() - _length_delta/10) ;                
-            
+            PLfloat length_delta = screenDragVector * (_plState->graftScreenAxis).normalize(); 
+            graft.adjustLength(-length_delta/10) ;                            
             graft.updateCartilageMesh();
             graft.updateBoneMesh();
-
             break;
         }
         
@@ -912,12 +831,8 @@ void plGraftDragEdit( PLint x, PLint y )
             // marker
             
             plVector3 screenAxisNormal(-_plState->graftScreenAxis.y, _plState->graftScreenAxis.x, 0 );
-
-            PLfloat angle = -(screenDragVector * screenAxisNormal);
-            
+            PLfloat angle = -(screenDragVector * screenAxisNormal);           
             plGraftSpinMarker( angle );
-            
-
             break;
         }
     } 
@@ -1000,7 +915,6 @@ void plGraftSpinMarker( PLfloat angle_degrees )
 void plGraftSpinMarker( PLuint graft_id, PLfloat angle_degrees )
 {
     _plPlan->_grafts[graft_id].spinMark(angle_degrees);
-    //_plPlan->_grafts[graft_id].updateMarkPosition();
 }
 
 //////////////////////////////////////////////////

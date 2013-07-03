@@ -6,5 +6,7 @@
 
 plVector3 plProjectVectorOnPlane( const plVector3 &vector, const plVector3 &plane_normal);
 plVector3 plClosestPointOnLineSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b);
+PLfloat   plClamp( PLfloat val, PLfloat min, PLfloat max);
+
 
 #endif

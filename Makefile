@@ -14,7 +14,7 @@ SOURCES = main.cpp Window.cpp ArcballWindow.cpp PlannerWindow.cpp pl.cpp \
 	plColourMesh.cpp plColourMap.cpp plProjection.cpp plState.cpp \
 	plMatrix44.cpp plPickingTexture.cpp plTriangle.cpp plModel.cpp plGraft.cpp \
 	plTransform.cpp plPlan.cpp plBoundary.cpp plSpline.cpp plCSV.cpp \
-	plCamera.cpp plRenderable.cpp plError.cpp
+	plCamera.cpp plRenderable.cpp plError.cpp plDonorSite.cpp plIGuide.cpp
        
 EXE  = planner
 

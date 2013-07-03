@@ -5,7 +5,6 @@ plBoundary::plBoundary()
     _showWalls = true;
 }
 
-
 void plBoundary::toggleVisibility()
 {
     if (_isVisible && _showWalls)
@@ -72,7 +71,6 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         }
         else
         {
-            std::cout << "eep\n";
             // clock-wise, add new point between existing two
             _points.shift(1);
             _normals.shift(1);
@@ -304,12 +302,12 @@ void plBoundary::updateMesh()
     _mesh = plMesh(interleaved_vertices, indices);
 }
 
-
+/*
 void plBoundary::drawWalls() const
 {  
     _mesh.draw();
 }
-
+*/
 
 void plBoundary::draw() const
 {        
@@ -346,6 +344,15 @@ void plBoundary::draw() const
     }
 }
 
+
+std::ostream& operator << ( std::ostream& out, const plBoundary &b )
+{
+    for (PLuint j=0; j<b._points.size(); j++)
+    {
+        out << "," << b._points[j];
+        out << "," << b._normals[j];
+    }
+}
 //////////////////////////////////////
 
 PLint plBoundaryGetSelectedType()

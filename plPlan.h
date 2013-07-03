@@ -3,6 +3,7 @@
 
 #include "pl.h"
 #include "plError.h"
+#include "plSeq.h"
 #include "plVector3.h"
 #include "plCSV.h"
 #include "plGraft.h"
@@ -11,36 +12,8 @@
 #include "plBoundary.h"
 #include "plSpline.h"
 #include "plString.h"
-
-class plKWire 
-{
-    public:
-        
-        plVector3 position;
-        plVector3 direction;
-  
-        plKWire() 
-        {
-        }
-};
-
-
-class plIGuide : public plRenderable
-{
-    public:
-
-        plBoundary   boundary;
-        plSeq<int>   graftIndices;
-        plSeq<plKWire> kwires;
-
-        plIGuide() {}
-
-        void draw() 
-        {
-            boundary.draw();
-        }
-};
- 
+#include "plDonorSite.h"
+#include "plIGuide.h"
 
 class plPlan : public plRenderable
 {
@@ -61,15 +34,17 @@ class plPlan : public plRenderable
         
         //void outputForManuela();
         
+        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
+        
     //private: eventually make these member variables private
     
-        plSeq<plSpline>   _defectSplines;        
-        plSeq<plBoundary> _donorRegions;
-        plSeq<plIGuide>   _iGuides;                
-        plSeq<plGraft>    _grafts;      
+        plSeq<plSpline>    _defectSplines;        
+        plSeq<plDonorSite> _donorRegions;
+        plSeq<plIGuide>    _iGuides;                
+        plSeq<plGraft>     _grafts;      
 };
 
-std::ostream& operator << ( std::ostream& out, plPlan const &p );
+std::ostream& operator << ( std::ostream& out, const plPlan &p );
 
 #endif
 

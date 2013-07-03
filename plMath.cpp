@@ -19,7 +19,12 @@ plVector3 plClosestPointOnLineSegment(const plVector3 &point, const plVector3 &a
     return a + t * ab;
 }
 
-
+PLfloat plClamp( PLfloat val, PLfloat min, PLfloat max)
+{
+    if (val > max) return max;
+    if (val < min) return min;
+    return val;
+}
 
 /*
 int plPlaneIntersection( const plvector3 &p1_normal, const plvector3 &p2_normal, Plane p1, Plane p2, Point &p, Vector &d)

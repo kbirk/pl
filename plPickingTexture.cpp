@@ -5,6 +5,7 @@ plPickingTexture::plPickingTexture(GLuint width, GLuint height)
     init(width, height);
 }
 
+
 plPickingTexture::~plPickingTexture()
 {
     if (_fbo != 0) {

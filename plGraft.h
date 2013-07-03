@@ -31,6 +31,7 @@ class plPointAndAngle
         
         PLfloat   angle;
         plVector3 point;
+        
         plPointAndAngle() {}
         plPointAndAngle( const PLfloat &a, const plVector3 &v ) 
         { 
@@ -57,63 +58,65 @@ class plGraft : public plRenderable
 
     public:
 
-        plTransform recipientTransform;
-        PLuint      recipientModelID;
+        plTransform recipientTransform;        
         plTransform harvestTransform;
-        PLuint      harvestModelID;
-    
+            
         plGraft();
+        
+        void init();
+        void readFromCSV( const plSeq<plString> &row );
 
-        const PLfloat    &heightOffset()  const { return _heightOffset; } 
-        const PLfloat    &radius()        const { return  _radius; } 
-        const PLfloat    &length()        const { return _length; } 
-        const plVector3  &markDirection() const { return _markDirection; } 
-        const plVector3  &markPosition()  const { return _markPosition; } 
+        PLfloat heightOffset() const { return _heightOffset; } 
+        PLfloat radius()       const { return _radius; } 
+        PLfloat length()       const { return _length; } 
 
-        void heightOffset ( PLfloat heightOffset)           { _heightOffset = heightOffset; } 
-        void radius       ( PLfloat radius)                 { _radius = radius; if (_radius < 0) _radius = 0; } 
-        void length       ( PLfloat length)                 { _length = length; if (_length < 0) _length = 0; } 
-        void markDirection( const plVector3 &markDirection) { _markDirection = markDirection; } 
+        void adjustHeightOffset ( PLfloat adjustment) { _heightOffset += adjustment; } 
+        void adjustRadius       ( PLfloat adjustment) { _radius += adjustment; if (_radius < 0) _radius = 0; } 
+        void adjustLength       ( PLfloat adjustment) { _length += adjustment; if (_length < 0) _length = 0; } 
 
         void computeTransforms();
         
+        void setCaps();
+        
         void draw() const;
-        void drawGraft() const;
-        void drawSelectionInterface() const;
-
+        
         void updateCartilageMesh();
         void updateBoneMesh();
         void updateMarkPosition();
             
         void spinMark( PLfloat degrees );
-    
-        plCap findCap ( const plSeq<plTriangle> &triangles, const plVector3 &up );
-        void  setCaps ();
-        
-        
+         
+        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
+         
     private:
 
-        PLfloat     _heightOffset;
-        PLfloat     _radius;
-        PLfloat     _length;
-        plVector3   _markDirection;
-        plVector3   _markPosition;
+        PLuint     _recipientModelID;
+        PLuint     _harvestModelID;
+        
+        PLfloat    _heightOffset;
+        PLfloat    _radius;
+        PLfloat    _length;
+        plVector3  _markDirection;
+        plVector3  _markPosition;
 
-        plMesh      _boneMesh;
-        plMesh      _cartilageMesh;
+        plMesh     _boneMesh;
+        plMesh     _cartilageMesh;
 
-        plCap       _cartilageCap;
-        plCap       _boneCap;
+        plCap      _cartilageCap;
+        plCap      _boneCap;
         
+        void      _drawGraft() const;
+        void      _drawSelectionInterface() const;
         
-        
-        bool      triangleIntersection( const plTriangle &tri, plPoly &p ) const;
-        plVector3 pointAtAngle( PLfloat theta ) const;
-        PLfloat   angleOfPoint( const plVector3 &v ) const;
-        plVector3 pointOnCircumference( const plVector3 &a, const plVector3 &b ) const;
+        plCap     _findCap             ( const plSeq<plTriangle> &triangles, const plVector3 &up );
+        bool      _triangleIntersection( const plTriangle &tri, plPoly &p ) const;
+        plVector3 _pointAtAngle        ( PLfloat theta ) const;
+        PLfloat   _angleOfPoint        ( const plVector3 &v ) const;
+        plVector3 _pointOnCircumference( const plVector3 &a, const plVector3 &b ) const;
 
 
 };
 
+bool _comparePointAndAngle( const plPointAndAngle &a, const plPointAndAngle &b );
 
 #endif

@@ -19,15 +19,17 @@ class plBoundary : public plRenderable
     public:
 
         plBoundary();       
+                  
+        plVector3 getAverageNormal() const;
+        PLuint    size() const;
+         
+        const plSeq<plVector3> &points () const { return _points;  }
+        const plSeq<plVector3> &normals() const { return _normals; }
         
-        plVector3               getAverageNormal() const;
-        PLuint                  size() const;
         const plVector3        &points ( PLuint index ) const { return _points[index];  }
         const plVector3        &normals( PLuint index ) const { return _normals[index]; }
-        const plSeq<plVector3> &points ()               const { return _points;  }
-        const plSeq<plVector3> &normals()               const { return _normals; }
-         
-        void   toggleVisibility();
+        
+        void  toggleVisibility();
         
         void   loadPointAndNormal(const plString &point, const plString &normal);
         PLuint addPointAndNormal (const plVector3 &point, const plVector3 &normal);
@@ -35,15 +37,19 @@ class plBoundary : public plRenderable
         void   removePointAndNormal( PLuint index );
         void   updateMesh(); 
         void   draw() const;     
-        void   drawWalls() const;  
+        //void   drawWalls() const;  
+        
+        friend std::ostream& operator << ( std::ostream& out, const plBoundary &b );
         
     private:
-    
+           
         plSeq<plVector3> _points;
         plSeq<plVector3> _normals;   
         plMesh           _mesh;    
         PLbool           _showWalls;                   
 };
+
+std::ostream& operator << ( std::ostream& out, const plBoundary &b );
 
 #endif
 

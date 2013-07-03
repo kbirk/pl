@@ -4,6 +4,44 @@ plSpline::plSpline()
 {
 }
 
+void plSpline::init()
+{
+    corners.updateMesh();
+    boundary.updateMesh();
+    if (corners.size() == 4)
+    {
+        computeHermiteSpline();
+    }
+}
+
+void plSpline::readFromCSV(const plSeq<plString> &row)
+{
+    // Fill in the field            
+    plString subfield = row[2];
+    
+    if (plStringCompareCaseInsensitive(subfield, "model") )
+    {
+        _modelID = atof( row[3].c_str() );
+    }                   
+    else if (plStringCompareCaseInsensitive(subfield, "corners") ) 
+    {              
+        for ( PLuint j = 3; j < row.size(); j+=2)
+        {       
+            corners.loadPointAndNormal( row[j], row[j+1] ); 
+        }                
+    }
+    else if (plStringCompareCaseInsensitive(subfield, "boundary") )   
+    {            
+        for ( PLuint j = 3; j < row.size(); j+=2)
+        {      
+            boundary.loadPointAndNormal( row[j], row[j+1] );                         
+        }
+    }  
+    else
+        std::cerr << "Error importing plan, 'spline': Unrecognized word '" << subfield << "' in third column." << std::endl;      
+}
+
+
 void plSpline::draw() const
 {      
     if (!_isVisible)
@@ -20,7 +58,7 @@ void plSpline::draw() const
     // draw spline corner axes
     if (PL_BOUNDARY_CURRENT_IS_SELECTED && corners.isVisible())
     {
-        drawCornersSelectionInterface();
+        _drawCornersSelectionInterface();
     }    
     
     // draw spline surface
@@ -33,12 +71,12 @@ void plSpline::draw() const
         
         if (PL_DEFECT_SPLINE_CURRENT_IS_SELECTED)
         {
-            drawSplineSelectionInterface();
+            _drawSplineSelectionInterface();
         }            
     }
 }
 
-void plSpline::drawCornersSelectionInterface() const
+void plSpline::_drawCornersSelectionInterface() const
 {
     const plSeq<plVector3> &p = corners.points();
     plSeq<plVector3> n;
@@ -295,7 +333,7 @@ void plSpline::computeHermiteSpline()
 }
 
 
-void plSpline::drawSplineSelectionInterface() const
+void plSpline::_drawSplineSelectionInterface() const
 {
     // draw spline
     _plPickingShader->setPickingUniforms(_plPickingState);

@@ -161,6 +161,12 @@ plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &d
     return closest_intersection; //(min < FLT_MAX);
 }
 
+std::ostream& operator << ( std::ostream& out, const plModel &m )
+{
+    out << m._filename;
+}
+
+
 ////////////////////////////////////////////////////////
 // plBoneAndCartilage
 ////////////////////////////////////////////////////////
@@ -170,6 +176,7 @@ plBoneAndCartilage::plBoneAndCartilage( plString bone_file, plString cartilage_f
 {
 }
 
+/*
 void plBoneAndCartilage::readBoneFile( plString bone_file )
 {
     _bone = plModel(bone_file);
@@ -179,6 +186,7 @@ void plBoneAndCartilage::readCartilageFile( plString cartilage_file )
 {
     _cartilage = plModel(cartilage_file);
 }
+*/
 
 void plBoneAndCartilage::toggleBoneVisibility()
 {
@@ -240,8 +248,31 @@ void plBoneAndCartilage::getMinMax(plVector3 &min, plVector3 &max) const
     max.y = (bmax.y > cmax.y) ? bmax.y : cmax.y;
     max.z = (bmax.z > cmax.z) ? bmax.z : cmax.z;
 }     
-   
-   
+ 
+void plBoneAndCartilage::readFromCSV( const plSeq<plString> &row)
+{
+    // fill in the field            
+    plString subfield = row[2];
+    
+    if (plStringCompareCaseInsensitive(subfield, "bone file") )
+        _bone = plModel( row[3] );
+                              
+    else if (plStringCompareCaseInsensitive(subfield, "cartilage file") )    
+        _cartilage = plModel( row[3] );     
+            
+    else
+        std::cerr << "Error importing plan, 'model': Unrecognized word '" << subfield << "' in third column." << std::endl;
+}
+
+/*
+std::ostream& operator << ( std::ostream& out, const plBoneAndCartilage &bnc )
+{
+    out << "model," << i << ",bone file,"      << bnc._bone << std::endl;
+    out << "model," << i << ",cartilage file," << bnc._cartilage << std::endl;
+    out << std::endl;
+}
+*/
+ 
 plIntersection plBoneAndCartilage::rayIntersectBone( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull) const
 {
     return _bone.rayIntersect(start, dir, ignoreBehindRay, backFaceCull);   
@@ -265,6 +296,8 @@ plVector3 plBoneAndCartilage::getCartilageAverageNormal( PLfloat radius, const p
 {
     return _cartilage.getAverageNormal(radius, origin, up);
 }
+
+
 
 ///////////////////////////////////////////
 

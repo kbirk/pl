@@ -8,9 +8,7 @@ class plComputeShader : public plShader
 {
     public:                    
           
-        plComputeShader(const char *computeFile) : plShader(computeFile, GL_COMPUTE_SHADER)
-        {
-        }
+        plComputeShader(const char *computeFile) : plShader(computeFile, GL_COMPUTE_SHADER) {}
 
 };
 
