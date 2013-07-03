@@ -758,8 +758,7 @@ void plGraftDragEdit( PLint x, PLint y )
 
                 } 
                 transform.set( x, y, z, intersection.point );                   
-                //graft.computeTransforms();
-                
+
                 if (PL_GRAFT_SELECTED_IS_DONOR)
                 {
                     graft.setCaps();
@@ -832,7 +831,6 @@ void plGraftSurfaceTranslate( PLuint graft_id, PLuint graft_index, const plVecto
         plVector3 x = (transform.y() ^ transform.z());  
         plVector3 z = transform.z(); 
         transform.set ( x, y, z, intersection.point);    
-        //graft.computeTransforms();
 
         if (graft_index == PL_PICKING_INDEX_GRAFT_DONOR)
         {
@@ -858,8 +856,6 @@ void plGraftRotate( PLuint graft_id, const plVector3 &axis, PLfloat angle_degree
     plMatrix44 rot; rot.setRotationD(angle_degrees,  axis);
 
     transform.set( rot * transform.x(), rot * transform.y() );  
-    
-    //graft.computeTransforms();
 
     if (PL_GRAFT_SELECTED_IS_DONOR)
     {

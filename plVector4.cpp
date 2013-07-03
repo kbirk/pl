@@ -5,9 +5,14 @@ plVector4::plVector4()
 	x = y = z = 0;
 }
 
+plVector4::plVector4( const plVector3 &v, PLfloat ww )
+{
+    x = v.x;    y = v.y;    z = v.z;    w = ww;
+}
+
 plVector4::plVector4( PLfloat xx, PLfloat yy, PLfloat zz, PLfloat ww )
 {
-	x = xx; y = yy; z = zz; w = ww; 
+	x = xx;     y = yy;     z = zz;     w = ww; 
 }
 
 plVector4::plVector4( PLchar *string ) 

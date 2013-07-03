@@ -306,6 +306,13 @@ void plModelAdd( plString bone_file, plString cartilage_file )
 	_plBoneAndCartilageModels.add( new plBoneAndCartilage(bone_file, cartilage_file) );
 }
 
+plBoneAndCartilage& plModelGet( PLuint model_id )
+{
+    if (plErrorCheckModelBounds(model_id, "plModelGet"))
+        return *_plBoneAndCartilageModels[0];   
+        
+    return *_plBoneAndCartilageModels[model_id]; 
+}
 
 void plModelRemove( PLuint model_id )
 {

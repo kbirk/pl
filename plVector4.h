@@ -1,13 +1,8 @@
 #ifndef __PL_VECTOR4_H__
 #define __PL_VECTOR4_H__
 
-#include <iostream>
-#include <cstdlib>
-#include <cfloat>
-#include <cstdio>
-#include <cmath>
-
 #include "pl.h"
+#include "plVector3.h"
 
 class plVector4 
 {
@@ -16,6 +11,7 @@ class plVector4
 		PLfloat x, y, z, w;
 
 		plVector4();
+		plVector4( const plVector3 &v, PLfloat ww );
 		plVector4( PLfloat xx, PLfloat yy, PLfloat zz, PLfloat ww );
 		plVector4( PLchar *string );  
 		plVector4( plString str );

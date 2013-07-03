@@ -247,6 +247,7 @@ extern void             plDrawDisk               ( float scale );
 // MODELS				plModel.h
 //////////////////////////////////////////////////////////////////////////////
 extern void             plModelAdd              ( plString bone_file, plString cartilage_file );
+extern plBoneAndCartilage& plModelGet           ( PLuint model_id );
 extern void             plModelRemove           ( PLuint model_id );
 extern PLuint			plModelCount			();
 extern void             plModelSelect           ( PLuint model_id );

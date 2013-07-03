@@ -1,12 +1,6 @@
 #ifndef __PL_VECTOR3_H__
 #define __PL_VECTOR3_H__
 
-#include <iostream>
-#include <cstdlib>
-#include <cfloat>
-#include <cstdio>
-#include <cmath>
-
 #include "pl.h"
 
 class plVector3 
