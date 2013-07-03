@@ -410,7 +410,7 @@ void plDrawPlan()
 */
 
 
-void plDraw();
+void plDraw(); 
 void plDrawSetViewingMatrix();
 void plDrawSetProjectionMatrix();
 

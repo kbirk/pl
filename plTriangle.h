@@ -23,6 +23,7 @@ class plOrderPair
 };
 
 
+// essentially a struct for storing information about ray intersection with a triangle
 class plIntersection
 {
     public:

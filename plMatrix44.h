@@ -4,6 +4,7 @@
 #include "pl.h"
 #include "plVector3.h"
 #include "plVector4.h"
+#include "plTriangle.h"
 
 class plMatrix44 
 {
@@ -264,6 +265,20 @@ class plMatrix44
 						     (_data[2] * v.x) + (_data[6] * v.y) + (_data[10] * v.z) + (_data[14] * v.w),
 						     (_data[3] * v.x) + (_data[7] * v.y) + (_data[11] * v.z) + (_data[15] * v.w));
 		}
+
+        // triangle multiplication
+        inline plTriangle operator*(const plTriangle &tri) const
+        {
+            plVector3 point0  = *this * tri.point0();
+            plVector3 point1  = *this * tri.point1();
+            plVector3 point2  = *this * tri.point2();
+
+            // normal is special, we must have 0 in the final entry (default is 1 for a plVector3)
+            plVector4 normal4 = *this * plVector4( tri.normal().x,  tri.normal().y,  tri.normal().z, 0.);
+            plVector3 normal3 =         plVector3(      normal4.x,       normal4.y,       normal4.z );
+
+            return plTriangle(normal3,point0,point1,point2);
+        }
 
 		////////////////////////////////////////////////////////
 		// plMatrix44 multiplication
