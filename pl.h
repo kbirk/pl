@@ -229,7 +229,7 @@ extern void 			plPopMatrix			    ();
 extern void             plDraw                   ( PLbool clear_buffer = true, PLbool leave_shader_bound = false);
 extern void             plDrawSetViewingMatrix   ();
 extern void             plDrawSetProjectionMatrix();
-
+extern void             plDrawUnbindShader       ();
 extern void             plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible); 
 extern void             plDrawProbe(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible);
  

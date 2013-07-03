@@ -64,6 +64,10 @@ void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
     if (!leave_shader_bound) _plMinimalShader->unbind();  
 }
 
+void plDrawUnbindShader()
+{
+    glUseProgram(0);
+}
 
 void plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible)
 {
