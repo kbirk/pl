@@ -226,12 +226,13 @@ extern void 			plPopMatrix			    ();
 //////////////////////////////////////////////////////////////////////////////
 // DRAW                 plDraw.h
 //////////////////////////////////////////////////////////////////////////////
-extern void             plDraw                   ();
+extern void             plDraw                   ( PLbool leave_shader_bound = false);
 extern void             plDrawSetViewingMatrix   ();
 extern void             plDrawSetProjectionMatrix();
 
 extern void             plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible); 
-
+extern void             plDrawProbe(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible);
+ 
 extern void             plDrawArrow              ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
 extern void             plDrawArrow              ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
 extern void             plDrawCircleArrow        ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);

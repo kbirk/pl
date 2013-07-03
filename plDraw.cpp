@@ -30,7 +30,7 @@ void _plSetOpenGLState()
     
 }
 
-void plDraw()
+void plDraw( PLbool leave_shader_bound )
 {
     _plSetOpenGLState();
 
@@ -42,6 +42,9 @@ void plDraw()
     
     // CAMERA
     plDrawSetViewingMatrix();
+    
+    // PICKING
+    _plDrawPicking();
     
     _plMinimalShader->bind();   
     _plMinimalShader->setLightUniform( plVector3(10, 10, 15) );
@@ -55,18 +58,12 @@ void plDraw()
         _plBoneAndCartilageModels[i]->draw();
     }
 
-    _plMinimalShader->unbind();
-
-    // PICKING
-    _plDrawPicking();
+    if (!leave_shader_bound) _plMinimalShader->unbind();  
 }
 
 
 void plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible)
 {
-    _plMinimalShader->bind();   
-    _plMinimalShader->setLightUniform( plVector3(10, 10, 15) );
-
     // Draw the TA104 arthroscope
     static plMesh c1(1.5f, 2.0f, 120.0f, 16, 4);
     static plMesh c2(4.0f, 4.0f, 30.0f, 16, 4);
@@ -99,10 +96,34 @@ void plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngl
         glPopMatrix();
     }
     glPopMatrix();
-
-    _plMinimalShader->unbind();
 } 
 
+void plDrawProbe(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible) 
+{
+    static plMesh c1(0.0f, 1.0f, 4.0f, 16, 4);
+    static plMesh c2(1.0f, 2.5f, 124.0f, 16, 4);
+    
+    // Draw the TA002 probe
+    if (visible)
+        glColor3f(0.6,0.6,0.6);
+    else
+        glColor3f(1.0,0.3,0.1);
+
+    
+    glPushMatrix();
+    {
+        glTranslatef(pos.x, pos.y, pos.z);
+        glRotatef(rotAngle,rotAxis.x,rotAxis.y,rotAxis.z);
+        c1.draw();
+        glPushMatrix();
+        {
+            glTranslatef(0, 0, 4);
+            c2.draw();
+        }
+        glPopMatrix();
+    }
+    glPopMatrix();
+}
 
 
 void _plDrawPicking()
