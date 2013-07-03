@@ -8,8 +8,9 @@ plGraft::plGraft()
 
 void plGraft::init()
 {
-    // Compute transforms for OpenGL                       
-    computeTransforms();        
+    // Compute transforms                     
+    harvestTransform.compute();      
+    recipientTransform.compute();             
     // Compute cartilage and bone caps
     setCaps();
     // Make mark direction perpendicular to axis
@@ -39,35 +40,36 @@ void plGraft::readFromCSV( const plSeq<plString> &row )
         _length = atof( row[3].c_str() );
        
     else if (plStringCompareCaseInsensitive(subfield, "mark direction") )
-        _markDirection = plVector3( row[3].c_str() ).normalize();
+        _markDirection = plVector3( row[3] ).normalize();
         
     else if (plStringCompareCaseInsensitive(subfield, "recipient origin") )
-        recipientTransform.origin = plVector3( row[3].c_str() );
+        recipientTransform.origin( row[3] );
     
     else if (plStringCompareCaseInsensitive(subfield, "recipient x") )            
-        recipientTransform.x = plVector3( row[3].c_str() ).normalize();
+        recipientTransform.x( row[3] );
 
     else if (plStringCompareCaseInsensitive(subfield, "recipient y") )
-        recipientTransform.y = plVector3( row[3].c_str() ).normalize();
+        recipientTransform.y( row[3] );
          
     else if (plStringCompareCaseInsensitive(subfield, "harvest origin") )
-        harvestTransform.origin = plVector3( row[3].c_str() );
+        harvestTransform.origin( row[3] );
     
     else if (plStringCompareCaseInsensitive(subfield, "harvest x") )
-        harvestTransform.x = plVector3( row[3].c_str() ).normalize();
+        harvestTransform.x( row[3] );
 
     else if (plStringCompareCaseInsensitive(subfield, "harvest y") )
-        harvestTransform.y = plVector3( row[3].c_str() ).normalize();
+        harvestTransform.y( row[3] );
     else
         std::cerr << "Error in plan, 'graft': Unrecognized word '" << subfield << "' in third column." << std::endl;
 }
 
-
+/*
 void plGraft::computeTransforms() 
 {
     recipientTransform.compute();
     harvestTransform.compute();
 }
+*/
         
 void plGraft::_drawSelectionInterface() const
 {
@@ -275,8 +277,8 @@ void plGraft::_drawGraft() const
 void plGraft::setCaps()
 {
     // generate cap polygons
-    _cartilageCap = _findCap( _plBoneAndCartilageModels[_harvestModelID]->getCartilageTriangles(), harvestTransform.y);
-    _boneCap      = _findCap( _plBoneAndCartilageModels[_harvestModelID]->getBoneTriangles(),      harvestTransform.y);
+    _cartilageCap = _findCap( _plBoneAndCartilageModels[_harvestModelID]->getCartilageTriangles() );
+    _boneCap      = _findCap( _plBoneAndCartilageModels[_harvestModelID]->getBoneTriangles());
     // generate meshes   
     updateCartilageMesh();   
     updateBoneMesh();  
@@ -492,7 +494,7 @@ void plGraft::updateBoneMesh()
 }
 
 
-plCap plGraft::_findCap( const plSeq<plTriangle> &triangles, const plVector3 &up )
+plCap plGraft::_findCap( const plSeq<plTriangle> &triangles)
 {   
     plCap cap;
 
@@ -500,7 +502,7 @@ plCap plGraft::_findCap( const plSeq<plTriangle> &triangles, const plVector3 &up
     for (PLuint i=0; i<triangles.size(); i++) 
     {
         plPoly p;
-        if (triangles[i].normal() * up > 0 && _triangleIntersection( triangles[i], p ))
+        if (triangles[i].normal() * harvestTransform.y() > 0 && _triangleIntersection( triangles[i], p ))
         {
             cap.polys.add( p );
         }
@@ -702,13 +704,13 @@ plVector3 plGraft::_pointOnCircumference( const plVector3 &u, const plVector3 &v
 
 float plGraft::_angleOfPoint( const plVector3 &v ) const
 {
-    return atan2( v*harvestTransform.x, v*harvestTransform.z );
+    return atan2( v*harvestTransform.x(), v*harvestTransform.z() );
 }
 
 
 plVector3 plGraft::_pointAtAngle( PLfloat theta ) const
 {
-    return cos(theta) * harvestTransform.z + sin(theta) * harvestTransform.x;
+    return cos(theta) * harvestTransform.z() + sin(theta) * harvestTransform.x();
 }
 
 void plGraft::spinMark( PLfloat degrees )

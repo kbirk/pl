@@ -21,7 +21,7 @@ class plCamera
         plMatrix44       matrix()    const;
 
         void position( const plVector3 &position ) { _position = position; }
-        void focus   ( const plVector3 &lookat   ) { _lookat = lookat;     }
+        void lookat  ( const plVector3 &lookat   ) { _lookat = lookat;     }
         void up      ( const plVector3 &up       ) { _up = up;             }
         
         void importViewParams( std::string filename );             
@@ -31,6 +31,7 @@ class plCamera
         void rotate   ( PLint x0, PLint y0, PLint x1, PLint y1 );      
         void zoom     ( PLfloat z );
         void reset    ( const plVector3 &min, const plVector3 &max );
+        
     private:
 
         plVector3 _position; 

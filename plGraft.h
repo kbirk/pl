@@ -74,7 +74,7 @@ class plGraft : public plRenderable
         void adjustRadius       ( PLfloat adjustment) { _radius += adjustment; if (_radius < 0) _radius = 0; } 
         void adjustLength       ( PLfloat adjustment) { _length += adjustment; if (_length < 0) _length = 0; } 
 
-        void computeTransforms();
+        //void computeTransforms();
         
         void setCaps();
         
@@ -108,7 +108,7 @@ class plGraft : public plRenderable
         void      _drawGraft() const;
         void      _drawSelectionInterface() const;
         
-        plCap     _findCap              ( const plSeq<plTriangle> &triangles, const plVector3 &up );
+        plCap     _findCap              ( const plSeq<plTriangle> &triangles );
         bool      _triangleIntersection ( const plTriangle &tri, plPoly &p ) const;
         plVector3 _pointAtAngle         ( PLfloat theta ) const;
         PLfloat   _angleOfPoint         ( const plVector3 &v ) const;

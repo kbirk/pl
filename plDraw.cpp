@@ -24,9 +24,6 @@ void _plSetOpenGLState()
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     glEnable( GL_DEPTH_TEST );
 
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
     
 }
 
@@ -48,6 +45,10 @@ void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
     
     // PICKING
     _plDrawPicking();
+    
+    // NORMAL DRAW
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );  
     
     _plMinimalShader->bind();   
     _plMinimalShader->setLightUniform( plVector3(10, 10, 15) );

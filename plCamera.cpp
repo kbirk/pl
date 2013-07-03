@@ -214,7 +214,7 @@ void plCameraSetPosition(const plVector3 &position)
 
 void plCameraSetFocus( const plVector3 &focus)
 {
-    _plCamera->focus(focus);
+    _plCamera->lookat(focus);
 }
 
 void plCameraSetUp( const plVector3 up)

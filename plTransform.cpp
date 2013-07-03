@@ -6,34 +6,58 @@ plTransform::plTransform()
 
 void plTransform::compute() 
 {
-    z = (x ^ y).normalize();
+    _z = (_x ^ _y).normalize(); // re-compute z to ensure it is orthogonal to x and y
 
-    if (fabs(x*y) > 0.001) 
+    if (fabs(_x*_y) > 0.001) 
     {
-        std::cerr << "x and y are not perpendicular (dot product = " << x*y << std::endl;
-        exit(1);
+        std::cerr << "x and y are not perpendicular (dot product = " << _x*_y << std::endl;
     }
 
-    transform[ 0] = x.x; transform[ 4] = y.x; transform[ 8] = z.x; transform[12] = origin.x;
-    transform[ 1] = x.y; transform[ 5] = y.y; transform[ 9] = z.y; transform[13] = origin.y;
-    transform[ 2] = x.z; transform[ 6] = y.z; transform[10] = z.z; transform[14] = origin.z;
-    transform[ 3] = 0.0; transform[ 7] = 0.0; transform[11] = 0.0; transform[15] = 1.0;
+    _transform[ 0] = _x.x; _transform[ 4] = _y.x; _transform[ 8] = _z.x; _transform[12] = _origin.x;
+    _transform[ 1] = _x.y; _transform[ 5] = _y.y; _transform[ 9] = _z.y; _transform[13] = _origin.y;
+    _transform[ 2] = _x.z; _transform[ 6] = _y.z; _transform[10] = _z.z; _transform[14] = _origin.z;
+    _transform[ 3] = 0.0;  _transform[ 7] = 0.0;  _transform[11] = 0.0;  _transform[15] = 1.0;
+}
+
+
+void plTransform::set( const plVector3 &x, const plVector3 &y)
+{
+    _x = x;
+    _y = y;
+    compute();
+}
+
+void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &z)
+{
+    _x = x;
+    _y = y;
+    _z = z;
+    compute();
+}
+
+void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &z, const plVector3 &origin )
+{
+    _x = x;
+    _y = y;
+    _z = z;
+    _origin = origin;
+    compute();
 }
 
 void plTransform::apply() const
 {
-    glMultMatrixf( transform );
+    glMultMatrixf( _transform );
 }
 
 plVector3 plTransform::applyInverse( const plVector3 &v ) const
 {
-    plVector3 p = v-origin;
-    return plVector3( p*x, p*y, p*z );
+    plVector3 p = v-_origin;
+    return plVector3( p*_x, p*_y, p*_z );
 } 
 
 plVector3 plTransform::applyNormalInverse( const plVector3 &v ) const
 {
-    return plVector3( v*x, v*y, v*z );
+    return plVector3( v*_x, v*_y, v*_z );
 }
 
 PLfloat plTransform::squaredDistToAxis( const plVector3 &v ) const    

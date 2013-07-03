@@ -117,7 +117,6 @@
 #define PL_PI                                    3.1415927         
 #define PL_MIN_OF_3(a,b,c)                       (a<=b ? (a<=c ? a : c) : (b<=c ? b : c))
 #define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c)) 
- 
        
 // TYPEDEFS
 
@@ -156,6 +155,7 @@ class plMesh;
 class plTriangle;
 class plIntersection;
 class plBoundary;
+class plGraft;
 
 extern plMesh                         *_plSphere;
 extern plMesh                         *_plCylinder;
@@ -281,6 +281,7 @@ extern void             plGraftSelectRecipient  ( PLuint graft_id );
 extern void             plGraftSelectHarvest    ( PLuint graft_id );
 extern PLbool           plGraftIsSelected       ();
 extern PLint            plGraftGetSelectedID    ();
+extern plGraft&         plGraftGet              ( PLuint graft_id );            
 extern void             plGraftEnableHandles    ();
 extern void             plGraftDisableHandles   ();
 
@@ -345,7 +346,7 @@ extern void             plDefectSplineSetDragOrigin( PLint x, PLint y );
 //////////////////////////////////////////////////////////////////////////////
 // BOUNDARY 
 //////////////////////////////////////////////////////////////////////////////
-extern plBoundary      &plBoundaryGet           ( PLuint type, PLuint id );
+extern plBoundary&      plBoundaryGet           ( PLuint type, PLuint id );
 extern PLint            plBoundaryPointAdd      ( const plVector3 &point, const plVector3 &normal );
 extern PLint            plBoundaryPointAdd      ( PLuint x, PLuint y );
 extern void             plBoundaryPointSelect   ( PLuint index );

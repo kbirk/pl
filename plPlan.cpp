@@ -228,16 +228,16 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         
         out << "graft," << i << ",harvest model,"         << graft._harvestModelID                 << std::endl;
         out << "graft," << i << ",recipient model,"       << graft._recipientModelID               << std::endl;       
-        out << "graft," << i << ",height offset,"         << graft._heightOffset                  << std::endl;
+        out << "graft," << i << ",height offset,"         << graft._heightOffset                   << std::endl;
         out << "graft," << i << ",radius,"                << graft._radius                         << std::endl;
         out << "graft," << i << ",length,"                << graft._length                         << std::endl;
         out << "graft," << i << ",mark direction,"        << graft._markDirection                  << std::endl;
-        out << "graft," << i << ",recipient origin,"      << graft.recipientTransform.origin      << std::endl;
-        out << "graft," << i << ",recipient x,"           << graft.recipientTransform.x           << std::endl;
-        out << "graft," << i << ",recipient y,"           << graft.recipientTransform.y           << std::endl;       
-        out << "graft," << i << ",harvest origin,"        << graft.harvestTransform.origin        << std::endl;
-        out << "graft," << i << ",harvest x,"             << graft.harvestTransform.x             << std::endl;
-        out << "graft," << i << ",harvest y,"             << graft.harvestTransform.y             << std::endl;
+        out << "graft," << i << ",recipient origin,"      << graft.recipientTransform.origin()     << std::endl;
+        out << "graft," << i << ",recipient x,"           << graft.recipientTransform.x()          << std::endl;
+        out << "graft," << i << ",recipient y,"           << graft.recipientTransform.y()          << std::endl;       
+        out << "graft," << i << ",harvest origin,"        << graft.harvestTransform.origin()       << std::endl;
+        out << "graft," << i << ",harvest x,"             << graft.harvestTransform.x()            << std::endl;
+        out << "graft," << i << ",harvest y,"             << graft.harvestTransform.y()            << std::endl;
         out << std::endl;
     }
 
@@ -542,6 +542,14 @@ PLuint plGraftCount()
     return _plPlan->_donorRegions.size();
 }
 
+plGraft& plGraftGet( PLuint graft_id )
+{
+    if (plErrorCheckGraftBounds(graft_id, "plGraftGet"))
+        return _plPlan->_grafts[0];
+        
+    return _plPlan->_grafts[graft_id];
+}
+
 plTransform plGraftGetHarvestTransform( PLuint graft_id )
 {
     if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestTransform"))
@@ -563,7 +571,7 @@ plVector3 plGraftGetHarvestXAxis( PLuint graft_id )
     if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestXAxis"))
         return plVector3();
         
-    return _plPlan->_grafts[graft_id].harvestTransform.x;    
+    return _plPlan->_grafts[graft_id].harvestTransform.x();    
 }
 
 plVector3 plGraftGetHarvestYAxis( PLuint graft_id )
@@ -571,7 +579,7 @@ plVector3 plGraftGetHarvestYAxis( PLuint graft_id )
     if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestYAxis"))
         return plVector3();
         
-    return _plPlan->_grafts[graft_id].harvestTransform.y; 
+    return _plPlan->_grafts[graft_id].harvestTransform.y(); 
 }
 
 plVector3 plGraftGetHarvestZAxis( PLuint graft_id )
@@ -579,7 +587,7 @@ plVector3 plGraftGetHarvestZAxis( PLuint graft_id )
     if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestZAxis"))
         return plVector3();
         
-    return _plPlan->_grafts[graft_id].harvestTransform.z; 
+    return _plPlan->_grafts[graft_id].harvestTransform.z(); 
 }
 
 plVector3 plGraftGetHarvestOrigin( PLuint graft_id )
@@ -587,7 +595,7 @@ plVector3 plGraftGetHarvestOrigin( PLuint graft_id )
     if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestOrigin"))
         return plVector3();
         
-    return _plPlan->_grafts[graft_id].harvestTransform.origin;  
+    return _plPlan->_grafts[graft_id].harvestTransform.origin();  
 }
 
 plVector3 plGraftGetRecipientXAxis( PLuint graft_id )
@@ -595,7 +603,7 @@ plVector3 plGraftGetRecipientXAxis( PLuint graft_id )
     if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientXAxis"))
         return plVector3();
         
-    return _plPlan->_grafts[graft_id].recipientTransform.x;
+    return _plPlan->_grafts[graft_id].recipientTransform.x();
 }
 
 plVector3 plGraftGetRecipientYAxis( PLuint graft_id )
@@ -603,7 +611,7 @@ plVector3 plGraftGetRecipientYAxis( PLuint graft_id )
     if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientYAxis"))
         return plVector3();
         
-    return _plPlan->_grafts[graft_id].recipientTransform.y;
+    return _plPlan->_grafts[graft_id].recipientTransform.y();
 }
 
 plVector3 plGraftGetRecipientZAxis( PLuint graft_id )
@@ -611,7 +619,7 @@ plVector3 plGraftGetRecipientZAxis( PLuint graft_id )
     if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientZAxis"))
         return plVector3();
         
-    return _plPlan->_grafts[graft_id].recipientTransform.z;
+    return _plPlan->_grafts[graft_id].recipientTransform.z();
 }
 
 plVector3 plGraftGetRecipientOrigin( PLuint graft_id )
@@ -619,7 +627,7 @@ plVector3 plGraftGetRecipientOrigin( PLuint graft_id )
     if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientOrigin"))
         return plVector3();
         
-    return _plPlan->_grafts[graft_id].recipientTransform.origin;
+    return _plPlan->_grafts[graft_id].recipientTransform.origin();
 }
 
 void plGraftToggleVisibility( PLuint graft_id )
@@ -674,22 +682,22 @@ void plGraftSetDragOrigin ( PLint x, PLint y )
     {
         case PL_PICKING_TYPE_GRAFT_HANDLE_X: 
             
-            _plState->graftEditAxis = _plState->graftInitialTransform.x; 
-            _plState->graftInitialPlaneNormal = _plState->graftInitialTransform.z;
+            _plState->graftEditAxis = _plState->graftInitialTransform.x(); 
+            _plState->graftInitialPlaneNormal = _plState->graftInitialTransform.z();
             break;
             
         case PL_PICKING_TYPE_GRAFT_HANDLE_Y: 
         
-            _plState->graftEditAxis = _plState->graftInitialTransform.y;             
+            _plState->graftEditAxis = _plState->graftInitialTransform.y();             
             break;
             
         case PL_PICKING_TYPE_GRAFT_HANDLE_Z: 
-            _plState->graftEditAxis = _plState->graftInitialTransform.z; 
-            _plState->graftInitialPlaneNormal = -_plState->graftInitialTransform.x;
+            _plState->graftEditAxis = _plState->graftInitialTransform.z(); 
+            _plState->graftInitialPlaneNormal = -_plState->graftInitialTransform.x();
             break;
     }                                                         
                                               
-    _plState->graftScreenAxis = _plGraftGetScreenAxis(_plState->graftEditAxis, _plState->graftInitialTransform.origin);      
+    _plState->graftScreenAxis = _plGraftGetScreenAxis(_plState->graftEditAxis, _plState->graftInitialTransform.origin());      
 }
 
 void plGraftDragEdit( PLint x, PLint y )
@@ -711,7 +719,7 @@ void plGraftDragEdit( PLint x, PLint y )
             
             PLfloat distOnAxis = (screenDragVector * _plState->graftScreenAxis)/10.0f;
 
-            if (_plState->graftEditAxis == transform.y)  
+            if (_plState->graftEditAxis == transform.y())  
             {
                 // translating along y
                 graft.adjustHeightOffset(distOnAxis);  
@@ -720,37 +728,37 @@ void plGraftDragEdit( PLint x, PLint y )
             
             distOnAxis = plClamp(distOnAxis);
 
-            plVector3 rayOrigin = _plState->graftInitialTransform.origin + (distOnAxis * _plState->graftEditAxis);
+            plVector3 rayOrigin = _plState->graftInitialTransform.origin() + (distOnAxis * _plState->graftEditAxis);
 
-            plIntersection intersection = plModelBoneIntersect(0, rayOrigin, -transform.y);
+            plIntersection intersection = plModelBoneIntersect(0, rayOrigin, -transform.y());
 
             if (intersection.exists)
             {   
-                _plState->graftInitialTransform.origin = intersection.point; //update
+                _plState->graftInitialTransform.origin(intersection.point); //update
                 
                 PLfloat normal_radius = 6.0f;
-                plVector3 normal = plModelBoneGetAvgNormal( 0, normal_radius, transform.origin, transform.y);
+                plVector3 normal = plModelBoneGetAvgNormal( 0, normal_radius, transform.origin(), transform.y());
                 
-                if (_plState->graftEditAxis == transform.x)  
+                plVector3 x,y,z;
+                if (_plState->graftEditAxis == transform.x())  
                 {
-                    // translating along x
-                    transform.x = (normal ^ _plState->graftInitialPlaneNormal).normalize();                       
-                    transform.y = normal.normalize();                        
-                    transform.z = (transform.x ^ transform.y).normalize();
-                    _plState->graftEditAxis = transform.x;    
+                    // translating along x                    
+                    x = (normal ^ _plState->graftInitialPlaneNormal);                       
+                    y = normal;                        
+                    z = (x ^ y);
+                    _plState->graftEditAxis = x;    
                 }
                 else 
                 {
                     // translating along z
-                    transform.z = (normal ^ _plState->graftInitialPlaneNormal).normalize();                       
-                    transform.y = normal.normalize();                         
-                    transform.x = (transform.y ^ transform.z).normalize();     
-                    _plState->graftEditAxis = transform.z; 
+                    z = (normal ^ _plState->graftInitialPlaneNormal);                       
+                    y = normal;                         
+                    x = (y ^ z);     
+                    _plState->graftEditAxis = z; 
 
                 } 
-
-                transform.origin = intersection.point;                   
-                graft.computeTransforms();
+                transform.set( x, y, z, intersection.point );                   
+                //graft.computeTransforms();
                 
                 if (PL_GRAFT_SELECTED_IS_DONOR)
                 {
@@ -812,18 +820,19 @@ void plGraftSurfaceTranslate( PLuint graft_id, PLuint graft_index, const plVecto
     plTransform &transform = (graft_index == PL_PICKING_INDEX_GRAFT_DONOR) ? graft.harvestTransform : graft.recipientTransform;
 
     plVector3 point, normal;
-    plIntersection intersection = plModelBoneIntersect( 0, transform.origin + translation, -transform.y);
+    plIntersection intersection = plModelBoneIntersect( 0, transform.origin() + translation, -transform.y());
 
     if (intersection.exists)
     {   
         PLfloat normal_radius = 6.0f;
-        plVector3 normal = plModelBoneGetAvgNormal( 0, normal_radius, transform.origin, transform.y);
+        plVector3 normal = plModelBoneGetAvgNormal( 0, normal_radius, transform.origin(), transform.y());
         
         // translate
-        transform.y      = normal.normalize();
-        transform.x      = (transform.y ^ transform.z).normalize();                       
-        transform.origin = intersection.point;    
-        graft.computeTransforms();
+        plVector3 y = normal;
+        plVector3 x = (transform.y() ^ transform.z());  
+        plVector3 z = transform.z(); 
+        transform.set ( x, y, z, intersection.point);    
+        //graft.computeTransforms();
 
         if (graft_index == PL_PICKING_INDEX_GRAFT_DONOR)
         {
@@ -848,10 +857,9 @@ void plGraftRotate( PLuint graft_id, const plVector3 &axis, PLfloat angle_degree
   
     plMatrix44 rot; rot.setRotationD(angle_degrees,  axis);
 
-    transform.x = (rot * transform.x).normalize();  
-    transform.y = (rot * transform.y).normalize();  
+    transform.set( rot * transform.x(), rot * transform.y() );  
     
-    graft.computeTransforms();
+    //graft.computeTransforms();
 
     if (PL_GRAFT_SELECTED_IS_DONOR)
     {
