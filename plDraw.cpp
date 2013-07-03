@@ -91,8 +91,8 @@ void plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngl
             {
                 glTranslatef(0,0,30);
                 c3.draw();
-                //glTranslatef(0,0,60);
-                //c4.draw();
+                glTranslatef(0,0,60);
+                c4.draw();
             }
             glPopMatrix();
         }    
