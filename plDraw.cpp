@@ -30,13 +30,16 @@ void _plSetOpenGLState()
     
 }
 
-void plDraw( PLbool leave_shader_bound )
+void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
 {
     _plSetOpenGLState();
 
-    glClearColor( 1,1,1,0 );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
+    if (clear_buffer)
+    {
+        glClearColor( 1,1,1,0 );
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    }
+    
     // PROJECTION
     plDrawSetProjectionMatrix();   
     
