@@ -23,7 +23,7 @@ class plBoundary : public plRenderable
         plVector3 getAverageNormal() const;
         PLuint    size() const;
          
-        const plSeq<plVector3> &points () const { return _points;  }
+        const plSeq<plVector3> &points () const { return _points;  } // always in counterclockwise direction
         const plSeq<plVector3> &normals() const { return _normals; }
         
         const plVector3        &points ( PLuint index ) const { return _points[index];  }
