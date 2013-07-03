@@ -71,7 +71,7 @@ void plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngl
     static plMesh c1(1.5f, 2.0f, 120.0f, 16, 4);
     static plMesh c2(4.0f, 4.0f, 30.0f, 16, 4);
     static plMesh c3(8.0f, 8.0f, 60.0f, 16, 4);
-    //static plMesh c4(8.0f, 0.0f, 0.0f, 16, 4);
+    static plMesh c4(8.0f, 0.0f, 0.0f, 16, 4);
 
     if (visible)
         glColor3f(0.4,0.4,0.4);
