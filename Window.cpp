@@ -1,6 +1,6 @@
 #include "Window.h"
 
-static Window * windows[ MAX_NUM_WINDOWS ];
+static Window *windows[ MAX_NUM_WINDOWS ];
 
 Window::Window( int x, int y, int width, int height, std::string title ) 
 {

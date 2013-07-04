@@ -46,7 +46,7 @@ class plBoneAndCartilage
     public:
        
         plBoneAndCartilage() {};
-        plBoneAndCartilage( plString bone_file, plString cartilage_file);
+        plBoneAndCartilage( plString bone_file, plString cartilage_file );
 
         void readFromCSV( const plSeq<plString> &row);
         

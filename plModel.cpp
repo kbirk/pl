@@ -176,18 +176,6 @@ plBoneAndCartilage::plBoneAndCartilage( plString bone_file, plString cartilage_f
 {
 }
 
-/*
-void plBoneAndCartilage::readBoneFile( plString bone_file )
-{
-    _bone = plModel(bone_file);
-}
-
-void plBoneAndCartilage::readCartilageFile( plString cartilage_file )
-{
-    _cartilage = plModel(cartilage_file);
-}
-*/
-
 void plBoneAndCartilage::toggleBoneVisibility()
 {
     _bone.toggleVisibility();
@@ -264,15 +252,7 @@ void plBoneAndCartilage::readFromCSV( const plSeq<plString> &row)
         std::cerr << "Error importing plan, 'model': Unrecognized word '" << subfield << "' in third column." << std::endl;
 }
 
-/*
-std::ostream& operator << ( std::ostream& out, const plBoneAndCartilage &bnc )
-{
-    out << "model," << i << ",bone file,"      << bnc._bone << std::endl;
-    out << "model," << i << ",cartilage file," << bnc._cartilage << std::endl;
-    out << std::endl;
-}
-*/
- 
+
 plIntersection plBoneAndCartilage::rayIntersectBone( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull) const
 {
     return _bone.rayIntersect(start, dir, ignoreBehindRay, backFaceCull);   
