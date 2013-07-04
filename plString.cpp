@@ -49,6 +49,13 @@ void plStringStripPreceedingWhitespace( plString &s)
         s = s.substr( startpos );
 }  
 
+void plStringStripPreceedingFilepath( plString &s)
+{
+    size_t startpos = s.find_last_of("/") + 1;
+    if (startpos < s.length())
+        s = s.substr( startpos );
+}
+
 bool plStringOnlyWhitespace( const plString &s)
 {
     return (s.length() == 0) || (s.find_first_not_of("\t\n\r ") == plString::npos);

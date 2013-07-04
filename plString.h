@@ -7,6 +7,7 @@ bool plStringCompareCaseInsensitive     ( const plString &str1, const plString &
 bool plStringCompareCaseInsensitive     ( const plString &str1, const plString &str2);
 void plStringStripQuotations            ( plString &s);
 void plStringStripPreceedingWhitespace  ( plString &s);
+void plStringStripPreceedingFilepath    ( plString &s);
 bool plStringOnlyWhitespace             ( const plString &s);
 
 #endif
