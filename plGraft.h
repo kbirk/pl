@@ -66,16 +66,16 @@ class plGraft : public plRenderable
         void init();
         void readFromCSV( const plSeq<plString> &row );
 
-        PLfloat heightOffset() const { return _heightOffset; } 
-        PLfloat radius()       const { return _radius; } 
-        PLfloat length()       const { return _length; } 
+        PLfloat heightOffset()     const { return _heightOffset; } 
+        PLfloat radius()           const { return _radius; } 
+        PLfloat length()           const { return _length; } 
+        PLuint  recipientModelID() const { return _recipientModelID; }
+        PLuint  harvestModelID()   const { return _harvestModelID; }
 
         void adjustHeightOffset ( PLfloat adjustment) { _heightOffset += adjustment; } 
         void adjustRadius       ( PLfloat adjustment) { _radius += adjustment; if (_radius < 0) _radius = 0; } 
         void adjustLength       ( PLfloat adjustment) { _length += adjustment; if (_length < 0) _length = 0; } 
 
-        //void computeTransforms();
-        
         void setCaps();
         
         void draw() const;

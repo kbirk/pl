@@ -14,9 +14,9 @@ plCamera::plCamera( std::string filename)
 void plCamera::_defaultInit()
 {
 	// set default position
-	_position = plVector3(0,0,50);    
-	_lookat   = plVector3(0,0,0);
-	_up       = plVector3(0,1,0);
+	position = plVector3(0,0,50);    
+	lookat   = plVector3(0,0,0);
+	up       = plVector3(0,1,0);
 }  
     
 plMatrix44 plCamera::matrix() const 
@@ -24,8 +24,8 @@ plMatrix44 plCamera::matrix() const
     plVector3 x, y, z;
 
     // Make rotation plMatrix44 
-    z = (_position - _lookat).normalize();
-    y = _up;
+    z = (position - lookat).normalize();
+    y = up;
 
     // X plVector3 = Y cross Z 
     x = (y ^ z).normalize();
@@ -40,20 +40,31 @@ plMatrix44 plCamera::matrix() const
     rot(3,0) = 0.0;   rot(3,1) = 0.0;   rot(3,2) = 0.0;   rot(3,3) = 1.0;
 
     // Translate Eye to Origin 
-    plMatrix44 trans( -_position.x, -_position.y, -_position.z );
+    plMatrix44 trans( -position.x, -position.y, -position.z );
    
     return rot * trans;
+}
+
+void plCamera::reset(const plVector3 &point)
+{
+     plVector3 focus_centre = point;     
+     plVector3 separation = position - focus_centre;    
+     plVector3 camera_direction = (lookat-position).normalize();     
+     PLfloat projection = separation * camera_direction;
+     
+     position = focus_centre + (projection * camera_direction);
+     lookat = focus_centre;
 }
 
 void plCamera::reset(const plVector3 &min, const plVector3 &max)
 {
      plVector3 focus_centre = 0.5f * (max + min);     
-     plVector3 separation = _position - focus_centre;    
-     plVector3 camera_direction = (_lookat-_position).normalize();     
+     plVector3 separation = position - focus_centre;    
+     plVector3 camera_direction = (lookat-position).normalize();     
      PLfloat projection = separation * camera_direction;
      
-     _position = focus_centre + (projection * camera_direction);
-     _lookat = focus_centre;
+     position = focus_centre + (projection * camera_direction);
+     lookat = focus_centre;
 }
 
 void plCamera::exportViewParams( std::string filename )
@@ -66,9 +77,9 @@ void plCamera::exportViewParams( std::string filename )
     }
     else 
     {
-        out << _position << std::endl;
-        out << _lookat << std::endl;
-        out << _up << std::endl;
+        out << position << std::endl;
+        out << lookat << std::endl;
+        out << up << std::endl;
     }
 }
 
@@ -84,9 +95,9 @@ void plCamera::importViewParams( std::string filename )
     }
     else 
     {
-        in >> _position;
-        in >> _lookat;
-        in >> _up;
+        in >> position;
+        in >> lookat;
+        in >> up;
     }
 }
 
@@ -95,7 +106,7 @@ void plCamera::zoom(PLfloat z)
 {     
     const PLfloat ZOOM_SENSITIVITY = 0.005f;
  
-    _position = (_position + (z*ZOOM_SENSITIVITY)*(_lookat - _position));
+    position = (position + (z*ZOOM_SENSITIVITY)*(lookat - position));
 
 }
 
@@ -103,14 +114,14 @@ void plCamera::translate(PLint x, PLint y)
 {
     const PLfloat TRANSLATION_SENSITIVITY = 0.1f;
     
-    PLfloat distance = (_lookat -_position).length();
+    PLfloat distance = (lookat -position).length();
     
-    plVector3 ydir = _up.normalize();
-    plVector3 zdir = (_position - _lookat).normalize();
+    plVector3 ydir = up.normalize();
+    plVector3 zdir = (position - lookat).normalize();
     plVector3 xdir = (ydir ^ zdir).normalize();
     
-    _lookat = _lookat + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);
-    _position = _position + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);  
+    lookat = lookat + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);
+    position = position + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);  
    
 }
 
@@ -132,21 +143,21 @@ void plCamera::rotate( PLint x0, PLint y0, PLint x1, PLint y1 )
     plMatrix44 t = m.inverse() * qm.inverse();
 
     // rotate the view and up direction
-    plVector4 prev( 0, 0,(_position - _lookat).length(), 1);
+    plVector4 prev( 0, 0,(position - lookat).length(), 1);
 
     plVector4 next = t * prev;
 
-    _position.x = next.x/next.w + _lookat.x;
-    _position.y = next.y/next.w + _lookat.y;
-    _position.z = next.z/next.w + _lookat.z;
+    position.x = next.x/next.w + lookat.x;
+    position.y = next.y/next.w + lookat.y;
+    position.z = next.z/next.w + lookat.z;
 
     prev = plVector4(0,1,0,1);
 
     next = t * prev;
 
-    _up.x = next.x/next.w;
-    _up.y = next.y/next.w;
-    _up.z = next.z/next.w;
+    up.x = next.x/next.w;
+    up.y = next.y/next.w;
+    up.z = next.z/next.w;
 }
 
 // ================================================================
@@ -204,22 +215,22 @@ plVector3 plCameraGetDirection()
 
 plVector3 plCameraGetPosition()
 {
-    return _plCamera->position();
+    return _plCamera->position;
 }
 
 void plCameraSetPosition(const plVector3 &position)
 {
-    _plCamera->position(position);
+    _plCamera->position = position;
 }
 
 void plCameraSetFocus( const plVector3 &focus)
 {
-    _plCamera->lookat(focus);
+    _plCamera->lookat = focus;
 }
 
 void plCameraSetUp( const plVector3 up)
 {
-    _plCamera->up(up);
+    _plCamera->up = up;
 }
 
 void plCameraTranslate(PLint x, PLint y)
