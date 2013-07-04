@@ -63,15 +63,17 @@ void plPlan::draw()
 
 // to remove the dependancy that plan elements are included in sequential order, these functions ensures that indices are
 // consistant between plan files and runtime plans
-template<class T>
-T &plGetImportReference( plSeq<T*> &ts, const plString &index )
+plBoneAndCartilage &plGetModelReference( const plString &index )
 {
-    PLuint j = atoi( index.c_str() );           
-    while (ts.size() < j+1)
+    PLuint j = atoi( index.c_str() ); 
+        
+    while (plModelCount() < j+1)
     {
-        ts.add( new T() );   // add new elements until index exists         
+        // add new elements until index exists    
+        plBoneAndCartilage *m = new plBoneAndCartilage();        
     }
-    return *ts[j];
+    
+    return plModelGet(j);
 
 } 
 
@@ -89,7 +91,8 @@ T &plGetImportReference( plSeq<T> &ts,  const plString &index )
 void plPlan::readFile( plString filename )
 {
     plCSV csv( filename );
-
+    //plBoneAndCartilage model;// = new plBoneAndCartilage();
+    
     for ( PLuint i = 0; i < csv.data.size(); i++)
     {
         plString field = csv.data[i][0];
@@ -105,7 +108,7 @@ void plPlan::readFile( plString filename )
         else if (plStringCompareCaseInsensitive(field, "model") )     
         {
             // get reference to model
-            plBoneAndCartilage &model = plGetImportReference( _plBoneAndCartilageModels, csv.data[i][1] ); 
+            plBoneAndCartilage &model = plGetModelReference( csv.data[i][1] ); 
             
             // read model attribute from current row
             model.readFromCSV( csv.data[i] );
@@ -168,7 +171,6 @@ void plPlan::readFile( plString filename )
     {        
         _defectSplines[i].init(); 
     }
-
 }
 
 

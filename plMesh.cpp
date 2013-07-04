@@ -97,7 +97,7 @@ void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plS
 }
 
 void plMesh::draw() const
-{		    			
+{					
 	// bind vertex array object
 	glBindVertexArray(_vertexArrayObject);
 	// draw batch

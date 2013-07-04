@@ -172,7 +172,7 @@ extern plMatrixStack			      *_plModelMatrixStack;
 extern PLuint                         _plColourmap[PL_COLOURMAP_SIZE][4];
 
 extern plPlan                         *_plPlan;
-extern plSeq<plBoneAndCartilage*> 	  _plBoneAndCartilageModels;
+//extern plSeq<plBoneAndCartilage*> 	  _plBoneAndCartilageModels;
 
 
 //////////////////////////////////////////////////////////////////////////////

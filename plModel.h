@@ -2,12 +2,15 @@
 #define __PL_MODEL_H__
 
 #include "pl.h"
+#include "plSeq.h"
 #include "plError.h"
 #include "plRenderable.h"
 #include "plTriangle.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plMesh.h"
+
+extern plSeq<plBoneAndCartilage*> _plBoneAndCartilageModels;
 
 class plModel : public plRenderable
 {
@@ -45,8 +48,10 @@ class plBoneAndCartilage
 {
     public:
        
-        plBoneAndCartilage() {};
+        plBoneAndCartilage();
         plBoneAndCartilage( plString bone_file, plString cartilage_file );
+
+        ~plBoneAndCartilage();
 
         void readFromCSV( const plSeq<plString> &row);
         

@@ -52,10 +52,10 @@ void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
     
     _plMinimalShader->bind();   
     _plMinimalShader->setLightUniform( plVector3(10, 10, 15) );
-    
+
     // PLAN
     _plPlan->draw();
-    
+
     // MODEL
     for (PLuint i =0; i < _plBoneAndCartilageModels.size(); i++)
     {        
@@ -164,13 +164,14 @@ void _plDrawPicking()
 	glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );	        // no longer modify the stencil bits  
     glStencilFunc( GL_EQUAL, 0x00, 0xFF);               // only render to bits = 0 (have not been written)
     
+
     // MODEL
     for (PLuint i =0; i < _plBoneAndCartilageModels.size(); i++)
     {            
         _plPickingState->id = i;    
         _plBoneAndCartilageModels[i]->draw();
     }
-    
+
     _plPickingTexture->unbind(); 
     _plPickingShader->unbind(); 
     

@@ -1,5 +1,7 @@
 #include "plModel.h"
 
+plSeq<plBoneAndCartilage*> _plBoneAndCartilageModels;
+
 ////////////////////////////////////////////////////////
 // plModel
 ////////////////////////////////////////////////////////
@@ -14,7 +16,6 @@ plModel::plModel( std::string filename )
     }
    
     plSTLImportFile( _triangles, filename );
-
     _mesh = plMesh(_triangles);
     _filename = filename;
     _isTransparent = false;
@@ -108,8 +109,7 @@ void plModel::draw() const
         std::sort(order.begin(), order.end(), _compareOrderPairs);
         
         _mesh.draw(order);
-    }
-  
+    } 
 }
 
 
@@ -137,23 +137,18 @@ plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &d
 {
     PLfloat min = FLT_MAX;
 
-    //plVector3 p, n;
-    //PLfloat t;
-    
     plIntersection closest_intersection(false);
 
     for ( PLuint i = 0; i < _triangles.size(); i++)
     {  
         plIntersection intersection = _triangles[i].rayIntersect( start, dir, ignoreBehindRay, backFaceCull);
         
-        if (intersection.exists) //_triangles[i].rayIntersect( p, n, t, start, dir, ignoreBehindRay, backFaceCull))
+        if (intersection.exists)
         {
-            if ( fabs(intersection.t) < min) //fabs(t) < min) 
+            if ( fabs(intersection.t) < min) 
             {
-                min = intersection.t; //fabs(t);
+                min = intersection.t;
                 closest_intersection = intersection;
-                //intPoint = p;
-                //intNorm = n;
             }
         }
 
@@ -171,9 +166,35 @@ std::ostream& operator << ( std::ostream& out, const plModel &m )
 // plBoneAndCartilage
 ////////////////////////////////////////////////////////
 
+plBoneAndCartilage::plBoneAndCartilage()
+{           
+    _plBoneAndCartilageModels.add( this ); 
+}
+
+
 plBoneAndCartilage::plBoneAndCartilage( plString bone_file, plString cartilage_file)
     :   _bone(bone_file), _cartilage(cartilage_file)
-{
+{       
+    _plBoneAndCartilageModels.add( this );
+}
+
+plBoneAndCartilage::~plBoneAndCartilage()
+{     
+    for (PLuint i=0; i<_plBoneAndCartilageModels.size(); i++)
+    {
+        if (_plBoneAndCartilageModels[i] == this)
+        {
+            _plBoneAndCartilageModels.remove(i);
+            std::cout << "plBoneAndCartilage Error:\n"
+                      << "\tDeleting model id: " << i << "\n" 
+                      << "\tIf this is occuring, it is because the model object is:\n"
+                      << "\t\t a) Allocated on the stack and being destructed upon leaving scope\n"
+                      << "\t\t b) Assigned during instantiation using the assignment operator\n"
+                      << "\t\t c) Assigned post instantiation using the assignment operator\n"
+                      << "\tPlease instantiate on the heap, or within the scope of the program without the assignment operator";  
+            break;
+        }
+    }        
 }
 
 void plBoneAndCartilage::toggleBoneVisibility()
@@ -204,7 +225,7 @@ void plBoneAndCartilage::draw() const
     _plPickingState->type = PL_PICKING_TYPE_BONE;
     _plPickingShader->setPickingUniforms(_plPickingState->type,_plPickingState->id, 0);    
     _bone.draw();
-    
+
     // DRAW CARTILAGE
     if (_cartilage.isTransparent())
     {
@@ -241,7 +262,7 @@ void plBoneAndCartilage::readFromCSV( const plSeq<plString> &row)
 {
     // fill in the field            
     plString subfield = row[2];
-    
+
     if (plStringCompareCaseInsensitive(subfield, "bone file") )
         _bone = plModel( row[3] );
                               
@@ -249,7 +270,8 @@ void plBoneAndCartilage::readFromCSV( const plSeq<plString> &row)
         _cartilage = plModel( row[3] );     
             
     else
-        std::cerr << "Error importing plan, 'model': Unrecognized word '" << subfield << "' in third column." << std::endl;
+        std::cerr << "Error importing plan, 'model': Unrecognized word '" << subfield << "' in third column." << std::endl;    
+        
 }
 
 

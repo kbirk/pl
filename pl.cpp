@@ -32,7 +32,7 @@ plMatrixStack			      *_plModelMatrixStack;
 /////////////////////////////////////////////////////////////
 
 plPlan                        *_plPlan;
-plSeq<plBoneAndCartilage*> 	  _plBoneAndCartilageModels;
+//plSeq<plBoneAndCartilage*> 	  _plBoneAndCartilageModels;
 
 void plInit()
 {
