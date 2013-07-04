@@ -28,6 +28,8 @@ class plModel : public plRenderable
         
         plIntersection rayIntersect( const plVector3 &start, const plVector3 &dir, 
                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
+
+        plString  getFilenameWithoutPath ();
         
         friend std::ostream& operator << ( std::ostream& out, const plModel &m );
           
@@ -48,7 +50,7 @@ class plBoneAndCartilage
         plBoneAndCartilage() {};
         plBoneAndCartilage( plString bone_file, plString cartilage_file );
 
-        void readFromCSV( const plSeq<plString> &row);
+        void readFromCSV( const plSeq<plString> &row , const plString &directory );
         
         const plSeq<plTriangle> &getBoneTriangles()      const { return _bone.triangles(); }
         const plSeq<plTriangle> &getCartilageTriangles() const { return _cartilage.triangles(); }

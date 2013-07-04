@@ -15,7 +15,7 @@ plPlan::plPlan( plString filename )
         return;
     }
 
-    readFile( filename );     
+    readFile( filename );
 }
 
 void plPlan::defaultInit()
@@ -106,9 +106,9 @@ void plPlan::readFile( plString filename )
         {
             // get reference to model
             plBoneAndCartilage &model = plGetImportReference( _plBoneAndCartilageModels, csv.data[i][1] ); 
-            
+
             // read model attribute from current row
-            model.readFromCSV( csv.data[i] );
+            model.readFromCSV( csv.data[i], directory );
         }
         
         else if (plStringCompareCaseInsensitive(field, "spline") ) // read before boundary
@@ -152,7 +152,7 @@ void plPlan::readFile( plString filename )
     }
 
     // init grafts    
-    for ( PLuint i = 0; i < _grafts.size(); i++) 
+    for ( PLuint i = 0; i < _grafts.size(); i++)
     {                              
         _grafts[i].init();        
     }
@@ -163,7 +163,7 @@ void plPlan::readFile( plString filename )
         _donorRegions[i].init(); 
     }
 
-    // init donor regions
+    // init deflect regions
     for ( PLuint i = 0; i < _defectSplines.size(); i++) 
     {        
         _defectSplines[i].init(); 
@@ -195,8 +195,8 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     // models
     for (PLuint i=0; i<_plBoneAndCartilageModels.size(); i++) 
     {
-        out << "model," << i << ",bone file,"      << _plBoneAndCartilageModels[i]->_bone        << std::endl;
-        out << "model," << i << ",cartilage file," << _plBoneAndCartilageModels[i]->_cartilage   << std::endl;
+        out << "model," << i << ",bone file,"      << _plBoneAndCartilageModels[i]->_bone.     getFilenameWithoutPath()   << std::endl;
+        out << "model," << i << ",cartilage file," << _plBoneAndCartilageModels[i]->_cartilage.getFilenameWithoutPath()   << std::endl;
         out << std::endl;
     }
     
