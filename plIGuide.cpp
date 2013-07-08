@@ -7,10 +7,7 @@ void plIGuide::readFromCSV( const plSeq<plString> &row )
     
     if (plStringCompareCaseInsensitive(subfield, "boundary") )
     {                    
-        for (PLuint j=3; j < row.size(); j+=2)
-        {
-            boundary.loadPointAndNormal( row[j], row[j+1] );
-        }       
+        boundary.readFromCSV( row );        
     } 
     else if (plStringCompareCaseInsensitive(subfield, "graft indices") ) 
     {
@@ -27,5 +24,6 @@ void plIGuide::readFromCSV( const plSeq<plString> &row )
 
 void plIGuide::draw() 
 {
+    _plPickingState->type = PL_PICKING_TYPE_IGUIDE_BOUNDARY; 
     boundary.draw();
 }

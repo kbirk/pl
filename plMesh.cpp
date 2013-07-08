@@ -9,7 +9,7 @@ plMesh::plMesh(const plSeq<plTriangle> &triangles)
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
     // set vertex count
-	_numIndices = triangles.size() * 3;
+	//_numIndices = triangles.size() * 3;
 	// convert triangles to interleaved
 	triangleToInterleaved(triangles);
 }
@@ -18,7 +18,7 @@ plMesh::plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint>
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {            
 	// set index count
-	_numIndices = indices.size();
+	//_numIndices = indices.size();
 	// set VBO and VAO
     setBuffers(interleaved_vertices, indices);
 }
@@ -33,11 +33,8 @@ void plMesh::destroy()
 void plMesh::triangleToInterleaved(const plSeq<plTriangle> &triangles)
 {			
 	// convert to interleaved format
-	plSeq<plVector3> interleaved_vertices;
-	plSeq<PLuint> indices;
-	
-	interleaved_vertices.reserve(_numIndices*2);
-	indices.reserve(_numIndices);
+	plSeq<plVector3> interleaved_vertices( triangles.size() * 3 * 2 );
+	plSeq<PLuint>    indices             ( triangles.size() * 3);
 	
     int indexCount = 0;
     for (PLuint i = 0; i < triangles.size(); i++) 
@@ -61,8 +58,11 @@ void plMesh::triangleToInterleaved(const plSeq<plTriangle> &triangles)
 
 void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices)
 {
-    // destroy previous buffers incase
-    //destroy();
+    // destroy previous just in case
+    destroy();
+
+    // set number of indices
+    _numIndices = indices.size();
 
     // size of each vertex 
 	const GLuint POS_SIZE = sizeof(GLfloat)*3;

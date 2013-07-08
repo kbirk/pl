@@ -14,47 +14,50 @@
 
 void findInteriorMesh( plSeq<plPolygon> &triangles, plSeq<plWall> &walls, plSeq<plPolygon> &polygons )
 {
-  for (PLint i=0; i<triangles.size(); i++)
-    triangles[i].processed = false;
+    for (PLint i=0; i<triangles.size(); i++)
+        triangles[i].processed = false;
 
-  polygons.clear();
+    polygons.clear();
 
-  plSeq<plVector3> interiorPoints( 3 * triangles.size() );
+    plSeq<plVector3> interiorPoints( 3 * triangles.size() );
 
-  // Collect polygons that intersect the boundary
+    // Collect polygons that intersect the boundary
 
-  for (PLint i=0; i<triangles.size(); i++)
-    triangleCutsBoundary( triangles[i], walls, polygons, interiorPoints );
+    for (PLint i=0; i<triangles.size(); i++)
+        triangleCutsBoundary( triangles[i], walls, polygons, interiorPoints );
 
-  // Collect other polygons that contain an interior point.  This is very slow.
+    // Collect other polygons that contain an interior point.  This is very slow.
 
-  for (PLint i=0; i<interiorPoints.size(); i++)
-  {
-    for (PLint j=0; j<triangles.size(); j++)
-    {
-      if (!triangles[j].processed)
-      {
-        for (PLint k=0; k<3; k++)
+    for (PLint i=0; i<interiorPoints.size(); i++)
+    { 
+        for (PLint j=0; j<triangles.size(); j++)
         {
-          if (interiorPoints[i] == triangles[j].ps[k]) {
-            polygons.add( triangles[j] );
-            triangles[j].processed = true;
-            for (PLint l=0; l<3; l++) {
-              PLint m;
-              for (m=0; m<interiorPoints.size(); m++)
-              {
-                if (triangles[j].ps[l] == interiorPoints[m])
-                  break;
-              }
-              if (m == interiorPoints.size())
-                interiorPoints.add( triangles[j].ps[l] );
+            if (!triangles[j].processed)
+            {
+                for (PLint k=0; k<3; k++)
+                {   
+                    if (interiorPoints[i] == triangles[j].ps[k]) 
+                    {
+                        polygons.add( triangles[j] );
+                        triangles[j].processed = true;
+                        for (PLint l=0; l<3; l++) 
+                        {
+                            PLint m;
+                            for (m=0; m<interiorPoints.size(); m++)
+                            {
+                                if (triangles[j].ps[l] == interiorPoints[m])
+                                    break;
+                            }
+                            if (m == interiorPoints.size())
+                                interiorPoints.add( triangles[j].ps[l] );
+                        }
+                        break;
+                    }
+                }
             }
-            break;
-          }
         }
-      }
     }
-  }
+
 }
 
 
@@ -65,7 +68,6 @@ void findInteriorMesh( plSeq<plPolygon> &triangles, plSeq<plWall> &walls, plSeq<
 
 
 void triangleCutsBoundary( plPolygon &tri,  plSeq<plWall> &walls, plSeq<plPolygon> &polys, plSeq<plVector3> &interiorPoints )
-
 {
   plVector3 ps[3] = { tri.ps[0], tri.ps[1], tri.ps[2] };
 

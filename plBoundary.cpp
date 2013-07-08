@@ -7,17 +7,17 @@ plBoundary::plBoundary()
 
 void plBoundary::toggleVisibility()
 {
-    if (_isVisible && _showWalls)
+    if (isVisible && _showWalls)
     {
         _showWalls = false;
     } 
-    else if (_isVisible && !_showWalls)
+    else if (isVisible && !_showWalls)
     {
-        _isVisible = false;
+        isVisible = false;
     }
     else
     {
-        _isVisible = true;
+        isVisible = true;
         _showWalls = true;
     }
 }
@@ -40,12 +40,18 @@ PLuint plBoundary::size() const
 }
 
 
-void plBoundary::loadPointAndNormal(const plString &point, const plString &normal)
+void plBoundary::readFromCSV( const plSeq<plString> &row )
 {
-    // load in _points from a plan file, this assumes they are counter-clockwise already
-    _points.add(  plVector3( point ) );                  
-    _normals.add( plVector3( normal ) );
+    // assumes points are counter-clockwise
+    for ( PLuint j = 3; j < row.size(); j+=2)
+    {               
+        _points.add(  plVector3( row[j] ) );                  
+        _normals.add( plVector3( row[j+1] ) );
+    } 
+    // construct mesh
+    _updateMesh(); 
 }
+
 
 
 PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
@@ -55,6 +61,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         // 0 or 1 _points, doesnt matter, just add
         _points.add( point );
         _normals.add( normal );
+        _updateMesh();
         return _points.size()-1;
     }
     else if (_points.size() == 3) 
@@ -67,6 +74,8 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
             // already counter clockwise
             _points.add( point );
             _normals.add( normal );
+            
+            _updateMesh(); 
             return 2;
         }
         else
@@ -76,6 +85,8 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
             _normals.shift(1);
             _points[1] = point;
             _normals[1] = normal;
+            
+            _updateMesh(); 
             return 1;
         }
     } 
@@ -141,9 +152,9 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         _points.shift(shift_i);
         _points[shift_i] = point; 
          
+        _updateMesh(); 
         return shift_i;  
     }
-
 }
 
 
@@ -151,6 +162,7 @@ void plBoundary::movePointAndNormal( PLuint index, const plVector3 &point, const
 {
     _points[index] = point;    
     _normals[index] = normal;
+    _updateMesh(); 
 }
 
 
@@ -158,38 +170,15 @@ void plBoundary::removePointAndNormal( PLuint index )
 {
     _points.remove(index);
     _normals.remove(index);
+    _updateMesh(); 
 }
 
 
-void _plSetBoundaryColour()
+void plBoundary::_setColour() const
 {
-    if (PL_BOUNDARY_NONE_SELECTED || PL_BOUNDARY_CURRENT_IS_SELECTED)
+    if (_isSelected)
     {
-        switch (_plPickingState->type)
-        {
-            case PL_PICKING_TYPE_DEFECT_CORNERS:
-                // defect corners 
-                glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
-                break;
-
-            case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-                // defect boundary
-                glColor3f( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
-                break;
- 
-            case PL_PICKING_TYPE_DONOR_BOUNDARY:
-                // donor boundary
-                glColor3f( PL_BOUNDARY_DONOR_COLOUR );
-                break;
-
-            case PL_PICKING_TYPE_IGUIDE_BOUNDARY:     
-                // iguide boundary
-                glColor3f( PL_BOUNDARY_IGUIDE_COLOUR );   
-                break;
-        }
-    }
-    else
-    {
+        // selected
         switch (_plPickingState->type)
         {
             case PL_PICKING_TYPE_DEFECT_CORNERS:
@@ -213,10 +202,36 @@ void _plSetBoundaryColour()
                 break;
         }
     }
+    else
+    {
+        // not selected
+        switch (_plPickingState->type)
+        {
+            case PL_PICKING_TYPE_DEFECT_CORNERS:
+                // defect corners 
+                glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
+                break;
+
+            case PL_PICKING_TYPE_DEFECT_BOUNDARY:
+                // defect boundary
+                glColor3f( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
+                break;
+ 
+            case PL_PICKING_TYPE_DONOR_BOUNDARY:
+                // donor boundary
+                glColor3f( PL_BOUNDARY_DONOR_COLOUR );
+                break;
+
+            case PL_PICKING_TYPE_IGUIDE_BOUNDARY:     
+                // iguide boundary
+                glColor3f( PL_BOUNDARY_IGUIDE_COLOUR );   
+                break;
+        }
+    }
 }
 
 
-void plBoundary::updateMesh()
+void plBoundary::_updateMesh()
 {
     plVector3 n = getAverageNormal();
 
@@ -298,25 +313,18 @@ void plBoundary::updateMesh()
   
     }
 
-    _mesh.destroy();
-    _mesh = plMesh(interleaved_vertices, indices);
+    _mesh.setBuffers(interleaved_vertices, indices);
 }
 
-/*
-void plBoundary::drawWalls() const
-{  
-    _mesh.draw();
-}
-*/
 
 void plBoundary::draw() const
 {        
-    if (!_isVisible)
+    if (!isVisible)
         return;
 
     if (_points.size() > 0) 
     {
-        _plSetBoundaryColour();
+        _setColour();
         
         // draw walls
         if (_showWalls)
@@ -332,7 +340,7 @@ void plBoundary::draw() const
             _plPickingState->index = i; 
             _plPickingShader->setPickingUniforms(_plPickingState);
             
-            if (PL_BOUNDARY_POINT_CURRENT_IS_SELECTED)
+            if (_isSelected && _selectedValue == i)   // is the current point selected?
             {
                 plDrawSphere( _points[i], 1.5) ;
             }
@@ -352,12 +360,7 @@ std::ostream& operator << ( std::ostream& out, const plBoundary &b )
         out << "," << b._points[j];
         out << "," << b._normals[j];
     }
-}
-//////////////////////////////////////
-
-PLint plBoundaryGetSelectedType()
-{
-    return _plState->boundarySelectedType;
+    return out;
 }
 
 

@@ -6,9 +6,6 @@
 #include "plTriangle.h"
 #include "plShader.h" // attribute enums
 
-#define PL_POSITION_ATTRIBUTE  0
-#define PL_NORMAL_ATTRIBUTE    2
-#define PL_COLOUR_ATTRIBUTE    3
 
 class plMesh
 {

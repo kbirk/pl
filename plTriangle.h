@@ -1,7 +1,6 @@
 #ifndef __PL_TRIANGLE_H__
 #define	__PL_TRIANGLE_H__
 
-// PLANNER
 #include "pl.h"
 #include "plString.h"
 #include "plVector3.h"
@@ -54,9 +53,9 @@ class plTriangle
         plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 );
         plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 );
 
-        const plVector3 &point0()   const { return _point0;   }                      
-		const plVector3 &point1()   const { return _point1;   } 
-		const plVector3 &point2()   const { return _point2;   } 
+        const plVector3 &point0()   const { return _points[0];   }                      
+		const plVector3 &point1()   const { return _points[1];   } 
+		const plVector3 &point2()   const { return _points[2];   } 
 		const plVector3 &normal()   const { return _normal;   }
 		const plVector3 &centroid() const { return _centroid; }  
 		                    
@@ -64,6 +63,8 @@ class plTriangle
 		void  point1( const plVector3 &point );
 		void  point2( const plVector3 &point );
          
+		const plVector3 &operator[](int index) const { return _points[index]; }
+                 
         plIntersection rayIntersect( const plVector3 &rayStart, 
 		                             const plVector3 &rayDir, 
 		                             PLbool ignoreBehindRay = false, 
@@ -71,10 +72,9 @@ class plTriangle
 
     private:
     
-        plVector3 _normal;
-        plVector3 _point0;
-        plVector3 _point1;
-        plVector3 _point2;
+        plSeq<plVector3> _points;
+        plVector3        _normal;
+
         plVector3 _centroid;
         
         void _recalculate();

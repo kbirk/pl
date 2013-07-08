@@ -3,14 +3,12 @@
 
 #include "pl.h"
 #include "plSeq.h"
-#include "plError.h"
 #include "plRenderable.h"
 #include "plTriangle.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plMesh.h"
-
-extern plSeq<plBoneAndCartilage*> _plBoneAndCartilageModels;
+#include "plCamera.h"
 
 class plModel : public plRenderable
 {
@@ -18,22 +16,20 @@ class plModel : public plRenderable
 
         plModel() {}
         plModel( std::string filename );
-
-        bool                     isTransparent() const { return _isTransparent; }                
+             
         const plSeq<plTriangle> &triangles()     const { return _triangles; }
         
         void toggleVisibility();
         
-        void draw() const;
+        void draw( const plVector3 &colour ) const;
 
         void      getMinMax(plVector3 &min, plVector3 &max) const;        
         plVector3 getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
-        
+        plString  getFilenameWithoutPath ();
+
         plIntersection rayIntersect( const plVector3 &start, const plVector3 &dir, 
                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
 
-        plString  getFilenameWithoutPath ();
-        
         friend std::ostream& operator << ( std::ostream& out, const plModel &m );
           
 	private:
@@ -50,35 +46,20 @@ class plBoneAndCartilage
 {
     public:
        
+        plModel bone;
+		plModel	cartilage;
+
         plBoneAndCartilage();
         plBoneAndCartilage( plString bone_file, plString cartilage_file );
 
-        ~plBoneAndCartilage();
-
         void readFromCSV( const plSeq<plString> &row , const plString &directory );
-        
-        const plSeq<plTriangle> &getBoneTriangles()      const { return _bone.triangles(); }
-        const plSeq<plTriangle> &getCartilageTriangles() const { return _cartilage.triangles(); }
 
-		void toggleBoneVisibility();
-		void toggleCartilageVisibility();
-		
         void draw() const;
 
         void getMinMax(plVector3 &min, plVector3 &max) const;   
-        
-        plIntersection rayIntersectBone     ( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;                                     
-		plIntersection rayIntersectCartilage( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
-
-		plVector3 getBoneAverageNormal      ( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
-        plVector3 getCartilageAverageNormal ( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
 
         friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
         
-    private:
-	
-		plModel _bone;
-		plModel	_cartilage;
 };
 
 

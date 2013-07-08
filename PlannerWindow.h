@@ -2,34 +2,53 @@
 #define PLANNER_WINDOW_H
 
 // PLANNER
-#include "ArcballWindow.h"
-#include "pl.h"
+#include "Window.h"
+#include "plCamera.h"
+#include "plPlan.h"
+#include "plGraftEditor.h"
+#include "plBoundaryEditor.h"
+#include "plProjection.h"
 
-#define DRAGEE_NONE 		       -1
-#define DRAGEE_GRAFT_HANDLE         1
-#define DRAGEE_BOUNDARY_POINT 	    2
-#define DRAGEE_SPLINE_HANDLE        3
+#define GLUT_NO_BUTTON             -1
 
-class PlannerWindow : public ArcballWindow 
+#define CAMERA_ROTATION_MODE 		1
+#define CAMERA_TRANSLATION_MODE 	2
+
+class PlannerWindow : public Window 
 {
-    
     public:
 
         PlannerWindow( int x, int y, int width, int height, std::string title, int argc, char **argv );
-
-        void draw();
+      
+        void display();        
+        void mouseAction( int button, int state, int x, int y );
+        void passiveMouseMotion( int x, int y);
+        void activeMouseMotion( int x, int y );       
+        void keyAction( unsigned char key, int x, int y );      
+        void setCursor(int x, int y);
                 
-    private:
+    protected:
         
-        PLint _currentDragee;
-        
-        void userKeyAction( PLbyte key, int x, int y );
-        bool userMouseAction( int button, int state, int x, int y );
-        bool userActiveMouseMotion( int x, int y );
-        void userPassiveMouseMotion( int x, int y);
-        void userSetCursor( int x, int y);
- 
+        // planner
+        plPlan           _plan;
+
+        // editing
+        plGraftEditor    _graftEditor; 
+        plBoundaryEditor _boundaryEditor;
+
+        // camera  
+		PLuint	   _cameraMode;     // rotation or translation mode
+		plCamera   _camera;
+		
+		// projection
+		
+		plProjection _projection;
+		
+		// glut
+        plVector3  _previousMouse;	// last mouse position
+        PLint      _button;		    // which button is currently down, must be stored for glutMouseMotion 
+
 };
 
-
 #endif
+

@@ -31,7 +31,7 @@ class plCamera
         void zoom     ( PLfloat z );
         
         void reset    ( const plVector3 &point );
-        void reset    ( const plVector3 &min, const plVector3 &max );
+        void reset    ( const plBoneAndCartilage &model );
         
     private:
 

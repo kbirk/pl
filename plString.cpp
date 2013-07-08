@@ -61,3 +61,17 @@ bool plStringOnlyWhitespace( const plString &s)
     return (s.length() == 0) || (s.find_first_not_of("\t\n\r ") == plString::npos);
 } 
 
+plString plStringConcat( const plString &s1, const plString &s2)
+{
+    std::stringstream str;
+    str << s1 << s2 << "\0";
+    return str.str();
+}
+
+plString plStringConcat( const plString &s1, const plString &s2,  const plString &s3)
+{
+    std::stringstream str;
+    str << s1 << s2 << s3 << "\0";
+    return str.str();
+}
+

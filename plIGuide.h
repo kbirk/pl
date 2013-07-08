@@ -7,6 +7,7 @@
 #include "plVector4.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
+#include "plPickingTexture.h"
 
 class plKWire 
 {

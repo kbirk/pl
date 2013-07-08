@@ -1,208 +1,201 @@
 #include "PlannerWindow.h"
 
-//int Light::nextLight = 0;
-
 PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string title, int argc, char **argv )
-    : ArcballWindow( x, y, width, height, title )
+    : _button( GLUT_NO_BUTTON ),
+      _camera( ".view0" ), 
+      _cameraMode( CAMERA_ROTATION_MODE ),
+      _projection( glutGet(GLUT_WINDOW_WIDTH) / glutGet(GLUT_WINDOW_HEIGHT) ),
+      _graftEditor(),
+      _boundaryEditor(),
+      _plan( argc, argv ), 
+      Window( x, y, width, height, title )
 {  
-    
     plInit();
-    plCameraImportView(".view0");	
-
-    // check if plan file provided
-    if (argc == 2)
-    {
-        // load plan CSV file
-        plPlanImport( argv[1] );
-        
-    }
-    else
-    {
-        // check model count
-        if ( (argc-1) % 2 != 0)  
-        {
-            std::cerr << "Model files must be submitted in twos (bone and cartilage)\n";
-        }
-        
-        // load models
-        for (PLint i = 1; i < argc; i+=2)
-        {
-            // model formats submitted bone, cartilage, bone, cartilage, etc...
-            plModelAdd( argv[i], argv[i+1] ); 
-        }
-        
-        // create empty plan
-        plPlanCreateNew();
-    }
-    
+    plSet( _plan );
+    plSet( _camera );
+    plSet( _projection );
+    plSet( _graftEditor );
+    plSet( _boundaryEditor );
 }
 
-void PlannerWindow::draw()
+
+void PlannerWindow::display()
 {
     plDraw();
+    glutSwapBuffers();
 }
 
 
-void PlannerWindow::userSetCursor(int x, int y)
+void PlannerWindow::setCursor(int x, int y)
 {
-    if (_currentDragee != DRAGEE_NONE) 
-    {
-        glutSetCursor(GLUT_CURSOR_INFO);  
-    }
-    //else if (m_state.options.isMouseOver(x,y))
-    //{
-    //    glutSetCursor(GLUT_CURSOR_INFO);  
-    //}
-    else
-    {
-        glutSetCursor( GLUT_CURSOR_RIGHT_ARROW );
+    switch (_button)
+    {   
+        case GLUT_MIDDLE_BUTTON:        glutSetCursor( GLUT_CURSOR_CROSSHAIR );     break;      // middle button:   zoom
+        case GLUT_LEFT_BUTTON:          glutSetCursor(GLUT_CURSOR_INFO);            break;      // left button:     click / drag 
+        case GLUT_RIGHT_BUTTON: 
+           
+            // right button:    translate / rotate 
+            if (_cameraMode == CAMERA_TRANSLATION_MODE) 
+            
+                glutSetCursor( GLUT_CURSOR_CROSSHAIR );     // translation cursor
+
+            else
+                glutSetCursor( GLUT_CURSOR_CYCLE );         // rotation cursor
+
+     
+        case GLUT_NO_BUTTON:            glutSetCursor( GLUT_CURSOR_RIGHT_ARROW );   break;      // no button:     idle cursor   
     }
 }
 
-void PlannerWindow::userKeyAction( unsigned char key, int x, int y )
-{
 
-    static int planNum = 1;
-//    static int currentView = 0;
+void PlannerWindow::keyAction( unsigned char key, int x, int y )
+{
+    static int currentView = 0;
 
     switch (key) 
-    {   
-        case 'b':   plModelBoneToggleVisibility(0);              break;            
-        case 'c':   plModelCartilageToggleVisibility(0);         break;      
-        case 'p':   plPlanToggleVisibility();                    break;    
-        case 'z':   plCameraResetToModel(0);                     break;          
-        case 't':   plGraftSetTranslateMode();                   break; 
-        case 'r':   plGraftSetRotateMode();                      break;     
-        case 'l':   plGraftSetLengthMode();                      break; 
-        case 'm':   plGraftSetMarkerMode();                      break; 
-        case 'g':   plGraftToggleVisibilityAll();                break;
-        case 's':   plDefectSplineToggleVisibilityAll();         break; 
-        case 'd':   plDonorRegionToggleVisibilityAll();          break;         
-        case 'q':   plDefectSplineCornersToggleVisibilityAll();  break;
-        case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;        
-        case 'O':   plPlanExport("exportPlan");                  break;
+    {
+        case 27:    // esc  
+             exit(0);   
+                                        
+        case ' ':  // spacebar 
+            _cameraMode =  (_cameraMode == CAMERA_ROTATION_MODE) ? CAMERA_TRANSLATION_MODE : CAMERA_ROTATION_MODE;  
+            break; 
+            
+        case 'W':   
+            _camera.exportViewParams( plStringConcat( ".view", plToString( currentView ) ) );   
+            break;
+            
+        case 'R':   
+            _camera.importViewParams( plStringConcat( ".view", plToString( currentView ) ) );   
+            break;  
+       
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case '0':   // 0-9            
+            currentView = (PLint)(key - '0');
+            break;                
+
+        case 'b':   _plan._models[0].bone.toggleVisibility();                   break;            
+        case 'c':   _plan._models[0].cartilage.toggleVisibility();              break;      
+        case 'p':   _plan.toggleVisibility();                                   break;    
+        case 'z':   _camera.reset(_plan._models[0]);                            break;          
+        case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
+        case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
+        case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 
+        case 'm':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_MARKER );      break; 
+        //case 'g':   plGraftToggleVisibilityAll();                break;
+        //case 's':   plDefectSplineToggleVisibilityAll();         break; 
+        //case 'd':   plDonorRegionToggleVisibilityAll();          break;         
+        //case 'q':   plDefectSplineCornersToggleVisibilityAll();  break;
+        //case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;        
+        case 'O':   _plan.exportFile("plan");                    break;
 
         case 127:	 // delete 
         {   
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
 	        {
-                // delete group 
+                // delete boundary 
 	            
             }
             else
             {
                 // delete point
-                plBoundaryPointRemove();         	            
+                _boundaryEditor.removeSelectedPoint();         	            
 	        }
             break;
-        }  
-    }   
-      
+        } 
+    }
+    
     glutPostRedisplay();
 }
 
 
-bool PlannerWindow::userMouseAction( int button, int state, int x, int y )
-{
-    if (state == GLUT_UP) 
+void PlannerWindow::passiveMouseMotion( int x, int y )
+{   
+    // do nothing   
+}
+
+void PlannerWindow::activeMouseMotion( int x, int y )
+{    
+    switch (_button)
     {
-        // mouse button is released
-        _currentDragee = DRAGEE_NONE;
-        return false; 
+        case GLUT_LEFT_BUTTON: 
+
+            // process drag movements 
+            _graftEditor.processMouseDrag(x, glutGet(GLUT_WINDOW_HEIGHT)-y);   
+            _boundaryEditor.processMouseDrag(x, glutGet(GLUT_WINDOW_HEIGHT)-y);  
+            break;       
+
+        case GLUT_MIDDLE_BUTTON:    
+            
+            // zoom camera
+            _camera.zoom(_previousMouse.y - y);                             
+            break;
+
+        case GLUT_RIGHT_BUTTON:
+        
+            // previous and current mouse coords will always be very small, as 
+            // _previousMouse has already been updated in mouseAction() by this point
+            if (_cameraMode == CAMERA_ROTATION_MODE)
+            {
+                _camera.rotate(_previousMouse.x, _previousMouse.y, x, y);
+            }
+            else
+		    {
+			    _camera.translate(_previousMouse.x - x,
+			                      (glutGet(GLUT_WINDOW_HEIGHT) - _previousMouse.y) - (glutGet(GLUT_WINDOW_HEIGHT) - y) );
+            }
+            break;
+    }
+
+    // update mouse position on drag    
+    _previousMouse.x = x;
+    _previousMouse.y = y;
+
+    glutPostRedisplay();
+}
+
+
+
+// Record button state when mouse button is pressed or released
+void PlannerWindow::mouseAction( int button, int state, int x, int y )
+{
+    // NOTE: this function ALWAYS executes BEFORE activeMouseMotion()
+    
+    switch (state)
+    {
+        case GLUT_UP:           _button = GLUT_NO_BUTTON;   return;  // button release, do not process any further (don't want to select anything upon a release)
+        case GLUT_DOWN:         _button = button;           break;   // button press
     }
     
-    if (button == GLUT_LEFT_BUTTON) 
-    {
-        if (glutGetModifiers() == GLUT_ACTIVE_CTRL)
-        {
-            // add boundary point
-            PLint new_index = plBoundaryPointAdd(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
-            if (new_index > 0)  // may not always add a new point (ex. selecting over bone)
-            {
-                plBoundaryPointSelect(new_index);
-            } 
-            glutPostRedisplay();   
-            return true;                               
-        }
-        
-        PLint type = plPickingSelect(x, glutGet(GLUT_WINDOW_HEIGHT)-y);
-
-        switch (type)
-        {
-            case PL_PICKING_TYPE_NONE:
-            {
-                glutPostRedisplay();
-                return false; 
+    switch (button)
+    {   
+        case GLUT_LEFT_BUTTON:  
+            
+            if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
+	        {
+                // add new point
+                _boundaryEditor.addPoint(x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
             }
-            
-            case PL_PICKING_TYPE_GRAFT_HANDLE_X:
-            case PL_PICKING_TYPE_GRAFT_HANDLE_Y:
-            case PL_PICKING_TYPE_GRAFT_HANDLE_Z:
+            else
             {
-                plGraftSetDragOrigin(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
-                _currentDragee = DRAGEE_GRAFT_HANDLE;
-                glutPostRedisplay();
-                return true;                                              
+                // process mouse clicks 
+                _graftEditor.processMouseClick(x, glutGet(GLUT_WINDOW_HEIGHT)-y);    
+                _boundaryEditor.processMouseClick(x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
             }
-            
-            case PL_PICKING_TYPE_DEFECT_CORNERS:
-            case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-            case PL_PICKING_TYPE_DONOR_BOUNDARY:
-            case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
-            {
-                _currentDragee = DRAGEE_BOUNDARY_POINT;
-                glutPostRedisplay();
-                return true; 
-            } 
-            
-            case PL_PICKING_TYPE_DEFECT_HANDLE_0:
-            case PL_PICKING_TYPE_DEFECT_HANDLE_1:
-            case PL_PICKING_TYPE_DEFECT_HANDLE_2:
-            case PL_PICKING_TYPE_DEFECT_HANDLE_3:
-            case PL_PICKING_TYPE_DEFECT_HANDLE_C:
-            {
-                   
-            }
-            
-            default:
-            {
-                glutPostRedisplay();
-                return true; 
-            }            
-        }
-    }
-
-    return false; 
+            break;
+    }    
+     
+    // update mouse position on key press
+    _previousMouse.x = x;
+    _previousMouse.y = y;   
+    
+    glutPostRedisplay();
 }
-
-void PlannerWindow::userPassiveMouseMotion(int x, int y)
-{ 
-    userSetCursor(x,y);
-}
-
-
-bool PlannerWindow::userActiveMouseMotion( int x, int y )
-{   
-
-    switch (_currentDragee)
-    {
-        case DRAGEE_GRAFT_HANDLE:
-        {        
-            plGraftDragEdit(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
-            glutPostRedisplay();    
-            return true;
-        }
-        
-        case DRAGEE_BOUNDARY_POINT:
-        {
-            plBoundaryPointMove(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
-            glutPostRedisplay();
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-

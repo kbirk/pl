@@ -11,12 +11,11 @@ class plRenderable
     
         plRenderable();  
         
-        virtual void   toggleVisibility();
-        virtual PLbool isVisible() const;
+        virtual void toggleVisibility();
 		
     protected:     
            
-        PLbool _isVisible;
+        PLbool isVisible;
     
 };
 

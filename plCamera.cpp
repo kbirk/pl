@@ -47,24 +47,27 @@ plMatrix44 plCamera::matrix() const
 
 void plCamera::reset(const plVector3 &point)
 {
-     plVector3 focus_centre = point;     
-     plVector3 separation = position - focus_centre;    
-     plVector3 camera_direction = (lookat-position).normalize();     
-     PLfloat projection = separation * camera_direction;
+    plVector3 focus_centre = point;     
+    plVector3 separation = position - focus_centre;    
+    plVector3 camera_direction = (lookat-position).normalize();     
+    PLfloat projection = separation * camera_direction;
      
-     position = focus_centre + (projection * camera_direction);
-     lookat = focus_centre;
+    position = focus_centre + (projection * camera_direction);
+    lookat = focus_centre;
 }
 
-void plCamera::reset(const plVector3 &min, const plVector3 &max)
+void plCamera::reset( const plBoneAndCartilage &model )
 {
-     plVector3 focus_centre = 0.5f * (max + min);     
-     plVector3 separation = position - focus_centre;    
-     plVector3 camera_direction = (lookat-position).normalize();     
-     PLfloat projection = separation * camera_direction;
+    plVector3 min, max;
+	model.getMinMax(min, max);
+
+    plVector3 focus_centre = 0.5f * (max + min);     
+    plVector3 separation = position - focus_centre;    
+    plVector3 camera_direction = (lookat-position).normalize();     
+    PLfloat projection = separation * camera_direction;
      
-     position = focus_centre + (projection * camera_direction);
-     lookat = focus_centre;
+    position = focus_centre + (projection * camera_direction);
+    lookat = focus_centre;
 }
 
 void plCamera::exportViewParams( std::string filename )
@@ -208,66 +211,10 @@ plVector4 calc_quat(PLint x0, PLint y0, PLint x1, PLint y1)
 
 /////////////////////////////////////////
 
-plVector3 plCameraGetDirection()
+void plSet( plCamera &camera )
 {
-	return _plCamera->direction();
+    _plCamera = &camera;
 }
-
-plVector3 plCameraGetPosition()
-{
-    return _plCamera->position;
-}
-
-void plCameraSetPosition(const plVector3 &position)
-{
-    _plCamera->position = position;
-}
-
-void plCameraSetFocus( const plVector3 &focus)
-{
-    _plCamera->lookat = focus;
-}
-
-void plCameraSetUp( const plVector3 up)
-{
-    _plCamera->up = up;
-}
-
-void plCameraTranslate(PLint x, PLint y)
-{
-	_plCamera->translate(x, y);
-}
-
-void plCameraZoom(PLfloat z)
-{
-	_plCamera->zoom(z);
-}
-
-void plCameraArcballRotate(PLint x0, PLint x1, PLint y0, PLint y1)
-{
-	_plCamera->rotate(x0, x1, y0, y1);
-}
-
-void plCameraImportView(plString filename)
-{
-	_plCamera->importViewParams(filename);
-}
-
-void plCameraExportView(plString filename)
-{
-	_plCamera->exportViewParams(filename);
-}
-
-void plCameraResetToModel(PLuint model_id)
-{
-    if ( plErrorCheckModelBounds(model_id, "plCameraResetToModel") )
-        return;
-
-	plVector3 min, max;
-	_plBoneAndCartilageModels[model_id]->getMinMax(min, max);
-	_plCamera->reset(min, max);
-}
-
 
 
 

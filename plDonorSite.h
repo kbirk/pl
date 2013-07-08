@@ -3,13 +3,10 @@
 
 #include "pl.h"
 #include "plVector3.h"
-#include "plVector4.h"
 #include "plBoundary.h"
-#include "plTriangle.h"
 #include "plRenderable.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
-
 
 class plDonorSite : public plRenderable
 {
@@ -19,8 +16,8 @@ class plDonorSite : public plRenderable
                 
         plDonorSite();
 
-        void init();
         void readFromCSV( const plSeq<plString> &row );
+
         void draw() const;      
 
         friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
