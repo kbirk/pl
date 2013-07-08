@@ -22,9 +22,7 @@ void plDrawSetProjectionMatrix()
 void _plSetOpenGLState()
 {
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    glEnable( GL_DEPTH_TEST );
-
-    
+    glEnable( GL_DEPTH_TEST );    
 }
 
 void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
@@ -46,7 +44,7 @@ void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
     // PICKING
     _plDrawPicking();
     
-    // NORMAL DRAW
+    // DRAW
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );  
     
@@ -56,11 +54,9 @@ void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
     // PLAN
     _plPlan->draw();
 
-    // MODEL
-    for (PLuint i =0; i < _plBoneAndCartilageModels.size(); i++)
-    {        
-        _plBoneAndCartilageModels[i]->draw();
-    }
+    // EDITORS
+    if (_plGraftEditor != NULL)
+        _plGraftEditor->draw();
 
     if (!leave_shader_bound) _plMinimalShader->unbind();  
 }
@@ -116,8 +112,7 @@ void plDrawProbe(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngl
         glColor3f(0.6,0.6,0.6);
     else
         glColor3f(1.0,0.3,0.1);
-
-    
+   
     glPushMatrix();
     {
         glTranslatef(pos.x, pos.y, pos.z);
@@ -151,31 +146,18 @@ void _plDrawPicking()
     // CAMERA
     plDrawSetViewingMatrix
     */   
-    
-    // stencil testing used to allow user to click on plan components through transparent bone/cartilage
-	glEnable( GL_STENCIL_TEST );						// need stencil testing enabled  					
-	glStencilFunc( GL_ALWAYS, 0xFF, 0xFF );             // replace where rendered 		
-	glStencilOp( GL_REPLACE, GL_REPLACE, GL_REPLACE );	// always replace previous bit	
-	glStencilMask(0x01);                                // only write to first bit
-        
+   
     // PLAN
-    _plPlan->draw();
-        
-	glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );	        // no longer modify the stencil bits  
-    glStencilFunc( GL_EQUAL, 0x00, 0xFF);               // only render to bits = 0 (have not been written)
-    
-
-    // MODEL
-    for (PLuint i =0; i < _plBoneAndCartilageModels.size(); i++)
-    {            
-        _plPickingState->id = i;    
-        _plBoneAndCartilageModels[i]->draw();
-    }
+    _plPlan->draw(true);
+   
+    // EDITORS
+    if (_plGraftEditor != NULL)
+        _plGraftEditor->draw();
 
     _plPickingTexture->unbind(); 
     _plPickingShader->unbind(); 
     
-    glDisable( GL_STENCIL_TEST );
+    
 }
 
 
@@ -241,10 +223,12 @@ void plDrawCircleArrow(const plVector3 &direction, PLfloat length, PLfloat scale
 
 void plDrawSphere(float radius)
 {
+    static plMesh sphere(1, 20, 20);
+
     glPushMatrix();
     {
         glScalef(radius, radius, radius);
-        _plSphere->draw();
+        sphere.draw();
     }
     glPopMatrix();
 }
@@ -255,8 +239,7 @@ void plDrawSphere(const plVector3 &origin, float radius)
     glPushMatrix();
     {
         glTranslatef( origin.x, origin.y, origin.z );
-        glScalef(radius, radius, radius);
-        _plSphere->draw();
+        plDrawSphere( radius );
     }
     glPopMatrix();
 }
@@ -264,20 +247,24 @@ void plDrawSphere(const plVector3 &origin, float radius)
 
 void plDrawCylinder(float radius, float height)
 {
+    static plMesh cylinder(1.0f, 1.0f, 1.0f, 30, 1);    
+
     glPushMatrix();
     {
         glScalef(radius, radius, height);        
-        _plCylinder->draw();
+        cylinder.draw();
     }
     glPopMatrix();
 }
 
 void plDrawDisk(float radius)
 {
+    static plMesh disk(0.0f, 1.0f, 20, 20);   
+
     glPushMatrix();
     {
         glScalef(radius, radius, radius);        
-        _plDisk->draw();
+        disk.draw();
     }
     glPopMatrix();
 }

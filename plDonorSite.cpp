@@ -4,11 +4,6 @@ plDonorSite::plDonorSite()
 {
 }
 
-void plDonorSite::init()
-{
-    boundary.updateMesh();
-}
-
 void plDonorSite::readFromCSV(const plSeq<plString> &row)
 {
     plString subfield = row[2];
@@ -19,10 +14,7 @@ void plDonorSite::readFromCSV(const plSeq<plString> &row)
     }                   
     else if (plStringCompareCaseInsensitive(subfield, "boundary") )   
     {            
-        for ( PLuint j = 3; j < row.size(); j+=2)
-        {      
-            boundary.loadPointAndNormal( row[j], row[j+1] );                         
-        }
+        boundary.readFromCSV( row );  
     } 
     else
     {
@@ -32,7 +24,7 @@ void plDonorSite::readFromCSV(const plSeq<plString> &row)
 
 void plDonorSite::draw() const
 {      
-    if (!_isVisible)
+    if (!isVisible)
         return;
       
     // draw spline boundary 

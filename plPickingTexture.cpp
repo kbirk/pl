@@ -1,6 +1,7 @@
 #include "plPickingTexture.h"
 
 plPickingTexture::plPickingTexture(GLuint width, GLuint height)
+    : _readSinceLastDraw(false)
 {
     init(width, height);
 }
@@ -59,6 +60,7 @@ void plPickingTexture::init(PLuint width, PLuint height)
 void plPickingTexture::bind()
 {    
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo);
+    _readSinceLastDraw = false;
 }
 
 
@@ -68,20 +70,27 @@ void plPickingTexture::unbind()
 }
 
 
+
 plPickingInfo plPickingTexture::readPixel(PLuint x, PLuint y)
 {
+    if (_readSinceLastDraw)
+    {
+        return _lastPick; // already read, no need to read buffer again
+    }
+
+    _readSinceLastDraw = true;
+
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _fbo);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
 
-    plPickingInfo pi;
-    glReadPixels(x, y, 1, 1, GL_RGB_INTEGER, GL_INT, &pi);
+    glReadPixels(x, y, 1, 1, GL_RGB_INTEGER, GL_INT, &_lastPick);
 
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     
-    std::cout << "picking: " << pi.type << " " << pi.id << " " << pi.index << "\n"; 
+    std::cout << "picking: " << _lastPick.type << " " << _lastPick.id << " " << _lastPick.index << "\n"; 
     
-    return pi;
+    return _lastPick;
 }
 
 
@@ -120,54 +129,6 @@ PLint plPickingGetID(PLuint x, PLuint y)
 PLint plPickingGetIndex(PLuint x, PLuint y)
 {
    return _plPickingTexture->readPixel(x,y).index;
-}
-
-PLint plPickingSelect(PLuint x, PLuint y)
-{
-    plPickingInfo pi = _plPickingTexture->readPixel(x,y);
-
-    switch (pi.type) 
-    {   
-        case PL_PICKING_TYPE_BONE:   
-        case PL_PICKING_TYPE_CARTILAGE:
-            
-            _plState->selectModel(pi.id);             
-            break;  
-            
-        case PL_PICKING_TYPE_GRAFT:
-        
-            _plState->selectGraft(pi.id, pi.index);
-            break;
-
-        case PL_PICKING_TYPE_NONE:
-
-            _plState->selectNothing();
-            break;
-            
-        case PL_PICKING_TYPE_DEFECT_CORNERS:
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
-        
-            _plState->selectBoundaryPoint(pi.type, pi.id, pi.index);
-            break;
-        
-        case PL_PICKING_TYPE_DEFECT_SPLINE:
-        
-            _plState->selectSpline(pi.id);
-            break;
-        
-        case PL_PICKING_TYPE_DEFECT_HANDLE_0:
-        case PL_PICKING_TYPE_DEFECT_HANDLE_1:
-        case PL_PICKING_TYPE_DEFECT_HANDLE_2:
-        case PL_PICKING_TYPE_DEFECT_HANDLE_3:
-        case PL_PICKING_TYPE_DEFECT_HANDLE_C:
-        {           
-            break;    
-        }    
-    }
-    
-    return pi.type; 
 }
 
 

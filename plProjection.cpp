@@ -1,44 +1,24 @@
 #include "plProjection.h"
 
-plProjection::plProjection(PLfloat aspect_ratio) 
-    :   _fov(7), _aspect(aspect_ratio), _near(100), _far(15000)
+plProjection::plProjection(PLfloat aspectRatio) 
+    :   _fov(7.0f), _aspect(aspectRatio), _nearPlane(100.0f), _farPlane(15000.0f)
 {
 }
 
-plProjection::plProjection(PLfloat fov, PLfloat aspect_ratio, PLfloat near_plane, PLfloat far_plane)
-    :   _fov(fov), _aspect(aspect_ratio), _near(near_plane), _far(far_plane)
+plProjection::plProjection(PLfloat fov, PLfloat aspectRatio, PLfloat nearPlane, PLfloat farPlane)
+    :   _fov(fov), _aspect(aspectRatio), _nearPlane(nearPlane), _farPlane(farPlane)
 {
 }
 				
 /////////////////////////////////////////////////////////
 
-
-void plProjectionSetAspect(PLfloat aspect_ratio)
+void plSet( plProjection &projection )
 {
-    _plProjection->aspectRatio(aspect_ratio);
+    _plProjection = &projection;
 }
 
-void plProjectionSetFOV(PLfloat fov)
-{
-    _plProjection->fov(fov);
-}
 
-void plProjectionSetNear(PLfloat near_plane)
-{
-    _plProjection->near(near_plane);
-}
-
-void plProjectionSetFar(PLfloat far_plane)
-{
-    _plProjection->far(far_plane);
-}
-
-void plProjectionSetPerspective(PLfloat fov, PLfloat aspect, PLfloat near_plane, PLfloat far_plane)
-{
-    delete _plProjection;
-    _plProjection = new plProjection(fov, aspect, near_plane, far_plane);
-}
-
+/////////////////////////////////////////////////////////
 
 void plWindowReshape(PLuint width, PLuint height)
 {    
@@ -46,8 +26,6 @@ void plWindowReshape(PLuint width, PLuint height)
     delete _plPickingTexture;
     _plPickingTexture = new plPickingTexture(width, height);
 }
-
-/////////////////////////////////////////////////////////
 
 plVector3 plWindowGetMouseToWorldPos(PLint x, PLint y, PLint z)
 {

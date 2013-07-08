@@ -4,116 +4,21 @@ plSpline::plSpline()
 {
 }
 
-void plSpline::init()
-{
-    corners.updateMesh();
-    boundary.updateMesh();
-    if (corners.size() == 4)
-    {
-        computeHermiteSpline();
-    }
-}
-
-void plSpline::readFromCSV(const plSeq<plString> &row)
-{
-    // Fill in the field            
-    plString subfield = row[2];
-    
-    if (plStringCompareCaseInsensitive(subfield, "model") )
-    {
-        _modelID = atof( row[3].c_str() );
-    }                   
-    else if (plStringCompareCaseInsensitive(subfield, "corners") ) 
-    {              
-        for ( PLuint j = 3; j < row.size(); j+=2)
-        {       
-            corners.loadPointAndNormal( row[j], row[j+1] ); 
-        }                
-    }
-    else if (plStringCompareCaseInsensitive(subfield, "boundary") )   
-    {            
-        for ( PLuint j = 3; j < row.size(); j+=2)
-        {      
-            boundary.loadPointAndNormal( row[j], row[j+1] );                         
-        }
-    }  
-    else
-        std::cerr << "Error importing plan, 'spline': Unrecognized word '" << subfield << "' in third column." << std::endl;      
-}
-
 
 void plSpline::draw() const
 {      
-    if (!_isVisible)
+    if (!isVisible)
         return;
-      
-    // draw spline boundary 
-    _plPickingState->type = PL_PICKING_TYPE_DEFECT_BOUNDARY;
-    boundary.draw();   
-     
-    // draw spline corners
-    _plPickingState->type = PL_PICKING_TYPE_DEFECT_CORNERS;
-    corners.draw();
-    
-    // draw spline corner axes
-    if (PL_BOUNDARY_CURRENT_IS_SELECTED && corners.isVisible())
-    {
-        _drawCornersSelectionInterface();
-    }    
-    
-    // draw spline surface
-    if (corners.size() == 4)
-    {
-        _plPickingState->type = PL_PICKING_TYPE_DEFECT_SPLINE;       
-        _plPickingShader->setPickingUniforms(_plPickingState);
-        glColor3f(PL_DEFECT_SPLINE_COLOUR); 
-        _mesh.draw();
-        
-        if (PL_DEFECT_SPLINE_CURRENT_IS_SELECTED)
-        {
-            _drawSplineSelectionInterface();
-        }            
-    }
-}
 
-void plSpline::_drawCornersSelectionInterface() const
-{
-    const plSeq<plVector3> &p = corners.points();
-    plSeq<plVector3> n;
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[0], corners.normals(0)) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[1], corners.normals(1)) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[2], corners.normals(2)) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[3], corners.normals(3)) );
-        
-    plVector3 nm = corners.getAverageNormal();
+    _plPickingState->type = PL_PICKING_TYPE_DEFECT_SPLINE;       
+    _plPickingShader->setPickingUniforms(_plPickingState);
+    glColor3f(PL_DEFECT_SPLINE_COLOUR); 
+    _mesh.draw();
     
-    glColor3f( 1.0, 0.2, 0.2 );
-    for (PLuint i = 0; i < _s.size(); i++)
+    if (_isSelected)
     {
-        glPushMatrix();
-        glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
-        plDrawArrow(p[i], _s[i], 4.0f, 0.5f);
-        glPopMatrix();
-    }
-
-    glColor3f( 0.2, 0.2, 1.0);
-    for (PLuint i = 0; i < _t.size(); i++)
-    {
-        glPushMatrix();
-        glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
-        plDrawArrow(p[i], _t[i], 4.0f, 0.5f);
-        glPopMatrix();        
-    }
-  
-    glColor3f( 0.2, 1.0, 0.2 );
-    for (PLuint i = 0; i < n.size(); i++)
-    {
-        glPushMatrix();
-        glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
-        plDrawArrow(p[i], n[i], 4.0f, 0.5f);
-        glPopMatrix();        
-    }
-    
+        //_drawSplineSelectionInterface();
+    }            
 }
 
 PLfloat Q( PLfloat s, PLfloat t, const plSeq<plVector3> &p, const plSeq<PLfloat> &st, const plSeq<PLfloat> &tt)
@@ -135,18 +40,18 @@ PLfloat Q( PLfloat s, PLfloat t, const plSeq<plVector3> &p, const plSeq<PLfloat>
     return (h * sc) * q * (h * tc);                         
 }
 
-void plSpline::computeHermiteSpline()
+void plSpline::computeHermite( const plBoundary &corners, const plModel &cartilage )
 {    
     // p and n for cleaner code
     const plSeq<plVector3> &p = corners.points();    
     plSeq<plVector3> n;
 
     // compute averages normals
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[0], corners.normals(0)) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[1], corners.normals(1)) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[2], corners.normals(2)) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, p[3], corners.normals(3)) );
-
+    n.add( cartilage.getAverageNormal( 4.0f, p[0], corners.normals(0)) );   //  (plModelCartilageGetAvgNormal(modelID, 4.0f, p[0], corners.normals(0)) );
+    n.add( cartilage.getAverageNormal( 4.0f, p[1], corners.normals(1)) ); 
+    n.add( cartilage.getAverageNormal( 4.0f, p[2], corners.normals(2)) ); 
+    n.add( cartilage.getAverageNormal( 4.0f, p[3], corners.normals(3)) );  
+ 
     // get unit directional vectors, (p01 = from p0 to p1)
     plVector3 p01 = (p[1]-p[0]).normalize();
     plVector3 p03 = (p[3]-p[0]).normalize();
@@ -211,8 +116,8 @@ void plSpline::computeHermiteSpline()
 
     const PLfloat inc = 0.05f;
  
-    plSeq<plVector3>    interleaved_vertices( ((1.0 / inc) + 1) * 4 * 3 );
-    plSeq<PLuint>       indices             ( ((1.0 / inc) + 1) * 6 );
+    plSeq<plVector3> interleaved_vertices( ((1.0 / inc) + 1) * 4 * 3 );
+    plSeq<PLuint>    indices             ( ((1.0 / inc) + 1) * 6 );
 
     PLfloat percent = 0;
 
@@ -270,26 +175,27 @@ void plSpline::computeHermiteSpline()
              
             plIntersection intersection(false); 
               
-            // colour map values      
-            intersection = plModelCartilageIntersect(0, pos0+(10*faceNorm), -faceNorm, false, true);
+            // colour map values   
+             
+            intersection = cartilage.rayIntersect( pos0+(10.0f*faceNorm), -faceNorm, false, true );  // plModelCartilageIntersect(modelID, pos0+(10*faceNorm), -faceNorm, false, true);
             if (intersection.exists)
                 col0 = plColourMap( (intersection.point - pos0).squaredLength()/FURTHEST_DISTANCE );
             else 
                 col0 = plVector3(0.2, 0.2, 0.2); 
                                 
-            intersection = plModelCartilageIntersect(0, pos1+(10*faceNorm), -faceNorm, false, true);
+            intersection = cartilage.rayIntersect( pos1+(10.0f*faceNorm), -faceNorm, false, true );  
             if (intersection.exists)
                 col1 = plColourMap((intersection.point - pos1).squaredLength()/FURTHEST_DISTANCE);
             else 
                 col1 = plVector3(0.2, 0.2, 0.2);
                 
-            intersection = plModelCartilageIntersect(0, pos2+(10*faceNorm), -faceNorm, false, true);
+            intersection = cartilage.rayIntersect( pos2+(10.0f*faceNorm), -faceNorm, false, true ); 
             if (intersection.exists)
                 col2 = plColourMap((intersection.point - pos2).squaredLength()/FURTHEST_DISTANCE);
             else 
                 col2 = plVector3(0.2, 0.2, 0.2);
                 
-            intersection = plModelCartilageIntersect(0, pos3+(10*faceNorm), -faceNorm, false, true);
+            intersection = cartilage.rayIntersect( pos3+(10.0f*faceNorm), -faceNorm, false, true );  
             if (intersection.exists)
                 col3 = plColourMap((intersection.point - pos3).squaredLength()/FURTHEST_DISTANCE);
             else 
@@ -328,21 +234,21 @@ void plSpline::computeHermiteSpline()
         
     }    
     std::cout << "\r100% spline calculation\n"; 
-    _mesh.destroy();
-    _mesh = plColourMesh(interleaved_vertices, indices);
+
+    _mesh.setBuffers(interleaved_vertices, indices);
 }
 
-
+/*
 void plSpline::_drawSplineSelectionInterface() const
 {
     // draw spline
     _plPickingShader->setPickingUniforms(_plPickingState);
        
     plSeq<plVector3> n; 
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points(0), corners.normals(0)) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points(1), corners.normals(1)) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points(2), corners.normals(2)) );
-    n.add( plModelCartilageGetAvgNormal(0, 4.0f, corners.points(3), corners.normals(3)) );   
+    n.add( plModelCartilageGetAvgNormal(modelID, 4.0f, corners.points(0), corners.normals(0)) );
+    n.add( plModelCartilageGetAvgNormal(modelID, 4.0f, corners.points(1), corners.normals(1)) );
+    n.add( plModelCartilageGetAvgNormal(modelID, 4.0f, corners.points(2), corners.normals(2)) );
+    n.add( plModelCartilageGetAvgNormal(modelID, 4.0f, corners.points(3), corners.normals(3)) );   
        
     glPushMatrix();
     for (PLuint i = 0; i < corners.size(); i++)
@@ -354,17 +260,7 @@ void plSpline::_drawSplineSelectionInterface() const
     }
     glPopMatrix();
 }
-
-////////////////////////////////////////////////
-
-PLbool plDefectSplineIsSelected()
-{
-    return _plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_SPLINE;
-}
-
-
-
-
+*/
 
 
 

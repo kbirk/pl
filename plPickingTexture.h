@@ -2,7 +2,6 @@
 #define	__PL_PICKING_FBO_H
 
 #include "pl.h"
-#include "plState.h"
 
 class plPickingInfo 
 {
@@ -28,6 +27,8 @@ class plPickingTexture
 		plPickingTexture(GLuint width, GLuint height);
 		~plPickingTexture();
 
+        const plPickingInfo &lastPick() const { return _lastPick; }
+
 		void init(PLuint width, PLuint height);
 		void bind();		
 		void unbind();
@@ -37,9 +38,12 @@ class plPickingTexture
         
 	private:
 	
-		GLuint _fbo;
-		GLuint _pickingTexture;
-		GLuint _depthStencilTexture;
+        PLbool        _readSinceLastDraw;
+        plPickingInfo _lastPick;
+
+		GLuint        _fbo;
+		GLuint        _pickingTexture;
+		GLuint        _depthStencilTexture;
 };
 
 #endif

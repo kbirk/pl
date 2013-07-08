@@ -7,8 +7,7 @@ plColourMesh::plColourMesh() : plMesh()
 
 plColourMesh::plColourMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices) : plMesh()
 {            
-	// set index count
-	_numIndices = indices.size();
+	
 	// set VBO and VAO
     setBuffers(interleaved_vertices, indices);
 }
@@ -16,6 +15,12 @@ plColourMesh::plColourMesh(const plSeq<plVector3> &interleaved_vertices, const p
 
 void plColourMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices)
 {
+    // destroy incase already set
+    destroy();
+
+    // set index count
+	_numIndices = indices.size();
+
     // size of each vertex 
 	const GLuint POS_SIZE = sizeof(GLfloat)*3;
 	const GLuint NOR_SIZE = sizeof(GLfloat)*3;

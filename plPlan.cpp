@@ -1,94 +1,135 @@
 #include "plPlan.h"
 
-plPlan::plPlan() 
+plPlan::plPlan( plString filename )
 {
-   defaultInit(); 
-}
-
-plPlan::plPlan( plString filename ) 
-{      
     if (filename.compare(filename.size()-4, 4, ".csv") != 0)
     {
         std::cerr << "Unrecognized suffix on filename '" << filename 
                   << "'. plPlan filenames should have suffix .csv" << std::endl;                
-        defaultInit();
-        return;
+        exit(1);
     }
-
-    readFile( filename );
+    importFile( filename );
 }
 
-void plPlan::defaultInit()
-{
-    date = directory = "";   
-}
 
-void plPlan::draw()
-{
-    if (!_isVisible)
-        return;
+plPlan::plPlan( int argc, char **argv )
+{ 
+    if (argc == 1)
+    {
+        // 0 arguments    
+        std::cerr << "plPlan error: No arguments provided, an empty plan must be provided a bone and cartilage model\n";
+        exit(1);
+    }
+    if (argc == 2)
+    {
+        // 1 arguments
+        plString filename(argv[1]);
+        if (filename.compare(filename.size()-4, 4, ".csv") != 0)
+        {
+            std::cerr << "Unrecognized suffix on filename '" << filename 
+                      << "'. plPlan filenames should have suffix .csv" << std::endl;                
+            exit(1);
+        }
+        importFile( filename );
+    }
+    else
+    {
+        // 2+ arguments
+        if ( (argc-1) % 2 != 0)  
+        {
+            std::cerr << "Model files must be submitted in twos (bone and cartilage)\n";
+            exit(1);
+        }
         
-    // Draw defect boundary 
-    for ( PLuint i = 0; i < _defectSplines.size(); i++)
-    {
-        _plPickingState->id = i; 
-        _defectSplines[i].draw();
+        // load models
+        for (PLint i = 1; i < argc; i+=2)
+        {
+            // model input order: bone, cartilage, bone, cartilage, etc...
+            _models.add( plBoneAndCartilage( argv[i], argv[i+1] ) );
+        }
+        
+        // FIX THIS TO GET THE INPUT DIRECTORY OF MODEL FILES
+        date = directory = "";  
     }
-   
-    // Draw harvest boundaries   
-    for ( PLuint i = 0; i < _donorRegions.size(); i++)
-    {
-        //_plPickingState->type = PL_PICKING_TYPE_DONOR_BOUNDARY; 
-        _plPickingState->id = i;        
-        _donorRegions[i].draw();            
-    }    
 
-    // Draw grafts
-    for ( PLuint i = 0; i < _grafts.size(); i++)
-    {       
-        _plPickingState->type = PL_PICKING_TYPE_GRAFT; 
-        _plPickingState->id = i; 
-        _grafts[i].draw();
+}
+
+
+void plPlan::draw( PLbool picking )
+{
+    if (picking)
+    {
+        glEnable     ( GL_STENCIL_TEST );				      // need stencil testing enabled  					
+	    glStencilFunc( GL_ALWAYS, 0xFF, 0xFF );               // replace where rendered 		
+	    glStencilOp  ( GL_REPLACE, GL_REPLACE, GL_REPLACE );  // always replace previous bit	
+	    glStencilMask( 0x01 );                                // only write to first bit
+    } 
+
+    if (isVisible)
+    {
+        // Draw defect boundary 
+        for ( PLuint i = 0; i < _defectSites.size(); i++)
+        {
+            _plPickingState->id = i; 
+            _defectSites[i].draw();
+        }
+       
+        // Draw harvest boundaries   
+        for ( PLuint i = 0; i < _donorSites.size(); i++)
+        {
+            _plPickingState->id = i;        
+            _donorSites[i].draw();            
+        }    
+
+        // Draw grafts
+        for ( PLuint i = 0; i < _grafts.size(); i++)
+        {       
+            
+            _plPickingState->id = i; 
+            _grafts[i].draw();
+        }
+        
+        // Draw iGuides
+        for ( PLuint i = 0; i < _iGuides.size(); i++)
+        {            
+            _plPickingState->id = i; 
+            _iGuides[i].draw();
+        }
+    }      
+    
+    if (picking)
+    {    
+	    glStencilOp  ( GL_KEEP, GL_KEEP, GL_KEEP );	        // no longer modify the stencil bits  
+        glStencilFunc( GL_EQUAL, 0x00, 0xFF);               // only render to bits = 0 (have not been written)
     }
     
-    /*
-    // Draw iGuides
-    if (selectedIGuide != -1)
-    {
-        iGuides[selectedIGuide].draw(plVector3(IGUIDE_BOUNDARY_COLOUR), ctrlPointColourPickingValue, state.selectedCtrlPoint );
-        ctrlPointColourPickingValue+=MAX_CTRL_POINTS;
-    }
-    */
-}
-
-// to remove the dependancy that plan elements are included in sequential order, these functions ensures that indices are
-// consistant between plan files and runtime plans
-plBoneAndCartilage &plGetModelReference( const plString &index )
-{
-    PLuint j = atoi( index.c_str() ); 
-        
-    while (plModelCount() < j+1)
-    {
-        // add new elements until index exists    
-        plBoneAndCartilage *m = new plBoneAndCartilage();        
+    // draw models (draw last for proper transparency blending)
+    for (PLuint i =0; i < _models.size(); i++)
+    {            
+        _plPickingState->id = i;    
+        _models[i].draw();
     }
     
-    return plModelGet(j);
+    if (picking)
+    {            
+        glDisable( GL_STENCIL_TEST );
+    }
+}
 
-} 
 
 template<class T>
 T &plGetImportReference( plSeq<T> &ts,  const plString &index )
 {
-    PLuint j = atoi( index.c_str() );           
+    PLuint j = plFromString<PLuint>( index );           
     while (ts.size() < j+1)
     {
         ts.add( T() );  // add new elements until index exists 
     }
-    return ts.back();
+    return ts[j];
 }  
 
-void plPlan::readFile( plString filename )
+
+void plPlan::importFile( plString filename )
 {
     plCSV csv( filename );
 
@@ -107,28 +148,28 @@ void plPlan::readFile( plString filename )
         else if (plStringCompareCaseInsensitive(field, "model") )     
         {
             // get reference to model
-            plBoneAndCartilage &model = plGetModelReference( csv.data[i][1] ); 
+            plBoneAndCartilage &model = plGetImportReference( _models, csv.data[i][1] ); //plGetModelReference( csv.data[i][1] ); 
             
             // read model attribute from current row
-            model.readFromCSV( csv.data[i], directory );
+            model.readFromCSV( csv.data[i], directory );    // assumes directory attribute has been read by this point
         }
         
-        else if (plStringCompareCaseInsensitive(field, "spline") ) // read before boundary
+        else if (plStringCompareCaseInsensitive(field, "defect site") ) // read before boundary
         {
-            // get reference to spline
-            plSpline &spline = plGetImportReference( _defectSplines, csv.data[i][1] );
+            // get reference to defect site
+            plDefectSite &defectSite = plGetImportReference( _defectSites, csv.data[i][1] );
             
-            // read spline attribute from current row
-            spline.readFromCSV( csv.data[i] );                    
+            // read defect site attribute from current row
+            defectSite.readFromCSV( csv.data[i] );                    
         } 
         
-        else if (plStringCompareCaseInsensitive(field, "donor region") ) // read before boundary
+        else if (plStringCompareCaseInsensitive(field, "donor site") ) // read before boundary
         {
             // get reference to donor region
-            plDonorSite &donorRegion = plGetImportReference( _donorRegions, csv.data[i][1] ); 
+            plDonorSite &donorSite = plGetImportReference( _donorSites, csv.data[i][1] ); 
             
             // read donor region attribute from current row
-            donorRegion.readFromCSV( csv.data[i] );                  
+            donorSite.readFromCSV( csv.data[i] );                  
         } 
 
         else if (plStringCompareCaseInsensitive(field, "graft" ) ) 
@@ -152,37 +193,45 @@ void plPlan::readFile( plString filename )
             std::cerr << "Error in '" << filename << "': Unrecognized word '" << field << "' in first column." << std::endl;
         }
     }
-
+       
     // init grafts    
     for ( PLuint i = 0; i < _grafts.size(); i++) 
     {                              
-        _grafts[i].init();        
+        _grafts[i].init( _models );       
     }
 
-    // init donor regions
-    for ( PLuint i = 0; i < _donorRegions.size(); i++) 
-    {
-        _donorRegions[i].init(); 
-    }
-
-    // init deflect regions
-    for ( PLuint i = 0; i < _defectSplines.size(); i++) 
+    // init deflect splines
+    for ( PLuint i = 0; i < _defectSites.size(); i++) 
     {        
-        _defectSplines[i].init(); 
+        _defectSites[i].computeSpline( _models ); 
     }
 
 }
 
+void plPlan::exportFile( plString filename )
+{
+    std::ofstream out( plStringConcat( filename, ".csv") );
+        
+    if (!out)
+    {
+        std::cerr << "Could not open '" << filename << "' to store the plan." << std::endl;
+    }
+    else 
+    {
+        out << *this;
+        std::cout << "Saved plan in CSV format in '" << filename << "'." << std::endl;
+    }
+}
 
 plBoundary &plBoundaryGet(PLuint type, PLuint id)
 {
     switch (type)
     {
-        case PL_PICKING_TYPE_DEFECT_CORNERS:        return _plPlan->_defectSplines[id].corners;            
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:       return _plPlan->_defectSplines[id].boundary;            
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:        return _plPlan->_donorRegions[id].boundary;            
+        case PL_PICKING_TYPE_DEFECT_CORNERS:        return _plPlan->_defectSites[id].corners;            
+        case PL_PICKING_TYPE_DEFECT_BOUNDARY:       return _plPlan->_defectSites[id].boundary;            
+        case PL_PICKING_TYPE_DONOR_BOUNDARY:        return _plPlan->_donorSites[id].boundary;            
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY:       return _plPlan->_iGuides[id].boundary;
-        default:                                    return _plPlan->_defectSplines[0].corners;  // default
+        default:                                    return _plPlan->_defectSites[0].corners;  // default
     }
 }
 
@@ -195,31 +244,31 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     out << std::endl;
 
     // models
-    for (PLuint i=0; i<_plBoneAndCartilageModels.size(); i++) 
+    for (PLuint i=0; i<p._models.size(); i++) 
     {
-        out << "model," << i << ",bone file,"      << _plBoneAndCartilageModels[i]->_bone.     getFilenameWithoutPath()   << std::endl;
-        out << "model," << i << ",cartilage file," << _plBoneAndCartilageModels[i]->_cartilage.getFilenameWithoutPath()   << std::endl;
+        out << "model," << i << ",bone file,"      << p._models[i].bone.getFilenameWithoutPath()        << std::endl;
+        out << "model," << i << ",cartilage file," << p._models[i].cartilage.getFilenameWithoutPath()   << std::endl;
         out << std::endl;
     }
     
     // splines
-    for (PLuint i=0; i<p._defectSplines.size(); i++) 
+    for (PLuint i=0; i<p._defectSites.size(); i++) 
     {    
-        plSpline &spline = p._defectSplines[i];
+        plDefectSite &defectSite = p._defectSites[i];
         
-        out << "spline," << i << ",model,"  << spline._modelID << std::endl;        
-        out << "spline," << i << ",corners" << spline.corners  << std::endl;  
-        out << "spline," << i << ",boundary" << spline.boundary << std::endl;  
+        out << "defect site," << i << ",model,"  << defectSite._modelID << std::endl;        
+        out << "defect site," << i << ",corners" << defectSite.corners  << std::endl;  
+        out << "defect site," << i << ",boundary" << defectSite.boundary << std::endl;  
         out << std::endl;
     }
 
     // donor regions
-    for (PLuint i=0; i<p._donorRegions.size(); i++) 
+    for (PLuint i=0; i<p._donorSites.size(); i++) 
     {
-        plDonorSite &donor = p._donorRegions[i];
+        plDonorSite &donor = p._donorSites[i];
         
-        out << "donor region," << i << ",model,"   << donor._modelID << std::endl;
-        out << "donor region," << i << ",boundary" << donor.boundary << std::endl;  
+        out << "donor site," << i << ",model,"   << donor._modelID << std::endl;
+        out << "donor site," << i << ",boundary" << donor.boundary << std::endl;  
         out << std::endl;
     }
 
@@ -313,626 +362,9 @@ void plPlan::outputForManuela()
 
 //////////////////////////////////////
 
-void plPlanImport( plString plan_file )
+void plSet( plPlan &plan )
 {
-    delete _plPlan;
-    _plPlan = new plPlan( plan_file );
+    _plPlan = &plan;
 }
-
-void plPlanExport ( plString plan_file )
-{
-    static PLint planNum = 1;    
-
-    std::stringstream filename;
-    filename << plan_file << "-" << planNum << ".csv";
-    std::ofstream out( filename.str().c_str());
-        
-    if (!out)
-    {
-        std::cerr << "Could not open '" << filename.str() << "' to store the plan." << std::endl;
-    }
-    else 
-    {
-        out << *_plPlan;
-        std::cout << "Saved plan in CSV format in '" << filename.str() << "'." << std::endl;
-        planNum++;
-    }
-}
-
-void plPlanCreateNew()
-{
-    delete _plPlan;
-    _plPlan = new plPlan();
-}
-
-void plPlanToggleVisibility()
-{
-    _plPlan->toggleVisibility();
-}
-
-//////////////////////////////////////////////
-
-void plBoundaryPointSelect(PLuint index)
-{
-    if (plErrorIsBoundarySelected("plBoundaryPointSelect"))
-        return;
-
-    _plState->selectBoundaryPoint(index);     
-}
-
-void plBoundaryPointMove(const plVector3 &point, const plVector3 &normal)
-{
-    if (plErrorIsBoundarySelected("plBoundaryPointMove"))
-        return;
-
-    if (_plState->boundarySelectedPointID < 0)   // wall is selected
-        return;
-
-    plBoundary &boundary = plBoundaryGet(_plState->boundarySelectedType, _plState->boundarySelectedID);
-    boundary.movePointAndNormal(_plState->boundarySelectedPointID, point, normal);    
-    boundary.updateMesh();
-}
-
-void plBoundaryPointMove( PLuint x, PLuint y )
-{
-    if (plErrorIsBoundarySelected( "plBoundaryPointMove" ) )
-        return;
-        
-    if (_plState->boundarySelectedPointID < 0)   // wall is selected
-        return;
-        
-    plVector3 mouseInWorld = plWindowGetMouseToWorldPos(x, y, 0);
-    plVector3 rayOrigin = plCameraGetPosition();
-    plVector3 rayDirection = (mouseInWorld - rayOrigin).normalize();
-
-    plIntersection intersection = plModelCartilageIntersect(0, rayOrigin, rayDirection);
-
-    if (intersection.exists) 
-    {     
-        plBoundaryPointMove(intersection.point, intersection.normal);
-    }
-
-    if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS && _plPlan->_defectSplines[_plState->boundarySelectedID].corners.size() == 4)
-    {
-        // recompute hermite spline
-        _plPlan->_defectSplines[_plState->boundarySelectedID].computeHermiteSpline();
-    }
-}
-
-PLint plBoundaryPointAdd( PLuint x, PLuint y )
-{
-    if (plErrorIsBoundarySelected( "plBoundaryPointAdd" ))
-        return -1;
-
-    plVector3 mouseInWorld = plWindowGetMouseToWorldPos(x, y,0);
-    plVector3 rayOrigin = plCameraGetPosition();
-    plVector3 rayDirection = (mouseInWorld - rayOrigin).normalize();
-
-    plIntersection intersection = plModelCartilageIntersect(0, rayOrigin, rayDirection);
-
-    if (intersection.exists) 
-    {     
-        return plBoundaryPointAdd(intersection.point, intersection.normal);
-    }
-
-    return -1;  // no cartilage at point
-}
-
-
-PLint plBoundaryPointAdd(const plVector3 &point, const plVector3 &normal)
-{
-    if (plErrorIsBoundarySelected( "plBoundaryPointAdd" ))
-        return -1;
-        
-    plBoundary &boundary = plBoundaryGet(_plState->boundarySelectedType, _plState->boundarySelectedID);
-    
-    // limit spline corners to 4 points
-    if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS && boundary.size() > 3)
-    {   
-        // already 4 corner points    
-        return -1;
-    }
-    
-    PLint ret = boundary.addPointAndNormal(point, normal);
-    boundary.updateMesh();
-    
-    if (_plState->boundarySelectedType == PL_PICKING_TYPE_DEFECT_CORNERS && boundary.size() > 3)
-    {
-        // just added 4th point, compute spline    
-        return -1;
-    }
-    return ret;
-}
-
-void plBoundaryPointRemove()
-{
-    plBoundaryPointRemove( _plState->boundarySelectedPointID );   
-}
-
-void plBoundaryPointRemove( PLuint point_index )
-{
-    if (plErrorIsBoundarySelected( "plBoundaryPointRemove" ))
-        return; 
-        
-    plBoundary &boundary = plBoundaryGet(_plState->boundarySelectedType, _plState->boundarySelectedID);
-    
-    boundary.removePointAndNormal(point_index);
-    boundary.updateMesh();
-    
-    _plState->boundarySelectedPointID = -1;  
-}
-
-PLuint plDonorRegionCount()
-{
-    return _plPlan->_donorRegions.size();
-}
-
-void plDonorRegionToggleVisibility( PLuint region_id )
-{
-    if (plErrorCheckDonorRegionBounds(region_id, "plDonorRegionToggleVisibility"))
-        return;
-        
-    _plPlan->_donorRegions[region_id].toggleVisibility();    
-}
-
-PLuint plDefectSplineCount()
-{
-    return _plPlan->_donorRegions.size();
-}
-
-
-void plDonorRegionToggleVisibilityAll()
-{
-    for (PLuint i = 0; i < _plPlan->_donorRegions.size(); i++)
-    {
-        _plPlan->_donorRegions[i].toggleVisibility(); 
-    }  
-}
-
-void plDefectSplineToggleVisibility( PLuint region_id )
-{
-    if (plErrorCheckDefectSplineBounds(region_id, "plDefectSplineToggleVisibility"))
-        return;
-    
-    _plPlan->_defectSplines[region_id].toggleVisibility();
-}
-
-void plDefectSplineToggleVisibilityAll()
-{
-    for (PLuint i = 0; i < _plPlan->_donorRegions.size(); i++)
-    {
-        _plPlan->_defectSplines[i].toggleVisibility(); 
-    }  
-}
-
-void plDefectSplineCornersToggleVisibility( PLuint region_id )
-{
-    if (plErrorCheckDefectSplineBounds(region_id, "plDefectSplineCornersToggleVisibility"))
-        return;
-        
-    _plPlan->_defectSplines[region_id].corners.toggleVisibility(); 
-}
-
-void plDefectSplineCornersToggleVisibilityAll()
-{
-    for (PLuint i = 0; i < _plPlan->_defectSplines.size(); i++)
-    {
-        _plPlan->_defectSplines[i].corners.toggleVisibility(); 
-    } 
-}
-
-void plDefectSplineBoundaryToggleVisibility( PLuint region_id )
-{
-    if (plErrorCheckDefectSplineBounds(region_id, "plDefectSplineBoundaryToggleVisibility"))
-        return;
-        
-    _plPlan->_defectSplines[region_id].boundary.toggleVisibility(); 
-}
-
-void plDefectSplineBoundaryToggleVisibilityAll()
-{
-    for (PLuint i = 0; i < _plPlan->_defectSplines.size(); i++)
-    {
-        _plPlan->_defectSplines[i].boundary.toggleVisibility(); 
-    } 
-} 
- 
-////////////////////////////////
-
-PLuint plGraftCount()
-{
-    return _plPlan->_donorRegions.size();
-}
-
-plGraft& plGraftGet( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGet"))
-        return _plPlan->_grafts[0];
-        
-    return _plPlan->_grafts[graft_id];
-}
-
-plTransform plGraftGetHarvestTransform( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestTransform"))
-        return plTransform();
-        
-    return _plPlan->_grafts[graft_id].harvestTransform;
-} 
-
-plTransform plGraftGetRecipientTransform( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientTransform"))
-        return plTransform();
-        
-    return _plPlan->_grafts[graft_id].recipientTransform;
-} 
-
-plVector3 plGraftGetHarvestXAxis( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestXAxis"))
-        return plVector3();
-        
-    return _plPlan->_grafts[graft_id].harvestTransform.x();    
-}
-
-plVector3 plGraftGetHarvestYAxis( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestYAxis"))
-        return plVector3();
-        
-    return _plPlan->_grafts[graft_id].harvestTransform.y(); 
-}
-
-plVector3 plGraftGetHarvestZAxis( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestZAxis"))
-        return plVector3();
-        
-    return _plPlan->_grafts[graft_id].harvestTransform.z(); 
-}
-
-plVector3 plGraftGetHarvestOrigin( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetHarvestOrigin"))
-        return plVector3();
-        
-    return _plPlan->_grafts[graft_id].harvestTransform.origin();  
-}
-
-plVector3 plGraftGetRecipientXAxis( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientXAxis"))
-        return plVector3();
-        
-    return _plPlan->_grafts[graft_id].recipientTransform.x();
-}
-
-plVector3 plGraftGetRecipientYAxis( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientYAxis"))
-        return plVector3();
-        
-    return _plPlan->_grafts[graft_id].recipientTransform.y();
-}
-
-plVector3 plGraftGetRecipientZAxis( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientZAxis"))
-        return plVector3();
-        
-    return _plPlan->_grafts[graft_id].recipientTransform.z();
-}
-
-plVector3 plGraftGetRecipientOrigin( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientOrigin"))
-        return plVector3();
-        
-    return _plPlan->_grafts[graft_id].recipientTransform.origin();
-}
-
-void plGraftToggleVisibility( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftGetRecipientXAxis"))
-        return;
-    
-    _plPlan->_grafts[graft_id].toggleVisibility();       
-}
-
-void plGraftToggleVisibilityAll()
-{
-    for (PLuint i = 0; i < _plPlan->_grafts.size(); i++)
-    {
-        _plPlan->_grafts[i].toggleVisibility(); 
-    }    
-}
-
-
-plVector3 _plGraftGetScreenAxis( const plVector3 &edit_axis, const plVector3 &world_position)
-{
-    plVector3 graftScreenOrigin = plWindowGetWorldToScreenPos( world_position.x, 
-                                                             world_position.y, 
-                                                             world_position.z );
-    
-    plVector3 graftScreenAxisTip = plWindowGetWorldToScreenPos( edit_axis.x + world_position.x, 
-                                                              edit_axis.y + world_position.y, 
-                                                              edit_axis.z + world_position.z );
-
-    return (graftScreenAxisTip - graftScreenOrigin).normalize();
-}
-
-void plGraftSetDragOrigin ( PLint x, PLint y )
-{
-    if (plErrorIsGraftSelected("plGraftSetDragOrigin"))
-        return;
-
-    _plState->graftInitialDragPos = plVector3(x,y,0);
-                
-    if (PL_GRAFT_SELECTED_IS_DONOR)
-    {
-        _plState->graftInitialTransform = plGraftGetHarvestTransform(_plState->graftSelectedID);
-    }
-    else
-    {
-        _plState->graftInitialTransform = plGraftGetRecipientTransform(_plState->graftSelectedID);
-    }  
-                                                        
-    PLint type = plPickingGetType(x,y); 
-                                                                       
-    switch (type) 
-    {
-        case PL_PICKING_TYPE_GRAFT_HANDLE_X: 
-            
-            _plState->graftEditAxis = _plState->graftInitialTransform.x(); 
-            _plState->graftInitialPlaneNormal = _plState->graftInitialTransform.z();
-            break;
-            
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Y: 
-        
-            _plState->graftEditAxis = _plState->graftInitialTransform.y();             
-            break;
-            
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Z: 
-            _plState->graftEditAxis = _plState->graftInitialTransform.z(); 
-            _plState->graftInitialPlaneNormal = -_plState->graftInitialTransform.x();
-            break;
-    }                                                         
-                                              
-    _plState->graftScreenAxis = _plGraftGetScreenAxis(_plState->graftEditAxis, _plState->graftInitialTransform.origin());      
-}
-
-void plGraftDragEdit( PLint x, PLint y )
-{
-    if (plErrorIsGraftSelected("plGraftDragEdit"))
-        return;
-
-    plGraft &graft = _plPlan->_grafts[_plState->graftSelectedID];   
-
-    plVector3 screenDragVector = plVector3(x,y,0) - _plState->graftInitialDragPos;
-    
-    switch (_plState->graftEditMode)
-    {
-        case PL_GRAFT_EDIT_MODE_TRANSLATE:
-        {
-            // translation
-            
-            plTransform &transform = (PL_GRAFT_SELECTED_IS_DONOR) ? graft.harvestTransform : graft.recipientTransform;           
-            
-            PLfloat distOnAxis = (screenDragVector * _plState->graftScreenAxis)/10.0f;
-
-            if (_plState->graftEditAxis == transform.y())  
-            {
-                // translating along y
-                graft.adjustHeightOffset(distOnAxis);  
-                break;              
-            }
-            
-            distOnAxis = plClamp(distOnAxis);
-
-            plVector3 rayOrigin = _plState->graftInitialTransform.origin() + (distOnAxis * _plState->graftEditAxis);
-
-            plIntersection intersection = plModelBoneIntersect(0, rayOrigin, -transform.y());
-
-            if (intersection.exists)
-            {   
-                _plState->graftInitialTransform.origin(intersection.point); //update
-                
-                PLfloat normal_radius = 6.0f;
-                plVector3 normal = plModelBoneGetAvgNormal( 0, normal_radius, transform.origin(), transform.y());
-                
-                plVector3 x,y,z;
-                if (_plState->graftEditAxis == transform.x())  
-                {
-                    // translating along x                    
-                    x = (normal ^ _plState->graftInitialPlaneNormal);                       
-                    y = normal;                        
-                    z = (x ^ y);
-                    _plState->graftEditAxis = x;    
-                }
-                else 
-                {
-                    // translating along z
-                    z = (normal ^ _plState->graftInitialPlaneNormal);                       
-                    y = normal;                         
-                    x = (y ^ z);     
-                    _plState->graftEditAxis = z; 
-
-                } 
-                transform.set( x, y, z, intersection.point );                   
-
-                if (PL_GRAFT_SELECTED_IS_DONOR)
-                {
-                    graft.setCaps();
-                }
-            }
-                    
-            break;
-        }
-        
-        case PL_GRAFT_EDIT_MODE_ROTATE:
-        {
-            // rotation
-
-            plVector3 screenAxisNormal(-_plState->graftScreenAxis.y, _plState->graftScreenAxis.x, 0 );
-            PLfloat angle = -(screenDragVector * screenAxisNormal);
-            plGraftRotate(_plState->graftSelectedID, _plState->graftEditAxis, angle);          
-            break;
-        }
-        
-        case PL_GRAFT_EDIT_MODE_LENGTH:
-        {
-            // _length
-            
-            PLfloat length_delta = screenDragVector * (_plState->graftScreenAxis).normalize(); 
-            graft.adjustLength(-length_delta/10) ;                            
-            graft.updateCartilageMesh();
-            graft.updateBoneMesh();
-            break;
-        }
-        
-        case PL_GRAFT_EDIT_MODE_MARKER:
-        {
-            // marker
-            
-            plVector3 screenAxisNormal(-_plState->graftScreenAxis.y, _plState->graftScreenAxis.x, 0 );
-            PLfloat angle = -(screenDragVector * screenAxisNormal);           
-            plGraftSpinMarker( angle );
-            break;
-        }
-    } 
-    
-    // update initial drag position
-    _plState->graftInitialDragPos = plVector3(x,y,0);          
-}
-
-
-void plGraftSurfaceTranslate( const plVector3 &translation )
-{
-    if (plErrorIsGraftSelected("plGraftSurfaceTranslate"))
-        return;
-    
-    plGraftSurfaceTranslate( _plState->graftSelectedID, _plState->graftSelectedIndex, translation);
-}
-
-void plGraftSurfaceTranslate( PLuint graft_id, PLuint graft_index, const plVector3 &translation )
-{ 
-    plGraft     &graft     = _plPlan->_grafts[graft_id];            
-    plTransform &transform = (graft_index == PL_PICKING_INDEX_GRAFT_DONOR) ? graft.harvestTransform : graft.recipientTransform;
-
-    plVector3 point, normal;
-    plIntersection intersection = plModelBoneIntersect( 0, transform.origin() + translation, -transform.y());
-
-    if (intersection.exists)
-    {   
-        PLfloat normal_radius = 6.0f;
-        plVector3 normal = plModelBoneGetAvgNormal( 0, normal_radius, transform.origin(), transform.y());
-        
-        // translate
-        plVector3 y = normal;
-        plVector3 x = (transform.y() ^ transform.z());  
-        plVector3 z = transform.z(); 
-        transform.set ( x, y, z, intersection.point);    
-
-        if (graft_index == PL_PICKING_INDEX_GRAFT_DONOR)
-        {
-            // harvest, re-compute cap  
-            graft.setCaps();
-        }
-    }
-}
-
-void plGraftRotate( const plVector3 &axis, PLfloat angle_degrees )
-{
-    if (plErrorIsGraftSelected("plGraftRotate"))
-        return;
-    
-    plGraftRotate( _plState->graftSelectedID, axis, angle_degrees);
-}
-
-void plGraftRotate( PLuint graft_id, const plVector3 &axis, PLfloat angle_degrees )
-{
-    plGraft     &graft     = _plPlan->_grafts[graft_id];      
-    plTransform &transform = (PL_GRAFT_SELECTED_IS_DONOR) ? graft.harvestTransform : graft.recipientTransform;
-  
-    plMatrix44 rot; rot.setRotationD(angle_degrees,  axis);
-
-    transform.set( rot * transform.x(), rot * transform.y() );  
-
-    if (PL_GRAFT_SELECTED_IS_DONOR)
-    {
-        // harvest, re-compute cap      
-        graft.setCaps();    
-    }
-}
-
-void plGraftSpinMarker( PLfloat angle_degrees )
-{
-    if (plErrorIsGraftSelected("plGraftSpinMarker"))
-        return;
-    
-    plGraftSpinMarker( _plState->graftSelectedID, angle_degrees);
-}
-
-void plGraftSpinMarker( PLuint graft_id, PLfloat angle_degrees )
-{
-    _plPlan->_grafts[graft_id].spinMark(angle_degrees);
-}
-
-//////////////////////////////////////////////////
-
-void plDefectSplineSetDragOrigin ( PLint x, PLint y )
-{
-    /*
-    if (plErrorIsDefectSplineSelected("plDefectSplineSetDragOrigin"))
-        return;
-
-    _plState->graftInitialDragPos = plVector3(x,y,0);
-                
-    if (PL_GRAFT_SELECTED_IS_DONOR)
-    {
-        _plState->graftInitialTransform = plGraftGetHarvestTransform(_plState->graftSelectedID);
-    }
-    else
-    {
-        _plState->graftInitialTransform = plGraftGetRecipientTransform(_plState->graftSelectedID);
-    }  
-                                                        
-    PLint type = plPickingGetType(x,y); 
-                                                                       
-    switch (type) 
-    {
-        case PL_PICKING_TYPE_GRAFT_HANDLE_X: 
-            
-            _plState->graftEditAxis = _plState->graftInitialTransform.x; 
-            _plState->graftInitialPlaneNormal = _plState->graftInitialTransform.z;
-            break;
-            
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Y: 
-        
-            _plState->graftEditAxis = _plState->graftInitialTransform.y;             
-            break;
-            
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Z: 
-            _plState->graftEditAxis = _plState->graftInitialTransform.z; 
-            _plState->graftInitialPlaneNormal = -_plState->graftInitialTransform.x;
-            break;
-    }                                                         
-                                              
-    _plState->graftScreenAxis = _plGraftGetScreenAxis(_plState->graftEditAxis, _plState->graftInitialTransform.origin);      
-    */
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 

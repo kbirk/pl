@@ -1,26 +1,16 @@
 #ifndef __PL_SHADER_H__
 #define __PL_SHADER_H__
 
-#include <vector>
 #include "pl.h"
 
 // TODO: switch to layout qualifiers!!!!
-/*
-enum ARRAY_ATTRIBUTE
-{ 
-	POSITION_ATTRIBUTE = 0,
-	NORMAL_ATTRIBUTE,
-    TANGENT_ATTRIBUTE,
-    BITANGENT_ATTRIBUTE,
-	TEXTURE_ATTRIBUTE0,
-	TEXTURE_ATTRIBUTE1,
-	TEXTURE_ATTRIBUTE2,
-	TEXTURE_ATTRIBUTE3
-};
-*/
+#define PL_POSITION_ATTRIBUTE  0
+#define PL_NORMAL_ATTRIBUTE    2
+#define PL_COLOUR_ATTRIBUTE    3
 
 class plShader 
 {
+
     public:                    
           
         plShader(const char *shaderFile, GLenum shaderType)

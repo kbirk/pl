@@ -1,14 +1,18 @@
 #include "plTriangle.h"
 
 plTriangle::plTriangle()
-    :   _normal(0,0,0), _point0(0,0,0), _point1(0,0,0), _point2(0,0,0), _centroid(0,0,0)
+    :   _normal(0,0,0), _points( plVector3(0,0,0), 3), _centroid(0,0,0)
 {
 }
 
 plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) 
-    :   _point0(p0), _point1(p1), _point2(p2), 
+    :   _points(3), 
         _centroid(0.333333f * (p0 + p1 + p2))
-{
+{        
+    _points.add( p0 );
+    _points.add( p1 );
+    _points.add( p2 );
+    
     if (n.x == 0.0f && n.y == 0.0f && n.z == 0.0f) 
     {
         _normal = ((p1-p0)^(p2-p0)).normalize();
@@ -19,34 +23,45 @@ plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 
     }
 }
 
+
 plTriangle::plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) 
     :   _normal(((p1 - p0) ^ (p2 - p0)).normalize()), 
-        _point0(p0), _point1(p1), _point2(p2), 
+        _points(3),  
         _centroid(0.333333f * (p0 + p1 + p2))
 {
+    _points.add( p0 );
+    _points.add( p1 );
+    _points.add( p2 );
 }
+
 
 void plTriangle::point0( const plVector3 &point )
 {
-    _point0 = point;
-    _recalculate();
-}                   
-void plTriangle::point1( const plVector3 &point )
-{
-    _point1 = point;
-    _recalculate(); 
-} 
-void plTriangle::point2( const plVector3 &point )
-{
-    _point2 = point;
+    _points[0] = point;
     _recalculate();
 } 
 
+                  
+void plTriangle::point1( const plVector3 &point )
+{
+    _points[1] = point;
+    _recalculate(); 
+} 
+
+
+void plTriangle::point2( const plVector3 &point )
+{
+    _points[2] = point;
+    _recalculate();
+} 
+
+
 void plTriangle::_recalculate()
 {
-   _normal = ((_point1 - _point0) ^ (_point2 - _point0)).normalize();
-   _centroid = 0.333333f * (_point0 + _point1 + _point2);
+   _normal = ((_points[1] - _points[0]) ^ (_points[2] - _points[0])).normalize();
+   _centroid = 0.333333f * (_points[0] + _points[1] + _points[2]);
 } 
+
 
 // Compute plane/ray intersection, and then the local coordinates to
 // see whether the intersection point is inside.
@@ -58,7 +73,7 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
     if (dn == 0 || (backFaceCull &&  dn > 0) )
         return plIntersection(false); //false;		// ray is parallel to plane    
 
-    PLfloat dist = _point0 * _normal;
+    PLfloat dist = _points[0] * _normal;
 
     PLfloat t = (dist - rayStart*_normal) / dn;
     
@@ -68,9 +83,9 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
     plVector3 intPoint = rayStart + t * rayDir;
 
     // Compute barycentric coords
-    PLfloat totalArea = ((_point1-_point0) ^ (_point2-_point0)) * _normal;
-    PLfloat u = (((_point2-_point1) ^ (intPoint - _point1)) * _normal) / totalArea;
-    PLfloat v = (((_point0-_point2) ^ (intPoint - _point2)) * _normal) / totalArea;
+    PLfloat totalArea = ((_points[1]-_points[0]) ^ (_points[2]-_points[0])) * _normal;
+    PLfloat u = (((_points[2]-_points[1]) ^ (intPoint - _points[1])) * _normal) / totalArea;
+    PLfloat v = (((_points[0]-_points[2]) ^ (intPoint - _points[2])) * _normal) / totalArea;
 
     // Reject if outside triangle
     if (u < 0 || v < 0 || u + v > 1)

@@ -6,16 +6,13 @@ plGraft::plGraft()
 }
 
 
-void plGraft::init()
+void plGraft::init( const plSeq<plBoneAndCartilage> &models )
 {
     // Compute transforms                     
     harvestTransform.compute();      
     recipientTransform.compute();             
     // Compute cartilage and bone caps
-    setCaps();
-    // Make mark direction perpendicular to axis
-    //plVector3 axis(0,1,0);
-    //_markDirection( _markDirection - (_markDirection*axis)*axis );
+    setCaps( models );
 }
 
 
@@ -63,134 +60,53 @@ void plGraft::readFromCSV( const plSeq<plString> &row )
         std::cerr << "Error in plan, 'graft': Unrecognized word '" << subfield << "' in third column." << std::endl;
 }
 
-/*
-void plGraft::computeTransforms() 
+
+void plGraft::_setBoneColour() const
 {
-    recipientTransform.compute();
-    harvestTransform.compute();
-}
-*/
-        
-void plGraft::_drawSelectionInterface() const
-{
-    if (!PL_GRAFT_HANDLES_ENABLED)
-        return;
-
-    // draw axes and handles
-    glMatrixMode( GL_MODELVIEW );
-    
-    glPushMatrix();
-    glTranslatef( 0, PL_GRAFT_HANDLE_OFFSET, 0 );
-
-    switch(_plState->graftEditMode)
+    if (_isSelected)
     {
-        case PL_GRAFT_EDIT_MODE_TRANSLATE:   
-        case PL_GRAFT_EDIT_MODE_ROTATE:
-        {
-            glColor3f( 0.2, 0.2, 0.2 ); 
-            plDrawSphere( 1.5 );
-
-            // x axis
-            glColor3f( 1.0, 0.2, 0.2 ); 
-            
-            _plPickingState->type = PL_PICKING_TYPE_GRAFT_HANDLE_X;
-            _plPickingShader->setPickingUniforms(_plPickingState);
-        
-            (_plState->graftEditMode == PL_GRAFT_EDIT_MODE_TRANSLATE) ? plDrawArrow( plVector3(1,0,0) ) : plDrawCircleArrow( plVector3(1,0,0) );
-
-            if (PL_GRAFT_EDIT_SHOW_Y_HANDLE)    
-            {
-                // y axis
-                glColor3f( 0.2, 1.0, 0.2 );  
-
-                _plPickingState->type = PL_PICKING_TYPE_GRAFT_HANDLE_Y;
-                _plPickingShader->setPickingUniforms(_plPickingState);
-
-                (_plState->graftEditMode == PL_GRAFT_EDIT_MODE_TRANSLATE) ? plDrawArrow( plVector3(0,1,0) ) : plDrawCircleArrow( plVector3(0,1,0) );
-            }
-
-            // z axis
-            glColor3f( 0.2, 0.2, 1.0 ); 
-            _plPickingState->type = PL_PICKING_TYPE_GRAFT_HANDLE_Z;
-            _plPickingShader->setPickingUniforms(_plPickingState);
-        
-            (_plState->graftEditMode == PL_GRAFT_EDIT_MODE_TRANSLATE) ? plDrawArrow( plVector3(0,0,1) ) : plDrawCircleArrow( plVector3(0,0,1) );
-            
-            break;
-        }
-        case PL_GRAFT_EDIT_MODE_LENGTH:
-        {     
-            glColor3f( 0.2, 0.2, 0.2 ); 
-            glPushMatrix();
-                glTranslatef( 0, PL_HANDLE_LENGTH/2.0, 0 );
-                plDrawSphere( 1.5 );
-            glPopMatrix();
-                    
-            _plPickingState->type = PL_PICKING_TYPE_GRAFT_HANDLE_Y;
-            _plPickingShader->setPickingUniforms(_plPickingState);
-            glColor3f( 0.2, 1.0, 0.2 ); 
-            plDrawArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH-1, 0), plVector3(0,1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);    
-            glColor3f( 1.0, 0.2, 0.2 );         
-            plDrawArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH, 0), plVector3(0,-1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);
-
-            break;     
-        }
-        
-        case PL_GRAFT_EDIT_MODE_MARKER:
-        {
-            glColor3f( 0.2, 0.2, 0.2 ); 
-            glPushMatrix();
-                glTranslatef( 0, PL_HANDLE_LENGTH/2.0, 0 );
-                plDrawSphere( 1.5 );
-            glPopMatrix();
-
-            _plPickingState->type = PL_PICKING_TYPE_GRAFT_HANDLE_Y;
-            _plPickingShader->setPickingUniforms(_plPickingState);
-            glColor3f( 0.2, 1.0, 0.2 ); 
-            plDrawCircleArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH-1, 0), plVector3(0,1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);            
-            plDrawCircleArrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH, 0), plVector3(0,-1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);
-           
-            break;
-        }
-    }
-    glPopMatrix();
-}
-
-void _plSetGraftBoneColour()
-{
-    if (PL_GRAFT_NONE_SELECTED || PL_GRAFT_CURRENT_IS_SELECTED)
-    {
-        // no grafts are selected
-        if (PL_GRAFT_IS_DEFECT)
-        {
-            glColor3f( PL_GRAFT_DEFECT_BONE_COLOUR );
-        }
-        else
-        {
-            glColor3f( PL_GRAFT_DONOR_BONE_COLOUR );
-        }
-    }
-    else
-    {
-        // a graft is selected and it is not this one, dull colour
-        if (PL_GRAFT_IS_DEFECT)
+        // selected
+        if (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DEFECT)
         {
             glColor3f( PL_GRAFT_DEFECT_BONE_COLOUR_DULL );
         }
         else
         {
             glColor3f( PL_GRAFT_DONOR_BONE_COLOUR_DULL );
-        }       
+        }
     }
-       
+    else
+    {
+        // not selected
+        if (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        {
+            glColor3f( PL_GRAFT_DEFECT_BONE_COLOUR );
+        }
+        else
+        {
+            glColor3f( PL_GRAFT_DONOR_BONE_COLOUR );
+        } 
+    }
 }
 
-void _plSetGraftCartilageColour()
+void plGraft::_setCartilageColour() const
 {
-    if (PL_GRAFT_NONE_SELECTED || PL_GRAFT_CURRENT_IS_SELECTED)
+    if (_isSelected)
     {
-        // no grafts are selected
-        if (PL_GRAFT_IS_DEFECT)
+        // selected
+        if (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        {
+            glColor3f( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
+        }
+        else
+        {
+            glColor3f( PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL );
+        }  
+    }
+    else
+    {
+        // not selected
+        if (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DEFECT)
         {
             glColor3f( PL_GRAFT_DEFECT_CARTILAGE_COLOUR );
         }
@@ -198,24 +114,12 @@ void _plSetGraftCartilageColour()
         {
             glColor3f( PL_GRAFT_DONOR_CARTILAGE_COLOUR );
         }
-    }
-    else
-    {
-        // a graft is selected and it is not this one, dull colour
-        if (PL_GRAFT_IS_DEFECT)
-        {
-            glColor3f( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
-        }
-        else
-        {
-            glColor3f( PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL );
-        }       
-    } 
+    }      
 }
 
 void plGraft::draw() const
 {
-    if (!_isVisible)
+    if (!isVisible)
         return;
 
     // Draw at harvest location
@@ -223,15 +127,8 @@ void plGraft::draw() const
     glPushMatrix();
     {
         harvestTransform.apply();
-        _plPickingState->index = PL_PICKING_INDEX_GRAFT_DONOR;
-        _plPickingShader->setPickingUniforms(_plPickingState);
+        _plPickingState->index = PL_PICKING_INDEX_GRAFT_DONOR;      
         _drawGraft();
-
-        if (PL_GRAFT_CURRENT_IS_SELECTED && PL_GRAFT_SELECTED_IS_DONOR) 
-        {
-            _drawSelectionInterface();
-            _plPickingState->type = PL_PICKING_TYPE_GRAFT;   // reset after handle is drawn
-        }
     }
     glPopMatrix();
 
@@ -242,13 +139,7 @@ void plGraft::draw() const
         recipientTransform.apply();
         glTranslatef( 0, _heightOffset, 0 );
         _plPickingState->index = PL_PICKING_INDEX_GRAFT_DEFECT;
-        _plPickingShader->setPickingUniforms(_plPickingState);
         _drawGraft();
-
-        if (PL_GRAFT_CURRENT_IS_SELECTED && PL_GRAFT_SELECTED_IS_DEFECT) 
-        {
-            _drawSelectionInterface();
-        }
     }
     glPopMatrix();
 }
@@ -256,15 +147,18 @@ void plGraft::draw() const
 
 void plGraft::_drawGraft() const
 {
+    _plPickingState->type = PL_PICKING_TYPE_GRAFT; 
+    _plPickingShader->setPickingUniforms(_plPickingState);
+
     // draw cartilage cap
     if (_cartilageCap.polys.size() > 0)  // may not always have the cartilage top
     {
-        _plSetGraftCartilageColour();
+        _setCartilageColour();
         _cartilageMesh.draw();
     }
     
     // draw bone cap
-    _plSetGraftBoneColour();
+    _setBoneColour();
     _boneMesh.draw();
     
     // draw marker   
@@ -274,15 +168,16 @@ void plGraft::_drawGraft() const
 }
 
 
-void plGraft::setCaps()
+void plGraft::setCaps( const plSeq<plBoneAndCartilage> &models )
 {
     // generate cap polygons
-    _cartilageCap = _findCap( _plBoneAndCartilageModels[_harvestModelID]->getCartilageTriangles() );
-    _boneCap      = _findCap( _plBoneAndCartilageModels[_harvestModelID]->getBoneTriangles());
+    _cartilageCap = _findCap( models[_harvestModelID].cartilage.triangles() );
+    _boneCap      = _findCap( models[_harvestModelID].bone.triangles()      );
+   
     // generate meshes   
-    updateCartilageMesh();   
-    updateBoneMesh();  
-    updateMarkPosition();    
+    _updateCartilageMesh();   
+    _updateBoneMesh();  
+    _updateMarkPosition();  
 }
 
 
@@ -292,18 +187,19 @@ bool _comparePointAndAngle( const plPointAndAngle &a, const plPointAndAngle &b )
 }
 
 
-void plGraft::updateCartilageMesh()
+void plGraft::_updateCartilageMesh()
 {
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
     plSeq<plVector3> interleaved_vertices;
-    plSeq<PLuint> indices;
+    plSeq<PLuint>    indices;
 
     // cartilage top
     for (PLuint i = 0; i < _cartilageCap.polys.size(); i++)
     {
         PLint base = interleaved_vertices.size()/2;
         plPoly &p = _cartilageCap.polys[i];
+
         for (PLuint j = 0; j < p.vertices.size(); j++)
         {
             plVector3 &v = p.vertices[j];
@@ -339,11 +235,11 @@ void plGraft::updateCartilageMesh()
             plVector3 n = (_cartilageCap.perimeter[c].point).normalize();
     
             indices.add(interleaved_vertices.size()/2);
-            interleaved_vertices.add( _cartilageCap.perimeter[c].point );    // position
+            interleaved_vertices.add( _cartilageCap.perimeter[c].point );   // position
             interleaved_vertices.add( n );                                  // normal
             
             indices.add(interleaved_vertices.size()/2);
-            interleaved_vertices.add( _boneCap.perimeter[b].point );         // position
+            interleaved_vertices.add( _boneCap.perimeter[b].point );        // position
             interleaved_vertices.add( n );                                  // normal
         
             if (cAngle < bAngle) 
@@ -379,14 +275,13 @@ void plGraft::updateCartilageMesh()
     }
        
     if (indices.size() > 0)
-    {
-        _cartilageMesh.destroy();
-        _cartilageMesh = plMesh(interleaved_vertices, indices);  
+    {   
+        _cartilageMesh.setBuffers(interleaved_vertices, indices);  
     }
 }
 
 
-void plGraft::updateBoneMesh()
+void plGraft::_updateBoneMesh()
 {        
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
@@ -488,9 +383,7 @@ void plGraft::updateBoneMesh()
         }
 
     }
-
-    _boneMesh.destroy();
-    _boneMesh = plMesh(interleaved_vertices, indices);
+    _boneMesh.setBuffers(interleaved_vertices, indices);
 }
 
 
@@ -718,10 +611,10 @@ void plGraft::spinMark( PLfloat degrees )
     plVector3 axis(0,1,0);
     plMatrix44 rot; rot.setRotationD( degrees, axis );     
     _markDirection = (rot * _markDirection).normalize();    
-    updateMarkPosition();
+    _updateMarkPosition();
 }
 
-void plGraft::updateMarkPosition()
+void plGraft::_updateMarkPosition()
 {
     // Mark at tool alignment direction on cartilage
     _markPosition = _radius * _markDirection;
@@ -747,66 +640,36 @@ void plGraft::updateMarkPosition()
     _markPosition.y = minY;
 }
 
-/////////////////////////////////////////
 
+void plGraft::translateHarvest( const plVector3 &translation )
+{     
+    _translate( harvestTransform, _harvestModelID, translation );
 
-void plGraftSelectDefect( PLuint graft_id )
-{    
-    if (plErrorCheckGraftBounds(graft_id, "plGraftSelectDefect"))
-        return; 
-    
-    _plState->selectGraft(graft_id, PL_PICKING_INDEX_GRAFT_DEFECT);        
-}
-
-void plGraftSelectDonor( PLuint graft_id )
-{
-    if (plErrorCheckGraftBounds(graft_id, "plGraftSelectDonor"))
-        return;
-    
-    _plState->selectGraft(graft_id, PL_PICKING_INDEX_GRAFT_DONOR);   
-}
-
-void plGraftEnableHandles()
-{
-    _plState->graftHandlesEnabled = true;
-}
-
-void plGraftDisableHandles()
-{
-    _plState->graftHandlesEnabled = false;
-}
-
-PLbool plGraftIsSelected()
-{
-    return _plState->graftSelectedID != -1;
-}
-
-PLint plGraftGetSelectedID()
-{
-    return _plState->graftSelectedID;
-}
-
-void plGraftSetRotateMode()
-{
-    _plState->graftEditMode = PL_GRAFT_EDIT_MODE_ROTATE;
-} 
-
-void plGraftSetTranslateMode()
-{
-    _plState->graftEditMode = PL_GRAFT_EDIT_MODE_TRANSLATE;
-}
-
-void plGraftSetLengthMode()
-{
-    _plState->graftEditMode = PL_GRAFT_EDIT_MODE_LENGTH;
-}
-
-void plGraftSetMarkerMode()
-{
-    _plState->graftEditMode = PL_GRAFT_EDIT_MODE_MARKER;
+    // harvest, re-compute cap  
+    setCaps( _plPlan->_models );
 }
 
 
+void plGraft::translateRecipient( const plVector3 &translation )
+{     
+    _translate( recipientTransform, _recipientModelID, translation );
+}
 
 
+void plGraft::_translate( plTransform &transform, PLuint modelID, const plVector3 &translation )
+{     
+    plIntersection intersection = _plPlan->_models[modelID].bone.rayIntersect( transform.origin() + translation, -transform.y() );  
+
+    if (intersection.exists)
+    {   
+        PLfloat normal_radius = 6.0f;
+        plVector3 normal = _plPlan->_models[modelID].bone.getAverageNormal( normal_radius, transform.origin(), transform.y() );  
+
+        // translate       
+        plVector3 y      = normal.normalize();
+        plVector3 x      = (y ^ transform.z()).normalize();                       
+        plVector3 origin = intersection.point;   
+        transform.set( x, y, origin); 
+    }
+}
 

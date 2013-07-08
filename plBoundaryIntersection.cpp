@@ -25,6 +25,7 @@ void findInteriorMesh( plSeq<plPolygon> &triangles, plSeq<plWall> &walls, plSeq<
   plSeq<plVector3> interiorPoints( 3 * triangles.size() );
 
   // Collect polygons that intersect the boundary
+
   for (PLint i=0; i<triangles.size(); i++)
     triangleCutsBoundary( triangles[i], walls, polygons, interiorPoints );
 
@@ -66,7 +67,10 @@ void findInteriorMesh( plSeq<plPolygon> &triangles, plSeq<plWall> &walls, plSeq<
 
 
 void triangleCutsBoundary( plPolygon &tri,  plSeq<plWall> &walls, plSeq<plPolygon> &polys, plSeq<plVector3> &interiorPoints )
+
 {
+  plVector3 ps[3] = { tri.ps[0], tri.ps[1], tri.ps[2] };
+
   plSeq<plCut> edgeCuts;
 
   for (PLint wallIndex=0; wallIndex<walls.size(); wallIndex++) {
@@ -106,15 +110,19 @@ void triangleCutsBoundary( plPolygon &tri,  plSeq<plWall> &walls, plSeq<plPolygo
   qsort( &wallCuts[0], wallCuts.size(), sizeof(plCut), compareWallCuts ); // sort by increasing wall index, then by increasing parameter on each wall
 
   // Bookkeeping to know when to stop
+
   for (PLint i=0; i<edgeCuts.size(); i++)
     edgeCuts[i].processed = false;
 
+  PLint numCutsLeft = edgeCuts.size();
 
   while (numCutsLeft > 0)
   {
 
     // Build one polygon
+
     plPolygon poly;
+
     poly.n = tri.n;
 
     // Find an initial edge cut at which the triangle edge is going
@@ -135,11 +143,13 @@ void triangleCutsBoundary( plPolygon &tri,  plSeq<plWall> &walls, plSeq<plPolygo
     do
     {
       // Add this int point
+
       poly.ps.add( edgeCuts[ edgeCutIndex ].p );
       edgeCuts[ edgeCutIndex ].processed = true;
       numCutsLeft--;
 
       // Find this intersection point in the list of wall cuts.
+
       PLint wallCutIndex;
       for (wallCutIndex=0; wallCutIndex<wallCuts.size(); wallCutIndex++)
         if (wallCuts[ wallCutIndex ].p == edgeCuts[ edgeCutIndex ].p)
@@ -151,6 +161,7 @@ void triangleCutsBoundary( plPolygon &tri,  plSeq<plWall> &walls, plSeq<plPolygo
       }
 
       // Move along the walls from this intersection point to the next intersection point.
+
       PLint thisWallIndex = wallCuts[ wallCutIndex ].wallIndex;
       PLint nextWallIndex = wallCuts[ (wallCutIndex+1)%wallCuts.size() ].wallIndex;
 
@@ -159,13 +170,16 @@ void triangleCutsBoundary( plPolygon &tri,  plSeq<plWall> &walls, plSeq<plPolygo
         // We're not yet re-entering on the same wall, so we need to
         // include some of the wall vertices.
         thisWallIndex = (thisWallIndex+1) % walls.size();
+
         poly.ps.add( walls[ thisWallIndex ].p0 );
       } // end while
 
       // Advance to the wall cut at which the triangle edge re-enters the wall.
+
       wallCutIndex = (wallCutIndex+1)%wallCuts.size();
 
       // Find this intersection point in the list of edge cuts.
+
       for (edgeCutIndex=0; edgeCutIndex<edgeCuts.size(); edgeCutIndex++)
       {
         if (edgeCuts[ edgeCutIndex ].p == wallCuts[ wallCutIndex ].p)
@@ -185,23 +199,28 @@ void triangleCutsBoundary( plPolygon &tri,  plSeq<plWall> &walls, plSeq<plPolygo
       } // end if
 
       // Add this int point
+
       poly.ps.add( edgeCuts[ edgeCutIndex ].p );
       edgeCuts[ edgeCutIndex ].processed = true;
       numCutsLeft--;
 
       // Move along the triangle edges from this intersection point to the next.
+
       PLint thisEdgeIndex = edgeCuts[ edgeCutIndex ].edgeIndex;
       PLint nextEdgeIndex = edgeCuts[ (edgeCutIndex+1)%edgeCuts.size() ].edgeIndex;
 
       while (thisEdgeIndex != nextEdgeIndex) {
+
         // We're not intersecting the next wall on the same triangle
         // edge, so walk around the triangle edges.
+
         thisEdgeIndex = (thisEdgeIndex+1) % 3; // (3 edges per triangle)
         poly.ps.add( tri.ps[ thisEdgeIndex ] );
         interiorPoints.add( tri.ps[ thisEdgeIndex ] );
       }
 
       // Advance to the edge cut at which the triangle edge exits the wall.
+
       edgeCutIndex = (edgeCutIndex+1)%edgeCuts.size();
 
     } // end do
@@ -219,6 +238,7 @@ PLbool edgeCutsWall( plVector3 &v0, plVector3 &v1, plWall &wall, plVector3 &intP
 
 {
   // Find the intersection point
+
   PLfloat dot0 = v0 * wall.n;
   PLfloat dot1 = v1 * wall.n;
 

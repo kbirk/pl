@@ -24,6 +24,7 @@ Window::Window( int x, int y, int width, int height, std::string title )
     glutMotionFunc( GLUTactiveMouseMotion );
     glutPassiveMotionFunc( GLUTpassiveMouseMotion );
     glutKeyboardFunc( GLUTkeyAction );
+
 }
 
 void Window::registerWindow( int windowId )

@@ -5,38 +5,32 @@
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plBoundary.h"
-#include "plTriangle.h"
 #include "plColourMesh.h"
 #include "plRenderable.h"
+#include "plEditable.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plColourMap.h"
+#include "plModel.h"
 
-class plSpline : public plRenderable
+class plSpline : public plRenderable,
+                 public plEditable
 {
     public:
 
-        plBoundary  boundary, corners; 
-                
         plSpline();
 
-        void init();
-        void readFromCSV( const plSeq<plString> &row );
-        void draw() const;        
-        void computeHermiteSpline();
-        
-        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
-                
+        void draw() const;   
+
+        void computeHermite( const plBoundary &corners, const plModel &cartilage );
+           
     private:
     
-        PLuint            _modelID;
         plColourMesh      _mesh;   
         plSeq<plVector3>  _s, _t;  
         
-        void _drawCornersSelectionInterface() const;
-        void _drawSplineSelectionInterface() const;
-        
-                
+        void _drawSelectionInterface() const;
+               
 };
 
 
