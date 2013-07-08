@@ -257,8 +257,8 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         plDefectSite &defectSite = p._defectSites[i];
         
         out << "defect site," << i << ",model,"  << defectSite._modelID << std::endl;        
-        out << "defect site," << i << ",corners" << defectSite.corners  << std::endl;  
-        out << "defect site," << i << ",boundary" << defectSite.boundary << std::endl;  
+        out << "defect site," << i << ",corners" << static_cast<plBoundaryBase>(defectSite.corners)  << std::endl;  
+        out << "defect site," << i << ",boundary" << static_cast<plBoundaryBase>(defectSite.boundary) << std::endl;  
         out << std::endl;
     }
 
@@ -268,7 +268,7 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         plDonorSite &donor = p._donorSites[i];
         
         out << "donor site," << i << ",model,"   << donor._modelID << std::endl;
-        out << "donor site," << i << ",boundary" << donor.boundary << std::endl;  
+        out << "donor site," << i << ",boundary" << static_cast<plBoundaryBase>(donor.boundary) << std::endl;  
         out << std::endl;
     }
 
@@ -298,7 +298,7 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         plIGuide &iguide = p._iGuides[i];
 
         out << std::endl;
-        out << "iguide," << i << ", boundary" << iguide.boundary << std::endl;  
+        out << "iguide," << i << ", boundary" << static_cast<plBoundaryBase>(iguide.boundary) << std::endl;  
         out << "iguide," << i << ",graft indices";
         for (PLuint j=0; j<iguide.graftIndices.size(); j++)
         {

@@ -9,7 +9,7 @@ CXX = g++
 
 OBJECTS = $(patsubst %.cpp,objects/%.o,$(SOURCES))
 
-SOURCES = main.cpp pl.cpp PlannerWindow.cpp plBoundary.cpp plBoundaryEditor.cpp \
+SOURCES = main.cpp pl.cpp PlannerWindow.cpp plBoundary.cpp plBoundaryBase.cpp plBoundaryEditor.cpp \
 	plBoundaryIntersection.cpp plCamera.cpp plColourMap.cpp plColourMesh.cpp plCSV.cpp plDefectSite.cpp \
 	plDonorSite.cpp plDraw.cpp plEditable.cpp plGraft.cpp plGraftEditor.cpp plIGuide.cpp plMath.cpp plMatrix44.cpp \
 	plMesh.cpp plModel.cpp plPickingTexture.cpp plPlan.cpp plProjection.cpp plRenderable.cpp \

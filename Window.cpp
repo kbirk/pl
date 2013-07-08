@@ -2,11 +2,15 @@
 
 static Window *windows[ MAX_NUM_WINDOWS ];
 
-Window::Window( int x, int y, int width, int height, std::string title ) 
+Window::Window( int x, int y, int width, int height, std::string title, int argc, char **argv ) 
 {
+    // Set up windows
+    glutInit( &argc, argv );
+    glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
+    
     glutInitWindowPosition( x, y );
     glutInitWindowSize( width, height );
-    m_windowId = glutCreateWindow( title.c_str() );
+    _windowID = glutCreateWindow( title.c_str() );
     
     // init glew AFTER glut (needs rendering context)
     glewExperimental = GL_TRUE;
@@ -16,8 +20,8 @@ Window::Window( int x, int y, int width, int height, std::string title )
       fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
     }
              
-    registerWindow( m_windowId );
-    glutSetWindow( m_windowId );
+    registerWindow( _windowID );
+    glutSetWindow( _windowID );
     glutDisplayFunc( GLUTdisplay );
     glutReshapeFunc( GLUTreshape );
     glutMouseFunc( GLUTmouseAction );
@@ -29,14 +33,14 @@ Window::Window( int x, int y, int width, int height, std::string title )
 
 void Window::registerWindow( int windowId )
 {
-    if (m_windowId < 0 || m_windowId >= MAX_NUM_WINDOWS) 
+    if (_windowID < 0 || _windowID >= MAX_NUM_WINDOWS) 
     {
-        std::cerr << "New window has windowId " << m_windowId
+        std::cerr << "New window has windowId " << _windowID
                   << ", which is outside the allowed range 0.." << MAX_NUM_WINDOWS-1
                   << std::endl;
         abort();
     }
-    windows[ m_windowId ] = this;
+    windows[ _windowID ] = this;
 }
 
 void Window::reshape( int width, int height ) 

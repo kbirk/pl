@@ -291,28 +291,60 @@ void plBoundaryEditor::draw() const
                 glColor3f( PL_BOUNDARY_IGUIDE_COLOUR ); 
     */
     
+    const PLfloat HORIZONTAL_BUFFER  = 50;
+    const PLfloat VERTICAL_BUFFER    = 50;
+    const PLfloat HORIZONTAL_SPACING = 20;
+    const PLfloat VERTICAL_SPACING   = 20;   
+    const PLfloat CIRCLE_RADIUS      = 8;
+    
+    PLfloat currentSpacing = VERTICAL_BUFFER;
+    
+    PLfloat windowWidth = glutGet(GLUT_WINDOW_WIDTH);
+    PLfloat windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+    
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     {
         glLoadIdentity();   // set orthographic
          
         // TEMPORARY! REMOVE DEPENDANCY ON GLUT
-        plMatrix44 ortho( 0, glutGet(GLUT_WINDOW_WIDTH), 0, glutGet(GLUT_WINDOW_HEIGHT), -1, 1);
+        plMatrix44 ortho( 0, windowWidth, 0, windowHeight, -1, 1);
         glMultMatrixf( (GLfloat*)(&ortho) ); 
 
-        for (PLuint i=0; i<_plPlan->_defectSites.size(); i++)
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
         {
-            // corners menu
-            _plPickingState->type = PL_PICKING_TYPE_EDIT_DEFECT_CORNERS;
-            _plPickingState->id = i; 
-            _plPickingShader->setPickingUniforms(_plPickingState);           
-            glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
-            
-            plDrawDisk ( 2 );
-            
-            // boundary menu
+            glLoadIdentity();
+        
+            for (PLuint i=0; i<_plPlan->_defectSites.size(); i++)
+            {
+                // corners menu
+                _plPickingState->type = PL_PICKING_TYPE_EDIT_DEFECT_CORNERS;
+                _plPickingState->id = i; 
+                _plPickingShader->setPickingUniforms(_plPickingState);           
+                glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
+                glPushMatrix();
+                {
+                    glTranslatef( windowWidth - (HORIZONTAL_BUFFER + CIRCLE_RADIUS + HORIZONTAL_SPACING), windowHeight - VERTICAL_BUFFER, 0);
+                    plDrawDisk ( CIRCLE_RADIUS );
+                }
+                glPopMatrix();
+                // boundary menu
+                _plPickingState->type = PL_PICKING_TYPE_EDIT_DEFECT_BOUNDARY;
+                _plPickingState->id = i; 
+                _plPickingShader->setPickingUniforms(_plPickingState);           
+                glColor3f( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
+                glPushMatrix();
+                {
+                    glTranslatef( windowWidth - HORIZONTAL_BUFFER, windowHeight - VERTICAL_BUFFER, 0);
+                    plDrawDisk ( CIRCLE_RADIUS );
+                }
+                glPopMatrix();
+            }
         }
+        glPopMatrix();
     }
+    glMatrixMode(GL_PROJECTION);
     glPopMatrix();
 }
 
