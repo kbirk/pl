@@ -98,14 +98,10 @@ plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &d
 // plBoneAndCartilage
 ////////////////////////////////////////////////////////
 
-plBoneAndCartilage::plBoneAndCartilage()
-{           
-}
-
 
 plBoneAndCartilage::plBoneAndCartilage( plString bone_file, plString cartilage_file)
-    :   bone(bone_file), cartilage(cartilage_file)
-{       
+              : plBoneAndCartilageBase(          bone_file,          cartilage_file)
+{
 }
 
 /*
@@ -158,21 +154,6 @@ void plBoneAndCartilage::draw() const
     cartilage.draw( plVector3(PL_MODEL_CARTILAGE_COLOUR) );
 }
 
-
-void plBoneAndCartilage::getMinMax(plVector3 &min, plVector3 &max) const
-{
-    plVector3 bmin, bmax, cmin, cmax;
-    bone.getMinMax(bmin, bmax);
-    cartilage.getMinMax(cmin, cmax);
-    
-    min.x = (bmin.x < cmin.x) ? bmin.x : cmin.x;
-    min.y = (bmin.y < cmin.y) ? bmin.y : cmin.y;
-    min.z = (bmin.z < cmin.z) ? bmin.z : cmin.z;
-    
-    max.x = (bmax.x > cmax.x) ? bmax.x : cmax.x;
-    max.y = (bmax.y > cmax.y) ? bmax.y : cmax.y;
-    max.z = (bmax.z > cmax.z) ? bmax.z : cmax.z;
-}     
  
 void plBoneAndCartilage::readFromCSV( const plSeq<plString> &row, const plString &directory )
 {

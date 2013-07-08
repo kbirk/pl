@@ -88,3 +88,52 @@ std::ostream& operator << ( std::ostream& out, const plModelBase &m )
     out << m._filename;
     return out;
 }
+
+
+
+
+////////////////////////////////////////////////////////
+// plBoneAndCartilage
+////////////////////////////////////////////////////////
+
+
+plBoneAndCartilageBase::plBoneAndCartilageBase( plString bone_file, plString cartilage_file)
+    :   bone(bone_file), cartilage(cartilage_file)
+{
+}
+
+
+void plBoneAndCartilageBase::getMinMax(plVector3 &min, plVector3 &max) const
+{
+    plVector3 bmin, bmax, cmin, cmax;
+    bone.getMinMax(bmin, bmax);
+    cartilage.getMinMax(cmin, cmax);
+
+    min.x = (bmin.x < cmin.x) ? bmin.x : cmin.x;
+    min.y = (bmin.y < cmin.y) ? bmin.y : cmin.y;
+    min.z = (bmin.z < cmin.z) ? bmin.z : cmin.z;
+
+    max.x = (bmax.x > cmax.x) ? bmax.x : cmax.x;
+    max.y = (bmax.y > cmax.y) ? bmax.y : cmax.y;
+    max.z = (bmax.z > cmax.z) ? bmax.z : cmax.z;
+}
+
+
+void plBoneAndCartilageBase::readFromCSV( const plSeq<plString> &row, const plString &directory )
+{
+    // fill in the field
+    plString subfield = row[2];
+
+    if (plStringCompareCaseInsensitive(subfield, "bone file") )
+    {
+        bone = plModelBase( plStringConcat(directory, row[3])  );       // combine directory and filename
+    }
+    else if (plStringCompareCaseInsensitive(subfield, "cartilage file") )
+    {
+        cartilage = plModelBase( plStringConcat(directory, row[3])  );  // combine directory and filename
+    }
+    else
+    {
+        std::cerr << "Error importing plan, 'model': Unrecognized word '" << subfield << "' in third column." << std::endl;
+    }
+}

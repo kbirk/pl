@@ -30,4 +30,21 @@ protected:
 
 };
 
+
+class plBoneAndCartilageBase
+{
+public:
+    plModelBase bone;
+    plModelBase	cartilage;
+
+    plBoneAndCartilageBase() {}
+    plBoneAndCartilageBase( plString bone_file, plString cartilage_file );
+
+    void readFromCSV( const plSeq<plString> &row , const plString &directory );
+
+    void getMinMax(plVector3 &min, plVector3 &max) const;
+
+    friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
+};
+
 #endif // PLMODELBASE_H

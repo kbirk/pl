@@ -12,10 +12,14 @@ class plModel : public plRenderable,
                 public plModelBase
 {
     public:
+
         plModel() : plModelBase() {}
         plModel( std::string filename );
+
         void toggleVisibility();
+
         void draw( const plVector3 &colour ) const;
+
         plIntersection rayIntersect( const plVector3 &start, const plVector3 &dir,
                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
           
@@ -26,24 +30,19 @@ class plModel : public plRenderable,
 
 std::ostream& operator << ( std::ostream& out, const plModel &m );
 
-class plBoneAndCartilage
+class plBoneAndCartilage : public plBoneAndCartilageBase
 {
     public:
        
         plModel bone;
 		plModel	cartilage;
 
-        plBoneAndCartilage();
+        plBoneAndCartilage() : plBoneAndCartilageBase() {}
         plBoneAndCartilage( plString bone_file, plString cartilage_file );
 
         void readFromCSV( const plSeq<plString> &row , const plString &directory );
 
         void draw() const;
-
-        void getMinMax(plVector3 &min, plVector3 &max) const;   
-
-        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
-        
 };
 
 
