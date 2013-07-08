@@ -114,8 +114,6 @@ void triangleCutsBoundary( plPolygon &tri,  plSeq<plWall> &walls, plSeq<plPolygo
   for (PLint i=0; i<edgeCuts.size(); i++)
     edgeCuts[i].processed = false;
 
-  PLint numCutsLeft = edgeCuts.size();
-
   while (numCutsLeft > 0)
   {
 

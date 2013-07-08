@@ -210,7 +210,7 @@ void plPlan::importFile( plString filename )
 
 void plPlan::exportFile( plString filename )
 {
-    std::ofstream out( plStringConcat( filename, ".csv") );
+    std::ofstream out( plStringConcat( filename, ".csv").c_str() );
         
     if (!out)
     {
