@@ -168,7 +168,6 @@ void plGraft::setCaps()
     // generate meshes   
     _updateCartilageMesh();   
     _updateBoneMesh();  
- 
 }
 
 

@@ -1,33 +1,31 @@
-#ifndef PLMODELBASE_H
-#define PLMODELBASE_H
+#ifndef _PL_MODELBASE_H_
+#define _PL_MODELBASE_H_
 
 #include "pl.h"
 #include "plSeq.h"
 #include "plTriangle.h"
-#include "plMesh.h"
-
 
 class plModelBase
 {
 
-public:
+    public:
 
-    plModelBase() {}
-    plModelBase( std::string filename );
+        plModelBase() {}
+        plModelBase( std::string filename );
 
-    const plSeq<plTriangle> &triangles()     const { return _triangles; }
+        const plSeq<plTriangle> &triangles()     const { return _triangles; }
 
-    void      getMinMax(plVector3 &min, plVector3 &max) const;
-    plVector3 getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
-    plString  getFilenameWithoutPath ();
+        void      getMinMax(plVector3 &min, plVector3 &max) const;
+        plVector3 getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
+        plString  getFilenameWithoutPath ();
 
-    friend std::ostream& operator << ( std::ostream& out, const plModelBase &m );
+        friend std::ostream& operator << ( std::ostream& out, const plModelBase &m );
 
-protected:
+    protected:
 
-    plSeq<plTriangle>     _triangles;
-    plString              _filename;
+        plSeq<plTriangle>     _triangles;
+        plString              _filename;
 
 };
 
-#endif // PLMODELBASE_H
+#endif

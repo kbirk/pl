@@ -5,6 +5,7 @@
 #include "plRenderable.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
+#include "plMesh.h"
 #include "plCamera.h"
 #include "plModelBase.h"
 
@@ -14,8 +15,11 @@ class plModel : public plRenderable,
     public:
         plModel() : plModelBase() {}
         plModel( std::string filename );
+        
         void toggleVisibility();
+        
         void draw( const plVector3 &colour ) const;
+        
         plIntersection rayIntersect( const plVector3 &start, const plVector3 &dir,
                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
           
