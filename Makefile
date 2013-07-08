@@ -11,7 +11,7 @@ OBJECTS = $(patsubst %.cpp,objects/%.o,$(SOURCES))
 
 SOURCES = main.cpp pl.cpp PlannerWindow.cpp plBoundary.cpp plBoundaryBase.cpp plBoundaryEditor.cpp \
 	plBoundaryIntersection.cpp plCamera.cpp plColourMap.cpp plColourMesh.cpp plCSV.cpp plDefectSite.cpp \
-	plDonorSite.cpp plDraw.cpp plEditable.cpp plGraft.cpp plGraftEditor.cpp plIGuide.cpp plMath.cpp plMatrix44.cpp \
+	plDonorSite.cpp plDraw.cpp plEditable.cpp plGraft.cpp plGraftBase.cpp plGraftEditor.cpp plIGuide.cpp plMath.cpp plMatrix44.cpp \
 	plMesh.cpp plModel.cpp plPickingTexture.cpp plPlan.cpp plProjection.cpp plRenderable.cpp \
 	plSpline.cpp plString.cpp plTransform.cpp plTriangle.cpp plVector3.cpp \
 	plVector4.cpp Window.cpp
