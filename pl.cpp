@@ -31,6 +31,19 @@ plPickingTexture              *_plPickingTexture;
 plMatrixStack			      *_plModelMatrixStack;
 /////////////////////////////////////////////////////////////
 
+void glErrorReport( char *where )
+
+{ // borrowed by Thomas Vaugan from another program,
+    // should inform if anything upset OpenGL
+    GLuint errnum;
+    const char *errstr;
+
+    while ((errnum = glGetError())) {
+    errstr = reinterpret_cast<const char *>(gluErrorString(errnum));
+    printf("%s: %s\n", where, errstr);
+    }
+}
+
 void plInit()
 {
     _plComputeShader    = new plComputeShader("./shaders/test.comp");
