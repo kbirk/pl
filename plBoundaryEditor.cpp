@@ -304,14 +304,14 @@ void plBoundaryEditor::draw() const
                 _plPickingShader->setPickingUniforms(_plPickingState);           
                 glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
                 
-                //plDrawDisk ( plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL + count*VERTICAL_SPACING, 0), CIRCLE_RADIUS );
+                plDrawDisk ( plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL + count*VERTICAL_SPACING, 0), CIRCLE_RADIUS );
                 
                 // boundary menu
                 _plPickingState->type = PL_PICKING_TYPE_EDIT_DEFECT_BOUNDARY;
                 _plPickingShader->setPickingUniforms(_plPickingState);           
                 glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
                 
-                //plDrawDisk ( plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL + count*VERTICAL_SPACING, 0), CIRCLE_RADIUS );
+                plDrawDisk ( plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL + count*VERTICAL_SPACING, 0), CIRCLE_RADIUS );
 
                 count++;
             }

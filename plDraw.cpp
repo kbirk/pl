@@ -58,6 +58,9 @@ void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
     if (_plGraftEditor != NULL)
         _plGraftEditor->draw();
 
+    if (_plBoundaryEditor != NULL)
+        _plBoundaryEditor->draw();
+
     if (!leave_shader_bound) _plMinimalShader->unbind();  
 }
 
@@ -153,6 +156,9 @@ void _plDrawPicking()
     // EDITORS
     if (_plGraftEditor != NULL)
         _plGraftEditor->draw();
+
+    if (_plBoundaryEditor != NULL)
+        _plBoundaryEditor->draw();
 
     _plPickingTexture->unbind(); 
     _plPickingShader->unbind(); 
@@ -253,6 +259,16 @@ void plDrawCylinder(float radius, float height)
     {
         glScalef(radius, radius, height);        
         cylinder.draw();
+    }
+    glPopMatrix();
+}
+
+void plDrawDisk(const plVector3 &origin, float radius)
+{
+    glPushMatrix();
+    {
+        glTranslatef( origin.x, origin.y, origin.z );
+        plDrawDisk( radius );       
     }
     glPopMatrix();
 }

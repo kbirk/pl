@@ -211,6 +211,7 @@ extern void             plDrawCircleArrow        ( const plVector3 &direction, P
 extern void             plDrawSphere             ( float radius);
 extern void             plDrawSphere             ( const plVector3 &origin, float radius);
 extern void             plDrawCylinder           ( float radius, float height); 
+extern void             plDrawDisk               ( const plVector3 &origin, float scale );
 extern void             plDrawDisk               ( float scale );
 
 
