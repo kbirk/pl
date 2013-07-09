@@ -134,6 +134,7 @@ class plBoneAndCartilage;
 class plProjection;
 class plComputeShader;
 class plMinimalShader;
+class plPhongShader;
 class plPickingShader;
 class plPickingTexture;
 class plPickingInfo;
@@ -154,6 +155,7 @@ extern plGraftEditor    *_plGraftEditor;
 extern plBoundaryEditor *_plBoundaryEditor;
 
 extern plMinimalShader  *_plMinimalShader;
+extern plPhongShader    *_plPhongShader;
 extern plPickingShader  *_plPickingShader;
 extern plComputeShader  *_plComputeShader;
 extern plPickingInfo    *_plPickingState;
@@ -172,7 +174,7 @@ extern void             plInit                  ();
 //////////////////////////////////////////////////////////////////////////////
 // Check for OpenGL Errors           pl.cpp
 //////////////////////////////////////////////////////////////////////////////
-extern void glErrorReport( char *where );
+extern void             glErrorReport           ( const plString &str  );
 
 
 //////////////////////////////////////////////////////////////////////////////

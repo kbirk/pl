@@ -8,6 +8,7 @@
 #include "plPlan.h"
 #include "plSeq.h"
 #include "plMinimalShader.h"
+#include "plPhongShader.h"
 #include "plPickingShader.h"
 #include "plMesh.h"
 #include "plGraftEditor.h"

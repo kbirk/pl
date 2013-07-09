@@ -282,14 +282,14 @@ void plBoundaryEditor::draw() const
      
     PLfloat count = 0;
        
-    //glMatrixMode(GL_PROJECTION);
-    //glPushMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
     {
-        //glLoadIdentity();   // set orthographic
+        glLoadIdentity();   // set orthographic
          
         // TEMPORARY! REMOVE DEPENDANCY ON GLUT
-        //plMatrix44 ortho( 0, windowWidth, 0, windowHeight, -1, 1);
-        //glMultMatrixf( (GLfloat*)(&ortho) ); 
+        plMatrix44 ortho( 0, windowWidth, 0, windowHeight, -1, 1);
+        glMultMatrixf( (GLfloat*)(&ortho) ); 
         
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -318,8 +318,10 @@ void plBoundaryEditor::draw() const
         }
         glPopMatrix();
     }
-    //glMatrixMode(GL_PROJECTION);
-    //glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    
+    glMatrixMode(GL_MODELVIEW);
 }
 
 
