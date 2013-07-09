@@ -41,10 +41,10 @@ void findInteriorMesh( plSeq<plTriangle> &triangles, plSeq<plWall> &walls, plSeq
         {
           if (interiorPoints[interiorPointsIndex] == (triangles[trianglesIndex])[triangleVerticesIndex]) {
             plPolygon poly;
-            poly._points.add( triangles[trianglesIndex].point0() );
-            poly._points.add( triangles[trianglesIndex].point1() );
-            poly._points.add( triangles[trianglesIndex].point2() );
-            poly._normal    = triangles[trianglesIndex].normal();
+            poly.addPoint ( triangles[trianglesIndex].point0() );
+            poly.addPoint ( triangles[trianglesIndex].point1() );
+            poly.addPoint ( triangles[trianglesIndex].point2() );
+            poly.setNormal( triangles[trianglesIndex].normal() );
             interiorPolygons.add( poly );
             trianglesProcessedFlag[trianglesIndex] = true;
             for (PLint l=0; l<3; l++)
@@ -118,7 +118,7 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
     // Build one polygon
     plPolygon poly;
 
-    poly._normal = tri.normal();
+    poly.setNormal(tri.normal());
 
     // Find an initial edge cut at which the triangle edge is going
     // outward through wall.
@@ -139,7 +139,7 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
     {
       // Add this int point
 
-      poly._points.add( edgeCuts[ edgeCutIndex ].p );
+      poly.addPoint( edgeCuts[ edgeCutIndex ].p );
       edgeCuts[ edgeCutIndex ].processed = true;
       numCutsLeft--;
 
@@ -166,7 +166,7 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
         // include some of the wall vertices.
         thisWallIndex = (thisWallIndex+1) % walls.size();
 
-        poly._points.add( walls[ thisWallIndex ].p0 );
+        poly.addPoint( walls[ thisWallIndex ].p0 );
       } // end while
 
       // Advance to the wall cut at which the triangle edge re-enters the wall.
@@ -195,7 +195,7 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
 
       // Add this int point
 
-      poly._points.add( edgeCuts[ edgeCutIndex ].p );
+      poly.addPoint( edgeCuts[ edgeCutIndex ].p );
       edgeCuts[ edgeCutIndex ].processed = true;
       numCutsLeft--;
 
@@ -210,7 +210,7 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
         // edge, so walk around the triangle edges.
 
         thisEdgeIndex = (thisEdgeIndex+1) % 3; // (3 edges per triangle)
-        poly._points.add( tri[ thisEdgeIndex ] );
+        poly.addPoint( tri[ thisEdgeIndex ] );
         interiorPoints.add( tri[ thisEdgeIndex ] );
       }
 
@@ -219,7 +219,7 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
       edgeCutIndex = (edgeCutIndex+1)%edgeCuts.size();
 
     } // end do
-    while (edgeCuts[ edgeCutIndex ].p != poly._points[0]); // Stop if we've reached the starting point.
+    while (edgeCuts[ edgeCutIndex ].p != poly.getPoint(0)); // Stop if we've reached the starting point.
 
     interiorPolygons.add( poly );
   }
