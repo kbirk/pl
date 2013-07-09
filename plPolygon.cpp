@@ -7,7 +7,7 @@ std::ostream& operator << ( std::ostream &stream, const plPolygon &p ) {
     {
         stream << "Vertex " << i << " = " << p.point(i) << "\n";
     } // end for
-}
+} // end << operator
 
 
 void plPolygon::point ( const plVector3 &value , const PLuint index )
@@ -22,12 +22,12 @@ void plPolygon::point ( const plVector3 &value , const PLuint index )
 void plPolygon::normal( const plVector3 &value )
 {
     _normal = value;
-}// end void function setNormal()
+} // end void function setNormal()
 
 
 void plPolygon::addPoint ( const plVector3 &value ) {
     _points.add(value);
-}
+} // end void function addPoint()
 
 
 void plPolygon::removePoint ( const PLuint &index ) {
@@ -35,4 +35,4 @@ void plPolygon::removePoint ( const PLuint &index ) {
         std::cerr << "Error: plPolygon setPoint(index,value) - index " << index << " is out of range, maximum is currently " << _points.size() << std::endl;
     }
     _points.remove(index);
-}
+} // end void function removePoint()

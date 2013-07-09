@@ -10,7 +10,7 @@ class plPolygon {
   public:
     plPolygon() {}
 
-    const PLuint    &getPolygonSize()          const { return _points.size(); }
+    const PLuint    getPolygonSize()        const { return _points.size(); }
     const plVector3 &point ( PLuint index ) const { return _points[index]; }
     const plVector3 &normal()               const { return _normal;        }
 
