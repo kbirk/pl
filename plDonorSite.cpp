@@ -2,7 +2,6 @@
 
 plDonorSite::plDonorSite() 
 {
-    boundary
 }
 
 void plDonorSite::readFromCSV(const plSeq<plString> &row)

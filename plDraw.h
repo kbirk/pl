@@ -11,7 +11,6 @@
 #include "plPickingShader.h"
 #include "plMesh.h"
 #include "plGraftEditor.h"
-#include "plBoundaryEditor.h"
 
 void _plDrawPicking();
 void _plDrawArrowCone(float scale);

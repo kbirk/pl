@@ -8,7 +8,7 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       _graftEditor(),
       _boundaryEditor(),
       _plan( argc, argv ), 
-      Window( x, y, width, height, title, argc, argv )
+      Window( x, y, width, height, title )
 {  
     plInit();
     plSet( _plan );
@@ -95,7 +95,7 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
         //case 'd':   plDonorRegionToggleVisibilityAll();          break;         
         //case 'q':   plDefectSplineCornersToggleVisibilityAll();  break;
         //case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;        
-        case 'O':   _plan.exportFile("plan");                                   break;
+        case 'O':   _plan.exportFile("plan");                    break;
 
         case 127:	 // delete 
         {   

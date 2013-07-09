@@ -16,7 +16,7 @@ class Window
 {
     public:
 
-        Window( int x, int y, int width, int height, std::string title, int argc, char **argv );
+        Window( int x, int y, int width, int height, std::string title );
 
         virtual void display() = 0;
         virtual void mouseAction( int button, int state, int x, int y ) {};
@@ -28,7 +28,7 @@ class Window
         
     private:
         
-        int _windowID;
+        int m_windowId;
         
         void registerWindow( int windowId );
 };

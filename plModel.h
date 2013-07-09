@@ -2,30 +2,42 @@
 #define __PL_MODEL_H__
 
 #include "pl.h"
+#include "plSeq.h"
 #include "plRenderable.h"
+#include "plTriangle.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plMesh.h"
 #include "plCamera.h"
-#include "plModelBase.h"
 
-class plModel : public plRenderable,
-                public plModelBase
+class plModel : public plRenderable
 {
     public:
-        plModel() : plModelBase() {}
+
+        plModel() {}
         plModel( std::string filename );
+             
+        const plSeq<plTriangle> &triangles()     const { return _triangles; }
         
         void toggleVisibility();
         
         void draw( const plVector3 &colour ) const;
-        
-        plIntersection rayIntersect( const plVector3 &start, const plVector3 &dir,
+
+        void      getMinMax(plVector3 &min, plVector3 &max) const;        
+        plVector3 getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
+        plString  getFilenameWithoutPath ();
+
+        plIntersection rayIntersect( const plVector3 &start, const plVector3 &dir, 
                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
+
+        friend std::ostream& operator << ( std::ostream& out, const plModel &m );
           
-    private:
-        plMesh                _mesh;
+	private:
+	
+		plMesh                _mesh;
+        plSeq<plTriangle>     _triangles;
         PLbool                _isTransparent;
+		plString              _filename;
 };
 
 std::ostream& operator << ( std::ostream& out, const plModel &m );

@@ -307,7 +307,7 @@ void plGraftEditor::_dragHandle( PLint x, PLint y )
                 
                 if (PL_GRAFT_SELECTED_IS_DONOR)
                 {
-                    graft.setCaps();
+                    graft.setCaps( _plPlan->_models );
                 }
             }
                     
@@ -380,7 +380,7 @@ void plGraftEditor::translate( plGraft &graft, const plVector3 &translation )
         if (PL_GRAFT_SELECTED_IS_DONOR)
         {
             // harvest, re-compute cap  
-            graft.setCaps();
+            graft.setCaps( _plPlan->_models );
         }
     }
 }
@@ -407,7 +407,7 @@ void plGraftEditor::rotate( plGraft &graft, const plVector3 &axis, PLfloat angle
     if (PL_GRAFT_SELECTED_IS_DONOR)
     {
         // harvest, re-compute cap      
-        graft.setCaps();    
+        graft.setCaps( _plPlan->_models );    
     }
 }
 

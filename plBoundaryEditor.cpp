@@ -267,40 +267,20 @@ void plBoundaryEditor::addBoundary( PLuint x, PLuint y, PLuint type, PLbool sele
 
 void plBoundaryEditor::draw() const
 {
-    /*
-    #define PL_PICKING_TYPE_EDIT_DEFECT_CORNERS      17
-    #define PL_PICKING_TYPE_EDIT_DEFECT_BOUNDARY     18
-    #define PL_PICKING_TYPE_EDIT_DONOR_BOUNDARY      19
-    #define PL_PICKING_TYPE_EDIT_IGUIDE_BOUNDARY     20
 
-                
-                break;
-
-            case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-                // defect boundary
-                glColor3f( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
-                break;
- 
-            case PL_PICKING_TYPE_DONOR_BOUNDARY:
-                // donor boundary
-                glColor3f( PL_BOUNDARY_DONOR_COLOUR );
-                break;
-
-            case PL_PICKING_TYPE_IGUIDE_BOUNDARY:     
-                // iguide boundary
-                glColor3f( PL_BOUNDARY_IGUIDE_COLOUR ); 
-    */
-    
-    const PLfloat HORIZONTAL_BUFFER  = 50;
-    const PLfloat VERTICAL_BUFFER    = 50;
-    const PLfloat HORIZONTAL_SPACING = 20;
-    const PLfloat VERTICAL_SPACING   = 20;   
-    const PLfloat CIRCLE_RADIUS      = 8;
-    
-    PLfloat currentSpacing = VERTICAL_BUFFER;
-    
-    PLfloat windowWidth = glutGet(GLUT_WINDOW_WIDTH);
+    PLfloat windowWidth  = glutGet(GLUT_WINDOW_WIDTH);
     PLfloat windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+    
+    const PLfloat HORIZONTAL_BUFFER   = 50;
+    const PLfloat VERTICAL_BUFFER     = 50;
+    const PLfloat HORIZONTAL_SPACING  = 20;
+    const PLfloat VERTICAL_SPACING    = 20;     
+    const PLfloat CIRCLE_RADIUS       = 8;
+    const PLfloat CORNER_HORIZONTAL   = windowWidth - (HORIZONTAL_BUFFER + CIRCLE_RADIUS + HORIZONTAL_SPACING);  
+    const PLfloat BOUNDARY_HORIZONTAL = windowWidth - HORIZONTAL_BUFFER;
+    const PLfloat INITIAL_VERTICAL    = windowHeight - VERTICAL_BUFFER;
+     
+    PLfloat count = 0;
     
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -313,9 +293,9 @@ void plBoundaryEditor::draw() const
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
+        glLoadIdentity();
         {
-            glLoadIdentity();
-        
+                   
             for (PLuint i=0; i<_plPlan->_defectSites.size(); i++)
             {
                 // corners menu
@@ -323,23 +303,17 @@ void plBoundaryEditor::draw() const
                 _plPickingState->id = i; 
                 _plPickingShader->setPickingUniforms(_plPickingState);           
                 glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
-                glPushMatrix();
-                {
-                    glTranslatef( windowWidth - (HORIZONTAL_BUFFER + CIRCLE_RADIUS + HORIZONTAL_SPACING), windowHeight - VERTICAL_BUFFER, 0);
-                    plDrawDisk ( CIRCLE_RADIUS );
-                }
-                glPopMatrix();
+                
+                //plDrawDisk ( plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL + count*VERTICAL_SPACING, 0), CIRCLE_RADIUS );
+                
                 // boundary menu
                 _plPickingState->type = PL_PICKING_TYPE_EDIT_DEFECT_BOUNDARY;
-                _plPickingState->id = i; 
                 _plPickingShader->setPickingUniforms(_plPickingState);           
-                glColor3f( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
-                glPushMatrix();
-                {
-                    glTranslatef( windowWidth - HORIZONTAL_BUFFER, windowHeight - VERTICAL_BUFFER, 0);
-                    plDrawDisk ( CIRCLE_RADIUS );
-                }
-                glPopMatrix();
+                glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
+                
+                //plDrawDisk ( plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL + count*VERTICAL_SPACING, 0), CIRCLE_RADIUS );
+
+                count++;
             }
         }
         glPopMatrix();
