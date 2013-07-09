@@ -40,3 +40,14 @@ void plInit()
     _plPickingTexture   = new plPickingTexture(1,1);
     _plModelMatrixStack = new plMatrixStack();
 }
+
+void glErrorReport( char *where ) {
+    // borrowed by Thomas Vaughan from another program,
+    // should print out if anything upset OpenGL
+    GLuint errnum;
+    const char *errstr;
+    while (errnum = glGetError()) {
+        errstr = reinterpret_cast<const char *> (gluErrorString(errnum));
+        printf("%s: %s\n", where, errstr);
+    }
+}
