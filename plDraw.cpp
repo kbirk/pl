@@ -1,5 +1,145 @@
 #include "plDraw.h"
  
+/*
+
+void setViewingMatrix()
+{
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    plMatrix44 viewingMatrix = _plCamera->matrix();
+    glMultMatrixf( (GLfloat*)(&viewingMatrix) );
+}
+
+
+void setProjectionMatrix()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();   
+    plMatrix44 projectionMatrix = projection.matrix();
+    glMultMatrixf( (GLfloat*)(&projectionMatrix) ); 
+}
+
+
+void _setOpenGLState()
+{
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    glEnable( GL_DEPTH_TEST );   
+}
+
+
+void draw()
+{
+    _setOpenGLState();
+
+    // projection
+    setProjectionMatrix();       
+    // camera
+    setViewingMatrix();
+    
+    // picking draw
+    _beginPicking();
+    {
+        _drawScene();
+    }
+    _endPicking();
+    
+    // normal draw
+    _beginDrawing();
+    {
+        _drawScene();
+    }
+    _endDrawing();
+}
+
+void setShaderUniforms()
+{
+    if (isPicking)
+    {
+        _pickingShader.setPickingUniforms( pickingValue ); 
+    }
+    //_shader->setUniforms( PVM );
+}
+
+
+void _beginPicking()
+{
+    _shader = &_pickingShader;
+    isPicking = true;
+
+    glDisable( GL_BLEND );
+
+    // bind pickign shader and texture
+    pickingTexture.bind();
+    _pickingShader.bind();
+
+    // clear picking texture
+    glClearColor(0,0,0,0);
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  
+
+}
+
+
+void _endPicking()
+{
+    pickingTexture.unbind(); 
+    pickingTexture.unbind(); 
+    
+    _shader = NULL;
+    isPicking = false;
+}
+
+
+void _beginDrawing()
+{
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );  
+    
+    glClearColor( 1,1,1,0 );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    
+    _shader = &_minimalShader;
+    
+    _minimalShader.bind();   
+    _minimalShader.setLightUniform( plVector3(10, 10, 15) );
+}
+
+
+void _endDrawing()
+{
+    _minimalShader.unbind();     
+    _shader = NULL;
+}
+
+
+void _drawScene()
+{
+    // PLAN
+    _plPlan->draw();
+
+    // EDITORS
+    if (_plGraftEditor != NULL)
+        _plGraftEditor->draw();
+
+    if (_plBoundaryEditor != NULL)
+        _plBoundaryEditor->draw();
+}
+
+
+
+
+
+
+*/
+
+
+
+
+
+
+
+
+
+
 
 void plDrawSetViewingMatrix()
 {
@@ -48,8 +188,8 @@ void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );  
     
-    _plMinimalShader->bind();   
-    _plMinimalShader->setLightUniform( plVector3(10, 10, 15) );
+    _plPhongShader->bind();   
+    _plPhongShader->setLightUniform( plVector3(10, 10, 15) );
 
     // PLAN
     _plPlan->draw();
@@ -61,7 +201,7 @@ void plDraw( PLbool clear_buffer, PLbool leave_shader_bound )
     if (_plBoundaryEditor != NULL)
         _plBoundaryEditor->draw();
 
-    if (!leave_shader_bound) _plMinimalShader->unbind();  
+    if (!leave_shader_bound) _plPhongShader->unbind();  
 }
 
 void plDrawUnbindShader()

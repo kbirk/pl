@@ -1,17 +1,17 @@
-#ifndef __PL_MINIMAL_SHADER_H__
-#define __PL_MINIMAL_SHADER_H__
+#ifndef __PL_PHONG_SHADER_H__
+#define __PL_PHONG_SHADER_H__
 
 #include "pl.h"
 #include "plShader.h"
 //#include "plMatrix44.h"
 
-class plMinimalShader : public plShader
+class plPhongShader : public plShader
 {
     public:                    
              
         //plMinimalShader() {}
              
-        plMinimalShader(const char *vertexFile, const char *fragmentFile) : plShader(vertexFile, fragmentFile)
+        plPhongShader(const char *vertexFile, const char *fragmentFile) : plShader(vertexFile, fragmentFile)
 		{  
             // get uniform locations
             getUniformLocations();
@@ -21,7 +21,8 @@ class plMinimalShader : public plShader
         {			
 			// transformation uniform locations
 			//m_modelViewID     = glGetUniformLocation(m_shaderProgramID, "mModelView"    );			
-            //m_projectionID    = glGetUniformLocation(m_shaderProgramID, "mProjection"   );                     
+            //m_projectionID    = glGetUniformLocation(m_shaderProgramID, "mProjection"   );                
+            _lightPositionID = glGetUniformLocation(_shaderProgramID, "vLightPosition");              
             //_colourID        = glGetUniformLocation(_shaderProgramID, "cColour"       );  
         }
         /*
@@ -39,7 +40,10 @@ class plMinimalShader : public plShader
             
 		}
 		*/
-
+		virtual void setLightUniform(const plVector3 &lightPosition) const
+		{	
+		    glUniform3fv(_lightPositionID, 1, (GLfloat*)(&lightPosition));	
+		}
 		/*
 		virtual void setColourUniform(const float colour[4]) const
 		{	
@@ -50,6 +54,7 @@ class plMinimalShader : public plShader
 	/*
         GLuint m_modelViewID;
         GLuint m_projectionID; */
+        GLuint _lightPositionID;
         //GLuint _colourID;  
         
 
