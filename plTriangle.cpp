@@ -102,9 +102,9 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
 std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 {
     stream << "Normal    = " << p.normal() << "\n"
-           << "Vertex 1  = " << p.point0() << "\n"
-           << "Vertex 2  = " << p.point1() << "\n"
-           << "Vertex 3  = " << p.point2() << "\n";
+           << "Vertex 0  = " << p.point0() << "\n"
+           << "Vertex 1  = " << p.point1() << "\n"
+           << "Vertex 2  = " << p.point2() << "\n";
     return stream;
 }
 
