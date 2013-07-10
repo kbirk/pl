@@ -195,7 +195,7 @@ void plPlan::importFile( plString filename )
     }
        
     // init grafts    
-    for ( PLuint i = 0; i < _grafts.size(); i++) 
+    /*for ( PLuint i = 0; i < _grafts.size(); i++)
     {                              
         _grafts[i].init( _models );       
     }
@@ -204,7 +204,7 @@ void plPlan::importFile( plString filename )
     for ( PLuint i = 0; i < _defectSites.size(); i++) 
     {        
         _defectSites[i].computeSpline( _models ); 
-    }
+    }*/
 
 }
 
