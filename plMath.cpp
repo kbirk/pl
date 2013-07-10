@@ -53,3 +53,30 @@ plVector3 plClosestPointOnPlane(const plVector3 &q, const plVector3 &p, const pl
     return q - t * n;
 }
 */
+
+
+void plConvexPolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
+{
+    tris.clear();
+    for (int i = 0; i < polys.size(); i++)
+    {
+        if (polys[i].points.size() > 2) // general case
+        {
+            plVector3 normal(polys[i].normal);
+            plVector3 point0(polys[i].points[0]);
+            // create a fan of triangles from this point
+            for (int currentVertex=1;currentVertex<polys[i].points.size()-1;currentVertex++)
+            {
+                plVector3 point1(polys[i].points[currentVertex]);
+                plVector3 point2(polys[i].points[currentVertex+1]);
+                plTriangle tri(normal,point0,point1,point2);
+                tris.add(tri);
+            }
+        }
+        else // must be an invalid polygon
+        {
+            std::cerr << "Error: polygon with less than three vertices detected: " << polys[i].points.size() << ". Aborting." << std::endl;
+            exit(1);
+        }
+    }
+}

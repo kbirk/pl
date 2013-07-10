@@ -232,6 +232,59 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
 PLbool edgeCutsWall( const plVector3 &v0, const plVector3 &v1, plWall &wall, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &wallParam, PLint &intDir )
 
 {
+    plVector3 avgNormal ((wall.n0+wall.n1).normalize());
+
+    // outward pointing normal:
+    plVector3 outwardNormal = ((wall.p1-wall.p0)^avgNormal).normalize();
+
+    //parameter for plane equation, n*x = d
+
+    PLfloat d = wall.p0 * outwardNormal;
+
+    // Find the intersection point
+
+    PLfloat dot0 = v0 * outwardNormal;
+    PLfloat dot1 = v1 * outwardNormal;
+
+    PLfloat denom = dot1 - dot0;
+
+    if (fabs(denom) > 1e-6) {	// edge is not parallel to wall
+
+      PLfloat t = (d - dot0) / denom;
+
+      if (0 <= t && t <= 1) {	// edge endpoints are on opposite sides of wall
+
+        // Project intersection point onto line in wall from wall.p0 to wall.p1
+
+        plVector3 x = v0 + t * (v1-v0);
+
+        PLfloat s = ((x-wall.p0) * (wall.p1-wall.p0)) / ((wall.p1-wall.p0)*(wall.p1-wall.p0));
+
+        if (0 <= s && s <= 1) {
+
+          plVector3 y = wall.p0 + s * (wall.p1-wall.p0);
+
+          if ((x-y).length() < 0.5*(wall.p1-wall.p0).length()) {
+
+            intPoint = x;
+            intDir = (denom > 0 ? +1 : -1);
+            edgeParam = t;
+            wallParam = s;	// We're assuming that the projections are monotonically increasing
+                                  // as we walk across the mesh from one wall extreme to the other.
+            return true;
+          }
+        }
+      }
+    }
+
+    /*plVector3 avgNormal ((wall.n0+wall.n1).normalize());
+
+    // outward pointing normal:
+    wall.n = ((wall.p1-wall.p0)^avgNormal).normalize();
+
+    //parameter for plane equation, n*x = d
+    wall.d = wall.p0 * wall.n;
+
   // Find the intersection point
 
   PLfloat dot0 = v0 * wall.n;
@@ -266,7 +319,7 @@ PLbool edgeCutsWall( const plVector3 &v0, const plVector3 &v1, plWall &wall, plV
         }
       }
     }
-  }
+  }*/
 
   return false;
 }

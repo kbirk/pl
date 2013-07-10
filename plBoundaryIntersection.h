@@ -13,13 +13,11 @@ class plWall {
 
   plVector3 p0, p1;		// two points on surface at opposite ends of wall
   plVector3 n0, n1;		// surface normals at p0 and p1
-  plVector3 n;			// outward pointing normal of wall
-  PLfloat  d;			// scalar in plane equation of wall
 
   plWall() {}
 
   plWall( plVector3 pp0, plVector3 pp1, plVector3 nn0, plVector3 nn1, plVector3 nn, PLfloat dd ):
-    p0(pp0), p1(pp1), n0(nn0), n1(nn1), n(nn), d(dd)
+    p0(pp0), p1(pp1), n0(nn0), n1(nn1)
     {}
 };
 
