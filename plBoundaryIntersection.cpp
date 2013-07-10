@@ -12,7 +12,7 @@
 // boundary across the triangle mesh.
 
 
-void findInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plSeq<plPolygon> &interiorPolygons )
+void findInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plSeq<plTriangle> &interiorTriangles )
 {
   // set all the processed flags to false
   plSeq<PLbool> trianglesProcessedFlag (triangles.size());
@@ -20,12 +20,13 @@ void findInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plSeq
     trianglesProcessedFlag.add(false);
 
   // just in case polygons has stuff in it, it should be emptied
-  interiorPolygons.clear();
+  interiorTriangles.clear();
 
   // allocate a worst-case number of interior points
   plSeq<plVector3> interiorPoints( 3 * triangles.size() );
 
   // Collect polygons that intersect the boundary
+  plSeq<plPolygon> interiorPolygons;
   for (PLint i=0; i<triangles.size(); i++) {
     triangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints );
   }
@@ -64,6 +65,10 @@ void findInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plSeq
       } // end if
     } // end for
   } // end for
+
+  // convert polygons to triangles for the output
+  plConvexPolysToTris(interiorPolygons,interiorTriangles);
+
 } // end void function
 
 

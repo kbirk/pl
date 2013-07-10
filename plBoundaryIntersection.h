@@ -7,6 +7,7 @@
 #include "plTriangle.h"
 #include "plPolygon.h"
 #include "plBoundary.h"
+#include "plMath.h"
 
 
 class plCut {
@@ -29,7 +30,7 @@ public:
 
 
 
-void findInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &walls, plSeq<plPolygon> &polygons );
+void findInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &walls, plSeq<plTriangle> &interiorTriangles );
 PLbool edgeCutsWall( const plVector3 &v0, const plVector3 &v1, plBoundary &wall, PLuint index, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &wallParam, PLint &intDir );
 void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plBoundary &walls, plSeq<plPolygon> &polys, plSeq<plVector3> &interiorPoints );
 PLint compareEdgeCuts( const void* a, const void* b );
