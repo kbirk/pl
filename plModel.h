@@ -42,25 +42,5 @@ class plModel : public plRenderable
 
 std::ostream& operator << ( std::ostream& out, const plModel &m );
 
-class plBoneAndCartilage
-{
-    public:
-       
-        plModel bone;
-		plModel	cartilage;
-
-        plBoneAndCartilage();
-        plBoneAndCartilage( plString bone_file, plString cartilage_file );
-
-        void readFromCSV( const plSeq<plString> &row , const plString &directory );
-
-        void draw() const;
-
-        void getMinMax(plVector3 &min, plVector3 &max) const;   
-
-        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
-        
-};
-
 
 #endif

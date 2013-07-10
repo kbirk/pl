@@ -85,7 +85,7 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
         case 'b':   _plan._models[0].bone.toggleVisibility();                   break;            
         case 'c':   _plan._models[0].cartilage.toggleVisibility();              break;      
         case 'p':   _plan.toggleVisibility();                                   break;    
-        case 'z':   _camera.reset(_plan._models[0]);                            break;          
+        case 'z':   _camera.reset( _plan._models[0].getCentroid() );            break;          
         case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
         case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
         case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 

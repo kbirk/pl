@@ -2,10 +2,8 @@
 #define __PL_BOUNDARY_EDITOR_H__
 
 #include "pl.h"
-//#include "plError.h"
 #include "plSeq.h"
 #include "plVector3.h"
-//#include "plTransform.h"
 #include "plPlan.h"
 #include "plBoundary.h"
 #include "plDefectSite.h"

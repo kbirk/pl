@@ -6,7 +6,7 @@
 #include "plEditable.h"
 #include "plVector3.h"
 #include "plTriangle.h"
-#include "plModel.h"
+#include "plBoneAndCartilage.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plTransform.h"

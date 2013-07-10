@@ -7,10 +7,8 @@
 #include "plVector3.h"
 #include "plCSV.h"
 #include "plRenderable.h"
-
 #include "plGraft.h"
-#include "plModel.h"
-#include "plBoundary.h"
+#include "plBoneAndCartilage.h"
 #include "plDefectSite.h"
 #include "plDonorSite.h"
 #include "plIGuide.h"

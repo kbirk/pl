@@ -8,6 +8,7 @@
 #include "plRenderable.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
+#include "plBoneAndCartilage.h"
 
 class plDefectSite : public plRenderable
 {

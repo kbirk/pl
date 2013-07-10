@@ -56,19 +56,6 @@ void plCamera::reset(const plVector3 &point)
     lookat = focus_centre;
 }
 
-void plCamera::reset( const plBoneAndCartilage &model )
-{
-    plVector3 min, max;
-	model.getMinMax(min, max);
-
-    plVector3 focus_centre = 0.5f * (max + min);     
-    plVector3 separation = position - focus_centre;    
-    plVector3 camera_direction = (lookat-position).normalize();     
-    PLfloat projection = separation * camera_direction;
-     
-    position = focus_centre + (projection * camera_direction);
-    lookat = focus_centre;
-}
 
 void plCamera::exportViewParams( std::string filename )
 {

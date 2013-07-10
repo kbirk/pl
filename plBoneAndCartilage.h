@@ -2,7 +2,7 @@
 #define __PL_BONE_AND_CARTILAGE_MODEL_H__
 
 #include "pl.h"
-#include "plRenderer.h"
+//#include "plRenderer.h"
 #include "plModel.h"
 
 class plBoneAndCartilage

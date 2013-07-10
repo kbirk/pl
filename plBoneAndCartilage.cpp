@@ -14,13 +14,13 @@ plBoneAndCartilage::plBoneAndCartilage( plString bone_file, plString cartilage_f
 void plBoneAndCartilage::draw() const
 {
     // DRAW BONE
-    _plRenderer->pickingValue.type = PL_PICKING_TYPE_BONE;
-    //_plPickingShader->setPickingUniforms(_plPickingState->type,_plPickingState->id, 0);    
+    _plPickingState->type = PL_PICKING_TYPE_BONE;
+    _plPickingShader->setPickingUniforms(_plPickingState->type,_plPickingState->id, 0);    
     bone.draw( plVector3(PL_MODEL_BONE_COLOUR) );
 
     // DRAW CARTILAGE
-    _plRenderer->pickingValue.type = PL_PICKING_TYPE_CARTILAGE;
-    //_plPickingShader->setPickingUniforms(_plPickingState->type,_plPickingState->id, 0);    
+    _plPickingState->type = PL_PICKING_TYPE_CARTILAGE;
+    _plPickingShader->setPickingUniforms(_plPickingState->type,_plPickingState->id, 0);    
     cartilage.draw( plVector3(PL_MODEL_CARTILAGE_COLOUR) );
 }
 

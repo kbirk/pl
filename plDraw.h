@@ -17,4 +17,12 @@
 void _plDrawPicking();
 void _plDrawArrowCone(float scale);
 
+void _setOpenGLState();
+        
+void _beginPicking();
+void _endPicking();
+
+void _beginDrawing();
+void _endDrawing();
+
 #endif

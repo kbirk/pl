@@ -1,8 +1,8 @@
 #include "plDraw.h"
  
-/*
 
-void setViewingMatrix()
+
+void plDrawSetViewingMatrix()
 {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -11,12 +11,12 @@ void setViewingMatrix()
 }
 
 
-void setProjectionMatrix()
+void plDrawSetProjectionMatrix()
 {
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();   
-    plMatrix44 projectionMatrix = projection.matrix();
-    glMultMatrixf( (GLfloat*)(&projectionMatrix) ); 
+    glLoadIdentity();  
+    plMatrix44 projectionMatrix = _plProjection->matrix();
+    glMultMatrixf( (GLfloat*)(&projectionMatrix) );  
 }
 
 
@@ -27,31 +27,50 @@ void _setOpenGLState()
 }
 
 
-void draw()
+void plDraw()
 {
     _setOpenGLState();
 
     // projection
-    setProjectionMatrix();       
+    plDrawSetProjectionMatrix();       
     // camera
-    setViewingMatrix();
+    plDrawSetViewingMatrix();
     
     // picking draw
     _beginPicking();
     {
-        _drawScene();
+        // PLAN
+        _plPlan->draw(true);
+       
+        // EDITORS
+        if (_plGraftEditor != NULL)
+            _plGraftEditor->draw();
+
+        if (_plBoundaryEditor != NULL)
+            _plBoundaryEditor->draw();
     }
     _endPicking();
     
     // normal draw
     _beginDrawing();
     {
-        _drawScene();
+        // PLAN
+        _plPlan->draw();
+       
+        // EDITORS
+        if (_plGraftEditor != NULL)
+            _plGraftEditor->draw();
+
+        //_plMinimalShader->bind(); 
+
+        if (_plBoundaryEditor != NULL)
+            _plBoundaryEditor->draw();
     }
     _endDrawing();
 }
 
-void setShaderUniforms()
+/*
+void plSetShaderUniforms()
 {
     if (isPicking)
     {
@@ -59,18 +78,18 @@ void setShaderUniforms()
     }
     //_shader->setUniforms( PVM );
 }
-
+*/
 
 void _beginPicking()
 {
-    _shader = &_pickingShader;
-    isPicking = true;
+    //_shader = &_pickingShader;
+    //isPicking = true;
 
     glDisable( GL_BLEND );
 
     // bind pickign shader and texture
-    pickingTexture.bind();
-    _pickingShader.bind();
+    _plPickingTexture->bind();
+    _plPickingShader->bind();
 
     // clear picking texture
     glClearColor(0,0,0,0);
@@ -81,11 +100,11 @@ void _beginPicking()
 
 void _endPicking()
 {
-    pickingTexture.unbind(); 
-    pickingTexture.unbind(); 
+    _plPickingTexture->unbind(); 
+    _plPickingTexture->unbind(); 
     
-    _shader = NULL;
-    isPicking = false;
+    //_shader = NULL;
+    //isPicking = false;
 }
 
 
@@ -97,17 +116,17 @@ void _beginDrawing()
     glClearColor( 1,1,1,0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
-    _shader = &_minimalShader;
+    //_shader = &_minimalShader;
     
-    _minimalShader.bind();   
-    _minimalShader.setLightUniform( plVector3(10, 10, 15) );
+    _plPhongShader->bind();   
+    _plPhongShader->setLightUniform( plVector3(10, 10, 15) );
 }
 
 
 void _endDrawing()
 {
-    _minimalShader.unbind();     
-    _shader = NULL;
+    _plPhongShader->unbind();     
+    //_shader = NULL;
 }
 
 
@@ -129,7 +148,6 @@ void _drawScene()
 
 
 
-*/
 
 
 
@@ -139,25 +157,7 @@ void _drawScene()
 
 
 
-
-
-void plDrawSetViewingMatrix()
-{
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    plMatrix44 viewingMatrix = _plCamera->matrix();
-    glMultMatrixf( (GLfloat*)(&viewingMatrix) );
-}
-
-
-void plDrawSetProjectionMatrix()
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();  
-    plMatrix44 projectionMatrix = _plProjection->matrix();
-    glMultMatrixf( (GLfloat*)(&projectionMatrix) );  
-}
-
+/*
 
 void _plSetOpenGLState()
 {
@@ -282,13 +282,7 @@ void _plDrawPicking()
     glClearColor(0,0,0,0);
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
-    /*
-    // PROJECTION
-    plDrawSetProjectionMatrix();   
-    
-    // CAMERA
-    plDrawSetViewingMatrix
-    */   
+
    
     // PLAN
     _plPlan->draw(true);
@@ -305,7 +299,7 @@ void _plDrawPicking()
     
     
 }
-
+*/
 
 void plDrawArrow( const plVector3 &origin, const plVector3 &direction, PLfloat length, PLfloat scale)
 {
