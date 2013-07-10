@@ -198,16 +198,16 @@ void plGraft::_updateCartilageMesh()
     for (PLuint i = 0; i < _cartilageCap.polys.size(); i++)
     {
         PLint base = interleaved_vertices.size()/2;
-        plPoly &p = _cartilageCap.polys[i];
+        plPolygon &p = _cartilageCap.polys[i];
 
-        for (PLuint j = 0; j < p.vertices.size(); j++)
+        for (PLuint j = 0; j < p.points.size(); j++)
         {
-            plVector3 &v = p.vertices[j];
+            const plVector3 &v = p.points[j];
             interleaved_vertices.add( plVector3( v.x, v.y+0.01f, v.z) );    // position
             interleaved_vertices.add( p.normal );                           // normal
         }
         
-        for (PLuint j = 1; j <= p.vertices.size()-2; j++) 
+        for (PLuint j = 1; j <= p.points.size()-2; j++)
         {
             indices.add(base+0);
             indices.add(base+j); 
@@ -294,15 +294,15 @@ void plGraft::_updateBoneMesh()
         for (PLuint i = 0; i < _boneCap.polys.size(); i++)
         {
             PLint base = interleaved_vertices.size()/2;
-            plPoly &p = _boneCap.polys[i];
-            for (PLuint j = 0; j < p.vertices.size(); j++)
+            plPolygon &p = _boneCap.polys[i];
+            for (PLuint j = 0; j < p.points.size(); j++)
             {
-                plVector3 &v = p.vertices[j];
+                const plVector3 &v = p.points[j];
                 interleaved_vertices.add( plVector3( v.x, v.y+0.01f, v.z) );        // position
                 interleaved_vertices.add( p.normal );                               // normal
             }
             
-            for (PLuint j = 1; j <= p.vertices.size()-2; j++) 
+            for (PLuint j = 1; j <= p.points.size()-2; j++)
             {
                 indices.add(base+0);
                 indices.add(base+j); 
@@ -394,7 +394,7 @@ plCap plGraft::_findCap( const plSeq<plTriangle> &triangles)
     // Find polygons on top of graft
     for (PLuint i=0; i<triangles.size(); i++) 
     {
-        plPoly p;
+        plPolygon p;
         if (triangles[i].normal() * harvestTransform.y() > 0 && _triangleIntersection( triangles[i], p ))
         {
             cap.polys.add( p );
@@ -406,9 +406,9 @@ plCap plGraft::_findCap( const plSeq<plTriangle> &triangles)
 
     for (PLuint i=0; i<cap.polys.size(); i++) 
     {
-        for (PLuint j=0; j<cap.polys[i].vertices.size(); j++) 
+        for (PLuint j=0; j<cap.polys[i].points.size(); j++)
         {
-            plVector3 &v = cap.polys[i].vertices[j];
+            const plVector3 &v = cap.polys[i].points[j];
             
             if ((v.x*v.x + v.z*v.z) > 0.97f * _radius* _radius)
             {
@@ -440,7 +440,7 @@ plCap plGraft::_findCap( const plSeq<plTriangle> &triangles)
 // interior of the cylinder.
 
 
-bool plGraft::_triangleIntersection( const plTriangle &triangle, plPoly &p ) const
+bool plGraft::_triangleIntersection( const plTriangle &triangle, plPolygon &p ) const
 {
     static float min = FLT_MAX;
 
@@ -484,9 +484,9 @@ bool plGraft::_triangleIntersection( const plTriangle &triangle, plPoly &p ) con
 
     if (maxDist <= radiusSquared) 
     {
-        p.vertices.add( point1 );
-        p.vertices.add( point2 );
-        p.vertices.add( point3 );
+        p.points.add( point1 );
+        p.points.add( point2 );
+        p.points.add( point3 );
         return true;
     }
 
@@ -528,19 +528,19 @@ bool plGraft::_triangleIntersection( const plTriangle &triangle, plPoly &p ) con
         if (prevInside && nextInside) 
         {
             // Add inside triangle point
-            p.vertices.add( vs[j] );
+            p.points.add( vs[j] );
         } 
         else if (prevInside && !nextInside) 
         {
             // Find point on edge of graft
-            p.vertices.add( _pointOnCircumference(vs[i], vs[j]) );
+            p.points.add( _pointOnCircumference(vs[i], vs[j]) );
         } 
         else if (!prevInside && nextInside) 
         {
             // Find entering point and angle 
-            p.vertices.add( _pointOnCircumference(vs[i], vs[j]) );    
+            p.points.add( _pointOnCircumference(vs[i], vs[j]) );
             // Add inside triangle point    
-            p.vertices.add( vs[j] );
+            p.points.add( vs[j] );
         }
 
         prevInside = nextInside;

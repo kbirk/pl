@@ -12,17 +12,7 @@
 #include "plTransform.h"
 #include "plMesh.h"
 #include "plPlan.h"
-
-class plPoly 
-{
-
-    public:
-
-        plSeq<plVector3> vertices;
-        plVector3        normal;
-
-        plPoly() {}
-};
+#include "plPolygon.h"
 
 
 class plPointAndAngle 
@@ -46,7 +36,7 @@ class plCap
 
     public:
 
-        plSeq<plPoly>           polys;	    // polygons of the cap
+        plSeq<plPolygon>        polys;      // polygons of the cap
         plSeq<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above (?)
     
         plCap() {}
@@ -124,7 +114,7 @@ void      setCaps               ( const plSeq<plBoneAndCartilage> &models );
         void      _drawGraft() const;
                
         plCap     _findCap              ( const plSeq<plTriangle> &triangles );
-        bool      _triangleIntersection ( const plTriangle &tri, plPoly &p ) const;
+        bool      _triangleIntersection ( const plTriangle &tri, plPolygon &p ) const;
         plVector3 _pointAtAngle         ( PLfloat theta ) const;
         PLfloat   _angleOfPoint         ( const plVector3 &v ) const;
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;
