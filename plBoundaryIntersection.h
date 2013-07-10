@@ -6,20 +6,7 @@
 #include "plSeq.h"
 #include "plTriangle.h"
 #include "plPolygon.h"
-
-
-class plWall {
- public:
-
-  plVector3 p0, p1;		// two points on surface at opposite ends of wall
-  plVector3 n0, n1;		// surface normals at p0 and p1
-
-  plWall() {}
-
-  plWall( plVector3 pp0, plVector3 pp1, plVector3 nn0, plVector3 nn1, plVector3 nn, PLfloat dd ):
-    p0(pp0), p1(pp1), n0(nn0), n1(nn1)
-    {}
-};
+#include "plBoundary.h"
 
 
 class plCut {
@@ -42,9 +29,9 @@ public:
 
 
 
-void findInteriorMesh( plSeq<plTriangle> &triangles, plSeq<plWall> &walls, plSeq<plPolygon> &polygons );
-PLbool edgeCutsWall( const plVector3 &v0, const plVector3 &v1, plWall &wall, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &wallParam, PLint &intDir );
-void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> &walls, plSeq<plPolygon> &polys, plSeq<plVector3> &interiorPoints );
+void findInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &walls, plSeq<plPolygon> &polygons );
+PLbool edgeCutsWall( const plVector3 &v0, const plVector3 &v1, plBoundary &wall, PLuint index, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &wallParam, PLint &intDir );
+void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plBoundary &walls, plSeq<plPolygon> &polys, plSeq<plVector3> &interiorPoints );
 PLint compareEdgeCuts( const void* a, const void* b );
 PLint compareWallCuts( const void* a, const void* b );
 
