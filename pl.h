@@ -205,7 +205,7 @@ extern void 			plPopMatrix			    ();
 //////////////////////////////////////////////////////////////////////////////
 // DRAW                 plDraw.h
 //////////////////////////////////////////////////////////////////////////////
-extern void             plDraw                   (); // PLbool clear_buffer = true, PLbool leave_shader_bound = false);
+extern void             plDraw                   ( PLbool clear_buffer = true, PLbool leave_shader_bound = false);
 extern void             plDrawSetViewingMatrix   ();
 extern void             plDrawSetProjectionMatrix();
 extern void             plDrawUnbindShader       ();

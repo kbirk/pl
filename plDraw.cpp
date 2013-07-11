@@ -19,7 +19,7 @@ void plDrawSetProjectionMatrix()
     glMultMatrixf( (GLfloat*)(&projectionMatrix) );  
 }
 
-
+/*
 void _setOpenGLState()
 {
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
@@ -69,16 +69,7 @@ void plDraw()
     _endDrawing();
 }
 
-/*
-void plSetShaderUniforms()
-{
-    if (isPicking)
-    {
-        _pickingShader.setPickingUniforms( pickingValue ); 
-    }
-    //_shader->setUniforms( PVM );
-}
-*/
+
 
 void _beginPicking()
 {
@@ -148,6 +139,7 @@ void _drawScene()
 
 
 
+*/
 
 
 
@@ -157,7 +149,6 @@ void _drawScene()
 
 
 
-/*
 
 void _plSetOpenGLState()
 {
@@ -299,7 +290,7 @@ void _plDrawPicking()
     
     
 }
-*/
+
 
 void plDrawArrow( const plVector3 &origin, const plVector3 &direction, PLfloat length, PLfloat scale)
 {

@@ -36,7 +36,7 @@ class plPickingShader : public plShader
 		*/
 		void setPickingUniforms(const plPickingInfo *pi) const
         {
-            glErrorReport("Before glUniform1i red");
+//            glErrorReport("Before glUniform1i red");
 		    glUniform1i(_redID,   pi->type);	
             glUniform1i(_greenID, pi->id);	
 			glUniform1i(_blueID,  pi->index);
@@ -44,7 +44,7 @@ class plPickingShader : public plShader
 		
 		void setPickingUniforms(int red, int green, int blue) const
 		{	
-            glErrorReport("Before glUniform1i red");
+//            glErrorReport("Before glUniform1i red");
 		    glUniform1i(_redID,   red);	
             glUniform1i(_greenID, green);	
 			glUniform1i(_blueID,  blue);
