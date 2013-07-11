@@ -1,4 +1,4 @@
-#include "trackedObject.h"
+#include "plTrackedObject.h"
 
 
 trackedObject::trackedObject(DRBTransform ToTrackedPoint,
@@ -21,7 +21,7 @@ void trackedObject::updatePosition(DRBTransform DRBToWorld, DRBTransform FemurTo
 
     tTipWorldCoords   = DRBToTrackedPoint.applyTransform(zeroVec);
     tTipWorldCoords   = DRBToWorld.applyTransform(tTipWorldCoords);
-    trackedTip        = FemurToWorld.applyInverseTransform2(tTipWorldCoords);
+    trackedTip        = FemurToWorld.applyInverseTransform(tTipWorldCoords);
     trackedTip        = ToFemurSTL.applyTransform(trackedTip);
 
     if (!isArthroscope) {
@@ -34,13 +34,14 @@ void trackedObject::updatePosition(DRBTransform DRBToWorld, DRBTransform FemurTo
                 plVector3(0, 0, -10));
     }
     tEndWorldCoords     = DRBToWorld.applyTransform(tEndWorldCoords);
-    trackedEnd          = FemurToWorld.applyInverseTransform2(
+    trackedEnd          = FemurToWorld.applyInverseTransform(
             tEndWorldCoords);
     trackedEnd          = ToFemurSTL.applyTransform(trackedEnd);
     rotationAxis    = (((trackedEnd-trackedTip).normalize())
                        ^ plVector3(0,0,1)).normalize();
+                                     // 180 / PI = 57.295779513082320876798154
     rotationAngle   = - acos((trackedEnd-trackedTip).normalize()
-                             * plVector3(0,0,1)) * 180 / PI;
+                             * plVector3(0,0,1)) * 57.295779513082320876798154;
 
 }
 

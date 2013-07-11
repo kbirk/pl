@@ -1,8 +1,8 @@
 #ifndef TRACKEDOBJECT_H
 #define TRACKEDOBJECT_H
 
-#include "kevinsCode/pl.h"
-#include "DRBTransform.h"
+#include "pl.h"
+#include "plDRBTransform.h"
 
 class trackedObject
 {
