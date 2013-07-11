@@ -28,7 +28,7 @@ void plFindInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plS
   // Collect polygons that intersect the boundary
   plSeq<plPolygon> interiorPolygons;
   for (PLint i=0; i<triangles.size(); i++) {
-    triangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints );
+    plTriangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints );
   }
 
   // Collect other polygons that contain an interior point.  This is very slow.
@@ -48,7 +48,7 @@ void plFindInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plS
             poly.normal        = triangles[trianglesIndex].normal();
             interiorPolygons.add( poly );
             trianglesProcessedFlag[trianglesIndex] = true;
-            updateInteriorPoints( triangles[trianglesIndex], interiorPoints);
+            plUpdateInteriorPoints( triangles[trianglesIndex], interiorPoints);
             break;
           } // end if
         } // end for
@@ -62,7 +62,7 @@ void plFindInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plS
 } // end void function
 
 
-void updateInteriorPoints( plTriangle &triangle , plSeq<plVector3> &interiorPoints ) {
+static void plUpdateInteriorPoints( plTriangle &triangle , plSeq<plVector3> &interiorPoints ) {
   for (PLint vertexIndex=0; vertexIndex<3; vertexIndex++)
   {
     PLint interiorPointsIndex;
@@ -77,7 +77,7 @@ void updateInteriorPoints( plTriangle &triangle , plSeq<plVector3> &interiorPoin
 }
 
 
-void triangleCutsBoundary( plTriangle &triangle, PLbool &triangleProcessed, plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
+static void plTriangleCutsBoundary( plTriangle &triangle, PLbool &triangleProcessed, plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
 {
   plSeq<plCut> edgeCuts;
 
@@ -93,7 +93,7 @@ void triangleCutsBoundary( plTriangle &triangle, PLbool &triangleProcessed, plBo
     {
       for (PLint edgeIndex=0; edgeIndex<3; edgeIndex++)
       {
-        if (edgeCutsBoundary( triangle[edgeIndex], triangle[(edgeIndex+1)%3], boundary, boundaryPointIndex, intersectionPoint, edgeParameter, boundaryParameter, intersectionDirection ))
+        if (plEdgeCutsBoundary( triangle[edgeIndex], triangle[(edgeIndex+1)%3], boundary, boundaryPointIndex, intersectionPoint, edgeParameter, boundaryParameter, intersectionDirection ))
           edgeCuts.add( plCut( intersectionPoint, edgeIndex, edgeParameter, boundaryPointIndex, boundaryParameter, intersectionDirection ) );
       } // end for
     } // end if
@@ -108,8 +108,8 @@ void triangleCutsBoundary( plTriangle &triangle, PLbool &triangleProcessed, plBo
   plSeq<plCut> boundaryCuts = edgeCuts;
 
   // Sort the cuts
-  qsort( &edgeCuts[0],     edgeCuts.size(),     sizeof(plCut), compareEdgeCuts     ); // sort by increasing edge index, then by increasing parameter on each edge
-  qsort( &boundaryCuts[0], boundaryCuts.size(), sizeof(plCut), compareBoundaryCuts ); // sort by increasing boundary index, then by increasing parameter on each boundary wall
+  qsort( &edgeCuts[0],     edgeCuts.size(),     sizeof(plCut), plCompareEdgeCuts     ); // sort by increasing edge index, then by increasing parameter on each edge
+  qsort( &boundaryCuts[0], boundaryCuts.size(), sizeof(plCut), plCompareBoundaryCuts ); // sort by increasing boundary index, then by increasing parameter on each boundary wall
 
   // Bookkeeping to know when to stop
 
@@ -220,10 +220,6 @@ void triangleCutsBoundary( plTriangle &triangle, PLbool &triangleProcessed, plBo
       // Advance to the edge cut at which the triangle edge exits the boundary wall.
 
       edgeCutIndex = (edgeCutIndex+1)%edgeCuts.size();
-      std::cout << "1: " << poly.points[0] << std::endl;
-      std::cout << "2: " << edgeCuts[ edgeCutIndex ].point << std::endl;
-      std::cout << "3: " << (edgeCuts[ edgeCutIndex ].point == poly.points[0]) << std::endl;
-      if (poly.points.size() > 5) exit(1);
     } // end do
     while (edgeCuts[ edgeCutIndex ].point != poly.points[0]); // Stop if we've reached the starting point.
 
@@ -235,7 +231,7 @@ void triangleCutsBoundary( plTriangle &triangle, PLbool &triangleProcessed, plBo
 
 
 
-PLbool edgeCutsBoundary( const plVector3 &v0, const plVector3 &v1, plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
+static PLbool plEdgeCutsBoundary( const plVector3 &v0, const plVector3 &v1, plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
 
 {
     plVector3 point0(boundary.points  (   boundaryPointIndex  )                     );
@@ -289,8 +285,7 @@ PLbool edgeCutsBoundary( const plVector3 &v0, const plVector3 &v1, plBoundary &b
 }
 
 
-
-PLint compareEdgeCuts( const void* a, const void* b )
+static PLint plCompareEdgeCuts( const void* a, const void* b )
 
 {
   plCut &pa = * (plCut*) a;
@@ -310,7 +305,7 @@ PLint compareEdgeCuts( const void* a, const void* b )
 
 
 
-PLint compareBoundaryCuts( const void* a, const void* b )
+static PLint plCompareBoundaryCuts( const void* a, const void* b )
 
 {
   plCut &pa = * (plCut*) a;
