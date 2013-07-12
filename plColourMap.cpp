@@ -1,16 +1,6 @@
 #include "plColourMap.h"
 
-plVector3 plColourMap(PLfloat k)
-{
-    if (k > 1) k = 1;
-    if (k < 0) k = 0;
-    PLint i = k * (PL_COLOURMAP_SIZE-1);
-    return plVector3( _plColourmap[i][0]/255.0f,
-                      _plColourmap[i][1]/255.0f,
-                      _plColourmap[i][2]/255.0f );
-}
-
-PLuint _plColourmap[PL_COLOURMAP_SIZE][4] = 
+PLuint plColourMap::_colourMap[PL_COLOURMAP_SIZE][4] = 
 {
   { 0, 0, 188, 128 },
   { 0, 0, 189, 128 },
@@ -525,4 +515,15 @@ PLuint _plColourmap[PL_COLOURMAP_SIZE][4] =
   { 203, 0, 0, 128 },
   { 201, 0, 0, 128 },
 };
+
+
+plVector3 plColourMap::map(PLfloat k)
+{
+    if (k > 1) k = 1;
+    if (k < 0) k = 0;
+    PLint i = k * (PL_COLOURMAP_SIZE-1);
+    return plVector3( _colourMap[i][0]/255.0f,
+                      _colourMap[i][1]/255.0f,
+                      _colourMap[i][2]/255.0f );
+}
 

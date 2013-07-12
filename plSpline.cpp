@@ -4,16 +4,60 @@ plSpline::plSpline()
 {
 }
 
+void plSpline::readFromCSV( const plSeq<plString> &row, const plBoneAndCartilage &model )
+{
+    plBoundary::readFromCSV( row, model );
+    
+    // construct spline 
+    if (size() == 4)
+    {
+        _computeHermite();
+    }
+}
 
+PLuint plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &normal)
+{
+    if (size() < 4)
+    {
+        PLint ret = plBoundary::addPointAndNormal(point, normal);
+        if (size() == 4)
+        {
+            _computeHermite();
+        }
+        return ret;
+    }
+    return -1;
+}
+
+void plSpline::movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal)
+{
+    plBoundary::movePointAndNormal( index, point, normal );
+    if (size() == 4)
+    {
+        _computeHermite();
+    }
+
+}
+
+void plSpline::removePointAndNormal( PLuint index )
+{
+    plBoundary::removePointAndNormal(index);   
+}
+        
 void plSpline::draw() const
 {      
     if (!isVisible)
         return;
-
-    _plPickingState->type = PL_PICKING_TYPE_DEFECT_SPLINE;       
-    _plPickingShader->setPickingUniforms(_plPickingState);
-    glColor3f(PL_DEFECT_SPLINE_COLOUR); 
-    _mesh.draw();
+   
+    plPicking::value.type = PL_PICKING_TYPE_DEFECT_CORNERS;
+    plBoundary::draw();
+    
+    if (size() == 4)
+    {
+        plPicking::value.type = PL_PICKING_TYPE_DEFECT_SPLINE;       
+        plColourStack::load(PL_DEFECT_SPLINE_COLOUR);        
+        _surfaceMesh.draw();
+    }
     
     if (_isSelected)
     {
@@ -40,17 +84,17 @@ PLfloat Q( PLfloat s, PLfloat t, const plSeq<plVector3> &p, const plSeq<PLfloat>
     return (h * sc) * q * (h * tc);                         
 }
 
-void plSpline::computeHermite( const plBoundary &corners, const plModel &cartilage )
+void plSpline::_computeHermite()
 {    
     // p and n for cleaner code
-    const plSeq<plVector3> &p = corners.points();    
+    const plSeq<plVector3> &p = _points;    
     plSeq<plVector3> n;
 
     // compute averages normals
-    n.add( cartilage.getAverageNormal( 4.0f, p[0], corners.normals(0)) );   //  (plModelCartilageGetAvgNormal(modelID, 4.0f, p[0], corners.normals(0)) );
-    n.add( cartilage.getAverageNormal( 4.0f, p[1], corners.normals(1)) ); 
-    n.add( cartilage.getAverageNormal( 4.0f, p[2], corners.normals(2)) ); 
-    n.add( cartilage.getAverageNormal( 4.0f, p[3], corners.normals(3)) );  
+    n.add( _model->cartilage.getAverageNormal( 4.0f, p[0], _normals[0]) ); 
+    n.add( _model->cartilage.getAverageNormal( 4.0f, p[1], _normals[1]) ); 
+    n.add( _model->cartilage.getAverageNormal( 4.0f, p[2], _normals[2]) ); 
+    n.add( _model->cartilage.getAverageNormal( 4.0f, p[3], _normals[3]) );  
  
     // get unit directional vectors, (p01 = from p0 to p1)
     plVector3 p01 = (p[1]-p[0]).normalize();
@@ -74,29 +118,29 @@ void plSpline::computeHermite( const plBoundary &corners, const plModel &cartila
     sn = ( p01 ^ -n01 ).normalize();
     tn = ( p03 ^ n03 ).normalize();
     
-    _s.add( plProjectVectorOnPlane(p03 ^ n[0], sn).normalize() );
-    _t.add( plProjectVectorOnPlane(p01 ^ -n[0], tn).normalize() ) ; 
+    _s.add( plMath::projectVectorOnPlane(p03 ^ n[0], sn).normalize() );
+    _t.add( plMath::projectVectorOnPlane(p01 ^ -n[0], tn).normalize() ) ; 
 
     // p1 plane normals
     sn = ( p01 ^ -n01 ).normalize();
     tn = ( p12 ^ n12 ).normalize();
     
-    _s.add( plProjectVectorOnPlane( p03 ^ n[1], sn).normalize() );
-    _t.add( plProjectVectorOnPlane( p01 ^ -n[1], tn).normalize() ) ;
+    _s.add( plMath::projectVectorOnPlane( p03 ^ n[1], sn).normalize() );
+    _t.add( plMath::projectVectorOnPlane( p01 ^ -n[1], tn).normalize() ) ;
     
     // p2 plane normals
     sn = ( p32 ^ -n32 ).normalize();
     tn = ( p12 ^ n12 ).normalize();
     
-    _s.add( plProjectVectorOnPlane( p12 ^ n[2], sn).normalize() );
-    _t.add( plProjectVectorOnPlane( p32 ^ -n[2], tn).normalize() ) ;
+    _s.add( plMath::projectVectorOnPlane( p12 ^ n[2], sn).normalize() );
+    _t.add( plMath::projectVectorOnPlane( p32 ^ -n[2], tn).normalize() ) ;
     
     // p3 plane normals
     sn = ( p32 ^ -n32 ).normalize();
     tn = ( p03 ^ n03 ).normalize();
     
-    _s.add( plProjectVectorOnPlane( p03 ^ n[3], sn).normalize() );
-    _t.add( plProjectVectorOnPlane( p32 ^ -n[3], tn).normalize() ) ;
+    _s.add( plMath::projectVectorOnPlane( p03 ^ n[3], sn).normalize() );
+    _t.add( plMath::projectVectorOnPlane( p32 ^ -n[3], tn).normalize() ) ;
 
     // find tangents in the s and t planes
     plSeq<PLfloat>   st(4), tt(4); 
@@ -177,27 +221,27 @@ void plSpline::computeHermite( const plBoundary &corners, const plModel &cartila
               
             // colour map values   
              
-            intersection = cartilage.rayIntersect( pos0+(10.0f*faceNorm), -faceNorm, false, true );  // plModelCartilageIntersect(modelID, pos0+(10*faceNorm), -faceNorm, false, true);
+            intersection = _model->cartilage.rayIntersect( pos0+(10.0f*faceNorm), -faceNorm, false, true );  // plModelCartilageIntersect(modelID, pos0+(10*faceNorm), -faceNorm, false, true);
             if (intersection.exists)
-                col0 = plColourMap( (intersection.point - pos0).squaredLength()/FURTHEST_DISTANCE );
+                col0 = plColourMap::map( (intersection.point - pos0).squaredLength()/FURTHEST_DISTANCE );
             else 
                 col0 = plVector3(0.2, 0.2, 0.2); 
                                 
-            intersection = cartilage.rayIntersect( pos1+(10.0f*faceNorm), -faceNorm, false, true );  
+            intersection = _model->cartilage.rayIntersect( pos1+(10.0f*faceNorm), -faceNorm, false, true );  
             if (intersection.exists)
-                col1 = plColourMap((intersection.point - pos1).squaredLength()/FURTHEST_DISTANCE);
+                col1 = plColourMap::map((intersection.point - pos1).squaredLength()/FURTHEST_DISTANCE);
             else 
                 col1 = plVector3(0.2, 0.2, 0.2);
                 
-            intersection = cartilage.rayIntersect( pos2+(10.0f*faceNorm), -faceNorm, false, true ); 
+            intersection = _model->cartilage.rayIntersect( pos2+(10.0f*faceNorm), -faceNorm, false, true ); 
             if (intersection.exists)
-                col2 = plColourMap((intersection.point - pos2).squaredLength()/FURTHEST_DISTANCE);
+                col2 = plColourMap::map((intersection.point - pos2).squaredLength()/FURTHEST_DISTANCE);
             else 
                 col2 = plVector3(0.2, 0.2, 0.2);
                 
-            intersection = cartilage.rayIntersect( pos3+(10.0f*faceNorm), -faceNorm, false, true );  
+            intersection = _model->cartilage.rayIntersect( pos3+(10.0f*faceNorm), -faceNorm, false, true );  
             if (intersection.exists)
-                col3 = plColourMap((intersection.point - pos3).squaredLength()/FURTHEST_DISTANCE);
+                col3 = plColourMap::map((intersection.point - pos3).squaredLength()/FURTHEST_DISTANCE);
             else 
                 col3 = plVector3(0.2, 0.2, 0.2);        
                                                    
@@ -235,7 +279,7 @@ void plSpline::computeHermite( const plBoundary &corners, const plModel &cartila
     }    
     std::cout << "\r100% spline calculation\n"; 
 
-    _mesh.setBuffers(interleaved_vertices, indices);
+    _surfaceMesh.setBuffers(interleaved_vertices, indices);
 }
 
 /*
@@ -255,8 +299,8 @@ void plSpline::_drawSplineSelectionInterface() const
     {      
         _plPickingState->type = PL_PICKING_TYPE_DEFECT_HANDLE_0 + i; 
         _plPickingShader->setPickingUniforms(_plPickingState);
-        glColor3f( 0.2, 1.0, 0.2 ); 
-        plDrawArrow(corners.points(i), n[i]);
+        plColourStack::load( 0.2, 1.0, 0.2 ); 
+        plDraw::arrow(corners.points(i), n[i]);
     }
     glPopMatrix();
 }

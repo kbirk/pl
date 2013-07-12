@@ -1,14 +1,13 @@
 #ifndef __PL_MODEL_H__
 #define __PL_MODEL_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plSeq.h"
 #include "plRenderable.h"
 #include "plTriangle.h"
-#include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plMesh.h"
-#include "plCamera.h"
+#include "plRenderingPipeline.h"
 
 class plModel : public plRenderable
 {
@@ -17,15 +16,15 @@ class plModel : public plRenderable
         plModel() {}
         plModel( std::string filename );
              
-        const plSeq<plTriangle> &triangles()     const { return _triangles; }
-        
+        const plSeq<plTriangle> &triangles() const { return _triangles; }
+        plString                 filename()  const { return _filename;  }  
         void toggleVisibility();
         
         void draw( const plVector3 &colour ) const;
 
         void      getMinMax(plVector3 &min, plVector3 &max) const;        
         plVector3 getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
-        plString  getFilenameWithoutPath ();
+        
 
         plIntersection rayIntersect( const plVector3 &start, const plVector3 &dir, 
                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;

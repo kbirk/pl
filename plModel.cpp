@@ -10,7 +10,7 @@ plModel::plModel( std::string filename )
         return;
     }
    
-    plSTLImportFile( _triangles, filename );
+    plSTL::importFile( _triangles, filename );
     _mesh = plMesh(_triangles);
     _filename = filename;
     _isTransparent = false;
@@ -89,16 +89,17 @@ void plModel::draw( const plVector3 &colour ) const
     if (!_isTransparent) 
     {
         glDisable( GL_STENCIL_TEST );            // if opaque, allow overwriting pixels during picking
-        glColor4f( colour.x, colour.y, colour.z, 1.0); 
+        plColourStack::load( colour.x, colour.y, colour.z, 1.0); 
         _mesh.draw();
     }
     else
     {
         glEnable( GL_STENCIL_TEST );             // if transparent, prevent overwriting pixels during picking
-        glColor4f( colour.x, colour.y, colour.z, 0.2);
+        plColourStack::load( colour.x, colour.y, colour.z, 0.2);
 
         // Sort by distance
-        plVector3 viewDir = _plCamera->direction();
+        
+        plVector3 viewDir = plCameraStack::direction(); //plVector3(1,0,0); //PL_GLOBAL_CAMERA->direction();
         
         std::vector<plOrderPair> order;
         order.reserve(_triangles.size());              
@@ -137,31 +138,23 @@ plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &d
 {
     PLfloat min = FLT_MAX;
 
-    plIntersection closest_intersection(false);
+    plIntersection closestIntersection(false);
 
     for ( PLuint i = 0; i < _triangles.size(); i++)
     {  
-        plIntersection intersection = _triangles[i].rayIntersect( start, dir, ignoreBehindRay, backFaceCull);
+        plIntersection intersection = _triangles[i].rayIntersect( start, dir, ignoreBehindRay, backFaceCull );
         
         if (intersection.exists)
         {
             if ( fabs(intersection.t) < min) 
             {
-                min = intersection.t;
-                closest_intersection = intersection;
+                min = fabs(intersection.t);
+                closestIntersection = intersection;
             }
         }
 
     }
-    return closest_intersection; 
-}
-
-
-plString plModel::getFilenameWithoutPath()
-{
-    plString filenameOnly( _filename );
-    plStringStripPreceedingFilepath( filenameOnly );
-    return filenameOnly;
+    return closestIntersection; 
 }
 
 

@@ -42,7 +42,7 @@ void Window::registerWindow( int windowId )
 void Window::reshape( int width, int height ) 
 {
     glViewport( 0, 0, width, height );
-    plWindowReshape( width, height );
+    plWindow::reshape( width, height );
     glutPostRedisplay();
 }
         

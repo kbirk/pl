@@ -299,6 +299,18 @@ plMatrix44 plMatrix44::inverse() const
     return inv;
 }
 
+// I/O operators
+std::ostream& operator << ( std::ostream& stream, const plMatrix44 &m )
+{
+    for (PLuint i=0; i < 4; i++)
+    {
+       stream << m(i,0) << "\t" << m(i,1) << "\t" << m(i,2) << "\t" << m(i,3) << "\n";
+    }
+
+    
+    return stream;
+}
+
 plVector4 operator * ( const plVector4 &v, const plMatrix44 &m )
 {
     PLfloat x = v.x * m(0,0) + v.y * m(1,0) + v.z * m(2,0) + v.w * m(3,0);
@@ -307,5 +319,15 @@ plVector4 operator * ( const plVector4 &v, const plMatrix44 &m )
     PLfloat w = v.x * m(0,3) + v.y * m(1,3) + v.z * m(2,3) + v.w * m(3,3);
     
     return plVector4(x,y,z,w);
+}
+
+plVector3 operator * ( const plVector3 &v, const plMatrix44 &m )
+{
+    PLfloat x = v.x * m(0,0) + v.y * m(1,0) + v.z * m(2,0) + m(3,0);
+    PLfloat y = v.x * m(0,1) + v.y * m(1,1) + v.z * m(2,1) + m(3,1);
+    PLfloat z = v.x * m(0,2) + v.y * m(1,2) + v.z * m(2,2) + m(3,2);
+    PLfloat w = v.x * m(0,3) + v.y * m(1,3) + v.z * m(2,3) + m(3,3);
+    
+    return plVector3(x,y,z);
 }
 

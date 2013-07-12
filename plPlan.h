@@ -1,7 +1,7 @@
 #ifndef __PL_PLAN_H__
 #define __PL_PLAN_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plString.h"
 #include "plSeq.h"
 #include "plVector3.h"
@@ -26,10 +26,9 @@ class plPlan : public plRenderable
         void importFile( plString filename );        
         void exportFile( plString filename );
                
-        void draw( PLbool picking = false );
-        
-        //void outputForManuela();
-        
+        void drawElements() const;
+        void drawModels()   const;
+
         friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
         
     //private: eventually make these member variables private

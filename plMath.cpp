@@ -1,13 +1,13 @@
 #include "plMath.h"
 
-plVector3 plProjectVectorOnPlane( const plVector3 &vector, const plVector3 &plane_normal)
+plVector3 plMath::projectVectorOnPlane( const plVector3 &vector, const plVector3 &plane_normal)
 {
     PLfloat dist = vector * plane_normal;
     
     return vector - (dist*plane_normal);
 }
 
-plVector3 plClosestPointOnLineSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b)
+plVector3 plMath::closestPointOnSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b)
 {
     plVector3 ab = b - a;
     // Project c onto ab, computing parameterized position d(t) = a + t*(b  a)
@@ -19,7 +19,7 @@ plVector3 plClosestPointOnLineSegment(const plVector3 &point, const plVector3 &a
     return a + t * ab;
 }
 
-PLfloat plClamp( PLfloat val, PLfloat min, PLfloat max)
+PLfloat plMath::clamp( PLfloat val, PLfloat min, PLfloat max)
 {
     if (val > max) return max;
     if (val < min) return min;

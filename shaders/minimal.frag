@@ -1,6 +1,10 @@
-#version 120
+#version 330
 
-void main(void)
+uniform vec4 cColour;
+
+out vec4 cFragColour;
+
+void main()
 { 
-    gl_FragColor = gl_Color;   
+	cFragColour = cColour;
 }

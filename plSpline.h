@@ -1,7 +1,7 @@
 #ifndef SPLINE_H
 #define SPLINE_H
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plBoundary.h"
@@ -13,21 +13,28 @@
 #include "plColourMap.h"
 #include "plModel.h"
 
-class plSpline : public plRenderable,
-                 public plEditable
+class plSpline : public plBoundary
 {
     public:
 
         plSpline();
 
-        void draw() const;   
+        void   draw() const;           
 
-        void computeHermite( const plBoundary &corners, const plModel &cartilage );
+        void   readFromCSV( const plSeq<plString> &row, const plBoneAndCartilage &model );
+
+        PLuint addPointAndNormal (const plVector3 &point, const plVector3 &normal);
+        void   movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal);
+        void   removePointAndNormal( PLuint index );
+
+        
            
     private:
     
-        plColourMesh      _mesh;   
+        plColourMesh      _surfaceMesh;   
         plSeq<plVector3>  _s, _t;  
+        
+        void _computeHermite();
         
         void _drawSelectionInterface() const;
                

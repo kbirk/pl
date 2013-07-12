@@ -1,15 +1,12 @@
 #ifndef __PL_MINIMAL_SHADER_H__
 #define __PL_MINIMAL_SHADER_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plShader.h"
-//#include "plMatrix44.h"
 
 class plMinimalShader : public plShader
 {
     public:                    
-             
-        //plMinimalShader() {}
              
         plMinimalShader(const char *vertexFile, const char *fragmentFile) : plShader(vertexFile, fragmentFile)
 		{  
@@ -20,37 +17,32 @@ class plMinimalShader : public plShader
         virtual void getUniformLocations()
         {			
 			// transformation uniform locations
-			//m_modelViewID     = glGetUniformLocation(m_shaderProgramID, "mModelView"    );			
-            //m_projectionID    = glGetUniformLocation(m_shaderProgramID, "mProjection"   );                     
-            //_colourID        = glGetUniformLocation(_shaderProgramID, "cColour"       );  
+			_modelID      = glGetUniformLocation(_shaderProgramID, "mModel"      );	
+            _viewID       = glGetUniformLocation(_shaderProgramID, "mView"       );
+            _projectionID = glGetUniformLocation(_shaderProgramID, "mProjection" );                     
+            _colourID     = glGetUniformLocation(_shaderProgramID,  "cColour"    );   
         }
-        /*
-		virtual void setGlobalUniforms(const matrix &modelView,  
-		                               const matrix &projection, 
-		                               const vector &lightPosition) const
+        
+		virtual void setTransformUniforms( const plMatrix44 &model, const plMatrix44 &view, const plMatrix44 &projection ) const
 		{				
             // minimal transformation uniforms				
-		    glUniformMatrix4fv(m_modelViewID,  1, GL_FALSE, (GLfloat*)(&modelView) );
-            glUniformMatrix4fv(m_projectionID, 1, GL_FALSE, (GLfloat*)(&projection));
-           
-            // lighting uniforms	
-            glUniform3fv(m_lightPositionID,    1, (GLfloat*)(&lightPosition));	
-            glUniform3fv(m_colourID,           1, colour);		
-            
+		    glUniformMatrix4fv(_modelID,      1, GL_FALSE, (GLfloat*)(&model) );
+            glUniformMatrix4fv(_viewID,       1, GL_FALSE, (GLfloat*)(&view) );
+            glUniformMatrix4fv(_projectionID, 1, GL_FALSE, (GLfloat*)(&projection));           
 		}
-		*/
 
-		/*
-		virtual void setColourUniform(const float colour[4]) const
-		{	
-		    glUniform4fv(_colourID, 1, colour);
-		}
-	    */
+        virtual void setColourUniform( const plVector4 colour ) const
+        {
+            glUniform4fv(_colourID, 1, (GLfloat*)(&colour));	
+        }
+
+
     private:
-	/*
-        GLuint m_modelViewID;
-        GLuint m_projectionID; */
-        //GLuint _colourID;  
+	
+        GLuint _modelID;
+        GLuint _viewID;
+        GLuint _projectionID; 
+        GLuint _colourID; 
         
 
 };

@@ -1,12 +1,11 @@
-#ifndef PLBOUNDARYINTERSECTION_H
-#define PLBOUNDARYINTERSECTION_H
+#ifndef _PL_BOUNDARY_INTERSECTION_H
+#define _PL_BOUNDARY_INTERSECTION_H
 
 #include "plCommon.h"
 #include "plVector3.h"
 #include "plSeq.h"
 #include "plTriangle.h"
 #include "plPolygon.h"
-
 
 class plWall {
  public:

@@ -1,7 +1,7 @@
 #ifndef __PL_I_GUIDE_H__ 
 #define __PL_I_GUIDE_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plSeq.h"
 #include "plVector3.h"
 #include "plVector4.h"
@@ -29,9 +29,15 @@ class plIGuide : public plRenderable
 
         plIGuide() {}
 
-        void readFromCSV( const plSeq<plString> &row );
+        void readFromCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
         
         void draw();
+        
+    private:
+    
+        PLuint                   _modelID;
+        const plBoneAndCartilage *_model;      
+        
 };
 
 

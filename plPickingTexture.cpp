@@ -1,30 +1,37 @@
 #include "plPickingTexture.h"
 
+// plPicking static variables
+plPickingTexture*  plPicking::texture = NULL;
+plPickingInfo      plPicking::value;
+
+// init function
+void plPicking::init(PLuint width, PLuint height)
+{
+    delete texture;
+    texture = new plPickingTexture(1,1);
+}
+
+///////////////////////////////////////////////////////////////////////
+
 plPickingTexture::plPickingTexture(GLuint width, GLuint height)
     : _readSinceLastDraw(false)
 {
-    init(width, height);
+    setFBO(width, height);
 }
 
 
-plPickingTexture::~plPickingTexture()
+void plPickingTexture::destroy()
 {
-    if (_fbo != 0) {
-        glDeleteFramebuffers(1, &_fbo);
-    }
+    glDeleteFramebuffers(1, &_fbo);
+    glDeleteTextures(1, &_pickingTexture);
+    glDeleteTextures(1, &_depthStencilTexture);
+}
 
-    if (_pickingTexture != 0) {
-        glDeleteTextures(1, &_pickingTexture);
-    }
+void plPickingTexture::setFBO(PLuint width, PLuint height)
+{
+    // destroy previous buffer
+    destroy();
     
-    if (_depthStencilTexture != 0) {
-        glDeleteTextures(1, &_depthStencilTexture);
-    }
-}
-
-
-void plPickingTexture::init(PLuint width, PLuint height)
-{
     // Create the FBO
     glGenFramebuffers(1, &_fbo);    
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo);
@@ -107,30 +114,6 @@ PLfloat plPickingTexture::readDepth(PLuint x, PLuint y)
     
     return depth;
 }
-
-///////////////////////////////////
-
-PLfloat plPickingGetDepth(PLuint x, PLuint y)
-{
-    return _plPickingTexture->readDepth(x,y);
-}
-
-
-PLint plPickingGetType(PLuint x, PLuint y)
-{
-   return _plPickingTexture->readPixel(x,y).type;
-}
-
-PLint plPickingGetID(PLuint x, PLuint y)
-{
-   return _plPickingTexture->readPixel(x,y).id;
-}
-
-PLint plPickingGetIndex(PLuint x, PLuint y)
-{
-   return _plPickingTexture->readPixel(x,y).index;
-}
-
 
 
 

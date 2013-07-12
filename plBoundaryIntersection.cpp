@@ -1,8 +1,4 @@
-// offset.cpp
-
-
 #include "plBoundaryIntersection.h"
-
 
 // Determine the polygons of a triangle mesh that are inside a boundary.
 //

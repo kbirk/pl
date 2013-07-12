@@ -97,7 +97,9 @@ void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plS
 }
 
 void plMesh::draw() const
-{					
+{		
+    // use current shader and properly set uniforms
+    plShaderStack::use();			
 	// bind vertex array object
 	glBindVertexArray(_vertexArrayObject);
 	// draw batch
@@ -108,8 +110,7 @@ void plMesh::draw() const
 
 void plMesh::draw(const std::vector<plOrderPair> &order) const
 {
-    plSeq<PLuint> indices;
-	indices.reserve(_numIndices);
+    plSeq<PLuint> indices(_numIndices);
 	
 	for (PLuint i = 0; i < _numIndices/3; i++)
 	{
@@ -118,6 +119,8 @@ void plMesh::draw(const std::vector<plOrderPair> &order) const
 	    indices.add( order[i].index*3+2 );
 	}
 
+    // use current shader and properly set uniforms
+    plShaderStack::use();
     // bind vertex array object
 	glBindVertexArray(_vertexArrayObject);		
     // buffer new index data
