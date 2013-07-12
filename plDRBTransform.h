@@ -63,8 +63,6 @@ class plDRBTransform
         plMatrix44 fwdTransform, inverseTransform;
         plVector3 reverseTranslation;
 
-        
-
 };
 
 #endif // plDRBTransform_H
