@@ -136,6 +136,7 @@
 #include <cmath>
 #include <vector>
 #include <stack>
+#include <limits>
 
 // TYPEDEFS
 

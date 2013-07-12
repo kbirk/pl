@@ -33,7 +33,7 @@ plDRBTransform::plDRBTransform( const std::string& inputFile, MarkerType t )
         else 
         {
             calibaxisx = calibaxisy = calibangle = 0; calibaxisz = 1;
-	    calibscaley = calibscalez = calibscalex = 1;
+            calibscaley = calibscalez = calibscalex = 1;
         }
     } 
     else 
@@ -43,7 +43,6 @@ plDRBTransform::plDRBTransform( const std::string& inputFile, MarkerType t )
         calibaxisz = calibscaley = calibscalez = calibscalex = 1;
     }
     calibFile.close();
-
     initializeTransforms();
 }
 
