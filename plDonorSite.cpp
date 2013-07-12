@@ -4,17 +4,28 @@ plDonorSite::plDonorSite()
 {
 }
 
-void plDonorSite::readFromCSV(const plSeq<plString> &row)
+void plDonorSite::readFromCSV(const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
 {
     plString subfield = row[2];
             
-    if (plStringCompareCaseInsensitive(subfield, "model") )
+    if (subfield.compareCaseInsensitive( "model") )
     {
         _modelID = atof( row[3].c_str() );
+        if (models.size() < (_modelID +1) )
+        {
+            std::cerr << "plDonorSite readFromCSV() error: model ID read before model data";
+            exit(1);
+        }
+        model = &models[_modelID];
     }                   
-    else if (plStringCompareCaseInsensitive(subfield, "boundary") )   
-    {            
-        boundary.readFromCSV( row );  
+    else if (subfield.compareCaseInsensitive( "boundary") )   
+    {       
+        if (model == NULL)
+        {
+            std::cerr << "plDonorSite readFromCSV() error: boundary data read before model ID";
+            exit(1);
+        }         
+        boundary.readFromCSV( row, *model );  
     } 
     else
     {
@@ -28,7 +39,7 @@ void plDonorSite::draw() const
         return;
       
     // draw spline boundary 
-    _plPickingState->type = PL_PICKING_TYPE_DONOR_BOUNDARY;
+    plPicking::value.type = PL_PICKING_TYPE_DONOR_BOUNDARY;
     boundary.draw();   
    
 }

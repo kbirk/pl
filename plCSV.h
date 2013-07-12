@@ -1,7 +1,7 @@
 #ifndef CSV_H
 #define CSV_H
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plSeq.h"
 #include "plString.h"
 

@@ -30,9 +30,9 @@ void plCSV::_readFile( plString filename, PLbool verbose )
         // parse each comma seperated value
         while(std::getline(lineStream, entry,','))
         {
-            plStringStripCharacter(entry, '\r');         // remove any quotation marks
+            entry.stripCharacter('\r');         // remove any quotation marks
             
-            if (!plStringOnlyWhitespace(entry))     // ignore any lines consisting of only whitespace
+            if (!entry.isOnlyWhitespace())     // ignore any lines consisting of only whitespace
             {
                 lineData.add(entry);                
             }

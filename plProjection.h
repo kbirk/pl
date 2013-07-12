@@ -1,9 +1,8 @@
 #ifndef __PL_PROJECTION_H__
 #define __PL_PROJECTION_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plMatrix44.h"
-#include "plPickingTexture.h"
 
 class plProjection
 {

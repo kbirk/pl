@@ -1,12 +1,14 @@
-#version 120
+#version 330
 
-varying vec3 vViewNormal;
-varying vec3 vViewLightDirection;
+in vec4 cColourInterp;
+in vec3 vViewNormal;
+in vec3 vViewLightDirection;
 
-void main(void)
-{ 
+out vec4 cFragColour;
 
-    vec3 N = normalize(vViewNormal);
+void main()
+{
+	vec3 N = normalize(vViewNormal);
     vec3 L = normalize(vViewLightDirection);
     vec3 R = normalize(reflect(-L, N));   
     
@@ -14,8 +16,7 @@ void main(void)
     float spec = pow(abs( dot(N, R)), 128);
     
     // Multiply intensity by diffuse color, force alpha to 1.0
-    gl_FragColor = vec4(gl_Color.r*diff, gl_Color.g*diff, gl_Color.b*diff, gl_Color.a)
-                 + vec4(gl_Color.r*0.1,  gl_Color.b*0.1,  gl_Color.g*0.1,  0)
-                 + vec4(spec, spec, spec, 0);
-    
+    cFragColour =  vec4(cColourInterp.r*diff, cColourInterp.g*diff, cColourInterp.b*diff, cColourInterp.a)
+                 + vec4(cColourInterp.r*0.1,  cColourInterp.b*0.1,  cColourInterp.g*0.1,  0)
+                 + vec4(spec, spec, spec, 0);   
 }

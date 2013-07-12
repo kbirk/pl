@@ -1,11 +1,10 @@
 #ifndef __PL_DONOR_SITE_H__
 #define __PL_DONOR_SITE_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plVector3.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
-#include "plPickingShader.h"
 #include "plPickingTexture.h"
 
 class plDonorSite : public plRenderable
@@ -16,7 +15,7 @@ class plDonorSite : public plRenderable
                 
         plDonorSite();
 
-        void readFromCSV( const plSeq<plString> &row );
+        void readFromCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
 
         void draw() const;      
 
@@ -24,7 +23,8 @@ class plDonorSite : public plRenderable
         
     private:
     
-        PLuint _modelID;
+        PLuint                   _modelID;
+        const plBoneAndCartilage *model;  
 };
 
 

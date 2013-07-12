@@ -1,6 +1,6 @@
 /**
  *======================================================================================================
- * DRBTransform class
+ * plDRBTransform class
  * Thomas Vaughan, Queen's University
  * August 16 2011
  *------------------------------------------------------------------------------------------------------
@@ -16,10 +16,10 @@
  *======================================================================================================
  */
 
-#ifndef DRBTRANSFORM_H
-#define DRBTRANSFORM_H
+#ifndef _PL_DRB_TRANSFORM_H_
+#define _PL_DRB_TRANSFORM_H_
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plMatrix44.h"
 #include <string>
 #include <fstream>
@@ -29,47 +29,51 @@
 typedef enum { TRANSLATION , TRANSLATION_ROTATION, TRANSLATION_ROTATION_SCALE } MarkerType;
 
 
-class DRBTransform {
+class plDRBTransform 
+{
 
-private:
+    private:
 
-    // These store the information about the translations.
-    // (computed on instantiation)
-    plMatrix44 fwdTransform, inverseTransform;
-    plVector3 reverseTranslation;
+        // These store the information about the translations.
+        // (computed on instantiation)
+        plMatrix44 fwdTransform, inverseTransform;
+        plVector3 reverseTranslation;
 
-    // Values to store the original information, provided by the file or the DRB.
-    // Storing these isn't strictly necessary, though could be useful if ever
-    // we wanted to get the original axis-angle representation values
-public:
-    double calibpointx, calibpointy, calibpointz;
-    double calibangle, calibaxisx, calibaxisy, calibaxisz;
-    double calibscalex, calibscaley, calibscalez; // generally these will all be the same value
+        // Values to store the original information, provided by the file or the DRB.
+        // Storing these isn't strictly necessary, though could be useful if ever
+        // we wanted to get the original axis-angle representation values
+    public:
+    
+        double calibpointx, calibpointy, calibpointz;
+        double calibangle, calibaxisx, calibaxisy, calibaxisz;
+        double calibscalex, calibscaley, calibscalez; // generally these will all be the same value
 
 
-public:
+    public:
 
-    DRBTransform() { // default transform - this will do nothing
-        calibpointx=calibpointy=calibpointz=calibangle=calibaxisy=calibaxisx=0;
-        calibscalex=calibscaley=calibscalez=calibaxisz=1;
-        initializeTransforms();
-    };
+        plDRBTransform() 
+        { 
+            // default transform - this will do nothing
+            calibpointx=calibpointy=calibpointz=calibangle=calibaxisy=calibaxisx=0;
+            calibscalex=calibscaley=calibscalez=calibaxisz=1;
+            initializeTransforms();
+        }
 
-    DRBTransform( const std::string&, MarkerType = TRANSLATION );
-    // File Transformation - string is the file, MarkerType specifies how much to read
+        plDRBTransform( const std::string&, MarkerType = TRANSLATION );
+        // File Transformation - string is the file, MarkerType specifies how much to read
 
-    DRBTransform( const plVector3&, const plVector3&, double ); // DRB Transformation
+        plDRBTransform( const plVector3&, const plVector3&, double ); // DRB Transformation
 
-//    DRBTransform( const Matrix1<double> ); // DRB Transformation from a 4x4 matrix;
+    //    plDRBTransform( const Matrix1<double> ); // DRB Transformation from a 4x4 matrix;
 
-    DRBTransform( const plMatrix44 );
+        plDRBTransform( const plMatrix44 );
 
-    void initializeTransforms(); // Sets up the matrices
-    DRBTransform clone();
-    plMatrix44 getTransform();
-    plVector3 applyTransform        ( const plVector3& ); // forward transformation, returns resulting vector
-    plVector3 applyInverseTransform ( const plVector3& ); // reverse transformation, returns resulting vector
+        void initializeTransforms(); // Sets up the matrices
+        plDRBTransform clone() const;
+        plMatrix44     getTransform() const;
+        plVector3      applyTransform         ( const plVector3& ) const; // forward transformation, returns resulting vector
+        plVector3      applyInverseTransform  ( const plVector3& ) const; // reverse transformation, returns resulting vector
 
 };
 
-#endif // DRBTRANSFORM_H
+#endif // plDRBTransform_H

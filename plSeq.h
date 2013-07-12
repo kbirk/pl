@@ -1,9 +1,7 @@
-#ifndef __PL_plSeq_H__
-#define __PL_plSeq_H__
+#ifndef __PL_SEQ_H__
+#define __PL_SEQ_H__
 
-#include <iostream>
-#include <algorithm>
-#include "pl.h"
+#include "plCommon.h"
 
 #define PL_SEQ_INITIAL_SIZE 8
 

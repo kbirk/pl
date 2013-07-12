@@ -1,9 +1,10 @@
 #ifndef __PL_BONE_AND_CARTILAGE_MODEL_H__
 #define __PL_BONE_AND_CARTILAGE_MODEL_H__
 
-#include "pl.h"
-//#include "plRenderer.h"
+#include "plCommon.h"
 #include "plModel.h"
+
+class plPlan;
 
 class plBoneAndCartilage
 {

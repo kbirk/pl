@@ -1,7 +1,7 @@
 #ifndef __PL_TRIANGLE_H__
 #define	__PL_TRIANGLE_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plString.h"
 #include "plVector3.h"
 #include "plSeq.h"
@@ -84,11 +84,22 @@ class plTriangle
 
 std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
 
-void plSTLImportFile      ( plSeq<plTriangle> &triangles, plString filename );
-void plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filename );
-void plSTLExportFileASCII ( const plSeq<plTriangle> &triangles , plString filename );
-void _plCheckTypeSizes    ();
+class plSTL 
+{ 
 
+    public:
+    
+        static void importFile      ( plSeq<plTriangle> &triangles, plString filename );
+        static void exportFileBinary( const plSeq<plTriangle> &triangles , plString filename );
+        static void exportFileASCII ( const plSeq<plTriangle> &triangles , plString filename );
+               
+    private:
+    
+        plSTL() {};
+        
+        static void _plCheckTypeSizes    ();
+
+};
 
 #endif
 

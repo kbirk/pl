@@ -1,7 +1,8 @@
 #ifndef __PL_VECTOR3_H__
 #define __PL_VECTOR3_H__
 
-#include "pl.h"
+#include "plCommon.h"
+#include "plString.h"
 
 class plVector3 
 {
@@ -33,8 +34,7 @@ class plVector3
 };
 
 
-// Scalar/Vector multiplication
-
+// scalar multiplication
 plVector3 operator * ( PLfloat k, const plVector3 &p );
 
 PLfloat distToEdge( const plVector3 &point, const plVector3 &head, const plVector3 &tail );

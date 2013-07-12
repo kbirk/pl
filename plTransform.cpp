@@ -4,7 +4,15 @@ plTransform::plTransform()
 {
 }
 
-void plTransform::compute() 
+void plTransform::readFromCSV( const plSeq<plString> &row )
+{
+    _origin = plVector3( row[3] );
+    _x      = plVector3( row[4] );
+    _y      = plVector3( row[5] );    
+    _compute();
+}
+
+void plTransform::_compute() 
 {
     _z = (_x ^ _y).normalize(); // re-compute z to ensure it is orthogonal to x and y
 
@@ -13,40 +21,35 @@ void plTransform::compute()
         std::cerr << "x and y are not perpendicular (dot product = " << _x*_y << std::endl;
     }
 
-    _transform[ 0] = _x.x; _transform[ 4] = _y.x; _transform[ 8] = _z.x; _transform[12] = _origin.x;
-    _transform[ 1] = _x.y; _transform[ 5] = _y.y; _transform[ 9] = _z.y; _transform[13] = _origin.y;
-    _transform[ 2] = _x.z; _transform[ 6] = _y.z; _transform[10] = _z.z; _transform[14] = _origin.z;
-    _transform[ 3] = 0.0;  _transform[ 7] = 0.0;  _transform[11] = 0.0;  _transform[15] = 1.0;
+    _transform.setColumn(0, _x.x,      _x.y,      _x.z,      0.0f);
+    _transform.setColumn(1, _y.x,      _y.y,      _y.z,      0.0f);
+    _transform.setColumn(2, _z.x,      _z.y,      _z.z,      0.0f);
+    _transform.setColumn(3, _origin.x, _origin.y, _origin.z, 1.0f);
 }
 
 
 void plTransform::set( const plVector3 &x, const plVector3 &y)
 {
-    _x = x;
-    _y = y;
-    compute();
+    _x = x.normalize();
+    _y = y.normalize();
+    _compute();
 }
 
-void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &z)
+void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &origin)
 {
-    _x = x;
-    _y = y;
-    _z = z;
-    compute();
+    _x = x.normalize();
+    _y = y.normalize();
+    _origin = origin;
+    _compute();
 }
 
 void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &z, const plVector3 &origin )
 {
-    _x = x;
-    _y = y;
-    _z = z;
+    _x = x.normalize();
+    _y = y.normalize();
+    _z = z.normalize();
     _origin = origin;
-    compute();
-}
-
-void plTransform::apply() const
-{
-    glMultMatrixf( _transform );
+    _compute();
 }
 
 plVector3 plTransform::applyInverse( const plVector3 &v ) const
@@ -72,4 +75,12 @@ PLfloat plTransform::projectedDistOnAxis( const plVector3 &v ) const
     // v is already in the *local* coordinate system of the graft 
     static plVector3 axis(0,1,0);
     return v*axis;
+}
+
+std::ostream& operator << ( std::ostream& out, const plTransform &t )
+{
+    out << "," << t._origin; 
+    out << "," << t._x;
+    out << "," << t._y;  
+    return out;
 }

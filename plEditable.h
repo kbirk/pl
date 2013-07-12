@@ -1,8 +1,7 @@
 #ifndef __PL_EDITABLE_H_
 #define __PL_EDITABLE_H_
 
-#include "pl.h"
-#include "plVector3.h"
+#include "plCommon.h"
 
 class plEditable
 {
@@ -11,7 +10,7 @@ class plEditable
 
         plEditable();  
         
-        // only editors can see the privatae variables
+        // only editors can see the private variables
         friend class plGraftEditor;
         friend class plBoundaryEditor;
 

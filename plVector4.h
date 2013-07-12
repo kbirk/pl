@@ -1,7 +1,8 @@
 #ifndef __PL_VECTOR4_H__
 #define __PL_VECTOR4_H__
 
-#include "pl.h"
+#include "plCommon.h"
+#include "plString.h"
 #include "plVector3.h"
 
 class plVector4 

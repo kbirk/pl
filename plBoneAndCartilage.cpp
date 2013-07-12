@@ -14,13 +14,11 @@ plBoneAndCartilage::plBoneAndCartilage( plString bone_file, plString cartilage_f
 void plBoneAndCartilage::draw() const
 {
     // DRAW BONE
-    _plPickingState->type = PL_PICKING_TYPE_BONE;
-    _plPickingShader->setPickingUniforms(_plPickingState->type,_plPickingState->id, 0);    
+    plPicking::value.type = PL_PICKING_TYPE_BONE;   
     bone.draw( plVector3(PL_MODEL_BONE_COLOUR) );
 
     // DRAW CARTILAGE
-    _plPickingState->type = PL_PICKING_TYPE_CARTILAGE;
-    _plPickingShader->setPickingUniforms(_plPickingState->type,_plPickingState->id, 0);    
+    plPicking::value.type = PL_PICKING_TYPE_CARTILAGE; 
     cartilage.draw( plVector3(PL_MODEL_CARTILAGE_COLOUR) );
 }
 
@@ -52,13 +50,13 @@ void plBoneAndCartilage::readFromCSV( const plSeq<plString> &row, const plString
     // fill in the field            
     plString subfield = row[2];
 
-    if (plStringCompareCaseInsensitive(subfield, "bone file") )
+    if (subfield.compareCaseInsensitive( "bone file") )
     {
-        bone = plModel( plStringConcat(directory, row[3])  );       // combine directory and filename
+        bone = plModel( directory + row[3] );       // combine directory and filename
     }                        
-    else if (plStringCompareCaseInsensitive(subfield, "cartilage file") )
+    else if (subfield.compareCaseInsensitive( "cartilage file") )
     {
-        cartilage = plModel( plStringConcat(directory, row[3])  );  // combine directory and filename
+        cartilage = plModel( directory + row[3] );  // combine directory and filename
     }        
     else
     {

@@ -1,28 +1,30 @@
 #ifndef __PL_DRAW_H__
 #define __PL_DRAW_H__
 
-#include "pl.h"
-#include "plProjection.h"
-#include "plCamera.h"
-#include "plModel.h"
-#include "plPlan.h"
-#include "plSeq.h"
-#include "plMinimalShader.h"
-#include "plPhongShader.h"
-#include "plPickingShader.h"
+#include "plCommon.h"
 #include "plMesh.h"
-#include "plGraftEditor.h"
-#include "plBoundaryEditor.h"
+#include "plTrackedObject.h"
 
-void _plDrawPicking();
-void _plDrawArrowCone(float scale);
+class plDraw
+{
+    public:
 
-void _setOpenGLState();
-        
-void _beginPicking();
-void _endPicking();
+        static void arrow    ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
+        static void arrow    ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
+        static void knob     ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
+        static void knob     ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
+        static void sphere   ( float radius);
+        static void sphere   ( const plVector3 &origin, float radius);
+        static void cylinder ( float radius, float height); 
+        static void disk     ( const plVector3 &origin, float scale );
+        static void disk     ( float scale );
+        static void scope    ( const plTrackedObject &scope );
+        static void probe    ( const plTrackedObject &probe );
 
-void _beginDrawing();
-void _endDrawing();
+    private:
+
+        plDraw() {};
+
+};
 
 #endif

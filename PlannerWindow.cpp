@@ -4,24 +4,24 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
     : _button( GLUT_NO_BUTTON ),
       _camera( ".view0" ), 
       _cameraMode( CAMERA_ROTATION_MODE ),
-      _projection( glutGet(GLUT_WINDOW_WIDTH) / glutGet(GLUT_WINDOW_HEIGHT) ),
       _graftEditor(),
       _boundaryEditor(),
       _plan( argc, argv ), 
       Window( x, y, width, height, title )
 {  
-    plInit();
-    plSet( _plan );
-    plSet( _camera );
-    plSet( _projection );
-    plSet( _graftEditor );
-    plSet( _boundaryEditor );
+    plRenderer::init();  
 }
 
 
 void PlannerWindow::display()
 {
-    plDraw();
+    plCameraStack::load( _camera );
+
+    plRenderer::queue( _plan );
+    plRenderer::queue( _graftEditor );
+    plRenderer::queue( _boundaryEditor );
+    plRenderer::draw();
+
     glutSwapBuffers();
 }
 
@@ -62,11 +62,11 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
             break; 
             
         case 'W':   
-            _camera.exportViewParams( plStringConcat( ".view", plToString( currentView ) ) );   
+            _camera.exportViewParams( ".view" + plString::toString(currentView ) );   
             break;
             
         case 'R':   
-            _camera.importViewParams( plStringConcat( ".view", plToString( currentView ) ) );   
+            _camera.importViewParams( ".view" + plString::toString( currentView ) );   
             break;  
        
         case '1':
@@ -129,8 +129,8 @@ void PlannerWindow::activeMouseMotion( int x, int y )
         case GLUT_LEFT_BUTTON: 
 
             // process drag movements 
-            _graftEditor.processMouseDrag(x, glutGet(GLUT_WINDOW_HEIGHT)-y);   
-            _boundaryEditor.processMouseDrag(x, glutGet(GLUT_WINDOW_HEIGHT)-y);  
+            _graftEditor.processMouseDrag   ( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y);   
+            _boundaryEditor.processMouseDrag( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y);  
             break;       
 
         case GLUT_MIDDLE_BUTTON:    
@@ -182,13 +182,13 @@ void PlannerWindow::mouseAction( int button, int state, int x, int y )
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
 	        {
                 // add new point
-                _boundaryEditor.addPoint(x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
+                _boundaryEditor.addPoint( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
             }
             else
             {
                 // process mouse clicks 
-                _graftEditor.processMouseClick(x, glutGet(GLUT_WINDOW_HEIGHT)-y);    
-                _boundaryEditor.processMouseClick(x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
+                _graftEditor.processMouseClick   ( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y);    
+                _boundaryEditor.processMouseClick( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
             }
             break;
     }    

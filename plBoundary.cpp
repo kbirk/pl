@@ -40,18 +40,20 @@ PLuint plBoundary::size() const
 }
 
 
-void plBoundary::readFromCSV( const plSeq<plString> &row )
+void plBoundary::readFromCSV( const plSeq<plString> &row, const plBoneAndCartilage &model )
 {
+    // set internal model pointer
+    _model = &model;
+
     // assumes points are counter-clockwise
     for ( PLuint j = 3; j < row.size(); j+=2)
     {               
-        _points.add(  plVector3( row[j] ) );                  
+        _points.add (  plVector3( row[j] ) );                  
         _normals.add( plVector3( row[j+1] ) );
     } 
     // construct mesh
     _updateMesh(); 
 }
-
 
 
 PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
@@ -102,7 +104,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         {
             PLint j = (i+1) % _points.size();   // next point
             // get closest point on current edge
-            plVector3 closest = plClosestPointOnLineSegment(point, _points[i], _points[j]);
+            plVector3 closest = plMath::closestPointOnSegment(point, _points[i], _points[j]);
             // compare distance to current minimum distance
             PLfloat distSquared = (closest - point).squaredLength();
             
@@ -179,52 +181,52 @@ void plBoundary::_setColour() const
     if (_isSelected)
     {
         // selected
-        switch (_plPickingState->type)
+        switch (plPicking::value.type)
         {
             case PL_PICKING_TYPE_DEFECT_CORNERS:
                 // defect corners 
-                glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
+                plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
                 break;
 
             case PL_PICKING_TYPE_DEFECT_BOUNDARY:
                 // defect boundary
-                glColor3f( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL ); 
+                plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL ); 
                 break;
  
             case PL_PICKING_TYPE_DONOR_BOUNDARY:
                 // donor boundary
-                glColor3f( PL_BOUNDARY_DONOR_COLOUR_DULL );
+                plColourStack::load( PL_BOUNDARY_DONOR_COLOUR_DULL );
                 break;
 
             case PL_PICKING_TYPE_IGUIDE_BOUNDARY:     
                 // iguide boundary
-                glColor3f( PL_BOUNDARY_IGUIDE_COLOUR_DULL );   
+                plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR_DULL );   
                 break;
         }
     }
     else
     {
         // not selected
-        switch (_plPickingState->type)
+        switch (plPicking::value.type)
         {
             case PL_PICKING_TYPE_DEFECT_CORNERS:
                 // defect corners 
-                glColor3f( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
+                plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
                 break;
 
             case PL_PICKING_TYPE_DEFECT_BOUNDARY:
                 // defect boundary
-                glColor3f( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
+                plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
                 break;
  
             case PL_PICKING_TYPE_DONOR_BOUNDARY:
                 // donor boundary
-                glColor3f( PL_BOUNDARY_DONOR_COLOUR );
+                plColourStack::load( PL_BOUNDARY_DONOR_COLOUR );
                 break;
 
             case PL_PICKING_TYPE_IGUIDE_BOUNDARY:     
                 // iguide boundary
-                glColor3f( PL_BOUNDARY_IGUIDE_COLOUR );   
+                plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR );   
                 break;
         }
     }
@@ -329,24 +331,22 @@ void plBoundary::draw() const
         // draw walls
         if (_showWalls)
         {
-            _plPickingState->index = -1;  // draw walls with index of -1
-            _plPickingShader->setPickingUniforms(_plPickingState);
+            plPicking::value.index = -1; // draw walls with index of -1
             _mesh.draw();
         }
         
         // draw _points
         for (PLuint i=0; i<_points.size(); i++) 
         {
-            _plPickingState->index = i; 
-            _plPickingShader->setPickingUniforms(_plPickingState);
+            plPicking::value.index = i;
             
             if (_isSelected && _selectedValue == i)   // is the current point selected?
             {
-                plDrawSphere( _points[i], 1.5) ;
+                plDraw::sphere( _points[i], 1.5);
             }
             else
             {
-                plDrawSphere( _points[i], 1 );
+                plDraw::sphere( _points[i], 1 );
             }
         }
     }

@@ -5,6 +5,7 @@ plTriangle::plTriangle()
 {
 }
 
+
 plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) 
     :   _points(3), 
         _centroid(0.333333f * (p0 + p1 + p2))
@@ -72,22 +73,22 @@ void plTriangle::_recalculate()
 } 
 
 
-// Compute plane/ray intersection, and then the local coordinates to
-// see whether the intersection point is inside.
+// Compute plane/ray intersection, and then the local coordinates 
+// to see whether the intersection point is inside.
 plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVector3 &rayDir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 {
     // Compute ray/plane intersection
     PLfloat dn = rayDir * _normal;
 
-    if (dn == 0 || (backFaceCull &&  dn > 0) )
-        return plIntersection(false); //false;		// ray is parallel to plane    
+    if (dn == 0 || (backFaceCull && dn > 0) )
+        return plIntersection(false);   // ray is parallel to plane, or coming from behind    
 
     PLfloat dist = _points[0] * _normal;
 
     PLfloat t = (dist - rayStart*_normal) / dn;
     
     if (ignoreBehindRay && t < 0) 
-        return plIntersection(false);  //false;       // plane is behind ray
+        return plIntersection(false);   // plane is behind ray
 
     plVector3 intPoint = rayStart + t * rayDir;
 
@@ -98,12 +99,9 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
 
     // Reject if outside triangle
     if (u < 0 || v < 0 || u + v > 1)
-        return plIntersection(false); //false;
+        return plIntersection(false); 
 
-    // Return int point and normal and parameter
-    //intNorm = _normal;
-
-    return plIntersection(intPoint, _normal, t); //true;
+    return plIntersection( intPoint, _normal, t );
 }
 
 
@@ -118,7 +116,7 @@ std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 }
 
 
-void plSTLImportFile( plSeq<plTriangle> &triangles, plString filename)
+void plSTL::importFile( plSeq<plTriangle> &triangles, plString filename)
 {
     // just in case, clear seq
     triangles.clear();
@@ -135,7 +133,7 @@ void plSTLImportFile( plSeq<plTriangle> &triangles, plString filename)
     // First line: ASCII or RAW?
     plString line;
     std::getline(infile, line);
-    bool isAscii = plStringCompareCaseInsensitive(line, "solid", 5);
+    bool isAscii = line.compareCaseInsensitive( "solid", 5);
 
     if (isAscii) 
     {      
@@ -147,14 +145,15 @@ void plSTLImportFile( plSeq<plTriangle> &triangles, plString filename)
             
             std::getline(infile, line);    
             
-            plStringStripPreceedingWhitespace( line );
+            line.stripPreceedingWhitespace();
+            
        
-            if (plStringCompareCaseInsensitive(line, "facet", 5)) 
+            if (line.compare("facet", 5)) 
             {   
                 // normal   
                 sscanf(line.c_str(), "%s %s %f %f %f", filler, filler, &n.x, &n.y, &n.z);
             } 
-            else if (plStringCompareCaseInsensitive(line, "vertex", 6)) 
+            else if (line.compare("vertex", 6)) 
             {
                 // vertex 1
                 sscanf(line.c_str(), "%s %f %f %f", filler, &p0.x, &p0.y, &p0.z);
@@ -165,7 +164,7 @@ void plSTLImportFile( plSeq<plTriangle> &triangles, plString filename)
                 std::getline(infile, line); // read next vertex line
                 sscanf(line.c_str(), "%s %f %f %f", filler, &p2.x, &p2.y, &p2.z);
             } 
-            else if (plStringCompareCaseInsensitive(line, "endfacet", 8))
+            else if (line.compare("endfacet", 8))
             {
                 // end of face, build triangle
                 triangles.add( plTriangle(n,p0,p1,p2) );                
@@ -207,7 +206,7 @@ void plSTLImportFile( plSeq<plTriangle> &triangles, plString filename)
 }
 
 
-void plSTLExportFileASCII( const plSeq<plTriangle> &triangles , plString filename )
+void plSTL::exportFileASCII( const plSeq<plTriangle> &triangles , plString filename )
 {
     std::ofstream outfile ( filename.c_str() );
     if ( !outfile.good() )
@@ -235,7 +234,7 @@ void plSTLExportFileASCII( const plSeq<plTriangle> &triangles , plString filenam
 }
 
 
-void plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filename )
+void plSTL::exportFileBinary( const plSeq<plTriangle> &triangles , plString filename )
 {
     _plCheckTypeSizes();
 
@@ -273,7 +272,7 @@ void plSTLExportFileBinary( const plSeq<plTriangle> &triangles , plString filena
 }
 
 
-void _plCheckTypeSizes()
+void plSTL::_plCheckTypeSizes()
 {
     // check to ensure compiler designates compatible bytes to each type
     if (sizeof(PLuint) != 4)

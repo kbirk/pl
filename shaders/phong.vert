@@ -1,22 +1,37 @@
-#version 120
+#version 330
 
-uniform vec3   vLightPosition;
+in vec3 vPosition;
+in vec3 vNormal;
+in vec4 vColour;
 
-varying vec3 vViewNormal;
-varying vec3 vViewLightDirection;
+uniform vec3 vLightPosition;
 
-void main(void) 
-{ 	
-    
+uniform mat4 mModel;
+uniform mat4 mView;
+uniform mat4 mProjection;
+uniform vec4 cColour;
+
+out vec4 cColourInterp;
+out vec3 vViewNormal;
+out vec3 vViewLightDirection;
+
+void main()
+{
+    // if vertex colour attribute is unspecified, all indices are 1
+    // if vertex colour is unspecified, use uniform, else use vertex colour (for colour meshes)
+    if (vColour != vec4(1,1,1,1))
+        cColourInterp = vColour;
+    else
+        cColourInterp = cColour;
+
+	mat4 modelView = mView * mModel;
+
     // view space normal 
-    vViewNormal = mat3(gl_ModelViewMatrix) * gl_Normal;   
+    vViewNormal = mat3(modelView) * vNormal; 
      
     //  vector to light source              
-    vViewLightDirection = vLightPosition - vec3(gl_ModelViewMatrix * gl_Vertex);   
+    vViewLightDirection = vLightPosition - vec3(modelView * vec4(vPosition,1));  
     
-    gl_FrontColor = gl_Color;
-        
-    gl_Position = ftransform(); 
-
+    gl_Position = mProjection * mView * mModel * vec4(vPosition,1);
 }
 

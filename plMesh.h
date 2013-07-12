@@ -1,11 +1,11 @@
 #ifndef _PL_MESH_H_
 #define _PL_MESH_H_ 
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plVector3.h"
 #include "plTriangle.h"
 #include "plShader.h" // attribute enums
-
+#include "plRenderingPipeline.h"
 
 class plMesh
 {

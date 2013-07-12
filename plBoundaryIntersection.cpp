@@ -1,8 +1,4 @@
-// offset.cpp
-
-
 #include "plBoundaryIntersection.h"
-
 
 // Determine the polygons of a triangle mesh that are inside a boundary.
 //
@@ -57,7 +53,7 @@ void plFindInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plS
   } // end for
 
   // convert polygons to triangles for the output
-  plConcavePolysToTris(interiorPolygons,interiorTriangles);
+  plMath::concavePolysToTris(interiorPolygons,interiorTriangles);
 
 } // end void function
 

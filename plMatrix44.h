@@ -1,7 +1,7 @@
 #ifndef __PL_MATRIX44_H__
 #define __PL_MATRIX44_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plTriangle.h"
@@ -168,13 +168,13 @@ class plMatrix44
 		}
 
 		//void setRotation(PLfloat angle, PLfloat x, PLfloat y, PLfloat z);
-        void setRotation(PLfloat angle_radian, const plVector3 &axis);
-        void setRotation( const plVector4 &quat );
+        void setRotation (PLfloat angle_radian, const plVector3 &axis);
+        void setRotation ( const plVector4 &quat );
         void setRotationD(PLfloat angle_degree, const plVector3 &axis);
-        void setRotation(const plVector3 &from, const plVector3 &to);
+        void setRotation (const plVector3 &from, const plVector3 &to);
         
-        void setOrthographic(PLfloat xMin, PLfloat xMax, PLfloat yMin, PLfloat yMax, PLfloat zMin, PLfloat zMax);
-        void setPerspective(PLfloat fov, PLfloat aspect, PLfloat nearPlane, PLfloat farPlane);
+        void setOrthographic( PLfloat xMin, PLfloat xMax, PLfloat yMin, PLfloat yMax, PLfloat zMin, PLfloat zMax);
+        void setPerspective ( PLfloat fov, PLfloat aspect, PLfloat nearPlane, PLfloat farPlane);
 
 		///////////////////////////////////////////////////////
 		// inverse
@@ -235,18 +235,18 @@ class plMatrix44
 		// scalar multiplication
 		inline plMatrix44 operator*(PLfloat s) const 
 		{
-            return plMatrix44(_data[0]  * s, _data[1]  * s, _data[2]  * s, _data[3]  * s,
-                              _data[4]  * s, _data[5]  * s, _data[6]  * s, _data[7]  * s,
-                              _data[8]  * s, _data[9]  * s, _data[10] * s, _data[11] * s,
-                              _data[12] * s, _data[13] * s, _data[14] * s, _data[15] * s);
+			return plMatrix44(_data[0]  * s,  _data[1]  * s,  _data[2]  * s,  _data[3]  * s,
+							  _data[4]  * s,  _data[5]  * s,  _data[6]  * s,  _data[7]  * s,
+							  _data[8]  * s,  _data[9]  * s,  _data[10] * s, _data[11] * s,
+							  _data[12] * s, _data[13] * s, _data[14] * s, _data[15] * s);
 
 		}
 		inline plMatrix44 &operator*=(PLfloat s)  
 		{
-            _data[0] *= s;	_data[4] *= s;  _data[8] *= s;  _data[12]*= s;
-            _data[1] *= s;	_data[5] *= s;	_data[9] *= s;  _data[13]*= s;
-            _data[2] *= s;	_data[6] *= s;	_data[10] *= s; _data[14]*= s;
-            _data[3] *= s;	_data[7] *= s;	_data[11] *= s; _data[15]*= s;
+			_data[0] *= s;	_data[4] *= s;	_data[8]  *= s;	_data[12] *= s;	
+			_data[1] *= s;	_data[5] *= s;	_data[9]  *= s;	_data[13] *= s;		
+			_data[2] *= s;	_data[6] *= s;	_data[10] *= s; _data[14] *= s;		
+			_data[3] *= s;	_data[7] *= s;	_data[11] *= s; _data[15] *= s;		
 			return *this;
 		}
 
@@ -302,7 +302,9 @@ class plMatrix44
 
 };
 
-plVector4 operator * ( const plVector4 &v, const plMatrix44 &m );
+std::ostream& operator << ( std::ostream& stream, const plMatrix44 &m );
 
+plVector4 operator * ( const plVector4 &v, const plMatrix44 &m );
+plVector3 operator * ( const plVector3 &v, const plMatrix44 &m );
 
 #endif
