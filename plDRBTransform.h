@@ -21,16 +21,40 @@
 
 #include "plCommon.h"
 #include "plMatrix44.h"
-#include <string>
-#include <fstream>
-
 
 // This enum is used to indicate how much information is in a transformation file
-typedef enum { TRANSLATION , TRANSLATION_ROTATION, TRANSLATION_ROTATION_SCALE } MarkerType;
-
+enum MarkerType 
+{ 
+    TRANSLATION , 
+    TRANSLATION_ROTATION, 
+    TRANSLATION_ROTATION_SCALE 
+};
 
 class plDRBTransform 
 {
+ 
+    public:
+    
+        // Values to store the original information, provided by the file or the DRB.
+        // Storing these isn't strictly necessary, though could be useful if ever
+        // we wanted to get the original axis-angle representation values
+        double calibpointx, calibpointy, calibpointz;
+        double calibangle,  calibaxisx, calibaxisy, calibaxisz;
+        double calibscalex, calibscaley, calibscalez; // generally these will all be the same value
+
+        plDRBTransform();
+        
+        plDRBTransform( const plMatrix44 );
+        plDRBTransform( const std::string&, MarkerType = TRANSLATION ); // File Transformation - string is the file, MarkerType specifies how much to read
+        plDRBTransform( const plVector3&, const plVector3&, double ); // DRB Transformation
+        
+        void           initializeTransforms(); // Sets up the matrices
+        
+        plDRBTransform clone()        const;
+        plMatrix44     getTransform() const;
+        
+        plVector3      applyTransform       ( const plVector3& ) const; // forward transformation, returns resulting vector
+        plVector3      applyInverseTransform( const plVector3& ) const; // reverse transformation, returns resulting vector
 
     private:
 
@@ -39,40 +63,7 @@ class plDRBTransform
         plMatrix44 fwdTransform, inverseTransform;
         plVector3 reverseTranslation;
 
-        // Values to store the original information, provided by the file or the DRB.
-        // Storing these isn't strictly necessary, though could be useful if ever
-        // we wanted to get the original axis-angle representation values
-    public:
-    
-        double calibpointx, calibpointy, calibpointz;
-        double calibangle, calibaxisx, calibaxisy, calibaxisz;
-        double calibscalex, calibscaley, calibscalez; // generally these will all be the same value
-
-
-    public:
-
-        plDRBTransform() 
-        { 
-            // default transform - this will do nothing
-            calibpointx=calibpointy=calibpointz=calibangle=calibaxisy=calibaxisx=0;
-            calibscalex=calibscaley=calibscalez=calibaxisz=1;
-            initializeTransforms();
-        }
-
-        plDRBTransform( const std::string&, MarkerType = TRANSLATION );
-        // File Transformation - string is the file, MarkerType specifies how much to read
-
-        plDRBTransform( const plVector3&, const plVector3&, double ); // DRB Transformation
-
-    //    plDRBTransform( const Matrix1<double> ); // DRB Transformation from a 4x4 matrix;
-
-        plDRBTransform( const plMatrix44 );
-
-        void initializeTransforms(); // Sets up the matrices
-        plDRBTransform clone() const;
-        plMatrix44     getTransform() const;
-        plVector3      applyTransform         ( const plVector3& ) const; // forward transformation, returns resulting vector
-        plVector3      applyInverseTransform  ( const plVector3& ) const; // reverse transformation, returns resulting vector
+        
 
 };
 

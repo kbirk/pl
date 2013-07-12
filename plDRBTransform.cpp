@@ -1,12 +1,18 @@
-// See header or API for class information
-// Thomas Vaughan, August 16, 2011
-
 #include "plDRBTransform.h"
 
-plDRBTransform::plDRBTransform( const std::string& inputFile, MarkerType t ) {
+plDRBTransform::plDRBTransform() 
+{ 
+    // default transform - this will do nothing
+    calibpointx=calibpointy=calibpointz=calibangle=calibaxisy=calibaxisx=0;
+    calibscalex=calibscaley=calibscalez=calibaxisz=1;
+    initializeTransforms();
+}
 
+plDRBTransform::plDRBTransform( const std::string& inputFile, MarkerType t ) 
+{
     std::ifstream calibFile;
     calibFile.open(inputFile.c_str());
+    
     // Different files (calibration/registration/etc...) have different levels of detail provided
     if (calibFile.good() && t >= TRANSLATION) 
     {
@@ -66,7 +72,6 @@ plDRBTransform::plDRBTransform(plMatrix44 A)
 
 void plDRBTransform::initializeTransforms()
 {
-
     // Forward transformation is carried out via means of:
     // Scale -> Rotation -> Translation
     // This can all be done in one 4x4 matrix
@@ -91,19 +96,17 @@ plDRBTransform plDRBTransform::clone() const
     return temp;
 }
 
-plVector3 plDRBTransform::applyTransform(const plVector3& pos) const {
-
+plVector3 plDRBTransform::applyTransform(const plVector3& pos) const 
+{
     // Forward transform is carried out in the order:
     // Scale -> Rotation -> Translation
     // All taken care of by the 4x4 matrix
-
     plVector4 position(1.0,1.0,1.0,1.0);
     position.x = pos.x;
     position.y = pos.y;
     position.z = pos.z;
     plVector4 returnVal = fwdTransform * position;
     return plVector3(returnVal.x, returnVal.y, returnVal.z);
-
 }
 
 plMatrix44 plDRBTransform::getTransform() const 
@@ -114,7 +117,6 @@ plMatrix44 plDRBTransform::getTransform() const
 plVector3 plDRBTransform::applyInverseTransform(const plVector3& pos) const
 {
     // All taken care of by the 4x4 matrix
-
     plVector4 position(pos, 1.0);
     plVector4 returnVal = inverseTransform * position;
     return plVector3(returnVal.x, returnVal.y, returnVal.z);
