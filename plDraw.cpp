@@ -1,4 +1,5 @@
 #include "plDraw.h"
+ 
 
 void plDraw::arrow( const plVector3 &origin, const plVector3 &direction, PLfloat length, PLfloat scale)
 {
@@ -157,7 +158,6 @@ void plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngl
     }
     glPopMatrix();
 } 
-
 
 void plDrawProbe(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible) 
 {

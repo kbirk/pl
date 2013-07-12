@@ -8,7 +8,7 @@
 // boundary across the triangle mesh.
 
 
-void findInteriorMesh( plSeq<plTriangle> &triangles, plSeq<plWall> &walls, plSeq<plPolygon> &interiorPolygons )
+void plFindInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plSeq<plTriangle> &interiorTriangles )
 {
   // set all the processed flags to false
   plSeq<PLbool> trianglesProcessedFlag (triangles.size());
@@ -16,14 +16,15 @@ void findInteriorMesh( plSeq<plTriangle> &triangles, plSeq<plWall> &walls, plSeq
     trianglesProcessedFlag.add(false);
 
   // just in case polygons has stuff in it, it should be emptied
-  interiorPolygons.clear();
+  interiorTriangles.clear();
 
   // allocate a worst-case number of interior points
   plSeq<plVector3> interiorPoints( 3 * triangles.size() );
 
   // Collect polygons that intersect the boundary
+  plSeq<plPolygon> interiorPolygons;
   for (PLint i=0; i<triangles.size(); i++) {
-    triangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], walls, interiorPolygons, interiorPoints );
+    plTriangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints );
   }
 
   // Collect other polygons that contain an interior point.  This is very slow.
@@ -43,66 +44,68 @@ void findInteriorMesh( plSeq<plTriangle> &triangles, plSeq<plWall> &walls, plSeq
             poly.normal        = triangles[trianglesIndex].normal();
             interiorPolygons.add( poly );
             trianglesProcessedFlag[trianglesIndex] = true;
-            for (PLint l=0; l<3; l++)
-            {
-              PLint m;
-              for (m=0; m<interiorPoints.size(); m++)
-              {
-                if (triangles[trianglesIndex][l] == interiorPoints[m])
-                  break;
-              } // end for
-              if (m == interiorPoints.size())
-                interiorPoints.add( triangles[trianglesIndex][l] );
-            } // end for
+            plUpdateInteriorPoints( triangles[trianglesIndex], interiorPoints);
             break;
           } // end if
         } // end for
       } // end if
     } // end for
   } // end for
+
+  // convert polygons to triangles for the output
+  plMath::concavePolysToTris(interiorPolygons,interiorTriangles);
+
 } // end void function
 
 
-void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> &walls, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
+static void plUpdateInteriorPoints( plTriangle &triangle , plSeq<plVector3> &interiorPoints ) {
+  for (PLint vertexIndex=0; vertexIndex<3; vertexIndex++)
+  {
+    PLint interiorPointsIndex;
+    for (interiorPointsIndex=0; interiorPointsIndex<interiorPoints.size(); interiorPointsIndex++)
+    {
+      if (triangle[vertexIndex] == interiorPoints[interiorPointsIndex])
+        break;
+    } // end for
+    if (interiorPointsIndex == interiorPoints.size())
+      interiorPoints.add( triangle[vertexIndex] );
+  } // end for
+}
 
+
+static void plTriangleCutsBoundary( plTriangle &triangle, PLbool &triangleProcessed, plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
 {
   plSeq<plCut> edgeCuts;
 
-  for (PLint wallIndex=0; wallIndex<walls.size(); wallIndex++) {
+  for (PLint boundaryPointIndex=0; boundaryPointIndex<boundary.size(); boundaryPointIndex++) {
 
-    // For each triangle edge, see if it crosses walls[i]
+    // For each triangle edge, see if it crosses the line starting at boundary.points(index)
 
     plVector3 intersectionPoint;
-    PLfloat  edgeParameter, wallParameter;
-    PLint    intDir;
+    PLfloat  edgeParameter, boundaryParameter;
+    PLint    intersectionDirection;
 
-    if (tri.normal() * walls[wallIndex].n0 > 0) // only consider triangles on same side of mesh as walls
+    if (triangle.normal() * boundary.normals(boundaryPointIndex) > 0) // only consider triangles on same side of mesh as boundary walls
     {
       for (PLint edgeIndex=0; edgeIndex<3; edgeIndex++)
       {
-        if (edgeCutsWall( tri[edgeIndex], tri[(edgeIndex+1)%3], walls[wallIndex], intersectionPoint, edgeParameter, wallParameter, intDir ))
-          edgeCuts.add( plCut( intersectionPoint, edgeIndex, edgeParameter, wallIndex, wallParameter, intDir ) );
+        if (plEdgeCutsBoundary( triangle[edgeIndex], triangle[(edgeIndex+1)%3], boundary, boundaryPointIndex, intersectionPoint, edgeParameter, boundaryParameter, intersectionDirection ))
+          edgeCuts.add( plCut( intersectionPoint, edgeIndex, edgeParameter, boundaryPointIndex, boundaryParameter, intersectionDirection ) );
       } // end for
     } // end if
   } // end for
 
-
-
-
-
-
-
-  // Build the polygons that remain inside the wall
+  // Build the polygons that remain inside the boundary
   PLint numCutsLeft = edgeCuts.size();
 
   if (numCutsLeft == 0)
     return;
 
-  plSeq<plCut> wallCuts = edgeCuts;
+  plSeq<plCut> boundaryCuts = edgeCuts;
 
   // Sort the cuts
-  qsort( &edgeCuts[0], edgeCuts.size(), sizeof(plCut), compareEdgeCuts ); // sort by increasing edge index, then by increasing parameter on each edge
-  qsort( &wallCuts[0], wallCuts.size(), sizeof(plCut), compareWallCuts ); // sort by increasing wall index, then by increasing parameter on each wall
+  qsort( &edgeCuts[0],     edgeCuts.size(),     sizeof(plCut), plCompareEdgeCuts     ); // sort by increasing edge index, then by increasing parameter on each edge
+  qsort( &boundaryCuts[0], boundaryCuts.size(), sizeof(plCut), plCompareBoundaryCuts ); // sort by increasing boundary index, then by increasing parameter on each boundary wall
 
   // Bookkeeping to know when to stop
 
@@ -114,15 +117,15 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
     // Build one polygon
     plPolygon poly;
 
-    poly.normal = tri.normal();
+    poly.normal = triangle.normal();
 
     // Find an initial edge cut at which the triangle edge is going
-    // outward through wall.
+    // outward through boundary wall.
 
     PLint edgeCutIndex;
     for (edgeCutIndex=0; edgeCutIndex<edgeCuts.size(); edgeCutIndex++)
     {
-      if (!edgeCuts[ edgeCutIndex ].processed && edgeCuts[ edgeCutIndex ].dir == +1)
+      if (!edgeCuts[ edgeCutIndex ].processed && edgeCuts[ edgeCutIndex ].direction == +1)
         break;
     } // end for
 
@@ -135,45 +138,45 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
     {
       // Add this int point
 
-      poly.points.add( edgeCuts[ edgeCutIndex ].p );
+      poly.points.add( edgeCuts[ edgeCutIndex ].point );
       edgeCuts[ edgeCutIndex ].processed = true;
       numCutsLeft--;
 
-      // Find this intersection point in the list of wall cuts.
+      // Find this intersection point in the list of boundary cuts.
 
-      PLint wallCutIndex;
-      for (wallCutIndex=0; wallCutIndex<wallCuts.size(); wallCutIndex++)
-        if (wallCuts[ wallCutIndex ].p == edgeCuts[ edgeCutIndex ].p)
+      PLint boundaryCutIndex;
+      for (boundaryCutIndex=0; boundaryCutIndex<boundaryCuts.size(); boundaryCutIndex++)
+        if (boundaryCuts[ boundaryCutIndex ].point == edgeCuts[ edgeCutIndex ].point)
       break;
 
-      if (wallCutIndex == wallCuts.size()) {
-        std::cerr << "Error: An intersection point is missing from the wallCuts list." << std::endl;
+      if (boundaryCutIndex == boundaryCuts.size()) {
+        std::cerr << "Error: An intersection point is missing from the boundaryCuts list." << std::endl;
         exit(1);
       }
 
-      // Move along the walls from this intersection point to the next intersection point.
+      // Move along the boundary from this intersection point to the next intersection point.
 
-      PLint thisWallIndex = wallCuts[ wallCutIndex ].wallIndex;
-      PLint nextWallIndex = wallCuts[ (wallCutIndex+1)%wallCuts.size() ].wallIndex;
+      PLint thisBoundaryIndex = boundaryCuts[ boundaryCutIndex ].boundaryIndex;
+      PLint nextBoundaryIndex = boundaryCuts[ (boundaryCutIndex+1)%boundaryCuts.size() ].boundaryIndex;
 
-      while (thisWallIndex != nextWallIndex)
+      while (thisBoundaryIndex != nextBoundaryIndex)
       {
-        // We're not yet re-entering on the same wall, so we need to
-        // include some of the wall vertices.
-        thisWallIndex = (thisWallIndex+1) % walls.size();
+        // We're not yet re-entering on the same boundary wall, so we need to
+        // include some of the boundary vertices.
+        thisBoundaryIndex = (thisBoundaryIndex+1) % boundary.size();
 
-        poly.points.add( walls[ thisWallIndex ].p0 );
+        poly.points.add( boundary.points(thisBoundaryIndex) );
       } // end while
 
-      // Advance to the wall cut at which the triangle edge re-enters the wall.
+      // Advance to the boundary cut at which the triangle edge re-enters the boundary.
 
-      wallCutIndex = (wallCutIndex+1)%wallCuts.size();
+      boundaryCutIndex = (boundaryCutIndex+1)%boundaryCuts.size();
 
       // Find this intersection point in the list of edge cuts.
 
       for (edgeCutIndex=0; edgeCutIndex<edgeCuts.size(); edgeCutIndex++)
       {
-        if (edgeCuts[ edgeCutIndex ].p == wallCuts[ wallCutIndex ].p)
+        if (edgeCuts[ edgeCutIndex ].point == boundaryCuts[ boundaryCutIndex ].point)
           break;
       } // end for
 
@@ -183,7 +186,7 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
         std::cerr << "Error: An intersection point is missing from the edgeCuts list." << std::endl;
         exit(1);
       }
-      else if (edgeCuts[ edgeCutIndex ].dir != -1)
+      else if (edgeCuts[ edgeCutIndex ].direction != -1)
       {
         std::cerr << "Error: Expected to have an incoming triangle edge but an outgoing edge was found." << std::endl;
         exit(1);
@@ -191,7 +194,7 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
 
       // Add this int point
 
-      poly.points.add( edgeCuts[ edgeCutIndex ].p );
+      poly.points.add( edgeCuts[ edgeCutIndex ].point );
       edgeCuts[ edgeCutIndex ].processed = true;
       numCutsLeft--;
 
@@ -202,74 +205,83 @@ void triangleCutsBoundary( plTriangle &tri, PLbool &triProcessed, plSeq<plWall> 
 
       while (thisEdgeIndex != nextEdgeIndex) {
 
-        // We're not intersecting the next wall on the same triangle
+        // We're not intersecting the next boundary wall on the same triangle
         // edge, so walk around the triangle edges.
 
         thisEdgeIndex = (thisEdgeIndex+1) % 3; // (3 edges per triangle)
-        poly.points.add   ( tri[ thisEdgeIndex ] );
-        interiorPoints.add( tri[ thisEdgeIndex ] );
+        poly.points.add   ( triangle[ thisEdgeIndex ] );
+        interiorPoints.add( triangle[ thisEdgeIndex ] );
       }
 
-      // Advance to the edge cut at which the triangle edge exits the wall.
+      // Advance to the edge cut at which the triangle edge exits the boundary wall.
 
       edgeCutIndex = (edgeCutIndex+1)%edgeCuts.size();
-
     } // end do
-    while (edgeCuts[ edgeCutIndex ].p != poly.points[0]); // Stop if we've reached the starting point.
+    while (edgeCuts[ edgeCutIndex ].point != poly.points[0]); // Stop if we've reached the starting point.
 
     interiorPolygons.add( poly );
   }
 
-  triProcessed = true;
+  triangleProcessed = true;
 }
 
 
 
-PLbool edgeCutsWall( const plVector3 &v0, const plVector3 &v1, plWall &wall, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &wallParam, PLint &intDir )
+static PLbool plEdgeCutsBoundary( const plVector3 &v0, const plVector3 &v1, plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
 
 {
-  // Find the intersection point
+    plVector3 point0(boundary.points  (   boundaryPointIndex  )                     );
+    plVector3 point1(boundary.points  ( ( boundaryPointIndex+1) % boundary.size() ) );
+    plVector3 normal0(boundary.normals(   boundaryPointIndex  )                     );
+    plVector3 normal1(boundary.normals( ( boundaryPointIndex+1) % boundary.size() ) );
 
-  PLfloat dot0 = v0 * wall.n;
-  PLfloat dot1 = v1 * wall.n;
+    // outward pointing normal:
+    plVector3 avgNormal     (  (normal0+normal1)         .normalize() );
+    plVector3 outwardNormal ( ((point1-point0)^avgNormal).normalize() );
 
-  PLfloat denom = dot1 - dot0;
+    //parameter for plane equation, n*x = d
+    PLfloat d = point0 * outwardNormal;
 
-  if (fabs(denom) > 1e-6) {	// edge is not parallel to wall
+    // Find the intersection point
+    PLfloat dot0 = v0 * outwardNormal;
+    PLfloat dot1 = v1 * outwardNormal;
 
-    PLfloat t = (wall.d - dot0) / denom;
+    PLfloat denom = dot1 - dot0;
 
-    if (0 <= t && t <= 1) {	// edge endpoints are on opposite sides of wall
+    if (fabs(denom) > 1e-6) {	// edge is not parallel to boundary wall
 
-      // Project intersection point onto line in wall from wall.p0 to wall.p1
+      PLfloat t = (d - dot0) / denom;
 
-      plVector3 x = v0 + t * (v1-v0);
+      if (0 <= t && t <= 1) {	// edge endpoints are on opposite sides of boundary wall
 
-      PLfloat s = ((x-wall.p0) * (wall.p1-wall.p0)) / ((wall.p1-wall.p0)*(wall.p1-wall.p0));
+        // Project intersection point onto line in boundary between points
 
-      if (0 <= s && s <= 1) {
+        plVector3 x = v0 + t * (v1-v0);
 
-        plVector3 y = wall.p0 + s * (wall.p1-wall.p0);
+        PLfloat s = ((x-point0) * (point1-point0)) / ((point1-point0)*(point1-point0));
 
-        if ((x-y).length() < 0.5*(wall.p1-wall.p0).length()) {
+        if (0 <= s && s <= 1) {
 
-          intPoint = x;
-          intDir = (denom > 0 ? +1 : -1);
-          edgeParam = t;
-          wallParam = s;	// We're assuming that the projections are monotonically increasing
-                                // as we walk across the mesh from one wall extreme to the other.
-          return true;
+          plVector3 y = point0 + s * (point1-point0);
+
+          if ((x-y).length() < 0.5*(point1-point0).length()) {
+
+            intPoint = x;
+            intDir = (denom > 0 ? +1 : -1);
+            edgeParam = t;
+            boundaryParam = s;	// We're assuming that the projections are monotonically increasing
+                                  // as we walk across the mesh from one boundary wall extreme to the other.
+            return true;
+          }
         }
       }
     }
-  }
 
   return false;
 }
 
 
-
-PLint compareEdgeCuts( const void* a, const void* b )
+static PLint plCompareEdgeCuts( const void* a, const void* b )
 
 {
   plCut &pa = * (plCut*) a;
@@ -289,19 +301,19 @@ PLint compareEdgeCuts( const void* a, const void* b )
 
 
 
-PLint compareWallCuts( const void* a, const void* b )
+static PLint plCompareBoundaryCuts( const void* a, const void* b )
 
 {
   plCut &pa = * (plCut*) a;
   plCut &pb = * (plCut*) b;
 
-  if (pa.wallIndex < pb.wallIndex)
+  if (pa.boundaryIndex < pb.boundaryIndex)
     return -1;
-  else if (pa.wallIndex > pb.wallIndex)
+  else if (pa.boundaryIndex > pb.boundaryIndex)
     return +1;
-  else if (pa.wallParam < pb.wallParam)
+  else if (pa.boundaryParam < pb.boundaryParam)
     return -1;
-  else if (pa.wallParam > pb.wallParam)
+  else if (pa.boundaryParam > pb.boundaryParam)
     return +1;
   else
     return 0;

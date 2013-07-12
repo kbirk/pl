@@ -98,6 +98,7 @@ void plPlan::drawModels() const
         plPicking::value.id = i;    
         _models[i].draw();
     }
+
 }
 
 
@@ -177,6 +178,7 @@ void plPlan::importFile( plString filename )
             std::cerr << "Error in '" << filename << "': Unrecognized word '" << field << "' in first column." << std::endl;
         }
     }
+
 }
 
 void plPlan::exportFile( plString filename )
@@ -270,5 +272,4 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     
     return out;
 }
-
 
