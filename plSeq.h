@@ -33,7 +33,7 @@ class plSeq
 		plSeq<T> &operator = (const plSeq<T> &source); 
 
 		PLint findIndex( const T &x );
-		bool exists( const T &x );
+        bool exists( const T &x );
 
     private:
     
@@ -258,7 +258,7 @@ plSeq<T> &plSeq<T>::operator = (const plSeq<T> &source)
 
 // Find and return an element
 template<class T>
-bool plSeq<T>::exists( const T &x )
+PLbool plSeq<T>::exists( const T &x )
 {
 	for (PLint i=0; i<_numElements; i++)
 	{
@@ -271,7 +271,9 @@ bool plSeq<T>::exists( const T &x )
 }
 
 
-// Find and return the *index* of an element
+
+// Find and return index of the first instance of an element
+// if it doesn't exist, return -1
 template<class T>
 PLint plSeq<T>::findIndex( const T &x )
 {

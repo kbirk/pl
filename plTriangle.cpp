@@ -56,6 +56,15 @@ void plTriangle::point2( const plVector3 &point )
 } 
 
 
+void plTriangle::flipTriangle()
+{
+    plVector3 tempPt ( _points[0] );
+    _points[0] = _points[1];
+    _points[1] = tempPt;
+    _recalculate();
+}
+
+
 void plTriangle::_recalculate()
 {
    _normal = ((_points[1] - _points[0]) ^ (_points[2] - _points[0])).normalize();

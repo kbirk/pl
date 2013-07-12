@@ -57,7 +57,7 @@ void plFindInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plS
   } // end for
 
   // convert polygons to triangles for the output
-  plConvexPolysToTris(interiorPolygons,interiorTriangles);
+  plConcavePolysToTris(interiorPolygons,interiorTriangles);
 
 } // end void function
 

@@ -80,3 +80,86 @@ void plConvexPolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
         }
     }
 }
+
+
+void plConcavePolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
+{
+    tris.clear();
+    for (PLuint i = 0; i < polys.size(); i++)
+    {
+        plSeq<plTriangle> polyConverted;
+        PLfloat area (std::numeric_limits<PLfloat>::max());
+        plConcavePolysToTrisHelper(polys[i],polyConverted,area);
+        for (PLuint j = 0; j < polyConverted.size(); j++)
+        {
+            tris.add(polyConverted[j]);
+        }
+    }
+}
+
+// take as input a polygon
+// iterate through each possible triangle involving the vertices at indices 0 and 1 (so 0-1-2, 0-1-3, and so on, basically we have 0-1-X)
+// there will be two polygons remaining:
+// the one from index 1 to X
+// the one from index X to 0
+// recursively call this function for each of these smaller polygons
+// store only the sequence of triangles that results in the smallest surface area
+// also store the surface area of the triangulation
+// INITIAL VALUE FOR OUTPUTTRIANGLES SHOULD BE AN EMPTY PLSEQ!
+// INITIAL VALUE FOR OUTPUTMINSURFACEAREA SHOULD BE THE MAXIMUM VALUE FOR A FLOATING POINT
+void plConcavePolysToTrisHelper(plPolygon &inputPolygon, plSeq<plTriangle> &outputTriangles, PLfloat &outputMinSurfaceArea)
+{
+    if (inputPolygon.points.size() <= 2) { // base case
+        outputMinSurfaceArea = 0.f;
+        return;
+    }
+
+    // try all permutations of triangles involving the edge between points[0] and points[1]
+    for (PLuint i = 2; i < inputPolygon.points.size(); i++)
+    {
+        plTriangle bisectingTriangle( inputPolygon.points[0], inputPolygon.points[1], inputPolygon.points[i] );
+        PLfloat    bisectingTriangleArea ( ((inputPolygon.points[0]-inputPolygon.points[i])^(inputPolygon.points[1]-inputPolygon.points[i])).length() / 2.f );
+
+        // first polygon
+        plPolygon firstPolygonInput;
+        for (PLuint j = 1; j <= i; j++)
+        {
+            firstPolygonInput.points.add(inputPolygon.points[j]);
+        }
+        plSeq<plTriangle> firstPolygonOutputTris;
+        PLfloat           firstPolygonOutputArea(std::numeric_limits<PLfloat>::max());
+        plConcavePolysToTrisHelper(firstPolygonInput,firstPolygonOutputTris,firstPolygonOutputArea);
+
+        // second polygon
+        plPolygon secondPolygonInput;
+        secondPolygonInput.points.add(inputPolygon.points[0]);
+        for (PLuint j = i; j < inputPolygon.points.size(); j++)
+        {
+            secondPolygonInput.points.add(inputPolygon.points[j]);
+        }
+        plSeq<plTriangle> secondPolygonOutputTris;
+        PLfloat           secondPolygonOutputArea(std::numeric_limits<PLfloat>::max());
+        plConcavePolysToTrisHelper(secondPolygonInput,secondPolygonOutputTris,secondPolygonOutputArea);
+
+        // calculate current surface
+        PLfloat currentSurfaceArea( bisectingTriangleArea + firstPolygonOutputArea + secondPolygonOutputArea );
+
+        // update the output if necessary
+        if (currentSurfaceArea < outputMinSurfaceArea)
+        {
+            outputTriangles.clear();
+            outputTriangles.add(bisectingTriangle);
+            for (int j = 0; j < firstPolygonOutputTris.size(); j++)
+            {
+                outputTriangles.add(firstPolygonOutputTris[j]);
+            }
+            for (int j = 0; j < secondPolygonOutputTris.size(); j++)
+            {
+                outputTriangles.add(secondPolygonOutputTris[j]);
+            }
+            outputMinSurfaceArea = currentSurfaceArea;
+        }
+    } // end for
+
+} // end void function()
+
