@@ -132,9 +132,9 @@ void plDraw::scope( const plTrackedObject &scope )
     static plMesh c4(8.0f, 0.0f, 0.0f, 16, 4);
 
     if (scope.isVisible)
-        glColor3f(0.4,0.4,0.4);
+        plColourStack::load(0.4,0.4,0.4);
     else
-        glColor3f(1.0,0.25,0.05);
+        plColourStack::load(1.0,0.25,0.05);
 
     plModelStack::push();
     {
@@ -166,9 +166,9 @@ void plDraw::probe( const plTrackedObject &probe )
     
     // Draw the TA002 probe
     if (probe.isVisible)
-        glColor3f(0.6,0.6,0.6);
+        plColourStack::load(0.6,0.6,0.6);
     else
-        glColor3f(1.0,0.3,0.1);
+        plColourStack::load(1.0,0.3,0.1);
    
     plModelStack::push();
     {
