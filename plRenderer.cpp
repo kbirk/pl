@@ -4,6 +4,7 @@
 const plPlan*            plRenderer::_planToDraw             = NULL;
 const plGraftEditor*     plRenderer::_graftEditorToDraw      = NULL;
 const plBoundaryEditor*  plRenderer::_boundaryEditorToDraw   = NULL;
+plSeq<const plTrackedObject*> plRenderer::_trackedObjectsToDraw;
 plComputeShader*         plRenderer::_computeShader          = NULL;
 plMinimalShader*         plRenderer::_minimalShader          = NULL;
 plPhongShader*           plRenderer::_phongShader            = NULL; 
@@ -27,6 +28,7 @@ void plRenderer::_clearRenderQueue()
     _planToDraw           = NULL;
     _graftEditorToDraw    = NULL;
     _boundaryEditorToDraw = NULL;
+    _trackedObjectsToDraw.clear();
 }
 
 
@@ -54,6 +56,11 @@ void plRenderer::queue ( const plBoundaryEditor &editor )
         std::cerr << "plRenderer queue() error: plBoundaryEditor already queued top draw, overridding previous \n";
         
     _boundaryEditorToDraw = &editor;
+}
+
+void plRenderer::queue ( const plTrackedObject &object )
+{
+    _trackedObjectsToDraw.add( &object );
 }
 
 void plRenderer::reportError( const plString &str  ) 
@@ -177,6 +184,19 @@ void plRenderer::_drawScene()
         
         plShaderStack::pop();   
     }   
+    
+    // tracked objects
+    for (PLuint i=0; i<_trackedObjectsToDraw.size(); i++)
+    {
+        if (_trackedObjectsToDraw[i]->isArthroscope())
+        {
+            plDraw::scope( *_trackedObjectsToDraw[i] );
+        }    
+        else
+        {
+            plDraw::probe( *_trackedObjectsToDraw[i] );
+        }
+    }
 
 }
 

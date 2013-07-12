@@ -122,8 +122,8 @@ void plDraw::disk(float radius)
     plModelStack::pop();
 }
 
-/*
-void plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible)
+
+void plDraw::scope( const plTrackedObject &scope )
 {
     // Draw the TA104 arthroscope
     static plMesh c1(1.5f, 2.0f, 120.0f, 16, 4);
@@ -131,57 +131,57 @@ void plDrawScope(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngl
     static plMesh c3(8.0f, 8.0f, 60.0f, 16, 4);
     static plMesh c4(8.0f, 0.0f, 0.0f, 16, 4);
 
-    if (visible)
+    if (scope.isVisible)
         glColor3f(0.4,0.4,0.4);
     else
         glColor3f(1.0,0.25,0.05);
 
-    glPushMatrix();
+    plModelStack::push();
     {
-        glTranslatef(pos.x, pos.y, pos.z);
-        glRotatef(rotAngle,rotAxis.x,rotAxis.y,rotAxis.z);
+        plModelStack::translate(scope.getPoint());
+        plModelStack::rotate(scope.getRotationAngle(), scope.getRotationAxis());
         c1.draw();
-        glPushMatrix();
+        plModelStack::push();
         {
-            glTranslatef(0, 0, 120);
+            plModelStack::translate(0, 0, 120);
             c2.draw();
-            glPushMatrix();
+            plModelStack::push();
             {
-                glTranslatef(0,0,30);
+                plModelStack::translate(0,0,30);
                 c3.draw();
-                glTranslatef(0,0,60);
+                plModelStack::translate(0,0,60);
                 c4.draw();
             }
-            glPopMatrix();
+            plModelStack::pop();
         }    
-        glPopMatrix();
+        plModelStack::pop();
     }
-    glPopMatrix();
+    plModelStack::pop();
 } 
 
-void plDrawProbe(const plVector3 &pos, const plVector3 &rotAxis, PLfloat rotAngle, PLbool visible) 
+void plDraw::probe( const plTrackedObject &probe )
 {
     static plMesh c1(0.0f, 1.0f, 4.0f, 16, 4);
     static plMesh c2(1.0f, 2.5f, 124.0f, 16, 4);
     
     // Draw the TA002 probe
-    if (visible)
+    if (probe.isVisible)
         glColor3f(0.6,0.6,0.6);
     else
         glColor3f(1.0,0.3,0.1);
    
-    glPushMatrix();
+    plModelStack::push();
     {
-        glTranslatef(pos.x, pos.y, pos.z);
-        glRotatef(rotAngle,rotAxis.x,rotAxis.y,rotAxis.z);
+        plModelStack::translate(probe.getPoint());
+        plModelStack::rotate(probe.getRotationAngle(), probe.getRotationAxis());
         c1.draw();
-        glPushMatrix();
+        plModelStack::push();
         {
-            glTranslatef(0, 0, 4);
+            plModelStack::translate(0, 0, 4);
             c2.draw();
         }
-        glPopMatrix();
+        plModelStack::pop();
     }
-    glPopMatrix();
+    plModelStack::pop();
 }
-*/
+

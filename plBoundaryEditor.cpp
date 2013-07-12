@@ -187,7 +187,11 @@ PLint plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool selec
     plVector3 rayOrigin, rayDirection;
     plWindow::mouseToRay( rayOrigin, rayDirection, x, y );
     
+    std::cout << "1\n";
+    
     plIntersection intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
+
+    std::cout << "2\n";
 
     if (intersection.exists) 
     {     
@@ -207,6 +211,8 @@ PLint plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool selec
         
         return newIndex;
     }
+    
+    std::cout << "3\n";
 
     return -1;  // no cartilage at point
 }

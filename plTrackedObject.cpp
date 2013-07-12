@@ -1,9 +1,9 @@
 #include "plTrackedObject.h"
 
 
-trackedObject::trackedObject(DRBTransform ToTrackedPoint,
-                             DRBTransform ToTrackedEnd,
-                             DRBTransform FemurDRBToFemurSTL, bool isArthro) {
+plTrackedObject::plTrackedObject( const plDRBTransform &ToTrackedPoint,
+                                  const plDRBTransform &ToTrackedEnd,
+                                  const plDRBTransform &FemurDRBToFemurSTL, bool isArthro) {
     DRBToTrackedPoint       = ToTrackedPoint.clone();
     DRBToTrackedEnd         = ToTrackedEnd.clone();
     ToFemurSTL              = FemurDRBToFemurSTL.clone();
@@ -13,18 +13,20 @@ trackedObject::trackedObject(DRBTransform ToTrackedPoint,
     tTipWorldCoords         = plVector3(0, 0, 0);
     tEndWorldCoords         = plVector3(0, 0, 0);
     zeroVec                 = plVector3(0, 0, 0);
-    visible                 = false;
-    isArthroscope           = isArthro;
+    isVisible               = false;
+    _isArthroscope          = isArthro;
 }
 
-void trackedObject::updatePosition(DRBTransform DRBToWorld, DRBTransform FemurToWorld) {
+void plTrackedObject::updatePosition( const plDRBTransform &DRBToWorld, const plDRBTransform &FemurToWorld) 
+{
 
     tTipWorldCoords   = DRBToTrackedPoint.applyTransform(zeroVec);
     tTipWorldCoords   = DRBToWorld.applyTransform(tTipWorldCoords);
     trackedTip        = FemurToWorld.applyInverseTransform(tTipWorldCoords);
     trackedTip        = ToFemurSTL.applyTransform(trackedTip);
 
-    if (!isArthroscope) {
+    if (!_isArthroscope) 
+    {
         tEndWorldCoords = DRBToTrackedEnd.applyTransform(zeroVec);
     }
     else {
@@ -45,6 +47,3 @@ void trackedObject::updatePosition(DRBTransform DRBToWorld, DRBTransform FemurTo
 
 }
 
-void trackedObject::setVisibility(bool currentVisibility) {
-    visible = currentVisibility;
-}

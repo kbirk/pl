@@ -13,7 +13,7 @@ class plRenderable
         
         virtual void toggleVisibility();
 		
-    protected:     
+    //protected:     
            
         PLbool isVisible;
     
