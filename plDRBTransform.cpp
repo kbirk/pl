@@ -20,7 +20,7 @@ DRBTransform::DRBTransform( const std::string& inputFile, MarkerType t ) {
             }
         } else {
             calibaxisx = calibaxisy = calibangle = 0; calibaxisz = 1;
-	    calibscaley = calibscalez = calibscalex = 1;
+            calibscaley = calibscalez = calibscalex = 1;
         }
     } else {
         std::cout << "Error opening file " << inputFile << " - using default values of 0" << std::endl;
@@ -28,7 +28,6 @@ DRBTransform::DRBTransform( const std::string& inputFile, MarkerType t ) {
         calibaxisz = calibscaley = calibscalez = calibscalex = 1;
     }
     calibFile.close();
-
     initializeTransforms();
 }
 

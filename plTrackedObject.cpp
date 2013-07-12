@@ -41,7 +41,7 @@ void trackedObject::updatePosition(DRBTransform DRBToWorld, DRBTransform FemurTo
                        ^ plVector3(0,0,1)).normalize();
                                      // 180 / PI = 57.295779513082320876798154
     rotationAngle   = - acos((trackedEnd-trackedTip).normalize()
-                             * plVector3(0,0,1)) * 57.295779513082320876798154;
+                             * plVector3(0,0,1)) * (180 / PL_PI);
 
 }
 

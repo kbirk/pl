@@ -235,18 +235,18 @@ class plMatrix44
 		// scalar multiplication
 		inline plMatrix44 operator*(PLfloat s) const 
 		{
-			return plMatrix44(_data[0] * s, _data[1] * s, _data[2] * s,  _data[3] * s,
-							  _data[4] * s, _data[5] * s, _data[6] * s,  _data[7] * s,
-							  _data[8] * s, _data[9] * s, _data[10] * s, _data[11] * s,
-							  _data[12],	   _data[13],    _data[14],     _data[15]);
+            return plMatrix44(_data[0]  * s, _data[1]  * s, _data[2]  * s, _data[3]  * s,
+                              _data[4]  * s, _data[5]  * s, _data[6]  * s, _data[7]  * s,
+                              _data[8]  * s, _data[9]  * s, _data[10] * s, _data[11] * s,
+                              _data[12] * s, _data[13] * s, _data[14] * s, _data[15] * s);
 
 		}
 		inline plMatrix44 &operator*=(PLfloat s)  
 		{
-			_data[0] *= s;	_data[4] *= s;	_data[8] *= s;	
-			_data[1] *= s;	_data[5] *= s;	_data[9] *= s;		
-			_data[2] *= s;	_data[6] *= s;	_data[10] *= s; 	
-			_data[3] *= s;	_data[7] *= s;	_data[11] *= s; 	
+            _data[0] *= s;	_data[4] *= s;  _data[8] *= s;  _data[12]*= s;
+            _data[1] *= s;	_data[5] *= s;	_data[9] *= s;  _data[13]*= s;
+            _data[2] *= s;	_data[6] *= s;	_data[10] *= s; _data[14]*= s;
+            _data[3] *= s;	_data[7] *= s;	_data[11] *= s; _data[15]*= s;
 			return *this;
 		}
 
