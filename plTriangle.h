@@ -56,8 +56,9 @@ class plTriangle
         const plVector3 &point0()   const { return _points[0];   }                      
 		const plVector3 &point1()   const { return _points[1];   } 
 		const plVector3 &point2()   const { return _points[2];   } 
-		const plVector3 &normal()   const { return _normal;   }
-		const plVector3 &centroid() const { return _centroid; }  
+		const plVector3 &normal()   const { return _normal;      }
+		const plVector3 &centroid() const { return _centroid;    }  
+		PLfloat          radius()   const { return _radius;      }
 		                    
         void  point0( const plVector3 &point  );
         void  point1( const plVector3 &point  );
@@ -76,10 +77,11 @@ class plTriangle
     
         plSeq<plVector3> _points;
         plVector3        _normal;
-
-        plVector3 _centroid;
+        plVector3        _centroid;
+        PLfloat          _radius;
         
         void _recalculate();
+        void _calcRadius();
 };
 
 std::ostream& operator << ( std::ostream &stream, const plTriangle &p );

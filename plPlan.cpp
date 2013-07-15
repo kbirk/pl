@@ -130,6 +130,24 @@ void plPlan::addIGuide( PLuint modelIndex )
 }
 
 
+void plPlan::removeDefectSite( PLuint index)
+{
+    _defectSites.remove( index );
+}
+
+
+void plPlan::removeDonorSite( PLuint index)
+{
+    _donorSites.remove( index );
+}
+
+
+void plPlan::removeIGuide( PLuint index)
+{
+    _iGuides.remove( index );
+}
+
+
 template<class T>
 T &plGetImportReference( plSeq<T> &ts,  const plString &index )
 {

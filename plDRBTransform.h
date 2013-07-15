@@ -39,7 +39,7 @@ class plDRBTransform
         // Storing these isn't strictly necessary, though could be useful if ever
         // we wanted to get the original axis-angle representation values
         double calibpointx, calibpointy, calibpointz;
-        double calibangle,  calibaxisx, calibaxisy, calibaxisz;
+        double calibangle,  calibaxisx,  calibaxisy, calibaxisz;
         double calibscalex, calibscaley, calibscalez; // generally these will all be the same value
 
         plDRBTransform();

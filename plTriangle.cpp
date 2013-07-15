@@ -3,6 +3,7 @@
 plTriangle::plTriangle()
     :   _normal(0,0,0), _points( plVector3(0,0,0), 3), _centroid(0,0,0)
 {
+    _calcRadius();
 }
 
 
@@ -22,6 +23,7 @@ plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 
     {
         _normal = n;
     }
+    _calcRadius();
 }
 
 
@@ -33,6 +35,7 @@ plTriangle::plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3
     _points.add( p0 );
     _points.add( p1 );
     _points.add( p2 );
+    _calcRadius();
 }
 
 
@@ -69,9 +72,16 @@ void plTriangle::flipTriangle()
 void plTriangle::_recalculate()
 {
    _normal = ((_points[1] - _points[0]) ^ (_points[2] - _points[0])).normalize();
-   _centroid = 0.333333f * (_points[0] + _points[1] + _points[2]);
+   _centroid = 0.333333f * (_points[0] + _points[1] + _points[2]);  
+   _calcRadius();
 } 
 
+void plTriangle::_calcRadius()
+{
+    _radius = PL_MAX_OF_3( (_points[0] - _centroid).length(),
+                          (_points[1] - _centroid).length(),
+                          (_points[2] - _centroid).length() );
+}
 
 // Compute plane/ray intersection, and then the local coordinates 
 // to see whether the intersection point is inside.

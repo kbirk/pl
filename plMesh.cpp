@@ -8,8 +8,6 @@ plMesh::plMesh()
 plMesh::plMesh(const plSeq<plTriangle> &triangles)
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
-    // set vertex count
-	//_numIndices = triangles.size() * 3;
 	// convert triangles to interleaved
 	triangleToInterleaved(triangles);
 }
@@ -17,8 +15,6 @@ plMesh::plMesh(const plSeq<plTriangle> &triangles)
 plMesh::plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices)
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {            
-	// set index count
-	//_numIndices = indices.size();
 	// set VBO and VAO
     setBuffers(interleaved_vertices, indices);
 }
@@ -90,7 +86,7 @@ void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plS
     // bind vertex array object
     glGenBuffers(1, &_vertexBufferIndices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PLuint)*_numIndices, &indices[0], GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STREAM_DRAW);
      
 	// unbind the vertex array object
 	glBindVertexArray(0); 			
@@ -143,7 +139,7 @@ plMesh::plMesh(float radius, int slices, int stacks)
     dtheta = 2.0f * PL_PI / slices;
     
     plSeq<plVector3> interleaved_vertices; 
-    plSeq<PLuint> indices;
+    plSeq<PLuint>    indices;
 
     // draw +Z end as a triangle fan
     // centre of triangle fan
@@ -234,8 +230,6 @@ plMesh::plMesh(float radius, int slices, int stacks)
         indices.add(base+j+1);
     }
 
-    // set index count
-	_numIndices = indices.size();
     // set VBOs and VAO
     setBuffers(interleaved_vertices, indices);
 }
@@ -258,7 +252,7 @@ plMesh::plMesh(float baseRadius, float topRadius, float height, int slices, int 
     r = baseRadius;
     
     plSeq<plVector3> interleaved_vertices; 
-    plSeq<PLuint> indices;
+    plSeq<PLuint>    indices;
     
     for (int j = 0; j < stacks; j++) 
     {
@@ -297,8 +291,6 @@ plMesh::plMesh(float baseRadius, float topRadius, float height, int slices, int 
         
     }
     
-    // set index count
-	_numIndices = indices.size();
     // set VBOs and VAO
     setBuffers(interleaved_vertices, indices);
 }       
@@ -317,7 +309,7 @@ plMesh::plMesh(float innerRadius, float outerRadius, int slices, int loops, bool
     float r1 = innerRadius;
 
     plSeq<plVector3> interleaved_vertices; 
-    plSeq<PLuint> indices;
+    plSeq<PLuint>    indices;
 
     for (int l = 0; l < loops; l++) 
     {
@@ -373,8 +365,6 @@ plMesh::plMesh(float innerRadius, float outerRadius, int slices, int loops, bool
         
     }
     
-    // set index count
-	_numIndices = indices.size();
     // set VBOs and VAO
     setBuffers(interleaved_vertices, indices);
 }

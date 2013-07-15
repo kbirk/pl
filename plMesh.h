@@ -22,8 +22,8 @@ class plMesh
         void destroy();       
         
         virtual void setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices);
-
-        void draw() const;		
+        virtual void draw() const;	
+        	
 		void draw(const std::vector<plOrderPair> &order) const;
         
     protected:

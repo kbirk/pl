@@ -94,7 +94,9 @@
 // OTHER MACROS
 
 #define PL_COLOURMAP_SIZE                        512
-#define PL_PI                                    3.1415927f         
+#define PL_PI                                    3.1415927f   
+#define PL_MIN_OF_2(a,b)                         (a<=b ? a : b)
+#define PL_MAX_OF_2(a,b)                         (a>=b ? a : b)     
 #define PL_MIN_OF_3(a,b,c)                       (a<=b ? (a<=c ? a : c) : (b<=c ? b : c))
 #define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c)) 
 

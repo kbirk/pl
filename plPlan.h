@@ -33,6 +33,10 @@ class plPlan : public plRenderable
         void addDonorSite ( PLuint modelIndex = 0 );
         void addIGuide    ( PLuint modelIndex = 0 );
 
+        void removeDefectSite( PLuint index);
+        void removeDonorSite ( PLuint index);
+        void removeIGuide    ( PLuint index);
+
         void drawElements() const;
         void drawModels()   const;
 

@@ -4,7 +4,11 @@
 const plPlan*            plRenderer::_planToDraw             = NULL;
 const plGraftEditor*     plRenderer::_graftEditorToDraw      = NULL;
 const plBoundaryEditor*  plRenderer::_boundaryEditorToDraw   = NULL;
+
 plSeq<const plTrackedObject*> plRenderer::_trackedObjectsToDraw;
+plSeq<const plLineMesh*>      plRenderer::_debugToDraw;
+plSeq<const plOctree*>        plRenderer::_octreesToDraw;
+
 plComputeShader*         plRenderer::_computeShader          = NULL;
 plMinimalShader*         plRenderer::_minimalShader          = NULL;
 plPhongShader*           plRenderer::_phongShader            = NULL; 
@@ -29,6 +33,8 @@ void plRenderer::_clearRenderQueue()
     _graftEditorToDraw    = NULL;
     _boundaryEditorToDraw = NULL;
     _trackedObjectsToDraw.clear();
+    _debugToDraw.clear();
+    _octreesToDraw.clear();
 }
 
 
@@ -62,6 +68,16 @@ void plRenderer::queue ( const plBoundaryEditor &editor )
 void plRenderer::queue ( const plTrackedObject &object )
 {
     _trackedObjectsToDraw.add( &object );
+}
+
+void plRenderer::queue ( const plLineMesh &debug )
+{
+    _debugToDraw.add( &debug );
+}
+
+void plRenderer::queue ( const plOctree &octree )
+{
+    _octreesToDraw.add( &octree );
 }
 
 
@@ -199,10 +215,30 @@ void plRenderer::_drawScene()
             plDraw::probe( *_trackedObjectsToDraw[i] );
         }
     }
+  
+    // set flat shader
+    plShaderStack::push( _minimalShader );    
+    plColourStack::load( 1.0, 0.0, 0.0 );
+    // debug objects
+    for (PLuint i=0; i<_octreesToDraw.size(); i++)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    
+        _octreesToDraw[i]->draw();
+        
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+    
+    // debug objects
+    for (PLuint i=0; i<_debugToDraw.size(); i++)
+    {
+        _debugToDraw[i]->draw();
+    }
+    plShaderStack::pop(); 
 
 }
 
-    void plRenderer::_drawScenePicking()
+void plRenderer::_drawScenePicking()
 {
     // plan
     if (_planToDraw != NULL)

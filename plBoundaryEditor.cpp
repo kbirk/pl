@@ -3,6 +3,7 @@
 plBoundaryEditor::plBoundaryEditor() 
 {
     _selectedBoundaryType   = -1;
+    //_selectedBoundaryIndex  = -1;
     _selectedBoundary       = NULL;
     _selectedPointIndex     = -1;
 }
@@ -10,6 +11,7 @@ plBoundaryEditor::plBoundaryEditor()
 void plBoundaryEditor::clearSelection( plPlan &plan )
 {
     _selectedBoundaryType   = -1;
+    //_selectedBoundaryIndex  = -1;
     _selectedBoundary       = NULL;
     _selectedPointIndex     = -1;
     _clearDefectSiteBoundaries  ( plan._defectSites );

@@ -32,7 +32,8 @@ class plBoundaryEditor
 
     private: 
     
-        PLint       _selectedBoundaryType;       
+        PLint       _selectedBoundaryType;  
+        // Plint       _selectedBoundaryIndex;    use this and above to determine with pl*Site 
         plBoundary *_selectedBoundary;
         PLint       _selectedPointIndex;
          

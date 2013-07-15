@@ -41,4 +41,4 @@ class plTrackedObject : public plRenderable
 
 };
 
-#endif // TRACKEDOBJECT_H
+#endif
