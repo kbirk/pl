@@ -4,11 +4,11 @@ plTransform::plTransform()
 {
 }
 
-void plTransform::readFromCSV( const plSeq<plString> &row )
+void plTransform::importCSV( const plSeq<plString> &row )
 {
-    _origin = plVector3( row[3] );
-    _x      = plVector3( row[4] );
-    _y      = plVector3( row[5] );    
+    _origin = plVector3( row[4] );
+    _x      = plVector3( row[5] );
+    _y      = plVector3( row[6] ); 
     _compute();
 }
 

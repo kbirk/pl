@@ -1,12 +1,18 @@
 #include "plSpline.h" 
 
 plSpline::plSpline() 
+    : plBoundary()
 {
 }
 
-void plSpline::readFromCSV( const plSeq<plString> &row, const plBoneAndCartilage &model )
+plSpline::plSpline( const plBoneAndCartilage &model )
+    : plBoundary(model)
 {
-    plBoundary::readFromCSV( row, model );
+}
+
+void plSpline::importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model )
+{
+    plBoundary::importCSV( row, model );
     
     // construct spline 
     if (size() == 4)
@@ -221,7 +227,7 @@ void plSpline::_computeHermite()
               
             // colour map values   
              
-            intersection = _model->cartilage.rayIntersect( pos0+(10.0f*faceNorm), -faceNorm, false, true );  // plModelCartilageIntersect(modelID, pos0+(10*faceNorm), -faceNorm, false, true);
+            intersection = _model->cartilage.rayIntersect( pos0+(10.0f*faceNorm), -faceNorm, false, true );
             if (intersection.exists)
                 col0 = plColourMap::map( (intersection.point - pos0).squaredLength()/FURTHEST_DISTANCE );
             else 
@@ -281,6 +287,9 @@ void plSpline::_computeHermite()
 
     _surfaceMesh.setBuffers(interleaved_vertices, indices);
 }
+
+
+
 
 /*
 void plSpline::_drawSplineSelectionInterface() const

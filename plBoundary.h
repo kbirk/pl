@@ -17,7 +17,8 @@ class plBoundary : public plRenderable,
 {
     public:
 
-        plBoundary();       
+        plBoundary();      
+        plBoundary( const plBoneAndCartilage &model );
           
         PLuint size() const;
 
@@ -31,9 +32,8 @@ class plBoundary : public plRenderable,
 
         plVector3 getAverageNormal() const;
 
-        virtual void   toggleVisibility();        
-        virtual void   readFromCSV( const plSeq<plString> &row, const plBoneAndCartilage &model );
-
+        virtual void   toggleVisibility();   
+        virtual void   importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model );
         virtual PLuint addPointAndNormal   (const plVector3 &point, const plVector3 &normal);
         virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);
         virtual void   removePointAndNormal( PLuint index );

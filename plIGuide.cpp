@@ -1,6 +1,15 @@
 #include "plIGuide.h" 
 
-void plIGuide::readFromCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
+plIGuide::plIGuide() 
+{
+}
+
+plIGuide::plIGuide( PLuint modelID, const plBoneAndCartilage &model )
+    : plModelSpecific( modelID, model ), boundary( model )
+{
+}
+
+void plIGuide::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
 {
     // Fill in the field
     plString subfield = row[2];
@@ -10,7 +19,7 @@ void plIGuide::readFromCSV( const plSeq<plString> &row, const plSeq<plBoneAndCar
         _modelID = atof( row[3].c_str() );
         if (models.size() < (_modelID +1) )
         {
-            std::cerr << "plDefectSite readFromCSV() error: model ID read before model data";
+            std::cerr << "plDefectSite importCSV() error: model ID read before model data";
             exit(1);
         }
         _model = &models[_modelID];
@@ -19,10 +28,10 @@ void plIGuide::readFromCSV( const plSeq<plString> &row, const plSeq<plBoneAndCar
     {      
         if (_model == NULL)
         {
-            std::cerr << "plDefectSite readFromCSV() error: spline data read before model ID";
+            std::cerr << "plDefectSite importCSV() error: spline data read before model ID";
             exit(1);
         }                 
-        boundary.readFromCSV( row, *_model );        
+        boundary.importCSV( row, *_model );        
     } 
     else if (subfield.compareCaseInsensitive( "graft indices") ) 
     {

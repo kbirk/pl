@@ -105,7 +105,7 @@ void plModel::draw( const plVector3 &colour ) const
         order.reserve(_triangles.size());              
         for (PLuint i=0; i<_triangles.size(); i++) 
         {
-            order.push_back( plOrderPair(i, _triangles[i].centroid() * viewDir) );
+            order.push_back( plOrderPair( i, _triangles[i].centroid() * viewDir) );
         }
         std::sort(order.begin(), order.end(), _compareOrderPairs);
         

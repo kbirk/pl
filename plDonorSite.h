@@ -3,28 +3,24 @@
 
 #include "plCommon.h"
 #include "plVector3.h"
+#include "plModelSpecific.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
 #include "plPickingTexture.h"
 
-class plDonorSite : public plRenderable
+class plDonorSite : public plModelSpecific,
+                    public plRenderable
 {
     public:
 
         plBoundary boundary; 
                 
         plDonorSite();
+        plDonorSite( PLuint _modelID, const plBoneAndCartilage &_model );
 
-        void readFromCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
+        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
 
         void draw() const;      
-
-        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
-        
-    private:
-    
-        PLuint                   _modelID;
-        const plBoneAndCartilage *model;  
 };
 
 

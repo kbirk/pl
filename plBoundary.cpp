@@ -1,9 +1,16 @@
 #include "plBoundary.h"
 
 plBoundary::plBoundary()
+    : _showWalls(true)
 {
-    _showWalls = true;
 }
+
+
+plBoundary::plBoundary( const plBoneAndCartilage &model )
+    : _showWalls(true), _model(&model)
+{
+}
+
 
 void plBoundary::toggleVisibility()
 {
@@ -40,15 +47,14 @@ PLuint plBoundary::size() const
 }
 
 
-void plBoundary::readFromCSV( const plSeq<plString> &row, const plBoneAndCartilage &model )
+void plBoundary::importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model )
 {
     // set internal model pointer
     _model = &model;
-
     // assumes points are counter-clockwise
     for ( PLuint j = 3; j < row.size(); j+=2)
     {               
-        _points.add (  plVector3( row[j] ) );                  
+        _points.add ( plVector3( row[j] ) );                  
         _normals.add( plVector3( row[j+1] ) );
     } 
     // construct mesh
@@ -58,7 +64,7 @@ void plBoundary::readFromCSV( const plSeq<plString> &row, const plBoneAndCartila
 
 PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
 {
-    if (_points.size() < 3) 
+    if (_points.size() < 2) 
     {
         // 0 or 1 _points, doesnt matter, just add
         _points.add( point );
@@ -66,7 +72,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         _updateMesh();
         return _points.size()-1;
     }
-    else if (_points.size() == 3) 
+    else if (_points.size() == 2) 
     {
         // 2 _points, ensure third is counter clockwise
         plVector3 n = 0.5f * (_normals[1] + _normals[0]);
@@ -235,6 +241,9 @@ void plBoundary::_setColour() const
 
 void plBoundary::_updateMesh()
 {
+    if (_points.size() < 2)
+        return;
+
     plVector3 n = getAverageNormal();
 
     plSeq<plVector3> interleaved_vertices( _points.size() * 10 );
@@ -242,18 +251,28 @@ void plBoundary::_updateMesh()
 
     for (PLuint i = 0; i < _points.size(); i++)
     {        
-        int j = (i+1) % _points.size();  // next index
-        int k = (i+2) % _points.size();  // next next index
+        int j = (i+1) % _points.size();            // next index
+        int k = (i+2) % _points.size();            // next next index
         int l = (i == 0) ? _points.size()-1 : i-1; // previous index
 
         // tangent vectors of previous, current, and next segments
-        plVector3 t1 = ((_points[j] - _points[i]) ^ n).normalize();
-        plVector3 t0 = ((_points[i] - _points[l]) ^ n).normalize();        
-        plVector3 t2 = ((_points[k] - _points[j]) ^ n).normalize();           
+        plVector3 t0 = ((_points[i] - _points[l]) ^ n).normalize(); // previous tangent 
+        plVector3 t1 = ((_points[j] - _points[i]) ^ n).normalize(); // current tangent            
+        plVector3 t2 = ((_points[k] - _points[j]) ^ n).normalize(); // next tangent
 
-        // average tangent vectors of current segment end _points
-        plVector3 x0 = (t0 + t1).normalize();
-        plVector3 x1 = (t1 + t2).normalize();
+        plVector3 x0, x1;
+        if (_points.size() == 2)
+        {
+            // single wall, only use 
+            x0 = t1;
+            x1 = t1;
+        }
+        else
+        {
+            // average tangent vectors of current segment end points
+            x0 = (t0 + t1).normalize();
+            x1 = (t1 + t2).normalize();
+        }
 
         plVector3 a = _points[i] + PL_BOUNDARY_MESH_WIDTH_HALF * x0;
         plVector3 b = _points[j] + PL_BOUNDARY_MESH_WIDTH_HALF * x1;
@@ -311,9 +330,53 @@ void plBoundary::_updateMesh()
         indices.add(base+4);    indices.add(base+8);    indices.add(base+9);
         
         indices.add(base+7);    indices.add(base+6);    indices.add(base+9);
-        indices.add(base+7);    indices.add(base+9);   indices.add(base+8);   
-  
+        indices.add(base+7);    indices.add(base+9);    indices.add(base+8);  
+
+        if (_points.size() == 2 && i == 0 )
+        {
+            // only 2 points, add faces on ends
+            plVector3 backNormal = (_points[i] - _points[l]).normalize();
+            plVector3 frontNormal = -backNormal;
+
+            // "back" wall ridge
+            interleaved_vertices.add(0.5f * (a+e) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
+            interleaved_vertices.add(backNormal);   // normal
+        
+            interleaved_vertices.add(0.5f * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
+            interleaved_vertices.add(backNormal);   // normal
+
+            // "front" wall ridge
+            interleaved_vertices.add(0.5f * (b+f) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
+            interleaved_vertices.add(frontNormal);   // normal
+        
+            interleaved_vertices.add(0.5f * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
+            interleaved_vertices.add(frontNormal);   // normal
+
+            // "back" indices
+            indices.add(base+6);    indices.add(base+10);    indices.add(base+11);
+            indices.add(base+6);    indices.add(base+11);    indices.add(base+9);
+
+            indices.add(base+10);    indices.add(base+0);    indices.add(base+3);
+            indices.add(base+10);    indices.add(base+3);    indices.add(base+11);
+
+            indices.add(base+9);    indices.add(base+11);    indices.add(base+4);
+            indices.add(base+11);    indices.add(base+3);    indices.add(base+4);
+
+            // "front" indices
+            indices.add(base+1);    indices.add(base+12);   indices.add(base+13);
+            indices.add(base+1);    indices.add(base+13);   indices.add(base+2);
+
+            indices.add(base+12);   indices.add(base+7);    indices.add(base+8);
+            indices.add(base+12);   indices.add(base+8);    indices.add(base+13);
+
+            indices.add(base+2);    indices.add(base+13);   indices.add(base+5);
+            indices.add(base+13);   indices.add(base+8);    indices.add(base+5);
+
+            break; // break out of loop, a 2 point wall mesh is complete from the first iteration
+        }
     }
+
+    
 
     _mesh.setBuffers(interleaved_vertices, indices);
 }
@@ -324,30 +387,27 @@ void plBoundary::draw() const
     if (!isVisible)
         return;
 
-    if (_points.size() > 0) 
+    _setColour();
+        
+    // draw walls
+    if (_showWalls && _points.size() > 1)
     {
-        _setColour();
+        plPicking::value.index = -1; // draw walls with index of -1
+        _mesh.draw();
+    }
         
-        // draw walls
-        if (_showWalls)
-        {
-            plPicking::value.index = -1; // draw walls with index of -1
-            _mesh.draw();
-        }
-        
-        // draw _points
-        for (PLuint i=0; i<_points.size(); i++) 
-        {
-            plPicking::value.index = i;
+    // draw _points
+    for (PLuint i=0; i<_points.size(); i++) 
+    {
+        plPicking::value.index = i;
             
-            if (_isSelected && _selectedValue == i)   // is the current point selected?
-            {
-                plDraw::sphere( _points[i], 1.5);
-            }
-            else
-            {
-                plDraw::sphere( _points[i], 1 );
-            }
+        if (_isSelected && _selectedValue == i)   // is the current point selected?
+        {
+            plDraw::sphere( _points[i], 1.5);
+        }
+        else
+        {
+            plDraw::sphere( _points[i], 1 );
         }
     }
 }

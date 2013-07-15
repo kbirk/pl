@@ -10,22 +10,20 @@
 #include "plMath.h"
 
 
-class plCut {
-public:
+class plCut 
+{
+    public:
 
-  plCut() {}
+        plCut() {}
+        plCut( plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint dir );
 
-  plCut( plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint dir ):
-    point(pt), edgeIndex(ei), edgeParam(ep), boundaryIndex(bi), boundaryParam(bp), direction(dir)
-    {}
-
-  plVector3 point;          // int point
-  PLint    edgeIndex;       // index of edge (0,1,2)
-  PLfloat  edgeParam;       // param on triangle edge
-  PLint    boundaryIndex;   // index of wall
-  PLfloat  boundaryParam;   // param on wall
-  PLint    direction;       // direction of edge: +1 = toward outside of wall, -1 = toward inside of wall
-  PLbool   processed;
+        plVector3 point;           // int point
+        PLint     edgeIndex;       // index of edge (0,1,2)
+        PLfloat   edgeParam;       // param on triangle edge
+        PLint     boundaryIndex;   // index of wall
+        PLfloat   boundaryParam;   // param on wall
+        PLint     direction;       // direction of edge: +1 = toward outside of wall, -1 = toward inside of wall
+        PLbool    processed;
 };
 
 void            plFindInteriorMesh      ( plSeq<plTriangle> &triangles, plBoundary &walls, plSeq<plTriangle> &interiorTriangles );

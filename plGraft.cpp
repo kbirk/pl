@@ -2,64 +2,42 @@
 
 plGraft::plGraft()
 {
-
 }
 
 
-void plGraft::readFromCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
+void plGraft::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
 {
     // Fill in the field            
     plString subfield = row[2];
-    
-    if (subfield.compareCaseInsensitive( "harvest model") )
-    {
-        harvest.modelID = atof( row[3].c_str() );
-        
-        if (models.size() < (harvest.modelID +1) )
-        {
-            std::cerr << "plGraft readFromCSV() error: harvest model ID read before model data";
-            exit(1);
-        }    
-        harvest.model = &models[harvest.modelID];
-    }                  
-    else if (subfield.compareCaseInsensitive( "recipient model") )
-    {
-        recipient.modelID = atof( row[3].c_str() );
-        
-        if (models.size() < (recipient.modelID +1) )
-        {
-            std::cerr << "plGraft readFromCSV() error: recipient model ID  read before model data";
-            exit(1);
-        }    
-        recipient.model = &models[recipient.modelID];
 
-    }
-    else if (subfield.compareCaseInsensitive( "height offset") )
+    if (subfield.compareCaseInsensitive( "harvest" ) )
+    {
+        harvest.importCSV( row, models );        
+        // check if transform, if so, set caps
+        if (row[3].compareCaseInsensitive( "transform" ) )
+        {
+            if (harvest.modelID() == -1 || _radius == 0)
+            {
+                std::cerr << "plGraft importCSV() error: harvest transform read before model ID or radius";
+                exit(1);
+            }  
+            _setCaps();
+        }           
+    }                  
+    else if (subfield.compareCaseInsensitive( "recipient" ) )
+        recipient.importCSV( row, models );   
+
+    else if (subfield.compareCaseInsensitive( "height offset" ) )
         _heightOffset = atof( row[3].c_str() );
                        
-    else if (subfield.compareCaseInsensitive( "radius") )
+    else if (subfield.compareCaseInsensitive( "radius" ) )
         _radius = atof( row[3].c_str() );
         
-    else if (subfield.compareCaseInsensitive( "length") )
+    else if (subfield.compareCaseInsensitive( "length" ) )
         _length = atof( row[3].c_str() );
        
-    else if (subfield.compareCaseInsensitive( "mark direction") )
+    else if (subfield.compareCaseInsensitive( "mark direction" ) )
         _markDirection = plVector3( row[3] ).normalize();
-
-    else if (subfield.compareCaseInsensitive( "recipient transform") )
-        recipient.transform.readFromCSV( row );
-    
-    
-    else if (subfield.compareCaseInsensitive( "harvest transform") )
-    {
-        harvest.transform.readFromCSV( row );
-        if (harvest.model == NULL)
-        {
-            std::cerr << "plGraft readFromCSV() error: harvest transform read before model ID";
-            exit(1);
-        }        
-        _setCaps();
-    }
     else
         std::cerr << "Error in plan, 'graft': Unrecognized word '" << subfield << "' in third column." << std::endl;
 }
@@ -172,8 +150,8 @@ void plGraft::_drawGraft() const
 void plGraft::_setCaps()
 {
     // generate cap polygons
-    _cartilageCap = _findCap( harvest.model->cartilage.triangles() );
-    _boneCap      = _findCap( harvest.model->bone.triangles()      );
+    _cartilageCap = _findCap( harvest.model()->cartilage.triangles() );
+    _boneCap      = _findCap( harvest.model()->bone.triangles()      );
    
     // generate meshes   
     _updateCartilageMesh();   

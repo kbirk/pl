@@ -4,7 +4,12 @@ plDefectSite::plDefectSite()
 {
 }
 
-void plDefectSite::readFromCSV(const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
+plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage &model )
+    : plModelSpecific( modelID, model ), boundary( model ), spline( model )
+{
+}
+
+void plDefectSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
 {
     // Fill in the field            
     plString subfield = row[2];
@@ -14,7 +19,7 @@ void plDefectSite::readFromCSV(const plSeq<plString> &row, const plSeq<plBoneAnd
         _modelID = atof( row[3].c_str() );
         if (models.size() < (_modelID +1) )
         {
-            std::cerr << "plDefectSite readFromCSV() error: model ID read before model data";
+            std::cerr << "plDefectSite importCSV() error: model ID read before model data";
             exit(1);
         }
         _model = &models[_modelID];
@@ -23,19 +28,19 @@ void plDefectSite::readFromCSV(const plSeq<plString> &row, const plSeq<plBoneAnd
     {     
         if (_model == NULL)
         {
-            std::cerr << "plDefectSite readFromCSV() error: spline data read before model ID";
+            std::cerr << "plDefectSite importCSV() error: spline data read before model ID";
             exit(1);
         }    
-        spline.readFromCSV( row, *_model );  
+        spline.importCSV( row, *_model );  
     }
     else if (subfield.compareCaseInsensitive( "boundary") )   
     {
         if (_model == NULL)
         {
-            std::cerr << "plDefectSite readFromCSV() error: boundary data read before model ID";
+            std::cerr << "plDefectSite importCSV() error: boundary data read before model ID";
             exit(1);
         }            
-        boundary.readFromCSV( row, *_model );  
+        boundary.importCSV( row, *_model );  
     }  
     else
         std::cerr << "Error importing plan, 'spline': Unrecognized word '" << subfield << "' in third column." << std::endl;      

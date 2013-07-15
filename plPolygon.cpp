@@ -1,6 +1,5 @@
 #include "plPolygon.h"
 
-
 std::ostream& operator << ( std::ostream &stream, const plPolygon &p ) 
 {
     stream << "Normal    = " << p.normal << "\n";
@@ -8,4 +7,5 @@ std::ostream& operator << ( std::ostream &stream, const plPolygon &p )
     {
         stream << "Vertex " << i << " = " << p.points[i] << "\n";
     } 
+    return stream;
 } 

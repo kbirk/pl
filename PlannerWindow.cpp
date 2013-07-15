@@ -97,6 +97,10 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
         //case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;        
         case 'O':   _plan.exportFile("plan");                    break;
 
+        case 'D':   _plan.addDonorSite();                        break;
+        case 'S':   _plan.addDefectSite();                       break;
+        case 'G':   _plan.addIGuide();                           break;
+
         case 127:	 // delete 
         {   
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
@@ -129,8 +133,8 @@ void PlannerWindow::activeMouseMotion( int x, int y )
         case GLUT_LEFT_BUTTON: 
 
             // process drag movements 
-            _graftEditor.processMouseDrag   ( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y);   
-            _boundaryEditor.processMouseDrag( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y);  
+            _graftEditor.processMouseDrag   ( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y );   
+            _boundaryEditor.processMouseDrag( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y );  
             break;       
 
         case GLUT_MIDDLE_BUTTON:    

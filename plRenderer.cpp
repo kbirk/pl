@@ -9,11 +9,11 @@ plComputeShader*         plRenderer::_computeShader          = NULL;
 plMinimalShader*         plRenderer::_minimalShader          = NULL;
 plPhongShader*           plRenderer::_phongShader            = NULL; 
 plPickingShader*         plRenderer::_pickingShader          = NULL;
-PLbool                   plRenderer::isPicking               = false;
+//PLbool                   plRenderer::isPicking               = false;
 
 void plRenderer::init()
 {
-    _computeShader = new plComputeShader("./shaders/test.comp");
+    //_computeShader = new plComputeShader("./shaders/test.comp");
     _minimalShader = new plMinimalShader("./shaders/minimal.vert", "./shaders/minimal.frag");
     _phongShader   = new plPhongShader  ("./shaders/phong.vert", "./shaders/phong.frag");
     _pickingShader = new plPickingShader("./shaders/picking.vert", "./shaders/picking.frag");  
@@ -58,10 +58,12 @@ void plRenderer::queue ( const plBoundaryEditor &editor )
     _boundaryEditorToDraw = &editor;
 }
 
+
 void plRenderer::queue ( const plTrackedObject &object )
 {
     _trackedObjectsToDraw.add( &object );
 }
+
 
 void plRenderer::reportError( const plString &str  ) 
 {
@@ -109,7 +111,7 @@ void plRenderer::_beginPicking()
 {
     glDisable( GL_BLEND );
 
-    isPicking = true;
+    //isPicking = true;
 
     // bind picking shader
     plShaderStack::push( _pickingShader );
@@ -126,7 +128,7 @@ void plRenderer::_beginPicking()
 
 void plRenderer::_endPicking()
 {
-    isPicking = false;
+    //isPicking = false;
     plShaderStack::pop();
     plPicking::texture->unbind();  
 }

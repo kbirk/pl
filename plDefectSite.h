@@ -3,13 +3,14 @@
 
 #include "plCommon.h"
 #include "plVector3.h"
+#include "plModelSpecific.h"
 #include "plSpline.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
 #include "plPickingTexture.h"
-#include "plBoneAndCartilage.h"
 
-class plDefectSite : public plRenderable
+class plDefectSite : public plModelSpecific,
+                     public plRenderable
 {
     public:
 
@@ -17,18 +18,11 @@ class plDefectSite : public plRenderable
         plSpline    spline;
              
         plDefectSite();
+        plDefectSite( PLuint _modelID, const plBoneAndCartilage &_model );
 
-        void readFromCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
+        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
 
         void draw() const;   
-
-        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
-                
-    private:
-          
-        PLuint                    _modelID;
-        const plBoneAndCartilage *_model;  
-    
                 
 };
 

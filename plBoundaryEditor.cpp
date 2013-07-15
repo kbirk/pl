@@ -128,21 +128,6 @@ void plBoundaryEditor::_selectIGuideBoundary( plSeq<plIGuide> &iGuides, PLuint b
     }  
 }
 
-/*
-plBoundary &plBoundaryEditor::getSelectedBoundary( plPlan &plan )
-{
-    switch (_selectedBoundaryType)
-    {
-        case PL_PICKING_TYPE_DEFECT_CORNERS:    return plan._defectSites[_selectedBoundaryIndex].corners;
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:   return plan._defectSites[_selectedBoundaryIndex].boundary; 
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:    return plan._donorSites[_selectedBoundaryIndex].boundary;
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:   return plan._iGuides[_selectedBoundaryIndex].boundary; 
-    }
-
-    return plan._defectSites[0].corners;
-}
-*/
-
 
 void plBoundaryEditor::selectBoundary( plPlan &plan, PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex)
 {   
@@ -187,11 +172,7 @@ PLint plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool selec
     plVector3 rayOrigin, rayDirection;
     plWindow::mouseToRay( rayOrigin, rayDirection, x, y );
     
-    std::cout << "1\n";
-    
     plIntersection intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
-
-    std::cout << "2\n";
 
     if (intersection.exists) 
     {     
@@ -211,8 +192,6 @@ PLint plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool selec
         
         return newIndex;
     }
-    
-    std::cout << "3\n";
 
     return -1;  // no cartilage at point
 }
@@ -228,30 +207,6 @@ void plBoundaryEditor::removeSelectedPoint()
     _selectedPointIndex    = -1;    
 }
 
-/*
-void plBoundaryEditor::addBoundary( PLuint x, PLuint y, PLuint type, PLbool selectNewBoundary)
-{
-    clearSelection();
-
-    switch (type)
-    {
-        case PL_PICKING_TYPE_DEFECT_CORNERS:
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-        
-            PL_GLOBAL_PLAN->_defectSite.add( plDefectSite() );
-        
-        
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:
-        
-            PL_GLOBAL_PLAN._donorSites.add( plDonorSite() );
-
-        
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
-            
-            PL_GLOBAL_PLAN._iGuides.add( plIGuide() );
-    }
-}
-*/
 
 void plBoundaryEditor::draw( const plPlan &plan ) const
 {
@@ -269,15 +224,17 @@ void plBoundaryEditor::draw( const plPlan &plan ) const
     const PLfloat INITIAL_VERTICAL    = windowHeight - VERTICAL_BUFFER;
      
     PLfloat count = 0;
-          
+    plPicking::value.index = -1;    
+       
     plModelStack::push( plMatrix44() ); // load identity
     {
         // defect sites       
         for (PLuint i=0; i<plan._defectSites.size(); i++)
         {
             // spline menu
-            plPicking::value.type = PL_PICKING_TYPE_EDIT_DEFECT_CORNERS;           
-            plPicking::value.id = i;         
+            plPicking::value.type = PL_PICKING_TYPE_DEFECT_CORNERS;           
+            plPicking::value.id = i;  
+               
             if (plan._defectSites[i].spline._isSelected)
             {
                 plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
@@ -289,7 +246,7 @@ void plBoundaryEditor::draw( const plPlan &plan ) const
             plDraw::disk( plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL - count*VERTICAL_SPACING, 0), CIRCLE_RADIUS );
             
             // boundary menu
-            plPicking::value.type = PL_PICKING_TYPE_EDIT_DEFECT_BOUNDARY;                 
+            plPicking::value.type = PL_PICKING_TYPE_DEFECT_BOUNDARY;                 
             if (plan._defectSites[i].boundary._isSelected)
             {
                 plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL ); 
@@ -307,7 +264,7 @@ void plBoundaryEditor::draw( const plPlan &plan ) const
         for (PLuint i=0; i<plan._donorSites.size(); i++)
         {
             // boundary menu
-            plPicking::value.type = PL_PICKING_TYPE_EDIT_DONOR_BOUNDARY;           
+            plPicking::value.type = PL_PICKING_TYPE_DONOR_BOUNDARY;           
             plPicking::value.id = i;   
             if (plan._donorSites[i].boundary._isSelected)
             {
@@ -326,7 +283,7 @@ void plBoundaryEditor::draw( const plPlan &plan ) const
         for (PLuint i=0; i<plan._iGuides.size(); i++)
         {
             // boundary menu
-            plPicking::value.type = PL_PICKING_TYPE_EDIT_IGUIDE_BOUNDARY;           
+            plPicking::value.type = PL_PICKING_TYPE_IGUIDE_BOUNDARY;           
             plPicking::value.id = i;         
             if (plan._iGuides[i].boundary._isSelected)
             {

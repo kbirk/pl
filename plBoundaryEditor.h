@@ -24,24 +24,17 @@ class plBoundaryEditor
         PLbool  processMouseClick( plPlan &plan, PLint x, PLint y );
         PLbool  processMouseDrag ( plPlan &plan, PLint x, PLint y );
 
-        //void moveSelectedBoundary (); // shift entire boundary around!
-        
-        PLint addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
-        //void  addBoundary        ( PLuint x, PLuint y, PLuint type, PLbool selectNewBoundary = true );
-        
-        void  moveSelectedPoint  ( PLuint x, PLuint y );
-        void  removeSelectedPoint();
+        PLint   addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
+        void    moveSelectedPoint  ( PLuint x, PLuint y );
+        void    removeSelectedPoint();
 
-        void  draw( const plPlan &plan ) const;
+        void    draw( const plPlan &plan ) const;
 
     private: 
     
-        PLint _selectedBoundaryType;
-        
+        PLint       _selectedBoundaryType;       
         plBoundary *_selectedBoundary;
-        
-        //PLint _selectedBoundaryIndex;
-        PLint _selectedPointIndex;
+        PLint       _selectedPointIndex;
          
         void _clearDefectSiteBoundaries  ( plSeq<plDefectSite> &defectSites );
         void _clearDonorSiteBoundaries   ( plSeq<plDonorSite>  &donorSites );

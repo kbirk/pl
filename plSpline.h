@@ -18,10 +18,11 @@ class plSpline : public plBoundary
     public:
 
         plSpline();
+        plSpline( const plBoneAndCartilage &model );
 
         void   draw() const;           
 
-        void   readFromCSV( const plSeq<plString> &row, const plBoneAndCartilage &model );
+        void   importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model );
 
         PLuint addPointAndNormal (const plVector3 &point, const plVector3 &normal);
         void   movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal);

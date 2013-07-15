@@ -23,6 +23,7 @@
 #include "plMatrix44.h"
 #include "plMatrixStack.h"
 #include "plModel.h"
+#include "plModelSpecific.h"
 #include "plPhongShader.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"

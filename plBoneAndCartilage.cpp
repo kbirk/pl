@@ -5,8 +5,8 @@ plBoneAndCartilage::plBoneAndCartilage()
 }
 
 
-plBoneAndCartilage::plBoneAndCartilage( plString bone_file, plString cartilage_file)
-    :   bone(bone_file), cartilage(cartilage_file)
+plBoneAndCartilage::plBoneAndCartilage( plString boneFile, plString cartilageFile)
+    :   bone(boneFile), cartilage(cartilageFile)
 {       
 }
 
@@ -45,18 +45,18 @@ plVector3 plBoneAndCartilage::getCentroid() const
     return 0.5f * (max + min);    
 }   
  
-void plBoneAndCartilage::readFromCSV( const plSeq<plString> &row, const plString &directory )
+void plBoneAndCartilage::importCSV( const plSeq<plString> &row ) //, const plString &directory )
 {
     // fill in the field            
     plString subfield = row[2];
 
     if (subfield.compareCaseInsensitive( "bone file") )
     {
-        bone = plModel( directory + row[3] );       // combine directory and filename
+        bone = plModel( row[3] );
     }                        
     else if (subfield.compareCaseInsensitive( "cartilage file") )
     {
-        cartilage = plModel( directory + row[3] );  // combine directory and filename
+        cartilage = plModel( row[3] );
     }        
     else
     {

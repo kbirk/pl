@@ -23,7 +23,7 @@ class plRenderer
 {
     public:
            
-        static PLbool isPicking;   
+        //static PLbool isPicking;   
                
         static void init(); 
           

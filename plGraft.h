@@ -48,12 +48,10 @@ class plGraft : public plRenderable,
 {
 
     public:
-
-        
-            
+   
         plGraft();
         
-        void readFromCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
+        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
 
         PLfloat heightOffset()     const { return _heightOffset; } 
         PLfloat radius()           const { return _radius; } 

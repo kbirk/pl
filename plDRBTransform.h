@@ -45,9 +45,9 @@ class plDRBTransform
         plDRBTransform();
         
         plDRBTransform( const plMatrix44 );
-        plDRBTransform( const std::string&, MarkerType = TRANSLATION ); // File Transformation - string is the file, MarkerType specifies how much to read
         plDRBTransform( const plVector3&, const plVector3&, double ); // DRB Transformation
-        
+        plDRBTransform( const std::string&, MarkerType = TRANSLATION ); // File Transformation - string is the file, MarkerType specifies how much to read
+              
         void           initializeTransforms(); // Sets up the matrices
         
         plDRBTransform clone()        const;
