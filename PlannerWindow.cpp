@@ -11,7 +11,7 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
 {  
     plRenderer::init(); 
        
-    octree = new plOctree(_plan._models[0].bone, 8);
+    octree = new plOctree(_plan._models[0].bone, 6);
 }
 
 

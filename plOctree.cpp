@@ -95,25 +95,100 @@ void plOctreeNode::insert( const plTriangle &tri, PLuint depth, PLbool exclusive
         
         if (!exclusive)
         {
-            // TODO: add non-exclusive functionality
-                
+            // non exclusive, add to intersected children as well
+            for (PLuint i=0; i<8; i++)
+            {
+                if ( sphereCheck( tri.centroid(), tri.radius(), i) )
+                    // part of bounding sphere intersects child, insert
+                    _insertChild( i, tri, depth, exclusive ); 
+            }    
        }     
             
     }    
-    else if ( dx < halfWidth+ tri.radius() || dy < halfWidth+ tri.radius() || dz < halfWidth+ tri.radius() )
-    {
-        // contained in child, find child         
+    else
+    {    
+        // fully contained in child, find child         
         if ( dx > 0 ) child += 1;
         if ( dy > 0 ) child += 2;
         if ( dz > 0 ) child += 4;
-        
+         
         _insertChild( child, tri, depth, exclusive ); 
-    }
-     
-    // outside of this node, recurse no further
-
-  
+    } 
 }
+
+void plOctreeNode::_insertChild( PLuint index, const plTriangle &tri, PLuint depth, PLbool exclusive )
+{
+    if (children[index] != NULL)    
+    {     
+        // child already exists, recursively insemaxAABB  
+        children[index]->insert( tri, depth-1, exclusive );
+    }    
+    else   
+    { 
+        // child does not exist, if terminal depth has not been reached, create child node
+        if (depth > 0)
+        {
+        
+            plVector3 offset;
+            PLfloat step = halfWidth * 0.5f;
+            offset.x = ((index & 1) ? step : -step);
+            offset.y = ((index & 2) ? step : -step);
+            offset.z = ((index & 4) ? step : -step);
+            children[index] = new plOctreeNode( centre + offset, step);
+            children[index]->insert( tri, depth - 1, exclusive );
+        }
+        else
+        {
+            // terminal depth reached, add to this node
+            contained.add( &tri );
+        }
+    }
+}
+
+PLfloat plOctreeNode::squaredDistanceFromPoint( const plVector3 &point, PLint child ) const
+{
+    plVector3 minAABB, maxAABB;    
+    if (child != -1)
+    {
+        // check for child      
+        plVector3 offsetCentre = centre; 
+        PLfloat step = 0.5f * halfWidth;
+        offsetCentre.x = ((child & 1) ? step : -step);
+        offsetCentre.y = ((child & 2) ? step : -step);
+        offsetCentre.z = ((child & 4) ? step : -step);
+        minAABB = plVector3( offsetCentre.x - step, offsetCentre.y - step, offsetCentre.z - step );
+        maxAABB = plVector3( offsetCentre.x + step, offsetCentre.y + step, offsetCentre.z + step );
+    }
+    else
+    {
+        // check for this node
+        minAABB = plVector3( centre.x - halfWidth, centre.y - halfWidth, centre.z - halfWidth );
+        maxAABB = plVector3( centre.x + halfWidth, centre.y + halfWidth, centre.z + halfWidth );   
+    }
+
+    PLfloat sqDist = 0.0f;
+    // For each axis count any excess distance outside box extents
+    // x
+    if (point.x < minAABB.x) sqDist += (minAABB.x - point.x) * (minAABB.x - point.x);
+    if (point.x > maxAABB.x) sqDist += (point.x - maxAABB.x) * (point.x - maxAABB.x);
+    // y
+    if (point.y < minAABB.y) sqDist += (minAABB.y - point.y) * (minAABB.y - point.y);
+    if (point.y > maxAABB.y) sqDist += (point.y - maxAABB.y) * (point.y - maxAABB.y);
+    // z
+    if (point.z < minAABB.z) sqDist += (minAABB.z - point.z) * (minAABB.z - point.z);
+    if (point.z > maxAABB.z) sqDist += (point.z - maxAABB.z) * (point.z - maxAABB.z);
+        
+    return sqDist;
+}
+
+PLbool plOctreeNode::sphereCheck( const plVector3 &centre, PLfloat radius, PLint child ) const
+{
+    // compute squared distance between sphere center and AABB
+    PLfloat sqDist = squaredDistanceFromPoint(centre, child);
+    // sphere and AABB intersect if the distance is less than the sphere radius
+    return sqDist <= radius * radius;
+}
+
 
 /*
 const plSeq<const plTriangle*> &plOctreeNode::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay ) const
@@ -163,34 +238,7 @@ const plSeq<const plTriangle*> &plOctreeNode::rayIntersect( const plVector3 &ray
 }
 */
 
-void plOctreeNode::_insertChild( PLuint index, const plTriangle &tri, PLuint depth, PLbool exclusive )
-{
-    if (children[index] != NULL)    
-    {     
-        // child already exists, recursively insemaxAABB  
-        children[index]->insert( tri, depth-1, exclusive );
-    }    
-    else   
-    { 
-        // child does not exist, if terminal depth has not been reached, create child node
-        if (depth > 0)
-        {
-        
-            plVector3 offset;
-            PLfloat step = halfWidth * 0.5f;
-            offset.x = ((index & 1) ? step : -step);
-            offset.y = ((index & 2) ? step : -step);
-            offset.z = ((index & 4) ? step : -step);
-            children[index] = new plOctreeNode( centre + offset, step);
-            children[index]->insert( tri, depth - 1, exclusive );
-        }
-        else
-        {
-            // terminal depth reached, add to this node
-            contained.add( &tri );
-        }
-    }
-}
+
 
 void plOctreeNode::_updateMesh()
 {

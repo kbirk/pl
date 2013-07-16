@@ -8,6 +8,19 @@
 #include "plLineMesh.h"
 #include "plModel.h"
 
+// children quadrant indices 
+// (functions rely on specific bitwise AND operations)
+/*
+    [0] = - - -
+    [1] = + - -
+    [2] = - + -
+    [3] = + + -
+    [4] = - - +
+    [5] = + - +
+    [6] = - + +
+    [7] = + + +
+*/
+
 class plOctreeNode 
 {
     public:
@@ -19,8 +32,11 @@ class plOctreeNode
         plSeq<plOctreeNode*>      children;      // pointers to the eight children nodes   
         plSeq<const plTriangle*>  contained;     // linked list of objects contained at this node 
         
-        void draw  () const;        
-        void insert( const plTriangle &tri, PLuint depth, PLbool exclusive );
+        void    draw  () const;        
+        void    insert( const plTriangle &tri, PLuint depth, PLbool exclusive );
+        
+        PLfloat squaredDistanceFromPoint( const plVector3 &point, PLint child = -1 ) const;
+        PLbool  sphereCheck             ( const plVector3 &centre, PLfloat radius, PLint child = -1 ) const;
         
         const plSeq<const plTriangle*> &rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false ) const;
         
