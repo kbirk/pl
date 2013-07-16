@@ -10,11 +10,8 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       Window( x, y, width, height, title )
 {  
     plRenderer::init(); 
-    
-    plVector3 min, max;
-    _plan._models[0].getMinMax(min,max);    
-    octree = new plOctree(min,max,5);
-    octree->fill( _plan._models[0].bone.triangles(), 5 );
+       
+    octree = new plOctree(_plan._models[0].bone, 8);
 }
 
 

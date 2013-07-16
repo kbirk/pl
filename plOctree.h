@@ -4,51 +4,53 @@
 #include "plCommon.h"
 #include "plSeq.h"
 #include "plVector3.h"
+#include "plMath.h"
 #include "plLineMesh.h"
-#include "plTriangle.h"
+#include "plModel.h"
 
-//template<class T>
 class plOctreeNode 
 {
     public:
 
-        plOctreeNode( const plVector3 &c, PLfloat hw, PLuint depth );
+        plOctreeNode( const plVector3 &c, PLfloat hw); 
 
-        plVector3            centre;       // center point of octree node (not strictly needed)    
-        PLfloat              halfWidth;    // half the width of the node volume (not strictly needed)    
-        plSeq<plOctreeNode*> children;     // pointers to the eight children nodes   
-  
-        void insert( const plTriangle &tri);
-  
-    //private:
-         
-        plSeq<const plTriangle*>     contained;    // linked list of objects contained at this node 
-          
-        plLineMesh           mesh;
+        plVector3                 centre;        // center point of octree node (not strictly needed)    
+        PLfloat                   halfWidth;     // half the width of the node volume (not strictly needed)    
+        plSeq<plOctreeNode*>      children;      // pointers to the eight children nodes   
+        plSeq<const plTriangle*>  contained;     // linked list of objects contained at this node 
         
-        void draw() const;
+        void draw  () const;        
+        void insert( const plTriangle &tri, PLuint depth, PLbool exclusive );
         
+        const plSeq<const plTriangle*> &rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false ) const;
+        
+    private:
+                           
+        plLineMesh  _mesh;
+
+        void _insertChild( PLuint index, const plTriangle &tri, PLuint depth, PLbool exclusive);
         void _updateMesh();
         
 };
 
-//template<class T>
 class plOctree
 {
     public:
 
         plOctreeNode *root;
+        plOctree( const plModel &model, PLuint depth, PLbool exclusive = false );
 
-        plOctree( const plVector3 &min, const plVector3 &max, PLuint depth);
-
-        void fill(const plSeq<plTriangle> &triangles);
+        const plSeq<const plTriangle*> &rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false ) const;
 
         void draw() const;
-    
-    
+        
     private:
     
-        
+        PLbool _exclusive;  // if each triangle is exclusive to a single cube
+                            // exclusive octree     = better memory efficiency
+                            // non-exclusive octree = better performance
+    
+        void _fill(const plSeq<plTriangle> &triangles, PLuint depth, PLbool exclusive);
 
 };
 

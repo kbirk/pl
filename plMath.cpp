@@ -26,6 +26,13 @@ PLfloat plMath::clamp( PLfloat val, PLfloat min, PLfloat max)
     return val;
 }
 
+void plMath::swap( PLfloat &a, PLfloat &b )
+{
+    PLfloat temp = a;
+    a = b; 
+    b = temp;
+}
+
 /*
 int plPlaneIntersection( const plvector3 &p1_normal, const plvector3 &p2_normal, Plane p1, Plane p2, Point &p, Vector &d)
 {
