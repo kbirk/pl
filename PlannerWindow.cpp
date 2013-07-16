@@ -41,7 +41,7 @@ void PlannerWindow::display()
     plRenderer::queue( _plan );
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );
-    plRenderer::queue( _plan._models[0].cartilage._octree );
+    //plRenderer::queue( _plan._models[0].cartilage._octree );
    
     plRenderer::draw();
 

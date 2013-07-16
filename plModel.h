@@ -31,14 +31,12 @@ class plModel : public plRenderable
                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
 
         friend std::ostream& operator << ( std::ostream& out, const plModel &m );
-         
-         plOctree              _octree;
-          
+              
 	private:
 	
 		plMesh                _mesh;
         plSeq<plTriangle>     _triangles;
-        
+        plOctree              _octree;
         PLbool                _isTransparent;
 		plString              _filename;
 

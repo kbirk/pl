@@ -26,17 +26,18 @@ class plGraftEditor
         plGraftEditor();
                
         void    clearSelection( plPlan &plan );
+        void    selectGraft   ( plPlan &plan, PLuint index, PLuint type );
         
         void    setEditMode( PLuint editMode );
 
         void    draw() const;
 
+        PLbool  isGraftSelected() const { return (_selectedGraft != NULL); }    
+
         PLbool  processMouseClick   ( plPlan &plan, PLint x, PLint y );
         PLbool  processMouseDrag    ( plPlan &plan, PLint x, PLint y );
         PLbool  processJoystickDrag ( plPlan &plan, PLfloat x, PLfloat y, PLbool flag );
-       
-        void    selectGraft( plPlan &plan, PLuint index, PLuint type );       
-                
+            
         void    translateSelected ( const plVector3 &translation );
         void    rotateSelected    ( const plVector3 &axis, PLfloat angle_degrees );
         void    spinMarkSelected  ( PLfloat angle_degrees );

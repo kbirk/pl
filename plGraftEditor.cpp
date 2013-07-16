@@ -168,9 +168,15 @@ PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLfloat x, PLfloat y, P
     const plTransform &transform = _selectedGraft->transform(_selectedType);    
     
     // translate joystick coords to local graft coords
+    /*
     PLfloat localx = plVector3(x, y, 0) *  transform.x(); 
     PLfloat localy = plVector3(x, y, 0) * -transform.z(); 
     PLfloat localz = plVector3(x, y, 0) *  transform.y(); 
+    */
+    
+    PLfloat localx =  transform.x() * plVector3(x, y, 0); 
+    PLfloat localy = -transform.z() * plVector3(x, y, 0); 
+    PLfloat localz =  transform.y() * plVector3(x, y, 0);
     
     plVector3 translationLocal( localx, localy, localz);
     
