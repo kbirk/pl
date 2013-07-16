@@ -162,12 +162,15 @@ PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
 
 PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLint x, PLint y, PLbool flag )
 {
+    if (_selectedGraft == NULL)    
+        return false;                 // no graft selected
+
     const plTransform &transform = _selectedGraft->transform(_selectedType);    
     
     // translate joystick coords to local graft coords
-    PLfloat localx = plVector3(x, y, 0) * transform.x(); 
-    PLfloat localy = plVector3(x, y, 0) * transform.y(); 
-    PLfloat localz = plVector3(x, y, 0) * transform.z(); 
+    PLfloat localx = plVector3(x, y, 0) *  transform.x(); 
+    PLfloat localy = plVector3(x, y, 0) * -transform.z(); 
+    PLfloat localz = plVector3(x, y, 0) * -transform.y(); 
     
     // translate by local coords
     translateSelected( plVector3(localx, localy, localz) );    

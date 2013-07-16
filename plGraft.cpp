@@ -639,7 +639,7 @@ const plTransform &plGraft::transform( PLuint type ) const
 }
 
 void plGraft::translate( PLuint type, const plVector3 &translation )
-{    
+{       
     switch (type)
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:

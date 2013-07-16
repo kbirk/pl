@@ -31,7 +31,7 @@ void plPlug::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartila
 }
 
 void plPlug::translate( const plVector3 &translation )
-{                 
+{        
     plIntersection intersection = _model->bone.rayIntersect( transform.origin() + translation, -transform.y() );  
 
     if (intersection.exists)
