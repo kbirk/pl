@@ -30,9 +30,7 @@ PLbool plMatrix44::importFile( const plString &file )
              values = xml.substr(startPos, endPos - startPos);
           }
         }
-        
-        std::cout << "values: " << values << "\n";
-        
+                
         sscanf(values.c_str(), "%f %f %f %f " 
                                "%f %f %f %f "
                                "%f %f %f %f "

@@ -20,7 +20,7 @@ plString::plString (const char* s)
 
 bool plString::importFile( const std::string &filename)      
 {
-    std::ifstream in(filename, std::ios::in | std::ios::binary);
+    std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
     if (in)
     {
         std::string contents;
