@@ -23,7 +23,7 @@ class plPlan : public plRenderable
         void importFile( plString filename );        
         void exportFile( plString filename );
           
-        /*
+        /*          
         plDefectSite& defectSites( PLuint index );
         plDonorsite&  donorSites ( PLuint index );
         plIGuides&    iGuides    ( PLuint index );

@@ -80,8 +80,6 @@ class plGraft : public plRenderable,
           
     private:
 
-        
-
         PLfloat    _heightOffset;
         PLfloat    _radius;
         PLfloat    _length;

@@ -3,12 +3,13 @@
 
 #include "plCommon.h"
 #include "plSeq.h"
-#include "plRenderable.h"
-#include "plTriangle.h"
-#include "plPickingTexture.h"
 #include "plMesh.h"
-#include "plRenderingPipeline.h"
 #include "plOctree.h"
+#include "plTriangle.h"
+#include "plRenderable.h"
+#include "plPickingTexture.h"
+#include "plRenderingPipeline.h"
+
 
 class plModel : public plRenderable
 {
