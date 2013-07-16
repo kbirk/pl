@@ -17,7 +17,7 @@ void plDefectSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCa
     if (subfield.compareCaseInsensitive( "model") )
     {
         _modelID = atof( row[3].c_str() );
-        if (models.size() < (_modelID +1) )
+        if (models.size() < (_modelID+1) )
         {
             std::cerr << "plDefectSite importCSV() error: model ID read before model data";
             exit(1);

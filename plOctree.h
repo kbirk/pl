@@ -54,7 +54,4 @@ class plOctree
 
 };
 
-std::ostream& operator << ( std::ostream &stream, const plOctree     &o );
-std::ostream& operator << ( std::ostream &stream, const plOctreeNode &n );
-
 #endif

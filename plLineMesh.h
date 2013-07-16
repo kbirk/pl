@@ -13,6 +13,7 @@ class plLineMesh : public plMesh
         
         void setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);
 
+        void draw() const;
 };
 
 #endif

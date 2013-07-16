@@ -23,7 +23,7 @@ plOctree::plOctree( const plModel &model, PLuint depth, PLbool exclusive )
     PLfloat maxMax = PL_MAX_OF_3( fabs(maxDiff.x), fabs(maxDiff.y), fabs(maxDiff.z) );       
     PLfloat halfWidth = PL_MAX_OF_2( minMax, maxMax );
     
-    // Construct and fill in ’root’ of this subtree
+    // Construct and fill in root 
     root = new plOctreeNode( centre, halfWidth );
  
     // traverse and fill sub cubes with triangles until desired depth is reached  
@@ -42,6 +42,7 @@ const plSeq<const plTriangle*> &plOctree::rayIntersect( const plVector3 &rayOrig
     return root->rayIntersect( rayOrigin, rayDirection, ignoreBehindRay );
 }
 */
+
 void plOctree::_fill(const plSeq<plTriangle> &triangles, PLuint depth, PLbool exclusive)
 {
     for (PLuint i=0; i< triangles.size(); i++)
@@ -60,14 +61,19 @@ plOctreeNode::plOctreeNode( const plVector3 &c, PLfloat hw)
 
 void plOctreeNode::draw() const
 {
-    if (contained.size() > 0)    
-        _mesh.draw();
-    
+    PLint count = 0;
+
     for (PLuint i=0; i < 8; i++)
     {
         if (children[i] != NULL)
+        {
             children[i]->draw();
+            count++;
+        }
     }
+
+    if (contained.size() > 0 || count > 0)    // only draw if contains objects, or has children that contain
+        _mesh.draw();
     
 }
 
@@ -94,15 +100,18 @@ void plOctreeNode::insert( const plTriangle &tri, PLuint depth, PLbool exclusive
        }     
             
     }    
-    else
+    else if ( dx < halfWidth+ tri.radius() || dy < halfWidth+ tri.radius() || dz < halfWidth+ tri.radius() )
     {
-        // fully contained in child, find child         
+        // contained in child, find child         
         if ( dx > 0 ) child += 1;
         if ( dy > 0 ) child += 2;
         if ( dz > 0 ) child += 4;
-         
+        
         _insertChild( child, tri, depth, exclusive ); 
-    } 
+    }
+     
+    // outside of this node, recurse no further
+
   
 }
 
@@ -186,67 +195,39 @@ void plOctreeNode::_insertChild( PLuint index, const plTriangle &tri, PLuint dep
 void plOctreeNode::_updateMesh()
 {
     // DEBUG MESH
-    plSeq<plVector3> vemaxAABBices( 8  );
-    plSeq<PLuint>    indices ( 12 );
+    plSeq<plVector3> vertices( 8  );
+    plSeq<PLuint>    indices ( 8*3 ); //12 );
     
     // front face
-    vemaxAABBices.add( plVector3( centre.x - halfWidth, centre.y - halfWidth, centre.z + halfWidth) );
-    vemaxAABBices.add( plVector3( centre.x + halfWidth, centre.y - halfWidth, centre.z + halfWidth) );
-    vemaxAABBices.add( plVector3( centre.x + halfWidth, centre.y + halfWidth, centre.z + halfWidth) );
-    vemaxAABBices.add( plVector3( centre.x - halfWidth, centre.y + halfWidth, centre.z + halfWidth) );
+    vertices.add( plVector3( centre.x - halfWidth, centre.y - halfWidth, centre.z + halfWidth) );
+    vertices.add( plVector3( centre.x + halfWidth, centre.y - halfWidth, centre.z + halfWidth) );
+    vertices.add( plVector3( centre.x + halfWidth, centre.y + halfWidth, centre.z + halfWidth) );
+    vertices.add( plVector3( centre.x - halfWidth, centre.y + halfWidth, centre.z + halfWidth) );
     
     // back face
-    vemaxAABBices.add( plVector3( centre.x - halfWidth, centre.y - halfWidth, centre.z - halfWidth) );
-    vemaxAABBices.add( plVector3( centre.x + halfWidth, centre.y - halfWidth, centre.z - halfWidth) );
-    vemaxAABBices.add( plVector3( centre.x + halfWidth, centre.y + halfWidth, centre.z - halfWidth) );
-    vemaxAABBices.add( plVector3( centre.x - halfWidth, centre.y + halfWidth, centre.z - halfWidth) );
+    vertices.add( plVector3( centre.x - halfWidth, centre.y - halfWidth, centre.z - halfWidth) );
+    vertices.add( plVector3( centre.x + halfWidth, centre.y - halfWidth, centre.z - halfWidth) );
+    vertices.add( plVector3( centre.x + halfWidth, centre.y + halfWidth, centre.z - halfWidth) );
+    vertices.add( plVector3( centre.x - halfWidth, centre.y + halfWidth, centre.z - halfWidth) );
     
     // front
-    indices.add( 0 );   indices.add( 1 );   indices.add( 2 );
-    indices.add( 0 );   indices.add( 2 );   indices.add( 3 );
-    
-    // right
-    indices.add( 1 );   indices.add( 5 );   indices.add( 6 );
-    indices.add( 1 );   indices.add( 6 );   indices.add( 2 );
-    
+    indices.add( 0 );   indices.add( 1 );   
+    indices.add( 1 );   indices.add( 2 );   
+    indices.add( 2 );   indices.add( 3 );   
+    indices.add( 3 );   indices.add( 0 );   
+
+    // sides 
+    indices.add( 0 );   indices.add( 4 );   
+    indices.add( 1 );   indices.add( 5 );   
+    indices.add( 2 );   indices.add( 6 );   
+    indices.add( 3 );   indices.add( 7 ); 
+
     // back
-    indices.add( 5 );   indices.add( 4 );   indices.add( 7 );
-    indices.add( 5 );   indices.add( 7 );   indices.add( 6 );
-    
-    // left
-    indices.add( 4 );   indices.add( 0 );   indices.add( 3 );
-    indices.add( 4 );   indices.add( 3 );   indices.add( 7 );
-    
-    // top
-    indices.add( 3 );   indices.add( 2 );   indices.add( 6 );
-    indices.add( 3 );   indices.add( 6 );   indices.add( 7 );
-    
-    // bottem
-    indices.add( 4 );   indices.add( 5 );   indices.add( 1 );
-    indices.add( 4 );   indices.add( 1 );   indices.add( 0 );
-    
-    _mesh.setBuffers( vemaxAABBices, indices );
+    indices.add( 4 );   indices.add( 5 );   
+    indices.add( 5 );   indices.add( 6 );   
+    indices.add( 6 );   indices.add( 7 );   
+    indices.add( 7 );   indices.add( 4 );
+
+    _mesh.setBuffers( vertices, indices );
 }
-
-std::ostream& operator << ( std::ostream& stream, const plOctree &o )
-{
-    stream << *o.root;
-    return stream;
-}
-
-std::ostream& operator << ( std::ostream& stream, const plOctreeNode &n )
-{
-    for (PLuint i=0; i < 8; i++)
-    {
-        if (n.children[i] != NULL)
-            stream << "child " << *n.children[i] << "\n"; 
-        else
-            stream << "leaf "; 
-            
-    }
-    stream << "\n"; 
-
-    return stream;
-}
-
 

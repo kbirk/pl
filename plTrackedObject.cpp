@@ -1,5 +1,8 @@
 #include "plTrackedObject.h"
 
+plTrackedObject::plTrackedObject()
+{
+}
 
 plTrackedObject::plTrackedObject( const plDRBTransform &ToTrackedPoint,
                                   const plDRBTransform &ToTrackedEnd,

@@ -47,3 +47,14 @@ void plLineMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuin
 	glBindVertexArray(0); 			
 }
 
+void plLineMesh::draw() const
+{		
+    // use current shader and properly set uniforms
+    plShaderStack::use();			
+	// bind vertex array object
+	glBindVertexArray(_vertexArrayObject);
+	// draw batch
+	glDrawElements( GL_LINES, _numIndices, GL_UNSIGNED_INT, 0); 
+    // unbind VBO
+	glBindVertexArray(0); 	    
+}

@@ -127,6 +127,51 @@ void plMesh::draw(const std::vector<plOrderPair> &order) const
 	glBindVertexArray(0); 
 }
 
+// cube
+plMesh::plMesh(float halfWidth)
+{
+    plSeq<plVector3> vertices( 8  );
+    plSeq<PLuint>    indices ( 8*3 ); //12 );
+    
+    // front face
+    vertices.add( plVector3( -halfWidth, -halfWidth, halfWidth) );
+    vertices.add( plVector3(  halfWidth, -halfWidth, halfWidth) );
+    vertices.add( plVector3(  halfWidth,  halfWidth, halfWidth) );
+    vertices.add( plVector3( -halfWidth, halfWidth,  halfWidth) );
+    
+    // back face
+    vertices.add( plVector3( -halfWidth, -halfWidth, -halfWidth) );
+    vertices.add( plVector3(  halfWidth, -halfWidth, -halfWidth) );
+    vertices.add( plVector3(  halfWidth,  halfWidth, -halfWidth) );
+    vertices.add( plVector3( -halfWidth,  halfWidth, -halfWidth) );
+    
+    // front
+    indices.add( 0 );   indices.add( 1 );   indices.add( 2 );
+    indices.add( 0 );   indices.add( 2 );   indices.add( 3 );
+    
+    // right
+    indices.add( 1 );   indices.add( 5 );   indices.add( 6 );
+    indices.add( 1 );   indices.add( 6 );   indices.add( 2 );
+    
+    // back
+    indices.add( 5 );   indices.add( 4 );   indices.add( 7 );
+    indices.add( 5 );   indices.add( 7 );   indices.add( 6 );
+    
+    // left
+    indices.add( 4 );   indices.add( 0 );   indices.add( 3 );
+    indices.add( 4 );   indices.add( 3 );   indices.add( 7 );
+    
+    // top
+    indices.add( 3 );   indices.add( 2 );   indices.add( 6 );
+    indices.add( 3 );   indices.add( 6 );   indices.add( 7 );
+    
+    // bottem
+    indices.add( 4 );   indices.add( 5 );   indices.add( 1 );
+    indices.add( 4 );   indices.add( 1 );   indices.add( 0 );
+
+    setBuffers( vertices, indices );
+}
+
 // sphere
 plMesh::plMesh(float radius, int slices, int stacks) 
 {

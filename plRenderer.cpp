@@ -218,7 +218,7 @@ void plRenderer::_drawScene()
   
     // set flat shader
     plShaderStack::push( _minimalShader );    
-    plColourStack::load( 1.0, 0.0, 0.0 );
+    plColourStack::load( 0.3, 0.1, 0.4 );
     // debug objects
     for (PLuint i=0; i<_octreesToDraw.size(); i++)
     {
