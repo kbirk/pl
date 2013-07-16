@@ -172,6 +172,9 @@ void plPlan::importFile( plString filename )
         {
             // get reference to model
             plBoneAndCartilage &model = plGetImportReference( _models, csv.data[i][1] );
+                        
+            //_models.add( plBoneAndCartilage( csv.data[i][3], csv.data[i+1][3]) );
+            //i++; // skip next line
             // read model attribute from current row
             model.importCSV( csv.data[i] );
         }
@@ -266,10 +269,10 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     {
         plGraft &graft = p._grafts[i];
                                  
-        out << "graft," << i << ",height offset,"        << graft._heightOffset       << std::endl;
-        out << "graft," << i << ",radius,"               << graft._radius             << std::endl;
-        out << "graft," << i << ",length,"               << graft._length             << std::endl;
-        out << "graft," << i << ",mark direction,"       << graft._markDirection      << std::endl;
+        out << "graft," << i << ",height offset,"        << graft.heightOffset()      << std::endl;
+        out << "graft," << i << ",radius,"               << graft.radius()            << std::endl;
+        out << "graft," << i << ",length,"               << graft.length()            << std::endl;
+        out << "graft," << i << ",mark direction,"       << graft.markDirection()     << std::endl;
         out << "graft," << i << ",recipient,model,"      << graft.recipient.modelID() << std::endl; 
         out << "graft," << i << ",harvest,model,"        << graft.harvest.modelID()   << std::endl;
         out << "graft," << i << ",recipient,transform"   << graft.recipient.transform << std::endl;   

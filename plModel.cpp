@@ -1,7 +1,7 @@
 #include "plModel.h"
 
-
 plModel::plModel( std::string filename )
+    : _filename(filename), _isTransparent(false)
 {
     if (filename.compare(filename.length()-4, 4, ".stl") != 0)
     {
@@ -9,12 +9,15 @@ plModel::plModel( std::string filename )
                   << "'. plModel filenames should have suffix .stl" << std::endl;  		
         return;
     }
-   
+    // import STL file
     plSTL::importFile( _triangles, filename );
-    _mesh = plMesh(_triangles);
-    _filename = filename;
-    _isTransparent = false;
-    isVisible = true;
+    // build mesh
+    _mesh = plMesh(_triangles);  
+    // get min and max extents of model
+    plVector3 min, max;
+    getMinMax(min,max);
+    // build octree       
+    _octree.build( min, max, _triangles, 6 );     
 }
 
 
@@ -136,6 +139,7 @@ void plModel::toggleVisibility()
 
 plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
 {
+    
     PLfloat min = FLT_MAX;
 
     plIntersection closestIntersection(false);
@@ -154,9 +158,10 @@ plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &d
         }
 
     }
-    std::cout << "triangle checks:" << _triangles.size() << "\n";
-    
+
     return closestIntersection; 
+    
+    //return _octree.rayIntersect( start, dir, ignoreBehindRay, backFaceCull );
 }
 
 

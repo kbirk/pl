@@ -13,7 +13,7 @@
 #include "plPlug.h"
 #include "plPolygon.h"
 
-class plPlan;
+//class plPlan;
 
 class plPointAndAngle 
 {
@@ -53,9 +53,10 @@ class plGraft : public plRenderable,
         
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
 
-        PLfloat heightOffset()     const { return _heightOffset; } 
-        PLfloat radius()           const { return _radius; } 
-        PLfloat length()           const { return _length; } 
+        PLfloat          heightOffset()  const { return _heightOffset; } 
+        PLfloat          radius()        const { return _radius; } 
+        PLfloat          length()        const { return _length; } 
+        const plVector3 &markDirection() const { return _markDirection; } 
         
         void adjustHeightOffset ( PLfloat adjustment) { _heightOffset += adjustment; } 
         void adjustRadius       ( PLfloat adjustment) { _radius += adjustment; if (_radius < 0) _radius = 0; _updateCartilageMesh(); _updateBoneMesh(); } 
@@ -71,12 +72,15 @@ class plGraft : public plRenderable,
          
         void draw() const;
 
-        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
+        //friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
+         
+        // make these private, currently public for graft exporting 
+        plPlug  recipient;
+        plPlug  harvest;  
           
     private:
 
-        plPlug  recipient;
-        plPlug  harvest; 
+        
 
         PLfloat    _heightOffset;
         PLfloat    _radius;

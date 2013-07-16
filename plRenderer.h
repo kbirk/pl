@@ -31,12 +31,12 @@ class plRenderer
           
         static void draw();  
          
-        static void queue ( const plPlan &plan );
-        static void queue ( const plGraftEditor &editor );
+        static void queue ( const plPlan           &plan   );
+        static void queue ( const plGraftEditor    &editor );
         static void queue ( const plBoundaryEditor &editor );
-        static void queue ( const plTrackedObject &object ); 
-        static void queue ( const plOctree &octree ); 
-        static void queue ( const plLineMesh &debug ); 
+        static void queue ( const plTrackedObject  &object ); 
+        static void queue ( const plOctree         &octree ); 
+        static void queue ( const plLineMesh       &debug  ); 
          
         static void reportError ( const plString &str );
 

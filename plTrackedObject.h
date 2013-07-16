@@ -10,8 +10,8 @@ class plTrackedObject : public plRenderable
 
     public:
            
-        plTrackedObject ();                                                                           // Empty Constructor, allows for declaration of trackedObjects in headers        
-        plTrackedObject ( const plDRBTransform &ToTrackedPoint, const plDRBTransform &ToTrackedEnd,   //  Real constructor requiring three DRB transforms (and an arthro flag)
+        plTrackedObject ();                                                                           //  empty Constructor, allows for declaration of trackedObjects in headers        
+        plTrackedObject ( const plDRBTransform &ToTrackedPoint, const plDRBTransform &ToTrackedEnd,   //  real constructor requiring three DRB transforms (and an arthro flag)
                           const plDRBTransform &FemurDRBToFemurSTL, bool isArthro = false);
                             
         void            updatePosition( const plDRBTransform &DRBToWorld, const plDRBTransform &FemurToWorld );

@@ -1,4 +1,4 @@
-model,0,bone file,./patient1/bone.stl
+model,0,bone file,./patient1/bone.stl,
 model,0,cartilage file,./patient1/cartilage.stl
 
 defect site,0,model,0

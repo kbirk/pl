@@ -10,25 +10,27 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       Window( x, y, width, height, title )
 {  
     plRenderer::init(); 
-       
-    octree = new plOctree(_plan._models[0].bone, 6);
+      
+      /*
+    plVector3 min, max;
+    _plan._models[0].bone.getMinMax(min,max);
+    octree = new plOctree(min, max, _plan._models[0].bone.triangles(), 6);
     
     
     plIntersection intersection0 = _plan._models[0].bone.rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
-                                                                          plVector3(0.0533538f, 0.998555f, -0.00636944f ));
+                                                                       plVector3(0.0533538f, 0.998555f, -0.00636944f ));
     
     
     plIntersection intersection1 = octree->rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
                                                          plVector3(0.0533538f, 0.998555f, -0.00636944f ));
-                          
-      
-    plMatrix44 mat;
-    mat.importFile( "./patient1/TDRBCAM.xml" ); 
-    std::cout << "mat:\n " << mat << "\n";
-                
-    std::cout << "exhaustive result: " << intersection0.point << "\n";
-    std::cout << "octree result: "     << intersection1.point << "\n";                      
     
+    plIntersection intersection2 = _plan._models[0].bone._octree.rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
+                                                                               plVector3(0.0533538f, 0.998555f, -0.00636944f ));
+                          
+    std::cout << "exhaustive result: " << intersection0.point << "\n";
+    std::cout << "octree alone result: "     << intersection1.point << "\n";     
+    std::cout << "octree member result: "     << intersection2.point << "\n";                    
+    */ 
 }
 
 
@@ -39,7 +41,7 @@ void PlannerWindow::display()
     plRenderer::queue( _plan );
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );
-    plRenderer::queue( *octree );
+    plRenderer::queue( _plan._models[0].cartilage._octree );
    
     plRenderer::draw();
 

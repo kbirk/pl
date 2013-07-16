@@ -160,6 +160,18 @@ PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
     return false;
 }
 
+PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLint x, PLint y, PLbool flag )
+{
+    const plTransform &transform = _selectedGraft->transform(_selectedType);    
+    
+    // translate joystick coords to local graft coords
+    PLfloat localx = plVector3(x, y, 0) * transform.x(); 
+    PLfloat localy = plVector3(x, y, 0) * transform.y(); 
+    PLfloat localz = plVector3(x, y, 0) * transform.z(); 
+    
+    // translate by local coords
+    translateSelected( plVector3(localx, localy, localz) );    
+}
 
 void plGraftEditor::selectGraft( plPlan &plan, PLuint index, PLuint type )
 {   

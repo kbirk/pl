@@ -1,17 +1,24 @@
 #include "plOctree.h"
  
-plOctree::plOctree( const plModel &model, PLuint depth, PLbool exclusive )
-    : _exclusive(exclusive)
+plOctree::plOctree()
+{
+} 
+ 
+plOctree::plOctree( const plVector3 &min, 
+                    const plVector3 &max, 
+                    const plSeq<plTriangle> &triangles, 
+                    PLuint depth)                    
+{
+    build( min, max, triangles, depth );
+}
+
+void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth )
 {
     if (depth == 0)
     {
-        std::cerr << "plOctree plOctree() error: depth must be greater than 0\n";
+        std::cerr << "plOctree::build() error: depth must be greater than 0\n";
         exit(1);
     }
-    
-    // get min and max extents of model
-    plVector3 min, max;
-    model.getMinMax(min,max);    
     
     // centre point of octree
     plVector3 centre = 0.5f * (min+max);
@@ -23,17 +30,16 @@ plOctree::plOctree( const plModel &model, PLuint depth, PLbool exclusive )
     PLfloat maxMax = PL_MAX_OF_3( fabs(maxDiff.x), fabs(maxDiff.y), fabs(maxDiff.z) );       
     PLfloat halfWidth = PL_MAX_OF_2( minMax, maxMax );
     
-    // Construct and fill in root 
-    root = new plOctreeNode( centre, halfWidth );
+    // Construct and fill in _root 
+    _root = new plOctreeNode( centre, halfWidth );
  
     // traverse and fill sub cubes with triangles until desired depth is reached  
-    _fill( model.triangles(), depth, exclusive );
+    _fill( triangles, depth ); 
 }
-
 
 void plOctree::draw() const
 {
-    root->draw();
+    _root->draw();
 }
 
 
@@ -43,12 +49,15 @@ plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVecto
 
     plSeq<const plTriangle*> triangles;
 
-    if (root->rayIntersect( triangles, rayOrigin, rayDirection, ignoreBehindRay ))
+    if ( _root->rayIntersect( triangles, rayOrigin, rayDirection, ignoreBehindRay ) )
     {
+        std::cout << "triangles found: " << triangles.size() << "\n";
+    
         PLfloat min = FLT_MAX;
 
         for ( PLuint i = 0; i < triangles.size(); i++)
         {  
+            std::cout << " t: " << *triangles[i];
             plIntersection intersection = triangles[i]->rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
             
             if (intersection.exists)
@@ -63,18 +72,16 @@ plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVecto
         }
     }
     
-    std::cout << "triangle checks:" << triangles.size() << "\n";
-    
     return closestIntersection; 
     
 }
 
 
-void plOctree::_fill(const plSeq<plTriangle> &triangles, PLuint depth, PLbool exclusive)
+void plOctree::_fill(const plSeq<plTriangle> &triangles, PLuint depth)
 {
     for (PLuint i=0; i< triangles.size(); i++)
     {
-        root->insert( triangles[i], depth-1, exclusive );
+        _root->insert( triangles[i], depth-1 );
     }
 }
 
@@ -106,12 +113,11 @@ void plOctreeNode::draw() const
 }
 
 
-void plOctreeNode::insert( const plTriangle &tri, PLuint depth, PLbool exclusive)
-{
-    // assumes the given triangle is already bound by the octree, so there 
-    // will enver be the case where it does not intersect the current node
-    
+void plOctreeNode::insert( const plTriangle &tri, PLuint depth)
+{    
     // add to current node
+    //      assumes the given triangle is already bound by the current node,
+    //      there will never be the case where it should not be added
     contained.add( &tri );
 
     // contains the 0-7 index of the child, determined using bit wise addition
@@ -126,37 +132,33 @@ void plOctreeNode::insert( const plTriangle &tri, PLuint depth, PLbool exclusive
     if ( fabs(dx) < tri.radius() || fabs(dy) < tri.radius() || fabs(dz) < tri.radius() )
     {
         // straddles a boundary
-        //contained.add( &tri );
-        
-        if (!exclusive)
+        // non exclusive, add to intersected children as well
+        for (PLuint i=0; i<8; i++)
         {
-            // non exclusive, add to intersected children as well
-            for (PLuint i=0; i<8; i++)
+            if ( sphereCheck( tri.centroid(), tri.radius(), i) )
             {
-                if ( sphereCheck( tri.centroid(), tri.radius(), i) )
-                    // part of bounding sphere intersects child, insert
-                    _insertChild( i, tri, depth, exclusive ); 
-            }    
-       }     
-            
+                // part of bounding sphere intersects child, insert
+                _insertChild( i, tri, depth ); 
+            }
+        }    
     }    
     else
     {    
-        // fully contained in child, find child         
+        // fully contained in a single child, find child         
         if ( dx > 0 ) child += 1;
         if ( dy > 0 ) child += 2;
         if ( dz > 0 ) child += 4;
          
-        _insertChild( child, tri, depth, exclusive ); 
+        _insertChild( child, tri, depth ); 
     } 
 }
 
-void plOctreeNode::_insertChild( PLuint index, const plTriangle &tri, PLuint depth, PLbool exclusive )
+void plOctreeNode::_insertChild( PLuint index, const plTriangle &tri, PLuint depth)
 {
     if (children[index] != NULL)    
     {     
         // child already exists, recursively insemaxAABB  
-        children[index]->insert( tri, depth-1, exclusive );
+        children[index]->insert( tri, depth-1 );
     }    
     else   
     { 
@@ -170,15 +172,8 @@ void plOctreeNode::_insertChild( PLuint index, const plTriangle &tri, PLuint dep
             offset.y = ((index & 2) ? step : -step);
             offset.z = ((index & 4) ? step : -step);
             children[index] = new plOctreeNode( centre + offset, step);
-            children[index]->insert( tri, depth - 1, exclusive );
+            children[index]->insert( tri, depth - 1 );
         }
-        /*
-        else
-        {
-            // terminal depth reached, add to this node
-            contained.add( &tri );
-        }
-        */
     }
 }
 
@@ -229,7 +224,6 @@ PLbool plOctreeNode::sphereCheck( const plVector3 &centre, PLfloat radius, PLint
 
 PLbool plOctreeNode::rayIntersect( plSeq<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay ) const
 {
-
     plVector3 minAABB( centre.x - halfWidth, centre.y - halfWidth, centre.z - halfWidth );
     plVector3 maxAABB( centre.x + halfWidth, centre.y + halfWidth, centre.z + halfWidth );
     
@@ -263,14 +257,16 @@ PLbool plOctreeNode::rayIntersect( plSeq<const plTriangle*> &triangles, const pl
     if (tmin > tmax)
         return false;
 
-    PLuint childCount = 0;
+    
     // intersection exists, recurse further
+    PLuint childCount = 0;
+    
     for (PLuint i=0; i<children.size(); i++)
     {       
         if (children[i] != NULL)
         {
             // not a leaf, recurse
-            children[i]->rayIntersect( triangles, rayOrigin, rayDirection ); 
+            children[i]->rayIntersect( triangles, rayOrigin, rayDirection, ignoreBehindRay ); 
             childCount++;            
         }           
     }
@@ -278,10 +274,11 @@ PLbool plOctreeNode::rayIntersect( plSeq<const plTriangle*> &triangles, const pl
     if (childCount == 0)
     {
         // leaf, add triangles
-        for (PLuint j=0; j<contained.size(); j++)
-            triangles.add( contained[j] );
+        for (PLuint i=0; i<contained.size(); i++)
+        {
+            triangles.add( contained[i] );
+        }        
     }
-
     return true;
 }
 
@@ -291,7 +288,7 @@ void plOctreeNode::_updateMesh()
 {
     // DEBUG MESH
     plSeq<plVector3> vertices( 8  );
-    plSeq<PLuint>    indices ( 8*3 ); //12 );
+    plSeq<PLuint>    indices ( 8*3 );
     
     // front face
     vertices.add( plVector3( centre.x - halfWidth, centre.y - halfWidth, centre.z + halfWidth) );

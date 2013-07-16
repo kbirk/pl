@@ -31,8 +31,9 @@ class plGraftEditor
 
         void    draw() const;
 
-        PLbool  processMouseClick( plPlan &plan, PLint x, PLint y );
-        PLbool  processMouseDrag ( plPlan &plan, PLint x, PLint y );
+        PLbool  processMouseClick   ( plPlan &plan, PLint x, PLint y );
+        PLbool  processMouseDrag    ( plPlan &plan, PLint x, PLint y );
+        PLbool  processJoystickDrag ( plPlan &plan, PLint x, PLint y, PLbool flag );
        
         void    selectGraft( plPlan &plan, PLuint index, PLuint type );       
                 

@@ -45,7 +45,7 @@ plVector3 plBoneAndCartilage::getCentroid() const
     return 0.5f * (max + min);    
 }   
  
-void plBoneAndCartilage::importCSV( const plSeq<plString> &row ) //, const plString &directory )
+void plBoneAndCartilage::importCSV( const plSeq<plString> &row )
 {
     // fill in the field            
     plString subfield = row[2];

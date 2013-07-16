@@ -6,7 +6,11 @@
 #include "plVector3.h"
 #include "plMath.h"
 #include "plLineMesh.h"
-#include "plModel.h"
+#include "plTriangle.h"
+//#include "plModel.h"
+
+// NOTE:    plOctrees are not exclusive, if a triangle is in a node, it will also be in its parent node
+//          as well. This is not as memory efficient, but gives much better performance
 
 // children quadrant indices 
 // (functions rely on specific bitwise AND operations)
@@ -33,7 +37,7 @@ class plOctreeNode
         plSeq<const plTriangle*>  contained;     // linked list of objects contained at this node 
         
         void    draw  () const;        
-        void    insert( const plTriangle &tri, PLuint depth, PLbool exclusive );
+        void    insert( const plTriangle &tri, PLuint depth);
         
         PLfloat squaredDistanceFromPoint( const plVector3 &point, PLint child = -1 ) const;
         PLbool  sphereCheck             ( const plVector3 &centre, PLfloat radius, PLint child = -1 ) const;
@@ -44,7 +48,7 @@ class plOctreeNode
                            
         plLineMesh  _mesh;
 
-        void _insertChild( PLuint index, const plTriangle &tri, PLuint depth, PLbool exclusive);
+        void _insertChild( PLuint index, const plTriangle &tri, PLuint depth);
         void _updateMesh();
         
 };
@@ -52,9 +56,11 @@ class plOctreeNode
 class plOctree
 {
     public:
+        
+        plOctree();
+        plOctree( const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth);
 
-        plOctreeNode *root;
-        plOctree( const plModel &model, PLuint depth, PLbool exclusive = false );
+        void build( const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth); 
 
         plIntersection rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false,  PLbool backFaceCull = false ) const;
 
@@ -62,11 +68,9 @@ class plOctree
         
     private:
     
-        PLbool _exclusive;  // if each triangle is exclusive to a single cube
-                            // exclusive octree     = better memory efficiency
-                            // non-exclusive octree = better performance
+        plOctreeNode *_root;
     
-        void _fill(const plSeq<plTriangle> &triangles, PLuint depth, PLbool exclusive);
+        void _fill(const plSeq<plTriangle> &triangles, PLuint depth);
 
 };
 

@@ -8,6 +8,7 @@
 #include "plPickingTexture.h"
 #include "plMesh.h"
 #include "plRenderingPipeline.h"
+#include "plOctree.h"
 
 class plModel : public plRenderable
 {
@@ -29,13 +30,17 @@ class plModel : public plRenderable
                                      PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
 
         friend std::ostream& operator << ( std::ostream& out, const plModel &m );
+         
+         plOctree              _octree;
           
 	private:
 	
 		plMesh                _mesh;
         plSeq<plTriangle>     _triangles;
+        
         PLbool                _isTransparent;
 		plString              _filename;
+
 };
 
 std::ostream& operator << ( std::ostream& out, const plModel &m );
