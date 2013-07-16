@@ -18,6 +18,20 @@ plString::plString (const char* s)
 
 }
 
+bool plString::importFile( const std::string &filename)      
+{
+    std::ifstream in(filename, std::ios::in | std::ios::binary);
+    if (in)
+    {
+        std::string contents;
+        in.seekg(0, std::ios::end);
+        this->resize(in.tellg());
+        in.seekg(0, std::ios::beg);
+        in.read(&(*this)[0], this->size());
+        in.close();
+    }  
+}    
+
 void plString::toLower()
 {
     for (PLuint i = 0; i < length(); i++)

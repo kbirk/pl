@@ -192,6 +192,10 @@ PLint plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool selec
             _selectedPointIndex = newIndex;
         }
         
+        std::cout << "origin: " << rayOrigin << "\n";
+        std::cout << "ray: "    << rayDirection << "\n";
+        std::cout << "result: " << intersection.point << "\n";
+        
         return newIndex;
     }
 

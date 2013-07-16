@@ -12,6 +12,23 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
     plRenderer::init(); 
        
     octree = new plOctree(_plan._models[0].bone, 6);
+    
+    
+    plIntersection intersection0 = _plan._models[0].bone.rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
+                                                                          plVector3(0.0533538f, 0.998555f, -0.00636944f ));
+    
+    
+    plIntersection intersection1 = octree->rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
+                                                         plVector3(0.0533538f, 0.998555f, -0.00636944f ));
+                          
+      
+    plMatrix44 mat;
+    mat.importFile( "./patient1/TDRBCAM.xml" ); 
+    std::cout << "mat:\n " << mat << "\n";
+                
+    std::cout << "exhaustive result: " << intersection0.point << "\n";
+    std::cout << "octree result: "     << intersection1.point << "\n";                      
+    
 }
 
 

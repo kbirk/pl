@@ -154,6 +154,8 @@ plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &d
         }
 
     }
+    std::cout << "triangle checks:" << _triangles.size() << "\n";
+    
     return closestIntersection; 
 }
 

@@ -10,6 +10,8 @@ class plString : public std::string
         plString();
         plString(const std::string& str);
         plString(const char* s);
+          
+        bool importFile( const std::string &filename);          
            
         bool compare( const plString &str );
         bool compare( const plString &str, PLuint num );

@@ -38,7 +38,7 @@ class plOctreeNode
         PLfloat squaredDistanceFromPoint( const plVector3 &point, PLint child = -1 ) const;
         PLbool  sphereCheck             ( const plVector3 &centre, PLfloat radius, PLint child = -1 ) const;
         
-        const plSeq<const plTriangle*> &rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false ) const;
+        PLbool rayIntersect ( plSeq<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false ) const;
         
     private:
                            
@@ -56,7 +56,7 @@ class plOctree
         plOctreeNode *root;
         plOctree( const plModel &model, PLuint depth, PLbool exclusive = false );
 
-        const plSeq<const plTriangle*> &rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false ) const;
+        plIntersection rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false,  PLbool backFaceCull = false ) const;
 
         void draw() const;
         
