@@ -1,19 +1,19 @@
 #ifndef __PL_GRAFT_H__
 #define __PL_GRAFT_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plRenderable.h"
 #include "plEditable.h"
 #include "plVector3.h"
 #include "plTriangle.h"
-#include "plBoneAndCartilage.h"
+#include "plDraw.h"
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
-#include "plTransform.h"
 #include "plMesh.h"
-#include "plPlan.h"
+#include "plPlug.h"
 #include "plPolygon.h"
 
+//class plPlan;
 
 class plPointAndAngle 
 {
@@ -42,60 +42,44 @@ class plCap
         plCap() {}
 };
 
-/*
-class plPlug
-{
-    public:
-
-        plPlug() {}
-
-        PLuint      _modelID
-        plTransform _transform;
-}
-*/
 
 class plGraft : public plRenderable,
                 public plEditable
 {
 
     public:
-
-        plTransform recipientTransform;        
-        plTransform harvestTransform;
-            
+   
         plGraft();
         
-        void init( const plSeq<plBoneAndCartilage> &models );
-        
-        void readFromCSV( const plSeq<plString> &row );
+        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
-        PLfloat heightOffset()     const { return _heightOffset; } 
-        PLfloat radius()           const { return _radius; } 
-        PLfloat length()           const { return _length; } 
+        PLfloat          heightOffset()  const { return _heightOffset; } 
+        PLfloat          radius()        const { return _radius; } 
+        PLfloat          length()        const { return _length; } 
+        const plVector3 &markDirection() const { return _markDirection; } 
         
-        PLuint  recipientModelID() const { return _recipientModelID; }
-        PLuint  harvestModelID()   const { return _harvestModelID; }
-
         void adjustHeightOffset ( PLfloat adjustment) { _heightOffset += adjustment; } 
         void adjustRadius       ( PLfloat adjustment) { _radius += adjustment; if (_radius < 0) _radius = 0; _updateCartilageMesh(); _updateBoneMesh(); } 
         void adjustLength       ( PLfloat adjustment) { _length += adjustment; if (_length < 0) _length = 0; _updateCartilageMesh(); _updateBoneMesh(); } 
 
-        void translateHarvest  ( const plVector3 &translation );
-        void translateRecipient( const plVector3 &translation );
+        const plTransform &transform( PLuint type ) const;
 
-        void spinMark( PLfloat degrees );
+        void translate  ( PLuint type, const plVector3 &translation );
+        void translateX ( PLuint type, PLfloat distance, const plVector3 &planeNormal );
+        void translateZ ( PLuint type, PLfloat distance, const plVector3 &planeNormal );
+        void rotate     ( PLuint type, const plVector3 &axis, PLfloat angleDegrees );
+        void spinMark   ( PLfloat degrees );
          
         void draw() const;
 
-void      setCaps               ( const plSeq<plBoneAndCartilage> &models );
-
-        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
+        //friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
          
+        // make these private, currently public for graft exporting 
+        plPlug  recipient;
+        plPlug  harvest;  
+          
     private:
 
-        PLuint     _recipientModelID;
-        PLuint     _harvestModelID;
-        
         PLfloat    _heightOffset;
         PLfloat    _radius;
         PLfloat    _length;
@@ -108,22 +92,21 @@ void      setCaps               ( const plSeq<plBoneAndCartilage> &models );
         plCap      _cartilageCap;
         plCap      _boneCap;
         
-        void      _setBoneColour() const;
-        void      _setCartilageColour() const;
-                
+        void      _setBoneColour     () const;
+        void      _setCartilageColour() const;              
         void      _drawGraft() const;
-               
-        plCap     _findCap              ( const plSeq<plTriangle> &triangles );
+                  
+        void      _setCaps();        
+        plCap     _findCap              ( const plModel &model );// const plSeq<plTriangle> &triangles );
         bool      _triangleIntersection ( const plTriangle &tri, plPolygon &p ) const;
-        plVector3 _pointAtAngle         ( PLfloat theta ) const;
-        PLfloat   _angleOfPoint         ( const plVector3 &v ) const;
+        //plVector3 _pointAtAngle         ( PLfloat theta ) const;
+        //PLfloat   _angleOfPoint         ( const plVector3 &v ) const;
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;
 
         void      _updateCartilageMesh();
-        void      _updateBoneMesh();
-        void      _updateMarkPosition();
-
-        void      _translate( plTransform &transform, PLuint modelID, const plVector3 &translation );
+        void      _updateBoneMesh     ();
+        void      _updateMarkPosition ();
+        
 };
 
 bool _comparePointAndAngle( const plPointAndAngle &a, const plPointAndAngle &b );

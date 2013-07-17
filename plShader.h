@@ -1,7 +1,8 @@
 #ifndef __PL_SHADER_H__
 #define __PL_SHADER_H__
 
-#include "pl.h"
+#include "plCommon.h"
+#include "plMatrix44.h"
 
 // TODO: switch to layout qualifiers!!!!
 #define PL_POSITION_ATTRIBUTE  0
@@ -82,7 +83,7 @@ class plShader
 			// bind attribute indices, bind fragment shader outputs
             // ** must be done before linking ** 
             // no issues if specific attribute is not present in shader
-            //bindAttributeLocations();   
+            bindAttributeLocations();   
             //bindFragDataLocations();    
 
             // link program, check for error
@@ -183,21 +184,25 @@ class plShader
             // print error message
 			fprintf(stdout, "%s\n", &errorMessage[0]);
         }
-        /*
+
+        
         void bindAttributeLocations() 
         {
             // bind all available attribute locations, doesnt seem to complain if they don't exist
-            glBindAttribLocation(_shaderProgramID, POSITION_ATTRIBUTE,  "vPosition" );
-			glBindAttribLocation(_shaderProgramID, NORMAL_ATTRIBUTE, 	 "vNormal"   );
-            glBindAttribLocation(_shaderProgramID, TANGENT_ATTRIBUTE, 	 "vTangent"  );
+            glBindAttribLocation(_shaderProgramID, PL_POSITION_ATTRIBUTE,  "vPosition" );
+			glBindAttribLocation(_shaderProgramID, PL_NORMAL_ATTRIBUTE,    "vNormal"   );
+            glBindAttribLocation(_shaderProgramID, PL_COLOUR_ATTRIBUTE,    "vColour"   );
+            /*
+            glBindAttribLocation(_shaderProgramID, TANGENT_ATTRIBUTE, 	"vTangent"  );
             glBindAttribLocation(_shaderProgramID, BITANGENT_ATTRIBUTE, "vBiTangent");
 			glBindAttribLocation(_shaderProgramID, TEXTURE_ATTRIBUTE0,  "vTexCoord0");
             glBindAttribLocation(_shaderProgramID, TEXTURE_ATTRIBUTE1,  "vTexCoord1");
             glBindAttribLocation(_shaderProgramID, TEXTURE_ATTRIBUTE2,  "vTexCoord2");
             glBindAttribLocation(_shaderProgramID, TEXTURE_ATTRIBUTE3,  "vTexCoord3");
+            */
         }
         
-        
+        /* these are used for multiple render targets
         void bindFragDataLocations()
         {      
 			// any name may be specified in name, including a name that is never
@@ -225,6 +230,9 @@ class plShader
             glUseProgram(0);  
 		}
 		
+		virtual void getUniformLocations () = 0;
+		virtual void setTransformUniforms(const plMatrix44 &model, const plMatrix44 &view, const plMatrix44 &projection) const {};
+
     protected:
 
 		GLuint _shaderProgramID;

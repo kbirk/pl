@@ -1,50 +1,48 @@
 #include "plTrackedObject.h"
 
-
-trackedObject::trackedObject(DRBTransform ToTrackedPoint,
-                             DRBTransform ToTrackedEnd,
-                             DRBTransform FemurDRBToFemurSTL, bool isArthro) {
-    DRBToTrackedPoint       = ToTrackedPoint.clone();
-    DRBToTrackedEnd         = ToTrackedEnd.clone();
-    ToFemurSTL              = FemurDRBToFemurSTL.clone();
-    trackedTip              = plVector3(0, 0, 0);
-    trackedEnd              = plVector3(0, 0, 0);
-    rotationAxis            = plVector3(0, 0, 0);
-    tTipWorldCoords         = plVector3(0, 0, 0);
-    tEndWorldCoords         = plVector3(0, 0, 0);
-    zeroVec                 = plVector3(0, 0, 0);
-    visible                 = false;
-    isArthroscope           = isArthro;
+plTrackedObject::plTrackedObject()
+{
 }
 
-void trackedObject::updatePosition(DRBTransform DRBToWorld, DRBTransform FemurToWorld) {
+plTrackedObject::plTrackedObject( const plDRBTransform &ToTrackedPoint,
+                                  const plDRBTransform &ToTrackedEnd,
+                                  const plDRBTransform &FemurDRBToFemurSTL, bool isArthro) {
+    _DRBToTrackedPoint = ToTrackedPoint.clone();
+    _DRBToTrackedEnd   = ToTrackedEnd.clone();
+    _toFemurSTL        = FemurDRBToFemurSTL.clone();
+    _trackedTip        = plVector3(0, 0, 0);
+    _trackedEnd        = plVector3(0, 0, 0);
+    _rotationAxis      = plVector3(0, 0, 0);
+    _tipWorldCoords    = plVector3(0, 0, 0);
+    _endWorldCoords    = plVector3(0, 0, 0);
+    _zeroVec           = plVector3(0, 0, 0);
+    isVisible         = false;
+    _isArthroscope     = isArthro;
+}
 
-    tTipWorldCoords   = DRBToTrackedPoint.applyTransform(zeroVec);
-    tTipWorldCoords   = DRBToWorld.applyTransform(tTipWorldCoords);
-    trackedTip        = FemurToWorld.applyInverseTransform(tTipWorldCoords);
-    trackedTip        = ToFemurSTL.applyTransform(trackedTip);
+void plTrackedObject::updatePosition( const plDRBTransform &DRBToWorld, const plDRBTransform &FemurToWorld) 
+{
 
-    if (!isArthroscope) {
-        tEndWorldCoords = DRBToTrackedEnd.applyTransform(zeroVec);
+    _tipWorldCoords   = _DRBToTrackedPoint.applyTransform(_zeroVec);
+    _tipWorldCoords   = DRBToWorld.applyTransform(_tipWorldCoords);
+    _trackedTip       = FemurToWorld.applyInverseTransform(_tipWorldCoords);
+    _trackedTip       = _toFemurSTL.applyTransform(_trackedTip);
+
+    if (!_isArthroscope) 
+    {
+        _endWorldCoords = _DRBToTrackedEnd.applyTransform(_zeroVec);
     }
-    else {
+    else 
+    {
         // arthroscope end is rotated by 30 degrees from camera view direction
         // and must be handled differently
-        tEndWorldCoords = DRBToTrackedEnd.applyTransform(
-                plVector3(0, 0, -10));
+        _endWorldCoords = _DRBToTrackedEnd.applyTransform(plVector3(0, 0, -10));
     }
-    tEndWorldCoords     = DRBToWorld.applyTransform(tEndWorldCoords);
-    trackedEnd          = FemurToWorld.applyInverseTransform(
-            tEndWorldCoords);
-    trackedEnd          = ToFemurSTL.applyTransform(trackedEnd);
-    rotationAxis    = (((trackedEnd-trackedTip).normalize())
-                       ^ plVector3(0,0,1)).normalize();
-                                     // 180 / PI = 57.295779513082320876798154
-    rotationAngle   = - acos((trackedEnd-trackedTip).normalize()
-                             * plVector3(0,0,1)) * 57.295779513082320876798154;
+    _endWorldCoords  = DRBToWorld.applyTransform(_endWorldCoords);
+    _trackedEnd      = FemurToWorld.applyInverseTransform( _endWorldCoords);
+    _trackedEnd      = _toFemurSTL.applyTransform(_trackedEnd);
+    _rotationAxis    = ( ((_trackedEnd-_trackedTip).normalize()) ^ plVector3(0,0,1) ).normalize();
+    _rotationAngle   = - acos((_trackedEnd-_trackedTip).normalize() * plVector3(0,0,1)) * 57.295779513082320876798154;
 
 }
 
-void trackedObject::setVisibility(bool currentVisibility) {
-    visible = currentVisibility;
-}

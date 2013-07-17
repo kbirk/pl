@@ -1,13 +1,16 @@
 #ifndef __PL_BOUNDARY_EDITOR_H__
 #define __PL_BOUNDARY_EDITOR_H__
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plSeq.h"
 #include "plVector3.h"
 #include "plPlan.h"
 #include "plBoundary.h"
 #include "plDefectSite.h"
 #include "plDonorSite.h"
+#include "plMatrixStack.h"
+#include "plDraw.h"
+#include "plWindow.h"
 
 class plBoundaryEditor
 {
@@ -15,38 +18,37 @@ class plBoundaryEditor
 
         plBoundaryEditor();
         
-        void        clearSelection();           
-        void        selectBoundary( PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex); 
-        plBoundary& getSelectedBoundary();
-        
-        PLbool  processMouseClick( PLint x, PLint y );
-        PLbool  processMouseDrag( PLint x, PLint y );
+        void    clearSelection( plPlan &plan );                     
+        void    selectBoundary( plPlan &plan, PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex ); 
 
-        //void moveSelectedBoundary (); // shift entire boundary around!
-        
-        PLint addPoint           ( PLuint x, PLuint y, PLbool selectNewPoint = true );
-        //void  addBoundary        ( PLuint x, PLuint y, PLuint type, PLbool selectNewBoundary = true );
-        
-        void  moveSelectedPoint  ( PLuint x, PLuint y );
-        void  removeSelectedPoint();
+        PLbool  isGBoundarySelected() const { return (_selectedBoundary != NULL); }
 
-        void  draw() const;
+        PLbool  processMouseClick( plPlan &plan, PLint x, PLint y );
+        PLbool  processMouseDrag ( plPlan &plan, PLint x, PLint y );
+
+        PLint   addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
+        void    moveSelectedPoint  ( PLuint x, PLuint y );
+        void    removeSelectedPoint();
+
+        void    draw( const plPlan &plan ) const;
 
     private: 
     
-        PLint _selectedBoundaryType;
-        PLint _selectedBoundaryIndex;
-        PLint _selectedPointIndex;
+        PLint       _selectedBoundaryType;  
+        // Plint       _selectedBoundaryIndex;    use this and above to determine with pl*Site 
+        plBoundary *_selectedBoundary;
+        PLint       _selectedPointIndex;
          
-        void _clearDefectSplineBoundaries();
-        void _clearDonorSiteBoundaries();
-        void _clearIGuideBoundaries();
+        void _clearDefectSiteBoundaries  ( plPlan &plan );
+        void _clearDonorSiteBoundaries   ( plPlan &plan );
+        void _clearIGuideBoundaries      ( plPlan &plan );
 
         void _checkAndSelectBoundary     ( plBoundary &boundary, PLuint i, PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex);
-        void _selectDefectSplineCorner   ( PLuint boundaryIndex, PLuint pointIndex );
-        void _selectDefectSplineBoundary ( PLuint boundaryIndex, PLuint pointIndex );
-        void _selectDonorSiteBoundary    ( PLuint boundaryIndex, PLuint pointIndex );
-        void _selectIGuideBoundary       ( PLuint boundaryIndex, PLuint pointIndex );
+        
+        void _selectDefectSiteSpline     ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
+        void _selectDefectSiteBoundary   ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
+        void _selectDonorSiteBoundary    ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
+        void _selectIGuideBoundary       ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
        
 };
 

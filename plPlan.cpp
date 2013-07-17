@@ -2,7 +2,7 @@
 
 plPlan::plPlan( plString filename )
 {
-    if (filename.compare(filename.size()-4, 4, ".csv") != 0)
+    if (filename.compare(".csv", filename.size()-4, 4))
     {
         std::cerr << "Unrecognized suffix on filename '" << filename 
                   << "'. plPlan filenames should have suffix .csv" << std::endl;                
@@ -24,7 +24,7 @@ plPlan::plPlan( int argc, char **argv )
     {
         // 1 arguments
         plString filename(argv[1]);
-        if (filename.compare(filename.size()-4, 4, ".csv") != 0)
+        if (filename.compare(".csv", filename.size()-4, 4))
         {
             std::cerr << "Unrecognized suffix on filename '" << filename 
                       << "'. plPlan filenames should have suffix .csv" << std::endl;                
@@ -45,89 +45,140 @@ plPlan::plPlan( int argc, char **argv )
         for (PLint i = 1; i < argc; i+=2)
         {
             // model input order: bone, cartilage, bone, cartilage, etc...
-            _models.add( plBoneAndCartilage( argv[i], argv[i+1] ) );
+            _models.add( new plBoneAndCartilage( argv[i], argv[i+1] ) );
         }
+    }
+
+}
+
+plPlan::~plPlan()
+{
+    for ( PLuint i = 0; i < _defectSites.size(); i++) delete _defectSites[i];
+    for ( PLuint i = 0; i < _donorSites.size();  i++) delete _donorSites[i];
+    for ( PLuint i = 0; i < _grafts.size();      i++) delete _grafts[i];
+    for ( PLuint i = 0; i < _iGuides.size();     i++) delete _iGuides[i];
+    for ( PLuint i = 0; i < _models.size();      i++) delete _models[i];
+}
+
+void plPlan::drawElements() const
+{
+    if (!isVisible)
+        return;
+
+    // Draw defect boundary 
+    for ( PLuint i = 0; i < _defectSites.size(); i++)
+    {
+        plPicking::value.id = i; 
+        _defectSites[i]->draw();
+    }
+       
+    // Draw harvest boundaries   
+    for ( PLuint i = 0; i < _donorSites.size(); i++)
+    {
+        plPicking::value.id = i;        
+        _donorSites[i]->draw();            
+    }    
+
+    // Draw grafts
+    for ( PLuint i = 0; i < _grafts.size(); i++)
+    {       
+            
+        plPicking::value.id = i; 
+        _grafts[i]->draw();
+    }
         
-        // FIX THIS TO GET THE INPUT DIRECTORY OF MODEL FILES
-        date = directory = "";  
+    // Draw iGuides
+    for ( PLuint i = 0; i < _iGuides.size(); i++)
+    {            
+        plPicking::value.id = i; 
+        _iGuides[i]->draw();
+    }
+}
+
+void plPlan::drawModels() const
+{
+    // draw models (draw last for proper transparency blending)
+    for (PLuint i =0; i < _models.size(); i++)
+    {            
+        plPicking::value.id = i;    
+        _models[i]->draw();
     }
 
 }
 
 
-void plPlan::draw( PLbool picking )
+void plPlan::addDefectSite( PLuint modelIndex )
 {
-    if (picking)
+    if ( _models.size() < modelIndex+1 )
     {
-        glEnable     ( GL_STENCIL_TEST );				      // need stencil testing enabled  					
-	    glStencilFunc( GL_ALWAYS, 0xFF, 0xFF );               // replace where rendered 		
-	    glStencilOp  ( GL_REPLACE, GL_REPLACE, GL_REPLACE );  // always replace previous bit	
-	    glStencilMask( 0x01 );                                // only write to first bit
-    } 
+        std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
+        return;
+    }
+    _defectSites.add( new plDefectSite( modelIndex, *_models[modelIndex] ) );
+}
 
-    if (isVisible)
+void plPlan::addDonorSite( PLuint modelIndex )
+{
+    if ( _models.size() < modelIndex+1 )
     {
-        // Draw defect boundary 
-        for ( PLuint i = 0; i < _defectSites.size(); i++)
-        {
-            _plPickingState->id = i; 
-            _defectSites[i].draw();
-        }
-       
-        // Draw harvest boundaries   
-        for ( PLuint i = 0; i < _donorSites.size(); i++)
-        {
-            _plPickingState->id = i;        
-            _donorSites[i].draw();            
-        }    
+        std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
+        return;
+    }
+    _donorSites.add( new plDonorSite( modelIndex, *_models[modelIndex] ) );
+}
 
-        // Draw grafts
-        for ( PLuint i = 0; i < _grafts.size(); i++)
-        {       
-            
-            _plPickingState->id = i; 
-            _grafts[i].draw();
-        }
-        
-        // Draw iGuides
-        for ( PLuint i = 0; i < _iGuides.size(); i++)
-        {            
-            _plPickingState->id = i; 
-            _iGuides[i].draw();
-        }
-    }      
-    
-    if (picking)
-    {    
-	    glStencilOp  ( GL_KEEP, GL_KEEP, GL_KEEP );	        // no longer modify the stencil bits  
-        glStencilFunc( GL_EQUAL, 0x00, 0xFF);               // only render to bits = 0 (have not been written)
+void plPlan::addIGuide( PLuint modelIndex )
+{
+    if ( _models.size() < modelIndex+1 )
+    {
+        std::cerr << " plPlan addIGuide() error: model ID does not exist\n";
+        return;
     }
-    
-    // draw models (draw last for proper transparency blending)
-    for (PLuint i =0; i < _models.size(); i++)
-    {            
-        _plPickingState->id = i;    
-        _models[i].draw();
-    }
-    
-    if (picking)
-    {            
-        glDisable( GL_STENCIL_TEST );
-    }
+    _iGuides.add( new plIGuide( modelIndex, *_models[modelIndex] ) );
+}
+
+
+void plPlan::removeDefectSite( PLuint index)
+{
+    delete _defectSites[index];
+    _defectSites.remove( index );
+}
+
+
+void plPlan::removeDonorSite( PLuint index)
+{
+    delete _donorSites[index];
+    _donorSites.remove( index );
+}
+
+
+void plPlan::removeIGuide( PLuint index)
+{
+    delete _iGuides[index];
+    _iGuides.remove( index );
 }
 
 
 template<class T>
-T &plGetImportReference( plSeq<T> &ts,  const plString &index )
+T &plGetImportReference( plSeq<T*> &ts,  const plString &index )
 {
-    PLuint j = plFromString<PLuint>( index );           
+    PLuint j = plString::fromString<PLuint>( index );           
     while (ts.size() < j+1)
     {
-        ts.add( T() );  // add new elements until index exists 
+        ts.add( new T() );  // add new elements until index exists 
     }
-    return ts[j];
+    return *ts[j];
 }  
 
+template<class T>
+T *getElementPointer( plSeq<T*> &ts,  PLuint index )
+{        
+    while (ts.size() < index+1)
+    {
+        ts.add( NULL );  // add new elements until index exists 
+    }
+    return ts[index];
+}
 
 void plPlan::importFile( plString filename )
 {
@@ -135,82 +186,62 @@ void plPlan::importFile( plString filename )
 
     for ( PLuint i = 0; i < csv.data.size(); i++)
     {
-        plString field = csv.data[i][0];
+           
+        plString field = csv.data[i][0];    // get field name
+        PLuint   index = plString::fromString<PLuint>( csv.data[i][1] );   // get field index
 
-        if (plStringCompareCaseInsensitive(field, "date") )
+        if (field.compareCaseInsensitive( "model") )     
         {
-            date = csv.data[i][1];
-        }
-        else if (plStringCompareCaseInsensitive(field, "directory") ) 
-        {
-            directory = csv.data[i][1];
-        } 
-        else if (plStringCompareCaseInsensitive(field, "model") )     
-        {
-            // get reference to model
-            plBoneAndCartilage &model = plGetImportReference( _models, csv.data[i][1] ); //plGetModelReference( csv.data[i][1] ); 
+            // get pointer to model
+            plBoneAndCartilage *model = getElementPointer( _models, index );
             
-            // read model attribute from current row
-            model.readFromCSV( csv.data[i], directory );    // assumes directory attribute has been read by this point
+            _models[index] = new plBoneAndCartilage( csv.data[i][3], csv.data[i+1][3] );
+            i++;
+            
+            
         }
         
-        else if (plStringCompareCaseInsensitive(field, "defect site") ) // read before boundary
+        else if (field.compareCaseInsensitive( "defect site") ) // read before boundary
         {
             // get reference to defect site
             plDefectSite &defectSite = plGetImportReference( _defectSites, csv.data[i][1] );
-            
             // read defect site attribute from current row
-            defectSite.readFromCSV( csv.data[i] );                    
+            defectSite.importCSV( csv.data[i], _models );                    
         } 
         
-        else if (plStringCompareCaseInsensitive(field, "donor site") ) // read before boundary
+        else if (field.compareCaseInsensitive( "donor site") ) // read before boundary
         {
             // get reference to donor region
             plDonorSite &donorSite = plGetImportReference( _donorSites, csv.data[i][1] ); 
-            
             // read donor region attribute from current row
-            donorSite.readFromCSV( csv.data[i] );                  
+            donorSite.importCSV( csv.data[i], _models );                  
         } 
 
-        else if (plStringCompareCaseInsensitive(field, "graft" ) ) 
-        {        
+        else if (field.compareCaseInsensitive( "graft" ) ) 
+        {    
             // get reference to graft
-            plGraft &graft = plGetImportReference( _grafts, csv.data[i][1] ); 
-            
+            plGraft &graft = plGetImportReference( _grafts, csv.data[i][1] );             
             // read graft attribute from row
-            graft.readFromCSV( csv.data[i] );
+            graft.importCSV( csv.data[i], _models );
         } 
-        else if (plStringCompareCaseInsensitive(field, "iguide" ) ) 
-        {       
+        else if (field.compareCaseInsensitive( "iguide" ) ) 
+        {  
              // get reference to iGuide
             plIGuide &iguide = plGetImportReference( _iGuides, csv.data[i][1] ); 
-
             // read iguide attribute from current row
-            iguide.readFromCSV(csv.data[i]);
+            iguide.importCSV( csv.data[i], _models );
         } 
         else
         {
             std::cerr << "Error in '" << filename << "': Unrecognized word '" << field << "' in first column." << std::endl;
         }
     }
-       
-    // init grafts    
-    /*for ( PLuint i = 0; i < _grafts.size(); i++)
-    {                              
-        _grafts[i].init( _models );       
-    }
-
-    // init deflect splines
-    for ( PLuint i = 0; i < _defectSites.size(); i++) 
-    {        
-        _defectSites[i].computeSpline( _models ); 
-    }*/
 
 }
 
 void plPlan::exportFile( plString filename )
 {
-    std::ofstream out( plStringConcat( filename, ".csv").c_str() );
+    std::ofstream out( (filename + plString(".csv")).c_str() );
         
     if (!out)
     {
@@ -223,82 +254,65 @@ void plPlan::exportFile( plString filename )
     }
 }
 
-plBoundary &plBoundaryGet(PLuint type, PLuint id)
-{
-    switch (type)
-    {
-        case PL_PICKING_TYPE_DEFECT_CORNERS:        return _plPlan->_defectSites[id].corners;            
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:       return _plPlan->_defectSites[id].boundary;            
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:        return _plPlan->_donorSites[id].boundary;            
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:       return _plPlan->_iGuides[id].boundary;
-        default:                                    return _plPlan->_defectSites[0].corners;  // default
-    }
-}
-
 
 std::ostream& operator << ( std::ostream& out, const plPlan &p )
 {
-    // date / directory
-    out << "date," << p.date << std::endl;
-    out << "directory," << p.directory << std::endl;
-    out << std::endl;
-
     // models
-    for (PLuint i=0; i<p._models.size(); i++) 
+    for (PLuint i=0; i<p.models().size(); i++) 
     {
-        out << "model," << i << ",bone file,"      << p._models[i].bone.getFilenameWithoutPath()        << std::endl;
-        out << "model," << i << ",cartilage file," << p._models[i].cartilage.getFilenameWithoutPath()   << std::endl;
+        const plBoneAndCartilage &model = p.models(i);
+    
+        out << "model," << i << ",bone file,"      << model.bone.filename()        << std::endl;
+        out << "model," << i << ",cartilage file," << model.cartilage.filename()   << std::endl;
         out << std::endl;
     }
     
     // splines
-    for (PLuint i=0; i<p._defectSites.size(); i++) 
+    for (PLuint i=0; i<p.defectSites().size(); i++) 
     {    
-        plDefectSite &defectSite = p._defectSites[i];
+        const plDefectSite &defectSite = p.defectSites(i);
         
-        out << "defect site," << i << ",model,"  << defectSite._modelID << std::endl;        
-        out << "defect site," << i << ",corners" << defectSite.corners  << std::endl;  
+        out << "defect site," << i << ",model,"   << defectSite.modelID() << std::endl;        
+        out << "defect site," << i << ",spline"   << defectSite.spline  << std::endl;  
         out << "defect site," << i << ",boundary" << defectSite.boundary << std::endl;  
         out << std::endl;
     }
 
     // donor regions
-    for (PLuint i=0; i<p._donorSites.size(); i++) 
+    for (PLuint i=0; i<p.donorSites().size(); i++) 
     {
-        plDonorSite &donor = p._donorSites[i];
+        const plDonorSite &donor = p.donorSites(i);
         
-        out << "donor site," << i << ",model,"   << donor._modelID << std::endl;
+        out << "donor site," << i << ",model,"   << donor.modelID() << std::endl;
         out << "donor site," << i << ",boundary" << donor.boundary << std::endl;  
         out << std::endl;
     }
 
     // grafts
-    for (PLuint i=0; i<p._grafts.size(); i++) 
+    for (PLuint i=0; i<p.grafts().size(); i++) 
     {
-        plGraft &graft = p._grafts[i];
+        const plGraft &graft = p.grafts(i);
+                                 
+        out << "graft," << i << ",height offset,"        << graft.heightOffset()      << std::endl;
+        out << "graft," << i << ",radius,"               << graft.radius()            << std::endl;
+        out << "graft," << i << ",length,"               << graft.length()            << std::endl;
+        out << "graft," << i << ",mark direction,"       << graft.markDirection()     << std::endl;
+        out << "graft," << i << ",recipient,model,"      << graft.recipient.modelID() << std::endl; 
+        out << "graft," << i << ",harvest,model,"        << graft.harvest.modelID()   << std::endl;
+        out << "graft," << i << ",recipient,transform"   << graft.recipient.transform << std::endl;   
+        out << "graft," << i << ",harvest,transform"     << graft.harvest.transform   << std::endl; // write/read this last to properly calculate plug meshes
         
-        out << "graft," << i << ",harvest model,"         << graft._harvestModelID                 << std::endl;
-        out << "graft," << i << ",recipient model,"       << graft._recipientModelID               << std::endl;       
-        out << "graft," << i << ",height offset,"         << graft._heightOffset                   << std::endl;
-        out << "graft," << i << ",radius,"                << graft._radius                         << std::endl;
-        out << "graft," << i << ",length,"                << graft._length                         << std::endl;
-        out << "graft," << i << ",mark direction,"        << graft._markDirection                  << std::endl;
-        out << "graft," << i << ",recipient origin,"      << graft.recipientTransform.origin()     << std::endl;
-        out << "graft," << i << ",recipient x,"           << graft.recipientTransform.x()          << std::endl;
-        out << "graft," << i << ",recipient y,"           << graft.recipientTransform.y()          << std::endl;       
-        out << "graft," << i << ",harvest origin,"        << graft.harvestTransform.origin()       << std::endl;
-        out << "graft," << i << ",harvest x,"             << graft.harvestTransform.x()            << std::endl;
-        out << "graft," << i << ",harvest y,"             << graft.harvestTransform.y()            << std::endl;
         out << std::endl;
     }
 
     // iGuides
-    for (PLuint i=0; i<p._iGuides.size(); i++) 
+    for (PLuint i=0; i<p.iGuides().size(); i++) 
     {
-        plIGuide &iguide = p._iGuides[i];
+        const plIGuide &iguide = p.iGuides(i);
 
         out << std::endl;
-        out << "iguide," << i << ", boundary" << iguide.boundary << std::endl;  
+        out << "iguide," << i << ",model,"   << iguide.model() << std::endl;
+        out << "iguide," << i << ",boundary" << iguide.boundary << std::endl;  
         out << "iguide," << i << ",graft indices";
         for (PLuint j=0; j<iguide.graftIndices.size(); j++)
         {
@@ -315,56 +329,4 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     
     return out;
 }
-
-/*
-void plPlan::outputForManuela()
-{
-    std::plVector3<Graft>::const_iterator graft_itr = grafts.begin();
-    std::plVector3<Graft>::const_iterator graft_end = grafts.end();
-    int graftIndex = 0; 
-    for ( ; graft_itr != graft_end; ++graft_itr)
-    {
-
-        // Open a file for this graft
-        char filename[100];
-        sprintf( filename, "graft_%d.dat", graftIndex );
-        std::ofstream out( filename );
-        if (!out) 
-        {
-            std::cerr << "Could not open '" << filename << "' to store plan." << std::endl;
-            continue;
-        }
-
-        out << "Height: " << graft_itr->height << std::endl;
-        out << "_radius: " << graft_itr->_radius << std::endl;
-        out << "Bone height: " << graft_itr->boneHeight << std::endl;
-        out << "LevelDirection: [" << graft_itr->_markDirection.x << ", " << graft_itr->_markDirection.y << ", " << graft_itr->_markDirection.z << "]" << std::endl;
-        out << std::endl;
-        out << std::endl;
-        out << "RecipientSide" << std::endl;
-        out << "Translation: [" << graft_itr->recipientTransform.translation.x << ", " << graft_itr->recipientTransform.translation.y << ", " << graft_itr->recipientTransform.translation.z << "]" << std::endl;
-        out << "Direction: [" << graft_itr->recipientTransform.direction.x << ", " << graft_itr->recipientTransform.direction.y << ", " << graft_itr->recipientTransform.direction.z << "]" << std::endl;
-        out << "UpDirection: [" << graft_itr->recipientTransform.upDirection.x << ", " << graft_itr->recipientTransform.upDirection.y << ", " << graft_itr->recipientTransform.upDirection.z << "]" << std::endl;
-        out << std::endl;
-        out << "HarvestSide" << std::endl;
-        out << "Translation: [" << graft_itr->harvestTransform.translation.x << ", " << graft_itr->harvestTransform.translation.y << ", " << graft_itr->harvestTransform.translation.z << "]" << std::endl;
-        out << "Direction: [" << graft_itr->harvestTransform.direction.x << ", " << graft_itr->harvestTransform.direction.y << ", " << graft_itr->harvestTransform.direction.z << "]" << std::endl;
-        out << "UpDirection: [" << graft_itr->harvestTransform.upDirection.x << ", " << graft_itr->harvestTransform.upDirection.y << ", " << graft_itr->harvestTransform.upDirection.z << "]" << std::endl;
-        out << std::endl;
-        out << std::endl;
-        out << "Difference of min and max heights: 0" << std::endl;
-        out << "Min Height: 0" << std::endl;
-        out << "Max Height: 0" << std::endl; 
-        graftIndex++;
-    }
-}
-*/
-
-//////////////////////////////////////
-
-void plSet( plPlan &plan )
-{
-    _plPlan = &plan;
-}
-
 

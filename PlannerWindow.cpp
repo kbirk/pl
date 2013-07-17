@@ -4,24 +4,46 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
     : _button( GLUT_NO_BUTTON ),
       _camera( ".view0" ), 
       _cameraMode( CAMERA_ROTATION_MODE ),
-      _projection( glutGet(GLUT_WINDOW_WIDTH) / glutGet(GLUT_WINDOW_HEIGHT) ),
       _graftEditor(),
       _boundaryEditor(),
       _plan( argc, argv ), 
       Window( x, y, width, height, title )
 {  
-    plInit();
-    plSet( _plan );
-    plSet( _camera );
-    plSet( _projection );
-    plSet( _graftEditor );
-    plSet( _boundaryEditor );
+    plRenderer::init(); 
+      /*
+    plVector3 min, max;
+    _plan._models[0].bone.getMinMax(min,max);
+    octree = new plOctree(min, max, _plan._models[0].bone.triangles(), 6);
+    
+    
+    plIntersection intersection0 = _plan._models[0].bone.rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
+                                                                       plVector3(0.0533538f, 0.998555f, -0.00636944f ));
+    
+    
+    plIntersection intersection1 = octree->rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
+                                                         plVector3(0.0533538f, 0.998555f, -0.00636944f ));
+    
+    plIntersection intersection2 = _plan._models[0].bone._octree.rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
+                                                                               plVector3(0.0533538f, 0.998555f, -0.00636944f ));
+                          
+    std::cout << "exhaustive result: " << intersection0.point << "\n";
+    std::cout << "octree alone result: "     << intersection1.point << "\n";     
+    std::cout << "octree member result: "     << intersection2.point << "\n";                    
+    */ 
+    
 }
 
 
 void PlannerWindow::display()
 {
-    plDraw();
+    plCameraStack::load( _camera );
+
+    plRenderer::queue( _plan );
+    plRenderer::queue( _graftEditor );
+    plRenderer::queue( _boundaryEditor );
+
+    plRenderer::draw();
+
     glutSwapBuffers();
 }
 
@@ -62,11 +84,11 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
             break; 
             
         case 'W':   
-            _camera.exportViewParams( plStringConcat( ".view", plToString( currentView ) ) );   
+            _camera.exportViewParams( ".view" + plString::toString(currentView ) );   
             break;
             
         case 'R':   
-            _camera.importViewParams( plStringConcat( ".view", plToString( currentView ) ) );   
+            _camera.importViewParams( ".view" + plString::toString( currentView ) );   
             break;  
        
         case '1':
@@ -82,10 +104,10 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
             currentView = (PLint)(key - '0');
             break;                
 
-        case 'b':   _plan._models[0].bone.toggleVisibility();                   break;            
-        case 'c':   _plan._models[0].cartilage.toggleVisibility();              break;      
+        case 'b':   _plan.models(0).bone.toggleVisibility();                   break;            
+        case 'c':   _plan.models(0).cartilage.toggleVisibility();              break;      
         case 'p':   _plan.toggleVisibility();                                   break;    
-        case 'z':   _camera.reset( _plan._models[0].getCentroid() );            break;          
+        case 'z':   _camera.reset( _plan.models(0).getCentroid() );            break;          
         case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
         case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
         case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 
@@ -96,6 +118,10 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
         //case 'q':   plDefectSplineCornersToggleVisibilityAll();  break;
         //case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;        
         case 'O':   _plan.exportFile("plan");                    break;
+
+        case 'D':   _plan.addDonorSite();                        break;
+        case 'S':   _plan.addDefectSite();                       break;
+        case 'G':   _plan.addIGuide();                           break;
 
         case 127:	 // delete 
         {   
@@ -129,8 +155,8 @@ void PlannerWindow::activeMouseMotion( int x, int y )
         case GLUT_LEFT_BUTTON: 
 
             // process drag movements 
-            _graftEditor.processMouseDrag(x, glutGet(GLUT_WINDOW_HEIGHT)-y);   
-            _boundaryEditor.processMouseDrag(x, glutGet(GLUT_WINDOW_HEIGHT)-y);  
+            _graftEditor.processMouseDrag   ( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y );   
+            _boundaryEditor.processMouseDrag( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y );  
             break;       
 
         case GLUT_MIDDLE_BUTTON:    
@@ -182,13 +208,13 @@ void PlannerWindow::mouseAction( int button, int state, int x, int y )
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
 	        {
                 // add new point
-                _boundaryEditor.addPoint(x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
+                _boundaryEditor.addPoint( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
             }
             else
             {
                 // process mouse clicks 
-                _graftEditor.processMouseClick(x, glutGet(GLUT_WINDOW_HEIGHT)-y);    
-                _boundaryEditor.processMouseClick(x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
+                _graftEditor.processMouseClick   ( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y);    
+                _boundaryEditor.processMouseClick( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
             }
             break;
     }    

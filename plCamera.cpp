@@ -5,7 +5,7 @@ plCamera::plCamera()
 	_defaultInit();
 }
 
-plCamera::plCamera( std::string filename)
+plCamera::plCamera( plString filename)
 {   
 	// read view parameters from file
 	importViewParams( filename );
@@ -194,13 +194,6 @@ plVector4 calc_quat(PLint x0, PLint y0, PLint x1, PLint y1)
         q.w = -1.0;
         
     return q;
-}
-
-/////////////////////////////////////////
-
-void plSet( plCamera &camera )
-{
-    _plCamera = &camera;
 }
 
 

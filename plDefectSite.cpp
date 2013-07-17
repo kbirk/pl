@@ -4,37 +4,43 @@ plDefectSite::plDefectSite()
 {
 }
 
-void plDefectSite::computeSpline( const plSeq<plBoneAndCartilage> &models )
+plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage &model )
+    : plModelSpecific( modelID, model ), boundary( model ), spline( model )
 {
-    if (corners.size() == 4)
-    {
-        spline.computeHermite( corners, models[_modelID].cartilage );
-    }
 }
 
-void plDefectSite::readFromCSV(const plSeq<plString> &row)
+void plDefectSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     // Fill in the field            
     plString subfield = row[2];
     
-    if (plStringCompareCaseInsensitive(subfield, "model") )
+    if (subfield.compareCaseInsensitive( "model") )
     {
         _modelID = atof( row[3].c_str() );
-    }                   
-    else if (plStringCompareCaseInsensitive(subfield, "corners") ) 
-    {     
-        corners.readFromCSV( row );  
-
-        /*
-        if (corners.size() == 4)
+        if (models.size() < (_modelID+1) )
         {
-            spline.computeHermite( corners, models[_modelID].cartilage );
+            std::cerr << "plDefectSite importCSV() error: model ID read before model data";
+            exit(1);
         }
-        */
+        _model = models[_modelID];
+    }                   
+    else if (subfield.compareCaseInsensitive( "spline") ) 
+    {     
+        if (_model == NULL)
+        {
+            std::cerr << "plDefectSite importCSV() error: spline data read before model ID";
+            exit(1);
+        }    
+        spline.importCSV( row, *_model );  
     }
-    else if (plStringCompareCaseInsensitive(subfield, "boundary") )   
-    {            
-        boundary.readFromCSV( row );  
+    else if (subfield.compareCaseInsensitive( "boundary") )   
+    {
+        if (_model == NULL)
+        {
+            std::cerr << "plDefectSite importCSV() error: boundary data read before model ID";
+            exit(1);
+        }            
+        boundary.importCSV( row, *_model );  
     }  
     else
         std::cerr << "Error importing plan, 'spline': Unrecognized word '" << subfield << "' in third column." << std::endl;      
@@ -47,26 +53,11 @@ void plDefectSite::draw() const
         return;
       
     // draw spline boundary 
-    _plPickingState->type = PL_PICKING_TYPE_DEFECT_BOUNDARY;
+    plPicking::value.type = PL_PICKING_TYPE_DEFECT_BOUNDARY;
     boundary.draw();   
      
     // draw spline corners
-    _plPickingState->type = PL_PICKING_TYPE_DEFECT_CORNERS;
-    corners.draw();
-    
-    // draw spline corner axes
-    /*
-    if (corners.isSelected && corners.isVisible)
-    {
-        _drawCornersSelectionInterface();
-    }    
-    */
-    
-    // draw spline surface
-    if (corners.size() == 4)
-    {
-        spline.draw();          
-    }
+    spline.draw();
 }
 
 /*
@@ -81,30 +72,30 @@ void plSpline::_drawCornersSelectionInterface() const
         
     plVector3 nm = corners.getAverageNormal();
     
-    glColor3f( 1.0, 0.2, 0.2 );
+    plColourStack::load( 1.0, 0.2, 0.2 );
     for (PLuint i = 0; i < _s.size(); i++)
     {
         glPushMatrix();
         glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
-        plDrawArrow(p[i], _s[i], 4.0f, 0.5f);
+        plDraw::arrow(p[i], _s[i], 4.0f, 0.5f);
         glPopMatrix();
     }
 
-    glColor3f( 0.2, 0.2, 1.0);
+    plColourStack::load( 0.2, 0.2, 1.0);
     for (PLuint i = 0; i < _t.size(); i++)
     {
         glPushMatrix();
         glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
-        plDrawArrow(p[i], _t[i], 4.0f, 0.5f);
+        plDraw::arrow(p[i], _t[i], 4.0f, 0.5f);
         glPopMatrix();        
     }
   
-    glColor3f( 0.2, 1.0, 0.2 );
+    plColourStack::load( 0.2, 1.0, 0.2 );
     for (PLuint i = 0; i < n.size(); i++)
     {
         glPushMatrix();
         glTranslatef( nm.x*6, nm.y*6, nm.z*6 );
-        plDrawArrow(p[i], n[i], 4.0f, 0.5f);
+        plDraw::arrow(p[i], n[i], 4.0f, 0.5f);
         glPopMatrix();        
     }   
 }

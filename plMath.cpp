@@ -1,13 +1,13 @@
 #include "plMath.h"
 
-plVector3 plProjectVectorOnPlane( const plVector3 &vector, const plVector3 &plane_normal)
+plVector3 plMath::projectVectorOnPlane( const plVector3 &vector, const plVector3 &plane_normal)
 {
     PLfloat dist = vector * plane_normal;
     
     return vector - (dist*plane_normal);
 }
 
-plVector3 plClosestPointOnLineSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b)
+plVector3 plMath::closestPointOnSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b)
 {
     plVector3 ab = b - a;
     // Project c onto ab, computing parameterized position d(t) = a + t*(b  a)
@@ -19,11 +19,18 @@ plVector3 plClosestPointOnLineSegment(const plVector3 &point, const plVector3 &a
     return a + t * ab;
 }
 
-PLfloat plClamp( PLfloat val, PLfloat min, PLfloat max)
+PLfloat plMath::clamp( PLfloat val, PLfloat min, PLfloat max)
 {
     if (val > max) return max;
     if (val < min) return min;
     return val;
+}
+
+void plMath::swap( PLfloat &a, PLfloat &b )
+{
+    PLfloat temp = a;
+    a = b; 
+    b = temp;
 }
 
 /*
@@ -55,7 +62,7 @@ plVector3 plClosestPointOnPlane(const plVector3 &q, const plVector3 &p, const pl
 */
 
 
-void plConvexPolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
+void plMath::convexPolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
 {
     tris.clear();
     for (PLuint i = 0; i < polys.size(); i++)
@@ -82,14 +89,14 @@ void plConvexPolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
 }
 
 
-void plConcavePolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
+void plMath::concavePolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
 {
     tris.clear();
     for (PLuint i = 0; i < polys.size(); i++)
     {
         plSeq<plTriangle> polyConverted;
-        PLfloat area (std::numeric_limits<PLfloat>::max());
-        plConcavePolysToTrisHelper(polys[i],polyConverted,area);
+        PLfloat area = FLT_MAX; //(std::numeric_limits<PLfloat>::max());
+        plMath::concavePolysToTrisHelper(polys[i],polyConverted,area);
         for (PLuint j = 0; j < polyConverted.size(); j++)
         {
             tris.add(polyConverted[j]);
@@ -107,7 +114,7 @@ void plConcavePolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
 // also store the surface area of the triangulation
 // INITIAL VALUE FOR OUTPUTTRIANGLES SHOULD BE AN EMPTY PLSEQ!
 // INITIAL VALUE FOR OUTPUTMINSURFACEAREA SHOULD BE THE MAXIMUM VALUE FOR A FLOATING POINT
-void plConcavePolysToTrisHelper(plPolygon &inputPolygon, plSeq<plTriangle> &outputTriangles, PLfloat &outputMinSurfaceArea)
+void plMath::concavePolysToTrisHelper(plPolygon &inputPolygon, plSeq<plTriangle> &outputTriangles, PLfloat &outputMinSurfaceArea)
 {
     const float epsilon(0.0001f);
 
@@ -142,8 +149,8 @@ void plConcavePolysToTrisHelper(plPolygon &inputPolygon, plSeq<plTriangle> &outp
             firstPolygonInput.points.add(inputPolygon.points[j]);
         }
         plSeq<plTriangle> firstPolygonOutputTris;
-        PLfloat           firstPolygonOutputArea(std::numeric_limits<PLfloat>::max());
-        plConcavePolysToTrisHelper(firstPolygonInput,firstPolygonOutputTris,firstPolygonOutputArea);
+        PLfloat           firstPolygonOutputArea = FLT_MAX; //(std::numeric_limits<PLfloat>::max());
+        plMath::concavePolysToTrisHelper(firstPolygonInput,firstPolygonOutputTris,firstPolygonOutputArea);
 
         // second polygon
         plPolygon secondPolygonInput;
@@ -153,8 +160,8 @@ void plConcavePolysToTrisHelper(plPolygon &inputPolygon, plSeq<plTriangle> &outp
             secondPolygonInput.points.add(inputPolygon.points[j]);
         }
         plSeq<plTriangle> secondPolygonOutputTris;
-        PLfloat           secondPolygonOutputArea(std::numeric_limits<PLfloat>::max());
-        plConcavePolysToTrisHelper(secondPolygonInput,secondPolygonOutputTris,secondPolygonOutputArea);
+        PLfloat           secondPolygonOutputArea = FLT_MAX; //(std::numeric_limits<PLfloat>::max());
+        plMath::concavePolysToTrisHelper(secondPolygonInput,secondPolygonOutputTris,secondPolygonOutputArea);
 
         // calculate current surface
         PLfloat currentSurfaceArea( bisectingTriangleArea + firstPolygonOutputArea + secondPolygonOutputArea );

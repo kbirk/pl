@@ -8,8 +8,6 @@ plMesh::plMesh()
 plMesh::plMesh(const plSeq<plTriangle> &triangles)
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
-    // set vertex count
-	//_numIndices = triangles.size() * 3;
 	// convert triangles to interleaved
 	triangleToInterleaved(triangles);
 }
@@ -17,8 +15,6 @@ plMesh::plMesh(const plSeq<plTriangle> &triangles)
 plMesh::plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices)
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {            
-	// set index count
-	//_numIndices = indices.size();
 	// set VBO and VAO
     setBuffers(interleaved_vertices, indices);
 }
@@ -90,14 +86,16 @@ void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plS
     // bind vertex array object
     glGenBuffers(1, &_vertexBufferIndices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PLuint)*_numIndices, &indices[0], GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STREAM_DRAW);
      
 	// unbind the vertex array object
 	glBindVertexArray(0); 			
 }
 
 void plMesh::draw() const
-{					
+{		
+    // use current shader and properly set uniforms
+    plShaderStack::use();			
 	// bind vertex array object
 	glBindVertexArray(_vertexArrayObject);
 	// draw batch
@@ -108,8 +106,7 @@ void plMesh::draw() const
 
 void plMesh::draw(const std::vector<plOrderPair> &order) const
 {
-    plSeq<PLuint> indices;
-	indices.reserve(_numIndices);
+    plSeq<PLuint> indices(_numIndices);
 	
 	for (PLuint i = 0; i < _numIndices/3; i++)
 	{
@@ -118,6 +115,8 @@ void plMesh::draw(const std::vector<plOrderPair> &order) const
 	    indices.add( order[i].index*3+2 );
 	}
 
+    // use current shader and properly set uniforms
+    plShaderStack::use();
     // bind vertex array object
 	glBindVertexArray(_vertexArrayObject);		
     // buffer new index data
@@ -126,6 +125,51 @@ void plMesh::draw(const std::vector<plOrderPair> &order) const
 	glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0); 
     // unbind VBO
 	glBindVertexArray(0); 
+}
+
+// cube
+plMesh::plMesh(float halfWidth)
+{
+    plSeq<plVector3> vertices( 8  );
+    plSeq<PLuint>    indices ( 8*3 ); //12 );
+    
+    // front face
+    vertices.add( plVector3( -halfWidth, -halfWidth, halfWidth) );
+    vertices.add( plVector3(  halfWidth, -halfWidth, halfWidth) );
+    vertices.add( plVector3(  halfWidth,  halfWidth, halfWidth) );
+    vertices.add( plVector3( -halfWidth, halfWidth,  halfWidth) );
+    
+    // back face
+    vertices.add( plVector3( -halfWidth, -halfWidth, -halfWidth) );
+    vertices.add( plVector3(  halfWidth, -halfWidth, -halfWidth) );
+    vertices.add( plVector3(  halfWidth,  halfWidth, -halfWidth) );
+    vertices.add( plVector3( -halfWidth,  halfWidth, -halfWidth) );
+    
+    // front
+    indices.add( 0 );   indices.add( 1 );   indices.add( 2 );
+    indices.add( 0 );   indices.add( 2 );   indices.add( 3 );
+    
+    // right
+    indices.add( 1 );   indices.add( 5 );   indices.add( 6 );
+    indices.add( 1 );   indices.add( 6 );   indices.add( 2 );
+    
+    // back
+    indices.add( 5 );   indices.add( 4 );   indices.add( 7 );
+    indices.add( 5 );   indices.add( 7 );   indices.add( 6 );
+    
+    // left
+    indices.add( 4 );   indices.add( 0 );   indices.add( 3 );
+    indices.add( 4 );   indices.add( 3 );   indices.add( 7 );
+    
+    // top
+    indices.add( 3 );   indices.add( 2 );   indices.add( 6 );
+    indices.add( 3 );   indices.add( 6 );   indices.add( 7 );
+    
+    // bottem
+    indices.add( 4 );   indices.add( 5 );   indices.add( 1 );
+    indices.add( 4 );   indices.add( 1 );   indices.add( 0 );
+
+    setBuffers( vertices, indices );
 }
 
 // sphere
@@ -140,7 +184,7 @@ plMesh::plMesh(float radius, int slices, int stacks)
     dtheta = 2.0f * PL_PI / slices;
     
     plSeq<plVector3> interleaved_vertices; 
-    plSeq<PLuint> indices;
+    plSeq<PLuint>    indices;
 
     // draw +Z end as a triangle fan
     // centre of triangle fan
@@ -231,8 +275,6 @@ plMesh::plMesh(float radius, int slices, int stacks)
         indices.add(base+j+1);
     }
 
-    // set index count
-	_numIndices = indices.size();
     // set VBOs and VAO
     setBuffers(interleaved_vertices, indices);
 }
@@ -255,7 +297,7 @@ plMesh::plMesh(float baseRadius, float topRadius, float height, int slices, int 
     r = baseRadius;
     
     plSeq<plVector3> interleaved_vertices; 
-    plSeq<PLuint> indices;
+    plSeq<PLuint>    indices;
     
     for (int j = 0; j < stacks; j++) 
     {
@@ -294,8 +336,6 @@ plMesh::plMesh(float baseRadius, float topRadius, float height, int slices, int 
         
     }
     
-    // set index count
-	_numIndices = indices.size();
     // set VBOs and VAO
     setBuffers(interleaved_vertices, indices);
 }       
@@ -314,7 +354,7 @@ plMesh::plMesh(float innerRadius, float outerRadius, int slices, int loops, bool
     float r1 = innerRadius;
 
     plSeq<plVector3> interleaved_vertices; 
-    plSeq<PLuint> indices;
+    plSeq<PLuint>    indices;
 
     for (int l = 0; l < loops; l++) 
     {
@@ -370,8 +410,6 @@ plMesh::plMesh(float innerRadius, float outerRadius, int slices, int loops, bool
         
     }
     
-    // set index count
-	_numIndices = indices.size();
     // set VBOs and VAO
     setBuffers(interleaved_vertices, indices);
 }

@@ -1,7 +1,7 @@
 #ifndef _PL_COLOUR_MESH_H_
 #define _PL_COLOUR_MESH_H_ 
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plVector3.h"
 #include "plMesh.h"
 

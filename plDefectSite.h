@@ -1,37 +1,28 @@
 #ifndef _PL_DEFECT_SITE_H_
 #define _PL_DEFECT_SITE_H_
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plVector3.h"
+#include "plModelSpecific.h"
 #include "plSpline.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
-#include "plPickingShader.h"
 #include "plPickingTexture.h"
-#include "plBoneAndCartilage.h"
 
-class plDefectSite : public plRenderable
+class plDefectSite : public plModelSpecific,
+                     public plRenderable
 {
     public:
 
-        plBoundary  boundary, corners; 
+        plBoundary  boundary; 
         plSpline    spline;
              
         plDefectSite();
+        plDefectSite( PLuint _modelID, const plBoneAndCartilage &_model );
 
-        void readFromCSV( const plSeq<plString> &row );
-             
-        void computeSpline( const plSeq<plBoneAndCartilage> &models );
-        
+        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
+
         void draw() const;   
-
-        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
-                
-    private:
-    
-        PLuint _modelID; 
-              
-        //void _drawCornersSelectionInterface() const;      
                 
 };
 

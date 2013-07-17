@@ -1,13 +1,13 @@
 #include "plColourMesh.h"
 
-plColourMesh::plColourMesh() : plMesh()
+plColourMesh::plColourMesh() 
+    : plMesh()
 {
 }
 
 
-plColourMesh::plColourMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices) : plMesh()
-{            
-	
+plColourMesh::plColourMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices) 
+{            	
 	// set VBO and VAO
     setBuffers(interleaved_vertices, indices);
 }
@@ -52,7 +52,7 @@ void plColourMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, con
     // bind vertex array object
     glGenBuffers(1, &_vertexBufferIndices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PLuint)*_numIndices, &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STATIC_DRAW);
      
 	// unbind the vertex array object
 	glBindVertexArray(0); 			

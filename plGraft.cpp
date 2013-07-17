@@ -2,60 +2,42 @@
 
 plGraft::plGraft()
 {
-
 }
 
 
-void plGraft::init( const plSeq<plBoneAndCartilage> &models )
-{
-    // Compute transforms                     
-    harvestTransform.compute();      
-    recipientTransform.compute();             
-    // Compute cartilage and bone caps
-    setCaps( models );
-}
-
-
-void plGraft::readFromCSV( const plSeq<plString> &row )
+void plGraft::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     // Fill in the field            
     plString subfield = row[2];
-    
-    if (plStringCompareCaseInsensitive(subfield, "harvest model") )
-        _harvestModelID = atof( row[3].c_str() );
-                       
-    else if (plStringCompareCaseInsensitive(subfield, "recipient model") )
-        _recipientModelID = atof( row[3].c_str() );
 
-    else if (plStringCompareCaseInsensitive(subfield, "height offset") )
+    if (subfield.compareCaseInsensitive( "harvest" ) )
+    {
+        harvest.importCSV( row, models );        
+        // check if transform, if so, set caps
+        if (row[3].compareCaseInsensitive( "transform" ) )
+        {
+            if (harvest.modelID() == -1 || _radius == 0)
+            {
+                std::cerr << "plGraft importCSV() error: harvest transform read before model ID or radius";
+                exit(1);
+            }  
+            _setCaps();
+        }           
+    }                  
+    else if (subfield.compareCaseInsensitive( "recipient" ) )
+        recipient.importCSV( row, models );   
+
+    else if (subfield.compareCaseInsensitive( "height offset" ) )
         _heightOffset = atof( row[3].c_str() );
                        
-    else if (plStringCompareCaseInsensitive(subfield, "radius") )
+    else if (subfield.compareCaseInsensitive( "radius" ) )
         _radius = atof( row[3].c_str() );
         
-    else if (plStringCompareCaseInsensitive(subfield, "length") )
+    else if (subfield.compareCaseInsensitive( "length" ) )
         _length = atof( row[3].c_str() );
        
-    else if (plStringCompareCaseInsensitive(subfield, "mark direction") )
+    else if (subfield.compareCaseInsensitive( "mark direction" ) )
         _markDirection = plVector3( row[3] ).normalize();
-        
-    else if (plStringCompareCaseInsensitive(subfield, "recipient origin") )
-        recipientTransform.origin( row[3] );
-    
-    else if (plStringCompareCaseInsensitive(subfield, "recipient x") )            
-        recipientTransform.x( row[3] );
-
-    else if (plStringCompareCaseInsensitive(subfield, "recipient y") )
-        recipientTransform.y( row[3] );
-         
-    else if (plStringCompareCaseInsensitive(subfield, "harvest origin") )
-        harvestTransform.origin( row[3] );
-    
-    else if (plStringCompareCaseInsensitive(subfield, "harvest x") )
-        harvestTransform.x( row[3] );
-
-    else if (plStringCompareCaseInsensitive(subfield, "harvest y") )
-        harvestTransform.y( row[3] );
     else
         std::cerr << "Error in plan, 'graft': Unrecognized word '" << subfield << "' in third column." << std::endl;
 }
@@ -66,25 +48,25 @@ void plGraft::_setBoneColour() const
     if (_isSelected)
     {
         // selected
-        if (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        if (plPicking::value.index == PL_PICKING_INDEX_GRAFT_DEFECT)
         {
-            glColor3f( PL_GRAFT_DEFECT_BONE_COLOUR_DULL );
+            plColourStack::load( PL_GRAFT_DEFECT_BONE_COLOUR_DULL );
         }
         else
         {
-            glColor3f( PL_GRAFT_DONOR_BONE_COLOUR_DULL );
+            plColourStack::load( PL_GRAFT_DONOR_BONE_COLOUR_DULL );
         }
     }
     else
     {
         // not selected
-        if (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        if (plPicking::value.index == PL_PICKING_INDEX_GRAFT_DEFECT)
         {
-            glColor3f( PL_GRAFT_DEFECT_BONE_COLOUR );
+            plColourStack::load( PL_GRAFT_DEFECT_BONE_COLOUR );
         }
         else
         {
-            glColor3f( PL_GRAFT_DONOR_BONE_COLOUR );
+            plColourStack::load( PL_GRAFT_DONOR_BONE_COLOUR );
         } 
     }
 }
@@ -94,25 +76,25 @@ void plGraft::_setCartilageColour() const
     if (_isSelected)
     {
         // selected
-        if (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        if (plPicking::value.index == PL_PICKING_INDEX_GRAFT_DEFECT)
         {
-            glColor3f( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
+            plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
         }
         else
         {
-            glColor3f( PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL );
+            plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL );
         }  
     }
     else
     {
         // not selected
-        if (_plPickingState->index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        if (plPicking::value.index == PL_PICKING_INDEX_GRAFT_DEFECT)
         {
-            glColor3f( PL_GRAFT_DEFECT_CARTILAGE_COLOUR );
+            plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR );
         }
         else
         {
-            glColor3f( PL_GRAFT_DONOR_CARTILAGE_COLOUR );
+            plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR );
         }
     }      
 }
@@ -123,32 +105,29 @@ void plGraft::draw() const
         return;
 
     // Draw at harvest location
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
+    plModelStack::push( harvest.transform.matrix() );
     {
-        harvestTransform.apply();
-        _plPickingState->index = PL_PICKING_INDEX_GRAFT_DONOR;      
+        plPicking::value.index = PL_PICKING_INDEX_GRAFT_DONOR;              
         _drawGraft();
     }
-    glPopMatrix();
+    plModelStack::pop();
+
 
     // Draw at recipient location
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
+    plModelStack::push( recipient.transform.matrix() );
     {
-        recipientTransform.apply();
-        glTranslatef( 0, _heightOffset, 0 );
-        _plPickingState->index = PL_PICKING_INDEX_GRAFT_DEFECT;
+        plModelStack::translate( 0, _heightOffset, 0 );
+        plPicking::value.index = PL_PICKING_INDEX_GRAFT_DEFECT;
         _drawGraft();
     }
-    glPopMatrix();
+    plModelStack::pop();
+
 }
 
 
 void plGraft::_drawGraft() const
 {
-    _plPickingState->type = PL_PICKING_TYPE_GRAFT; 
-    _plPickingShader->setPickingUniforms(_plPickingState);
+    plPicking::value.type = PL_PICKING_TYPE_GRAFT; 
 
     // draw cartilage cap
     if (_cartilageCap.polys.size() > 0)  // may not always have the cartilage top
@@ -162,17 +141,17 @@ void plGraft::_drawGraft() const
     _boneMesh.draw();
     
     // draw marker   
-    glColor3f( PL_GRAFT_MARKER_COLOUR );
-    plDrawSphere( _markPosition, 0.5 );
+    plColourStack::load( PL_GRAFT_MARKER_COLOUR );
+    plDraw::sphere( _markPosition, 0.5 );
 
 }
 
 
-void plGraft::setCaps( const plSeq<plBoneAndCartilage> &models )
+void plGraft::_setCaps()
 {
     // generate cap polygons
-    _cartilageCap = _findCap( models[_harvestModelID].cartilage.triangles() );
-    _boneCap      = _findCap( models[_harvestModelID].bone.triangles()      );
+    _cartilageCap = _findCap( harvest.model()->cartilage );
+    _boneCap      = _findCap( harvest.model()->bone      );
    
     // generate meshes   
     _updateCartilageMesh();   
@@ -273,7 +252,7 @@ void plGraft::_updateCartilageMesh()
             stepsLeft--;
         }
     }
-       
+
     if (indices.size() > 0)
     {   
         _cartilageMesh.setBuffers(interleaved_vertices, indices);  
@@ -383,19 +362,24 @@ void plGraft::_updateBoneMesh()
         }
 
     }
+
     _boneMesh.setBuffers(interleaved_vertices, indices);
 }
 
 
-plCap plGraft::_findCap( const plSeq<plTriangle> &triangles)
+plCap plGraft::_findCap( const plModel &model )
 {   
+    plSeq<const plTriangle*> triangles;
+
+    model.octree().graftIntersect( triangles, harvest.transform, _radius );
+
     plCap cap;
 
     // Find polygons on top of graft
     for (PLuint i=0; i<triangles.size(); i++) 
     {
         plPolygon p;
-        if (triangles[i].normal() * harvestTransform.y() > 0 && _triangleIntersection( triangles[i], p ))
+        if (triangles[i]->normal() * harvest.transform.y() > 0 && _triangleIntersection( *triangles[i], p ))
         {
             cap.polys.add( p );
         }
@@ -439,44 +423,44 @@ plCap plGraft::_findCap( const plSeq<plTriangle> &triangles)
 // Return the Poly that is the intersection of a triangle with the
 // interior of the cylinder.
 
-
 bool plGraft::_triangleIntersection( const plTriangle &triangle, plPolygon &p ) const
 {
     static float min = FLT_MAX;
 
     float radiusSquared = _radius * _radius;
 
-    plVector3 point1 = harvestTransform.applyInverse( triangle.point0() );
-    plVector3 point2 = harvestTransform.applyInverse( triangle.point1() );
-    plVector3 point3 = harvestTransform.applyInverse( triangle.point2() );
+    plVector3 point1 = harvest.transform.applyInverse( triangle.point0() );
+    plVector3 point2 = harvest.transform.applyInverse( triangle.point1() );
+    plVector3 point3 = harvest.transform.applyInverse( triangle.point2() );
 
     // Compute distance to graft axis
-    float dist1 = harvestTransform.squaredDistToAxis( point1 );
-    float dist2 = harvestTransform.squaredDistToAxis( point2 );
-    float dist3 = harvestTransform.squaredDistToAxis( point3 );
+    float dist1 = harvest.transform.squaredDistToAxis( point1 );
+    float dist2 = harvest.transform.squaredDistToAxis( point2 );
+    float dist3 = harvest.transform.squaredDistToAxis( point3 );
 
     // If too far from graft axis, reject.  Note that this will miss
     // some slightly-overlapping triangles!
 
     float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
-
+    
     if (minDist > radiusSquared)
         return false;
 
     // If too far away from graft origin, reject.
     
-    float proj1 = harvestTransform.projectedDistOnAxis( point1 );
-    float proj2 = harvestTransform.projectedDistOnAxis( point2 );
-    float proj3 = harvestTransform.projectedDistOnAxis( point3 );
+    float proj1 = harvest.transform.projectedDistOnAxis( point1 );
+    float proj2 = harvest.transform.projectedDistOnAxis( point2 );
+    float proj3 = harvest.transform.projectedDistOnAxis( point3 );
 
     float maxProj = PL_MAX_OF_3( proj1, proj2, proj3 );
-
-    if (maxProj < -_length)
+    float minProj = PL_MIN_OF_3( proj1, proj2, proj3 );
+    
+    if (minProj > _heightOffset+4 || maxProj < -_length)
         return false;
 
     // At least some of the triangle is inside
 
-    p.normal = harvestTransform.applyNormalInverse(triangle.normal());
+    p.normal = harvest.transform.applyNormalInverse(triangle.normal());
 
     // If entirely within the graft, accept the whole triangle (this is cheaper).
 
@@ -594,18 +578,18 @@ plVector3 plGraft::_pointOnCircumference( const plVector3 &u, const plVector3 &v
     
 }
 
-
+/*
 float plGraft::_angleOfPoint( const plVector3 &v ) const
 {
-    return atan2( v*harvestTransform.x(), v*harvestTransform.z() );
+    return atan2( v*harvest.transform.x(), v*harvest.transform.z() );
 }
 
 
 plVector3 plGraft::_pointAtAngle( PLfloat theta ) const
 {
-    return cos(theta) * harvestTransform.z() + sin(theta) * harvestTransform.x();
+    return cos(theta) * harvest.transform.z() + sin(theta) * harvest.transform.x();
 }
-
+*/
 void plGraft::spinMark( PLfloat degrees )
 {
     plVector3 axis(0,1,0);
@@ -640,36 +624,111 @@ void plGraft::_updateMarkPosition()
     _markPosition.y = minY;
 }
 
-
-void plGraft::translateHarvest( const plVector3 &translation )
-{     
-    _translate( harvestTransform, _harvestModelID, translation );
-
-    // harvest, re-compute cap  
-    setCaps( _plPlan->_models );
+const plTransform &plGraft::transform( PLuint type ) const
+{
+    switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:
+        
+            return harvest.transform;
+        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:
+        
+            return recipient.transform;
+            
+        default:
+        
+            std::cerr << "plGraft transform() error: invalid type enumeration provided, defaulting to recipient \n";
+            return recipient.transform;   
+    } 
 }
 
-
-void plGraft::translateRecipient( const plVector3 &translation )
-{     
-    _translate( recipientTransform, _recipientModelID, translation );
+void plGraft::translate( PLuint type, const plVector3 &translation )
+{       
+    switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:
+        
+            harvest.translate( translation );
+            _setCaps();
+            break;
+        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:
+        
+            recipient.translate( translation );
+            break;
+            
+        default:
+        
+            std::cerr << "plGraft translate() error: invalid type enumeration provided \n";
+            break;    
+    } 
 }
 
-
-void plGraft::_translate( plTransform &transform, PLuint modelID, const plVector3 &translation )
-{     
-    plIntersection intersection = _plPlan->_models[modelID].bone.rayIntersect( transform.origin() + translation, -transform.y() );  
-
-    if (intersection.exists)
-    {   
-        PLfloat normal_radius = 6.0f;
-        plVector3 normal = _plPlan->_models[modelID].bone.getAverageNormal( normal_radius, transform.origin(), transform.y() );  
-
-        // translate       
-        plVector3 y      = normal.normalize();
-        plVector3 x      = (y ^ transform.z()).normalize();                       
-        plVector3 origin = intersection.point;   
-        transform.set( x, y, origin); 
-    }
+void plGraft::translateX( PLuint type, PLfloat distance, const plVector3 &planeNormal  )
+{    
+    switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:
+        
+            harvest.translateX( distance, planeNormal );
+            _setCaps();
+            break;
+        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:
+        
+            recipient.translateX( distance, planeNormal );
+            break;
+            
+        default:
+        
+            std::cerr << "plGraft translateX() error: invalid type enumeration provided \n";
+            break;    
+    } 
 }
+
+void plGraft::translateZ( PLuint type, PLfloat distance, const plVector3 &planeNormal  )
+{    
+    switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:
+        
+            harvest.translateZ( distance, planeNormal );
+            _setCaps();
+            break;
+        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:
+        
+            recipient.translateZ( distance, planeNormal );
+            break;
+            
+        default:
+        
+            std::cerr << "plGraft translateZ() error: invalid type enumeration provided \n";
+            break;    
+    } 
+}
+
+void plGraft::rotate( PLuint type, const plVector3 &axis, PLfloat angleDegrees )
+{    
+    switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:
+        
+            harvest.rotate( axis, angleDegrees );
+            _setCaps();
+            break;
+        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:
+        
+            recipient.rotate( axis, angleDegrees );
+            break;
+            
+        default:
+        
+            std::cerr << "plGraft rotate() error: invalid type enumeration provided \n";
+            break;    
+    } 
+}
+
 

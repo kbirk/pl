@@ -1,7 +1,7 @@
 #include "plModel.h"
 
-
 plModel::plModel( std::string filename )
+    : _filename(filename), _isTransparent(false)
 {
     if (filename.compare(filename.length()-4, 4, ".stl") != 0)
     {
@@ -9,12 +9,15 @@ plModel::plModel( std::string filename )
                   << "'. plModel filenames should have suffix .stl" << std::endl;  		
         return;
     }
-   
-    plSTLImportFile( _triangles, filename );
-    _mesh = plMesh(_triangles);
-    _filename = filename;
-    _isTransparent = false;
-    isVisible = true;
+    // import STL file
+    plSTL::importFile( _triangles, filename );
+    // build mesh
+    _mesh = plMesh(_triangles);  
+    // get min and max extents of model
+    plVector3 min, max;
+    getMinMax(min,max);
+    // build octree       
+    _octree.build( min, max, _triangles, 7 );    
 }
 
 
@@ -89,22 +92,23 @@ void plModel::draw( const plVector3 &colour ) const
     if (!_isTransparent) 
     {
         glDisable( GL_STENCIL_TEST );            // if opaque, allow overwriting pixels during picking
-        glColor4f( colour.x, colour.y, colour.z, 1.0); 
+        plColourStack::load( colour.x, colour.y, colour.z, 1.0); 
         _mesh.draw();
     }
     else
     {
         glEnable( GL_STENCIL_TEST );             // if transparent, prevent overwriting pixels during picking
-        glColor4f( colour.x, colour.y, colour.z, 0.2);
+        plColourStack::load( colour.x, colour.y, colour.z, 0.2);
 
         // Sort by distance
-        plVector3 viewDir = _plCamera->direction();
+        
+        plVector3 viewDir = plCameraStack::direction(); //plVector3(1,0,0); //PL_GLOBAL_CAMERA->direction();
         
         std::vector<plOrderPair> order;
         order.reserve(_triangles.size());              
         for (PLuint i=0; i<_triangles.size(); i++) 
         {
-            order.push_back( plOrderPair(i, _triangles[i].centroid() * viewDir) );
+            order.push_back( plOrderPair( i, _triangles[i].centroid() * viewDir) );
         }
         std::sort(order.begin(), order.end(), _compareOrderPairs);
         
@@ -135,33 +139,29 @@ void plModel::toggleVisibility()
 
 plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
 {
+    /*
     PLfloat min = FLT_MAX;
 
-    plIntersection closest_intersection(false);
+    plIntersection closestIntersection(false);
 
     for ( PLuint i = 0; i < _triangles.size(); i++)
     {  
-        plIntersection intersection = _triangles[i].rayIntersect( start, dir, ignoreBehindRay, backFaceCull);
+        plIntersection intersection = _triangles[i].rayIntersect( start, dir, ignoreBehindRay, backFaceCull );
         
         if (intersection.exists)
         {
             if ( fabs(intersection.t) < min) 
             {
-                min = intersection.t;
-                closest_intersection = intersection;
+                min = fabs(intersection.t);
+                closestIntersection = intersection;
             }
         }
 
     }
-    return closest_intersection; 
-}
 
-
-plString plModel::getFilenameWithoutPath()
-{
-    plString filenameOnly( _filename );
-    plStringStripPreceedingFilepath( filenameOnly );
-    return filenameOnly;
+    return closestIntersection; 
+    */
+    return _octree.rayIntersect( start, dir, ignoreBehindRay, backFaceCull );
 }
 
 

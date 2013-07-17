@@ -1,8 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "pl.h"
-#include "plModel.h"
+#include "plCommon.h"
 #include "plSeq.h"
 #include "plVector3.h"
 #include "plVector4.h"

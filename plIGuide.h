@@ -1,7 +1,8 @@
 #ifndef __PL_I_GUIDE_H__ 
 #define __PL_I_GUIDE_H__
 
-#include "pl.h"
+#include "plCommon.h"
+#include "plModelSpecific.h"
 #include "plSeq.h"
 #include "plVector3.h"
 #include "plVector4.h"
@@ -19,7 +20,8 @@ class plKWire
         plKWire() {}
 };
 
-class plIGuide : public plRenderable
+class plIGuide : public plModelSpecific,
+                 public plRenderable
 {
     public:
 
@@ -27,9 +29,10 @@ class plIGuide : public plRenderable
         plSeq<PLuint>  graftIndices;
         plSeq<plKWire> kwires;
 
-        plIGuide() {}
+        plIGuide();
+        plIGuide( PLuint _modelID, const plBoneAndCartilage &_model );
 
-        void readFromCSV( const plSeq<plString> &row );
+        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
         
         void draw();
 };

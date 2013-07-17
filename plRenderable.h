@@ -1,7 +1,7 @@
 #ifndef __PL_RENDERABLE_H_
 #define __PL_RENDERABLE_H_
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plVector3.h"
 
 class plRenderable
@@ -13,7 +13,7 @@ class plRenderable
         
         virtual void toggleVisibility();
 		
-    protected:     
+    //protected:     
            
         PLbool isVisible;
     

@@ -1,22 +1,24 @@
 #ifndef BOUNDARY_H
 #define BOUNDARY_H
 
-#include "pl.h"
+#include "plCommon.h"
+#include "plMath.h"
 #include "plSeq.h"
 #include "plVector3.h"
 #include "plRenderable.h"
 #include "plEditable.h"
-#include "plPickingShader.h"
 #include "plPickingTexture.h"
+#include "plBoneAndCartilage.h"
 #include "plMesh.h"
-
+#include "plDraw.h"
 
 class plBoundary : public plRenderable,
                    public plEditable
 {
     public:
 
-        plBoundary();       
+        plBoundary();      
+        plBoundary( const plBoneAndCartilage &model );
           
         PLuint size() const;
 
@@ -26,21 +28,23 @@ class plBoundary : public plRenderable,
         const plVector3        &points ( PLuint index ) const { return _points[index];  }
         const plVector3        &normals( PLuint index ) const { return _normals[index]; }
 
+        const plBoneAndCartilage &model() const { return *_model; }
+
         plVector3 getAverageNormal() const;
 
-        void   toggleVisibility();
+        virtual void   toggleVisibility();   
+        virtual void   importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model );
+        virtual PLuint addPointAndNormal   (const plVector3 &point, const plVector3 &normal);
+        virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);
+        virtual void   removePointAndNormal( PLuint index );
         
-        void   readFromCSV( const plSeq<plString> &row );
-
-        PLuint addPointAndNormal (const plVector3 &point, const plVector3 &normal);
-        void   movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal);
-        void   removePointAndNormal( PLuint index );
-        
-        void   draw() const;     
+        virtual void   draw() const;     
         
         friend std::ostream& operator << ( std::ostream& out, const plBoundary &b );
 
-    private:
+    protected:
+           
+        const plBoneAndCartilage *_model;   
            
         plSeq<plVector3> _points;       // always in counterclockwise direction
         plSeq<plVector3> _normals;   

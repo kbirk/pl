@@ -1,6 +1,6 @@
 /**
  *======================================================================================================
- * DRBTransform class
+ * plDRBTransform class
  * Thomas Vaughan, Queen's University
  * August 16 2011
  *------------------------------------------------------------------------------------------------------
@@ -16,60 +16,53 @@
  *======================================================================================================
  */
 
-#ifndef DRBTRANSFORM_H
-#define DRBTRANSFORM_H
+#ifndef _PL_DRB_TRANSFORM_H_
+#define _PL_DRB_TRANSFORM_H_
 
-#include "pl.h"
+#include "plCommon.h"
 #include "plMatrix44.h"
-#include <string>
-#include <fstream>
-
 
 // This enum is used to indicate how much information is in a transformation file
-typedef enum { TRANSLATION , TRANSLATION_ROTATION, TRANSLATION_ROTATION_SCALE } MarkerType;
+enum MarkerType 
+{ 
+    TRANSLATION , 
+    TRANSLATION_ROTATION, 
+    TRANSLATION_ROTATION_SCALE 
+};
 
+class plDRBTransform 
+{
+ 
+    public:
+    
+        // Values to store the original information, provided by the file or the DRB.
+        // Storing these isn't strictly necessary, though could be useful if ever
+        // we wanted to get the original axis-angle representation values
+        double calibpointx, calibpointy, calibpointz;
+        double calibangle,  calibaxisx,  calibaxisy, calibaxisz;
+        double calibscalex, calibscaley, calibscalez; // generally these will all be the same value
 
-class DRBTransform {
+        plDRBTransform();
+        
+        plDRBTransform( const plMatrix44 );
+        plDRBTransform( const plVector3&, const plVector3&, double ); // DRB Transformation
+        plDRBTransform( const std::string&, MarkerType = TRANSLATION ); // File Transformation - string is the file, MarkerType specifies how much to read
+              
+        void           initializeTransforms(); // Sets up the matrices
+        
+        plDRBTransform clone()        const;
+        plMatrix44     getTransform() const;
+        
+        plVector3      applyTransform       ( const plVector3& ) const; // forward transformation, returns resulting vector
+        plVector3      applyInverseTransform( const plVector3& ) const; // reverse transformation, returns resulting vector
 
-private:
+    private:
 
-    // These store the information about the translations.
-    // (computed on instantiation)
-    plMatrix44 fwdTransform, inverseTransform;
-    plVector3 reverseTranslation;
-
-    // Values to store the original information, provided by the file or the DRB.
-    // Storing these isn't strictly necessary, though could be useful if ever
-    // we wanted to get the original axis-angle representation values
-public:
-    double calibpointx, calibpointy, calibpointz;
-    double calibangle, calibaxisx, calibaxisy, calibaxisz;
-    double calibscalex, calibscaley, calibscalez; // generally these will all be the same value
-
-
-public:
-
-    DRBTransform() { // default transform - this will do nothing
-        calibpointx=calibpointy=calibpointz=calibangle=calibaxisy=calibaxisx=0;
-        calibscalex=calibscaley=calibscalez=calibaxisz=1;
-        initializeTransforms();
-    };
-
-    DRBTransform( const std::string&, MarkerType = TRANSLATION );
-    // File Transformation - string is the file, MarkerType specifies how much to read
-
-    DRBTransform( const plVector3&, const plVector3&, double ); // DRB Transformation
-
-//    DRBTransform( const Matrix1<double> ); // DRB Transformation from a 4x4 matrix;
-
-    DRBTransform( const plMatrix44 );
-
-    void initializeTransforms(); // Sets up the matrices
-    DRBTransform clone();
-    plMatrix44 getTransform();
-    plVector3 applyTransform        ( const plVector3& ); // forward transformation, returns resulting vector
-    plVector3 applyInverseTransform ( const plVector3& ); // reverse transformation, returns resulting vector
+        // These store the information about the translations.
+        // (computed on instantiation)
+        plMatrix44 fwdTransform, inverseTransform;
+        plVector3 reverseTranslation;
 
 };
 
-#endif // DRBTRANSFORM_H
+#endif // plDRBTransform_H

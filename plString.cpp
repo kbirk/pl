@@ -1,16 +1,74 @@
 #include "plString.h"
 
-bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2, PLuint num)
+plString::plString() 
+    : std::string()
 {
-    // Convert both strings to upper case by transfrom() before compare.
-    if (num > str1.length() || num > str2.length())
+
+}
+
+plString::plString (const std::string &str)
+    : std::string( str ) 
+{
+
+}
+
+plString::plString (const char* s)
+    : std::string( s ) 
+{
+
+}
+
+bool plString::importFile( const std::string &filename)      
+{
+    std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
+    if (in)
+    {
+        std::string contents;
+        in.seekg(0, std::ios::end);
+        this->resize(in.tellg());
+        in.seekg(0, std::ios::beg);
+        in.read(&(*this)[0], this->size());
+        in.close();
+    }  
+    return true;
+}    
+
+void plString::toLower()
+{
+    for (PLuint i = 0; i < length(); i++)
+    {
+        (*this)[i] = tolower((*this)[i]);
+    }
+}
+
+bool plString::compare( const plString &str )
+{
+    if (length() != str.length())
+    {
+        return false;
+    }
+
+    for (PLuint i = 0; i < length(); i++)
+    {
+        if ( (*this)[i] != str[i] )
+        {
+            return false;
+        }
+    }
+    
+    return true;  
+}
+
+bool plString::compare( const plString &str, PLuint num  )
+{
+    if (num > this->length() || num > str.length())
     {
         return false;
     }
     
     for (PLuint i = 0; i < num; i++)
     {
-        if (tolower(str1[i]) != tolower(str2[i]))
+        if ( (*this)[i] != str[i] )
         {
             return false;
         }
@@ -19,16 +77,53 @@ bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2, 
     return true; 
 }
 
-bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2)
+bool plString::compare( const plString &str, PLuint index, PLuint num )
 {
-    if (str1.length() != str2.length())
+    if ( (index+num) > this->length() || (index+num) > str.length())
+    {
+        return false;
+    }
+    
+    for (PLuint i = index; i < (index+num); i++)
+    {
+        if ( (*this)[i] != str[i] )
+        {
+            return false;
+        }
+    }
+    
+    return true; 
+
+} 
+
+bool plString::compareCaseInsensitive( const plString &str, PLuint num) const
+{
+    if (num > this->length() || num > str.length())
+    {
+        return false;
+    }
+    
+    for (PLuint i = 0; i < num; i++)
+    {
+        if (tolower((*this)[i]) != tolower(str[i]))
+        {
+            return false;
+        }
+    }
+    
+    return true; 
+}
+
+bool plString::compareCaseInsensitive( const plString &str) const
+{
+    if (length() != str.length())
     {
         return false;
     }
 
-    for (PLuint i = 0; i < str1.length(); i++)
+    for (PLuint i = 0; i < length(); i++)
     {
-        if (tolower(str1[i]) != tolower(str2[i]))
+        if (tolower((*this)[i]) != tolower(str[i]))
         {
             return false;
         }
@@ -37,41 +132,40 @@ bool plStringCompareCaseInsensitive(const plString &str1, const plString &str2)
     return true;   
 }
 
-void plStringStripCharacter( plString &s, char c)
+plString plString::operator + ( const plString &s) const
 {
-    s.erase( std::remove( s.begin(), s.end(), c), s.end() ); 
-}  
-
-void plStringStripPreceedingWhitespace( plString &s)
-{
-    size_t startpos = s.find_first_not_of(" \t");
-    if (startpos < s.length())
-        s = s.substr( startpos );
-}  
-
-void plStringStripPreceedingFilepath( plString &s)
-{
-    size_t startpos = s.find_last_of("/") + 1;
-    if (startpos < s.length())
-        s = s.substr( startpos );
+    std::stringstream str;
+    str << *this << s << "\0";
+    return str.str();
 }
 
-bool plStringOnlyWhitespace( const plString &s)
+void plString::stripCharacter( char c)
 {
-    return (s.length() == 0) || (s.find_first_not_of("\t\n\r ") == plString::npos);
+    erase( std::remove( begin(), end(), c), end() ); 
+}  
+
+void plString::stripPreceedingWhitespace()
+{
+    size_t startpos = find_first_not_of(" \t");
+    if (startpos < length())
+        *this = substr( startpos );
+}  
+
+plString plString::withoutFilepath() const
+{
+    size_t startpos = find_last_of("/") + 1;
+    if (startpos < length())
+        return substr( startpos );
+    else
+        return *this;    
+}
+
+bool plString::isOnlyWhitespace() const
+{
+    return (length() == 0) || (find_first_not_of("\t\n\r ") == plString::npos);
 } 
 
-plString plStringConcat( const plString &s1, const plString &s2)
-{
-    std::stringstream str;
-    str << s1 << s2 << "\0";
-    return str.str();
-}
 
-plString plStringConcat( const plString &s1, const plString &s2,  const plString &s3)
-{
-    std::stringstream str;
-    str << s1 << s2 << s3 << "\0";
-    return str.str();
-}
+
+
 

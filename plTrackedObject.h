@@ -1,49 +1,44 @@
 #ifndef TRACKEDOBJECT_H
 #define TRACKEDOBJECT_H
 
-#include "pl.h"
+#include "plCommon.h"
+#include "plRenderable.h"
 #include "plDRBTransform.h"
 
-class trackedObject
+class plTrackedObject : public plRenderable
 {
-private:
-    DRBTransform    DRBToTrackedPoint;
-    DRBTransform    DRBToTrackedEnd;
-    DRBTransform    ToFemurSTL;
 
+    public:
+           
+        plTrackedObject ();                                                                           //  empty Constructor, allows for declaration of trackedObjects in headers        
+        plTrackedObject ( const plDRBTransform &ToTrackedPoint, const plDRBTransform &ToTrackedEnd,   //  real constructor requiring three DRB transforms (and an arthro flag)
+                          const plDRBTransform &FemurDRBToFemurSTL, bool isArthro = false);
+                            
+        void            updatePosition( const plDRBTransform &DRBToWorld, const plDRBTransform &FemurToWorld );
 
-    plVector3       zeroVec;
-    plVector3       trackedTip, tTipWorldCoords, rotationAxis;
-    plVector3       trackedEnd, tEndWorldCoords;
+        // Single line accessors
+        PLbool          isArthroscope() const       { return _isArthroscope;  }
+        const plVector3 &getPoint() const           { return _trackedTip;     }
+        const plVector3 &getEnd()   const           { return _trackedEnd;     }
+        const plVector3 &getTipWorldCoords() const  { return _tipWorldCoords; }
+        const plVector3 &getEndWorldCoords() const  { return _endWorldCoords; }
+        const plVector3 &getRotationAxis()   const  { return _rotationAxis;   }
+        double          getRotationAngle()   const  { return _rotationAngle;  }
+        plVector4       getRotationInfo()    const  { return plVector4( _rotationAxis, _rotationAngle); }
 
-    double          rotationAngle;
-    bool            visible;
-    bool            isArthroscope;
+    private:
+    
+        plDRBTransform   _DRBToTrackedPoint;
+        plDRBTransform   _DRBToTrackedEnd;
+        plDRBTransform   _toFemurSTL;
 
-public:
-    // Empty Constructor, allows for declaration of trackedObjects in headers
-    trackedObject   () {};
-    //  Real constructor requiring three DRB transforms (and an arthro flag)
-    trackedObject   (DRBTransform ToTrackedPoint, DRBTransform ToTrackedEnd,
-                  DRBTransform FemurDRBToFemurSTL, bool isArthro = false);
-    void            updatePosition(DRBTransform DRBToWorld, DRBTransform FemurToWorld);
-    void            setVisibility(bool currentVisibility);
+        plVector3       _zeroVec;
+        plVector3       _trackedTip, _tipWorldCoords, _rotationAxis;
+        plVector3       _trackedEnd, _endWorldCoords;
 
-
-    // Single line accessors
-    bool            getVisibility()     { return visible;           }
-    plVector3       getPoint()          { return trackedTip;        }
-    plVector3       getEnd()            { return trackedEnd;        }
-    plVector3       getTipWorldCoords() { return tTipWorldCoords;   }
-    plVector3       getEndWorldCoords() { return tEndWorldCoords;   }
-    plVector3       getRotationAxis()   { return rotationAxis;      }
-    double          getRotationAngle()  { return rotationAngle;     }
-    plVector4       getRotationInfo()   { return
-                                          plVector4(rotationAxis,
-                                                    rotationAngle); }
-
-
+        double          _rotationAngle;
+        PLbool          _isArthroscope;
 
 };
 
-#endif // TRACKEDOBJECT_H
+#endif
