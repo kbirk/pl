@@ -57,7 +57,7 @@ class plTriangle
 		const plVector3 &point1()   const { return _points[1];   } 
 		const plVector3 &point2()   const { return _points[2];   } 
 		const plVector3 &normal()   const { return _normal;   }
-		const plVector3 &centroid() const { return _centroid; }  
+        const plVector3 &centroid() const { return _centroid; }
 		                    
         void  point0( const plVector3 &point  );
         void  point1( const plVector3 &point  );
@@ -71,6 +71,8 @@ class plTriangle
 		                             const plVector3 &rayDir, 
 		                             PLbool ignoreBehindRay = false, 
 		                             PLbool backFaceCull = false ) const; 
+
+        plVector3 barycentricCoords( const plVector3 &testPoint );
 
     private:
     

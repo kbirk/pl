@@ -107,6 +107,28 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
 }
 
 
+// obtained from: http://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
+// Compute barycentric coordinates (u, v, w) for
+// point p with respect to triangle (a, b, c)
+plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint )
+{
+    // we're assuming that testPoint is in-plane with the triangle.
+    plVector3 v0 = _points[1] - _points[0],
+              v1 = _points[2] - _points[0],
+              v2 = testPoint - _points[0];
+    PLfloat d00 = (v0*v0);
+    PLfloat d01 = (v0*v1);
+    PLfloat d11 = (v1*v1);
+    PLfloat d20 = (v2*v0);
+    PLfloat d21 = (v2*v1);
+    PLfloat denom = d00 * d11 - d01 * d01;
+    PLfloat v = (d11 * d20 - d01 * d21) / denom;
+    PLfloat w = (d00 * d21 - d01 * d20) / denom;
+    PLfloat u = 1.0f - v - w;
+    return plVector3(u,v,w);
+}
+
+
 // I/O operators
 std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 {
