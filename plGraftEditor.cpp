@@ -14,9 +14,9 @@ void plGraftEditor::clearSelection( plPlan &plan )
 {
     _selectedGraft  = NULL; 
     _selectedType   = -1;
-    for (PLuint i=0; i<plan._grafts.size(); i++)
+    for (PLuint i=0; i<plan.grafts().size(); i++)
     {
-        plan._grafts[i]._clearSelection();      
+        plan.grafts(i)._clearSelection();      
     }  
 }
 
@@ -165,26 +165,14 @@ PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLfloat x, PLfloat y, P
     if (_selectedGraft == NULL)    
         return false;                 // no graft selected
 
-    const plTransform &transform = _selectedGraft->transform(_selectedType);    
+    plVector3 translation( x, y, 0);
     
-    // translate joystick coords to local graft coords
-    /*
-    PLfloat localx = plVector3(x, y, 0) *  transform.x(); 
-    PLfloat localy = plVector3(x, y, 0) * -transform.z(); 
-    PLfloat localz = plVector3(x, y, 0) *  transform.y(); 
-    */
-    
-    PLfloat localx =  transform.x() * plVector3(x, y, 0); 
-    PLfloat localy = -transform.z() * plVector3(x, y, 0); 
-    PLfloat localz =  transform.y() * plVector3(x, y, 0);
-    
-    plVector3 translationLocal( localx, localy, localz);
-    
-    if (translationLocal.squaredLength() > 1)
-        translationLocal = translationLocal.normalize();
+    if (translation.squaredLength() > 1)
+        translation = translation.normalize();
     
     // translate by local coords
-    translateSelected( translationLocal );    
+    translateSelected( translation ); 
+    return true;
 }
 
 void plGraftEditor::selectGraft( plPlan &plan, PLuint index, PLuint type )
@@ -192,14 +180,14 @@ void plGraftEditor::selectGraft( plPlan &plan, PLuint index, PLuint type )
     // clear any previous selections
     clearSelection( plan ); 
 
-    for (PLuint i=0; i<plan._grafts.size(); i++)
+    for (PLuint i=0; i<plan.grafts().size(); i++)
     {
         if (i == index)
         {
-            plan._grafts[i]._selectedValue  = type;
-            plan._grafts[i]._isSelected     = true;
+            plan.grafts(i)._selectedValue  = type;
+            plan.grafts(i)._isSelected     = true;
             _selectedType                   = type;
-            _selectedGraft                  = &plan._grafts[i];
+            _selectedGraft                  = &plan.grafts(i);
         }
     }   
     

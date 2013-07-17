@@ -30,6 +30,7 @@ bool plString::importFile( const std::string &filename)
         in.read(&(*this)[0], this->size());
         in.close();
     }  
+    return true;
 }    
 
 void plString::toLower()

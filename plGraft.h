@@ -51,7 +51,7 @@ class plGraft : public plRenderable,
    
         plGraft();
         
-        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
+        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         PLfloat          heightOffset()  const { return _heightOffset; } 
         PLfloat          radius()        const { return _radius; } 
@@ -97,10 +97,10 @@ class plGraft : public plRenderable,
         void      _drawGraft() const;
                   
         void      _setCaps();        
-        plCap     _findCap              ( const plSeq<plTriangle> &triangles );
+        plCap     _findCap              ( const plModel &model );// const plSeq<plTriangle> &triangles );
         bool      _triangleIntersection ( const plTriangle &tri, plPolygon &p ) const;
-        plVector3 _pointAtAngle         ( PLfloat theta ) const;
-        PLfloat   _angleOfPoint         ( const plVector3 &v ) const;
+        //plVector3 _pointAtAngle         ( PLfloat theta ) const;
+        //PLfloat   _angleOfPoint         ( const plVector3 &v ) const;
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;
 
         void      _updateCartilageMesh();

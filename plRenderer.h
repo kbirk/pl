@@ -35,7 +35,6 @@ class plRenderer
         static void queue ( const plGraftEditor    &editor );
         static void queue ( const plBoundaryEditor &editor );
         static void queue ( const plTrackedObject  &object ); 
-        static void queue ( const plOctree         &octree ); 
         static void queue ( const plLineMesh       &debug  ); 
          
         static void reportError ( const plString &str );
@@ -47,8 +46,7 @@ class plRenderer
         static const plPlan             *_planToDraw;
         static const plGraftEditor      *_graftEditorToDraw;
         static const plBoundaryEditor   *_boundaryEditorToDraw; 
-               
-        static plSeq<const plOctree*>        _octreesToDraw;        
+       
         static plSeq<const plLineMesh*>      _debugToDraw;        
         static plSeq<const plTrackedObject*> _trackedObjectsToDraw;
         

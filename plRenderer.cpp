@@ -7,7 +7,6 @@ const plBoundaryEditor*  plRenderer::_boundaryEditorToDraw   = NULL;
 
 plSeq<const plTrackedObject*> plRenderer::_trackedObjectsToDraw;
 plSeq<const plLineMesh*>      plRenderer::_debugToDraw;
-plSeq<const plOctree*>        plRenderer::_octreesToDraw;
 
 plComputeShader*         plRenderer::_computeShader          = NULL;
 plMinimalShader*         plRenderer::_minimalShader          = NULL;
@@ -34,7 +33,6 @@ void plRenderer::_clearRenderQueue()
     _boundaryEditorToDraw = NULL;
     _trackedObjectsToDraw.clear();
     _debugToDraw.clear();
-    _octreesToDraw.clear();
 }
 
 
@@ -70,14 +68,10 @@ void plRenderer::queue ( const plTrackedObject &object )
     _trackedObjectsToDraw.add( &object );
 }
 
+
 void plRenderer::queue ( const plLineMesh &debug )
 {
     _debugToDraw.add( &debug );
-}
-
-void plRenderer::queue ( const plOctree &octree )
-{
-    _octreesToDraw.add( &octree );
 }
 
 
@@ -116,8 +110,9 @@ void plRenderer::draw()
     {
         _drawScene();
     }
+
     _endDrawing();
-       
+
     // clear queues from this frame
     _clearRenderQueue();
 }
@@ -126,8 +121,6 @@ void plRenderer::draw()
 void plRenderer::_beginPicking()
 {
     glDisable( GL_BLEND );
-
-    //isPicking = true;
 
     // bind picking shader
     plShaderStack::push( _pickingShader );
@@ -144,7 +137,6 @@ void plRenderer::_beginPicking()
 
 void plRenderer::_endPicking()
 {
-    //isPicking = false;
     plShaderStack::pop();
     plPicking::texture->unbind();  
 }
@@ -216,18 +208,20 @@ void plRenderer::_drawScene()
         }
     }
   
+    /*
     // set flat shader
     plShaderStack::push( _minimalShader );    
-    plColourStack::load( 0.3, 0.1, 0.4 );
-    // debug objects
-    for (PLuint i=0; i<_octreesToDraw.size(); i++)
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
-        _octreesToDraw[i]->draw();
-        
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // octrees objects
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);    
+    for (PLuint i =0; i < _planToDraw->models().size(); i++)
+    {      
+        //plColourStack::load( 0.3, 0.1, 0.4 );
+        //_planToDraw->models(i).bone.octree().draw();
+        plColourStack::load( 0.1, 0.4, 0.3 );
+        _planToDraw->models(i).cartilage.octree().draw();
     }
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     
     // debug objects
     for (PLuint i=0; i<_debugToDraw.size(); i++)
@@ -235,6 +229,7 @@ void plRenderer::_drawScene()
         _debugToDraw[i]->draw();
     }
     plShaderStack::pop(); 
+    */
 
 }
 

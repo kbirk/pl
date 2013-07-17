@@ -12,6 +12,11 @@ plOctree::plOctree( const plVector3 &min,
     build( min, max, triangles, depth );
 }
 
+plOctree::~plOctree()
+{
+    delete _root;
+}
+
 void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth )
 {
     if (depth == 0)
@@ -20,6 +25,8 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<p
         exit(1);
     }
     
+    std::cout << "Building octree for " << triangles.size() << " triangles (depth = " << depth << ")...";
+
     // centre point of octree
     plVector3 centre = 0.5f * (min+max);
     
@@ -35,10 +42,15 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<p
  
     // traverse and fill sub cubes with triangles until desired depth is reached  
     _fill( triangles, depth ); 
+
+    std::cout << "\tComplete.\n";
 }
 
 void plOctree::draw() const
 {
+    if (!isVisible)
+        return;
+
     _root->draw();
 }
 
@@ -49,15 +61,12 @@ plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVecto
 
     plSeq<const plTriangle*> triangles;
 
-    if ( _root->rayIntersect( triangles, rayOrigin, rayDirection, ignoreBehindRay ) )
+    if ( _root->rayIntersect( triangles, rayOrigin, rayDirection, 0, ignoreBehindRay ) )
     {
-        std::cout << "triangles found: " << triangles.size() << "\n";
-    
         PLfloat min = FLT_MAX;
 
         for ( PLuint i = 0; i < triangles.size(); i++)
         {  
-            std::cout << " t: " << *triangles[i];
             plIntersection intersection = triangles[i]->rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
             
             if (intersection.exists)
@@ -77,13 +86,21 @@ plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVecto
 }
 
 
+void plOctree::graftIntersect( plSeq<const plTriangle*> &triangles, const plTransform &transform, PLfloat radius ) const
+{
+    _root->rayIntersect( triangles, transform.origin(), transform.y(), radius, false );
+}
+
+
 void plOctree::_fill(const plSeq<plTriangle> &triangles, PLuint depth)
 {
     for (PLuint i=0; i< triangles.size(); i++)
     {
         _root->insert( triangles[i], depth-1 );
     }
+    
 }
+
 
 
 plOctreeNode::plOctreeNode( const plVector3 &c, PLfloat hw)
@@ -91,6 +108,12 @@ plOctreeNode::plOctreeNode( const plVector3 &c, PLfloat hw)
 {
     // create mesh
     _updateMesh();
+}
+
+
+plOctreeNode::~plOctreeNode()
+{
+    for (PLuint i=0; i < 8; i++) delete children[i];
 }
 
 
@@ -221,44 +244,32 @@ PLbool plOctreeNode::sphereCheck( const plVector3 &centre, PLfloat radius, PLint
     return sqDist <= radius * radius;
 }
 
-
-PLbool plOctreeNode::rayIntersect( plSeq<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay ) const
+PLbool plOctreeNode::rayIntersect( plSeq<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat boxInflation, PLbool ignoreBehindRay ) const
 {
-    plVector3 minAABB( centre.x - halfWidth, centre.y - halfWidth, centre.z - halfWidth );
-    plVector3 maxAABB( centre.x + halfWidth, centre.y + halfWidth, centre.z + halfWidth );
-    
-    // r.dir is unit direction vector of ray
-    plVector3 directionDiv( 1.0f / rayDirection.x,
-                            1.0f / rayDirection.y,
-                            1.0f / rayDirection.z );
-                            
-    // minAABB is the corner of AABB with minimal coordinates - left bottom, maxAABB is maximal corner
-    // rayOrigin is origin of ray
-    float t1 = (minAABB.x - rayOrigin.x)*directionDiv.x;
-    float t2 = (maxAABB.x - rayOrigin.x)*directionDiv.x;
-    float t3 = (minAABB.y - rayOrigin.y)*directionDiv.y;
-    float t4 = (maxAABB.y - rayOrigin.y)*directionDiv.y;
-    float t5 = (minAABB.z - rayOrigin.z)*directionDiv.z;
-    float t6 = (maxAABB.z - rayOrigin.z)*directionDiv.z;
+    plVector3 diff;
 
-    float tmin = PL_MAX_OF_3( PL_MIN_OF_2(t1, t2), 
-                              PL_MIN_OF_2(t3, t4), 
-                              PL_MIN_OF_2(t5, t6) );
-      
-    float tmax = PL_MIN_OF_3( PL_MAX_OF_2(t1, t2), 
-                              PL_MAX_OF_2(t3, t4), 
-                              PL_MAX_OF_2(t5, t6) );
+    PLfloat boxExtents = halfWidth + boxInflation;
 
-    // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us    
-    if (ignoreBehindRay && tmax < 0)
-        return false;       // box is behind ray, 
-    
-    // if tmin > tmax, ray doesn't intersect AABB
-    if (tmin > tmax)
-        return false;
+	diff.x = rayOrigin.x - centre.x;
+	if(fabs(diff.x)>boxExtents && diff.x*rayDirection.x>=0.0f)	return false;
 
-    
-    // intersection exists, recurse further
+	diff.y = rayOrigin.y - centre.y;
+	if(fabs(diff.y)>boxExtents && diff.y*rayDirection.y>=0.0f)	return false;
+
+	diff.z = rayOrigin.z - centre.z;
+	if(fabs(diff.z)>boxExtents && diff.z*rayDirection.z>=0.0f)	return false;
+
+	float fAWdU[3];
+	fAWdU[0] = fabs(rayDirection.x);
+	fAWdU[1] = fabs(rayDirection.y);
+	fAWdU[2] = fabs(rayDirection.z);
+
+	float f;
+	f = rayDirection.y * diff.z - rayDirection.z * diff.y;	if(fabs(f)>boxExtents*fAWdU[2] + boxExtents*fAWdU[1])	return false;
+	f = rayDirection.z * diff.x - rayDirection.x * diff.z;	if(fabs(f)>boxExtents*fAWdU[2] + boxExtents*fAWdU[0])	return false;
+	f = rayDirection.x * diff.y - rayDirection.y * diff.x;	if(fabs(f)>boxExtents*fAWdU[1] + boxExtents*fAWdU[0])	return false;
+
+	// intersection exists, recurse further
     PLuint childCount = 0;
     
     for (PLuint i=0; i<children.size(); i++)
@@ -266,7 +277,7 @@ PLbool plOctreeNode::rayIntersect( plSeq<const plTriangle*> &triangles, const pl
         if (children[i] != NULL)
         {
             // not a leaf, recurse
-            children[i]->rayIntersect( triangles, rayOrigin, rayDirection, ignoreBehindRay ); 
+            children[i]->rayIntersect( triangles, rayOrigin, rayDirection, boxInflation, ignoreBehindRay ); 
             childCount++;            
         }           
     }
@@ -281,7 +292,6 @@ PLbool plOctreeNode::rayIntersect( plSeq<const plTriangle*> &triangles, const pl
     }
     return true;
 }
-
 
 
 void plOctreeNode::_updateMesh()

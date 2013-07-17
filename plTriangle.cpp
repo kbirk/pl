@@ -103,9 +103,9 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
     plVector3 intPoint = rayStart + t * rayDir;
 
     // Compute barycentric coords
-    PLfloat totalArea = ((_points[1]-_points[0]) ^ (_points[2]-_points[0])) * _normal;
-    PLfloat u = (((_points[2]-_points[1]) ^ (intPoint - _points[1])) * _normal) / totalArea;
-    PLfloat v = (((_points[0]-_points[2]) ^ (intPoint - _points[2])) * _normal) / totalArea;
+    PLfloat totalAreaDiv = 1 / ( ((_points[1]-_points[0]) ^ (_points[2]-_points[0])) * _normal);
+    PLfloat u = (((_points[2]-_points[1]) ^ (intPoint - _points[1])) * _normal) * totalAreaDiv;
+    PLfloat v = (((_points[0]-_points[2]) ^ (intPoint - _points[2])) * _normal) * totalAreaDiv;
 
     // Reject if outside triangle
     if (u < 0 || v < 0 || u + v > 1)
@@ -128,6 +128,8 @@ std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 
 void plSTL::importFile( plSeq<plTriangle> &triangles, plString filename)
 {
+    std::cout << "Importing " << filename << "...";
+
     // just in case, clear seq
     triangles.clear();
 
@@ -212,7 +214,7 @@ void plSTL::importFile( plSeq<plTriangle> &triangles, plString filename)
             triangles.add( plTriangle( n, p0, p1, p2 ) );
         }
     }
-
+    std::cout << "\t\t\tComplete.\n";
 }
 
 

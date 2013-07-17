@@ -7,7 +7,7 @@ plBoneAndCartilage::plBoneAndCartilage()
 
 plBoneAndCartilage::plBoneAndCartilage( plString boneFile, plString cartilageFile)
     :   bone(boneFile), cartilage(cartilageFile)
-{       
+{      
 }
 
 

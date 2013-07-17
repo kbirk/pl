@@ -19,6 +19,7 @@ class plModel : public plRenderable
         plModel( std::string filename );
              
         const plSeq<plTriangle> &triangles() const { return _triangles; }
+        const plOctree          &octree()    const { return _octree;    }
         plString                 filename()  const { return _filename;  }  
         
         void toggleVisibility();        

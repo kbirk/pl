@@ -10,7 +10,6 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       Window( x, y, width, height, title )
 {  
     plRenderer::init(); 
-      
       /*
     plVector3 min, max;
     _plan._models[0].bone.getMinMax(min,max);
@@ -31,6 +30,7 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
     std::cout << "octree alone result: "     << intersection1.point << "\n";     
     std::cout << "octree member result: "     << intersection2.point << "\n";                    
     */ 
+    
 }
 
 
@@ -41,8 +41,7 @@ void PlannerWindow::display()
     plRenderer::queue( _plan );
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );
-    //plRenderer::queue( _plan._models[0].cartilage._octree );
-   
+
     plRenderer::draw();
 
     glutSwapBuffers();
@@ -105,10 +104,10 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
             currentView = (PLint)(key - '0');
             break;                
 
-        case 'b':   _plan._models[0].bone.toggleVisibility();                   break;            
-        case 'c':   _plan._models[0].cartilage.toggleVisibility();              break;      
+        case 'b':   _plan.models(0).bone.toggleVisibility();                   break;            
+        case 'c':   _plan.models(0).cartilage.toggleVisibility();              break;      
         case 'p':   _plan.toggleVisibility();                                   break;    
-        case 'z':   _camera.reset( _plan._models[0].getCentroid() );            break;          
+        case 'z':   _camera.reset( _plan.models(0).getCentroid() );            break;          
         case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
         case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
         case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 

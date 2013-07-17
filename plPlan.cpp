@@ -45,12 +45,20 @@ plPlan::plPlan( int argc, char **argv )
         for (PLint i = 1; i < argc; i+=2)
         {
             // model input order: bone, cartilage, bone, cartilage, etc...
-            _models.add( plBoneAndCartilage( argv[i], argv[i+1] ) );
+            _models.add( new plBoneAndCartilage( argv[i], argv[i+1] ) );
         }
     }
 
 }
 
+plPlan::~plPlan()
+{
+    for ( PLuint i = 0; i < _defectSites.size(); i++) delete _defectSites[i];
+    for ( PLuint i = 0; i < _donorSites.size();  i++) delete _donorSites[i];
+    for ( PLuint i = 0; i < _grafts.size();      i++) delete _grafts[i];
+    for ( PLuint i = 0; i < _iGuides.size();     i++) delete _iGuides[i];
+    for ( PLuint i = 0; i < _models.size();      i++) delete _models[i];
+}
 
 void plPlan::drawElements() const
 {
@@ -61,14 +69,14 @@ void plPlan::drawElements() const
     for ( PLuint i = 0; i < _defectSites.size(); i++)
     {
         plPicking::value.id = i; 
-        _defectSites[i].draw();
+        _defectSites[i]->draw();
     }
        
     // Draw harvest boundaries   
     for ( PLuint i = 0; i < _donorSites.size(); i++)
     {
         plPicking::value.id = i;        
-        _donorSites[i].draw();            
+        _donorSites[i]->draw();            
     }    
 
     // Draw grafts
@@ -76,14 +84,14 @@ void plPlan::drawElements() const
     {       
             
         plPicking::value.id = i; 
-        _grafts[i].draw();
+        _grafts[i]->draw();
     }
         
     // Draw iGuides
     for ( PLuint i = 0; i < _iGuides.size(); i++)
     {            
         plPicking::value.id = i; 
-        _iGuides[i].draw();
+        _iGuides[i]->draw();
     }
 }
 
@@ -93,7 +101,7 @@ void plPlan::drawModels() const
     for (PLuint i =0; i < _models.size(); i++)
     {            
         plPicking::value.id = i;    
-        _models[i].draw();
+        _models[i]->draw();
     }
 
 }
@@ -106,7 +114,7 @@ void plPlan::addDefectSite( PLuint modelIndex )
         std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
         return;
     }
-    _defectSites.add( plDefectSite( modelIndex, _models[modelIndex] ) );
+    _defectSites.add( new plDefectSite( modelIndex, *_models[modelIndex] ) );
 }
 
 void plPlan::addDonorSite( PLuint modelIndex )
@@ -116,7 +124,7 @@ void plPlan::addDonorSite( PLuint modelIndex )
         std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
         return;
     }
-    _donorSites.add( plDonorSite( modelIndex, _models[modelIndex] ) );
+    _donorSites.add( new plDonorSite( modelIndex, *_models[modelIndex] ) );
 }
 
 void plPlan::addIGuide( PLuint modelIndex )
@@ -126,39 +134,51 @@ void plPlan::addIGuide( PLuint modelIndex )
         std::cerr << " plPlan addIGuide() error: model ID does not exist\n";
         return;
     }
-    _iGuides.add( plIGuide( modelIndex, _models[modelIndex] ) );
+    _iGuides.add( new plIGuide( modelIndex, *_models[modelIndex] ) );
 }
 
 
 void plPlan::removeDefectSite( PLuint index)
 {
+    delete _defectSites[index];
     _defectSites.remove( index );
 }
 
 
 void plPlan::removeDonorSite( PLuint index)
 {
+    delete _donorSites[index];
     _donorSites.remove( index );
 }
 
 
 void plPlan::removeIGuide( PLuint index)
 {
+    delete _iGuides[index];
     _iGuides.remove( index );
 }
 
 
 template<class T>
-T &plGetImportReference( plSeq<T> &ts,  const plString &index )
+T &plGetImportReference( plSeq<T*> &ts,  const plString &index )
 {
     PLuint j = plString::fromString<PLuint>( index );           
     while (ts.size() < j+1)
     {
-        ts.add( T() );  // add new elements until index exists 
+        ts.add( new T() );  // add new elements until index exists 
     }
-    return ts[j];
+    return *ts[j];
 }  
 
+template<class T>
+T *getElementPointer( plSeq<T*> &ts,  PLuint index )
+{        
+    while (ts.size() < index+1)
+    {
+        ts.add( NULL );  // add new elements until index exists 
+    }
+    return ts[index];
+}
 
 void plPlan::importFile( plString filename )
 {
@@ -166,17 +186,19 @@ void plPlan::importFile( plString filename )
 
     for ( PLuint i = 0; i < csv.data.size(); i++)
     {
-        plString field = csv.data[i][0];
+           
+        plString field = csv.data[i][0];    // get field name
+        PLuint   index = plString::fromString<PLuint>( csv.data[i][1] );   // get field index
 
         if (field.compareCaseInsensitive( "model") )     
         {
-            // get reference to model
-            plBoneAndCartilage &model = plGetImportReference( _models, csv.data[i][1] );
-                        
-            //_models.add( plBoneAndCartilage( csv.data[i][3], csv.data[i+1][3]) );
-            //i++; // skip next line
-            // read model attribute from current row
-            model.importCSV( csv.data[i] );
+            // get pointer to model
+            plBoneAndCartilage *model = getElementPointer( _models, index );
+            
+            _models[index] = new plBoneAndCartilage( csv.data[i][3], csv.data[i+1][3] );
+            i++;
+            
+            
         }
         
         else if (field.compareCaseInsensitive( "defect site") ) // read before boundary
@@ -196,14 +218,14 @@ void plPlan::importFile( plString filename )
         } 
 
         else if (field.compareCaseInsensitive( "graft" ) ) 
-        {        
+        {    
             // get reference to graft
             plGraft &graft = plGetImportReference( _grafts, csv.data[i][1] );             
             // read graft attribute from row
             graft.importCSV( csv.data[i], _models );
         } 
         else if (field.compareCaseInsensitive( "iguide" ) ) 
-        {       
+        {  
              // get reference to iGuide
             plIGuide &iguide = plGetImportReference( _iGuides, csv.data[i][1] ); 
             // read iguide attribute from current row
@@ -236,17 +258,19 @@ void plPlan::exportFile( plString filename )
 std::ostream& operator << ( std::ostream& out, const plPlan &p )
 {
     // models
-    for (PLuint i=0; i<p._models.size(); i++) 
+    for (PLuint i=0; i<p.models().size(); i++) 
     {
-        out << "model," << i << ",bone file,"      << p._models[i].bone.filename()        << std::endl;
-        out << "model," << i << ",cartilage file," << p._models[i].cartilage.filename()   << std::endl;
+        const plBoneAndCartilage &model = p.models(i);
+    
+        out << "model," << i << ",bone file,"      << model.bone.filename()        << std::endl;
+        out << "model," << i << ",cartilage file," << model.cartilage.filename()   << std::endl;
         out << std::endl;
     }
     
     // splines
-    for (PLuint i=0; i<p._defectSites.size(); i++) 
+    for (PLuint i=0; i<p.defectSites().size(); i++) 
     {    
-        plDefectSite &defectSite = p._defectSites[i];
+        const plDefectSite &defectSite = p.defectSites(i);
         
         out << "defect site," << i << ",model,"   << defectSite.modelID() << std::endl;        
         out << "defect site," << i << ",spline"   << defectSite.spline  << std::endl;  
@@ -255,9 +279,9 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     }
 
     // donor regions
-    for (PLuint i=0; i<p._donorSites.size(); i++) 
+    for (PLuint i=0; i<p.donorSites().size(); i++) 
     {
-        plDonorSite &donor = p._donorSites[i];
+        const plDonorSite &donor = p.donorSites(i);
         
         out << "donor site," << i << ",model,"   << donor.modelID() << std::endl;
         out << "donor site," << i << ",boundary" << donor.boundary << std::endl;  
@@ -265,9 +289,9 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     }
 
     // grafts
-    for (PLuint i=0; i<p._grafts.size(); i++) 
+    for (PLuint i=0; i<p.grafts().size(); i++) 
     {
-        plGraft &graft = p._grafts[i];
+        const plGraft &graft = p.grafts(i);
                                  
         out << "graft," << i << ",height offset,"        << graft.heightOffset()      << std::endl;
         out << "graft," << i << ",radius,"               << graft.radius()            << std::endl;
@@ -282,9 +306,9 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     }
 
     // iGuides
-    for (PLuint i=0; i<p._iGuides.size(); i++) 
+    for (PLuint i=0; i<p.iGuides().size(); i++) 
     {
-        plIGuide &iguide = p._iGuides[i];
+        const plIGuide &iguide = p.iGuides(i);
 
         out << std::endl;
         out << "iguide," << i << ",model,"   << iguide.model() << std::endl;

@@ -44,7 +44,7 @@ PLbool plMatrix44::importFile( const plString &file )
     {
         std::cerr << "plMatrix44::plMatrix44( const plString &file ) error: xml file could not be opened\n";
     }
-    
+    return true;
 }
 
 // scale 

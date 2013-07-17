@@ -17,7 +17,7 @@ plModel::plModel( std::string filename )
     plVector3 min, max;
     getMinMax(min,max);
     // build octree       
-    _octree.build( min, max, _triangles, 6 );     
+    _octree.build( min, max, _triangles, 7 );    
 }
 
 
@@ -139,7 +139,7 @@ void plModel::toggleVisibility()
 
 plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
 {
-    
+    /*
     PLfloat min = FLT_MAX;
 
     plIntersection closestIntersection(false);
@@ -160,8 +160,8 @@ plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &d
     }
 
     return closestIntersection; 
-    
-    //return _octree.rayIntersect( start, dir, ignoreBehindRay, backFaceCull );
+    */
+    return _octree.rayIntersect( start, dir, ignoreBehindRay, backFaceCull );
 }
 
 

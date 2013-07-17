@@ -20,15 +20,28 @@ class plPlan : public plRenderable
         plPlan( plString filename );        
         plPlan( int argc, char **argv ); 
         
+        ~plPlan();
+
         void importFile( plString filename );        
         void exportFile( plString filename );
-          
-        /*          
-        plDefectSite& defectSites( PLuint index );
-        plDonorsite&  donorSites ( PLuint index );
-        plIGuides&    iGuides    ( PLuint index );
-        plGraft&      grafts     ( PLuint index );
-        */
+                  
+        plDefectSite&       defectSites( PLuint index )        { return *_defectSites[index]; }
+        plDonorSite&        donorSites ( PLuint index )        { return *_donorSites[index];  }
+        plIGuide&           iGuides    ( PLuint index )        { return *_iGuides[index];     }
+        plGraft&            grafts     ( PLuint index )        { return *_grafts[index];      }   
+        plBoneAndCartilage& models     ( PLuint index )        { return *_models[index];      }
+              
+        const plDefectSite&       defectSites( PLuint index ) const  { return *_defectSites[index]; }
+        const plDonorSite&        donorSites ( PLuint index ) const  { return *_donorSites[index];  }
+        const plIGuide&           iGuides    ( PLuint index ) const  { return *_iGuides[index];     }
+        const plGraft&            grafts     ( PLuint index ) const  { return *_grafts[index];      }     
+        const plBoneAndCartilage& models     ( PLuint index ) const  { return *_models[index];      }
+        
+        const plSeq<plDefectSite*>&       defectSites() const { return _defectSites; }
+        const plSeq<plDonorSite*>&        donorSites()  const { return _donorSites; }
+        const plSeq<plIGuide*>&           iGuides()     const { return _iGuides; }
+        const plSeq<plGraft*>&            grafts()      const { return _grafts; }
+        const plSeq<plBoneAndCartilage*>& models()      const { return _models; }
         
         void addDefectSite( PLuint modelIndex = 0 );
         void addDonorSite ( PLuint modelIndex = 0 );
@@ -41,16 +54,13 @@ class plPlan : public plRenderable
         void drawElements() const;
         void drawModels()   const;
 
-        friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
-        
-    //private: eventually make these member variables private, 
-            // use an indexed accessor function returning a non-const reference, so individual 
-            // elements can be editted, but plSeq functions cannot be called
-        plSeq<plDefectSite>       _defectSites;        
-        plSeq<plDonorSite>        _donorSites;
-        plSeq<plIGuide>           _iGuides;                
-        plSeq<plGraft>            _grafts;        
-        plSeq<plBoneAndCartilage> _models;     
+    private: 
+    
+        plSeq<plDefectSite*>       _defectSites;        
+        plSeq<plDonorSite*>        _donorSites;
+        plSeq<plIGuide*>           _iGuides;                
+        plSeq<plGraft*>            _grafts;        
+        plSeq<plBoneAndCartilage*> _models;     
 };
 
 std::ostream& operator << ( std::ostream& out, const plPlan &p );

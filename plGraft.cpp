@@ -5,7 +5,7 @@ plGraft::plGraft()
 }
 
 
-void plGraft::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
+void plGraft::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     // Fill in the field            
     plString subfield = row[2];
@@ -150,8 +150,8 @@ void plGraft::_drawGraft() const
 void plGraft::_setCaps()
 {
     // generate cap polygons
-    _cartilageCap = _findCap( harvest.model()->cartilage.triangles() );
-    _boneCap      = _findCap( harvest.model()->bone.triangles()      );
+    _cartilageCap = _findCap( harvest.model()->cartilage );
+    _boneCap      = _findCap( harvest.model()->bone      );
    
     // generate meshes   
     _updateCartilageMesh();   
@@ -252,7 +252,7 @@ void plGraft::_updateCartilageMesh()
             stepsLeft--;
         }
     }
-       
+
     if (indices.size() > 0)
     {   
         _cartilageMesh.setBuffers(interleaved_vertices, indices);  
@@ -362,19 +362,24 @@ void plGraft::_updateBoneMesh()
         }
 
     }
+
     _boneMesh.setBuffers(interleaved_vertices, indices);
 }
 
 
-plCap plGraft::_findCap( const plSeq<plTriangle> &triangles)
+plCap plGraft::_findCap( const plModel &model )
 {   
+    plSeq<const plTriangle*> triangles;
+
+    model.octree().graftIntersect( triangles, harvest.transform, _radius );
+
     plCap cap;
 
     // Find polygons on top of graft
     for (PLuint i=0; i<triangles.size(); i++) 
     {
         plPolygon p;
-        if (triangles[i].normal() * harvest.transform.y() > 0 && _triangleIntersection( triangles[i], p ))
+        if (triangles[i]->normal() * harvest.transform.y() > 0 && _triangleIntersection( *triangles[i], p ))
         {
             cap.polys.add( p );
         }
@@ -418,7 +423,6 @@ plCap plGraft::_findCap( const plSeq<plTriangle> &triangles)
 // Return the Poly that is the intersection of a triangle with the
 // interior of the cylinder.
 
-
 bool plGraft::_triangleIntersection( const plTriangle &triangle, plPolygon &p ) const
 {
     static float min = FLT_MAX;
@@ -438,7 +442,7 @@ bool plGraft::_triangleIntersection( const plTriangle &triangle, plPolygon &p ) 
     // some slightly-overlapping triangles!
 
     float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
-
+    
     if (minDist > radiusSquared)
         return false;
 
@@ -449,8 +453,9 @@ bool plGraft::_triangleIntersection( const plTriangle &triangle, plPolygon &p ) 
     float proj3 = harvest.transform.projectedDistOnAxis( point3 );
 
     float maxProj = PL_MAX_OF_3( proj1, proj2, proj3 );
-
-    if (maxProj < -_length)
+    float minProj = PL_MIN_OF_3( proj1, proj2, proj3 );
+    
+    if (minProj > _heightOffset+4 || maxProj < -_length)
         return false;
 
     // At least some of the triangle is inside
@@ -573,7 +578,7 @@ plVector3 plGraft::_pointOnCircumference( const plVector3 &u, const plVector3 &v
     
 }
 
-
+/*
 float plGraft::_angleOfPoint( const plVector3 &v ) const
 {
     return atan2( v*harvest.transform.x(), v*harvest.transform.z() );
@@ -584,7 +589,7 @@ plVector3 plGraft::_pointAtAngle( PLfloat theta ) const
 {
     return cos(theta) * harvest.transform.z() + sin(theta) * harvest.transform.x();
 }
-
+*/
 void plGraft::spinMark( PLfloat degrees )
 {
     plVector3 axis(0,1,0);

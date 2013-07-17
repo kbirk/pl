@@ -32,7 +32,7 @@ class plIGuide : public plModelSpecific,
         plIGuide();
         plIGuide( PLuint _modelID, const plBoneAndCartilage &_model );
 
-        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models );
+        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
         
         void draw();
 };

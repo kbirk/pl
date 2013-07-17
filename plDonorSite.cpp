@@ -9,7 +9,7 @@ plDonorSite::plDonorSite( PLuint modelID, const plBoneAndCartilage &model )
 {
 }
 
-void plDonorSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
+void plDonorSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     plString subfield = row[2];
             
@@ -21,7 +21,7 @@ void plDonorSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCar
             std::cerr << "plDonorSite importCSV() error: model ID read before model data";
             exit(1);
         }
-        _model = &models[_modelID];
+        _model = models[_modelID];
     }                   
     else if (subfield.compareCaseInsensitive( "boundary") )   
     {       

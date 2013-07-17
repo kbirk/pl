@@ -108,7 +108,7 @@ void plSpline::_computeHermite()
     plVector3 p12 = (p[2]-p[1]).normalize();
     plVector3 p32 = (p[2]-p[3]).normalize();
     
-    // average unit normals between each corners 
+    // get corners walls unit normals 
     plVector3 n01 = (0.5*(n[0]+n[1])).normalize();
     plVector3 n03 = (0.5*(n[0]+n[3])).normalize();
     plVector3 n12 = (0.5*(n[1]+n[2])).normalize();
@@ -169,7 +169,124 @@ void plSpline::_computeHermite()
     plSeq<plVector3> interleaved_vertices( ((1.0 / inc) + 1) * 4 * 3 );
     plSeq<PLuint>    indices             ( ((1.0 / inc) + 1) * 6 );
 
-    PLfloat percent = 0;
+    for (PLfloat v=0.0; v < 1.0; v+=inc*2.0f)
+    {       
+        for (PLfloat u=0.0; u < 1.0; u+=inc*2.0f)
+        {         
+            PLfloat z0 = Q( u,     v,     p, st, tt );
+            PLfloat z1 = Q( u+inc, v,     p, st, tt );
+            PLfloat z2 = Q( u+inc, v+inc, p, st, tt );
+            PLfloat z3 = Q( u,     v+inc, p, st, tt );
+        
+            // pos0           
+            plVector3 n03 = (1.0-v)*n[0] + v*n[3];
+            plVector3 n12 = (1.0-v)*n[1] + v*n[2];            
+            plVector3 norm = ( (1.0-u)*n03 + u*n12 ).normalize();
+            
+            plVector3 p03 = (1.0-v)*p[0] + v*p[3];
+            plVector3 p12 = (1.0-v)*p[1] + v*p[2];            
+            plVector3 pos0 = (1.0-u)*p03 + u*p12 + z0*norm;
+            
+            // pos1            
+            n03 = (1.0-v)*n[0] + v*n[3];
+            n12 = (1.0-v)*n[1] + v*n[2];            
+            norm = ( (1.0-(u+inc))*n03 + (u+inc)*n12 ).normalize();
+            
+            p03 = (1.0-v)*p[0] + v*p[3];
+            p12 = (1.0-v)*p[1] + v*p[2];                       
+            plVector3 pos1 = (1.0-(u+inc))*p03 + (u+inc)*p12 + z1*norm;
+            
+            // pos2            
+            n03 = (1.0-(v+inc))*n[0] + (v+inc)*n[3];
+            n12 = (1.0-(v+inc))*n[1] + (v+inc)*n[2];            
+            norm = ( (1.0-(u+inc))*n03 + (u+inc)*n12 ).normalize();
+            
+            p03 = (1.0-(v+inc))*p[0] + (v+inc)*p[3];
+            p12 = (1.0-(v+inc))*p[1] + (v+inc)*p[2];            
+            plVector3 pos2 = (1.0-(u+inc))*p03 + (u+inc)*p12 + z2*norm;
+                       
+            // pos3            
+            n03 = (1.0-(v+inc))*n[0] + (v+inc)*n[3];
+            n12 = (1.0-(v+inc))*n[1] + (v+inc)*n[2];            
+            norm = ( (1.0-u)*n03 + u*n12 ).normalize();
+            
+            p03 = (1.0-(v+inc))*p[0] + (v+inc)*p[3];
+            p12 = (1.0-(v+inc))*p[1] + (v+inc)*p[2];            
+            plVector3 pos3 = (1.0-u)*p03 + u*p12 + z3*norm;
+
+            // quad
+            plVector3 faceNorm = ((pos1 - pos0) ^ (pos3 - pos0)).normalize();
+               
+            plVector3 col0, col1, col2, col3;
+            const PLfloat FURTHEST_DISTANCE = 1.0f;
+             
+            plIntersection intersection(false); 
+              
+            // colour map values   
+             
+            intersection = _model->cartilage.rayIntersect( pos0+(10.0f*faceNorm), -faceNorm, false, true );
+            if (intersection.exists)
+                col0 = plColourMap::map( (intersection.point - pos0).squaredLength()/FURTHEST_DISTANCE );
+            else 
+                col0 = plVector3(0.2, 0.2, 0.2); 
+                                
+            intersection = _model->cartilage.rayIntersect( pos1+(10.0f*faceNorm), -faceNorm, false, true );  
+            if (intersection.exists)
+                col1 = plColourMap::map((intersection.point - pos1).squaredLength()/FURTHEST_DISTANCE);
+            else 
+                col1 = plVector3(0.2, 0.2, 0.2);
+                
+            intersection = _model->cartilage.rayIntersect( pos2+(10.0f*faceNorm), -faceNorm, false, true ); 
+            if (intersection.exists)
+                col2 = plColourMap::map((intersection.point - pos2).squaredLength()/FURTHEST_DISTANCE);
+            else 
+                col2 = plVector3(0.2, 0.2, 0.2);
+                
+            intersection = _model->cartilage.rayIntersect( pos3+(10.0f*faceNorm), -faceNorm, false, true );  
+            if (intersection.exists)
+                col3 = plColourMap::map((intersection.point - pos3).squaredLength()/FURTHEST_DISTANCE);
+            else 
+                col3 = plVector3(0.2, 0.2, 0.2);        
+                                                   
+            PLint base = interleaved_vertices.size()/3;
+            
+            interleaved_vertices.add(pos0);     // position
+            interleaved_vertices.add(faceNorm); // normal
+            interleaved_vertices.add(col0);     // colour
+            
+            interleaved_vertices.add(pos1);     // position
+            interleaved_vertices.add(faceNorm); // normal            
+            interleaved_vertices.add(col1);     // colour
+            
+            interleaved_vertices.add(pos2);     // position
+            interleaved_vertices.add(faceNorm); // normal            
+            interleaved_vertices.add(col2);     // colour
+            
+            interleaved_vertices.add(pos3);     // position
+            interleaved_vertices.add(faceNorm); // normal
+            interleaved_vertices.add(col3);     // colour
+            
+            indices.add(base+0);
+            indices.add(base+1);
+            indices.add(base+2);
+            
+            indices.add(base+0);
+            indices.add(base+2);
+            indices.add(base+3);                     
+        }
+        
+    }    
+
+    _surfaceMesh.setBuffers(interleaved_vertices, indices);
+}
+
+
+
+
+/*
+
+ plSeq<plVector3> interleaved_vertices( ((1.0 / inc) + 1) * 4 * 3 );
+    plSeq<PLuint>    indices             ( ((1.0 / inc) + 1) * 6 );
 
     for (PLfloat v=0.0; v < 1.0; v+=inc)
     {        
@@ -275,18 +392,17 @@ void plSpline::_computeHermite()
             
             indices.add(base+0);
             indices.add(base+2);
-            indices.add(base+3);
-           
-            percent += 1 / ((1.0f/inc)*(1.0f/inc));
-            
-            std::cout << "\r" << (PLint)(percent*100) << "% spline calculation";           
+            indices.add(base+3);                     
         }
         
     }    
-    std::cout << "\r100% spline calculation\n"; 
+*/
 
-    _surfaceMesh.setBuffers(interleaved_vertices, indices);
-}
+
+
+
+
+
 
 
 

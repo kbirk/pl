@@ -9,7 +9,7 @@ plPlug::plPlug( PLuint modelID, const plBoneAndCartilage &model )
 {
 }
 
-void plPlug::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage> &models )
+void plPlug::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     // Fill in the field            
     plString subfield = row[3];
@@ -22,7 +22,7 @@ void plPlug::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartila
             std::cerr << "plPlug importCSV() error: model ID read before model data";
             exit(1);
         }    
-        _model = &models[_modelID];
+        _model = models[_modelID];
     }
     else if (subfield.compareCaseInsensitive("transform") )
     {

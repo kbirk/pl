@@ -39,16 +39,16 @@ class plBoundaryEditor
         plBoundary *_selectedBoundary;
         PLint       _selectedPointIndex;
          
-        void _clearDefectSiteBoundaries  ( plSeq<plDefectSite> &defectSites );
-        void _clearDonorSiteBoundaries   ( plSeq<plDonorSite>  &donorSites );
-        void _clearIGuideBoundaries      ( plSeq<plIGuide>     &iGuides );
+        void _clearDefectSiteBoundaries  ( plPlan &plan );
+        void _clearDonorSiteBoundaries   ( plPlan &plan );
+        void _clearIGuideBoundaries      ( plPlan &plan );
 
         void _checkAndSelectBoundary     ( plBoundary &boundary, PLuint i, PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex);
         
-        void _selectDefectSiteSpline     ( plSeq<plDefectSite> &defectSites, PLuint boundaryIndex, PLuint pointIndex );
-        void _selectDefectSiteBoundary   ( plSeq<plDefectSite> &defectSites, PLuint boundaryIndex, PLuint pointIndex );
-        void _selectDonorSiteBoundary    ( plSeq<plDonorSite>  &donorSites,  PLuint boundaryIndex, PLuint pointIndex );
-        void _selectIGuideBoundary       ( plSeq<plIGuide> &iGuides,         PLuint boundaryIndex, PLuint pointIndex );
+        void _selectDefectSiteSpline     ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
+        void _selectDefectSiteBoundary   ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
+        void _selectDonorSiteBoundary    ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
+        void _selectIGuideBoundary       ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
        
 };
 
