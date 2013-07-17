@@ -6,21 +6,6 @@
 #include "plVector3.h"
 #include "plSeq.h"
 
-// used to order triangles for drawing transparent meshes
-class plOrderPair
-{
-    public:
-    
-        int   index;
-        float distance;
-
-        plOrderPair (int i, float d)
-            : index(i), distance(d)
-        {
-        }
-    
-};
-
 
 // essentially a struct for storing information about ray intersection with a triangle
 class plIntersection

@@ -21,7 +21,7 @@ class plBoundaryEditor
         void    clearSelection( plPlan &plan );                     
         void    selectBoundary( plPlan &plan, PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex ); 
 
-        PLbool  isGBoundarySelected() const { return (_selectedBoundary != NULL); }
+        PLbool  isBoundarySelected() const { return (_selectedBoundary != NULL); }
 
         PLbool  processMouseClick( plPlan &plan, PLint x, PLint y );
         PLbool  processMouseDrag ( plPlan &plan, PLint x, PLint y );

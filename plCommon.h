@@ -134,6 +134,7 @@
 #include <vector>
 #include <stack>
 #include <limits>
+#include <set>
 
 // TYPEDEFS
 
@@ -149,6 +150,9 @@ typedef bool                PLbool;
 
 template <typename T>
 class plStack : public std::stack<T> {};
+
+template <typename T>
+class plSet : public std::set<T> {};
 
 
 
