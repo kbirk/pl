@@ -73,6 +73,8 @@ class plTriangle
 		                             PLbool ignoreBehindRay = false, 
 		                             PLbool backFaceCull = false ) const; 
 
+        plVector3 barycentricCoords(const plVector3 &point);
+
     private:
     
         plSeq<plVector3> _points;
@@ -86,6 +88,8 @@ class plTriangle
 
 std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
 
+class plSTL
+{
     public:
     
         static void importFile      ( plSeq<plTriangle> &triangles, plString filename );
