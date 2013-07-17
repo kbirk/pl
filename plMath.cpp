@@ -65,14 +65,14 @@ plVector3 plClosestPointOnPlane(const plVector3 &q, const plVector3 &p, const pl
 void plMath::convexPolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris)
 {
     tris.clear();
-    for (int i = 0; i < polys.size(); i++)
+    for (PLuint i = 0; i < polys.size(); i++)
     {
         if (polys[i].points.size() > 2) // general case
         {
             plVector3 normal(polys[i].normal);
             plVector3 point0(polys[i].points[0]);
             // create a fan of triangles from this point
-            for (int currentVertex=1;currentVertex<polys[i].points.size()-1;currentVertex++)
+            for (PLuint currentVertex=1;currentVertex<polys[i].points.size()-1;currentVertex++)
             {
                 plVector3 point1(polys[i].points[currentVertex]);
                 plVector3 point2(polys[i].points[currentVertex+1]);
@@ -102,7 +102,7 @@ void plMath::concavePolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris
             tris.add(polyConverted[j]);
         }
     }
-}
+} // end plConcavePolysToTris
 
 // take as input a polygon
 // iterate through each possible triangle involving the vertices at indices 0 and 1 (so 0-1-2, 0-1-3, and so on, basically we have 0-1-X)
@@ -116,16 +116,31 @@ void plMath::concavePolysToTris(plSeq<plPolygon> &polys, plSeq<plTriangle> &tris
 // INITIAL VALUE FOR OUTPUTMINSURFACEAREA SHOULD BE THE MAXIMUM VALUE FOR A FLOATING POINT
 void plMath::concavePolysToTrisHelper(plPolygon &inputPolygon, plSeq<plTriangle> &outputTriangles, PLfloat &outputMinSurfaceArea)
 {
+    const float epsilon(0.0001f);
+
+    std::cout << "Begin plConcavePolysToTrisHelper" << std::endl;
+    for (PLuint i = 0; i < inputPolygon.points.size(); i++)
+        std::cout << "  Input point: " << inputPolygon.points[i] << std::endl;
+
     if (inputPolygon.points.size() <= 2) { // base case
         outputMinSurfaceArea = 0.f;
         return;
     }
+    // three points lie on a line
+    if (inputPolygon.points.size() == 3 && (inputPolygon.points[2]^inputPolygon.points[0]).length() <= epsilon && (inputPolygon.points[2]-inputPolygon.points[1]).length() <= epsilon)
+    {
+        outputMinSurfaceArea = std::numeric_limits<PLfloat>::max()/2.f;
+        return;
+    } // end if
 
     // try all permutations of triangles involving the edge between points[0] and points[1]
     for (PLuint i = 2; i < inputPolygon.points.size(); i++)
     {
         plTriangle bisectingTriangle( inputPolygon.points[0], inputPolygon.points[1], inputPolygon.points[i] );
         PLfloat    bisectingTriangleArea ( ((inputPolygon.points[0]-inputPolygon.points[i])^(inputPolygon.points[1]-inputPolygon.points[i])).length() / 2.f );
+
+        if (bisectingTriangleArea <= epsilon)
+            continue; // bad triangle
 
         // first polygon
         plPolygon firstPolygonInput;
@@ -156,11 +171,11 @@ void plMath::concavePolysToTrisHelper(plPolygon &inputPolygon, plSeq<plTriangle>
         {
             outputTriangles.clear();
             outputTriangles.add(bisectingTriangle);
-            for (int j = 0; j < firstPolygonOutputTris.size(); j++)
+            for (PLuint j = 0; j < firstPolygonOutputTris.size(); j++)
             {
                 outputTriangles.add(firstPolygonOutputTris[j]);
             }
-            for (int j = 0; j < secondPolygonOutputTris.size(); j++)
+            for (PLuint j = 0; j < secondPolygonOutputTris.size(); j++)
             {
                 outputTriangles.add(secondPolygonOutputTris[j]);
             }

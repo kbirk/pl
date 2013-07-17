@@ -39,11 +39,11 @@ class plTriangle
         plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 );
 
         const plVector3 &point0()   const { return _points[0];   }                      
-		const plVector3 &point1()   const { return _points[1];   } 
-		const plVector3 &point2()   const { return _points[2];   } 
+        const plVector3 &point1()   const { return _points[1];   } 
+        const plVector3 &point2()   const { return _points[2];   } 
 		const plVector3 &normal()   const { return _normal;      }
-		const plVector3 &centroid() const { return _centroid;    }  
-		PLfloat          radius()   const { return _radius;      }
+        const plVector3 &centroid() const { return _centroid;    }  
+        PLfloat          radius()   const { return _radius;      }
 		                    
         void  point0( const plVector3 &point  );
         void  point1( const plVector3 &point  );
@@ -58,6 +58,8 @@ class plTriangle
 		                             PLbool ignoreBehindRay = false, 
 		                             PLbool backFaceCull = false ) const; 
 
+        plVector3 barycentricCoords(const plVector3 &point);
+
     private:
     
         plSeq<plVector3> _points;
@@ -71,9 +73,8 @@ class plTriangle
 
 std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
 
-class plSTL 
-{ 
-
+class plSTL
+{
     public:
     
         static void importFile      ( plSeq<plTriangle> &triangles, plString filename );
