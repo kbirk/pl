@@ -129,7 +129,7 @@ void plMath::concavePolysToTrisHelper(plPolygon &inputPolygon, plSeq<plTriangle>
     // three points lie on a line
     if (inputPolygon.points.size() == 3 && (inputPolygon.points[2]^inputPolygon.points[0]).length() <= epsilon && (inputPolygon.points[2]-inputPolygon.points[1]).length() <= epsilon)
     {
-        outputMinSurfaceArea = std::numeric_limits<PLfloat>::max()/2.f;
+        outputMinSurfaceArea = FLT_MAX/2.f;
         return;
     } // end if
 

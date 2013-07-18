@@ -216,9 +216,9 @@ void plRenderer::_drawScene()
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);    
     for (PLuint i =0; i < _planToDraw->models().size(); i++)
     {      
-        //plColourStack::load( 0.3, 0.1, 0.4 );
+        plColourStack::load( 0.3, 0.1, 0.4 );
         //_planToDraw->models(i).bone.octree().draw();
-        plColourStack::load( 0.1, 0.4, 0.3 );
+        //plColourStack::load( 0.1, 0.4, 0.3 );
         _planToDraw->models(i).cartilage.octree().draw();
     }
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

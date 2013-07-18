@@ -191,10 +191,8 @@ template<class T>
 void plSeq<T>::reserve(PLuint size)
 {
     if (size < _storageSize)
-    {
-        std::cerr << "plSeq reserve: Attempting to reserve less than current size \n";
         return;
-    }
+        
     T *new_data = new T[ size ];
     
 	for (PLuint i=0; i<_numElements; i++)

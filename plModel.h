@@ -22,19 +22,13 @@ class plOrderPair
             : index(i), distance(d)
         {
         }
-        
-        PLbool operator < (const plOrderPair &o) const
-        {
-            return distance < o.distance;
-        }
     
 };
 
 class plModel : public plRenderable
 {
     public:
-
-        plModel() {}
+        
         plModel( std::string filename );
              
         const plSeq<plTriangle> &triangles() const { return _triangles; }
@@ -59,6 +53,10 @@ class plModel : public plRenderable
         plOctree              _octree;
         PLbool                _isTransparent;
 		plString              _filename;
+
+        plModel();
+        plModel( const plModel &m );
+        plModel operator=(const plModel &m) const;  // prevent assignment, which will invalidate the octree's pointers if rhs is scoped
 
 };
 

@@ -162,17 +162,7 @@ PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
 
 PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLfloat x, PLfloat y, PLbool flag )
 {
-    if (_selectedGraft == NULL)    
-        return false;                 // no graft selected
 
-    plVector3 translation( x, y, 0);
-    
-    if (translation.squaredLength() > 1)
-        translation = translation.normalize();
-    
-    // translate by local coords
-    translateSelected( translation ); 
-    return true;
 }
 
 void plGraftEditor::selectGraft( plPlan &plan, PLuint index, PLuint type )
