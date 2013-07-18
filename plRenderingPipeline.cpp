@@ -74,13 +74,22 @@ plVector3 plCameraStack::direction()
 plVector3 plCameraStack::position()
 {
     // get rotation matrix
-    plMatrix44 rot = _stack.top();   rot.setColumn(3, 0, 0, 0, 1);
+    plMatrix44 rot = _stack.top();   rot.setColumn(3, 0, 0, 0, 1);  // remove translation component
         
     plVector3 d(-plCameraStack::top()[12], -plCameraStack::top()[13], -plCameraStack::top()[14]);
     
     return d * rot;    
 }
-		
+	
+plVector3 plCameraStack::up()
+{
+    // get rotation matrix
+    plMatrix44 rot = _stack.top();   rot.setColumn(3, 0, 0, 0, 1);  // remove translation component
+        
+    plVector3 d(-plCameraStack::top()[4], -plCameraStack::top()[5], -plCameraStack::top()[6]);
+    
+    return d * rot;
+}		
 
 void plShaderStack::push( const plShader *shader )  
 { 

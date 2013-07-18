@@ -165,13 +165,21 @@ PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLfloat x, PLfloat y, P
     if (_selectedGraft == NULL)    
         return false;                 // no graft selected
 
-    plVector3 translation( x, y, 0);
+    plVector3 translation( -y, 0, x);
     
     if (translation.squaredLength() > 1)
         translation = translation.normalize();
     
+    plVector3 localXAxis = (plCameraStack::direction() ^ _selectedGraft->transform(_selectedType).y()).normalize();
+    plVector3 localZAxis = (_selectedGraft->transform(_selectedType).y() ^ localXAxis).normalize();
+    plVector3 localYAxis = (localXAxis ^ localZAxis).normalize();
+
+    translation = (translation * localXAxis) * localXAxis +
+                  (translation * localYAxis) * localYAxis +
+                  (translation * localZAxis) * localZAxis;
+
     // translate by local coords
-    translateSelected( translation ); 
+    translateSelected( 0.3 * translation );
     return true;
 }
 

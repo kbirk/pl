@@ -54,10 +54,15 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
         
             moveSelectedPoint( x, y );
+
             return true; 
     }
     return false;
+}
 
+void plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
+{
+    moveSelectedPoint( x, y );
 }
 
 void plBoundaryEditor::_clearDefectSiteBoundaries( plPlan &plan  )
