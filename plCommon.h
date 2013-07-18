@@ -95,6 +95,7 @@
 
 #define PL_COLOURMAP_SIZE                        512
 #define PL_PI                                    3.1415927f         // specific decimals optimize floating point accuracy. Going higher digits or using double will result in more error
+#define PL_EPSILON                               0.00001f
 #define PL_MIN_OF_2(a,b)                         (a<=b ? a : b)
 #define PL_MAX_OF_2(a,b)                         (a>=b ? a : b)     
 #define PL_MIN_OF_3(a,b,c)                       (a<=b ? (a<=c ? a : c) : (b<=c ? b : c))
@@ -134,6 +135,7 @@
 #include <vector>
 #include <stack>
 #include <limits>
+#include <set>
 
 // TYPEDEFS
 
@@ -149,6 +151,9 @@ typedef bool                PLbool;
 
 template <typename T>
 class plStack : public std::stack<T> {};
+
+template <typename T>
+class plSet : public std::set<T> {};
 
 
 

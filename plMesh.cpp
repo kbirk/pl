@@ -55,7 +55,7 @@ void plMesh::triangleToInterleaved(const plSeq<plTriangle> &triangles)
 void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices)
 {
     // destroy previous just in case
-    destroy();
+    //destroy();
 
     // set number of indices
     _numIndices = indices.size();
@@ -67,11 +67,15 @@ void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plS
     const GLuint ARRAY_SIZE = TOTAL_SIZE * interleaved_vertices.size()/2;
     
     // create and bind VAO
-	glGenVertexArrays(1, &_vertexArrayObject);     
+    if (_vertexArrayObject == 0)
+	    glGenVertexArrays(1, &_vertexArrayObject);   
+	      
 	glBindVertexArray(_vertexArrayObject);
      
 	// create and bind vertex VBO
-	glGenBuffers(1, &_vertexBufferObject);
+	if (_vertexBufferObject == 0)
+	    glGenBuffers(1, &_vertexBufferObject);
+	    
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferObject); 
     glBufferData(GL_ARRAY_BUFFER, ARRAY_SIZE, &interleaved_vertices[0], GL_STATIC_DRAW);    
        
@@ -104,8 +108,9 @@ void plMesh::draw() const
 	glBindVertexArray(0); 	    
 }
 
-void plMesh::draw(const std::vector<plOrderPair> &order) const
+void plMesh::draw(const plSeq<PLuint> &indices) const
 {
+    /*
     plSeq<PLuint> indices(_numIndices);
 	
 	for (PLuint i = 0; i < _numIndices/3; i++)
@@ -114,7 +119,7 @@ void plMesh::draw(const std::vector<plOrderPair> &order) const
 	    indices.add( order[i].index*3+1 );
 	    indices.add( order[i].index*3+2 );
 	}
-
+    */
     // use current shader and properly set uniforms
     plShaderStack::use();
     // bind vertex array object

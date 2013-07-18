@@ -10,12 +10,25 @@
 #include "plPickingTexture.h"
 #include "plRenderingPipeline.h"
 
+// used to order triangles for drawing transparent meshes
+class plOrderPair
+{
+    public:
+    
+        int   index;
+        float distance;
+
+        plOrderPair (int i, float d)
+            : index(i), distance(d)
+        {
+        }
+    
+};
 
 class plModel : public plRenderable
 {
     public:
-
-        plModel() {}
+        
         plModel( std::string filename );
              
         const plSeq<plTriangle> &triangles() const { return _triangles; }
@@ -40,6 +53,10 @@ class plModel : public plRenderable
         plOctree              _octree;
         PLbool                _isTransparent;
 		plString              _filename;
+
+        plModel();
+        plModel( const plModel &m );
+        plModel operator=(const plModel &m) const;  // prevent assignment, which will invalidate the octree's pointers if rhs is scoped
 
 };
 

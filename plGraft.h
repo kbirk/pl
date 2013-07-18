@@ -13,7 +13,6 @@
 #include "plPlug.h"
 #include "plPolygon.h"
 
-//class plPlan;
 
 class plPointAndAngle 
 {
@@ -23,11 +22,16 @@ class plPointAndAngle
         plVector3 point;
         
         plPointAndAngle() {}
-        plPointAndAngle( const PLfloat &a, const plVector3 &v ) 
+        plPointAndAngle( const PLfloat &a, const plVector3 &p ) 
+            : point(p), angle(a)
         { 
-            angle = a; 
-            point = v; 
         }
+        
+        PLbool operator < (const plPointAndAngle &p) const
+        {
+            return (angle - p.angle) < -0.05;   // if not a difference by 0.05 degree, toss it
+        }
+        
 }; 
 
 
@@ -36,7 +40,7 @@ class plCap
 
     public:
 
-        plSeq<plPolygon>        polys;      // polygons of the cap
+        plSeq<plTriangle>       triangles;
         plSeq<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above (?)
     
         plCap() {}
@@ -72,8 +76,6 @@ class plGraft : public plRenderable,
          
         void draw() const;
 
-        //friend std::ostream& operator << ( std::ostream& out, const plPlan &p );
-         
         // make these private, currently public for graft exporting 
         plPlug  recipient;
         plPlug  harvest;  
@@ -97,10 +99,8 @@ class plGraft : public plRenderable,
         void      _drawGraft() const;
                   
         void      _setCaps();        
-        plCap     _findCap              ( const plModel &model );// const plSeq<plTriangle> &triangles );
-        bool      _triangleIntersection ( const plTriangle &tri, plPolygon &p ) const;
-        //plVector3 _pointAtAngle         ( PLfloat theta ) const;
-        //PLfloat   _angleOfPoint         ( const plVector3 &v ) const;
+        void      _findCap              ( plCap &cap, const plModel &model );
+        bool      _triangleIntersection ( plCap &cap, const plTriangle &triangle ) const; //const plTriangle &tri, plPolygon &p ) const;
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;
 
         void      _updateCartilageMesh();
@@ -109,6 +109,5 @@ class plGraft : public plRenderable,
         
 };
 
-bool _comparePointAndAngle( const plPointAndAngle &a, const plPointAndAngle &b );
 
 #endif

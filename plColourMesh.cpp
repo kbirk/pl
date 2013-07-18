@@ -16,7 +16,7 @@ plColourMesh::plColourMesh(const plSeq<plVector3> &interleaved_vertices, const p
 void plColourMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices)
 {
     // destroy incase already set
-    destroy();
+    //destroy();
 
     // set index count
 	_numIndices = indices.size();
@@ -29,13 +29,17 @@ void plColourMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, con
     const GLuint ARRAY_SIZE = TOTAL_SIZE * interleaved_vertices.size()/3;
     
     // create and bind VAO
-	glGenVertexArrays(1, &_vertexArrayObject);   
+    if (_vertexArrayObject == 0)
+	    glGenVertexArrays(1, &_vertexArrayObject);  
+
 	glBindVertexArray(_vertexArrayObject);
      
 	// create and bind vertex VBO
-	glGenBuffers(1, &_vertexBufferObject);
+	if (_vertexBufferObject == 0)
+	    glGenBuffers(1, &_vertexBufferObject);
+	    
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferObject); 
-    glBufferData(GL_ARRAY_BUFFER, ARRAY_SIZE, &interleaved_vertices[0], GL_STATIC_DRAW);    
+    glBufferData(GL_ARRAY_BUFFER, ARRAY_SIZE, &interleaved_vertices[0], GL_STREAM_DRAW);    
        
     // set position pointer, offset and stride
 	glEnableVertexAttribArray(PL_POSITION_ATTRIBUTE);
@@ -52,7 +56,7 @@ void plColourMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, con
     // bind vertex array object
     glGenBuffers(1, &_vertexBufferIndices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STREAM_DRAW);
      
 	// unbind the vertex array object
 	glBindVertexArray(0); 			

@@ -130,7 +130,7 @@ void plGraft::_drawGraft() const
     plPicking::value.type = PL_PICKING_TYPE_GRAFT; 
 
     // draw cartilage cap
-    if (_cartilageCap.polys.size() > 0)  // may not always have the cartilage top
+    if (_cartilageCap.triangles.size() > 0)  // may not always have the cartilage top
     {
         _setCartilageColour();
         _cartilageMesh.draw();
@@ -138,7 +138,7 @@ void plGraft::_drawGraft() const
     
     // draw bone cap
     _setBoneColour();
-    _boneMesh.draw();
+    //_boneMesh.draw();
     
     // draw marker   
     plColourStack::load( PL_GRAFT_MARKER_COLOUR );
@@ -150,19 +150,15 @@ void plGraft::_drawGraft() const
 void plGraft::_setCaps()
 {
     // generate cap polygons
-    _cartilageCap = _findCap( harvest.model()->cartilage );
-    _boneCap      = _findCap( harvest.model()->bone      );
-   
+    _findCap( _cartilageCap, harvest.model()->cartilage );
+    _findCap( _boneCap,      harvest.model()->bone      );
+    
     // generate meshes   
-    _updateCartilageMesh();   
-    _updateBoneMesh();  
+    _updateCartilageMesh();
+
+    _updateBoneMesh(); 
+
     _updateMarkPosition();  
-}
-
-
-bool _comparePointAndAngle( const plPointAndAngle &a, const plPointAndAngle &b )
-{
-    return (a.angle < b.angle);
 }
 
 
@@ -172,28 +168,30 @@ void plGraft::_updateCartilageMesh()
 
     plSeq<plVector3> interleaved_vertices;
     plSeq<PLuint>    indices;
-
-    // cartilage top
-    for (PLuint i = 0; i < _cartilageCap.polys.size(); i++)
+    
+    for (PLuint i = 0; i < _cartilageCap.triangles.size(); i++)
     {
         PLint base = interleaved_vertices.size()/2;
-        plPolygon &p = _cartilageCap.polys[i];
-
-        for (PLuint j = 0; j < p.points.size(); j++)
-        {
-            const plVector3 &v = p.points[j];
-            interleaved_vertices.add( plVector3( v.x, v.y+0.01f, v.z) );    // position
-            interleaved_vertices.add( p.normal );                           // normal
-        }
         
-        for (PLuint j = 1; j <= p.points.size()-2; j++)
-        {
-            indices.add(base+0);
-            indices.add(base+j); 
-            indices.add(base+j+1);   
-        }
-    }
+        const plVector3 &p0 = _cartilageCap.triangles[i].point0();
+        const plVector3 &p1 = _cartilageCap.triangles[i].point1();
+        const plVector3 &p2 = _cartilageCap.triangles[i].point2();
+        const plVector3 &n  = _cartilageCap.triangles[i].normal();
+        
+        interleaved_vertices.add( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
+        interleaved_vertices.add( n );                                     // normal
 
+        interleaved_vertices.add( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
+        interleaved_vertices.add( n );                                     // normal
+        
+        interleaved_vertices.add( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
+        interleaved_vertices.add( n );                                     // normal
+
+        indices.add(base+0);
+        indices.add(base+1); 
+        indices.add(base+2);   
+    }
+    
     // cartilage walls
     if (_boneCap.perimeter.size() > 0 && _cartilageCap.perimeter.size() > 0) 
     {
@@ -207,7 +205,6 @@ void plGraft::_updateCartilageMesh()
 
         while (stepsLeft > 0) 
         {
-
             float cAngle = _cartilageCap.perimeter[c].angle + cOffset;
             float bAngle = _boneCap.perimeter[b].angle + bOffset;
         
@@ -265,31 +262,31 @@ void plGraft::_updateBoneMesh()
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
     plSeq<plVector3> interleaved_vertices;
-    plSeq<PLuint> indices; 
-       
-    // bone top (only if no cartilage top)
-    if (_cartilageCap.polys.size() == 0)
+    plSeq<PLuint>    indices; 
+    
+    for (PLuint i = 0; i < _boneCap.triangles.size(); i++)
     {
-        for (PLuint i = 0; i < _boneCap.polys.size(); i++)
-        {
-            PLint base = interleaved_vertices.size()/2;
-            plPolygon &p = _boneCap.polys[i];
-            for (PLuint j = 0; j < p.points.size(); j++)
-            {
-                const plVector3 &v = p.points[j];
-                interleaved_vertices.add( plVector3( v.x, v.y+0.01f, v.z) );        // position
-                interleaved_vertices.add( p.normal );                               // normal
-            }
-            
-            for (PLuint j = 1; j <= p.points.size()-2; j++)
-            {
-                indices.add(base+0);
-                indices.add(base+j); 
-                indices.add(base+j+1);   
-            }
-        }
-    }
+        PLint base = interleaved_vertices.size()/2;
+        
+        const plVector3 &p0 = _boneCap.triangles[i].point0();
+        const plVector3 &p1 = _boneCap.triangles[i].point1();
+        const plVector3 &p2 = _boneCap.triangles[i].point2();
+        const plVector3 &n  = _boneCap.triangles[i].normal();
+        
+        interleaved_vertices.add( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
+        interleaved_vertices.add( n );                                     // normal
 
+        interleaved_vertices.add( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
+        interleaved_vertices.add( n );                                     // normal
+        
+        interleaved_vertices.add( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
+        interleaved_vertices.add( n );                                     // normal
+
+        indices.add(base+0);
+        indices.add(base+1); 
+        indices.add(base+2);   
+    }
+    
     // bone walls
     plVector3 centreBottom = -(_length) * y;
     plVector3 z(0,0,1);
@@ -367,113 +364,130 @@ void plGraft::_updateBoneMesh()
 }
 
 
-plCap plGraft::_findCap( const plModel &model )
+void plGraft::_findCap( plCap &cap, const plModel &model )
 {   
-    plSeq<const plTriangle*> triangles;
+    // clear previous cap incase
+    cap.triangles.clear();
+    cap.perimeter.clear();
+
+    plSet<const plTriangle*> triangles;
 
     model.octree().graftIntersect( triangles, harvest.transform, _radius );
 
-    plCap cap;
-
-    // Find polygons on top of graft
-    for (PLuint i=0; i<triangles.size(); i++) 
+    // must use iterators for set
+    plSet<const plTriangle*>::iterator tri_itr = triangles.begin();
+    plSet<const plTriangle*>::iterator tri_end = triangles.end();
+    for ( ; tri_itr != tri_end; ++tri_itr)
     {
-        plPolygon p;
-        if (triangles[i]->normal() * harvest.transform.y() > 0 && _triangleIntersection( *triangles[i], p ))
-        {
-            cap.polys.add( p );
-        }
+        // check if triangle is on cap
+        _triangleIntersection( cap, *(*tri_itr) );
     } 
 
-    // Find vertices of polygons along perimeter of graft
-    std::vector<plPointAndAngle> angles;
+    // calc just under radius
+    PLfloat subSquaredRadius = 0.97f * _radius * _radius;
 
-    for (PLuint i=0; i<cap.polys.size(); i++) 
+    // Find vertices of polygons along perimeter of graft
+    plSet<plPointAndAngle> angles;    // reserve at least as much space needed
+
+    // if point is very close to radius, assume perimeter point
+    for (PLuint i=0; i<cap.triangles.size(); i++) 
     {
-        for (PLuint j=0; j<cap.polys[i].points.size(); j++)
-        {
-            const plVector3 &v = cap.polys[i].points[j];
+        const plVector3 &p0 = cap.triangles[i].point0();
+        const plVector3 &p1 = cap.triangles[i].point1();
+        const plVector3 &p2 = cap.triangles[i].point2();
+
+        if ((p0.x*p0.x + p0.z*p0.z) > subSquaredRadius) 
+            angles.insert( plPointAndAngle( atan2( p0.x, p0.z ), p0 ) );
             
-            if ((v.x*v.x + v.z*v.z) > 0.97f * _radius* _radius)
-            {
-                angles.push_back( plPointAndAngle( atan2( v.x, v.z ), v ));
-            }
+        if ((p1.x*p1.x + p1.z*p1.z) > subSquaredRadius) 
+            angles.insert( plPointAndAngle( atan2( p1.x, p1.z ), p1 ) );
+            
+        if ((p2.x*p2.x + p2.z*p2.z) > subSquaredRadius) 
+            angles.insert( plPointAndAngle( atan2( p2.x, p2.z ), p2 ) );
+  
+    }   
+    
+    if (angles.size() > 0)
+    {       
+        cap.perimeter.reserve( angles.size() );  // reserve size
+        
+        plSet<plPointAndAngle>::iterator angle_itr = angles.begin();
+        plSet<plPointAndAngle>::iterator angle_end = angles.end();
+        for ( ; angle_itr != angle_end; ++angle_itr)
+        {
+            cap.perimeter.add( *angle_itr );
         }
     }
 
-    if (angles.size() > 0) 
-    {
-        std::sort(angles.begin(), angles.end(), _comparePointAndAngle);
-     
-        cap.perimeter.add( plPointAndAngle( angles[0].angle, angles[0].point ) );
-          
-        for (PLuint i=1; i<angles.size(); i++) 
-        {
-            if ( (angles[i].point - angles[i-1].point).squaredLength() > 0.01f)
-            {
-                cap.perimeter.add( angles[i]) ; 
-            }
-        }
-	}
 
-	return cap;
 }
 
 
 // Return the Poly that is the intersection of a triangle with the
 // interior of the cylinder.
-
-bool plGraft::_triangleIntersection( const plTriangle &triangle, plPolygon &p ) const
+bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) const
 {
-    static float min = FLT_MAX;
+    if (triangle.normal() * harvest.transform.y() < 0)
+        return false;
 
     float radiusSquared = _radius * _radius;
 
-    plVector3 point1 = harvest.transform.applyInverse( triangle.point0() );
-    plVector3 point2 = harvest.transform.applyInverse( triangle.point1() );
-    plVector3 point3 = harvest.transform.applyInverse( triangle.point2() );
+    plVector3 point0   = harvest.transform.applyInverse( triangle.point0() );
+    plVector3 point1   = harvest.transform.applyInverse( triangle.point1() );
+    plVector3 point2   = harvest.transform.applyInverse( triangle.point2() );
+    plVector3 centroid = harvest.transform.applyInverse( triangle.centroid() );
 
     // Compute distance to graft axis
+    float dist0 = harvest.transform.squaredDistToAxis( point0 );
     float dist1 = harvest.transform.squaredDistToAxis( point1 );
     float dist2 = harvest.transform.squaredDistToAxis( point2 );
-    float dist3 = harvest.transform.squaredDistToAxis( point3 );
-
+    float distC = harvest.transform.squaredDistToAxis( centroid );
     // If too far from graft axis, reject.  Note that this will miss
     // some slightly-overlapping triangles!
 
-    float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
+    float minDist = PL_MIN_OF_3( dist0, dist1, dist2 );
     
     if (minDist > radiusSquared)
+    {
+        // no vertices are inside, check if triangle spans across
+        if ( distC < radiusSquared )
+        {
+            // TODO: ADD CASE HERE!
+            // current ignores cases where each triangle point is outside the cylinder
+            // but spans across!
+        }        
         return false;
+    }
+    
 
     // If too far away from graft origin, reject.
     
+    float proj0 = harvest.transform.projectedDistOnAxis( point0 );
     float proj1 = harvest.transform.projectedDistOnAxis( point1 );
     float proj2 = harvest.transform.projectedDistOnAxis( point2 );
-    float proj3 = harvest.transform.projectedDistOnAxis( point3 );
 
-    float maxProj = PL_MAX_OF_3( proj1, proj2, proj3 );
-    float minProj = PL_MIN_OF_3( proj1, proj2, proj3 );
+    float maxProj = PL_MAX_OF_3( proj0, proj1, proj2 );
+    float minProj = PL_MIN_OF_3( proj0, proj1, proj2 );
     
-    if (minProj > _heightOffset+4 || maxProj < -_length)
+    const PLfloat VERTICAL_THRESHOLD = 8.0f;
+        
+    if (minProj > VERTICAL_THRESHOLD || maxProj < -VERTICAL_THRESHOLD)
         return false;
-
+    
     // At least some of the triangle is inside
+    plVector3 normal = harvest.transform.applyNormalInverse(triangle.normal());
 
-    p.normal = harvest.transform.applyNormalInverse(triangle.normal());
 
     // If entirely within the graft, accept the whole triangle (this is cheaper).
 
-    float maxDist = PL_MAX_OF_3( dist1, dist2, dist3 );
+    float maxDist = PL_MAX_OF_3( dist0, dist1, dist2 );
 
     if (maxDist <= radiusSquared) 
     {
-        p.points.add( point1 );
-        p.points.add( point2 );
-        p.points.add( point3 );
+        cap.triangles.add( plTriangle( normal, point0, point1, point2 ) );
         return true;
     }
-
+    
     // Not entirely within the graft, so find the intersection of the
     // triangle with the cylinder wall
 
@@ -482,27 +496,29 @@ bool plGraft::_triangleIntersection( const plTriangle &triangle, plPolygon &p ) 
     plVector3 vs[3];
     float ds[3];
   
-    if (dist1 <= radiusSquared) 
+    if (dist0 <= radiusSquared) 
+    {
+        vs[0] = point0; ds[0] = dist0;
+        vs[1] = point1; ds[1] = dist1;
+        vs[2] = point2; ds[2] = dist2;
+    } 
+    else if (dist1 <= radiusSquared)
     {
         vs[0] = point1; ds[0] = dist1;
         vs[1] = point2; ds[1] = dist2;
-        vs[2] = point3; ds[2] = dist3;
-    } 
-    else if (dist2 <= radiusSquared)
-    {
-        vs[0] = point2; ds[0] = dist2;
-        vs[1] = point3; ds[1] = dist3;
-        vs[2] = point1; ds[2] = dist1;
+        vs[2] = point0; ds[2] = dist0;
     } 
     else 
     {    
-        vs[0] = point3; ds[0] = dist3;
-        vs[1] = point1; ds[1] = dist1;
-        vs[2] = point2; ds[2] = dist2;
+        vs[0] = point2; ds[0] = dist2;
+        vs[1] = point0; ds[1] = dist0;
+        vs[2] = point1; ds[2] = dist1;
     }
 
     bool prevInside = true; // always starts as true (ds[0] <= radiusSquared)
 
+    plSeq<plVector3> points(4);
+    
     for (int i=0; i<3; i++) 
     {
         int j = (i+1) % 3;		// vertex at next end of edge
@@ -512,24 +528,30 @@ bool plGraft::_triangleIntersection( const plTriangle &triangle, plPolygon &p ) 
         if (prevInside && nextInside) 
         {
             // Add inside triangle point
-            p.points.add( vs[j] );
+            points.add( vs[j] );
         } 
         else if (prevInside && !nextInside) 
         {
             // Find point on edge of graft
-            p.points.add( _pointOnCircumference(vs[i], vs[j]) );
+            points.add( _pointOnCircumference(vs[i], vs[j]) );
         } 
         else if (!prevInside && nextInside) 
         {
             // Find entering point and angle 
-            p.points.add( _pointOnCircumference(vs[i], vs[j]) );
+            points.add( _pointOnCircumference(vs[i], vs[j]) );
             // Add inside triangle point    
-            p.points.add( vs[j] );
+            points.add( vs[j] );
         }
 
         prevInside = nextInside;
     }
 
+    cap.triangles.add( plTriangle( normal, points[0], points[1], points[2] ) );
+    if (points.size() == 4)
+    {
+        // polygons reach a max of 4 vertices, so if there are 4, create a second triangle
+        cap.triangles.add( plTriangle( normal, points[0], points[2], points[3] ) );
+    }
     return true;
 }
 
@@ -578,18 +600,7 @@ plVector3 plGraft::_pointOnCircumference( const plVector3 &u, const plVector3 &v
     
 }
 
-/*
-float plGraft::_angleOfPoint( const plVector3 &v ) const
-{
-    return atan2( v*harvest.transform.x(), v*harvest.transform.z() );
-}
 
-
-plVector3 plGraft::_pointAtAngle( PLfloat theta ) const
-{
-    return cos(theta) * harvest.transform.z() + sin(theta) * harvest.transform.x();
-}
-*/
 void plGraft::spinMark( PLfloat degrees )
 {
     plVector3 axis(0,1,0);
@@ -607,7 +618,7 @@ void plGraft::_updateMarkPosition()
     float minDist = FLT_MAX;
     float minY;
 
-    const plCap &cap = (_cartilageCap.polys.size() == 0) ? _boneCap : _cartilageCap;
+    const plCap &cap = (_cartilageCap.triangles.size() == 0) ? _boneCap : _cartilageCap;
 
     for (PLuint i=0; i<cap.perimeter.size(); i++) 
     {

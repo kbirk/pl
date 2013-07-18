@@ -99,6 +99,7 @@ class plCameraStack
 		
 		static plVector3 direction();
 		static plVector3 position();                   
+		static plVector3 up();
 		
         static const plMatrix44& top()	      { return _stack.top();} 
     

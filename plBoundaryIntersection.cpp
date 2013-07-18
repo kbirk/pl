@@ -242,12 +242,26 @@ static void plTriangleCutsBoundary( plTriangle &triangle, PLbool &triangleProces
 
 
 
-static PLbool plEdgeCutsBoundary( const plVector3 &v0, const plVector3 &v1, plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
+static PLbool plEdgeCutsBoundary( plVector3 edgeVertex0, plVector3 edgeVertex1, plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
 {
     plVector3 point0(boundary.points  (   boundaryPointIndex  )                     );
     plVector3 point1(boundary.points  ( ( boundaryPointIndex+1) % boundary.size() ) );
     plVector3 normal0(boundary.normals(   boundaryPointIndex  )                     );
     plVector3 normal1(boundary.normals( ( boundaryPointIndex+1) % boundary.size() ) );
+
+    // Order v0 and v1 lexicographically, so that different calls to
+    // this function always compute the intersection in the same way,
+    // resulting in exactly the same intersection point.
+    bool reverseEdge = (edgeVertex0.x > edgeVertex1.x ||
+                         (edgeVertex0.x == edgeVertex1.x
+                           && (edgeVertex0.y > edgeVertex1.y
+                             || (edgeVertex0.y == edgeVertex1.y
+                               && edgeVertex0.z > edgeVertex1.z) ) ) );
+    if (reverseEdge) {
+      plVector3 temp = edgeVertex0;
+      edgeVertex0 = edgeVertex1;
+      edgeVertex1 = temp;
+    }
 
     // outward pointing normal:
     plVector3 avgNormal     (  (normal0+normal1)         .normalize() );
@@ -257,8 +271,8 @@ static PLbool plEdgeCutsBoundary( const plVector3 &v0, const plVector3 &v1, plBo
     PLfloat d = point0 * outwardNormal;
 
     // Find the intersection point
-    PLfloat dot0 = v0 * outwardNormal;
-    PLfloat dot1 = v1 * outwardNormal;
+    PLfloat dot0 = edgeVertex0 * outwardNormal;
+    PLfloat dot1 = edgeVertex1 * outwardNormal;
 
     PLfloat denom = dot1 - dot0;
 
@@ -270,7 +284,7 @@ static PLbool plEdgeCutsBoundary( const plVector3 &v0, const plVector3 &v1, plBo
 
         // Project intersection point onto line in boundary between points
 
-        plVector3 x = v0 + t * (v1-v0);
+        plVector3 x = edgeVertex0 + t * (edgeVertex1-edgeVertex0);
 
         PLfloat s = ((x-point0) * (point1-point0)) / ((point1-point0)*(point1-point0));
 
@@ -286,10 +300,28 @@ static PLbool plEdgeCutsBoundary( const plVector3 &v0, const plVector3 &v1, plBo
             edgeParam = t;
             boundaryParam = s;	// We're assuming that the projections are monotonically increasing
                                   // as we walk across the mesh from one boundary wall extreme to the other.
+
+            if (reverseEdge) {    // undo the reverse (since edgeVertex0 & edgeVertex1 are passed by reference)
+              plVector3 temp = edgeVertex0;
+              edgeVertex0 = edgeVertex1;
+              edgeVertex1 = temp;
+
+              // since edge was reversed, fix up edgeParam and intDir
+
+              edgeParam = 1 - edgeParam;
+              intDir = -1 * intDir;
+            }
+
             return true;
           }
         }
       }
+    }
+
+    if (reverseEdge) {    // undo the reverse (since edgeVertex0 & edgeVertex1 are passed by reference)
+      plVector3 temp = edgeVertex0;
+      edgeVertex0 = edgeVertex1;
+      edgeVertex1 = temp;
     }
 
     return false;

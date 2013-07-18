@@ -59,15 +59,20 @@ plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVecto
 {
     plIntersection closestIntersection(false);
 
-    plSeq<const plTriangle*> triangles;
+    plSet<const plTriangle*> triangles;
 
     if ( _root->rayIntersect( triangles, rayOrigin, rayDirection, 0, ignoreBehindRay ) )
     {
         PLfloat min = FLT_MAX;
 
-        for ( PLuint i = 0; i < triangles.size(); i++)
+        // must use iterators for set
+        plSet<const plTriangle*>::iterator tri_itr = triangles.begin();
+        plSet<const plTriangle*>::iterator tri_end = triangles.end();
+        for ( ; tri_itr != tri_end; ++tri_itr)
+
+        //for ( PLuint i = 0; i < triangles.size(); i++)
         {  
-            plIntersection intersection = triangles[i]->rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
+            plIntersection intersection = (*tri_itr)->rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
             
             if (intersection.exists)
             {
@@ -86,7 +91,7 @@ plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVecto
 }
 
 
-void plOctree::graftIntersect( plSeq<const plTriangle*> &triangles, const plTransform &transform, PLfloat radius ) const
+void plOctree::graftIntersect( plSet<const plTriangle*> &triangles, const plTransform &transform, PLfloat radius ) const
 {
     _root->rayIntersect( triangles, transform.origin(), transform.y(), radius, false );
 }
@@ -244,7 +249,7 @@ PLbool plOctreeNode::sphereCheck( const plVector3 &centre, PLfloat radius, PLint
     return sqDist <= radius * radius;
 }
 
-PLbool plOctreeNode::rayIntersect( plSeq<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat boxInflation, PLbool ignoreBehindRay ) const
+PLbool plOctreeNode::rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat boxInflation, PLbool ignoreBehindRay ) const
 {
     plVector3 diff;
 
@@ -287,7 +292,7 @@ PLbool plOctreeNode::rayIntersect( plSeq<const plTriangle*> &triangles, const pl
         // leaf, add triangles
         for (PLuint i=0; i<contained.size(); i++)
         {
-            triangles.add( contained[i] );
+            triangles.insert( contained[i] );
         }        
     }
     return true;
