@@ -10,6 +10,25 @@
 #include "plPickingTexture.h"
 #include "plRenderingPipeline.h"
 
+// used to order triangles for drawing transparent meshes
+class plOrderPair
+{
+    public:
+    
+        int   index;
+        float distance;
+
+        plOrderPair (int i, float d)
+            : index(i), distance(d)
+        {
+        }
+        
+        PLbool operator < (const plOrderPair &o) const
+        {
+            return distance < o.distance;
+        }
+    
+};
 
 class plModel : public plRenderable
 {
