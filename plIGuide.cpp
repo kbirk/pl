@@ -52,17 +52,16 @@ void plIGuide::createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, c
 {
 
     templateBase.clear();
+    templateBase = cartilageTris;
 
     // process
 
-    std::cout << "A"<< std::endl;
     plFindInteriorMesh( cartilageTris , boundary , templateBase ); // find surface
-    std::cout << "B"<< std::endl;
     plSeq<edgeIndices> outsideEdges (collectOutsideEdges());
 
     for (PLuint i = 0; i < outsideEdges.size(); i++)
     {
-        std::cout << outsideEdges[i].triangleIndex << std::endl;
+        std::cout << cartilageTris[outsideEdges[i].triangleIndex][outsideEdges[i].vertexIndexA] << std::endl;
     } // end for;
 
 
@@ -123,8 +122,8 @@ plSeq<plIGuide::edgeIndices> plIGuide::collectOutsideEdgesUnsorted()
             {
                 // for readability - these are the indices to get to the vertices that we'll actually be looking at
                 PLuint searchTriangleIndex (unsortedEdges[unsortedEdgeIndex].triangleIndex);
-                PLuint searchVertexAIndex  (unsortedEdges[unsortedEdgeIndex].triangleIndex);
-                PLuint searchVertexBIndex  (unsortedEdges[unsortedEdgeIndex].triangleIndex);
+                PLuint searchVertexAIndex  (unsortedEdges[unsortedEdgeIndex].vertexIndexA);
+                PLuint searchVertexBIndex  (unsortedEdges[unsortedEdgeIndex].vertexIndexB);
 
                 // any edge that is being examined will be oriented opposite to what was already found
                 if (templateBase[searchTriangleIndex][searchVertexAIndex] == templateBase[triangleIndex][vertexBIndex] &&
