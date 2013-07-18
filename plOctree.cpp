@@ -65,20 +65,21 @@ plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVecto
     {
         PLfloat min = FLT_MAX;
 
-        // must use iterators for set
+        //std::cout << "triCount: " << triangles.size() << "\n";
+
+        // must use iterators for plSet
         plSet<const plTriangle*>::iterator tri_itr = triangles.begin();
         plSet<const plTriangle*>::iterator tri_end = triangles.end();
         for ( ; tri_itr != tri_end; ++tri_itr)
-
-        //for ( PLuint i = 0; i < triangles.size(); i++)
         {  
             plIntersection intersection = (*tri_itr)->rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
             
             if (intersection.exists)
             {
-                if ( fabs(intersection.t) < min) 
+                PLfloat tAbs = fabs(intersection.t);
+                if ( tAbs < min) 
                 {
-                    min = fabs(intersection.t);
+                    min = tAbs;
                     closestIntersection = intersection;
                 }
             }
@@ -86,8 +87,7 @@ plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVecto
         }
     }
     
-    return closestIntersection; 
-    
+    return closestIntersection;     
 }
 
 
@@ -105,7 +105,6 @@ void plOctree::_fill(const plSeq<plTriangle> &triangles, PLuint depth)
     }
     
 }
-
 
 
 plOctreeNode::plOctreeNode( const plVector3 &c, PLfloat hw)
@@ -241,6 +240,7 @@ PLfloat plOctreeNode::squaredDistanceFromPoint( const plVector3 &point, PLint ch
     return sqDist;
 }
 
+
 PLbool plOctreeNode::sphereCheck( const plVector3 &centre, PLfloat radius, PLint child ) const
 {
     // compute squared distance between sphere center and AABB
@@ -249,6 +249,7 @@ PLbool plOctreeNode::sphereCheck( const plVector3 &centre, PLfloat radius, PLint
     return sqDist <= radius * radius;
 }
 
+
 PLbool plOctreeNode::rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat boxInflation, PLbool ignoreBehindRay ) const
 {
     plVector3 diff;
@@ -256,13 +257,13 @@ PLbool plOctreeNode::rayIntersect( plSet<const plTriangle*> &triangles, const pl
     PLfloat boxExtents = halfWidth + boxInflation;
 
 	diff.x = rayOrigin.x - centre.x;
-	if(fabs(diff.x)>boxExtents && diff.x*rayDirection.x>=0.0f)	return false;
+	if( fabs(diff.x) > boxExtents && diff.x*rayDirection.x>=0.0f)	return false;
 
 	diff.y = rayOrigin.y - centre.y;
-	if(fabs(diff.y)>boxExtents && diff.y*rayDirection.y>=0.0f)	return false;
+	if( fabs(diff.y) > boxExtents && diff.y*rayDirection.y>=0.0f)	return false;
 
 	diff.z = rayOrigin.z - centre.z;
-	if(fabs(diff.z)>boxExtents && diff.z*rayDirection.z>=0.0f)	return false;
+	if( fabs(diff.z) > boxExtents && diff.z*rayDirection.z>=0.0f)	return false;
 
 	float fAWdU[3];
 	fAWdU[0] = fabs(rayDirection.x);

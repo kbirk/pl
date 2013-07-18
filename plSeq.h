@@ -18,6 +18,7 @@ class plSeq
 		~plSeq();
 	
 		void add( const T &x );
+		void add( const plSeq<T> &s );		
 		void remove();
 		void remove( PLuint i );
 		void shift( PLuint i );
@@ -105,6 +106,23 @@ void plSeq<T>::add( const T &x )
 	// Store the element in the next available position
 	_data[ _numElements ] = x;
 	_numElements++;
+}
+
+template<class T>
+void plSeq<T>::add( const plSeq<T> &s )
+{
+    // No storage left?  If so, double the storage
+	if (_numElements + s.size() >= _storageSize) 
+	{
+        reserve( _storageSize*2 + s.size() );	        
+	}
+	// Store the element in the next available position
+	
+	for (PLuint i=0; i<s.size(); i++)
+	{
+	    _data[ _numElements+i ] = s[i];	
+	}
+	_numElements+=s.size();	
 }
 
 template<class T>	

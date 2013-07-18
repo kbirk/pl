@@ -1,4 +1,4 @@
-LIBS = -Llib -lGLEW -lglut -lGLU -lGL -lm 
+LIBS = -Llib -lGLEW -lglut -lGLU -lGL -lm
 #LIBS = -framework OpenGL -framework GLUT -framework Cocoa
 
 INCS = 
@@ -19,7 +19,7 @@ SOURCES = main.cpp PlannerWindow.cpp plBoneAndCartilage.cpp plBoundary.cpp plBou
 EXE  = planner
 
 Window:	$(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJECTS) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJECTS) $(LIBS) 
 
 $(OBJECTS): | objects
 

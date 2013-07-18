@@ -147,35 +147,14 @@ void plModel::toggleVisibility()
 
 plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
 {
-    /*
-    PLfloat min = FLT_MAX;
-
-    plIntersection closestIntersection(false);
-
-    for ( PLuint i = 0; i < _triangles.size(); i++)
-    {  
-        plIntersection intersection = _triangles[i].rayIntersect( start, dir, ignoreBehindRay, backFaceCull );
-        
-        if (intersection.exists)
-        {
-            if ( fabs(intersection.t) < min) 
-            {
-                min = fabs(intersection.t);
-                closestIntersection = intersection;
-            }
-        }
-
-    }
-
-    return closestIntersection; 
-    */
+    // intersect the octree
     return _octree.rayIntersect( start, dir, ignoreBehindRay, backFaceCull );
 }
 
 
 std::ostream& operator << ( std::ostream& out, const plModel &m )
 {
-    out << m._filename;
+    out << m.filename();
     return out;
 }
 
