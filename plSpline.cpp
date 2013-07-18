@@ -237,7 +237,7 @@ void plSpline::_computeHermite()
                 col0 = plColourMap::map( (intersection.point - pos0).squaredLength()/FURTHEST_DISTANCE );
             else 
                 col0 = plVector3(0.2, 0.2, 0.2); 
-                                  
+                                
             intersection = _model->cartilage.rayIntersect( pos1+(10.0f*faceNorm), -faceNorm, false, true );  
             if (intersection.exists)
                 col1 = plColourMap::map((intersection.point - pos1).squaredLength()/FURTHEST_DISTANCE);
@@ -281,10 +281,7 @@ void plSpline::_computeHermite()
             indices.add(base+0);
             indices.add(base+2);
             indices.add(base+3);   
-            
-            cornerCount += 4;
-            centreCount ++;
-                            
+                       
         }
         
     }    

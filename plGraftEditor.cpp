@@ -162,7 +162,25 @@ PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
 
 PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLfloat x, PLfloat y, PLbool flag )
 {
+    if (_selectedGraft == NULL)    
+        return false;                 // no graft selected
 
+    plVector3 translation( -y, 0, x);
+    
+    if (translation.squaredLength() > 1)
+        translation = translation.normalize();
+    
+    plVector3 localXAxis = (plCameraStack::direction() ^ _selectedGraft->transform(_selectedType).y()).normalize();
+    plVector3 localZAxis = (_selectedGraft->transform(_selectedType).y() ^ localXAxis).normalize();
+    plVector3 localYAxis = (localXAxis ^ localZAxis).normalize();
+
+    translation = (translation * localXAxis) * localXAxis +
+                  (translation * localYAxis) * localYAxis +
+                  (translation * localZAxis) * localZAxis;
+
+    // translate by local coords
+    translateSelected( 0.3 * translation );
+    return true;
 }
 
 void plGraftEditor::selectGraft( plPlan &plan, PLuint index, PLuint type )
