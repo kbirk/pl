@@ -57,7 +57,6 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
             return true; 
     }
     return false;
-
 }
 
 void plBoundaryEditor::_clearDefectSiteBoundaries( plPlan &plan  )
