@@ -248,7 +248,7 @@ void plSpline::_computeHermite()
             else 
                 col3 = plVector3(0.2, 0.2, 0.2);        
                                                                                
-            //PLint base = interleaved_vertices.size()/3;
+            PLint base = interleaved_vertices.size()/3;
             
             interleaved_vertices.add(pos0);     // position
             interleaved_vertices.add(faceNorm); // normal
@@ -265,7 +265,7 @@ void plSpline::_computeHermite()
             interleaved_vertices.add(pos3);     // position
             interleaved_vertices.add(faceNorm); // normal
             interleaved_vertices.add(col3);     // colour
-            /*
+
             indices.add(base+0);
             indices.add(base+1);
             indices.add(base+2);
@@ -273,7 +273,7 @@ void plSpline::_computeHermite()
             indices.add(base+0);
             indices.add(base+2);
             indices.add(base+3);   
-            */                 
+
         }
         
     }    
@@ -286,22 +286,21 @@ void plSpline::_computeHermite()
     // |_4_|_3_|
     // |   |   |
     // |_1_|_2_|
-
-    for (PLuint j=0; j < 1/inc; j+=3)
-    {
-        for (PLuint i=0; i < 1/inc; i+=2)
-        {
-            
-            // quad 1    
-            indices.add(i+0);   indices.add(i+1);   indices.add(i+2);   
-            indices.add(i+0);   indices.add(i+2);   indices.add(i+3);
-            
-            // quad 2    
-            indices.add(i+1);   indices.add(i+4);   indices.add(i+7);   
-            indices.add(i+1);   indices.add(i+7);   indices.add(i+2);
-            
-        }
-    }
+//    for (PLuint j=0; j < 1/inc; j+=3)
+//    {
+//        for (PLuint i=0; i < 1/inc; i+=2)
+//        {
+//
+//            // quad 1
+//            indices.add(i+0);   indices.add(i+1);   indices.add(i+2);
+//            indices.add(i+0);   indices.add(i+2);   indices.add(i+3);
+//
+//            // quad 2
+//            indices.add(i+1);   indices.add(i+4);   indices.add(i+7);
+//            indices.add(i+1);   indices.add(i+7);   indices.add(i+2);
+//
+//        }
+//    }
     _surfaceMesh.setBuffers(interleaved_vertices, indices);
 }
 

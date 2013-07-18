@@ -25,6 +25,8 @@ class plBoundaryEditor
 
         PLbool  processMouseClick( plPlan &plan, PLint x, PLint y );
         PLbool  processMouseDrag ( plPlan &plan, PLint x, PLint y );
+        void    processJoystickDrag ( plPlan &plan, PLint x, PLint y);
+
 
         PLint   addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
         void    moveSelectedPoint  ( PLuint x, PLuint y );
