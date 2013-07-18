@@ -11,6 +11,7 @@
 #include "plPickingTexture.h"
 #include "plGraft.h"
 #include "plBoundaryIntersection.h"
+#include "plPolygon.h"
 
 class plKWire 
 {
@@ -25,6 +26,22 @@ class plKWire
 class plIGuide : public plModelSpecific,
                  public plRenderable
 {
+
+    private:
+        // used in constructing the template base shape
+        class edgeIndices
+        {
+            public:
+                edgeIndices() {}
+                edgeIndices(PLuint t, PLuint vA, PLuint vB) : triangleIndex(t), vertexIndexA(vA), vertexIndexB(vB) {}
+                PLuint triangleIndex;
+                PLuint vertexIndexA;
+                PLuint vertexIndexB;
+        };
+        plSeq<edgeIndices> collectOutsideEdges();
+        plSeq<edgeIndices> collectOutsideEdgesUnsorted();               // helper to collectOutsideEdges
+        plSeq<edgeIndices> collectOutsideEdgesSort(plSeq<edgeIndices>); // helper to collectOutsideEdges
+
     public:
 
         PLfloat        thickness;
@@ -44,7 +61,7 @@ class plIGuide : public plModelSpecific,
 
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
         
-        void createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, const plGraft &graft);
+        void createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, const plGraft &graft, const plBoundary &boundary);
 
         void draw();
 };

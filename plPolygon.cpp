@@ -30,8 +30,16 @@ plVector3 plEdge::otherPt(const plVector3 &point, const PLfloat &epsilon)
 
 PLbool plEdge::equals(const plEdge &e2, const PLfloat &epsilon)
 {
-    if ( ( (e2.pt1 - pt1).length() <= epsilon && ((e2.pt2 - pt2).length() <= epsilon) ) ||
-         ( (e2.pt2 - pt1).length() <= epsilon && ((e2.pt1 - pt2).length() <= epsilon) ) )
+    if ( ( (e2.pt1 - pt1).length() <= epsilon && (e2.pt2 - pt2).length() <= epsilon ) ||
+         ( (e2.pt2 - pt1).length() <= epsilon && (e2.pt1 - pt2).length() <= epsilon ) )
+        return true;
+    return false;
+}
+
+PLbool plEdge::operator==(const plEdge &e2)
+{
+    if ( ( e2.pt1 == pt1 && e2.pt2 == pt2 ) ||
+         ( e2.pt2 == pt1 && e2.pt1 == pt2 ) )
         return true;
     return false;
 }
@@ -52,16 +60,5 @@ std::ostream& operator << ( std::ostream &stream, const plPolygon &p )
     return stream;
 } 
 
-// SPECIALIZATION OF SEQ findIndex FUNCTION!
-// Find and return index of the first instance of an element
-// if it doesn't exist, return -1
-template <>
-PLint plSeq<plEdge>::findIndex( const plEdge &x )
-{
-    for (PLint i=0; i<_numElements; i++)
-        if (_data[i].equals(x))
-            return i;
 
-    return -1;
-}
 
