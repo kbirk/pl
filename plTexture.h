@@ -15,13 +15,13 @@ class plTexture
         void bind() const;  // bind textures AFTER binding shader AND BEFORE drawing arrays 
         void unbind() const;
 
-        void updateFromArthroImage( unsigned char *image, int dimx, int dimy );
+        void updateFromArthroImage( PLchar *image, PLint dimx, int PLdimy );
 
     private:
     
         GLuint   _textureID;
     
-        GLubyte *_texmap;
+        //GLubyte *_texmap;
         PLint    _width, _height;
         PLuint   _xdim,  _ydim;		
 

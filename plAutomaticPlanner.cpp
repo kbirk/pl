@@ -5,6 +5,9 @@ plSeq<plSiteGrid> plAutomaticPlanner::_defectSiteGrids;
 
 void plAutomaticPlanner::calculate( plPlan &plan )
 {
+    _donorSiteGrids.clear();
+    _defectSiteGrids.clear();
+
     std::cout << "Calculating Plan ... \n";
     /*
     // Draw defect boundary 

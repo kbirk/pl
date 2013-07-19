@@ -16,8 +16,8 @@ plTextureMesh::plTextureMesh( const plVector3 &bottemLeft, const plVector3 &bott
 
 void plTextureMesh::setBuffers( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft)
 {
-    plSeq<plVector3> interleaved_vertices(4);
-    plSeq<PLuint>    indices(4);
+    plSeq<plVector3> interleaved_vertices(8);
+    plSeq<PLuint>    indices(6);
     
     interleaved_vertices.add( bottemLeft );
     interleaved_vertices.add( plVector3( 0,0,0) );
@@ -67,7 +67,7 @@ void plTextureMesh::setBuffers( const plVector3 &bottemLeft, const plVector3 &bo
     // bind vertex array object
     glGenBuffers(1, &_vertexBufferIndices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STATIC_DRAW);
      
 	// unbind the vertex array object
 	glBindVertexArray(0); 			
