@@ -273,7 +273,7 @@ void plRenderer::_drawArthroTexture()
     plShaderStack::push( _textureShader );
     
     // ortho projection
-    plMatrix44 ortho( -xmargin, 1+xmargin, 0, 1, -1, 1);
+    plMatrix44 ortho( 0, 1, 0, 1, -1, 1);
     plProjectionStack::push( ortho ); 
 
     // identity model matrix
@@ -282,7 +282,7 @@ void plRenderer::_drawArthroTexture()
     // default camera matrix
     plMatrix44 camera( 1, 0,  0, 0,
                        0, 1,  0, 0,
-                       0, 0,  1, 0,
+                       0, 0, -1, 0,
                        0, 0,  0, 1 );        
     plCameraStack::push( camera );
 
