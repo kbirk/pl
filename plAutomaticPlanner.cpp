@@ -106,14 +106,14 @@ void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> 
         {
             for (PLfloat k=uMax; k>0; k-= GRID_SPACING)            
             {
-                plVector3
+                plVector3 p = origin + k*u + j*v;
             
                 std::cout << "k: " << k << " j: " << j << "\n"; 
             
-                std::cout << "p: " << k*u + j*v << "\n";
+                std::cout << "p: " << p << "\n";
                 std::cout << "p0: " << triangles[i].point0() << " p1: " << triangles[i].point1() << " p1: " << triangles[i].point2() << "\n";
             
-                plVector3 bCoord = triangles[i].barycentricCoords( k*u + j*v );
+                plVector3 bCoord = triangles[i].barycentricCoords( p );
                 
                 std::cout << bCoord << "\n";
                 
