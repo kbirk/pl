@@ -101,6 +101,7 @@
 #define PL_MIN_OF_3(a,b,c)                       (a<=b ? (a<=c ? a : c) : (b<=c ? b : c))
 #define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c)) 
 
+
 #ifdef WIN32
     #include <windows.h>  
 #endif
@@ -136,18 +137,26 @@
 #include <stack>
 #include <limits>
 #include <set>
+#include <chrono>
 
-// TYPEDEFS
 
-typedef unsigned char       PLbyte;      
-typedef char                PLchar;      
-typedef float               PLfloat;     
-typedef double              PLdouble;    
-typedef short unsigned int  PLushort;	
-typedef short int           PLshort;		
-typedef unsigned int        PLuint;     
-typedef int                 PLint;       
-typedef bool                PLbool;     
+
+
+// PRIMITIVE TYPEDEFS
+
+typedef unsigned char           PLbyte;      
+typedef char                    PLchar;      
+typedef float                   PLfloat;     
+typedef double                  PLdouble;    
+typedef short unsigned int      PLushort;	
+typedef short int               PLshort;		
+typedef unsigned int            PLuint;     
+typedef int                     PLint;       
+typedef bool                    PLbool;     
+typedef long long unsigned int  PLtime; 
+// STD TYPEDEFS
+
+//typedef std::chrono::high_resolution_clock plClock;
 
 template <typename T>
 class plStack : public std::stack<T> {};
@@ -155,6 +164,25 @@ class plStack : public std::stack<T> {};
 template <typename T>
 class plSet : public std::set<T> {};
 
+class plTimer
+{
+
+    public:
+    
+        static PLtime now()
+        {
+            typedef std::chrono::high_resolution_clock      plClock;
+            typedef std::chrono::milliseconds               plMilliseconds;
+        
+            return std::chrono::duration_cast<plMilliseconds>(plClock::now().time_since_epoch()).count() % 1000;
+
+        }
+    
+    private:
+    
+        plTimer();
+
+};
 
 
 #endif

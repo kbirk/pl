@@ -104,19 +104,16 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
             currentView = (PLint)(key - '0');
             break;                
 
-        case 'b':   _plan.models(0).bone.toggleVisibility();                   break;            
-        case 'c':   _plan.models(0).cartilage.toggleVisibility();              break;      
+        case 'b':   _plan.models(0).bone.toggleVisibility();                    break;            
+        case 'c':   _plan.models(0).cartilage.toggleVisibility();               break;      
         case 'p':   _plan.toggleVisibility();                                   break;    
-        case 'z':   _camera.reset( _plan.models(0).getCentroid() );            break;          
+        case 'z':   _camera.reset( _plan.models(0).getCentroid() );             break;          
         case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
         case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
         case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 
         case 'm':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_MARKER );      break; 
-        //case 'g':   plGraftToggleVisibilityAll();                break;
-        //case 's':   plDefectSplineToggleVisibilityAll();         break; 
-        //case 'd':   plDonorRegionToggleVisibilityAll();          break;         
-        //case 'q':   plDefectSplineCornersToggleVisibilityAll();  break;
-        //case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;        
+        case 'v':   _graftEditor.toggleSelectedVisibility();  
+                    _boundaryEditor.toggleSelectedVisibility();                 break;       
         case 'O':   _plan.exportFile("plan");                    break;
 
         case 'D':   _plan.addDonorSite();                        break;

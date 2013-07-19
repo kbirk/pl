@@ -138,7 +138,7 @@ void plGraft::_drawGraft() const
     
     // draw bone cap
     _setBoneColour();
-    //_boneMesh.draw();
+    _boneMesh.draw();
     
     // draw marker   
     plColourStack::load( PL_GRAFT_MARKER_COLOUR );

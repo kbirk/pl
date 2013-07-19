@@ -338,6 +338,12 @@ void plGraftEditor::spinMarkSelected( PLfloat angle_degrees )
     _selectedGraft->spinMark( angle_degrees );
 }
 
+void plGraftEditor::toggleSelectedVisibility()
+{
+    if (_selectedGraft == NULL)
+        return;
+    _selectedGraft->toggleVisibility();
+}
 
 
 plVector3 plGraftEditor::_getScreenAxis( const plVector3 &edit_axis, const plVector3 &world_position)
