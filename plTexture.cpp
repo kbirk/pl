@@ -78,10 +78,12 @@ void plTexture::_registerWithOpenGL()
         }
     }
     */
-    // Register it with OpenGL
-
+    
+    // Register with OpenGL
     glGenTextures( 1, &_textureID );
     glBindTexture( GL_TEXTURE_2D, _textureID );
+
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -91,20 +93,21 @@ void plTexture::_registerWithOpenGL()
     // ordinary texture
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexImage2D   ( GL_TEXTURE_2D, 0, GL_RGBA, _xdim, _ydim, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-    //glTexImage2D   ( GL_TEXTURE_2D, 0, GL_RGBA, _xdim, _ydim, 0, GL_RGBA, GL_UNSIGNED_BYTE, newTexMap );
-    
-    //delete [] newTexMap;
+    glTexImage2D   ( GL_TEXTURE_2D, 0, GL_RGB, _xdim, _ydim, 0, GL_BGR, GL_UNSIGNED_BYTE, 0 );
 }
 
 
 void plTexture::updateFromArthroImage( PLchar *image, PLint dimx, PLint dimy )  
 {
+    if (image == NULL) 
+        return;
+    
     _width = _xdim = dimx;
     _height = _ydim = dimy;
-    //_texmap = image;
-
+    
     glBindTexture( GL_TEXTURE_2D, _textureID );
+
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -114,6 +117,6 @@ void plTexture::updateFromArthroImage( PLchar *image, PLint dimx, PLint dimy )
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, dimx, dimy, 0, GL_BGRA, GL_UNSIGNED_BYTE, image );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, dimx, dimy, 0, GL_BGR, GL_UNSIGNED_BYTE, image );
 }
 

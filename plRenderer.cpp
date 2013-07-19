@@ -270,6 +270,8 @@ void plRenderer::_drawArthroTexture()
 
     PLfloat xmargin = (viewport[2] / viewport[3] - 1) / 2.0;
     
+    plShaderStack::push( _textureShader );
+    
     // ortho projection
     plMatrix44 ortho( -xmargin, 1+xmargin, 0, 1, -1, 1);
     plProjectionStack::push( ortho ); 
@@ -279,9 +281,9 @@ void plRenderer::_drawArthroTexture()
     
     // default camera matrix
     plMatrix44 camera( 1, 0,  0, 0,
-                        0, 1,  0, 0,
-                        0, 0, -1, 0,
-                        0, 0,  0, 1 );        
+                       0, 1,  0, 0,
+                       0, 0,  1, 0,
+                       0, 0,  0, 1 );        
     plCameraStack::push( camera );
 
     glDisable( GL_DEPTH_TEST );
@@ -293,6 +295,8 @@ void plRenderer::_drawArthroTexture()
     plProjectionStack::pop(); 
     plModelStack::pop();       
     plCameraStack::pop();
+    
+    plShaderStack::pop();
 }
 
 

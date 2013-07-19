@@ -74,11 +74,11 @@ void plTextureMesh::setBuffers( const plVector3 &bottemLeft, const plVector3 &bo
 }
 
 void plTextureMesh::draw() const
-{		
-    // use current shader and properly set uniforms
-    plShaderStack::use();	
+{	
     // bind texture
-    texture.bind();    		
+    texture.bind();  	
+    // use current shader and properly set uniforms
+    plShaderStack::use();	      		
 	// bind vertex array object
 	glBindVertexArray(_vertexArrayObject);
 	// draw batch
