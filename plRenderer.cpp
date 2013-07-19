@@ -4,7 +4,6 @@
 const plPlan*            plRenderer::_planToDraw             = NULL;
 const plGraftEditor*     plRenderer::_graftEditorToDraw      = NULL;
 const plBoundaryEditor*  plRenderer::_boundaryEditorToDraw   = NULL;
-
 plSeq<const plTrackedObject*> plRenderer::_trackedObjectsToDraw;
 plSeq<const plLineMesh*>      plRenderer::_debugToDraw;
 
@@ -208,6 +207,15 @@ void plRenderer::_drawScene()
         }
     }
   
+    for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)
+    {
+        for (PLuint j=0; j<plAutomaticPlanner::_donorSiteGrids[i].points.size(); j++)
+        {
+            plDraw::sphere( plAutomaticPlanner::_donorSiteGrids[i].points[j], 0.5f );
+            
+        }
+    }
+    
     /*
     // set flat shader
     plShaderStack::push( _minimalShader );    

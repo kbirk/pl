@@ -106,12 +106,6 @@
     #include <windows.h>  
 #endif
 
-#ifdef LINUX
-    //#include <sys/timeb.h>	// includes ftime (to return current time)
-    //#include <unistd.h>		// includes usleep (to sleep for some time)
-    //#include <values.h>
-#endif
-
 #ifdef __APPLE_CC__
     #include <glew.h>    // include before gl.h
     #include <OpenGL/gl.h>
@@ -139,9 +133,6 @@
 #include <set>
 #include <chrono>
 
-
-
-
 // PRIMITIVE TYPEDEFS
 
 typedef unsigned char           PLbyte;      
@@ -154,9 +145,9 @@ typedef unsigned int            PLuint;
 typedef int                     PLint;       
 typedef bool                    PLbool;     
 typedef long long unsigned int  PLtime; 
-// STD TYPEDEFS
 
-//typedef std::chrono::high_resolution_clock plClock;
+
+// STD TYPEDEFS
 
 template <typename T>
 class plStack : public std::stack<T> {};
@@ -172,10 +163,8 @@ class plTimer
         static PLtime now()
         {
             typedef std::chrono::high_resolution_clock      plClock;
-            typedef std::chrono::milliseconds               plMilliseconds;
-        
-            return std::chrono::duration_cast<plMilliseconds>(plClock::now().time_since_epoch()).count() % 1000;
-
+            typedef std::chrono::milliseconds               plMilliseconds;        
+            return std::chrono::duration_cast<plMilliseconds>( plClock::now().time_since_epoch() ).count() % 1000;
         }
     
     private:

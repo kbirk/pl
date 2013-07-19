@@ -2,6 +2,8 @@
 #define __PL_API_H__
 
 #include "plCommon.h"
+
+#include "plAutomaticPlanner.h"
 #include "plBoneAndCartilage.h"
 #include "plBoundaryEditor.h"
 #include "plCamera.h"

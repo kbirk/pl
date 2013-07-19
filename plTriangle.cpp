@@ -136,6 +136,10 @@ plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint )
     return plVector3(u,v,w);
 }
 
+PLfloat plTriangle::getArea() const
+{
+    return 0.5f * ( (_points[1] - _points[0]) ^ (_points[2] - _points[0]) ).length(); 
+}
 
 // I/O operators
 std::ostream& operator << ( std::ostream& stream, const plTriangle &p )

@@ -17,6 +17,8 @@
 #include "plGraftEditor.h"
 #include "plBoundaryEditor.h"
 #include "plOctree.h"
+#include "plAutomaticPlanner.h"
+
 
 #include "plRenderingPipeline.h"
 
@@ -46,7 +48,7 @@ class plRenderer
         static const plPlan             *_planToDraw;
         static const plGraftEditor      *_graftEditorToDraw;
         static const plBoundaryEditor   *_boundaryEditorToDraw; 
-       
+        
         static plSeq<const plLineMesh*>      _debugToDraw;        
         static plSeq<const plTrackedObject*> _trackedObjectsToDraw;
         

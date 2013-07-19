@@ -114,11 +114,13 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
         case 'm':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_MARKER );      break; 
         case 'v':   _graftEditor.toggleSelectedVisibility();  
                     _boundaryEditor.toggleSelectedVisibility();                 break;       
-        case 'O':   _plan.exportFile("plan");                    break;
+        case 'O':   _plan.exportFile("plan");                                   break;
 
-        case 'D':   _plan.addDonorSite();                        break;
-        case 'S':   _plan.addDefectSite();                       break;
-        case 'G':   _plan.addIGuide();                           break;
+        case 'D':   _plan.addDonorSite();                                       break;
+        case 'S':   _plan.addDefectSite();                                      break;
+        case 'G':   _plan.addIGuide();                                          break;
+
+        case 'P':   plAutomaticPlanner::calculate(_plan);                       break;
 
         case 127:	 // delete 
         {   
