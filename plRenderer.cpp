@@ -33,6 +33,7 @@ void plRenderer::_clearRenderQueue()
     _planToDraw           = NULL;
     _graftEditorToDraw    = NULL;
     _boundaryEditorToDraw = NULL;
+    _arthroTextureToDraw  = NULL;
     _trackedObjectsToDraw.clear();
     _debugToDraw.clear();
 }
