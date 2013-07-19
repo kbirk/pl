@@ -28,14 +28,14 @@ void plAutomaticPlanner::calculate( plPlan &plan )
         plSeq<plTriangle> interiorTriangles;                
         plMeshCutter::findInteriorMesh( plan.donorSites(i).model()->cartilage.triangles(), plan.donorSites(i).boundary, interiorTriangles );
         
-        std::cout << "\t Interior triangle Count: " << interiorTriangles.size() << "\n";
+        std::cout << "\t\t Interior triangle Count: " << interiorTriangles.size() << "\n";
         
         // compose grid over interior mesh
         plSiteGrid grid;
         _createGrid( grid, interiorTriangles );
         // store it       
         _donorSiteGrids.add( grid );
-        std::cout << "\t " <<  grid.points.size() << " grid points calculated \n";
+        std::cout << "\t\t " <<  grid.points.size() << " grid points calculated \n";
     }    
 
 
@@ -44,7 +44,7 @@ void plAutomaticPlanner::calculate( plPlan &plan )
 void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> &triangles )
 {
     const PLfloat PLUG_RADIUS  = 2.0f;
-    const PLfloat GRID_SPACING = sqrt(3.0f) * PLUG_RADIUS; 
+    const PLfloat GRID_SPACING = 0.2f; //sqrt(3.0f) * PLUG_RADIUS; 
     
     // randomly select points in each triangle to achieve approx spacing    
     grid.points.clear();
@@ -95,37 +95,22 @@ void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> 
             uMax = e12 * tangent;              
         }
         
-        std::cout << "---------------------------------------------------\n";
-        std::cout << "uMax: " << uMax << " u: " << u << "\n";
-        std::cout << "vMax: " << vMax << " v: " << v << "\n";
-        
-        std::cout << "grid spacing: " << GRID_SPACING << "\n";
-        
         // build grid, row by row, right to left (more efficient this way)
         for (PLfloat j=0; j<vMax; j+= GRID_SPACING)
         {
-            for (PLfloat k=uMax; k>0; k-= GRID_SPACING)            
+            for (PLfloat k=0; k<uMax; k+= GRID_SPACING)            
             {
-                plVector3 p = origin + k*u + j*v;
-            
-                std::cout << "k: " << k << " j: " << j << "\n"; 
-            
-                std::cout << "p: " << p << "\n";
-                std::cout << "p0: " << triangles[i].point0() << " p1: " << triangles[i].point1() << " p1: " << triangles[i].point2() << "\n";
-            
+                plVector3 p = origin + k*-u + j*v;
                 plVector3 bCoord = triangles[i].barycentricCoords( p );
-                
-                std::cout << bCoord << "\n";
-                
-                if ( bCoord.x < 0 || bCoord.y < 0 || bCoord.z < 0 )
+
+                if ( bCoord.x < -0.001 || bCoord.y < -0.001 || bCoord.z < -0.001 )
                     break;  // outside of triangle edge, go to next row
-                    
-                grid.points.add ( bCoord );    
-                grid.normals.add( triangles[i].normal() ); 
+                
+                    grid.points.add ( p );    
+                    grid.normals.add( triangles[i].normal() ); 
+                
             }   
         }
-        
-        
         
     }
     

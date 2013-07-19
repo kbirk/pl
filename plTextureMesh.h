@@ -1,0 +1,22 @@
+#ifndef _PL_TEXTURE_MESH_H_
+#define _PL_TEXTURE_MESH_H_ 
+
+#include "plCommon.h"
+#include "plMesh.h"
+#include "plTexture.h"
+
+class plTextureMesh : public plMesh
+{
+    public:
+		
+		plTexture texture;
+		
+		plTextureMesh();		
+		plTextureMesh( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft );              
+
+        void setBuffers( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft );
+        void draw() const;
+
+};
+
+#endif

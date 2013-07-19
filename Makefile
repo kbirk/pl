@@ -13,7 +13,7 @@ SOURCES = main.cpp PlannerWindow.cpp plAutomaticPlanner.cpp plBoneAndCartilage.c
 	plCamera.cpp plColourMap.cpp plColourMesh.cpp plCSV.cpp plDefectSite.cpp \
 	plDonorSite.cpp plDraw.cpp plDRBTransform.cpp plEditable.cpp plGraft.cpp plGraftEditor.cpp plIGuide.cpp plLineMesh.cpp plMath.cpp plMatrix44.cpp \
 	plMatrixStack.cpp plMesh.cpp plMeshCutter.cpp plModel.cpp plModelSpecific.cpp plOctree.cpp plPickingTexture.cpp plPlan.cpp plPlug.cpp plPolygon.cpp plProjection.cpp plRenderable.cpp \
-	plRenderer.cpp plRenderingPipeline.cpp plSpline.cpp plString.cpp plTrackedObject.cpp plTransform.cpp plTriangle.cpp plVector3.cpp \
+	plRenderer.cpp plRenderingPipeline.cpp plSpline.cpp plString.cpp plTexture.cpp plTextureMesh.cpp plTrackedObject.cpp plTransform.cpp plTriangle.cpp plVector3.cpp \
 	plVector4.cpp plWindow.cpp Window.cpp
        
 EXE  = planner
