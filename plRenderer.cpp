@@ -33,6 +33,7 @@ void plRenderer::_clearRenderQueue()
     _planToDraw           = NULL;
     _graftEditorToDraw    = NULL;
     _boundaryEditorToDraw = NULL;
+    _arthroTextureToDraw  = NULL;
     _trackedObjectsToDraw.clear();
     _debugToDraw.clear();
 }
@@ -282,7 +283,7 @@ void plRenderer::_drawArthroTexture()
     // default camera matrix
     plMatrix44 camera( 1, 0,  0, 0,
                        0, 1,  0, 0,
-                       0, 0,  1, 0,
+                       0, 0, -1, 0,
                        0, 0,  0, 1 );        
     plCameraStack::push( camera );
 
