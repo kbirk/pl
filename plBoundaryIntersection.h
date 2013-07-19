@@ -26,10 +26,10 @@ class plCut
         PLbool    processed;
 };
 
-void            plFindInteriorMesh      ( plSeq<plTriangle> &triangles, plBoundary &walls, plSeq<plTriangle> &interiorTriangles );
-static void     plUpdateInteriorPoints  ( plTriangle &triangle , plSeq<plVector3> &interiorPoints );
-static PLbool   plEdgeCutsBoundary      ( plVector3, plVector3, plBoundary &wall, PLuint index, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &wallParam, PLint &intDir );
-static void     plTriangleCutsBoundary  ( plTriangle &tri, PLbool &triProcessed, plBoundary &walls, plSeq<plPolygon> &polys, plSeq<plVector3> &interiorPoints );
+void            plFindInteriorMesh      ( const plSeq<plTriangle> &triangles, const plBoundary &walls, plSeq<plTriangle> &interiorTriangles );
+static void     plUpdateInteriorPoints  ( const plTriangle &triangle , plSeq<plVector3> &interiorPoints );
+static PLbool   plEdgeCutsBoundary      ( plVector3, plVector3, const plBoundary &wall, PLuint index, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &wallParam, PLint &intDir );
+static void     plTriangleCutsBoundary  ( const plTriangle &tri, PLbool &triProcessed, const plBoundary &walls, plSeq<plPolygon> &polys, plSeq<plVector3> &interiorPoints );
 static PLint    plCompareEdgeCuts       ( const void* a, const void* b );
 static PLint    plCompareBoundaryCuts   ( const void* a, const void* b );
 

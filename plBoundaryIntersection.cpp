@@ -11,7 +11,7 @@ plCut::plCut( plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint di
 {
 }
 
-void plFindInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plSeq<plTriangle> &interiorTriangles )
+void plFindInteriorMesh( const plSeq<plTriangle> &triangles, const plBoundary &boundary, plSeq<plTriangle> &interiorTriangles )
 {
     // set all the processed flags to false
     plSeq<PLbool> trianglesProcessedFlag( false, triangles.size() );
@@ -66,7 +66,7 @@ void plFindInteriorMesh( plSeq<plTriangle> &triangles, plBoundary &boundary, plS
 } // end void function
 
 
-static void plUpdateInteriorPoints( plTriangle &triangle , plSeq<plVector3> &interiorPoints ) 
+static void plUpdateInteriorPoints( const plTriangle &triangle , plSeq<plVector3> &interiorPoints )
 {
     for (PLint vertexIndex=0; vertexIndex<3; vertexIndex++)
     {
@@ -84,7 +84,7 @@ static void plUpdateInteriorPoints( plTriangle &triangle , plSeq<plVector3> &int
 }
 
 
-static void plTriangleCutsBoundary( plTriangle &triangle, PLbool &triangleProcessed, plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
+static void plTriangleCutsBoundary( const plTriangle &triangle, PLbool &triangleProcessed, const plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
 {
     plSeq<plCut> edgeCuts;
 
@@ -242,7 +242,7 @@ static void plTriangleCutsBoundary( plTriangle &triangle, PLbool &triangleProces
 
 
 
-static PLbool plEdgeCutsBoundary( plVector3 edgeVertex0, plVector3 edgeVertex1, plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
+static PLbool plEdgeCutsBoundary( plVector3 edgeVertex0, plVector3 edgeVertex1, const plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
 {
     plVector3 point0(boundary.points  (   boundaryPointIndex  )                     );
     plVector3 point1(boundary.points  ( ( boundaryPointIndex+1) % boundary.size() ) );

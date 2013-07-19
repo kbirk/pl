@@ -118,10 +118,6 @@ void plMath::concavePolysToTrisHelper(plPolygon &inputPolygon, plSeq<plTriangle>
 {
     const float epsilon(0.0001f);
 
-    std::cout << "Begin plConcavePolysToTrisHelper" << std::endl;
-    for (PLuint i = 0; i < inputPolygon.points.size(); i++)
-        std::cout << "  Input point: " << inputPolygon.points[i] << std::endl;
-
     if (inputPolygon.points.size() <= 2) { // base case
         outputMinSurfaceArea = 0.f;
         return;
