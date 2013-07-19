@@ -16,12 +16,18 @@ class plMath
         static PLfloat   clamp                 ( PLfloat val, PLfloat min = -1, PLfloat max = 1);
         static void      swap                  ( PLfloat &a, PLfloat &b );
 
-		static void  convexPolysToTris       ( plSeq<plPolygon> &polys, plSeq<plTriangle> &tris);
-		static void  concavePolysToTris      ( plSeq<plPolygon> &polys, plSeq<plTriangle> &tris);
-		static void  concavePolysToTrisHelper( plPolygon&, plSeq<plTriangle>&, PLfloat&);
+		static void  convexPolysToTris         ( plSeq<plPolygon> &polys, plSeq<plTriangle> &tris);
+		static void  concavePolysToTris        ( plSeq<plPolygon> &polys, plSeq<plTriangle> &tris);
+		static void  concavePolysToTrisHelper  ( plPolygon&, plSeq<plTriangle>&, PLfloat&);
 
     private:
 
         plMath() {};
 };
+
+
 #endif
+
+
+
+

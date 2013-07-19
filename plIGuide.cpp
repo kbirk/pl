@@ -56,7 +56,7 @@ void plIGuide::createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, c
 
     // process
 
-    plFindInteriorMesh( cartilageTris , boundary , templateBase ); // find surface
+    plMeshCutter::findInteriorMesh( cartilageTris , boundary , templateBase ); // find surface
     plSeq<edgeIndices> outsideEdges (collectOutsideEdges());
 
     for (PLuint i = 0; i < outsideEdges.size(); i++)

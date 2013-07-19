@@ -10,7 +10,7 @@
 #include "plRenderable.h"
 #include "plPickingTexture.h"
 #include "plGraft.h"
-#include "plBoundaryIntersection.h"
+#include "plMeshCutter.h"
 #include "plPolygon.h"
 
 class plKWire 

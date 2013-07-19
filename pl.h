@@ -3,9 +3,7 @@
 
 #include "plCommon.h"
 #include "plBoneAndCartilage.h"
-#include "plBoundary.h"
 #include "plBoundaryEditor.h"
-#include "plBoundaryIntersection.h"
 #include "plCamera.h"
 #include "plColourMap.h"
 #include "plColourMesh.h"
@@ -23,6 +21,8 @@
 #include "plMath.h"
 #include "plMatrix44.h"
 #include "plMatrixStack.h"
+#include "plMesh.h"
+#include "plMeshCutter.h"
 #include "plModel.h"
 #include "plModelSpecific.h"
 #include "plOctree.h"
