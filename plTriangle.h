@@ -49,7 +49,7 @@ class plTriangle
         void  point1( const plVector3 &point  );
         void  point2( const plVector3 &point  );
 
-        void  flipTriangle();
+        void  swapVertices0And1();
          
 		const plVector3 &operator[](int index) const { return _points[index]; }
                  

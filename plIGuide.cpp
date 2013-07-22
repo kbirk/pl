@@ -50,23 +50,20 @@ void plIGuide::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCarti
 
 void plIGuide::createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, const plGraft &graft, const plBoundary &boundary)
 {
-
     templateBase.clear();
-    templateBase = cartilageTris;
+    //templateBase = cartilageTris; // should be safe to remove this
 
-    // process
+    // find the surface for the iGuide
+    plFindInteriorMesh( cartilageTris , boundary , templateBase );
 
-    plFindInteriorMesh( cartilageTris , boundary , templateBase ); // find surface
+    // find the outside edges of the surface
     plSeq<edgeIndices> outsideEdges (collectOutsideEdges());
 
-    for (PLuint i = 0; i < outsideEdges.size(); i++)
-    {
-        std::cout << cartilageTris[outsideEdges[i].triangleIndex][outsideEdges[i].vertexIndexA] << std::endl;
-    } // end for;
+    // store these for bookkeeping. This is the index where upper (extruded) edges/triangles will start
+    PLuint indexOfUpperEdges (outsideEdges.size());
+    PLuint indexOfUpperTriangles (templateBase.size());
 
-
-    // 3. we need to extrude a bunch of these triangles in the direction of the average normal
-    /*PLuint indexOfUpperTriangles = templateBase.size();
+    // we need to extrude a bunch of these triangles in the direction of the average normal
     PLfloat offsetMagnitude(5.f);
     plVector3 offset ( offsetMagnitude * boundary.getAverageNormal() );
     for (PLuint i = 0; i < indexOfUpperTriangles; i++)
@@ -78,11 +75,43 @@ void plIGuide::createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, c
         templateBase.add( plTriangle(normal,point0,point1,point2) );
     } // end for
 
-    // 4. we need to reverse the normals of the triangles that lie on the surface of the knee
+    // update edgeIndices
+    for (PLuint i = 0; i < indexOfUpperEdges; i++)
+    {
+        outsideEdges.add(outsideEdges[i]);
+        outsideEdges[i+indexOfUpperEdges].triangleIndex = outsideEdges[i+indexOfUpperEdges].triangleIndex + indexOfUpperTriangles;
+    }
+
+    // we need to reverse the normals of the triangles that lie on top of the knee surface
     for (PLuint i = 0; i < indexOfUpperTriangles; i++)
     {
-        templateBase[i].flipTriangle();
-    } // end for*/
+        templateBase[i].swapVertices0And1(); // reverses the normal
+    } // end for
+
+    // update edgeIndices
+    for (PLuint i = 0; i < indexOfUpperEdges; i++)
+    {
+        outsideEdges[i].vertexIndexA = (outsideEdges[i].vertexIndexA==2?2:!outsideEdges[i].vertexIndexA); // results in mapping: 2 => 2, 1 => 0, 0 => 1. Since vertices 0 and 1 were flipped.
+        outsideEdges[i].vertexIndexB = (outsideEdges[i].vertexIndexB==2?2:!outsideEdges[i].vertexIndexB);
+    }
+
+    // now fill in the sides of the template with triangles
+    for (PLuint i = 0; i < indexOfUpperEdges; i++)
+    {
+        PLuint lowerTriangleIndex (outsideEdges[i].triangleIndex);
+        PLuint lowerVertexIndexA  (outsideEdges[i].vertexIndexA);
+        PLuint lowerVertexIndexB  (outsideEdges[i].vertexIndexB);
+        PLuint upperTriangleIndex (outsideEdges[i+indexOfUpperEdges].triangleIndex);
+        PLuint upperVertexIndexA  (outsideEdges[i+indexOfUpperEdges].vertexIndexA);
+        PLuint upperVertexIndexB  (outsideEdges[i+indexOfUpperEdges].vertexIndexB);
+        templateBase.add(plTriangle(templateBase[lowerTriangleIndex][lowerVertexIndexA],
+                                    templateBase[lowerTriangleIndex][lowerVertexIndexB],
+                                    templateBase[upperTriangleIndex][upperVertexIndexA] ) );
+        templateBase.add(plTriangle(templateBase[lowerTriangleIndex][lowerVertexIndexB],
+                                    templateBase[upperTriangleIndex][upperVertexIndexB],
+                                    templateBase[upperTriangleIndex][upperVertexIndexA] ) );
+    } // end for
+
 }
 
 
@@ -91,11 +120,8 @@ void plIGuide::createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, c
 plSeq<plIGuide::edgeIndices> plIGuide::collectOutsideEdges()
 {
     plSeq<plIGuide::edgeIndices> edges;
-    std::cout << "1"<< std::endl;
     edges = collectOutsideEdgesUnsorted();
-    std::cout << "2"<< std::endl;
     edges = collectOutsideEdgesSort(edges);
-    std::cout << "3"<< std::endl;
     return edges;
 }
 
