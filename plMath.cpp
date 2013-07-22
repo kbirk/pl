@@ -4,7 +4,7 @@ plVector3 plMath::projectVectorOnPlane( const plVector3 &vector, const plVector3
 {
     PLfloat dist = vector * plane_normal;
     
-    return vector - (dist*plane_normal);
+    return vector - (dist * plane_normal);
 }
 
 plVector3 plMath::closestPointOnSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b)
@@ -32,6 +32,23 @@ void plMath::swap( PLfloat &a, PLfloat &b )
     a = b; 
     b = temp;
 }
+
+
+PLfloat plMath::fsqrt(PLfloat x)
+{
+    #define SQRT_MAGIC_F 0x5f3759df   
+    const PLfloat xhalf = 0.5f*x;
+ 
+    union // get bits for floating value
+    {
+        PLfloat x;
+        int i;
+    } u;
+    u.x = x;
+    u.i = SQRT_MAGIC_F - (u.i >> 1);        // gives initial guess y0
+    return x*u.x*(1.5f - xhalf*u.x*u.x);    // Newton step, repeating increases accuracy 
+}  
+
 
 /*
 int plPlaneIntersection( const plvector3 &p1_normal, const plvector3 &p2_normal, Plane p1, Plane p2, Point &p, Vector &d)

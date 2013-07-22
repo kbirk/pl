@@ -16,8 +16,8 @@ void plPlug::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartila
     
     if (subfield.compareCaseInsensitive("model") )
     {
-        _modelID = atof( row[4].c_str() );       
-        if (models.size() < _modelID+1 )
+        _modelID = plString::fromString<PLint>( row[4] ); 
+        if (models.size() <= _modelID )
         {
             std::cerr << "plPlug importCSV() error: model ID read before model data";
             exit(1);

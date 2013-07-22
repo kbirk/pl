@@ -54,6 +54,8 @@ class plPlan : public plRenderable
         void drawElements() const;
         void drawModels()   const;
 
+        void clear();
+
     private: 
     
         plSeq<plDefectSite*>       _defectSites;        

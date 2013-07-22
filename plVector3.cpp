@@ -1,5 +1,7 @@
 #include "plVector3.h"
 
+
+
 plVector3::plVector3() 
 {
     x = y = z = 0;

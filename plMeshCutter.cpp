@@ -12,7 +12,7 @@ plCut::plCut( plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint di
 }
 
 
-void plMeshCutter::findInteriorMesh( const plSeq<plTriangle> &triangles, const plBoundary &boundary, plSeq<plTriangle> &interiorTriangles )
+PLbool plMeshCutter::findInteriorMesh( const plSeq<plTriangle> &triangles, const plBoundary &boundary, plSeq<plTriangle> &interiorTriangles )
 {
     // set all the processed flags to false
     plSeq<PLbool> trianglesProcessedFlag( false, triangles.size() );
@@ -25,19 +25,22 @@ void plMeshCutter::findInteriorMesh( const plSeq<plTriangle> &triangles, const p
 
     // Collect polygons that intersect the boundary
     plSeq<plPolygon> interiorPolygons;
-    for (PLint i=0; i<triangles.size(); i++) 
+    for (PLuint i=0; i<triangles.size(); i++) 
     {
-        _triangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints );
+        if (!_triangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints ))
+        {
+            return false;
+        }
     }
 
     // Collect other polygons that contain an interior point.  This is very slow.
-    for (PLint interiorPointsIndex=0; interiorPointsIndex<interiorPoints.size(); interiorPointsIndex++)
+    for (PLuint interiorPointsIndex=0; interiorPointsIndex<interiorPoints.size(); interiorPointsIndex++)
     {
-        for (PLint trianglesIndex=0; trianglesIndex<triangles.size(); trianglesIndex++)
+        for (PLuint trianglesIndex=0; trianglesIndex<triangles.size(); trianglesIndex++)
         {
             if (!trianglesProcessedFlag[trianglesIndex])
             {
-                for (PLint triangleVerticesIndex=0; triangleVerticesIndex<3; triangleVerticesIndex++)
+                for (PLuint triangleVerticesIndex=0; triangleVerticesIndex<3; triangleVerticesIndex++)
                 {
                     if (interiorPoints[interiorPointsIndex] == (triangles[trianglesIndex])[triangleVerticesIndex]) 
                     {
@@ -50,41 +53,42 @@ void plMeshCutter::findInteriorMesh( const plSeq<plTriangle> &triangles, const p
                         trianglesProcessedFlag[trianglesIndex] = true;
                         _updateInteriorPoints( triangles[trianglesIndex], interiorPoints);
                         break;
-                    } // end if
-                } // end for
-            } // end if
-        } // end for
-   } // end for
+                    } 
+                } 
+            }
+        }
+   }
 
     // convert polygons to triangles for the output
     plMath::concavePolysToTris(interiorPolygons, interiorTriangles);
 
-} // end void function
+    return true;
+} 
 
 
 void plMeshCutter::_updateInteriorPoints( const plTriangle &triangle , plSeq<plVector3> &interiorPoints )
 {
     for (PLint vertexIndex=0; vertexIndex<3; vertexIndex++)
     {
-        PLint interiorPointsIndex;
+        PLuint interiorPointsIndex;
         for (interiorPointsIndex=0; interiorPointsIndex<interiorPoints.size(); interiorPointsIndex++)
         {
             if (triangle[vertexIndex] == interiorPoints[interiorPointsIndex])
                 break;
-        } // end for
+        }
         if (interiorPointsIndex == interiorPoints.size())
         {
             interiorPoints.add( triangle[vertexIndex] );
         }
-    } // end for
+    }
 }
 
 
-void plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &triangleProcessed, const plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
+PLbool plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &triangleProcessed, const plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
 {
     plSeq<plCut> edgeCuts;
 
-    for (PLint boundaryPointIndex=0; boundaryPointIndex<boundary.size(); boundaryPointIndex++) 
+    for (PLuint boundaryPointIndex=0; boundaryPointIndex<boundary.size(); boundaryPointIndex++) 
     {
 
         // For each triangle edge, see if it crosses the line starting at boundary.points(index)
@@ -108,15 +112,15 @@ void plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &tr
                 {                      
                     edgeCuts.add( plCut( intersectionPoint, edgeIndex, edgeParameter, boundaryPointIndex, boundaryParameter, intersectionDirection ) );
                 }
-            } // end for
-        } // end if
-    } // end for
+            }
+        } 
+    }
 
     // Build the polygons that remain inside the boundary
     PLint numCutsLeft = edgeCuts.size();
 
     if (numCutsLeft == 0)
-        return;
+        return true;
 
     plSeq<plCut> boundaryCuts = edgeCuts;
 
@@ -126,7 +130,7 @@ void plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &tr
 
     // Bookkeeping to know when to stop
 
-    for (PLint i=0; i<edgeCuts.size(); i++)
+    for (PLuint i=0; i<edgeCuts.size(); i++)
         edgeCuts[i].processed = false;
 
     while (numCutsLeft > 0)
@@ -139,17 +143,17 @@ void plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &tr
         // Find an initial edge cut at which the triangle edge is going
         // outward through boundary wall.
 
-        PLint edgeCutIndex;
+        PLuint edgeCutIndex;
         for (edgeCutIndex=0; edgeCutIndex<edgeCuts.size(); edgeCutIndex++)
         {
             if (!edgeCuts[ edgeCutIndex ].processed && edgeCuts[ edgeCutIndex ].direction == +1)
                 break;
-        } // end for
+        }
 
         if (edgeCutIndex == edgeCuts.size()) 
         {
             std::cerr << "Error: Couldn't find an initial outgoing triangle edge cut." << std::endl;
-            exit(1);
+            return false;
         }
 
         do
@@ -162,7 +166,7 @@ void plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &tr
 
             // Find this intersection point in the list of boundary cuts.
 
-            PLint boundaryCutIndex;
+            PLuint boundaryCutIndex;
             for (boundaryCutIndex=0; boundaryCutIndex < boundaryCuts.size(); boundaryCutIndex++)
                 if (boundaryCuts[ boundaryCutIndex ].point == edgeCuts[ edgeCutIndex ].point)
                     break;
@@ -170,7 +174,7 @@ void plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &tr
             if (boundaryCutIndex == boundaryCuts.size())
             {
                 std::cerr << "Error: An intersection point is missing from the boundaryCuts list." << std::endl;
-                exit(1);
+                return false;
             }
 
             // Move along the boundary from this intersection point to the next intersection point.
@@ -197,19 +201,19 @@ void plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &tr
             {
                 if (edgeCuts[ edgeCutIndex ].point == boundaryCuts[ boundaryCutIndex ].point)
                     break;
-            } // end for
+            }
 
             // error checking
             if (edgeCutIndex == edgeCuts.size())
             {
                 std::cerr << "Error: An intersection point is missing from the edgeCuts list." << std::endl;
-                exit(1);
+                return false;
             }
             else if (edgeCuts[ edgeCutIndex ].direction != -1)
             {
                 std::cerr << "Error: Expected to have an incoming triangle edge but an outgoing edge was found." << std::endl;
-                exit(1);
-            } // end if
+                return false;
+            } 
 
             // Add this int point
 
@@ -243,13 +247,14 @@ void plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &tr
     }
 
     triangleProcessed = true;
+    return true;
 }
 
 
 PLbool plMeshCutter::_edgeCutsBoundary( const plVector3 &edgeVert0, const plVector3 &edgeVert1, const plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
 {
-    plVector3 point0 ( boundary.points  (   boundaryPointIndex  )                     );
-    plVector3 point1 ( boundary.points  ( ( boundaryPointIndex+1) % boundary.size() ) );
+    plVector3 point0 ( boundary.points (   boundaryPointIndex  )                     );
+    plVector3 point1 ( boundary.points ( ( boundaryPointIndex+1) % boundary.size() ) );
     plVector3 normal0( boundary.normals(   boundaryPointIndex  )                     );
     plVector3 normal1( boundary.normals( ( boundaryPointIndex+1) % boundary.size() ) );
 

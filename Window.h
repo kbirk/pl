@@ -28,7 +28,7 @@ class Window
         
     private:
         
-        int m_windowId;
+        int _windowID;
         
         void registerWindow( int windowId );
 };

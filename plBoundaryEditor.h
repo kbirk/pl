@@ -28,9 +28,11 @@ class plBoundaryEditor
         void    processJoystickDrag ( plPlan &plan, PLint x, PLint y);
 
 
-        PLint   addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
+        void    addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
         void    moveSelectedPoint  ( PLuint x, PLuint y );
         void    removeSelectedPoint();
+        void    clearSelectedBoundary();
+        void    removeSelectedSite( plPlan &plan );
         void    toggleSelectedVisibility();
 
         void    draw( const plPlan &plan ) const;

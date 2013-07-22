@@ -181,6 +181,13 @@ void plBoundary::removePointAndNormal( PLuint index )
     _updateMesh(); 
 }
 
+void plBoundary::clear()
+{
+    _points.clear();
+    _normals.clear();
+    _updateMesh(); 
+}
+
 
 void plBoundary::_setColour() const
 {

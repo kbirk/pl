@@ -7,7 +7,7 @@
 #include "plSeq.h"
 
 
-// essentially a struct for storing information about ray intersection with a triangle
+// a struct for storing information about ray intersection with a triangle
 class plIntersection
 {
     public:

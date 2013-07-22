@@ -255,6 +255,22 @@ void plPlan::exportFile( plString filename )
 }
 
 
+void plPlan::clear()
+{
+    for ( PLuint i = 0; i < _defectSites.size(); i++) delete _defectSites[i];
+    for ( PLuint i = 0; i < _donorSites.size();  i++) delete _donorSites[i];
+    for ( PLuint i = 0; i < _grafts.size();      i++) delete _grafts[i];
+    for ( PLuint i = 0; i < _iGuides.size();     i++) delete _iGuides[i];
+
+    _defectSites.clear();
+    _donorSites.clear();
+    _grafts.clear();
+    _iGuides.clear();
+
+
+}
+
+
 std::ostream& operator << ( std::ostream& out, const plPlan &p )
 {
     // models

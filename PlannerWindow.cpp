@@ -108,12 +108,14 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
 
         case 'P':   plAutomaticPlanner::calculate(_plan);                       break;
 
+        case 'N':   _plan.clear();                                              break;     
+
         case 127:	 // delete 
         {   
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
 	        {
                 // delete boundary 
-	            
+	            _boundaryEditor.clearSelectedBoundary();
             }
             else
             {

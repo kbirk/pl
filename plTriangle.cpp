@@ -123,7 +123,8 @@ plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint )
     // we're assuming that testPoint is in-plane with the triangle.
     plVector3 v0 = _points[1] - _points[0],
               v1 = _points[2] - _points[0],
-              v2 = testPoint - _points[0];
+              v2 =  testPoint - _points[0];
+              
     PLfloat d00 = (v0*v0);
     PLfloat d01 = (v0*v1);
     PLfloat d11 = (v1*v1);

@@ -37,6 +37,7 @@ class plBoundary : public plRenderable,
         virtual PLuint addPointAndNormal   (const plVector3 &point, const plVector3 &normal);
         virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);
         virtual void   removePointAndNormal( PLuint index );
+        virtual void   clear();
         
         virtual void   draw() const;     
         

@@ -4,6 +4,7 @@ plDefectSite::plDefectSite()
 {
 }
 
+
 plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage &model )
     : plModelSpecific( modelID, model ), boundary( model ), spline( model )
 {
@@ -16,8 +17,8 @@ void plDefectSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCa
     
     if (subfield.compareCaseInsensitive( "model") )
     {
-        _modelID = atof( row[3].c_str() );
-        if (models.size() < (_modelID+1) )
+        _modelID = plString::fromString<PLint>( row[3] ); 
+        if (models.size() <= _modelID )
         {
             std::cerr << "plDefectSite importCSV() error: model ID read before model data";
             exit(1);
