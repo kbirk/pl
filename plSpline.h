@@ -13,6 +13,8 @@
 #include "plColourMap.h"
 #include "plModel.h"
 
+#include <future>
+
 class plSpline : public plBoundary
 {
     public:
@@ -30,10 +32,15 @@ class plSpline : public plBoundary
 
     private:
     
-        PLtime          _lastUpdate;
-        plColourMesh    _surfaceMesh;
-        plSeq<plVector3> _s, _t;  
+        PLtime            _lastUpdate;
+        plColourMesh      _surfaceMesh;
+        //plSeq<plVector3>  _s, _t;  
+        plSeq<plTriangle> _triangles;
 
+
+        plSeq<plVector3> _averageCornerNormals() const;
+        
+        void _computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const plSeq<plVector3> &p, const plSeq<plVector3> &n ) const;
         void _computeHermite();
 
         void _drawSelectionInterface() const;

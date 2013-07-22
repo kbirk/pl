@@ -5,13 +5,13 @@ plTextureMesh::plTextureMesh()
 {
 }
 
+
 plTextureMesh::plTextureMesh( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft)              
     : plMesh()
 {
 	// set VBO and VAO
     setBuffers( bottemLeft, bottemRight, topRight, topLeft);
 }
-
 
 
 void plTextureMesh::setBuffers( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft)

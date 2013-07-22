@@ -171,40 +171,43 @@ void plBoundaryEditor::moveSelectedPoint( PLuint x, PLuint y )
 }
 
 
-PLint plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint )
+void plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint )
 {
     if (_selectedBoundary == NULL) // no boundary selected
-        return -1;
+        return;
     
     plVector3 rayOrigin, rayDirection;
     plWindow::mouseToRay( rayOrigin, rayDirection, x, y );
     
+    /*
+    if (_selectedBoundaryType = PL_PICKING_TYPE_DEFECT_BOUNDARY && _plan.defectSite( _selectedBoundaryIndex ).spline.size() == 4)
+    {
+        // defect point, check spline mesh first
+        
+    }
+    */
+
     plIntersection intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
 
     if (intersection.exists) 
     {     
+        /*
         if (_selectedBoundaryType == PL_PICKING_TYPE_DEFECT_CORNERS && _selectedBoundary->size() > 3)
         {   
             // already 4 corner points    
             return -1;
         }
-    
+        */
+
         PLint newIndex = _selectedBoundary->addPointAndNormal( intersection.point, intersection.normal );
         
-        if (selectNewPoint)
+        if (selectNewPoint && newIndex >= 0)
         {
             _selectedBoundary->_selectedValue = newIndex;
             _selectedPointIndex = newIndex;
-        }
-        
-        std::cout << "origin: " << rayOrigin << "\n";
-        std::cout << "ray: "    << rayDirection << "\n";
-        std::cout << "result: " << intersection.point << "\n";
-        
-        return newIndex;
+        }       
     }
 
-    return -1;  // no cartilage at point
 }
 
 
@@ -224,6 +227,14 @@ void plBoundaryEditor::toggleSelectedVisibility()
         return;
 
     _selectedBoundary->toggleVisibility();
+}
+
+void plBoundaryEditor::clearSelectedBoundary()
+{
+    if (_selectedBoundary == NULL)
+        return;
+
+    _selectedBoundary->clear();
 }
 
 void plBoundaryEditor::draw( const plPlan &plan ) const
