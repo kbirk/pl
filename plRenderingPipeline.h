@@ -9,6 +9,7 @@
 #include "plPickingShader.h"
 #include "plMinimalShader.h"
 #include "plPhongShader.h"
+#include "plTextureShader.h"
 
 class plColourStack
 {

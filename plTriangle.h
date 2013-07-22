@@ -59,6 +59,8 @@ class plTriangle
 		                             PLbool backFaceCull = false ) const; 
 
         plVector3 barycentricCoords(const plVector3 &point);
+        
+        PLfloat getArea() const;
 
     private:
     

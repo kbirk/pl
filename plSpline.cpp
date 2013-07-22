@@ -1,5 +1,6 @@
 #include "plSpline.h" 
 
+
 plSpline::plSpline() 
     : plBoundary()
 {
@@ -13,7 +14,6 @@ plSpline::plSpline( const plBoneAndCartilage &model )
 void plSpline::importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model )
 {
     plBoundary::importCSV( row, model );
-    
     // construct spline 
     if (size() == 4)
     {
@@ -26,6 +26,7 @@ PLuint plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &nor
     if (size() < 4)
     {
         PLint ret = plBoundary::addPointAndNormal(point, normal);
+        
         if (size() == 4)
         {
             _computeHermite();
@@ -38,6 +39,7 @@ PLuint plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &nor
 void plSpline::movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal)
 {
     plBoundary::movePointAndNormal( index, point, normal );
+    
     if (size() == 4)
     {
         _computeHermite();
@@ -61,8 +63,8 @@ void plSpline::draw() const
     if (size() == 4)
     {
         plPicking::value.type = PL_PICKING_TYPE_DEFECT_SPLINE;       
-        plColourStack::load(PL_DEFECT_SPLINE_COLOUR);        
-        //_surfaceMesh.draw();
+        plColourStack::load(PL_DEFECT_SPLINE_COLOUR);  
+        _surfaceMesh.draw();
     }
     
     if (_isSelected)
@@ -91,17 +93,14 @@ PLfloat Q( PLfloat s, PLfloat t, const plSeq<plVector3> &p, const plSeq<PLfloat>
 }
 
 
-PLfloat funcTest( PLfloat i, PLfloat j)
-{
-    //std::cout << "i: " << i << "\n";
-    return i * j;
-}
-
 void plSpline::_computeHermite()
 {    
+    if (_timeSinceLastUpdate() < 17 )
+        return;
+
     // p and n for cleaner code
     const plSeq<plVector3> &p = _points;    
-    plSeq<plVector3> n;
+    plSeq<plVector3> n(4);
 
     // compute averages normals
     n.add( _model->cartilage.getAverageNormal( 4.0f, p[0], _normals[0]) ); 
@@ -171,12 +170,11 @@ void plSpline::_computeHermite()
     st.add( (_s[3]*n32) / (_s[3]*p32) * (p[3]-p[2]).length() ); 
     tt.add( (_t[3]*n03) / (_t[3]*p03) * (p[0]-p[3]).length() ); 
 
-    const PLfloat inc = 0.05f;
- 
-    plSeq<plVector3> interleaved_vertices ( ((1.0 / inc) + 1) * 4 * 3 );
-    plSeq<PLuint>    indices              ( ((1.0 / inc) + 1) * 6 );
+    const PLfloat inc = 0.04f; // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
 
-    /*
+    plSeq<plVector3> interleaved_vertices( ((1.0 / inc) + 1) * 4 * 3 );
+    plSeq<PLuint>    indices             ( ((1.0 / inc) + 1) * 6 );
+
     for (PLfloat v=0.0; v < 1.0; v+=inc*2.0f)
     {       
         for (PLfloat u=0.0; u < 1.0; u+=inc*2.0f)
@@ -196,12 +194,12 @@ void plSpline::_computeHermite()
             plVector3 pos0 = (1.0-u)*p03 + u*p12 + z0*norm;
             
             // pos1            
-            //n03 = (1.0-v)*n[0] + v*n[3];
-            //n12 = (1.0-v)*n[1] + v*n[2];            
+            n03 = (1.0-v)*n[0] + v*n[3];
+            n12 = (1.0-v)*n[1] + v*n[2];            
             norm = ( (1.0-(u+inc))*n03 + (u+inc)*n12 ).normalize();
             
-            //p03 = (1.0-v)*p[0] + v*p[3];
-            //p12 = (1.0-v)*p[1] + v*p[2];                       
+            p03 = (1.0-v)*p[0] + v*p[3];
+            p12 = (1.0-v)*p[1] + v*p[2];                       
             plVector3 pos1 = (1.0-(u+inc))*p03 + (u+inc)*p12 + z1*norm;
             
             // pos2            
@@ -214,12 +212,12 @@ void plSpline::_computeHermite()
             plVector3 pos2 = (1.0-(u+inc))*p03 + (u+inc)*p12 + z2*norm;
                        
             // pos3            
-            //n03 = (1.0-(v+inc))*n[0] + (v+inc)*n[3];
-            //n12 = (1.0-(v+inc))*n[1] + (v+inc)*n[2];            
+            n03 = (1.0-(v+inc))*n[0] + (v+inc)*n[3];
+            n12 = (1.0-(v+inc))*n[1] + (v+inc)*n[2];            
             norm = ( (1.0-u)*n03 + u*n12 ).normalize();
             
-            //p03 = (1.0-(v+inc))*p[0] + (v+inc)*p[3];
-            //p12 = (1.0-(v+inc))*p[1] + (v+inc)*p[2];            
+            p03 = (1.0-(v+inc))*p[0] + (v+inc)*p[3];
+            p12 = (1.0-(v+inc))*p[1] + (v+inc)*p[2];            
             plVector3 pos3 = (1.0-u)*p03 + u*p12 + z3*norm;
 
             // quad
@@ -255,7 +253,7 @@ void plSpline::_computeHermite()
                 col3 = plColourMap::map((intersection.point - pos3).squaredLength()/FURTHEST_DISTANCE);
             else 
                 col3 = plVector3(0.2, 0.2, 0.2);        
-                                                                  
+                                                   
             PLint base = interleaved_vertices.size()/3;
             
             interleaved_vertices.add(pos0);     // position
@@ -273,41 +271,10 @@ void plSpline::_computeHermite()
             interleaved_vertices.add(pos3);     // position
             interleaved_vertices.add(faceNorm); // normal
             interleaved_vertices.add(col3);     // colour
-            
-            indices.add(base+0);
-            indices.add(base+1);
-            indices.add(base+2);
-            
-            indices.add(base+0);
-            indices.add(base+2);
-            indices.add(base+3);   
-                       
         }
-        
+           
     }    
-    */
 
-    std::vector< std::future <void> > splineThreads; //( (1/inc)*(1/inc) );
-
-    for (PLfloat v=0.0; v < 1.0; v+=inc*2.0f)
-    {       
-        for (PLfloat u=0.0; u < 1.0; u+=inc*2.0f)
-        {     
-            splineThreads.push_back ( std::async( std::launch::async, &plSpline::_getSplineQuad, this, u, v, inc, p, n, st, tt ) );
-            
-            //splineThreads.push_back( std::async( std::launch::async, funcTest, u, v )  );
-        }
-    }
-      
-    /*
-    for (PLuint i = 0; i< splineThreads.size(); i++)
-    {
-        //splineThreads[i].wait();
-        std::cout << "v: " << splineThreads[i].get() << "\n";
-    } 
-    */
-    
-    //PLuint axisCount = (1 / inc);
 
     // process quads 4 at a time
     //  _______
@@ -315,122 +282,59 @@ void plSpline::_computeHermite()
     // |_4_|_3_|
     // |   |   |
     // |_1_|_2_|
-    /*
-    for (PLuint j=0; j < 1/inc; j+=3)
+    
+    PLuint quadCount = 1/inc;
+
+    for (PLuint j=0; j < quadCount; j+=2)
     {
-        for (PLuint i=0; i < 1/inc; i+=2)
+        for (PLuint i=0; i < quadCount; i+=2)
         {
+            PLuint rowCount = ((quadCount)+1); // number of indices per row
+
+            PLuint k = i*2 + j*rowCount;
             
+            PLuint l = rowCount*2 + j*rowCount + i*2;
+
             // quad 1    
-            indices.add(i+0);   indices.add(i+1);   indices.add(i+2);   
-            indices.add(i+0);   indices.add(i+2);   indices.add(i+3);
+            indices.add(k+0);   indices.add(k+1);   indices.add(k+2);   
+            indices.add(k+0);   indices.add(k+2);   indices.add(k+3);
             
-            // quad 2    
-            indices.add(i+1);   indices.add(i+4);   indices.add(i+7);   
-            indices.add(i+1);   indices.add(i+7);   indices.add(i+2);
+            if ( (i+1) != quadCount)
+            {
+                // quad 2    
+                indices.add(k+1);   indices.add(k+4);   indices.add(k+7);   
+                indices.add(k+1);   indices.add(k+7);   indices.add(k+2);
+            }
+
+            if ( (i+1) != quadCount && (j+1) != quadCount )
+            {
+                // quad 3    
+                indices.add(k+2);   indices.add(k+7);   indices.add(l+4);   
+                indices.add(k+2);   indices.add(l+4);   indices.add(l+1);
+            }
+            
+            if ( (j+1) != quadCount )
+            {
+                // quad 4   
+                indices.add(k+3);   indices.add(k+2);   indices.add(l+1);   
+                indices.add(k+3);   indices.add(l+1);   indices.add(l+0);
+            }
             
         }
     }
-    */
-    //_surfaceMesh.setBuffers(interleaved_vertices, indices);
+    
+    _surfaceMesh.setBuffers(interleaved_vertices, indices);
+    
+    _lastUpdate = plTimer::now();
 }
 
 
-void plSpline::_getSplineQuad( PLuint u, PLuint v, PLuint inc, const plSeq<plVector3> &p, const plSeq<plVector3> &n, const plSeq<PLfloat> &st, const plSeq<PLfloat> &tt )
+PLuint plSpline::_timeSinceLastUpdate()
 {
-    PLfloat z0 = Q( u,     v,     p, st, tt );
-    PLfloat z1 = Q( u+inc, v,     p, st, tt );
-    PLfloat z2 = Q( u+inc, v+inc, p, st, tt );
-    PLfloat z3 = Q( u,     v+inc, p, st, tt );
-
-    // pos0           
-    plVector3 n03 = (1.0-v)*n[0] + v*n[3];
-    plVector3 n12 = (1.0-v)*n[1] + v*n[2];            
-    plVector3 norm0 = ( (1.0-u)*n03 + u*n12 ).normalize();
-    
-    plVector3 p03 = (1.0-v)*p[0] + v*p[3];
-    plVector3 p12 = (1.0-v)*p[1] + v*p[2];            
-    plVector3 pos0 = (1.0-u)*p03 + u*p12 + z0*norm0;
-    
-    // pos1                      
-    plVector3 norm1 = ( (1.0-(u+inc))*n03 + (u+inc)*n12 ).normalize();                      
-    plVector3 pos1  = (1.0-(u+inc))*p03 + (u+inc)*p12 + z1*norm1;
-    
-    // pos2            
-    n03 = (1.0-(v+inc))*n[0] + (v+inc)*n[3];
-    n12 = (1.0-(v+inc))*n[1] + (v+inc)*n[2];            
-    plVector3 norm2 = ( (1.0-(u+inc))*n03 + (u+inc)*n12 ).normalize();
-    
-    p03 = (1.0-(v+inc))*p[0] + (v+inc)*p[3];
-    p12 = (1.0-(v+inc))*p[1] + (v+inc)*p[2];            
-    plVector3 pos2 = (1.0-(u+inc))*p03 + (u+inc)*p12 + z2*norm2;
-               
-    // pos3                       
-    plVector3 norm3 = ( (1.0-u)*n03 + u*n12 ).normalize();          
-    plVector3 pos3  = (1.0-u)*p03 + u*p12 + z3*norm3;
-
-    // quad
-    plVector3 faceNorm = ((pos1 - pos0) ^ (pos3 - pos0)).normalize();
-       
-    plVector3 col0, col1, col2, col3;
-    const PLfloat FURTHEST_DISTANCE = 1.0f;
-    
-    // colour map values   
-    plIntersection intersection(false); 
-    
-    intersection = _model->cartilage.rayIntersect( pos0+(10.0f*faceNorm), -faceNorm, false, true );
-    if (intersection.exists)
-        col0 = plColourMap::map( (intersection.point - pos0).squaredLength()/FURTHEST_DISTANCE );
-    else 
-        col0 = plVector3(0.2, 0.2, 0.2); 
-                          
-    intersection = _model->cartilage.rayIntersect( pos1+(10.0f*faceNorm), -faceNorm, false, true );  
-    if (intersection.exists)
-        col1 = plColourMap::map((intersection.point - pos1).squaredLength()/FURTHEST_DISTANCE);
-    else 
-        col1 = plVector3(0.2, 0.2, 0.2);
-        
-    intersection = _model->cartilage.rayIntersect( pos2+(10.0f*faceNorm), -faceNorm, false, true ); 
-    if (intersection.exists)
-        col2 = plColourMap::map((intersection.point - pos2).squaredLength()/FURTHEST_DISTANCE);
-    else 
-        col2 = plVector3(0.2, 0.2, 0.2);
-        
-    intersection = _model->cartilage.rayIntersect( pos3+(10.0f*faceNorm), -faceNorm, false, true );  
-    if (intersection.exists)
-        col3 = plColourMap::map((intersection.point - pos3).squaredLength()/FURTHEST_DISTANCE);
-    else 
-        col3 = plVector3(0.2, 0.2, 0.2);                                                     
-      
-      /*     
-    PLint base = interleaved_vertices.size()/3;
-    
-    interleaved_vertices.add(pos0);     // position
-    interleaved_vertices.add(faceNorm); // normal
-    interleaved_vertices.add(col0);     // colour
-    
-    interleaved_vertices.add(pos1);     // position
-    interleaved_vertices.add(faceNorm); // normal            
-    interleaved_vertices.add(col0);     // colour
-    
-    interleaved_vertices.add(pos2);     // position
-    interleaved_vertices.add(faceNorm); // normal            
-    interleaved_vertices.add(col0);     // colour
-    
-    interleaved_vertices.add(pos3);     // position
-    interleaved_vertices.add(faceNorm); // normal
-    interleaved_vertices.add(col0);     // colour
-    
-    indices.add(base+0);
-    indices.add(base+1);
-    indices.add(base+2);
-    
-    indices.add(base+0);
-    indices.add(base+2);
-    indices.add(base+3);   
-    */
+    return plTimer::now() - _lastUpdate;
 }
-
+    
+    
 /*
 void plSpline::_drawSplineSelectionInterface() const
 {

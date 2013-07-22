@@ -50,13 +50,12 @@ void plIGuide::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCarti
 
 void plIGuide::createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, const plGraft &graft, const plBoundary &boundary)
 {
+
     templateBase.clear();
     //templateBase = cartilageTris; // should be safe to remove this
 
     // find the surface for the iGuide
-    plFindInteriorMesh( cartilageTris , boundary , templateBase );
-
-    // find the outside edges of the surface
+    plMeshCutter::findInteriorMesh( cartilageTris , boundary , templateBase ); // find surface
     plSeq<edgeIndices> outsideEdges (collectOutsideEdges());
 
     // store these for bookkeeping. This is the index where upper (extruded) edges/triangles will start

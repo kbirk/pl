@@ -2,10 +2,10 @@
 #define __PL_API_H__
 
 #include "plCommon.h"
+
+#include "plAutomaticPlanner.h"
 #include "plBoneAndCartilage.h"
-#include "plBoundary.h"
 #include "plBoundaryEditor.h"
-#include "plBoundaryIntersection.h"
 #include "plCamera.h"
 #include "plColourMap.h"
 #include "plColourMesh.h"
@@ -23,6 +23,8 @@
 #include "plMath.h"
 #include "plMatrix44.h"
 #include "plMatrixStack.h"
+#include "plMesh.h"
+#include "plMeshCutter.h"
 #include "plModel.h"
 #include "plModelSpecific.h"
 #include "plOctree.h"
@@ -39,6 +41,9 @@
 #include "plShader.h"
 #include "plSpline.h"
 #include "plString.h"
+#include "plTexture.h"
+#include "plTextureMesh.h"
+#include "plTextureShader.h"
 #include "plTrackedObject.h"
 #include "plTransform.h"
 #include "plTriangle.h"

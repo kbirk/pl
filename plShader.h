@@ -8,6 +8,7 @@
 #define PL_POSITION_ATTRIBUTE  0
 #define PL_NORMAL_ATTRIBUTE    2
 #define PL_COLOUR_ATTRIBUTE    3
+#define PL_TEXCOORD_ATTRIBUTE  4
 
 class plShader 
 {
@@ -192,14 +193,7 @@ class plShader
             glBindAttribLocation(_shaderProgramID, PL_POSITION_ATTRIBUTE,  "vPosition" );
 			glBindAttribLocation(_shaderProgramID, PL_NORMAL_ATTRIBUTE,    "vNormal"   );
             glBindAttribLocation(_shaderProgramID, PL_COLOUR_ATTRIBUTE,    "vColour"   );
-            /*
-            glBindAttribLocation(_shaderProgramID, TANGENT_ATTRIBUTE, 	"vTangent"  );
-            glBindAttribLocation(_shaderProgramID, BITANGENT_ATTRIBUTE, "vBiTangent");
-			glBindAttribLocation(_shaderProgramID, TEXTURE_ATTRIBUTE0,  "vTexCoord0");
-            glBindAttribLocation(_shaderProgramID, TEXTURE_ATTRIBUTE1,  "vTexCoord1");
-            glBindAttribLocation(_shaderProgramID, TEXTURE_ATTRIBUTE2,  "vTexCoord2");
-            glBindAttribLocation(_shaderProgramID, TEXTURE_ATTRIBUTE3,  "vTexCoord3");
-            */
+            glBindAttribLocation(_shaderProgramID, PL_TEXCOORD_ATTRIBUTE,  "vTexCoord");
         }
         
         /* these are used for multiple render targets

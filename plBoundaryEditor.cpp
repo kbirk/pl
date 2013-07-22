@@ -218,6 +218,13 @@ void plBoundaryEditor::removeSelectedPoint()
     _selectedPointIndex    = -1;    
 }
 
+void plBoundaryEditor::toggleSelectedVisibility()
+{
+    if (_selectedBoundary == NULL)
+        return;
+
+    _selectedBoundary->toggleVisibility();
+}
 
 void plBoundaryEditor::draw( const plPlan &plan ) const
 {

@@ -31,6 +31,7 @@ class plBoundaryEditor
         PLint   addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
         void    moveSelectedPoint  ( PLuint x, PLuint y );
         void    removeSelectedPoint();
+        void    toggleSelectedVisibility();
 
         void    draw( const plPlan &plan ) const;
 

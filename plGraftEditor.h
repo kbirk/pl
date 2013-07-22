@@ -42,6 +42,8 @@ class plGraftEditor
         void    rotateSelected    ( const plVector3 &axis, PLfloat angle_degrees );
         void    spinMarkSelected  ( PLfloat angle_degrees );
         
+        void    toggleSelectedVisibility();
+
     private: 
     
         PLint       _editMode;

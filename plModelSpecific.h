@@ -17,8 +17,6 @@ class plModelSpecific
 
         virtual void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models ) = 0;
 
-        //virtual void draw() const;      
-
     protected:
     
         PLint                     _modelID;

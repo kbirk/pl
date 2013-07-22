@@ -10,26 +10,12 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       Window( x, y, width, height, title )
 {  
     plRenderer::init(); 
-      /*
-    plVector3 min, max;
-    _plan._models[0].bone.getMinMax(min,max);
-    octree = new plOctree(min, max, _plan._models[0].bone.triangles(), 6);
     
+    plTextureMesh t( plVector3(0,0,0),
+                     plVector3(1,0,0),
+                     plVector3(1,0,0),
+                     plVector3(0,1,0));
     
-    plIntersection intersection0 = _plan._models[0].bone.rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
-                                                                       plVector3(0.0533538f, 0.998555f, -0.00636944f ));
-    
-    
-    plIntersection intersection1 = octree->rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
-                                                         plVector3(0.0533538f, 0.998555f, -0.00636944f ));
-    
-    plIntersection intersection2 = _plan._models[0].bone._octree.rayIntersect( plVector3(33.4318f, -1051.45f, -94.2374f),
-                                                                               plVector3(0.0533538f, 0.998555f, -0.00636944f ));
-                          
-    std::cout << "exhaustive result: " << intersection0.point << "\n";
-    std::cout << "octree alone result: "     << intersection1.point << "\n";     
-    std::cout << "octree member result: "     << intersection2.point << "\n";                    
-    */ 
     
 }
 
@@ -104,24 +90,23 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
             currentView = (PLint)(key - '0');
             break;                
 
-        case 'b':   _plan.models(0).bone.toggleVisibility();                   break;            
-        case 'c':   _plan.models(0).cartilage.toggleVisibility();              break;      
+        case 'b':   _plan.models(0).bone.toggleVisibility();                    break;            
+        case 'c':   _plan.models(0).cartilage.toggleVisibility();               break;      
         case 'p':   _plan.toggleVisibility();                                   break;    
-        case 'z':   _camera.reset( _plan.models(0).getCentroid() );            break;          
+        case 'z':   _camera.reset( _plan.models(0).getCentroid() );             break;          
         case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
         case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
         case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 
         case 'm':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_MARKER );      break; 
-        //case 'g':   plGraftToggleVisibilityAll();                break;
-        //case 's':   plDefectSplineToggleVisibilityAll();         break; 
-        //case 'd':   plDonorRegionToggleVisibilityAll();          break;         
-        //case 'q':   plDefectSplineCornersToggleVisibilityAll();  break;
-        //case 'w':   plDefectSplineBoundaryToggleVisibilityAll(); break;        
-        case 'O':   _plan.exportFile("plan");                    break;
+        case 'v':   _graftEditor.toggleSelectedVisibility();  
+                    _boundaryEditor.toggleSelectedVisibility();                 break;       
+        case 'O':   _plan.exportFile("plan");                                   break;
 
-        case 'D':   _plan.addDonorSite();                        break;
-        case 'S':   _plan.addDefectSite();                       break;
-        case 'G':   _plan.addIGuide();                           break;
+        case 'D':   _plan.addDonorSite();                                       break;
+        case 'S':   _plan.addDefectSite();                                      break;
+        case 'G':   _plan.addIGuide();                                          break;
+
+        case 'P':   plAutomaticPlanner::calculate(_plan);                       break;
 
         case 127:	 // delete 
         {   

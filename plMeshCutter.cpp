@@ -1,4 +1,4 @@
-#include "plBoundaryIntersection.h"
+#include "plMeshCutter.h"
 
 // Determine the polygons of a triangle mesh that are inside a boundary.
 //
@@ -11,16 +11,12 @@ plCut::plCut( plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint di
 {
 }
 
-void plFindInteriorMesh( const plSeq<plTriangle> &triangles, const plBoundary &boundary, plSeq<plTriangle> &interiorTriangles )
+
+void plMeshCutter::findInteriorMesh( const plSeq<plTriangle> &triangles, const plBoundary &boundary, plSeq<plTriangle> &interiorTriangles )
 {
     // set all the processed flags to false
     plSeq<PLbool> trianglesProcessedFlag( false, triangles.size() );
-    /*
-    for (PLint i=0; i<triangles.size(); i++)
-    {
-        trianglesProcessedFlag.add(false);
-    }
-    */
+
     // just in case polygons has stuff in it, it should be emptied
     interiorTriangles.clear();
 
@@ -31,7 +27,7 @@ void plFindInteriorMesh( const plSeq<plTriangle> &triangles, const plBoundary &b
     plSeq<plPolygon> interiorPolygons;
     for (PLint i=0; i<triangles.size(); i++) 
     {
-        plTriangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints );
+        _triangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints );
     }
 
     // Collect other polygons that contain an interior point.  This is very slow.
@@ -52,7 +48,7 @@ void plFindInteriorMesh( const plSeq<plTriangle> &triangles, const plBoundary &b
                         poly.normal    = triangles[trianglesIndex].normal();
                         interiorPolygons.add( poly );
                         trianglesProcessedFlag[trianglesIndex] = true;
-                        plUpdateInteriorPoints( triangles[trianglesIndex], interiorPoints);
+                        _updateInteriorPoints( triangles[trianglesIndex], interiorPoints);
                         break;
                     } // end if
                 } // end for
@@ -66,7 +62,7 @@ void plFindInteriorMesh( const plSeq<plTriangle> &triangles, const plBoundary &b
 } // end void function
 
 
-static void plUpdateInteriorPoints( const plTriangle &triangle , plSeq<plVector3> &interiorPoints )
+void plMeshCutter::_updateInteriorPoints( const plTriangle &triangle , plSeq<plVector3> &interiorPoints )
 {
     for (PLint vertexIndex=0; vertexIndex<3; vertexIndex++)
     {
@@ -84,7 +80,7 @@ static void plUpdateInteriorPoints( const plTriangle &triangle , plSeq<plVector3
 }
 
 
-static void plTriangleCutsBoundary( const plTriangle &triangle, PLbool &triangleProcessed, const plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
+void plMeshCutter::_triangleCutsBoundary( const plTriangle &triangle, PLbool &triangleProcessed, const plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
 {
     plSeq<plCut> edgeCuts;
 
@@ -101,8 +97,17 @@ static void plTriangleCutsBoundary( const plTriangle &triangle, PLbool &triangle
         {
             for (PLint edgeIndex=0; edgeIndex<3; edgeIndex++)
             {
-                if (plEdgeCutsBoundary( triangle[edgeIndex], triangle[(edgeIndex+1)%3], boundary, boundaryPointIndex, intersectionPoint, edgeParameter, boundaryParameter, intersectionDirection ))
+                if (_edgeCutsBoundary( triangle[edgeIndex], 
+                                       triangle[(edgeIndex+1)%3], 
+                                       boundary, 
+                                       boundaryPointIndex, 
+                                       intersectionPoint, 
+                                       edgeParameter, 
+                                       boundaryParameter, 
+                                       intersectionDirection ))
+                {                      
                     edgeCuts.add( plCut( intersectionPoint, edgeIndex, edgeParameter, boundaryPointIndex, boundaryParameter, intersectionDirection ) );
+                }
             } // end for
         } // end if
     } // end for
@@ -116,8 +121,8 @@ static void plTriangleCutsBoundary( const plTriangle &triangle, PLbool &triangle
     plSeq<plCut> boundaryCuts = edgeCuts;
 
     // Sort the cuts
-    qsort( &edgeCuts[0],     edgeCuts.size(),     sizeof(plCut), plCompareEdgeCuts     ); // sort by increasing edge index, then by increasing parameter on each edge
-    qsort( &boundaryCuts[0], boundaryCuts.size(), sizeof(plCut), plCompareBoundaryCuts ); // sort by increasing boundary index, then by increasing parameter on each boundary wall
+    qsort( &edgeCuts[0],     edgeCuts.size(),     sizeof(plCut), _compareEdgeCuts     ); // sort by increasing edge index, then by increasing parameter on each edge
+    qsort( &boundaryCuts[0], boundaryCuts.size(), sizeof(plCut), _compareBoundaryCuts ); // sort by increasing boundary index, then by increasing parameter on each boundary wall
 
     // Bookkeeping to know when to stop
 
@@ -241,26 +246,26 @@ static void plTriangleCutsBoundary( const plTriangle &triangle, PLbool &triangle
 }
 
 
-
-static PLbool plEdgeCutsBoundary( plVector3 edgeVertex0, plVector3 edgeVertex1, const plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
+PLbool plMeshCutter::_edgeCutsBoundary( const plVector3 &edgeVert0, const plVector3 &edgeVert1, const plBoundary &boundary, PLuint boundaryPointIndex, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &boundaryParam, PLint &intDir )
 {
-    plVector3 point0(boundary.points  (   boundaryPointIndex  )                     );
-    plVector3 point1(boundary.points  ( ( boundaryPointIndex+1) % boundary.size() ) );
-    plVector3 normal0(boundary.normals(   boundaryPointIndex  )                     );
-    plVector3 normal1(boundary.normals( ( boundaryPointIndex+1) % boundary.size() ) );
+    plVector3 point0 ( boundary.points  (   boundaryPointIndex  )                     );
+    plVector3 point1 ( boundary.points  ( ( boundaryPointIndex+1) % boundary.size() ) );
+    plVector3 normal0( boundary.normals(   boundaryPointIndex  )                     );
+    plVector3 normal1( boundary.normals( ( boundaryPointIndex+1) % boundary.size() ) );
+
+    plVector3 edgeVertex0 = edgeVert0;
+    plVector3 edgeVertex1 = edgeVert1;
 
     // Order v0 and v1 lexicographically, so that different calls to
     // this function always compute the intersection in the same way,
     // resulting in exactly the same intersection point.
-    bool reverseEdge = (edgeVertex0.x > edgeVertex1.x ||
-                         (edgeVertex0.x == edgeVertex1.x
-                           && (edgeVertex0.y > edgeVertex1.y
-                             || (edgeVertex0.y == edgeVertex1.y
-                               && edgeVertex0.z > edgeVertex1.z) ) ) );
-    if (reverseEdge) {
-      plVector3 temp = edgeVertex0;
-      edgeVertex0 = edgeVertex1;
-      edgeVertex1 = temp;
+    bool reverseEdge = (edgeVertex0.x > edgeVertex1.x || (edgeVertex0.x == edgeVertex1.x &&
+                                                         (edgeVertex0.y > edgeVertex1.y || (edgeVertex0.y == edgeVertex1.y && edgeVertex0.z > edgeVertex1.z) ) ) );
+    if (reverseEdge) 
+    {
+        plVector3 temp = edgeVertex0;
+        edgeVertex0 = edgeVertex1;
+        edgeVertex1 = temp;
     }
 
     // outward pointing normal:
@@ -278,57 +283,62 @@ static PLbool plEdgeCutsBoundary( plVector3 edgeVertex0, plVector3 edgeVertex1, 
 
     if (fabs(denom) > 1e-6) {	// edge is not parallel to boundary wall
 
-      PLfloat t = (d - dot0) / denom;
+        PLfloat t = (d - dot0) / denom;
 
-      if (0 <= t && t <= 1) {	// edge endpoints are on opposite sides of boundary wall
+        if (0 <= t && t <= 1) {	// edge endpoints are on opposite sides of boundary wall
 
-        // Project intersection point onto line in boundary between points
+            // Project intersection point onto line in boundary between points
 
-        plVector3 x = edgeVertex0 + t * (edgeVertex1-edgeVertex0);
+            plVector3 x = edgeVertex0 + t * (edgeVertex1-edgeVertex0);
 
-        PLfloat s = ((x-point0) * (point1-point0)) / ((point1-point0)*(point1-point0));
+            PLfloat s = ((x-point0) * (point1-point0)) / ((point1-point0)*(point1-point0));
 
-        if (0 <= s && s <= 1) {
+            if (0 <= s && s <= 1) 
+            {
 
-          plVector3 y = point0 + s * (point1-point0);
+                plVector3 y = point0 + s * (point1-point0);
 
-          if ((x-y).length() < 0.5*(point1-point0).length()) 
-          {
+                if ((x-y).length() < 0.5*(point1-point0).length()) 
+                {
 
-            intPoint = x;
-            intDir = (denom > 0 ? +1 : -1);
-            edgeParam = t;
-            boundaryParam = s;	// We're assuming that the projections are monotonically increasing
-                                  // as we walk across the mesh from one boundary wall extreme to the other.
+                    intPoint = x;
+                    intDir = (denom > 0 ? +1 : -1);
+                    edgeParam = t;
+                    boundaryParam = s;	// We're assuming that the projections are monotonically increasing
+                                          // as we walk across the mesh from one boundary wall extreme to the other.
 
-            if (reverseEdge) {    // undo the reverse (since edgeVertex0 & edgeVertex1 are passed by reference)
-              plVector3 temp = edgeVertex0;
-              edgeVertex0 = edgeVertex1;
-              edgeVertex1 = temp;
+                    if (reverseEdge) 
+                    {    
+                        // undo the reverse (since edgeVertex0 & edgeVertex1 are passed by reference)
+                        plVector3 temp = edgeVertex0;
+                        edgeVertex0 = edgeVertex1;
+                        edgeVertex1 = temp;
 
-              // since edge was reversed, fix up edgeParam and intDir
+                        // since edge was reversed, fix up edgeParam and intDir
 
-              edgeParam = 1 - edgeParam;
-              intDir = -1 * intDir;
+                        edgeParam = 1 - edgeParam;
+                        intDir = -1 * intDir;
+                    }
+
+                    return true;
+                }
             }
-
-            return true;
-          }
         }
-      }
     }
 
-    if (reverseEdge) {    // undo the reverse (since edgeVertex0 & edgeVertex1 are passed by reference)
-      plVector3 temp = edgeVertex0;
-      edgeVertex0 = edgeVertex1;
-      edgeVertex1 = temp;
+    if (reverseEdge) 
+    {    
+        // undo the reverse (since edgeVertex0 & edgeVertex1 are passed by reference)
+        plVector3 temp = edgeVertex0;
+        edgeVertex0 = edgeVertex1;
+        edgeVertex1 = temp;
     }
 
     return false;
 }
 
 
-static PLint plCompareEdgeCuts( const void* a, const void* b )
+PLint plMeshCutter::_compareEdgeCuts( const void* a, const void* b )
 {
     plCut &pa = * (plCut*) a;
     plCut &pb = * (plCut*) b;
@@ -346,8 +356,7 @@ static PLint plCompareEdgeCuts( const void* a, const void* b )
 }
 
 
-
-static PLint plCompareBoundaryCuts( const void* a, const void* b )
+PLint plMeshCutter::_compareBoundaryCuts( const void* a, const void* b )
 {
     plCut &pa = * (plCut*) a;
     plCut &pb = * (plCut*) b;
@@ -363,6 +372,7 @@ static PLint plCompareBoundaryCuts( const void* a, const void* b )
     else
         return 0;
 }
+
 
 
 

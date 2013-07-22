@@ -4,7 +4,7 @@
 const plPlan*            plRenderer::_planToDraw             = NULL;
 const plGraftEditor*     plRenderer::_graftEditorToDraw      = NULL;
 const plBoundaryEditor*  plRenderer::_boundaryEditorToDraw   = NULL;
-
+const plTextureMesh*     plRenderer::_arthroTextureToDraw     = NULL;
 plSeq<const plTrackedObject*> plRenderer::_trackedObjectsToDraw;
 plSeq<const plLineMesh*>      plRenderer::_debugToDraw;
 
@@ -12,7 +12,8 @@ plComputeShader*         plRenderer::_computeShader          = NULL;
 plMinimalShader*         plRenderer::_minimalShader          = NULL;
 plPhongShader*           plRenderer::_phongShader            = NULL; 
 plPickingShader*         plRenderer::_pickingShader          = NULL;
-//PLbool                   plRenderer::isPicking               = false;
+plTextureShader*         plRenderer::_textureShader          = NULL;
+
 
 void plRenderer::init()
 {
@@ -20,6 +21,7 @@ void plRenderer::init()
     _minimalShader = new plMinimalShader("./shaders/minimal.vert", "./shaders/minimal.frag");
     _phongShader   = new plPhongShader  ("./shaders/phong.vert", "./shaders/phong.frag");
     _pickingShader = new plPickingShader("./shaders/picking.vert", "./shaders/picking.frag");  
+    _textureShader = new plTextureShader("./shaders/texture.vert", "./shaders/texture.frag");  
 
     plPicking::init(1,1);
     plProjectionStack::load( plProjection( 7.0f, 1.6f, 100.0f, 15000.0f) );
@@ -31,6 +33,7 @@ void plRenderer::_clearRenderQueue()
     _planToDraw           = NULL;
     _graftEditorToDraw    = NULL;
     _boundaryEditorToDraw = NULL;
+    _arthroTextureToDraw  = NULL;
     _trackedObjectsToDraw.clear();
     _debugToDraw.clear();
 }
@@ -45,7 +48,7 @@ void plRenderer::queue ( const plPlan &plan )
 }
 
 
-void plRenderer::queue ( const plGraftEditor &editor )
+void plRenderer::queue( const plGraftEditor &editor )
 {
     if (_boundaryEditorToDraw != NULL)
         std::cerr << "plRenderer queue() error: plGraftEditor already queued top draw, overridding previous \n";
@@ -54,7 +57,7 @@ void plRenderer::queue ( const plGraftEditor &editor )
 }
 
 
-void plRenderer::queue ( const plBoundaryEditor &editor )
+void plRenderer::queue( const plBoundaryEditor &editor )
 {
     if (_boundaryEditorToDraw != NULL)
         std::cerr << "plRenderer queue() error: plBoundaryEditor already queued top draw, overridding previous \n";
@@ -63,13 +66,22 @@ void plRenderer::queue ( const plBoundaryEditor &editor )
 }
 
 
-void plRenderer::queue ( const plTrackedObject &object )
+void plRenderer::queue( const plTextureMesh &arthroTexture )
+{
+    if (_arthroTextureToDraw != NULL)
+        std::cerr << "plRenderer queue() error: plTextureMesh already queued top draw, overridding previous \n";
+        
+    _arthroTextureToDraw = &arthroTexture;
+}
+
+
+void plRenderer::queue( const plTrackedObject &object )
 {
     _trackedObjectsToDraw.add( &object );
 }
 
 
-void plRenderer::queue ( const plLineMesh &debug )
+void plRenderer::queue( const plLineMesh &debug )
 {
     _debugToDraw.add( &debug );
 }
@@ -162,6 +174,13 @@ void plRenderer::_endDrawing()
 
 void plRenderer::_drawScene()
 {
+
+    // arthro texture
+    if (_arthroTextureToDraw != NULL)
+    {
+        _drawArthroTexture();
+    }
+    
     // plan
     if (_planToDraw != NULL)
     {
@@ -208,6 +227,17 @@ void plRenderer::_drawScene()
         }
     }
   
+    // automatic planner
+    for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)
+    {
+        plColourStack::load( 0.9, 0.6, 0.2 );
+        for (PLuint j=0; j<plAutomaticPlanner::_donorSiteGrids[i].points.size(); j++)
+        {
+            plDraw::sphere( plAutomaticPlanner::_donorSiteGrids[i].points[j], 0.10f );
+            
+        }
+    }
+    
     /*
     // set flat shader
     plShaderStack::push( _minimalShader );    
@@ -232,6 +262,44 @@ void plRenderer::_drawScene()
     */
 
 }
+
+
+void plRenderer::_drawArthroTexture()
+{
+    GLint viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport );
+
+    PLfloat xmargin = (viewport[2] / viewport[3] - 1) / 2.0;
+    
+    plShaderStack::push( _textureShader );
+    
+    // ortho projection
+    plMatrix44 ortho( 0, 1, 0, 1, -1, 1);
+    plProjectionStack::push( ortho ); 
+
+    // identity model matrix
+    plModelStack::push( plMatrix44() );
+    
+    // default camera matrix
+    plMatrix44 camera( 1, 0,  0, 0,
+                       0, 1,  0, 0,
+                       0, 0, -1, 0,
+                       0, 0,  0, 1 );        
+    plCameraStack::push( camera );
+
+    glDisable( GL_DEPTH_TEST );
+
+    _arthroTextureToDraw->draw();
+     
+    glEnable( GL_DEPTH_TEST ); 
+           
+    plProjectionStack::pop(); 
+    plModelStack::pop();       
+    plCameraStack::pop();
+    
+    plShaderStack::pop();
+}
+
 
 void plRenderer::_drawScenePicking()
 {
