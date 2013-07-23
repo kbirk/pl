@@ -1,6 +1,6 @@
 #version 330
 
-in vec3 vPosition;
+layout(location = 0) in vec3 vPosition;
 
 uniform mat4 mModel;
 uniform mat4 mView;

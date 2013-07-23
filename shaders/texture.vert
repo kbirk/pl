@@ -1,13 +1,13 @@
 #version 330
 
-in vec3 vPosition;
-in vec2 vTexCoord;
-
-out vec2 vTexCoordOut;
+layout(location = 0) in vec3 vPosition;
+layout(location = 3) in vec2 vTexCoord;
 
 uniform mat4 mModel;
 uniform mat4 mView;
 uniform mat4 mProjection;
+
+out vec2 vTexCoordOut;
 
 void main()
 {

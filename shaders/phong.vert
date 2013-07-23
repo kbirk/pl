@@ -1,8 +1,8 @@
 #version 330
 
-in vec3 vPosition;
-in vec3 vNormal;
-in vec4 vColour;
+layout(location = 0) in vec3 vPosition;
+layout(location = 1) in vec3 vNormal;
+layout(location = 2) in vec4 vColour;
 
 uniform vec3 vLightPosition;
 
@@ -18,12 +18,12 @@ out vec3 vViewLightDirection;
 void main()
 {
     // if vertex colour attribute is unspecified, all indices are 1
-    // if vertex colour is unspecified, use uniform, else use vertex colour (for colour meshes)
-    if (vColour != vec4(1,1,1,1))
+    // if vertex colour is unspecified, use uniform, else use vertex colour (for colour meshes)       
+    if (cColour == vec4(0,0,0,0))
         cColourInterp = vColour;
     else
         cColourInterp = cColour;
-
+    
 	mat4 modelView = mView * mModel;
 
     // view space normal 

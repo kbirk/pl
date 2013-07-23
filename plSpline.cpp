@@ -274,7 +274,7 @@ void plSpline::_computeHermite()
             
     }   
 
-    _surfaceMesh.setBuffers( interleaved_vertices, indices);
+    _surfaceMesh.setBuffers( interleaved_vertices, indices );
          
     // get min and max extents of model
     plVector3 min, max;

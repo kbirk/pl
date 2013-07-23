@@ -5,9 +5,9 @@
 #include "plMatrix44.h"
 
 #define PL_POSITION_ATTRIBUTE  0
-#define PL_NORMAL_ATTRIBUTE    2
-#define PL_COLOUR_ATTRIBUTE    3
-#define PL_TEXCOORD_ATTRIBUTE  4
+#define PL_NORMAL_ATTRIBUTE    1
+#define PL_COLOUR_ATTRIBUTE    2
+#define PL_TEXCOORD_ATTRIBUTE  3
 
 class plShader 
 {
@@ -82,7 +82,7 @@ class plShader
 			// bind attribute indices, bind fragment shader outputs
             // ** must be done before linking ** 
             // no issues if specific attribute is not present in shader
-            bindAttributeLocations();   
+            //bindAttributeLocations();   
             //bindFragDataLocations();    
 
             // link program, check for error
@@ -184,10 +184,10 @@ class plShader
 			fprintf(stdout, "%s\n", &errorMessage[0]);
         }
 
-        
+        /*
         void bindAttributeLocations() 
         {
-            // bind all available attribute locations, doesnt seem to complain if they don't exist
+            // bind all available attribute locations, doesnt seem to complain if they don't exist            
             glBindAttribLocation(_shaderProgramID, PL_POSITION_ATTRIBUTE,  "vPosition" );
 			glBindAttribLocation(_shaderProgramID, PL_NORMAL_ATTRIBUTE,    "vNormal"   );
             glBindAttribLocation(_shaderProgramID, PL_COLOUR_ATTRIBUTE,    "vColour"   );

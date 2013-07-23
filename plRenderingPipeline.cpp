@@ -19,17 +19,6 @@ PLbool        plCameraStack::updated = false;
 // plShaderStack static variables
 plStack<const plShader*>   plShaderStack::_stack; 
 
-void reportError( const plString &str ) 
-{
-    GLuint errnum;
-    const char *errstr;
-    while (errnum = glGetError()) 
-    {
-        errstr = reinterpret_cast<const char *> (gluErrorString(errnum));
-        std::cout << str << " " << errstr << "\n";
-    }
-}
-
 
 void plColourStack::push( PLfloat r, PLfloat g, PLfloat b, PLfloat a)
 { 
@@ -142,6 +131,10 @@ void plShaderStack::use()
     {
         // only set transform uniforms if they need to be changed
         _stack.top()->setTransformUniforms( plModelStack::top(), plCameraStack::top(), plProjectionStack::top() );
+        // reset update flags
+        plModelStack::updated      = false;
+        plCameraStack::updated     = false;
+        plProjectionStack::updated = false;
     }
 
 }   

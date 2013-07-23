@@ -51,7 +51,6 @@ PLfloat plVector4::operator * (const plVector4 &p) const     /* dot product */
 }
 
 
-
 plVector4 plVector4::operator-() const
 {	
     // return negated vector

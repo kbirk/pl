@@ -48,7 +48,7 @@
 
 // SPLINE MACROS
 
-#define PL_DEFECT_SPLINE_COLOUR                  0.40, 0.20, 0.60
+#define PL_DEFECT_SPLINE_COLOUR                  0, 0, 0, 0
 
 // COLOUR PICKING   
 

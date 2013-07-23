@@ -20,7 +20,7 @@ class plMinimalShader : public plShader
 			_modelID      = glGetUniformLocation(_shaderProgramID, "mModel"      );	
             _viewID       = glGetUniformLocation(_shaderProgramID, "mView"       );
             _projectionID = glGetUniformLocation(_shaderProgramID, "mProjection" );                     
-            _colourID     = glGetUniformLocation(_shaderProgramID,  "cColour"    );   
+            _colourID     = glGetUniformLocation(_shaderProgramID, "cColour"     );   
         }
         
 		virtual void setTransformUniforms( const plMatrix44 &model, const plMatrix44 &view, const plMatrix44 &projection ) const
