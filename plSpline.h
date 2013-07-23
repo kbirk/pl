@@ -22,6 +22,8 @@ class plSpline : public plBoundary
         plSpline();
         plSpline( const plBoneAndCartilage &model );
 
+        const plSeq<plTriangle> &triangles() const { return _triangles; }
+
         void   draw() const;           
 
         void   importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model );
@@ -30,16 +32,19 @@ class plSpline : public plBoundary
         void   movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal);
         void   removePointAndNormal( PLuint index );
 
+        plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;        
+
     private:
     
         PLtime            _lastUpdate;
         plColourMesh      _surfaceMesh;
-        //plSeq<plVector3>  _s, _t;  
         plSeq<plTriangle> _triangles;
-
+        plOctree          _octree;
 
         plSeq<plVector3> _averageCornerNormals() const;
         
+        void _getMinMax(plVector3 &min, plVector3 &max) const;
+                
         void _computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const plSeq<plVector3> &p, const plSeq<plVector3> &n ) const;
         void _computeHermite();
 

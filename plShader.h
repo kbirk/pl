@@ -4,7 +4,6 @@
 #include "plCommon.h"
 #include "plMatrix44.h"
 
-// TODO: switch to layout qualifiers!!!!
 #define PL_POSITION_ATTRIBUTE  0
 #define PL_NORMAL_ATTRIBUTE    2
 #define PL_COLOUR_ATTRIBUTE    3
@@ -44,8 +43,7 @@ class plShader
 			}
 
 			// free shader objects
-			glDeleteShader(shader);  
-        
+			glDeleteShader(shader);          
         }  
           
         plShader(const char *vertexFile, const char *fragmentFile)

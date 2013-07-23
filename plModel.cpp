@@ -1,6 +1,6 @@
 #include "plModel.h"
 
-plModel::plModel( std::string filename )
+plModel::plModel( std::string filename, PLuint octreeDepth )
     : _filename(filename), _isTransparent(false)
 {
     if (filename.compare(filename.length()-4, 4, ".stl") != 0)
@@ -16,8 +16,10 @@ plModel::plModel( std::string filename )
     // get min and max extents of model
     plVector3 min, max;
     getMinMax(min,max);
-    // build octree       
-    _octree.build( min, max, _triangles, 7 );        
+    // build octree    
+    std::cout << "Building octree for " << _triangles.size() << " triangles (depth = " << octreeDepth << ")...";
+    _octree.build( min, max, _triangles, octreeDepth );      
+    std::cout << "\tComplete.\n";  
 }
 
 
@@ -145,10 +147,10 @@ void plModel::toggleVisibility()
 }
 
 
-plIntersection plModel::rayIntersect( const plVector3 &start, const plVector3 &dir, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
+plIntersection plModel::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
 {
     // intersect the octree
-    return _octree.rayIntersect( start, dir, ignoreBehindRay, backFaceCull );
+    return _octree.rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
 }
 
 

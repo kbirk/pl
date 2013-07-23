@@ -3,7 +3,7 @@
 plBoundaryEditor::plBoundaryEditor() 
 {
     _selectedBoundaryType   = -1;
-    //_selectedBoundaryIndex  = -1;
+    _selectedSiteIndex      = -1;
     _selectedBoundary       = NULL;
     _selectedPointIndex     = -1;
 }
@@ -11,7 +11,7 @@ plBoundaryEditor::plBoundaryEditor()
 void plBoundaryEditor::clearSelection( plPlan &plan )
 {
     _selectedBoundaryType   = -1;
-    //_selectedBoundaryIndex  = -1;
+    _selectedSiteIndex      = -1;
     _selectedBoundary       = NULL;
     _selectedPointIndex     = -1;
     _clearDefectSiteBoundaries( plan );
@@ -53,7 +53,7 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
         
-            moveSelectedPoint( x, y );
+            moveSelectedPoint( plan, x, y );
 
             return true; 
     }
@@ -62,7 +62,7 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
 
 void plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
 {
-    moveSelectedPoint( x, y );
+    moveSelectedPoint( plan, x, y );
 }
 
 void plBoundaryEditor::_clearDefectSiteBoundaries( plPlan &plan  )
@@ -95,11 +95,12 @@ void plBoundaryEditor::_checkAndSelectBoundary( plBoundary &boundary, PLuint i, 
 {
     if (i == boundaryIndex)
     {
-        boundary._selectedValue  = pointIndex;
+        boundary._selectedValue  = pointIndex;        
         boundary._isSelected     = true;
         _selectedBoundaryType    = boundaryType;
-        _selectedBoundary        = &boundary;
-        _selectedPointIndex      = pointIndex;    
+        _selectedSiteIndex       = boundaryIndex;
+        _selectedPointIndex      = pointIndex;
+        _selectedBoundary        = &boundary;            
     }
 }
 
@@ -152,7 +153,7 @@ void plBoundaryEditor::selectBoundary( plPlan &plan, PLuint boundaryType, PLuint
 }
 
 
-void plBoundaryEditor::moveSelectedPoint( PLuint x, PLuint y )
+void plBoundaryEditor::moveSelectedPoint( plPlan &plan, PLuint x, PLuint y )
 {
     if (_selectedBoundary == NULL || _selectedPointIndex < 0) // no boundary or point is selected
         return;         
@@ -160,7 +161,19 @@ void plBoundaryEditor::moveSelectedPoint( PLuint x, PLuint y )
     plVector3 rayOrigin, rayDirection;
     plWindow::mouseToRay( rayOrigin, rayDirection, x, y );
 
-    plIntersection intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection);
+    plIntersection intersection( false ); 
+
+    if (_selectedBoundaryType == PL_PICKING_TYPE_DEFECT_BOUNDARY) // && plan.defectSites( _selectedSiteIndex ).spline.size() == 4)
+    {
+        // defect point, add to spline
+        intersection = plan.defectSites( _selectedSiteIndex ).spline.rayIntersect( rayOrigin, rayDirection );        
+    }
+    else
+    {
+        intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
+    }
+
+    //plIntersection intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection);
 
     if (intersection.exists) 
     {     
@@ -179,16 +192,19 @@ void plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool select
     plVector3 rayOrigin, rayDirection;
     plWindow::mouseToRay( rayOrigin, rayDirection, x, y );
     
-    /*
-    if (_selectedBoundaryType = PL_PICKING_TYPE_DEFECT_BOUNDARY && _plan.defectSite( _selectedBoundaryIndex ).spline.size() == 4)
+   
+    plIntersection intersection( false ); 
+   
+    if (_selectedBoundaryType == PL_PICKING_TYPE_DEFECT_BOUNDARY) // && plan.defectSites( _selectedSiteIndex ).spline.size() == 4)
     {
-        // defect point, check spline mesh first
-        
+        // defect point, add to spline
+        intersection = plan.defectSites( _selectedSiteIndex ).spline.rayIntersect( rayOrigin, rayDirection );        
     }
-    */
-
-    plIntersection intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
-
+    else
+    {
+        intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
+    }
+    
     if (intersection.exists) 
     {     
         /*

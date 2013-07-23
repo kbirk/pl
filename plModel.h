@@ -29,7 +29,7 @@ class plModel : public plRenderable
 {
     public:
         
-        plModel( std::string filename );
+        plModel( std::string filename, PLuint octreeDepth = 7 );
              
         const plSeq<plTriangle> &triangles() const { return _triangles; }
         const plOctree          &octree()    const { return _octree;    }

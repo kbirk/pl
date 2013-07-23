@@ -9,22 +9,25 @@ void plAutomaticPlanner::calculate( plPlan &plan )
     _defectSiteGrids.clear();
 
     std::cout << "Calculating Plan ... \n";
-    /*
-    // Draw defect boundary 
-    for ( PLuint i = 0; i < _defectSites.size(); i++)
+    
+    for ( PLuint i = 0; i < plan.defectSites().size(); i++)
     {
+        std::cout << "\t Calculating defect site grid " << i << " \n";
         // calculate interior triangles outlined by boundary
         plSeq<plTriangle> interiorTriangles;                
-        plMeshCutter::findInteriorMesh( _defectSites(i).model().triangles(), _defectSites(i).boundary, interiorTriangles );
+        plMeshCutter::findInteriorMesh( plan.defectSites(i).spline.triangles(), plan.defectSites(i).boundary, interiorTriangles );
+        
+        std::cout << "\t\t Interior triangle Count: " << interiorTriangles.size() << "\n";
+        
         // compose grid over interior mesh
         plSiteGrid grid;
         _createGrid( grid, interiorTriangles );
         // store it
         _defectSiteGrids.add( grid ); 
+        std::cout << "\t\t " <<  grid.points.size() << " grid points calculated \n";
     }
-    */
-       
-    // Draw harvest boundaries   
+    
+
     for ( PLuint i = 0; i < plan.donorSites().size(); i++)
     {      
         std::cout << "\t Calculating donor site grid " << i << " \n";

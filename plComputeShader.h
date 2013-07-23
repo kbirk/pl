@@ -4,15 +4,60 @@
 #include "plCommon.h"
 #include "plShader.h"
 
+
 class plComputeShader : public plShader
 {
     public:                    
           
-        plComputeShader(const char *computeFile) : plShader(computeFile, GL_COMPUTE_SHADER) {}
+        plComputeShader(const char *computeFile ) 
+            : plShader(computeFile, GL_COMPUTE_SHADER)              
+        {            
+        }
+
+        void clearBuffers()
+        {
+            //_data.clear();
+            
+            for (PLuint i=0; i<_dataBuffers.size(); i++)
+            {
+                glDeleteBuffers(1, &_dataBuffers[i]);	    // delete buffer objects 
+            }
+            
+            _dataBuffers.clear();
+        }
 
         void getUniformLocations()
         {	
         }
+
+        template< class T>
+        void bufferData( const plSeq<T> &data )
+        {
+            // load data
+            _dataBuffers.add( 0 );
+            glGenBuffers(1, &_dataBuffers.back() );
+            glBindBuffer(GL_ARRAY_BUFFER, _dataBuffers.back() );
+            glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), &data[0], GL_DYNAMIC_COPY); // not sure what to put as usage, they are only hints anyway
+     
+        }
+
+        void dispatch( PLuint numGroupsX, PLuint numGroupsY, PLuint numGroupsZ )
+        {
+            // bind compute shader
+            bind();
+            
+            
+            glDispatchCompute( numGroupsX, numGroupsY, numGroupsZ );
+            
+            // memory barrier
+            
+            // clear data sequence
+            clearBuffers(); 
+        }
+
+    private:
+    
+        plSeq<PLuint>        _dataBuffers;
 
 };
 

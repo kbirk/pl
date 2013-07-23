@@ -29,7 +29,7 @@ class plBoundaryEditor
 
 
         void    addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
-        void    moveSelectedPoint  ( PLuint x, PLuint y );
+        void    moveSelectedPoint  ( plPlan &plan, PLuint x, PLuint y );
         void    removeSelectedPoint();
         void    clearSelectedBoundary();
         void    removeSelectedSite( plPlan &plan );
@@ -40,7 +40,7 @@ class plBoundaryEditor
     private: 
     
         PLint       _selectedBoundaryType;  
-        // Plint       _selectedBoundaryIndex;    use this and above to determine with pl*Site 
+        PLint       _selectedSiteIndex;    // use this and above to determine which pl*Site 
         plBoundary *_selectedBoundary;
         PLint       _selectedPointIndex;
          

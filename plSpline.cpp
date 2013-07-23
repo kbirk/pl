@@ -95,7 +95,7 @@ PLfloat Q( PLfloat s, PLfloat t, const plSeq<PLfloat> &st, const plSeq<PLfloat> 
 
 plSeq<plVector3> plSpline::_averageCornerNormals() const 
 {
-    const PLfloat AVERAGE_RADIUS = 4.0f;
+    const PLfloat AVERAGE_RADIUS = 2.0f;
 
     plSeq<plVector3> n(4);
 
@@ -175,14 +175,9 @@ void plSpline::_computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const p
 
 void plSpline::_computeHermite()
 {    
-    static PLdouble timeSum = 0;
-    static PLdouble timeCount = 0;
-
-    // spline colour map computations are very intensive, to prevent unnecessary updates, limit to less than ~60 times per second
-    if (_timeSinceLastUpdate() < 10 )  
+    // spline colour map computations are very intensive, to prevent unnecessary updates due to frequency of mouse events, add a limit
+    if (_timeSinceLastUpdate() < 5 )  
         return;
-
-    PLtime start = plTimer::now();
 
     // p and n for cleaner code
     const plSeq<plVector3> &p = _points;    
@@ -191,170 +186,102 @@ void plSpline::_computeHermite()
     // find tangents in the s and t planes
     plSeq<PLfloat> st(4), tt(4); _computeTangents( st, tt, p, n );
     
-    const PLfloat INC = 0.04f; // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
+    const PLfloat   INC      = 0.04f;  // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
+    const PLuint    NUM_INC  = 1.0f/INC;
+    const PLfloat   fNUM_INC = 1.0f/INC;     
+    const PLfloat   MAX_DISTANCE = 1.0f;              // colour map max distance, anything beyond this is dark red   
+    const plVector3 NO_DATA_COLOUR(0.2, 0.2, 0.2);  // default colour if no data available  
 
-    plSeq<plVector3> interleaved_vertices( ((1.0f / INC) + 1) * 4 * 3 );
-    plSeq<PLuint>    indices             ( ((1.0f / INC) + 1) * 6 );
-
-    for (PLfloat v=0.0; v < 1.0; v+=INC*2.0f)
-    {       
-        for (PLfloat u=0.0; u < 1.0; u+=INC*2.0f)
-        {      
-
-            PLfloat z0 = Q( u,     v,     st, tt );
-            PLfloat z1 = Q( u+INC, v,     st, tt );
-            PLfloat z2 = Q( u+INC, v+INC, st, tt );
-            PLfloat z3 = Q( u,     v+INC, st, tt );
-        
-            // pos0           
-            plVector3 n03 = (1.0-v)*n[0] + v*n[3];
-            plVector3 n12 = (1.0-v)*n[1] + v*n[2];            
-            plVector3 norm0 = ( (1.0-u)*n03 + u*n12 ).normalize();
-
-            plVector3 p03 = (1.0-v)*p[0] + v*p[3];
-            plVector3 p12 = (1.0-v)*p[1] + v*p[2];            
-            plVector3 pos0 = (1.0-u)*p03 + u*p12 + z0*norm0;
-            
-            // pos1            
-            //n03 = (1.0-v)*n[0] + v*n[3];  // redundant
-            //n12 = (1.0-v)*n[1] + v*n[2];  // redundant            
-            plVector3 norm1 = ( (1.0-(u+INC))*n03 + (u+INC)*n12 ).normalize();
-            
-            //p03 = (1.0-v)*p[0] + v*p[3];  // redundant
-            //p12 = (1.0-v)*p[1] + v*p[2];  // redundant                     
-            plVector3 pos1 = (1.0-(u+INC))*p03 + (u+INC)*p12 + z1*norm1;
-            
-            // pos2            
-            n03 = (1.0-(v+INC))*n[0] + (v+INC)*n[3];
-            n12 = (1.0-(v+INC))*n[1] + (v+INC)*n[2];            
-            plVector3 norm2 = ( (1.0-(u+INC))*n03 + (u+INC)*n12 ).normalize();
-            
-            p03 = (1.0-(v+INC))*p[0] + (v+INC)*p[3];
-            p12 = (1.0-(v+INC))*p[1] + (v+INC)*p[2];            
-            plVector3 pos2 = (1.0-(u+INC))*p03 + (u+INC)*p12 + z2*norm2;
-                       
-            // pos3            
-            //n03 = (1.0-(v+INC))*n[0] + (v+INC)*n[3];  // redundant
-            //n12 = (1.0-(v+INC))*n[1] + (v+INC)*n[2];  // redundant            
-            plVector3 norm3 = ( (1.0-u)*n03 + u*n12 ).normalize();
-            
-            //p03 = (1.0-(v+INC))*p[0] + (v+INC)*p[3];  // redundant
-            //p12 = (1.0-(v+INC))*p[1] + (v+INC)*p[2];  // redundant            
-            plVector3 pos3 = (1.0-u)*p03 + u*p12 + z3*norm3;
-
-            // quad normal
-            plVector3 faceNorm = ((pos1 - pos0) ^ (pos3 - pos0)).normalize();
-               
-            const PLfloat MAX_DISTANCE = 1.0f;
-             
-            plIntersection intersection(false); 
-              
-            // default colour if no data available  
-            plVector3 NO_DATA_COLOUR(0.2, 0.2, 0.2);
-            
-            // colour map values   
-            /*
-            std::future<plIntersection> t_i0 = std::async( std::launch::async, &plModel::rayIntersect, &_model->cartilage, pos0+(10.0f*faceNorm), -faceNorm, false, true);
-            std::future<plIntersection> t_i1 = std::async( std::launch::async, &plModel::rayIntersect, &_model->cartilage, pos1+(10.0f*faceNorm), -faceNorm, false, true);
-            std::future<plIntersection> t_i2 = std::async( std::launch::async, &plModel::rayIntersect, &_model->cartilage, pos2+(10.0f*faceNorm), -faceNorm, false, true);
-            std::future<plIntersection> t_i3 = std::async( std::launch::async, &plModel::rayIntersect, &_model->cartilage, pos3+(10.0f*faceNorm), -faceNorm, false, true); 
-             
-            plIntersection i0 = t_i0.get();  
-            plIntersection i1 = t_i1.get(); 
-            plIntersection i2 = t_i2.get(); 
-            plIntersection i3 = t_i3.get();   
-            */
-            plIntersection i0 = _model->cartilage.rayIntersect( pos0+(10.0f*faceNorm), -faceNorm, false, true );   
-            plIntersection i1 = _model->cartilage.rayIntersect( pos1+(10.0f*faceNorm), -faceNorm, false, true ); 
-            plIntersection i2 = _model->cartilage.rayIntersect( pos2+(10.0f*faceNorm), -faceNorm, false, true );
-            plIntersection i3 = _model->cartilage.rayIntersect( pos3+(10.0f*faceNorm), -faceNorm, false, true );  
-                 
-            plVector3 col0 = (i0.exists) ? plColourMap::map( (i0.point - pos0).squaredLength()/MAX_DISTANCE ) : NO_DATA_COLOUR;
-            plVector3 col1 = (i0.exists) ? plColourMap::map( (i1.point - pos1).squaredLength()/MAX_DISTANCE ) : NO_DATA_COLOUR;
-            plVector3 col2 = (i0.exists) ? plColourMap::map( (i2.point - pos2).squaredLength()/MAX_DISTANCE ) : NO_DATA_COLOUR;
-            plVector3 col3 = (i0.exists) ? plColourMap::map( (i3.point - pos3).squaredLength()/MAX_DISTANCE ) : NO_DATA_COLOUR;          
-                                                                              
-            PLint base = interleaved_vertices.size()/3;
-            
-            interleaved_vertices.add(pos0);     // position
-            interleaved_vertices.add(faceNorm); // normal
-            interleaved_vertices.add(col0);     // colour
-            
-            interleaved_vertices.add(pos1);     // position
-            interleaved_vertices.add(faceNorm); // normal            
-            interleaved_vertices.add(col1);     // colour
-            
-            interleaved_vertices.add(pos2);     // position
-            interleaved_vertices.add(faceNorm); // normal            
-            interleaved_vertices.add(col2);     // colour
-            
-            interleaved_vertices.add(pos3);     // position
-            interleaved_vertices.add(faceNorm); // normal
-            interleaved_vertices.add(col3);     // colour
-        }           
-    }    
-
-
-
-    // process quads 4 at a time
-    //  _______
-    // |   |   |
-    // |_4_|_3_|
-    // |   |   |
-    // |_1_|_2_|
+    _triangles = plSeq<plTriangle>( NUM_INC*NUM_INC*2 );
     
-    PLuint quadCount = 1/INC;
+    plSeq<plVector3> points ( (NUM_INC+1)*(NUM_INC+1) );
+    plSeq<plVector3> colours( (NUM_INC+1)*(NUM_INC+1) );
+    
+    plSeq<plVector3> interleaved_vertices( NUM_INC * NUM_INC * 6 * 3 );
+    plSeq<PLuint>    indices             ( NUM_INC * NUM_INC * 6 );
 
-    for (PLuint j=0; j < quadCount; j+=2)
+    for (PLuint j=0; j <= NUM_INC; j++)
     {
-        for (PLuint i=0; i < quadCount; i+=2)
+        PLfloat v = j/fNUM_INC;
+
+        // interpolate spline corner positions and normals for current v coord
+        plVector3 n03 = (1.0f-v)*n[0] + v*n[3];
+        plVector3 n12 = (1.0f-v)*n[1] + v*n[2]; 
+      
+        plVector3 p03 = (1.0f-v)*p[0] + v*p[3];
+        plVector3 p12 = (1.0f-v)*p[1] + v*p[2];
+
+        for (PLuint i=0; i <= NUM_INC; i++)
         {
-            PLuint rowCount = ((quadCount)+1); // number of indices per row
+            PLfloat u = i/fNUM_INC;
 
-            PLuint k = i*2 + j*rowCount;
+            // first row, don't triangulate
+            PLfloat z = Q( u, v, st, tt );
+                 
+            // interpolate position and normal for current u coord     
+            plVector3 norm = ( (1.0f-u)*n03 + u*n12 ).normalize();           
+            plVector3 pos  = (1.0f-u)*p03 + u*p12 + z*norm;          // inflate this point using normal scaled by z value returned by hermite spline
+        
+            // intersect cartilage
+            plIntersection intersection = _model->cartilage.rayIntersect( pos+(10.0f*norm), -norm, false, true ); 
+        
+            // get colour value
+            plVector3 colour = (intersection.exists) ? plColourMap::map( (intersection.point - pos).squaredLength()/MAX_DISTANCE ) : NO_DATA_COLOUR;
+             
+            points.add( pos );
+            colours.add( colour );
             
-            PLuint l = rowCount*2 + j*rowCount + i*2;
-
-            // quad 1    
-            indices.add(k+0);   indices.add(k+1);   indices.add(k+2);   
-            indices.add(k+0);   indices.add(k+2);   indices.add(k+3);
-
-            if ( (i+1) != quadCount)
+            if (j > 0 && i > 0 )
             {
-                // quad 2    
-                indices.add(k+1);   indices.add(k+4);   indices.add(k+7);   
-                indices.add(k+1);   indices.add(k+7);   indices.add(k+2);
-            }
+                // once past first row, begin triangulating
+                PLuint i0 = (i-1) + (j-1) * (NUM_INC+1);
+                PLuint i1 = i0 + 1;
+                PLuint i2 = i + j * (NUM_INC+1);  
+                PLuint i3 = i2 - 1;  
+                
+                plVector3 normal = ( ( points[i2] - points[i1]) ^ (points[i0] - points[i1]) ).normalize();
 
-            if ( (i+1) != quadCount && (j+1) != quadCount )
-            {
-                // quad 3    
-                indices.add(k+2);   indices.add(k+7);   indices.add(l+4);   
-                indices.add(k+2);   indices.add(l+4);   indices.add(l+1);
+                _triangles.add( plTriangle( normal, points[i0], points[i1], points[i2]) );
+                _triangles.add( plTriangle( normal, points[i0], points[i2], points[i3]) );
+
+                PLuint base = interleaved_vertices.size() / 3;
+
+                // point 0
+                interleaved_vertices.add( points[i0] );     // vertex
+                interleaved_vertices.add( normal );         // normal
+                interleaved_vertices.add( colours[i0] );    // colour
+
+                // point 1
+                interleaved_vertices.add( points[i1] );
+                interleaved_vertices.add( normal );
+                interleaved_vertices.add( colours[i1] );
+                
+                // point 2
+                interleaved_vertices.add( points[i2] );
+                interleaved_vertices.add( normal );
+                interleaved_vertices.add( colours[i2] );
+
+                // point 3
+                interleaved_vertices.add( points[i3] );
+                interleaved_vertices.add( normal );
+                interleaved_vertices.add( colours[i3] );
+
+                // triangle indices
+                indices.add( base );   indices.add( base+1 );   indices.add( base+2 );
+                indices.add( base );   indices.add( base+2 );   indices.add( base+3 );
             }
-            
-            if ( (j+1) != quadCount )
-            {
-                // quad 4   
-                indices.add(k+3);   indices.add(k+2);   indices.add(l+1);   
-                indices.add(k+3);   indices.add(l+1);   indices.add(l+0);
-            }
-            
         }
-    }
+            
+    }   
+
+    _surfaceMesh.setBuffers( interleaved_vertices, indices);
+         
+    // get min and max extents of model
+    plVector3 min, max;
+    _getMinMax(min,max);
     
-    _surfaceMesh.setBuffers(interleaved_vertices, indices);
-    
-    
-    PLtime indTime = plTimer::now() - start;
-    
-    if (indTime < 1000)
-    {
-        timeSum += indTime;
-        timeCount++;    
-        std::cout << "time: " << indTime << " avg: " << timeSum/timeCount << "\n";
-    }
-    
+    // build octree       
+    _octree.build( min, max, _triangles, 1 );           
     
     // update timer to store time of last update
     _lastUpdate = plTimer::now();
@@ -365,6 +292,32 @@ PLuint plSpline::_timeSinceLastUpdate()
 {
     return plTimer::now() - _lastUpdate;
 }
+  
+void plSpline::_getMinMax(plVector3 &min, plVector3 &max) const
+{
+    min = plVector3(FLT_MAX, FLT_MAX, FLT_MAX);
+    max = -1 * min;
+
+    for ( PLuint i = 0; i < _triangles.size(); i++)
+    {  
+        const plVector3 &v = _triangles[i].centroid();
+
+        if (v.x < min.x) min.x = v.x;
+        if (v.y < min.y) min.y = v.y;
+        if (v.z < min.z) min.z = v.z;
+
+        if (v.x > max.x) max.x = v.x;
+        if (v.y > max.y) max.y = v.y;
+        if (v.z > max.z) max.z = v.z;
+    }
+}  
+  
+  
+plIntersection plSpline::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+{
+    // intersect the octree
+    return _octree.rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
+}    
     
     
 /*

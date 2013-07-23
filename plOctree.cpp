@@ -24,9 +24,6 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<p
         std::cerr << "plOctree::build() error: depth must be greater than 0\n";
         exit(1);
     }
-    
-    std::cout << "Building octree for " << triangles.size() << " triangles (depth = " << depth << ")...";
-
     // centre point of octree
     plVector3 centre = 0.5f * (min+max);
     
@@ -42,8 +39,6 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<p
  
     // traverse and fill sub cubes with triangles until desired depth is reached  
     _fill( triangles, depth ); 
-
-    std::cout << "\tComplete.\n";
 }
 
 void plOctree::draw() const
@@ -57,6 +52,9 @@ void plOctree::draw() const
 
 plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull) const
 {
+    if (_root == NULL)
+        return plIntersection(false);
+
     plIntersection closestIntersection(false);
 
     plSet<const plTriangle*> triangles;

@@ -286,32 +286,31 @@ PLbool plMeshCutter::_edgeCutsBoundary( const plVector3 &edgeVert0, const plVect
 
     PLfloat denom = dot1 - dot0;
 
-    if (fabs(denom) > 1e-6) {	// edge is not parallel to boundary wall
-
+    if (fabs(denom) > 1e-6) 
+    {	
+        // edge is not parallel to boundary wall
         PLfloat t = (d - dot0) / denom;
 
-        if (0 <= t && t <= 1) {	// edge endpoints are on opposite sides of boundary wall
+        if (0 <= t && t <= 1) 
+        {	
+            // edge endpoints are on opposite sides of boundary wall
 
             // Project intersection point onto line in boundary between points
-
             plVector3 x = edgeVertex0 + t * (edgeVertex1-edgeVertex0);
 
             PLfloat s = ((x-point0) * (point1-point0)) / ((point1-point0)*(point1-point0));
 
             if (0 <= s && s <= 1) 
             {
-
                 plVector3 y = point0 + s * (point1-point0);
 
                 if ((x-y).length() < 0.5*(point1-point0).length()) 
                 {
-
                     intPoint = x;
                     intDir = (denom > 0 ? +1 : -1);
                     edgeParam = t;
                     boundaryParam = s;	// We're assuming that the projections are monotonically increasing
-                                          // as we walk across the mesh from one boundary wall extreme to the other.
-
+                                        // as we walk across the mesh from one boundary wall extreme to the other.
                     if (reverseEdge) 
                     {    
                         // undo the reverse (since edgeVertex0 & edgeVertex1 are passed by reference)
@@ -320,7 +319,6 @@ PLbool plMeshCutter::_edgeCutsBoundary( const plVector3 &edgeVert0, const plVect
                         edgeVertex1 = temp;
 
                         // since edge was reversed, fix up edgeParam and intDir
-
                         edgeParam = 1 - edgeParam;
                         intDir = -1 * intDir;
                     }

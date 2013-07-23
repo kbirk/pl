@@ -188,7 +188,9 @@ void plSeq<T>::compress()
 
 	new_data = new T[ _numElements ];
 	for (PLint i=0; i<_numElements; i++)
+	{
 		new_data[i] = _data[i];
+    }
 	_storageSize = _numElements;
 	delete [] _data;
 	_data = new_data;

@@ -30,7 +30,7 @@ class plOctreeNode
 {
     public:
 
-        plOctreeNode( const plVector3 &c, PLfloat hw); 
+        plOctreeNode( const plVector3 &c, PLfloat hw ); 
 
         ~plOctreeNode();
 
@@ -60,9 +60,9 @@ class plOctreeNode
 class plOctree : public plRenderable
 {
     public:
-        
-        plOctree();
-        plOctree( const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth);
+          
+        plOctree();        
+        plOctree( const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth );
 
         ~plOctree();
 
@@ -75,6 +75,9 @@ class plOctree : public plRenderable
         void draw() const;
         
     private:
+           
+        plOctree( const plOctree &o );
+        plOctree operator= ( const plOctree &o ) const;    
     
         plOctreeNode *_root;
     
