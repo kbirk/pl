@@ -87,9 +87,6 @@ void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plS
 	glEnableVertexAttribArray(PL_NORMAL_ATTRIBUTE);
 	glVertexAttribPointer(PL_NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, (GLvoid*)(POS_SIZE));                                
      
-    // disable colour attribute  
-    glDisableVertexAttribArray(PL_COLOUR_ATTRIBUTE);
-     
     // bind vertex array object
     glGenBuffers(1, &_vertexBufferIndices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
@@ -101,9 +98,6 @@ void plMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, const plS
 
 void plMesh::draw() const
 {	
-
-    glVertexAttrib4f(PL_COLOUR_ATTRIBUTE, 0,0,0,1);
-	
     // use current shader and properly set uniforms
     plShaderStack::use();			
 	// bind vertex array object

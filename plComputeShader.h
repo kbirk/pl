@@ -31,13 +31,22 @@ class plComputeShader : public plShader
         }
 
         template< class T>
-        void bufferData( const plSeq<T> &data )
+        void bufferUniformData( const plSeq<T> &data )
         {
             // load data
             _dataBuffers.add( 0 );
-            glGenBuffers(1, &_dataBuffers.back() );
-            glBindBuffer(GL_ARRAY_BUFFER, _dataBuffers.back() );
-            glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), &data[0], GL_DYNAMIC_COPY); // not sure what to put as usage, they are only hints anyway
+            //glGenBuffers(1, &_dataBuffers.back() );
+            //glBindBuffer(GL_ARRAY_BUFFER, _dataBuffers.back() );
+            //glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), &data[0], GL_DYNAMIC_COPY); // not sure what to put as usage, they are only hints anyway
+     
+     
+            // load data
+            glGenBuffers(1, &_dataBuffers.back());
+            glBindBuffer(GL_UNIFORM_BUFFER, _dataBuffers.back());
+            glBufferData(GL_UNIFORM_BUFFER, data.size() * sizeof(T), &data[0], GL_STATIC_DRAW);
+            
+            
+     
      
         }
 
@@ -45,6 +54,13 @@ class plComputeShader : public plShader
         {
             // bind compute shader
             bind();
+            
+            // bind uniform buffers
+            for (PLuint i=0; i<_dataBuffers.size(); i++)
+            {
+                glBindBufferBase(GL_UNIFORM_BUFFER, i, _dataBuffers[i]);
+            }
+            
             
             
             glDispatchCompute( numGroupsX, numGroupsY, numGroupsZ );
