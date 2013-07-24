@@ -30,8 +30,9 @@ class plGraftEditor
         
         void    setEditMode( PLuint editMode );
 
-        void    draw() const;
-
+        void    drawHandles() const;
+        void    drawMenu( const plPlan &plan ) const;
+        
         PLbool  isGraftSelected() const { return (_selectedGraft != NULL); }    
 
         PLbool  processMouseClick   ( plPlan &plan, PLint x, PLint y );

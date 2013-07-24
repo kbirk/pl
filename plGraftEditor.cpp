@@ -39,9 +39,68 @@ void plGraftEditor::setEditMode( PLuint editMode )
 }
 
 
-void plGraftEditor::draw() const
+void plGraftEditor::drawMenu( const plPlan &plan ) const
 { 
-    if (!_handlesEnabled || _selectedGraft == NULL)
+    // menu interface
+
+    PLfloat windowWidth  = glutGet(GLUT_WINDOW_WIDTH);
+    PLfloat windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+    
+    const PLfloat HORIZONTAL_BUFFER    = 50;
+    const PLfloat VERTICAL_BUFFER      = 50;
+    const PLfloat HORIZONTAL_SPACING   = 40;
+    const PLfloat VERTICAL_SPACING     = 40;     
+    const PLfloat CIRCLE_RADIUS        = 14;
+    const PLfloat HARVEST_HORIZONTAL   = HORIZONTAL_BUFFER;
+    const PLfloat RECIPIENT_HORIZONTAL = (HORIZONTAL_BUFFER + CIRCLE_RADIUS + HORIZONTAL_SPACING);      
+    const PLfloat INITIAL_VERTICAL     = windowHeight - VERTICAL_BUFFER;
+     
+    PLfloat count = 0;
+    plPicking::value.index = -1;    
+       
+    plModelStack::push( plMatrix44() ); // load identity
+    {
+        // grafts       
+        for (PLuint i=0; i<plan.grafts().size(); i++)
+        {
+                
+            // harvest
+            plPicking::value.type = PL_PICKING_TYPE_GRAFT;           
+            plPicking::value.id = i;  
+            plPicking::value.index = PL_PICKING_INDEX_GRAFT_DONOR;
+             
+            if (plan.grafts(i)._isSelected && _selectedType == PL_PICKING_INDEX_GRAFT_DONOR)
+            {
+                plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL ); 
+            }
+            else
+            {
+                plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR ); 
+            } 
+            plDraw::disk( plVector3( HARVEST_HORIZONTAL, INITIAL_VERTICAL - count*VERTICAL_SPACING, 0), CIRCLE_RADIUS );
+             
+            // recipient
+            plPicking::value.index = PL_PICKING_INDEX_GRAFT_DEFECT;
+            if (plan.grafts(i)._isSelected && _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT)
+            {
+                plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL ); 
+            }
+            else
+            {
+                plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR ); 
+            } 
+            plDraw::disk( plVector3( RECIPIENT_HORIZONTAL, INITIAL_VERTICAL - count*VERTICAL_SPACING, 0), CIRCLE_RADIUS );
+            
+            count++;
+        }
+
+    }
+    plModelStack::pop();
+}
+    
+void plGraftEditor::drawHandles() const
+{     
+    if (!_handlesEnabled || _selectedGraft == NULL || !_selectedGraft->isVisible)
         return;
 
     plModelStack::push( _selectedGraft->transform(_selectedType).matrix() );
@@ -112,7 +171,12 @@ void plGraftEditor::draw() const
         }
     }
     plModelStack::pop();
+
+
+    
+
 }
+
 
 
 PLbool plGraftEditor::processMouseClick( plPlan &plan, PLint x, PLint y )

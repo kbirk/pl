@@ -4,15 +4,12 @@
 #include "plCommon.h"
 #include "plSeq.h"
 #include "plVector3.h"
-#include "plLineMesh.h"
+#include "plRenderingPipeline.h"
 
-#include "plComputeShader.h"
 #include "plPhongShader.h"
 #include "plMinimalShader.h"
 #include "plPickingShader.h"
 #include "plTextureShader.h"
-
-#include "plPickingTexture.h"
 
 #include "plPlan.h"
 #include "plGraftEditor.h"
@@ -22,14 +19,11 @@
 #include "plAutomaticPlanner.h"
 
 
-#include "plRenderingPipeline.h"
 
 
 class plRenderer
 {
     public:
-           
-        //static PLbool isPicking;   
                
         static void init(); 
           
@@ -40,7 +34,6 @@ class plRenderer
         static void queue ( const plBoundaryEditor &editor );
         static void queue ( const plTrackedObject  &object ); 
         static void queue ( const plTextureMesh    &arthroTexture );
-        static void queue ( const plLineMesh       &debug  ); 
          
         static void reportError ( const plString &str );
 
@@ -52,11 +45,9 @@ class plRenderer
         static const plGraftEditor      *_graftEditorToDraw;
         static const plBoundaryEditor   *_boundaryEditorToDraw;         
         static const plTextureMesh      *_arthroTextureToDraw;
-        
-        static plSeq<const plLineMesh*>      _debugToDraw;        
+              
         static plSeq<const plTrackedObject*> _trackedObjectsToDraw;
         
-        static plComputeShader  *_computeShader;
         static plMinimalShader  *_minimalShader;
         static plPhongShader    *_phongShader;
         static plPickingShader  *_pickingShader; 

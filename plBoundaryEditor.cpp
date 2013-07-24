@@ -152,32 +152,36 @@ void plBoundaryEditor::selectBoundary( plPlan &plan, PLuint boundaryType, PLuint
 
 }
 
+plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint x, PLuint y )
+{
+    plVector3 rayOrigin, rayDirection;
+    plWindow::mouseToRay( rayOrigin, rayDirection, x, y );
+    
+    plIntersection intersection( false ); 
+
+    if (_selectedBoundaryType == PL_PICKING_TYPE_DEFECT_BOUNDARY) 
+    {
+        // defect point, intersect spline
+        intersection = plan.defectSites( _selectedSiteIndex ).spline.rayIntersect( rayOrigin, rayDirection );        
+    }
+    else
+    {
+        // other, intersect cartilage
+        intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
+    }
+    
+    return intersection;
+}
 
 void plBoundaryEditor::moveSelectedPoint( plPlan &plan, PLuint x, PLuint y )
 {
     if (_selectedBoundary == NULL || _selectedPointIndex < 0) // no boundary or point is selected
         return;         
 
-    plVector3 rayOrigin, rayDirection;
-    plWindow::mouseToRay( rayOrigin, rayDirection, x, y );
-
-    plIntersection intersection( false ); 
-
-    if (_selectedBoundaryType == PL_PICKING_TYPE_DEFECT_BOUNDARY) // && plan.defectSites( _selectedSiteIndex ).spline.size() == 4)
-    {
-        // defect point, add to spline
-        intersection = plan.defectSites( _selectedSiteIndex ).spline.rayIntersect( rayOrigin, rayDirection );        
-    }
-    else
-    {
-        intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
-    }
-
-    //plIntersection intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection);
-
+    plIntersection intersection = _getBoundaryIntersection( plan, x, y );
+    
     if (intersection.exists) 
-    {     
-        
+    {            
         _selectedBoundary->movePointAndNormal( _selectedPointIndex, intersection.point, intersection.normal);
     }
 
@@ -188,33 +192,11 @@ void plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool select
 {
     if (_selectedBoundary == NULL) // no boundary selected
         return;
-    
-    plVector3 rayOrigin, rayDirection;
-    plWindow::mouseToRay( rayOrigin, rayDirection, x, y );
-    
-   
-    plIntersection intersection( false ); 
-   
-    if (_selectedBoundaryType == PL_PICKING_TYPE_DEFECT_BOUNDARY) // && plan.defectSites( _selectedSiteIndex ).spline.size() == 4)
-    {
-        // defect point, add to spline
-        intersection = plan.defectSites( _selectedSiteIndex ).spline.rayIntersect( rayOrigin, rayDirection );        
-    }
-    else
-    {
-        intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
-    }
+
+    plIntersection intersection = _getBoundaryIntersection( plan, x, y );    
     
     if (intersection.exists) 
     {     
-        /*
-        if (_selectedBoundaryType == PL_PICKING_TYPE_DEFECT_CORNERS && _selectedBoundary->size() > 3)
-        {   
-            // already 4 corner points    
-            return -1;
-        }
-        */
-
         PLint newIndex = _selectedBoundary->addPointAndNormal( intersection.point, intersection.normal );
         
         if (selectNewPoint && newIndex >= 0)
@@ -237,6 +219,7 @@ void plBoundaryEditor::removeSelectedPoint()
     _selectedPointIndex    = -1;    
 }
 
+
 void plBoundaryEditor::toggleSelectedVisibility()
 {
     if (_selectedBoundary == NULL)
@@ -244,6 +227,7 @@ void plBoundaryEditor::toggleSelectedVisibility()
 
     _selectedBoundary->toggleVisibility();
 }
+
 
 void plBoundaryEditor::clearSelectedBoundary()
 {
@@ -253,7 +237,8 @@ void plBoundaryEditor::clearSelectedBoundary()
     _selectedBoundary->clear();
 }
 
-void plBoundaryEditor::draw( const plPlan &plan ) const
+
+void plBoundaryEditor::drawMenu( const plPlan &plan ) const
 {
 
     PLfloat windowWidth  = glutGet(GLUT_WINDOW_WIDTH);
