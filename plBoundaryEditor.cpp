@@ -85,9 +85,9 @@ void plBoundaryEditor::_clearDonorSiteBoundaries( plPlan &plan )
 
 void plBoundaryEditor::_clearIGuideBoundaries( plPlan &plan )
 {
-    for (PLuint i=0; i<plan.iGuides().size(); i++)
+    for (PLuint i=0; i<plan.iGuideSites().size(); i++)
     {
-        plan.iGuides(i).boundary._clearSelection();       
+        plan.iGuideSites(i).boundary._clearSelection();       
     }  
 }
 
@@ -130,9 +130,9 @@ void plBoundaryEditor::_selectDonorSiteBoundary( plPlan &plan, PLuint boundaryIn
 
 void plBoundaryEditor::_selectIGuideBoundary( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex )
 {
-    for (PLuint i=0; i<plan.iGuides().size(); i++)
+    for (PLuint i=0; i<plan.iGuideSites().size(); i++)
     {
-        _checkAndSelectBoundary( plan.iGuides(i).boundary, i, PL_PICKING_TYPE_IGUIDE_BOUNDARY, boundaryIndex, pointIndex );    
+        _checkAndSelectBoundary( plan.iGuideSites(i).boundary, i, PL_PICKING_TYPE_IGUIDE_BOUNDARY, boundaryIndex, pointIndex );    
     }  
 }
 
@@ -324,13 +324,13 @@ void plBoundaryEditor::draw( const plPlan &plan ) const
             count++;
         }
 
-        // iGuides boundaries       
-        for (PLuint i=0; i<plan.iGuides().size(); i++)
+        // iGuide site boundaries       
+        for (PLuint i=0; i<plan.iGuideSites().size(); i++)
         {
             // boundary menu
             plPicking::value.type = PL_PICKING_TYPE_IGUIDE_BOUNDARY;           
             plPicking::value.id = i;         
-            if (plan.iGuides(i).boundary._isSelected)
+            if (plan.iGuideSites(i).boundary._isSelected)
             {
                 plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR_DULL ); 
             }

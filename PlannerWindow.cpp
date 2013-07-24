@@ -104,7 +104,7 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
 
         case 'D':   _plan.addDonorSite();                                       break;
         case 'S':   _plan.addDefectSite();                                      break;
-        case 'G':   _plan.addIGuide();                                          break;
+        case 'G':   _plan.addIGuideSite();                                      break;
 
         case 'P':   plAutomaticPlanner::calculate(_plan);                       break;
 

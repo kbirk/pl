@@ -231,9 +231,12 @@ void plRenderer::_drawScene()
     for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)
     {
         plColourStack::load( 0.9, 0.6, 0.2 );
-        for (PLuint j=0; j<plAutomaticPlanner::_donorSiteGrids[i].points.size(); j++)
+        for (PLuint j=0; j<plAutomaticPlanner::_donorSiteGrids[i].size(); j++)
         {
-            plDraw::sphere( plAutomaticPlanner::_donorSiteGrids[i].points[j], 0.09f );
+            PLfloat x = plAutomaticPlanner::_donorSiteGrids[i].points(j).x;
+            PLfloat y = plAutomaticPlanner::_donorSiteGrids[i].points(j).y;
+            PLfloat z = plAutomaticPlanner::_donorSiteGrids[i].points(j).z;
+            plDraw::sphere( plVector3(x,y,z), 0.09f );
             
         }
     }
@@ -241,9 +244,12 @@ void plRenderer::_drawScene()
     for (PLuint i=0; i<plAutomaticPlanner::_defectSiteGrids.size(); i++)
     {    
         plColourStack::load( 0.2, 0.6, 0.9 );
-        for (PLuint j=0; j<plAutomaticPlanner::_defectSiteGrids[i].points.size(); j++)
+        for (PLuint j=0; j<plAutomaticPlanner::_defectSiteGrids[i].size(); j++)
         {
-            plDraw::sphere( plAutomaticPlanner::_defectSiteGrids[i].points[j], 0.09f );
+            PLfloat x = plAutomaticPlanner::_defectSiteGrids[i].points(j).x;
+            PLfloat y = plAutomaticPlanner::_defectSiteGrids[i].points(j).y;
+            PLfloat z = plAutomaticPlanner::_defectSiteGrids[i].points(j).z;
+            plDraw::sphere( plVector3(x,y,z), 0.09f );
             
         }
     }

@@ -9,34 +9,16 @@ class plPickingShader : public plMinimalShader
 {
     public:                    
                
-        plPickingShader(const char *vertexFile, const char *fragmentFile) : plMinimalShader(vertexFile, fragmentFile)
-		{  
-            // get uniform locations
-            getUniformLocations();
-		}
+        plPickingShader(const char *vertexFile, const char *fragmentFile);
       
-        void getUniformLocations()
-        {			
-            plMinimalShader::getUniformLocations();            
-            _redID 	   = glGetUniformLocation(_shaderProgramID, "uRedBits"); 
-			_greenID   = glGetUniformLocation(_shaderProgramID, "uGreenBits");  			
-			_blueID    = glGetUniformLocation(_shaderProgramID, "uBlueBits");  			 
-        }
-
-		void setPickingUniforms(const plPickingInfo &pi) const
-        {            
-		    glUniform1i(_redID,   pi.type);	
-            glUniform1i(_greenID, pi.id);	
-			glUniform1i(_blueID,  pi.index);
-		}
+        void getUniformLocations();
+		void setPickingUniforms(const plPickingInfo &pi) const;
 		
     private:
 	
 		GLuint _redID;
 		GLuint _greenID;
 		GLuint _blueID;
-		
-
 
 };
 

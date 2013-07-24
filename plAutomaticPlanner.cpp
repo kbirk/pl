@@ -24,7 +24,7 @@ void plAutomaticPlanner::calculate( plPlan &plan )
         _createGrid( grid, interiorTriangles );
         // store it
         _defectSiteGrids.add( grid ); 
-        std::cout << "\t\t " <<  grid.points.size() << " grid points calculated \n";
+        std::cout << "\t\t " <<  grid.size() << " grid points calculated \n";
     }
     
 
@@ -41,9 +41,18 @@ void plAutomaticPlanner::calculate( plPlan &plan )
         _createGrid( grid, interiorTriangles );
         // store it       
         _donorSiteGrids.add( grid );
-        std::cout << "\t\t " <<  grid.points.size() << " grid points calculated \n";
+        std::cout << "\t\t " <<  grid.size() << " grid points calculated \n";
     }    
 
+    std::cout << "\nfirst: " << plan.defectSites(0).spline.triangles()[2].point0() << "\n";
+    std::cout << "first: " << plan.defectSites(0).spline.triangles()[2].point1() << "\n";
+    std::cout << "first: " << plan.defectSites(0).spline.triangles()[2].point2() << "\n";
+    
+    plBuildDefectShader computeShader("./shaders/test.comp");
+    
+    computeShader.bufferGridTextures( _defectSiteGrids[0] );
+    computeShader.bufferSplineTexture( plan.defectSites(0).spline );
+    computeShader.dispatch();
 
 }
 
@@ -53,8 +62,7 @@ void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> 
     const PLfloat GRID_SPACING = 0.2f; //sqrt(3.0f) * PLUG_RADIUS; 
     
     // randomly select points in each triangle to achieve approx spacing    
-    grid.points.clear();
-    grid.normals.clear();
+    grid.clear();
     
     for (PLuint i=0; i < triangles.size(); i++)
     {
@@ -112,8 +120,7 @@ void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> 
                 if ( bCoord.x < -0.001 || bCoord.y < -0.001 || bCoord.z < -0.001 )
                     break;  // outside of triangle edge, go to next row
                 
-                    grid.points.add ( p );    
-                    grid.normals.add( triangles[i].normal() ); 
+                    grid.addPointAndNormal( plVector4(p,1), plVector4(triangles[i].normal(),1) ); 
                 
             }   
         }

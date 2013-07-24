@@ -1,8 +1,38 @@
 #version 430
 
-layout (local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 1024) in;
+
+layout (rgba32f, binding = 0) uniform image1D input_positions;
+layout (rgba32f, binding = 1) uniform image2D input_normals;
+layout (rgba32f, binding = 2) uniform image2D spline_triangles;
+layout (rgba32f, binding = 3) uniform image2D output;
 
 void main(void)
 { 
-    uint gid = gl_GlobalInvocationID.x;
+    int gid = int(gl_GlobalInvocationID.x);
+    
+    vec4 pos = imageLoad(input_positions, gid);
+    
+    ivec2 id0 = ivec2(gid, 0);
+    ivec2 id1 = ivec2(gid, 1);
+    ivec2 id2 = ivec2(gid, 2);
+    ivec2 id3 = ivec2(gid, 3);
+    
+    ivec2 t0 = ivec2(2,0);
+    ivec2 t1 = ivec2(2,1);
+    ivec2 t2 = ivec2(2,2);
+    
+    /*   
+    imageStore(output, id0, pos);
+    imageStore(output, id1, pos*2);
+    imageStore(output, id2, pos*4);
+    imageStore(output, id3, pos*8); 
+    */
+    
+    imageStore(output, id0, imageLoad(spline_triangles, t0) );
+    imageStore(output, id1, imageLoad(spline_triangles, t1) );
+    imageStore(output, id2, imageLoad(spline_triangles, t2) );
+    imageStore(output, id3, pos*8); 
 }
+
+

@@ -7,13 +7,9 @@
 #include "plTransform.h"
 #include "plPlan.h"
 
-class plSiteGrid
-{
-    public:
-    
-        plSeq<plVector3>  points; 
-        plSeq<plVector3>  normals;
-};
+#include "plSiteGrid.h"
+#include "plBuildDefectShader.h"
+
 
 
 class plAutomaticPlanner
@@ -30,6 +26,8 @@ class plAutomaticPlanner
         static plSeq<plSiteGrid>  _defectSiteGrids;
           
         static void _createGrid ( plSiteGrid &grid, const plSeq<plTriangle> &triangles );  
+            
+          
                         
 };
 
