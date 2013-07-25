@@ -235,6 +235,7 @@ void plRenderer::_drawScene()
     for (PLuint i=0; i<plAutomaticPlanner::_defectSiteGrids.size(); i++)
     {    
         plColourStack::load( 0.2, 0.6, 0.9 );
+        /*
         for (PLuint j=0; j<plAutomaticPlanner::_defectSiteGrids[i].size(); j++)
         {
             PLfloat x = plAutomaticPlanner::_defectSiteGrids[i].points(j).x;
@@ -243,6 +244,9 @@ void plRenderer::_drawScene()
             plDraw::sphere( plVector3(x,y,z), 0.09f );
             
         }
+        */
+        
+        plAutomaticPlanner::DEBUG_MESH->draw();
     }
     
     /* DEBUG FOR OCTREES

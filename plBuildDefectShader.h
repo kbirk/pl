@@ -6,6 +6,8 @@
 #include "plSiteGrid.h"
 #include "plSpline.h"
 
+#include "plMesh.h"
+
 #define PL_DEFECT_NUM_PERTURBATIONS     4
 
 class plBuildDefectShader : public plShader
@@ -20,7 +22,7 @@ class plBuildDefectShader : public plShader
         void bufferGridTextures( const plSiteGrid &grid );
         void bufferSplineTexture( const plSpline &spline );
         
-        void dispatch();        
+        plMesh* dispatch();        
         void loadOutputTexture();
         
     private:
@@ -29,10 +31,12 @@ class plBuildDefectShader : public plShader
         PLuint        _inputGridPointsID; 
         PLuint        _inputGridNormalsID; 
         
+        PLuint        _candidateAreasID;
         PLuint        _outputTextureID;
         //PLuint        _outputTextureY;
         
-        PLuint        _splineTriangleCountID;
+        PLuint        _splineTriangleCount;  
+        PLuint        _splineTriangleCountID;       
         PLuint        _splineTextureID;
                
                       

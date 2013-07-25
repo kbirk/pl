@@ -155,22 +155,21 @@ class plStack : public std::stack<T> {};
 template <typename T>
 class plSet : public std::set<T> {};
 
+
 class plTimer
 {
-
     public:
     
         static PLtime now()
         {
             typedef std::chrono::high_resolution_clock      plClock;
-            typedef std::chrono::milliseconds               plMilliseconds;        
-            return std::chrono::duration_cast<plMilliseconds>( plClock::now().time_since_epoch() ).count() % 1000;
+            typedef std::chrono::milliseconds               plMilliseconds;                
+            return std::chrono::duration_cast<plMilliseconds>( plClock::now().time_since_epoch() ).count();
         }
-    
+        
     private:
     
         plTimer();
-
 };
 
 

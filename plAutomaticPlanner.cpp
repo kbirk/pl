@@ -3,7 +3,25 @@
 plSeq<plSiteGrid> plAutomaticPlanner::_donorSiteGrids;
 plSeq<plSiteGrid> plAutomaticPlanner::_defectSiteGrids;
 
+plMesh* plAutomaticPlanner::DEBUG_MESH = NULL;
+
 void plAutomaticPlanner::calculate( plPlan &plan )
+{
+    // generate site grids
+    _generateSiteGrids( plan );
+    
+    
+    std::cout << "\nposition: " << _defectSiteGrids[0].points(0) << "\n";
+    std::cout << "normal: "      << _defectSiteGrids[0].normals(0) << "\n"; 
+    
+    //  
+    _dispatchDefectShader( plan );
+     
+     
+       
+} 
+
+void plAutomaticPlanner::_generateSiteGrids( plPlan &plan )
 {
     _donorSiteGrids.clear();
     _defectSiteGrids.clear();
@@ -43,18 +61,27 @@ void plAutomaticPlanner::calculate( plPlan &plan )
         _donorSiteGrids.add( grid );
         std::cout << "\t\t " <<  grid.size() << " grid points calculated \n";
     }    
-
-    std::cout << "\nfirst: " << plan.defectSites(0).spline.triangles()[2].point0() << "\n";
-    std::cout << "first: " << plan.defectSites(0).spline.triangles()[2].point1() << "\n";
-    std::cout << "first: " << plan.defectSites(0).spline.triangles()[2].point2() << "\n";
+}
     
+    
+void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
+{
+    // compile / link compute shader
     plBuildDefectShader computeShader("./shaders/test.comp");
     
+    // buffer data
     computeShader.bufferGridTextures( _defectSiteGrids[0] );
-    computeShader.bufferSplineTexture( plan.defectSites(0).spline );
-    computeShader.dispatch();
-
+    computeShader.bufferSplineTexture( plan.defectSites(0).spline ); 
+       
+    PLtime t0 = plTimer::now();
+    
+    DEBUG_MESH = computeShader.dispatch();
+    
+    PLtime t1 = plTimer::now();
+    
+    std::cout << "Compute shader execution time: " << t1 - t0 << " milliseconds \n";
 }
+     
 
 void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> &triangles )
 {
@@ -66,7 +93,7 @@ void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> 
     
     for (PLuint i=0; i < triangles.size(); i++)
     {
-        PLfloat area = triangles[i].getArea();
+        //PLfloat area = triangles[i].getArea();
 
         plVector3 e01 = triangles[i].point1() - triangles[i].point0();
         plVector3 e12 = triangles[i].point2() - triangles[i].point1();
