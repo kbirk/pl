@@ -78,27 +78,14 @@ void plArthroscope::updateImage(ImageManipulation im)
     }
 
     int image_center_x = image->width/2;
-//    std::cout << "image->width " << image->width << std::endl;
-//    std::cout << "image_center_x " << image_center_x << std::endl;
     int image_center_y = image->height/2;
-//    std::cout << "image->height " << image->height << std::endl;
-//    std::cout << "image_center_y " << image_center_y << std::endl;
 
     int texture_center = TEXTURE_SIZE/2;
-//    std::cout << "texture_center " << texture_center << std::endl;
-
     int texture_offset_y = texture_center - CAMERA_RADIUS;
     int texture_offset_x = texture_center - CAMERA_RADIUS * (1 + TEXTURE_SCALE_FACTOR);
-//    std::cout << "texture_offset_x " << texture_offset_x << std::endl;
-//    std::cout << "texture_offset_y " << texture_offset_y << std::endl;
-
 
     int colOffset = image_center_x - CAMERA_RADIUS * (1 + TEXTURE_SCALE_FACTOR / 2) ;
-//    std::cout << "colOffset " << colOffset << std::endl;
-
-
     int rowOffset = image_center_y - CAMERA_RADIUS;
-//    std::cout << "rowOffset " << rowOffset << std::endl;
 
     img = image->imageData;
     WIDTH = image->width;
