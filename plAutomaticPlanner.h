@@ -31,7 +31,7 @@ class plAutomaticPlanner
         static void _createGrid ( plSiteGrid &grid, const plSeq<plTriangle> &triangles );          
         static void _dispatchDefectShader( plPlan &plan );      
          
-        static plMesh *DEBUG_MESH;  
+        static plSeq<plMesh*> DEBUG_MESH;  
                         
 };
 

@@ -3,7 +3,7 @@
 plSeq<plSiteGrid> plAutomaticPlanner::_donorSiteGrids;
 plSeq<plSiteGrid> plAutomaticPlanner::_defectSiteGrids;
 
-plMesh* plAutomaticPlanner::DEBUG_MESH = NULL;
+plSeq<plMesh*> plAutomaticPlanner::DEBUG_MESH;
 
 void plAutomaticPlanner::calculate( plPlan &plan )
 {
@@ -75,7 +75,30 @@ void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
        
     PLtime t0 = plTimer::now();
     
-    DEBUG_MESH = computeShader.dispatch();
+    // DEBUG
+    
+    for (PLuint i=0; i<_defectSiteGrids[0].size(); i++)
+    {
+        
+        DEBUG_MESH.add( computeShader.dispatch(i) );    
+    
+        //PLtime t = plTimer::now();
+
+        /*
+        while(true)
+        {
+            if ( (plTimer::now() - t) > 1000 )
+            {
+                break;
+            }
+            usleep(2000);
+        }
+        */
+    }
+    
+        
+    
+    //DEBUG_MESH = computeShader.dispatch();
     
     PLtime t1 = plTimer::now();
     
@@ -86,7 +109,7 @@ void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
 void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> &triangles )
 {
     const PLfloat PLUG_RADIUS  = 2.0f;
-    const PLfloat GRID_SPACING = 0.2f; //sqrt(3.0f) * PLUG_RADIUS; 
+    const PLfloat GRID_SPACING = 8.0f; //sqrt(3.0f) * PLUG_RADIUS; 
     
     // randomly select points in each triangle to achieve approx spacing    
     grid.clear();

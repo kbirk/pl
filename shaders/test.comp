@@ -9,6 +9,7 @@ layout (r32f,    binding = 3) uniform image1D temp_potential_graft_areas;
 layout (rgba32f, binding = 4) uniform image2D output;
 
 uniform uint uSplineTriangleCount;
+uniform uint DEBUG_ID;
 
 struct triangle
 {
@@ -246,7 +247,7 @@ void main(void)
         t.p2 = vec3( imageLoad( spline_triangles, ivec2(i,2) ) );
         t.n  = vec3( imageLoad( spline_triangles, ivec2(i,3) ) ); 
         
-        float radius = 4.0;
+        float radius = 1.0;
         
         triangle tris[2];
         int numResults = intersectTriangle( tris, g, t, radius );  
@@ -257,7 +258,7 @@ void main(void)
             
             ///////////////   
             // TEMP, OUTPUT THE FIRST SET OF TRIANGLES FOR gid==0
-            if (gid == 7000)
+            if (gid == DEBUG_ID)
             {
                 imageStore( output, ivec2(num_tri, 0), vec4( tris[j].p0, 1) );
                 imageStore( output, ivec2(num_tri, 1), vec4( tris[j].p1, 1) );

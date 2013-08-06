@@ -17,6 +17,9 @@ plBuildDefectShader::~plBuildDefectShader()
 void plBuildDefectShader::getUniformLocations()
 {
     _splineTriangleCountID = glGetUniformLocation(_shaderProgramID, "uSplineTriangleCount");
+    
+    
+    DEBUG_ID = glGetUniformLocation(_shaderProgramID, "DEBUG_ID");
 }
 
 void plBuildDefectShader::bufferGridTextures( const plSiteGrid &grid )
@@ -83,7 +86,7 @@ void plBuildDefectShader::bufferSplineTexture( const plSpline &spline )
 }
 
 
-plMesh* plBuildDefectShader::dispatch()
+plMesh* plBuildDefectShader::dispatch(PLuint i)
 {
     // bind compute shader
     bind();
@@ -97,6 +100,7 @@ plMesh* plBuildDefectShader::dispatch()
     
     // bind uniforms
     glUniform1ui(_splineTriangleCountID, _splineTriangleCount);
+    glUniform1ui(DEBUG_ID, i);
     
     // get workgroup number
     PLuint workgroups = ceil(_inputGridSize / (PLfloat) 1024); // ensure enough workgroups are used

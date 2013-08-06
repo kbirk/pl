@@ -22,7 +22,7 @@ class plBuildDefectShader : public plShader
         void bufferGridTextures( const plSiteGrid &grid );
         void bufferSplineTexture( const plSpline &spline );
         
-        plMesh* dispatch();        
+        plMesh* dispatch(PLuint i);        
         void loadOutputTexture();
         
     private:
@@ -39,7 +39,7 @@ class plBuildDefectShader : public plShader
         PLuint        _splineTriangleCountID;       
         PLuint        _splineTextureID;
                
-                      
+        PLuint        DEBUG_ID;             
         
 
 };
