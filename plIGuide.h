@@ -41,13 +41,20 @@ class plIGuide : public plModelSpecific,
         plSeq<edgeIndices> collectOutsideEdges();
         plSeq<edgeIndices> collectOutsideEdgesUnsorted();               // helper to collectOutsideEdges
         plSeq<edgeIndices> collectOutsideEdgesSort(plSeq<edgeIndices>); // helper to collectOutsideEdges
+        plSeq<plTriangle>  createTemplatePieceTransformed ( const plSeq<plTriangle> &baseTriObject ,
+                                                            const plMatrix44  &plugTransform,
+                                                            const PLdouble    &zOffset,
+                                                            const plVector3   &scale,
+                                                            const PLdouble    &keyTranslationXAxis,
+                                                            const PLdouble    &keyRotationZAxis );
 
     public:
 
-        PLfloat        thickness;
-        plBoundary     boundary;
-        plSeq<PLuint>  graftIndices;
-        plSeq<plKWire> kwires;
+        PLfloat         thickness;
+        plBoundary      boundary;
+        plSeq<PLuint>   graftIndices;
+        plSeq<plGraft*> *grafts;      // pointer to the plan's grafts
+        plSeq<plKWire>  kwires;
 
         // individual pieces that are to be either boolean'ed together or exported to some other program
         plSeq<plTriangle> templateBase;
@@ -60,7 +67,8 @@ class plIGuide : public plModelSpecific,
         plIGuide( PLuint _modelID, const plBoneAndCartilage &_model );
 
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
-        
+
+        PLbool generateMeshes();
         void createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, const plGraft &graft, const plBoundary &boundary);
 
         void draw();
