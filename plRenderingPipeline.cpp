@@ -117,7 +117,7 @@ void plShaderStack::use()
     else if ( dynamic_cast<const plMinimalShader*>( _stack.top() ) )
     {
         // minimal shader
-        const plMinimalShader *shader = static_cast<const plMinimalShader*>(_stack.top());
+        const plMinimalShader *shader = static_cast<const plMinimalShader*>( _stack.top() );
         shader->setColourUniform( plColourStack::top()  );
     }  
     else if ( dynamic_cast<const plTextureShader*>( _stack.top() ) )
@@ -129,8 +129,9 @@ void plShaderStack::use()
 
     if (plModelStack::updated || plCameraStack::updated || plProjectionStack::updated)
     {
-        // only set transform uniforms if they need to be changed
-        _stack.top()->setTransformUniforms( plModelStack::top(), plCameraStack::top(), plProjectionStack::top() );
+        // only set transform uniforms if they need to be changed, cast to minimal for transform uniform setter function
+        const plMinimalShader *shader = static_cast<const plMinimalShader*>( _stack.top() );
+        shader->setTransformUniforms( plModelStack::top(), plCameraStack::top(), plProjectionStack::top() );
         // reset update flags
         plModelStack::updated      = false;
         plCameraStack::updated     = false;

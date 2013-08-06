@@ -6,9 +6,7 @@ const plGraftEditor*     plRenderer::_graftEditorToDraw      = NULL;
 const plBoundaryEditor*  plRenderer::_boundaryEditorToDraw   = NULL;
 const plTextureMesh*     plRenderer::_arthroTextureToDraw     = NULL;
 plSeq<const plTrackedObject*> plRenderer::_trackedObjectsToDraw;
-plSeq<const plLineMesh*>      plRenderer::_debugToDraw;
 
-plComputeShader*         plRenderer::_computeShader          = NULL;
 plMinimalShader*         plRenderer::_minimalShader          = NULL;
 plPhongShader*           plRenderer::_phongShader            = NULL; 
 plPickingShader*         plRenderer::_pickingShader          = NULL;
@@ -17,7 +15,6 @@ plTextureShader*         plRenderer::_textureShader          = NULL;
 
 void plRenderer::init()
 {
-    //_computeShader = new plComputeShader("./shaders/test.comp");
     _minimalShader = new plMinimalShader("./shaders/minimal.vert", "./shaders/minimal.frag");
     _phongShader   = new plPhongShader  ("./shaders/phong.vert", "./shaders/phong.frag");
     _pickingShader = new plPickingShader("./shaders/picking.vert", "./shaders/picking.frag");  
@@ -35,7 +32,6 @@ void plRenderer::_clearRenderQueue()
     _boundaryEditorToDraw = NULL;
     _arthroTextureToDraw  = NULL;
     _trackedObjectsToDraw.clear();
-    _debugToDraw.clear();
 }
 
 
@@ -78,12 +74,6 @@ void plRenderer::queue( const plTextureMesh &arthroTexture )
 void plRenderer::queue( const plTrackedObject &object )
 {
     _trackedObjectsToDraw.add( &object );
-}
-
-
-void plRenderer::queue( const plLineMesh &debug )
-{
-    _debugToDraw.add( &debug );
 }
 
 
@@ -188,14 +178,14 @@ void plRenderer::_drawScene()
         _planToDraw->drawModels();
     }
 
-    // graft editor
+    // graft editor handles
     if (_graftEditorToDraw != NULL)
     {
-        _graftEditorToDraw->draw();
+        _graftEditorToDraw->drawHandles();
     }
     
-    // boundary editor
-    if (_boundaryEditorToDraw != NULL && _planToDraw != NULL)
+    // draw editor menus
+    if ( (_boundaryEditorToDraw != NULL || _graftEditorToDraw != NULL) && _planToDraw != NULL)
     {
         GLint viewport[4];
         glGetIntegerv( GL_VIEWPORT, viewport );
@@ -206,7 +196,8 @@ void plRenderer::_drawScene()
         plCameraStack::push( plMatrix44() );    
         plProjectionStack::push( plMatrix44( 0, viewport[2], 0, viewport[3], -1, 1) ); // ortho, viewport dimensions
         
-        _boundaryEditorToDraw->draw( *_planToDraw );
+        _boundaryEditorToDraw->drawMenu( *_planToDraw );
+        _graftEditorToDraw->drawMenu( *_planToDraw );
         
         plCameraStack::pop(); 
         plProjectionStack::pop();
@@ -231,9 +222,12 @@ void plRenderer::_drawScene()
     for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)
     {
         plColourStack::load( 0.9, 0.6, 0.2 );
-        for (PLuint j=0; j<plAutomaticPlanner::_donorSiteGrids[i].points.size(); j++)
+        for (PLuint j=0; j<plAutomaticPlanner::_donorSiteGrids[i].size(); j++)
         {
-            plDraw::sphere( plAutomaticPlanner::_donorSiteGrids[i].points[j], 0.09f );
+            PLfloat x = plAutomaticPlanner::_donorSiteGrids[i].points(j).x;
+            PLfloat y = plAutomaticPlanner::_donorSiteGrids[i].points(j).y;
+            PLfloat z = plAutomaticPlanner::_donorSiteGrids[i].points(j).z;
+            plDraw::sphere( plVector3(x,y,z), 0.09f );
             
         }
     }
@@ -241,14 +235,30 @@ void plRenderer::_drawScene()
     for (PLuint i=0; i<plAutomaticPlanner::_defectSiteGrids.size(); i++)
     {    
         plColourStack::load( 0.2, 0.6, 0.9 );
-        for (PLuint j=0; j<plAutomaticPlanner::_defectSiteGrids[i].points.size(); j++)
+        
+        for (PLuint j=0; j<plAutomaticPlanner::_defectSiteGrids[i].size(); j++)
         {
-            plDraw::sphere( plAutomaticPlanner::_defectSiteGrids[i].points[j], 0.09f );
+            PLfloat x = plAutomaticPlanner::_defectSiteGrids[i].points(j).x;
+            PLfloat y = plAutomaticPlanner::_defectSiteGrids[i].points(j).y;
+            PLfloat z = plAutomaticPlanner::_defectSiteGrids[i].points(j).z;
+            plDraw::sphere( plVector3(x,y,z), 0.09f );
             
         }
+        
+        for (PLuint j=0; j<plAutomaticPlanner::DEBUG_MESH.size(); j++)
+        {
+            PLfloat r = (j % 100) * 0.01;
+            PLfloat g = (j % 1000) * 0.001;
+            PLfloat b = (j % 20) * 0.05;
+        
+            plColourStack::load( r, g, b );
+            plAutomaticPlanner::DEBUG_MESH[j]->draw();
+        }
+        
+        
     }
     
-    /*
+    /* DEBUG FOR OCTREES
     // set flat shader
     plShaderStack::push( _minimalShader );    
     
@@ -336,23 +346,24 @@ void plRenderer::_drawScenePicking()
     // graft editor
     if (_graftEditorToDraw != NULL)
     {
-        _graftEditorToDraw->draw();
+        _graftEditorToDraw->drawHandles();
     }
     
-    // boundary editor
-    if (_boundaryEditorToDraw != NULL && _planToDraw != NULL)
+    // draw editor menus
+    if ( (_boundaryEditorToDraw != NULL || _graftEditorToDraw != NULL) && _planToDraw != NULL)
     {
         GLint viewport[4];
         glGetIntegerv( GL_VIEWPORT, viewport );
         
-        // set identity viewing matrix and ortho projection to screen dimension
+        // set identity viewing matrix and ortho projection to screen dimension   
         plCameraStack::push( plMatrix44() );    
         plProjectionStack::push( plMatrix44( 0, viewport[2], 0, viewport[3], -1, 1) ); // ortho, viewport dimensions
         
-        _boundaryEditorToDraw->draw( *_planToDraw );
+        _boundaryEditorToDraw->drawMenu( *_planToDraw );
+        _graftEditorToDraw->drawMenu( *_planToDraw );
         
         plCameraStack::pop(); 
-        plProjectionStack::pop();         
+        plProjectionStack::pop();
     }   
 
 }

@@ -15,7 +15,7 @@ void plDraw::arrow( const plVector3 &origin, const plVector3 &direction, PLfloat
 
 void plDraw::arrow( const plVector3 &direction, PLfloat length, PLfloat scale)
 {      
-    static plMesh cone(PL_HEAD_RADIUS, 0.0f, PL_ARROW_LENGTH, 30, 1);
+    static plShapeMesh cone(PL_HEAD_RADIUS, 0.0f, PL_ARROW_LENGTH, 30, 1);
 
     plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
 
@@ -66,7 +66,7 @@ void plDraw::knob(const plVector3 &direction, PLfloat length, PLfloat scale)
 
 void plDraw::sphere(float radius)
 {
-    static plMesh sphere(1, 20, 20);
+    static plShapeMesh sphere(1, 20, 20);
 
     plModelStack::push();    
     {
@@ -90,7 +90,7 @@ void plDraw::sphere(const plVector3 &origin, float radius)
 
 void plDraw::cylinder(float radius, float height)
 {
-    static plMesh cylinder(1.0f, 1.0f, 1.0f, 30, 1);    
+    static plShapeMesh cylinder(1.0f, 1.0f, 1.0f, 30, 1);    
 
     plModelStack::push();
     {
@@ -112,7 +112,7 @@ void plDraw::disk(const plVector3 &origin, float radius)
 
 void plDraw::disk(float radius)
 {
-    static plMesh disk(0.0f, 1.0f, 20, 20);   
+    static plShapeMesh disk(0.0f, 1.0f, 20, 20);   
 
     plModelStack::push();
     {
@@ -126,10 +126,10 @@ void plDraw::disk(float radius)
 void plDraw::scope( const plTrackedObject &scope )
 {
     // Draw the TA104 arthroscope
-    static plMesh c1(1.5f, 2.0f, 120.0f, 16, 4);
-    static plMesh c2(4.0f, 4.0f, 30.0f, 16, 4);
-    static plMesh c3(8.0f, 8.0f, 60.0f, 16, 4);
-    static plMesh c4(8.0f, 0.0f, 0.0f, 16, 4);
+    static plShapeMesh c1(1.5f, 2.0f, 120.0f, 16, 4);
+    static plShapeMesh c2(4.0f, 4.0f, 30.0f, 16, 4);
+    static plShapeMesh c3(8.0f, 8.0f, 60.0f, 16, 4);
+    static plShapeMesh c4(8.0f, 0.0f, 0.0f, 16, 4);
 
     if (scope.isVisible)
         plColourStack::load(0.4, 0.4, 0.4);
@@ -161,8 +161,8 @@ void plDraw::scope( const plTrackedObject &scope )
 
 void plDraw::probe( const plTrackedObject &probe )
 {
-    static plMesh c1(0.0f, 1.0f, 4.0f, 16, 4);
-    static plMesh c2(1.0f, 2.5f, 124.0f, 16, 4);
+    static plShapeMesh c1(0.0f, 1.0f, 4.0f, 16, 4);
+    static plShapeMesh c2(1.0f, 2.5f, 124.0f, 16, 4);
     
     // Draw the TA002 probe
     if (probe.isVisible)

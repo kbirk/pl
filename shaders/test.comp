@@ -1,8 +1,283 @@
 #version 430
 
-layout (local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 1024) in;
+
+layout (rgba32f, binding = 0) uniform image1D input_positions;
+layout (rgba32f, binding = 1) uniform image1D input_normals;
+layout (rgba32f, binding = 2) uniform image2D spline_triangles;
+layout (r32f,    binding = 3) uniform image1D temp_potential_graft_areas;
+layout (rgba32f, binding = 4) uniform image2D output;
+
+uniform uint uSplineTriangleCount;
+uniform uint DEBUG_ID;
+
+struct triangle
+{
+    vec3 p0;
+    vec3 p1;
+    vec3 p2;
+    vec3 n;
+};
+
+
+struct gridPoint
+{
+    vec3 p;
+    vec3 n;
+};
+
+
+float distToAxis( in vec3 axis, in vec3 v )    
+{
+    // v is already in the *local* coordinate system of the graft        
+    return length(v - dot(v, axis)*axis);
+}
+
+
+float projectedDistOnAxis( in vec3 axis, in vec3 v )
+{
+    // v is already in the *local* coordinate system of the graft 
+    return dot(v, axis);
+}
+
+vec3 pointOnCircumference( in vec3 u, in vec3 v, in float radius )
+{
+    vec3 uProj = u;		// ignore component along axis
+    vec3 vProj = v;
+
+    //uProj.y = 0;
+    //vProj.y = 0;
+
+    float a = dot( (vProj-uProj), (vProj-uProj) );
+    float b = 2 * dot(uProj, (vProj-uProj) );
+    float c = dot( uProj, uProj) - radius*radius;
+
+    float radical = b*b - 4*a*c;
+    
+    if (radical < 0) 
+    {
+        // error
+        return vec3(0,0,0);	
+    }
+
+    float root = sqrt(radical);
+
+    float t1 = (-b + root)/(2*a);
+    float t2 = (-b - root)/(2*a);
+
+    float t;
+    if (t1 >= 0 && t1 <= 1 && (t1 <= t2 || t2 <= 0))
+    {
+        t = t1;
+    }
+    else if (t2 >= 0 && t2 <= 1 && (t2 <= t1 || t1 >= 1))
+    {
+        t = t2;
+    }
+    else 
+    {
+        // error
+        return vec3(0,0,0);	
+    }
+
+    return u + t*(v-u);
+    
+}
+
+int intersectTriangle( out triangle tri[2], in gridPoint g, in triangle t, in float radius ) 
+{
+    if ( dot(t.n, g.n) < 0 )
+        return 0;
+
+    // get vector from graft centre to triangle point
+    vec3 point0 = t.p0 - g.p;
+    vec3 point1 = t.p1 - g.p;
+    vec3 point2 = t.p2 - g.p;
+    
+    // Compute distance to graft axis
+    float dist0 = distToAxis( g.n, point0 );
+    float dist1 = distToAxis( g.n, point1 );
+    float dist2 = distToAxis( g.n, point2 );
+    
+    // If too far from graft axis, reject.  Note that this will miss some slightly-overlapping triangles!
+    float minDist = min( dist0, min( dist1, dist2 ) );
+    
+    if ( minDist > radius )
+    {
+        // no vertices are inside      
+        return 0;
+    }
+    
+    // If too far away from origin, reject.   
+    float proj0 = dot( point0, g.n );
+    float proj1 = dot( point1, g.n );
+    float proj2 = dot( point2, g.n );
+
+    float maxProj = max( proj0, max( proj1, proj2 ) );
+    float minProj = min( proj0, min( proj1, proj2 ) );
+    
+    float VERTICAL_THRESHOLD = 8.0f;
+        
+    if (minProj > VERTICAL_THRESHOLD || maxProj < -VERTICAL_THRESHOLD)
+        return 0;   
+    
+    // If entirely within the graft, accept the whole triangle (this is cheaper).
+    float maxDist = max( dist0, max( dist1, dist2 ) );
+
+    if (maxDist <= radius) 
+    {
+        tri[0].p0 = t.p0; //point0 + g.p;
+        tri[0].p1 = t.p1; //point1 + g.p;
+        tri[0].p2 = t.p2; //point2 + g.p;    
+        tri[0].n  = t.n;
+        return 1;
+    }
+    
+    // Not entirely within the graft, so find the intersection of the
+    // triangle with the cylinder wall
+
+    // Find a first vertex that is inside
+
+    vec3  vs[3];
+    float ds[3];
+  
+    if (dist0 <= radius) 
+    {
+        vs[0] = t.p0; ds[0] = dist0;
+        vs[1] = t.p1; ds[1] = dist1;
+        vs[2] = t.p2; ds[2] = dist2;
+    } 
+    else if (dist1 <= radius)
+    {
+        vs[0] = t.p1; ds[0] = dist1;
+        vs[1] = t.p2; ds[1] = dist2;
+        vs[2] = t.p0; ds[2] = dist0;
+    } 
+    else 
+    {    
+        vs[0] = t.p2; ds[0] = dist2;
+        vs[1] = t.p0; ds[1] = dist0;
+        vs[2] = t.p1; ds[2] = dist1;
+    }
+
+    bool prevInside = true; // always starts as true (ds[0] <= radius)
+
+    vec3 points[4];
+    int count = 0;
+    
+    for (int i=0; i<3; i++) 
+    {
+        int j = (i+1) % 3;		// vertex at next end of edge
+
+        bool nextInside = (ds[j] <= radius);
+
+        if (prevInside && nextInside) 
+        {
+            // Add inside triangle point
+            points[count++] = vs[j];
+        } 
+        else if (prevInside && !nextInside) 
+        {
+            // Find point on edge of graft
+            points[count++] = pointOnCircumference( (vs[i]-g.p), (vs[j]-g.p), radius ) + g.p;
+        } 
+        else if (!prevInside && nextInside) 
+        {
+            // Find entering point and angle 
+            points[count++] = pointOnCircumference( (vs[i]-g.p), (vs[j]-g.p), radius ) + g.p;
+            // Add inside triangle point    
+            points[count++] = vs[j];
+        }
+
+        prevInside = nextInside;
+    }
+
+    tri[0].p0 = points[0];// + g.p;
+    tri[0].p1 = points[1];// + g.p;
+    tri[0].p2 = points[2];// + g.p;
+    tri[0].n = t.n;
+    
+    if (count == 4)
+    {
+        // polygons reach a max of 4 vertices, so if there are 4, create a second triangle
+        tri[1].p0 = points[0];// + g.p;
+        tri[1].p1 = points[2];// + g.p;
+        tri[1].p2 = points[3];// + g.p;
+        tri[1].n = t.n;
+        return 2;
+    }
+    return 1;
+}
+
+
+float area( in triangle t)
+{
+    return 0.5 * cross( (t.p1 - t.p0),  (t.p2 - t.p0) ).length(); 
+}
+
 
 void main(void)
 { 
-    uint gid = gl_GlobalInvocationID.x;
+    // get global invocation id
+    int gid = int(gl_GlobalInvocationID.x);
+    
+    // get defect site position and normal
+    vec3 position = vec3( imageLoad( input_positions, gid ) );
+    vec3 normal   = vec3( imageLoad( input_normals,   gid ) );    
+       
+    gridPoint g;    
+    g.p = position;
+    g.n = normal;
+    
+    float area_sum = 0;
+    int   num_tri = 0;
+    
+    // iterate through each triangle in mesh
+    for(uint i=0; i<uSplineTriangleCount; i++)
+    {
+        triangle t;
+        t.p0 = vec3( imageLoad( spline_triangles, ivec2(i,0) ) );
+        t.p1 = vec3( imageLoad( spline_triangles, ivec2(i,1) ) );
+        t.p2 = vec3( imageLoad( spline_triangles, ivec2(i,2) ) );
+        t.n  = vec3( imageLoad( spline_triangles, ivec2(i,3) ) ); 
+        
+        float radius = 4.0;
+        
+        triangle tris[2];
+        int numResults = intersectTriangle( tris, g, t, radius );  
+
+        for (uint j=0; j<numResults; j++)
+        {
+            area_sum += area( tris[j] );
+            
+            ///////////////   
+            // TEMP, OUTPUT THE FIRST SET OF TRIANGLES FOR gid==0
+            if (gid == DEBUG_ID)
+            {
+                imageStore( output, ivec2(num_tri, 0), vec4( tris[j].p0, 1) );
+                imageStore( output, ivec2(num_tri, 1), vec4( tris[j].p1, 1) );
+                imageStore( output, ivec2(num_tri, 2), vec4( tris[j].p2, 1) );
+                imageStore( output, ivec2(num_tri, 3), vec4( tris[j].n, 1)  ); 
+            }
+            num_tri++;
+            //////////////////
+            
+        }
+             
+    }
+    
+    // store area
+    //imageStore(temp_potential_graft_areas, gid , vec4(area_sum, 0, 0, 1) );
+    
+    // block and wait for all graft area calculations
+    //barrier();
+
+    /* 
+    imageStore(output, ivec2(gid, 0), vec4( g.p, 1 ) );
+    imageStore(output, ivec2(gid, 1), vec4( imageLoad( temp_potential_graft_areas, gid ).x, 0, 0, 1) );
+    imageStore(output, ivec2(gid, 2), vec4( area_sum, -1, 0, 1)      );
+    imageStore(output, ivec2(gid, 3), vec4( num_tri++, 0, 0, 1)   ); 
+    */
 }
+
+

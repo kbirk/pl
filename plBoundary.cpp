@@ -422,10 +422,10 @@ void plBoundary::draw() const
 
 std::ostream& operator << ( std::ostream& out, const plBoundary &b )
 {
-    for (PLuint j=0; j<b._points.size(); j++)
+    for (PLuint j=0; j<b.size(); j++)
     {
-        out << "," << b._points[j];
-        out << "," << b._normals[j];
+        out << "," << b.points(j);
+        out << "," << b.normals(j);
     }
     return out;
 }

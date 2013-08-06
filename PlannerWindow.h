@@ -27,8 +27,6 @@ class PlannerWindow : public Window
         // planner
         plPlan           _plan;
 
-        plOctree        *octree;
-
         // editing
         plGraftEditor    _graftEditor; 
         plBoundaryEditor _boundaryEditor;

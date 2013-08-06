@@ -23,9 +23,11 @@ class plBoneAndCartilage
 
     private:
 
+        // prevent empty constructor, copy constructor, and assignment, which will invalidate the octree's pointers if rhs is scoped
         plBoneAndCartilage();
         plBoneAndCartilage( const plBoneAndCartilage &m );
-        plBoneAndCartilage operator= ( const plBoneAndCartilage &m ) const;    // prevent assignment, which will invalidate the octree's pointers if rhs is scoped
+        plBoneAndCartilage operator= ( const plBoneAndCartilage &m ) const;    
+        
 };
 
 

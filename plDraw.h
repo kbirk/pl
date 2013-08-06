@@ -2,7 +2,7 @@
 #define __PL_DRAW_H__
 
 #include "plCommon.h"
-#include "plMesh.h"
+#include "plShapeMesh.h"
 #include "plTrackedObject.h"
 
 class plDraw

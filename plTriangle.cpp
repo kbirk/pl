@@ -241,6 +241,8 @@ void plSTL::importFile( plSeq<plTriangle> &triangles, plString filename)
             triangles.add( plTriangle( n, p0, p1, p2 ) );
         }
     }
+    
+    infile.close();
     std::cout << "\t\t\tComplete.\n";
 }
 

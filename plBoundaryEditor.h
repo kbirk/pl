@@ -25,7 +25,7 @@ class plBoundaryEditor
 
         PLbool  processMouseClick( plPlan &plan, PLint x, PLint y );
         PLbool  processMouseDrag ( plPlan &plan, PLint x, PLint y );
-        void    processJoystickDrag ( plPlan &plan, PLint x, PLint y);
+        PLbool  processJoystickDrag ( plPlan &plan, PLint x, PLint y);
 
 
         void    addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
@@ -35,7 +35,7 @@ class plBoundaryEditor
         void    removeSelectedSite( plPlan &plan );
         void    toggleSelectedVisibility();
 
-        void    draw( const plPlan &plan ) const;
+        void    drawMenu( const plPlan &plan ) const;
 
     private: 
     
@@ -55,6 +55,8 @@ class plBoundaryEditor
         void _selectDonorSiteBoundary    ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
         void _selectIGuideBoundary       ( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex );
        
+        plIntersection _getBoundaryIntersection( plPlan &plan, PLuint x, PLuint y );
+
 };
 
 #endif

@@ -56,7 +56,7 @@ plPlan::~plPlan()
     for ( PLuint i = 0; i < _defectSites.size(); i++) delete _defectSites[i];
     for ( PLuint i = 0; i < _donorSites.size();  i++) delete _donorSites[i];
     for ( PLuint i = 0; i < _grafts.size();      i++) delete _grafts[i];
-    for ( PLuint i = 0; i < _iGuides.size();     i++) delete _iGuides[i];
+    for ( PLuint i = 0; i < _iGuideSites.size(); i++) delete _iGuideSites[i];
     for ( PLuint i = 0; i < _models.size();      i++) delete _models[i];
 }
 
@@ -88,10 +88,10 @@ void plPlan::drawElements() const
     }
         
     // Draw iGuides
-    for ( PLuint i = 0; i < _iGuides.size(); i++)
+    for ( PLuint i = 0; i < _iGuideSites.size(); i++)
     {            
         plPicking::value.id = i; 
-        _iGuides[i]->draw();
+        _iGuideSites[i]->draw();
     }
 }
 
@@ -127,14 +127,14 @@ void plPlan::addDonorSite( PLuint modelIndex )
     _donorSites.add( new plDonorSite( modelIndex, *_models[modelIndex] ) );
 }
 
-void plPlan::addIGuide( PLuint modelIndex )
+void plPlan::addIGuideSite( PLuint modelIndex )
 {
     if ( _models.size() < modelIndex+1 )
     {
         std::cerr << " plPlan addIGuide() error: model ID does not exist\n";
         return;
     }
-    _iGuides.add( new plIGuide( modelIndex, *_models[modelIndex] ) );
+    _iGuideSites.add( new plIGuideSite( modelIndex, *_models[modelIndex] ) );
 }
 
 
@@ -152,10 +152,10 @@ void plPlan::removeDonorSite( PLuint index)
 }
 
 
-void plPlan::removeIGuide( PLuint index)
+void plPlan::removeIGuideSite( PLuint index)
 {
-    delete _iGuides[index];
-    _iGuides.remove( index );
+    delete _iGuideSites[index];
+    _iGuideSites.remove( index );
 }
 
 
@@ -260,14 +260,13 @@ void plPlan::clear()
     for ( PLuint i = 0; i < _defectSites.size(); i++) delete _defectSites[i];
     for ( PLuint i = 0; i < _donorSites.size();  i++) delete _donorSites[i];
     for ( PLuint i = 0; i < _grafts.size();      i++) delete _grafts[i];
+    for ( PLuint i = 0; i < _iGuideSites.size(); i++) delete _iGuideSites[i];
     for ( PLuint i = 0; i < _iGuides.size();     i++) delete _iGuides[i];
-
     _defectSites.clear();
     _donorSites.clear();
+    _iGuideSites.clear();
     _grafts.clear();
     _iGuides.clear();
-
-
 }
 
 
@@ -283,7 +282,7 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         out << std::endl;
     }
     
-    // splines
+    // defect sites
     for (PLuint i=0; i<p.defectSites().size(); i++) 
     {    
         const plDefectSite &defectSite = p.defectSites(i);
@@ -294,7 +293,7 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         out << std::endl;
     }
 
-    // donor regions
+    // donor sites
     for (PLuint i=0; i<p.donorSites().size(); i++) 
     {
         const plDonorSite &donor = p.donorSites(i);
@@ -321,15 +320,24 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
         out << std::endl;
     }
 
-    // iGuides
-    for (PLuint i=0; i<p.iGuides().size(); i++) 
+    // iGuide sites
+    for (PLuint i=0; i<p.iGuideSites().size(); i++) 
     {
-        const plIGuide &iguide = p.iGuides(i);
+        const plIGuideSite &iguideSite = p.iGuideSites(i);
 
         out << std::endl;
-        out << "iguide," << i << ",model,"   << iguide.model() << std::endl;
-        out << "iguide," << i << ",boundary" << iguide.boundary << std::endl;  
-        out << "iguide," << i << ",graft indices";
+        out << "iguide site," << i << ",model,"   << iguideSite.model() << std::endl;
+        out << "iguide site," << i << ",boundary" << iguideSite.boundary << std::endl;  
+        
+    }
+        
+    // iGuides FIX THIS TOM!
+    for (PLuint i=0; i<p.iGuideSites().size(); i++) 
+    {   
+        const plIGuide &iguide= p.iGuides(i);
+        
+        out << "iguide site," << i << ",graft indices";
+        
         for (PLuint j=0; j<iguide.graftIndices.size(); j++)
         {
             out << "," << iguide.graftIndices[j];
@@ -341,6 +349,7 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
             out << "iguide," << i << ",kwire," << j << "," << iguide.kwires[j].position << "," << iguide.kwires[j].direction << std::endl;
         }
         out << std::endl;
+        
     }
     
     return out;

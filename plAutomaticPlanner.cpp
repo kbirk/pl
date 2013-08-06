@@ -3,7 +3,23 @@
 plSeq<plSiteGrid> plAutomaticPlanner::_donorSiteGrids;
 plSeq<plSiteGrid> plAutomaticPlanner::_defectSiteGrids;
 
+plSeq<plMesh*> plAutomaticPlanner::DEBUG_MESH;
+
 void plAutomaticPlanner::calculate( plPlan &plan )
+{
+    // generate site grids
+    _generateSiteGrids( plan );
+    
+    
+    std::cout << "\nposition: " << _defectSiteGrids[0].points(0) << "\n";
+    std::cout << "normal: "      << _defectSiteGrids[0].normals(0) << "\n"; 
+    
+    //  
+    _dispatchDefectShader( plan );
+
+} 
+
+void plAutomaticPlanner::_generateSiteGrids( plPlan &plan )
 {
     _donorSiteGrids.clear();
     _defectSiteGrids.clear();
@@ -24,7 +40,7 @@ void plAutomaticPlanner::calculate( plPlan &plan )
         _createGrid( grid, interiorTriangles );
         // store it
         _defectSiteGrids.add( grid ); 
-        std::cout << "\t\t " <<  grid.points.size() << " grid points calculated \n";
+        std::cout << "\t\t " <<  grid.size() << " grid points calculated \n";
     }
     
 
@@ -41,24 +57,72 @@ void plAutomaticPlanner::calculate( plPlan &plan )
         _createGrid( grid, interiorTriangles );
         // store it       
         _donorSiteGrids.add( grid );
-        std::cout << "\t\t " <<  grid.points.size() << " grid points calculated \n";
+        std::cout << "\t\t " <<  grid.size() << " grid points calculated \n";
     }    
-
-
 }
+
+   
+   
+   
+   
+   
+   
+   
+    
+    
+void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
+{
+    // compile / link compute shader
+    plBuildDefectShader computeShader("./shaders/test.comp");
+    
+    // buffer data
+    computeShader.bufferGridTextures( _defectSiteGrids[0] );
+    computeShader.bufferSplineTexture( plan.defectSites(0).spline ); 
+       
+    PLtime t0 = plTimer::now();
+    
+    // DEBUG
+    
+    for (PLuint i=0; i<_defectSiteGrids[0].size()/10; i++)
+    {
+        
+        DEBUG_MESH.add( computeShader.dispatch(i) );    
+    
+        //PLtime t = plTimer::now();
+
+        /*
+        while(true)
+        {
+            if ( (plTimer::now() - t) > 1000 )
+            {
+                break;
+            }
+            usleep(2000);
+        }
+        */
+    }
+    
+        
+    
+    //DEBUG_MESH = computeShader.dispatch();
+    
+    PLtime t1 = plTimer::now();
+    
+    std::cout << "Compute shader execution time: " << t1 - t0 << " milliseconds \n";
+}
+     
 
 void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> &triangles )
 {
     const PLfloat PLUG_RADIUS  = 2.0f;
-    const PLfloat GRID_SPACING = 0.2f; //sqrt(3.0f) * PLUG_RADIUS; 
+    const PLfloat GRID_SPACING = 8.0f; //sqrt(3.0f) * PLUG_RADIUS; 
     
     // randomly select points in each triangle to achieve approx spacing    
-    grid.points.clear();
-    grid.normals.clear();
+    grid.clear();
     
     for (PLuint i=0; i < triangles.size(); i++)
     {
-        PLfloat area = triangles[i].getArea();
+        //PLfloat area = triangles[i].getArea();
 
         plVector3 e01 = triangles[i].point1() - triangles[i].point0();
         plVector3 e12 = triangles[i].point2() - triangles[i].point1();
@@ -112,8 +176,7 @@ void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> 
                 if ( bCoord.x < -0.001 || bCoord.y < -0.001 || bCoord.z < -0.001 )
                     break;  // outside of triangle edge, go to next row
                 
-                    grid.points.add ( p );    
-                    grid.normals.add( triangles[i].normal() ); 
+                    grid.addPointAndNormal( plVector4(p,1), plVector4(triangles[i].normal(),1) ); 
                 
             }   
         }

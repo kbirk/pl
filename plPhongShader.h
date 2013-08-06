@@ -8,25 +8,10 @@ class plPhongShader : public plMinimalShader
 {
     public:                    
                          
-        plPhongShader(const char *vertexFile, const char *fragmentFile) : plMinimalShader(vertexFile, fragmentFile)
-		{  
-            // get uniform locations
-            getUniformLocations();
-		}
+        plPhongShader(const char *vertexFile, const char *fragmentFile);
 
-        virtual void getUniformLocations()
-        {			
-            plMinimalShader::getUniformLocations();
-            // lighting uniform
-            _lightPositionID = glGetUniformLocation(_shaderProgramID, "vLightPosition");  
-
-        }        
-
-		void setLightUniform(const plVector3 &lightPosition) const
-		{	
-		    glUniform3fv(_lightPositionID, 1, (GLfloat*)(&lightPosition));	
-		}
-
+        virtual void getUniformLocations();      
+		virtual void setLightUniform    (const plVector3 &lightPosition) const;
 
     private:
 
