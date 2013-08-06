@@ -33,7 +33,6 @@ class plBuildDefectShader : public plShader
         
         PLuint        _candidateAreasID;
         PLuint        _outputTextureID;
-        //PLuint        _outputTextureY;
 
         PLuint        _splineTriangleCount;  
         PLuint        _splineTriangleCountID;       

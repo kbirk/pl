@@ -9,6 +9,9 @@ class plWindow
 {
     public:                    
 
+
+        static PLuint    width         ();
+        static PLuint    height        ();
         static void      reshape       ( PLuint width, PLuint height );
         static plVector3 mouseToWorld  ( PLint x, PLint y, PLint z );
         static plVector3 worldToScreen ( PLfloat x, PLfloat y, PLfloat z );

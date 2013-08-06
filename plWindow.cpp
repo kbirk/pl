@@ -1,8 +1,24 @@
 #include "plWindow.h"
 
+PLuint plWindow::width()
+{
+    GLint viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport );
+    return viewport[2];
+}
+
+
+PLuint plWindow::height()
+{
+    GLint viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport );
+    return viewport[3];
+}
+
+
 void plWindow::reshape( PLuint width, PLuint height )
 {    
-    plProjectionStack::load( plProjection( 7.0f, (PLfloat)(width) / (PLfloat)(height), 100.0f, 15000.0f) );    
+    plProjectionStack::load( plProjection( 7.0f, (PLfloat)(width) / (PLfloat)(height), 10.0f, 15000.0f) );    
     plPicking::texture->setFBO(width, height); 
 }
 
@@ -67,10 +83,7 @@ void plWindow::mouseToRay( plVector3 &rayOrigin, plVector3 &rayDirection, PLint 
 {
     plVector3 mouseInWorld = plWindow::mouseToWorld(x, y, 0);  
 
-    // NEED TO GET CAMERA POSITION PROPERLY!
-    //*intentional bug!
     rayOrigin = plCameraStack::position(); 
-
     rayDirection = (mouseInWorld - rayOrigin).normalize();    
 }
 

@@ -21,7 +21,6 @@ void plRenderer::init()
     _textureShader = new plTextureShader("./shaders/texture.vert", "./shaders/texture.frag");  
 
     plPicking::init(1,1);
-    plProjectionStack::load( plProjection( 7.0f, 1.6f, 100.0f, 15000.0f) );
 } 
 
 
@@ -83,7 +82,7 @@ void plRenderer::reportError( const plString &str  )
     const char *errstr;
     while (errnum = glGetError()) 
     {
-        errstr = reinterpret_cast<const char *> (gluErrorString(errnum));
+        errstr = reinterpret_cast<const char*> (gluErrorString(errnum));
         std::cout << str << " " << errstr << "\n";
     }
 }
@@ -164,7 +163,6 @@ void plRenderer::_endDrawing()
 
 void plRenderer::_drawScene()
 {
-
     // arthro texture
     if (_arthroTextureToDraw != NULL)
     {
@@ -187,14 +185,11 @@ void plRenderer::_drawScene()
     // draw editor menus
     if ( (_boundaryEditorToDraw != NULL || _graftEditorToDraw != NULL) && _planToDraw != NULL)
     {
-        GLint viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );
-        
         // set flat shader
         plShaderStack::push( _minimalShader );
         // set identity viewing matrix and ortho projection to screen dimension   
         plCameraStack::push( plMatrix44() );    
-        plProjectionStack::push( plMatrix44( 0, viewport[2], 0, viewport[3], -1, 1) ); // ortho, viewport dimensions
+        plProjectionStack::push( plMatrix44( 0, plWindow::width(), 0, plWindow::height(), -1, 1) ); // ortho, viewport dimensions
         
         _boundaryEditorToDraw->drawMenu( *_planToDraw );
         _graftEditorToDraw->drawMenu( *_planToDraw );
@@ -286,10 +281,7 @@ void plRenderer::_drawScene()
 
 void plRenderer::_drawArthroTexture()
 {
-    GLint viewport[4];
-    glGetIntegerv( GL_VIEWPORT, viewport );
-
-    PLfloat xmargin = (viewport[2] / viewport[3] - 1) / 2.0;
+    PLfloat xmargin = (plWindow::width() / plWindow::height()- 1) / 2.0;
     
     plShaderStack::push( _textureShader );
     
@@ -352,12 +344,9 @@ void plRenderer::_drawScenePicking()
     // draw editor menus
     if ( (_boundaryEditorToDraw != NULL || _graftEditorToDraw != NULL) && _planToDraw != NULL)
     {
-        GLint viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );
-        
         // set identity viewing matrix and ortho projection to screen dimension   
         plCameraStack::push( plMatrix44() );    
-        plProjectionStack::push( plMatrix44( 0, viewport[2], 0, viewport[3], -1, 1) ); // ortho, viewport dimensions
+        plProjectionStack::push( plMatrix44( 0, plWindow::width(), 0, plWindow::height(), -1, 1) ); // ortho, viewport dimensions
         
         _boundaryEditorToDraw->drawMenu( *_planToDraw );
         _graftEditorToDraw->drawMenu( *_planToDraw );

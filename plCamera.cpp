@@ -25,7 +25,7 @@ plMatrix44 plCamera::matrix() const
 
     // Make rotation plMatrix44 
     z = (position - lookat).normalize();
-    y = up;
+    y = up.normalize();
 
     // X plVector3 = Y cross Z 
     x = (y ^ z).normalize();
