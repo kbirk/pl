@@ -2,7 +2,6 @@
 #define __PL_SHADER_H__
 
 #include "plCommon.h"
-#include "plMatrix44.h"
 
 // attribute locations, set by VBOs and mirrored in shader files
 #define PL_POSITION_ATTRIBUTE  0

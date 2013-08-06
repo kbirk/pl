@@ -16,9 +16,7 @@ void plAutomaticPlanner::calculate( plPlan &plan )
     
     //  
     _dispatchDefectShader( plan );
-     
-     
-       
+
 } 
 
 void plAutomaticPlanner::_generateSiteGrids( plPlan &plan )

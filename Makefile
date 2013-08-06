@@ -10,12 +10,12 @@ CXX = g++
 OBJECTS = $(patsubst %.cpp,objects/%.o,$(SOURCES))
 
 SOURCES = main.cpp PlannerWindow.cpp plAutomaticPlanner.cpp plBoneAndCartilage.cpp plBoundary.cpp \
-          plBoundaryEditor.cpp plBuildDefectShader.cpp plCamera.cpp plColourMap.cpp plColourMesh.cpp plComputeShader.cpp  \
+          plBoundaryEditor.cpp plBuildDefectShader.cpp plCamera.cpp plColourMap.cpp plColourMesh.cpp \
           plCSV.cpp plDefectSite.cpp plDonorSite.cpp plDraw.cpp plDRBTransform.cpp plEditable.cpp \
           plGraft.cpp plGraftEditor.cpp plIGuide.cpp plIGuideSite.cpp plLineMesh.cpp plMath.cpp plMatrix44.cpp     \
 	      plMatrixStack.cpp plMesh.cpp plMeshCutter.cpp plMinimalShader.cpp plModel.cpp plModelSpecific.cpp \
 	      plOctree.cpp plPhongShader.cpp plPickingShader.cpp plPickingTexture.cpp plPlan.cpp plPlug.cpp \
-	      plPolygon.cpp plProjection.cpp plRenderable.cpp plRenderer.cpp plRenderingPipeline.cpp plShader.cpp plSiteGrid.cpp \
+	      plPolygon.cpp plProjection.cpp plRenderable.cpp plRenderer.cpp plRenderingPipeline.cpp plShader.cpp plShapeMesh.cpp plSiteGrid.cpp \
 	      plSpline.cpp plString.cpp plTexture.cpp plTextureMesh.cpp plTextureShader.cpp plTrackedObject.cpp \
 	      plTransform.cpp plTriangle.cpp plVector3.cpp plVector4.cpp plWindow.cpp Window.cpp
        

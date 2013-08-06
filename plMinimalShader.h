@@ -3,6 +3,7 @@
 
 #include "plCommon.h"
 #include "plShader.h"
+#include "plMatrix44.h"
 
 class plMinimalShader : public plShader
 {

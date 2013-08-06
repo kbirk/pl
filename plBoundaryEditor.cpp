@@ -60,9 +60,14 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
     return false;
 }
 
-void plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
+PLbool plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
 {
+    if (_selectedBoundary == NULL)
+        return false;
+    
     moveSelectedPoint( plan, x, y );
+    
+    return true;
 }
 
 void plBoundaryEditor::_clearDefectSiteBoundaries( plPlan &plan  )

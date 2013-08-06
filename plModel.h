@@ -51,9 +51,10 @@ class plModel : public plRenderable
         PLbool                _isTransparent;
 		plString              _filename;
 
+        // prevent empty constructor, copy constructor, and assignment, which will invalidate the octree's pointers if rhs is scoped
         plModel();
         plModel( const plModel &m );
-        plModel operator=(const plModel &m) const;  // prevent assignment, which will invalidate the octree's pointers if rhs is scoped
+        plModel operator=(const plModel &m) const;
 
 };
 
