@@ -27,12 +27,6 @@ struct gridPoint
 };
 
 
-vec3 applyInverse( in vec3 origin, in vec3 v )
-{
-    return v-origin;
-} 
-
-
 float distToAxis( in vec3 axis, in vec3 v )    
 {
     // v is already in the *local* coordinate system of the graft        
@@ -95,9 +89,10 @@ int intersectTriangle( out triangle tri[2], in gridPoint g, in triangle t, in fl
     if ( dot(t.n, g.n) < 0 )
         return 0;
 
-    vec3 point0 = applyInverse( g.p, t.p0 );
-    vec3 point1 = applyInverse( g.p, t.p1 );
-    vec3 point2 = applyInverse( g.p, t.p2 );
+    // get vector from graft centre to triangle point
+    vec3 point0 = t.p0 - g.p;
+    vec3 point1 = t.p1 - g.p;
+    vec3 point2 = t.p2 - g.p;
     
     // Compute distance to graft axis
     float dist0 = distToAxis( g.n, point0 );
@@ -113,11 +108,10 @@ int intersectTriangle( out triangle tri[2], in gridPoint g, in triangle t, in fl
         return 0;
     }
     
-    // If too far away from origin, reject.
-    
-    float proj0 = projectedDistOnAxis( g.n, point0 );
-    float proj1 = projectedDistOnAxis( g.n, point1 );
-    float proj2 = projectedDistOnAxis( g.n, point2 );
+    // If too far away from origin, reject.   
+    float proj0 = dot( point0, g.n );
+    float proj1 = dot( point1, g.n );
+    float proj2 = dot( point2, g.n );
 
     float maxProj = max( proj0, max( proj1, proj2 ) );
     float minProj = min( proj0, min( proj1, proj2 ) );
@@ -132,9 +126,9 @@ int intersectTriangle( out triangle tri[2], in gridPoint g, in triangle t, in fl
 
     if (maxDist <= radius) 
     {
-        tri[0].p0 = point0 + g.p;
-        tri[0].p1 = point1 + g.p;
-        tri[0].p2 = point2 + g.p;    
+        tri[0].p0 = t.p0; //point0 + g.p;
+        tri[0].p1 = t.p1; //point1 + g.p;
+        tri[0].p2 = t.p2; //point2 + g.p;    
         tri[0].n  = t.n;
         return 1;
     }
@@ -149,21 +143,21 @@ int intersectTriangle( out triangle tri[2], in gridPoint g, in triangle t, in fl
   
     if (dist0 <= radius) 
     {
-        vs[0] = point0; ds[0] = dist0;
-        vs[1] = point1; ds[1] = dist1;
-        vs[2] = point2; ds[2] = dist2;
+        vs[0] = t.p0; ds[0] = dist0;
+        vs[1] = t.p1; ds[1] = dist1;
+        vs[2] = t.p2; ds[2] = dist2;
     } 
     else if (dist1 <= radius)
     {
-        vs[0] = point1; ds[0] = dist1;
-        vs[1] = point2; ds[1] = dist2;
-        vs[2] = point0; ds[2] = dist0;
+        vs[0] = t.p1; ds[0] = dist1;
+        vs[1] = t.p2; ds[1] = dist2;
+        vs[2] = t.p0; ds[2] = dist0;
     } 
     else 
     {    
-        vs[0] = point2; ds[0] = dist2;
-        vs[1] = point0; ds[1] = dist0;
-        vs[2] = point1; ds[2] = dist1;
+        vs[0] = t.p2; ds[0] = dist2;
+        vs[1] = t.p0; ds[1] = dist0;
+        vs[2] = t.p1; ds[2] = dist1;
     }
 
     bool prevInside = true; // always starts as true (ds[0] <= radius)
@@ -185,12 +179,12 @@ int intersectTriangle( out triangle tri[2], in gridPoint g, in triangle t, in fl
         else if (prevInside && !nextInside) 
         {
             // Find point on edge of graft
-            points[count++] = pointOnCircumference( vs[i], vs[j], radius );
+            points[count++] = pointOnCircumference( (vs[i]-g.p), (vs[j]-g.p), radius ) + g.p;
         } 
         else if (!prevInside && nextInside) 
         {
             // Find entering point and angle 
-            points[count++] = pointOnCircumference( vs[i], vs[j], radius );
+            points[count++] = pointOnCircumference( (vs[i]-g.p), (vs[j]-g.p), radius ) + g.p;
             // Add inside triangle point    
             points[count++] = vs[j];
         }
@@ -198,17 +192,17 @@ int intersectTriangle( out triangle tri[2], in gridPoint g, in triangle t, in fl
         prevInside = nextInside;
     }
 
-    tri[0].p0 = points[0] + g.p;
-    tri[0].p1 = points[1] + g.p;
-    tri[0].p2 = points[2] + g.p;
+    tri[0].p0 = points[0];// + g.p;
+    tri[0].p1 = points[1];// + g.p;
+    tri[0].p2 = points[2];// + g.p;
     tri[0].n = t.n;
     
     if (count == 4)
     {
         // polygons reach a max of 4 vertices, so if there are 4, create a second triangle
-        tri[1].p0 = points[0] + g.p;
-        tri[1].p1 = points[2] + g.p;
-        tri[1].p2 = points[3] + g.p;
+        tri[1].p0 = points[0];// + g.p;
+        tri[1].p1 = points[2];// + g.p;
+        tri[1].p2 = points[3];// + g.p;
         tri[1].n = t.n;
         return 2;
     }
@@ -247,7 +241,7 @@ void main(void)
         t.p2 = vec3( imageLoad( spline_triangles, ivec2(i,2) ) );
         t.n  = vec3( imageLoad( spline_triangles, ivec2(i,3) ) ); 
         
-        float radius = 1.0;
+        float radius = 4.0;
         
         triangle tris[2];
         int numResults = intersectTriangle( tris, g, t, radius );  

@@ -62,6 +62,14 @@ void plAutomaticPlanner::_generateSiteGrids( plPlan &plan )
         std::cout << "\t\t " <<  grid.size() << " grid points calculated \n";
     }    
 }
+
+   
+   
+   
+   
+   
+   
+   
     
     
 void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
@@ -77,7 +85,7 @@ void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
     
     // DEBUG
     
-    for (PLuint i=0; i<_defectSiteGrids[0].size(); i++)
+    for (PLuint i=0; i<_defectSiteGrids[0].size()/10; i++)
     {
         
         DEBUG_MESH.add( computeShader.dispatch(i) );    

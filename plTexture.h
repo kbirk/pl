@@ -20,10 +20,7 @@ class plTexture
     private:
     
         GLuint   _textureID;
-    
-        //GLubyte *_texmap;
-        PLint    _width, _height;
-        PLuint   _xdim,  _ydim;		
+        PLint    _width, _height;	
 
         void _registerWithOpenGL();
         
