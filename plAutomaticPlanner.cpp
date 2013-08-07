@@ -3,7 +3,7 @@
 plSeq<plSiteGrid> plAutomaticPlanner::_donorSiteGrids;
 plSeq<plSiteGrid> plAutomaticPlanner::_defectSiteGrids;
 
-plSeq<plMesh*> plAutomaticPlanner::DEBUG_MESH;
+plSeq<plMesh> plAutomaticPlanner::DEBUG_MESH;
 
 void plAutomaticPlanner::calculate( plPlan &plan )
 {
@@ -83,28 +83,63 @@ void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
     
     // DEBUG
     
-    for (PLuint i=0; i<_defectSiteGrids[0].size()/10; i++)
-    {
-        
-        DEBUG_MESH.add( computeShader.dispatch(i) );    
+    //for (PLuint i=0; i<_defectSiteGrids[0].size()/10; i++)
+    //{
     
-        //PLtime t = plTimer::now();
+    PLfloat *pixels = computeShader.dispatch();
+    
+    int stride = PL_MAX_GRAFT_CAP_TRIANGLES * (4*4);
 
-        /*
-        while(true)
+    for (int i=0; i<_defectSiteGrids[0].size(); i++) 
+    {
+        plSeq<plVector3> interleaved_vertices;
+        plSeq<PLuint>    indices;
+
+        for (int j=0; j < PL_MAX_GRAFT_CAP_TRIANGLES * (4*4); j+=(4*4) ) 
         {
-            if ( (plTimer::now() - t) > 1000 )
-            {
-                break;
-            }
-            usleep(2000);
-        }
-        */
-    }
-    
         
-    
-    //DEBUG_MESH = computeShader.dispatch();
+            if ( pixels[i * stride + j] < 0)
+            {
+                std::cout << "End at: " << j/16 << "\n";
+                break;
+            }            
+
+            plVector3 p0( pixels[i * stride + j + 0],
+                          pixels[i * stride + j + 1],
+                          pixels[i * stride + j + 2] );
+            
+            plVector3 p1( pixels[i * stride + j + 4],
+                          pixels[i * stride + j + 5],
+                          pixels[i * stride + j + 6] );;
+                          
+            plVector3 p2( pixels[i * stride + j + 8],
+                          pixels[i * stride + j + 9],
+                          pixels[i * stride + j + 10] ); 
+                                       
+            plVector3 n ( pixels[i * stride + j + 12],
+                          pixels[i * stride + j + 13],
+                          pixels[i * stride + j + 14] );
+            
+            int base = interleaved_vertices.size()/2;
+        
+            interleaved_vertices.add( p0 );
+            interleaved_vertices.add( n );
+            
+            interleaved_vertices.add( p1 );
+            interleaved_vertices.add( n );
+            
+            interleaved_vertices.add( p2 );
+            interleaved_vertices.add( n );
+            
+            indices.add(base);
+            indices.add(base+1);
+            indices.add(base+2);
+                            
+            //std::cout << "\t" << pixels[i] << "\n";
+        }
+        
+        DEBUG_MESH.add( plMesh( interleaved_vertices, indices ) ); 
+    }
     
     PLtime t1 = plTimer::now();
     

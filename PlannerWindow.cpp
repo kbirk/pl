@@ -10,13 +10,6 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       Window( x, y, width, height, title )
 {  
     plRenderer::init(); 
-    
-    plTextureMesh t( plVector3(0,0,0),
-                     plVector3(1,0,0),
-                     plVector3(1,0,0),
-                     plVector3(0,1,0));
-    
-    
 }
 
 
@@ -28,6 +21,15 @@ void PlannerWindow::display()
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );
 
+    
+    plTextureMesh t( plVector3(-1,-1,0),
+                     plVector3( 1,-1,0),
+                     plVector3( 1, 1,0),
+                     plVector3(-1, 1,0));
+
+    plRenderer::queue( t );
+    
+    
     plRenderer::draw();
 
     glutSwapBuffers();

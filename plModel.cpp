@@ -103,17 +103,15 @@ void plModel::draw( const plVector3 &colour ) const
         plColourStack::load( colour.x, colour.y, colour.z, 0.2);
 
         // Sort by distance        
-        plVector3 viewDir = plCameraStack::direction(); //plVector3(1,0,0); //PL_GLOBAL_CAMERA->direction();
+        plVector3 viewDir = plCameraStack::direction(); 
         
-
         std::vector<plOrderPair> order;     order.reserve(_triangles.size() );              
         for (PLuint i=0; i<_triangles.size(); i++) 
         {
             order.push_back( plOrderPair( i, _triangles[i].centroid() * viewDir) );
         }
         std::sort(order.begin(), order.end(), _compareOrderPairs);
-        
-                
+                        
         plSeq<PLuint> indices(_triangles.size()*3 );	
 	    for (PLuint i = 0; i < order.size(); i++)
 	    {

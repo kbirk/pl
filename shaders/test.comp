@@ -1,21 +1,24 @@
 #version 430
 
-#define MAX_NUM_GRID_POINTS     10000;
-#define MAX_NUM_MESH_TRIANGLES  2000;
+
+#define PL_MAX_GRAFT_CAP_TRIANGLES  500 // TODO: PASS THIS AS A UNIFORM
+//#define MAX_NUM_GRID_POINTS     10000
+//#define MAX_NUM_MESH_TRIANGLES  2000
+
+
 
 layout (local_size_x = 1024) in;
 
 layout (rgba32f, binding = 0) uniform image1D input_positions;
 layout (rgba32f, binding = 1) uniform image1D input_normals;
 layout (rgba32f, binding = 2) uniform image2D spline_triangles;
-//layout (r32f,    binding = 3) uniform image1D temp_potential_graft_areas;
-layout (rgba32f, binding = 4) uniform image2D output;
-
+layout (rgba32f, binding = 3) uniform image2D temp_graft_caps;
+layout (rgba32f, binding = 4) uniform image1D output;
 //layout (r32ui, binding = 5) uniform uimage2D spline_triangles_lock;
 
 uniform uint uSplineTriangleCount;
-uniform uint DEBUG_ID;
-uniform uint uTotalGridArea;
+
+//uniform uint uTotalGridArea;
 
 /*
 void aquireMutex( uint i )
@@ -255,12 +258,13 @@ void main(void)
     g.p = position;
     g.n = normal;
     
-    float area_sum = 0;
-    int   num_tri = 0;
+    //float area_sum = 0;
+    int num_tri = 0;
     
     // iterate through each triangle in mesh
     for(uint i=0; i<uSplineTriangleCount; i++)
     {
+        // create triangle struct
         triangle t;
         t.p0 = vec3( imageLoad( spline_triangles, ivec2(i,0) ) );
         t.p1 = vec3( imageLoad( spline_triangles, ivec2(i,1) ) );
@@ -270,39 +274,27 @@ void main(void)
         float radius = 4.0;
         
         triangle tris[2];   // triangle(s) to be added to graft cap
-        int numResults = intersectTriangle( tris, g, t, radius );  // numResults is the number of triangles returned, 0 <= t <= 2
+        int num_results = intersectTriangle( tris, g, t, radius );  // num_results is the number of triangles returned, 0 <= t <= 2
 
-        for (uint j=0; j<numResults; j++)
+        if (num_tri + num_results > PL_MAX_GRAFT_CAP_TRIANGLES) 
+            break;  // exceeded max number of triangles (this shouldn't happen unless grafts have ridiculously large radii)
+
+        for (uint j=0; j<num_results; j++)
         {
-            area_sum += area( tris[j] );
+            // store triangle           
+            imageStore( temp_graft_caps, ivec2( num_tri*4 + 0, gid ), vec4( tris[j].p0 + g.n * gid/50.0, 1) );
+            imageStore( temp_graft_caps, ivec2( num_tri*4 + 1, gid ), vec4( tris[j].p1 + g.n * gid/50.0, 1) );
+            imageStore( temp_graft_caps, ivec2( num_tri*4 + 2, gid ), vec4( tris[j].p2 + g.n * gid/50.0, 1) );
+            imageStore( temp_graft_caps, ivec2( num_tri*4 + 3, gid ), vec4( tris[j].n,  1) );
             
-            ///////////////   
-            // TEMP, OUTPUT THE FIRST SET OF TRIANGLES FOR gid==0
-            if (gid == DEBUG_ID)
-            {
-                imageStore( output, ivec2(num_tri, 0), vec4( tris[j].p0, 1) );
-                imageStore( output, ivec2(num_tri, 1), vec4( tris[j].p1, 1) );
-                imageStore( output, ivec2(num_tri, 2), vec4( tris[j].p2, 1) );
-                imageStore( output, ivec2(num_tri, 3), vec4( tris[j].n, 1)  ); 
-            }
             num_tri++;
-            //////////////////           
+                   
         }
-             
+         
     }
-    
-    // store area
-    //imageStore(temp_potential_graft_areas, gid , vec4(area_sum, 0, 0, 1) );
-    
-    // block and wait for all graft area calculations
-    //barrier();
 
-    /* 
-    imageStore(output, ivec2(gid, 0), vec4( g.p, 1 ) );
-    imageStore(output, ivec2(gid, 1), vec4( imageLoad( temp_potential_graft_areas, gid ).x, 0, 0, 1) );
-    imageStore(output, ivec2(gid, 2), vec4( area_sum, -1, 0, 1)      );
-    imageStore(output, ivec2(gid, 3), vec4( num_tri++, 0, 0, 1)   ); 
-    */
+    // block and wait for all graft area calculations
+    barrier();
 }
 
 

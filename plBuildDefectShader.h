@@ -9,6 +9,7 @@
 #include "plMesh.h"
 
 #define PL_DEFECT_NUM_PERTURBATIONS     4
+#define PL_MAX_GRAFT_CAP_TRIANGLES      500
 
 class plBuildDefectShader : public plShader
 {
@@ -22,7 +23,7 @@ class plBuildDefectShader : public plShader
         void bufferGridTextures( const plSiteGrid &grid );
         void bufferSplineTexture( const plSpline &spline );
         
-        plMesh* dispatch(PLuint i);        
+        PLfloat* dispatch();        
         void loadOutputTexture();
         
     private:
@@ -31,14 +32,14 @@ class plBuildDefectShader : public plShader
         PLuint        _inputGridPointsID; 
         PLuint        _inputGridNormalsID; 
         
-        PLuint        _candidateAreasID;
+        PLuint        _tempGraftCapsID;
         PLuint        _outputTextureID;
 
         PLuint        _splineTriangleCount;  
         PLuint        _splineTriangleCountID;       
         PLuint        _splineTextureID;
                
-        PLuint        DEBUG_ID;             
+        //PLuint        DEBUG_ID;             
         
 
 };
