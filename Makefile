@@ -1,4 +1,4 @@
-LIBS = -Llib -lGLEW -lglut -lGLU -lGL -lm
+LIBS = -L/usr/lib64 -Llib -lGLEW -lglut -lGLU -lGL -lm
 #LIBS = -framework OpenGL -framework GLUT -framework Cocoa
 
 INCS = 
