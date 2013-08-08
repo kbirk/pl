@@ -33,11 +33,16 @@ class plBuildDefectShader : public plShader
         PLuint        _inputGridNormalsID; 
         
         PLuint        _tempGraftCapsID;
+        PLuint        _tempGraftAreasID;
+        
         PLuint        _outputTextureID;
 
         PLuint        _splineTriangleCount;  
         PLuint        _splineTriangleCountID;       
         PLuint        _splineTextureID;
+        
+        PLfloat       _siteArea;
+        PLuint        _siteAreaID;
                
         //PLuint        DEBUG_ID;             
         

@@ -4,6 +4,7 @@
 #include "plCommon.h"
 #include "plSeq.h"
 #include "plVector4.h"
+#include "plTriangle.h"
 
 class plSiteGrid
 {
@@ -11,7 +12,8 @@ class plSiteGrid
     
         plSiteGrid();
         
-        PLuint size() const { return _points.size(); }
+        PLuint  size() const { return _points.size(); }
+        PLfloat area() const { return _area; } 
         
         void clear();
         
@@ -20,10 +22,14 @@ class plSiteGrid
         
         void addPointAndNormal( const plVector4 &p, const plVector4 &n );
            
+        void calcArea( const plSeq<plTriangle> &triangles );
+            
     private:
     
         plSeq<plVector4>  _points; 
         plSeq<plVector4>  _normals;
+        PLfloat           _area;
+        
 };
 
 #endif

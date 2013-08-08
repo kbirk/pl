@@ -17,12 +17,15 @@ plBuildDefectShader::~plBuildDefectShader()
 
 void plBuildDefectShader::getUniformLocations()
 {
-    _splineTriangleCountID = glGetUniformLocation(_shaderProgramID, "uSplineTriangleCount");
+    _splineTriangleCountID = glGetUniformLocation(_shaderProgramID, "uSplineTriangleCount");   
+    _siteAreaID            = glGetUniformLocation(_shaderProgramID, "uSiteArea");
 }
 
 void plBuildDefectShader::bufferGridTextures( const plSiteGrid &grid )
 {
     // INPUT
+    
+    _siteArea = grid.area();
     
     // load input data
     _inputGridSize = grid.size();
@@ -39,7 +42,7 @@ void plBuildDefectShader::bufferGridTextures( const plSiteGrid &grid )
 
     glBindTexture(GL_TEXTURE_1D, 0);
 
-    // OUTPUT
+    // INTERMEDIATE
 
     // fill graft cap texture with -1's          
     PLfloat *pixels = new PLfloat[_inputGridSize*PL_MAX_GRAFT_CAP_TRIANGLES*4*4];
@@ -56,6 +59,24 @@ void plBuildDefectShader::bufferGridTextures( const plSiteGrid &grid )
     glBindTexture(GL_TEXTURE_2D, 0);
 
     delete [] pixels;
+
+    // fill graft
+    pixels = new PLfloat[_inputGridSize]; 
+             
+    for (int i=0; i<_inputGridSize; i++)
+    {
+        pixels[i] = -1;
+    }
+                 
+    glGenTextures(1, &_tempGraftAreasID);                              
+    glBindTexture(GL_TEXTURE_1D, _tempGraftAreasID);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_R32F, _inputGridSize, 0, GL_R, GL_FLOAT, pixels);
+
+    delete [] pixels;
+
+    glBindTexture(GL_TEXTURE_1D, 0);
+
+    // OUTPUT
 
     // fill output texture with -1's
     pixels = new PLfloat[_inputGridSize*4]; 
@@ -112,10 +133,12 @@ PLfloat* plBuildDefectShader::dispatch()
     glBindImageTexture(1, _inputGridNormalsID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
     glBindImageTexture(2, _splineTextureID,    0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
     glBindImageTexture(3, _tempGraftCapsID,    0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-    glBindImageTexture(4, _outputTextureID,    0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+    glBindImageTexture(4, _tempGraftAreasID,   0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
+    glBindImageTexture(5, _outputTextureID,    0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
     
     // bind uniforms
     glUniform1ui(_splineTriangleCountID, _splineTriangleCount);
+    glUniform1f (_siteAreaID, _siteArea);
     
     // get workgroup number
     PLuint workgroups = ceil(_inputGridSize / (PLfloat) 1024); // ensure enough workgroups are used

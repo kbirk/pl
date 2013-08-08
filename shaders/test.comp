@@ -1,11 +1,14 @@
 #version 430
 
 
-#define PL_MAX_GRAFT_CAP_TRIANGLES  500 // TODO: PASS THIS AS A UNIFORM
+#define PL_MAX_GRAFT_CAP_TRIANGLES  500
+#define PL_MAX_CAPS_PER_SOLUTION    50
+
 //#define MAX_NUM_GRID_POINTS     10000
 //#define MAX_NUM_MESH_TRIANGLES  2000
 
-
+#define PL_INITIAL_TEMP    1.0
+#define PL_COOLING_RATE    0.0001
 
 layout (local_size_x = 1024) in;
 
@@ -13,10 +16,14 @@ layout (rgba32f, binding = 0) uniform image1D input_positions;
 layout (rgba32f, binding = 1) uniform image1D input_normals;
 layout (rgba32f, binding = 2) uniform image2D spline_triangles;
 layout (rgba32f, binding = 3) uniform image2D temp_graft_caps;
-layout (rgba32f, binding = 4) uniform image1D output;
+layout (r32f,    binding = 4) uniform image1D temp_graft_areas;
+
+layout (rgba32f, binding = 5) uniform image1D output;
+
 //layout (r32ui, binding = 5) uniform uimage2D spline_triangles_lock;
 
-uniform uint uSplineTriangleCount;
+uniform uint  uSplineTriangleCount;
+uniform float uSiteArea;
 
 //uniform uint uTotalGridArea;
 
@@ -37,6 +44,13 @@ void releaseMutex( uint i )
 }
 */
 
+struct state
+{
+    uint count;
+    int  caps[PL_MAX_CAPS_PER_SOLUTION];
+
+};
+
 struct triangle
 {
     vec3 p0;
@@ -52,11 +66,13 @@ struct gridPoint
     vec3 n;
 };
 
+
 float distToAxis( in vec3 axis, in vec3 v )    
 {
     // v is already in the *local* coordinate system of the graft        
     return length(v - dot(v, axis)*axis);
 }
+
 
 vec3 pointOnCircumference( in vec3 u, in vec3 v, in float radius )
 {
@@ -95,6 +111,7 @@ vec3 pointOnCircumference( in vec3 u, in vec3 v, in float radius )
     return u + t*(v-u);
     
 }
+
 
 int intersectTriangle( out triangle tri[2], in gridPoint g, in triangle t, in float radius ) 
 {
@@ -245,6 +262,79 @@ void unionMeshes( out triangle result[MAX_NUM_MESH_TRIANGLES],
 }
 */
 
+
+float area_covered( in state s )
+{
+    float total_area = 0;
+    for (uint i = 0; i < s.count; i++)
+    {   
+        // add area of cap to sum
+        total_area += imageLoad( temp_graft_areas, s.caps[i] ); 
+    }
+    return total_area;
+}
+
+
+float area_uncovered( in state s )
+{
+    float total_area = 0;
+
+    return total_area;
+}
+
+
+float energy ( in state s )
+{
+    float WEIGHT = 0.4;
+
+    return area_uncovered( s ) + WEIGHT * area_covered( s );
+}
+
+
+float acceptanceProbability( in float energy, in float new_energy, in float temperature ) 
+{
+    // If the new solution is better, accept it
+    if (new_energy < energy) 
+    {
+        return 1.0;
+    }
+    // If the new solution is worse, calculate an acceptance probability
+    return exp( (energy - new_energy) / temperature );
+}
+
+/*
+int simulatedAnnealing()
+{
+    
+    int max = values[0];
+    int max_energy = energy(max);
+    float temperature = INITIAL_TEMP;
+    
+    //std::cout << "********************************************************************\nInitial max set: " << max << "\n";
+    
+    while (temperature > 0.000001)
+    {
+        int new_value = values[rand() % NUM_VALUES];
+        float new_energy = energy(new_value);
+        
+        if ( acceptanceProbability( max_energy, new_energy, temperature) > ((float) rand() / (RAND_MAX)) )
+        {
+            max = new_value;
+            max_energy = new_energy;
+        }
+        
+        temperature *= 1-COOLING_RATE;
+        
+        // synchronize local work group
+        barrier();
+    }
+    
+    return max;
+    
+
+}
+*/
+
 void main(void)
 { 
     // get global invocation id
@@ -258,8 +348,8 @@ void main(void)
     g.p = position;
     g.n = normal;
     
-    //float area_sum = 0;
-    int num_tri = 0;
+    float area_sum = 0;
+    int   num_tri  = 0;
     
     // iterate through each triangle in mesh
     for(uint i=0; i<uSplineTriangleCount; i++)
@@ -281,19 +371,21 @@ void main(void)
 
         for (uint j=0; j<num_results; j++)
         {
+            // accumulate area
+            area_sum += area( tris[j] );
             // store triangle           
             imageStore( temp_graft_caps, ivec2( num_tri*4 + 0, gid ), vec4( tris[j].p0 + g.n * gid/50.0, 1) );
             imageStore( temp_graft_caps, ivec2( num_tri*4 + 1, gid ), vec4( tris[j].p1 + g.n * gid/50.0, 1) );
             imageStore( temp_graft_caps, ivec2( num_tri*4 + 2, gid ), vec4( tris[j].p2 + g.n * gid/50.0, 1) );
-            imageStore( temp_graft_caps, ivec2( num_tri*4 + 3, gid ), vec4( tris[j].n,  1) );
-            
-            num_tri++;
-                   
-        }
-         
+            imageStore( temp_graft_caps, ivec2( num_tri*4 + 3, gid ), vec4( tris[j].n,  1) );            
+            num_tri++;                   
+        }         
     }
+    
+    // write total cap area
+    imageStore( temp_graft_areas, gid, area_sum ); 
 
-    // block and wait for all graft area calculations
+    // synchronize local work group
     barrier();
 }
 

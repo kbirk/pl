@@ -9,10 +9,9 @@ void plAutomaticPlanner::calculate( plPlan &plan )
 {
     // generate site grids
     _generateSiteGrids( plan );
-    
-    
-    std::cout << "\nposition: " << _defectSiteGrids[0].points(0) << "\n";
-    std::cout << "normal: "      << _defectSiteGrids[0].normals(0) << "\n"; 
+        
+    std::cout << "\nposition: " << _defectSiteGrids[0].points(0)  << "\n";
+    std::cout << "normal: "     << _defectSiteGrids[0].normals(0) << "\n"; 
     
     //  
     _dispatchDefectShader( plan );
@@ -61,15 +60,7 @@ void plAutomaticPlanner::_generateSiteGrids( plPlan &plan )
     }    
 }
 
-   
-   
-   
-   
-   
-   
-   
-    
-    
+
 void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
 {
     // compile / link compute shader
@@ -83,10 +74,9 @@ void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
     
     // DEBUG
     
-    //for (PLuint i=0; i<_defectSiteGrids[0].size()/10; i++)
-    //{
-    
     PLfloat *pixels = computeShader.dispatch();
+    
+    return;
     
     int stride = PL_MAX_GRAFT_CAP_TRIANGLES * (4*4);
 
@@ -134,8 +124,6 @@ void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
             indices.add(base);
             indices.add(base+1);
             indices.add(base+2);
-                            
-            //std::cout << "\t" << pixels[i] << "\n";
         }
         
         DEBUG_MESH.add( plMesh( interleaved_vertices, indices ) ); 
@@ -218,6 +206,8 @@ void plAutomaticPlanner::_createGrid( plSiteGrid &grid, const plSeq<plTriangle> 
         
     }
     
+    // calc site area
+    grid.calcArea( triangles );
     
 
 }

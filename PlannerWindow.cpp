@@ -19,16 +19,7 @@ void PlannerWindow::display()
 
     plRenderer::queue( _plan );
     plRenderer::queue( _graftEditor );
-    plRenderer::queue( _boundaryEditor );
-
-    
-    plTextureMesh t( plVector3(-1,-1,0),
-                     plVector3( 1,-1,0),
-                     plVector3( 1, 1,0),
-                     plVector3(-1, 1,0));
-
-    plRenderer::queue( t );
-    
+    plRenderer::queue( _boundaryEditor );   
     
     plRenderer::draw();
 
