@@ -4,7 +4,7 @@
 const plPlan*            plRenderer::_planToDraw             = NULL;
 const plGraftEditor*     plRenderer::_graftEditorToDraw      = NULL;
 const plBoundaryEditor*  plRenderer::_boundaryEditorToDraw   = NULL;
-const plTextureMesh*     plRenderer::_arthroTextureToDraw     = NULL;
+const plTextureMesh*     plRenderer::_arthroTextureToDraw    = NULL;
 plSeq<const plTrackedObject*> plRenderer::_trackedObjectsToDraw;
 
 plMinimalShader*         plRenderer::_minimalShader          = NULL;
@@ -112,7 +112,6 @@ void plRenderer::draw()
     {
         _drawScene();
     }
-
     _endDrawing();
 
     // clear queues from this frame
@@ -150,6 +149,7 @@ void plRenderer::_beginDrawing()
     
     glClearColor( 1,1,1,0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glStencilFunc( GL_ALWAYS, 0x00, 0x00); // always render
     
     plShaderStack::push( _phongShader );     
 }
@@ -193,8 +193,8 @@ void plRenderer::_drawScene()
             _boundaryEditorToDraw->drawMenu( *_planToDraw );
             _graftEditorToDraw->drawMenu( *_planToDraw );
         }
-        plCameraStack::pop(); 
-        plProjectionStack::pop();        
+        plProjectionStack::pop(); 
+        plCameraStack::pop();                
         plShaderStack::pop();   
     }   
     
@@ -211,7 +211,8 @@ void plRenderer::_drawScene()
         }
     }
   
-    // automatic planner
+    // DEBUG
+    // GRID POINTS
     for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)
     {
         plColourStack::load( 0.9, 0.6, 0.2 );
@@ -225,6 +226,8 @@ void plRenderer::_drawScene()
         }
     }
     
+    // DEBUG
+    // POTENTIAL GRAFTS
     for (PLuint i=0; i<plAutomaticPlanner::_defectSiteGrids.size(); i++)
     {    
         plColourStack::load( 0.2, 0.6, 0.9 );
@@ -247,8 +250,6 @@ void plRenderer::_drawScene()
             plColourStack::load( r, g, b );
             plAutomaticPlanner::DEBUG_MESH[j].draw();
         }
-        
-        
     }
     
     /* DEBUG FOR OCTREES
