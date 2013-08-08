@@ -196,9 +196,7 @@ void plPlan::importFile( plString filename )
             plBoneAndCartilage *model = getElementPointer( _models, index );
             
             _models[index] = new plBoneAndCartilage( csv.data[i][3], csv.data[i+1][3] );
-            i++;
-            
-            
+            i++; // increment pointer to pass next line since both are read
         }
         
         else if (field.compareCaseInsensitive( "defect site") ) // read before boundary

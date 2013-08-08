@@ -121,6 +121,8 @@ void plModel::draw( const plVector3 &colour ) const
 	    }
         
         _mesh.draw(indices);
+        
+        glDisable( GL_STENCIL_TEST ); 
     } 
 }
 

@@ -76,8 +76,6 @@ void plAutomaticPlanner::_dispatchDefectShader( plPlan &plan )
     
     PLfloat *pixels = computeShader.dispatch();
     
-    return;
-    
     int stride = PL_MAX_GRAFT_CAP_TRIANGLES * (4*4);
 
     for (int i=0; i<_defectSiteGrids[0].size(); i++) 
