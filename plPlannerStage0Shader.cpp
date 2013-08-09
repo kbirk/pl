@@ -6,21 +6,31 @@ plPlannerStage0Shader::plPlannerStage0Shader(const char *computeFile )
     getUniformLocations();         
 }
 
+
 plPlannerStage0Shader::~plPlannerStage0Shader()
 {
+    /*
     glDeleteTextures(1, &_inputGridPointsID);
     glDeleteTextures(1, &_inputGridNormalsID);   
     glDeleteTextures(1, &_inputSiteMeshTrianglesID);           
     glDeleteTextures(1, &_outputGraftCapsID);
     glDeleteTextures(1, &_outputGraftAreasID);
+    */
 }
+
 
 void plPlannerStage0Shader::getUniformLocations()
 {
-    _inputSiteMeshSizeID = glGetUniformLocation(_shaderProgramID, "uSiteMeshSize");   
+    _siteMeshSizeID = glGetUniformLocation(_shaderProgramID, "uSiteMeshSize");   
 }
 
-void plPlannerStage0Shader::bufferGridTextures( const plSiteGrid &grid )
+void plPlannerStage0Shader::setMeshSizeUniform( PLuint size )
+{
+    glUniform1ui(_siteMeshSizeID, size );
+}
+
+/*
+void plPlannerStage0Shader::bufferTextures( const plSiteGrid &grid )
 {
     // INPUT   
     _inputSiteMeshSize = grid.triangles().size();     
@@ -75,15 +85,15 @@ void plPlannerStage0Shader::bufferGridTextures( const plSiteGrid &grid )
 
 PLfloat* plPlannerStage0Shader::dispatch()
 {
-    // bind compute shader
+    // bind shader
     bind();
     
     // bind input/output buffers            
-    glBindImageTexture(0, _inputGridPointsID,  0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
-    glBindImageTexture(1, _inputGridNormalsID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
-    glBindImageTexture(2, _inputSiteMeshTrianglesID,  0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
-    glBindImageTexture(3, _outputGraftCapsID,  0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-    glBindImageTexture(4, _outputGraftAreasID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
+    glBindImageTexture(0, _inputGridPointsID,        0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
+    glBindImageTexture(1, _inputGridNormalsID,       0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
+    glBindImageTexture(2, _inputSiteMeshTrianglesID, 0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
+    glBindImageTexture(3, _outputGraftCapsID,        0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    glBindImageTexture(4, _outputGraftAreasID,       0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F   );
 
     // bind uniforms
     glUniform1ui(_inputSiteMeshSizeID, _inputSiteMeshSize );
@@ -96,18 +106,17 @@ PLfloat* plPlannerStage0Shader::dispatch()
     
     // memory barrier
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-        
-    std::cout << "\nAutomatic planner stage 0 complete:\n";     
-                
+                     
     PLfloat *pixels = new PLfloat[_inputGridSize * PL_MAX_GRAFT_CAP_TRIANGLES * 4 * 4];
     
     // read output into array            
     glBindTexture(GL_TEXTURE_2D, _outputGraftCapsID);    
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &pixels[0]);    
 
+    // unbind shader
     unbind();
    
     return pixels;
 }
-     
+*/     
 

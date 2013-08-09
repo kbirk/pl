@@ -1,29 +1,25 @@
-#include "plPlannerStage0Shader.h"
+#include "plPlannerStage1Shader.h"
 
-plPlannerStage0Shader::plPlannerStage0Shader(const char *computeFile ) 
+plPlannerStage1Shader::plPlannerStage1Shader(const char *computeFile ) 
     : plShader(computeFile, GL_COMPUTE_SHADER)              
 {   
     getUniformLocations();         
 }
 
-plPlannerStage0Shader::~plPlannerStage0Shader()
+plPlannerStage1Shader::~plPlannerStage1Shader()
 {
-    glDeleteTextures(1, &_inputGridPointsID);
-    glDeleteTextures(1, &_inputGridNormalsID);   
-    glDeleteTextures(1, &_inputSiteMeshTrianglesID);           
-    glDeleteTextures(1, &_outputGraftCapsID);
-    glDeleteTextures(1, &_outputGraftAreasID);
 }
 
-void plPlannerStage0Shader::getUniformLocations()
+void plPlannerStage1Shader::getUniformLocations()
 {
-    _inputSiteMeshSizeID = glGetUniformLocation(_shaderProgramID, "uSiteTriangleCount");   
-    _inputGridSizeID     = glGetUniformLocation(_shaderProgramID, "uSiteGridPointCount"); 
-    _inputSiteAreaID     = glGetUniformLocation(_shaderProgramID, "uSiteArea");
-    _inputSiteNormalID   = glGetUniformLocation(_shaderProgramID, "uSiteNormal");
+    _siteMeshSizeID = glGetUniformLocation(_shaderProgramID, "uSiteTriangleCount");   
+    _gridSizeID     = glGetUniformLocation(_shaderProgramID, "uSiteGridPointCount"); 
+    _siteAreaID     = glGetUniformLocation(_shaderProgramID, "uSiteArea");
+    //_siteNormalID   = glGetUniformLocation(_shaderProgramID, "uSiteNormal");
 }
 
-void plPlannerStage0Shader::bufferGridTextures( const plSiteGrid &grid )
+/*
+void plPlannerStage1Shader::bufferTextures()
 {
     // INPUT   
     _inputSiteArea     = grid.area();
@@ -99,15 +95,16 @@ void plPlannerStage0Shader::bufferGridTextures( const plSiteGrid &grid )
 }
 
 
-PLfloat* plPlannerStage0Shader::dispatch()
+PLfloat* plPlannerStage1Shader::dispatch( PLuint capsID, PLuint areasID, PLuint trianglesID )
 {
     // bind compute shader
     bind();
     
     // bind input/output buffers            
-    glBindImageTexture(0, _inputGridPointsID,  0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
-    glBindImageTexture(1, _inputGridNormalsID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
-    glBindImageTexture(2, _inputSiteMeshTrianglesID,  0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+    glBindImageTexture(0, capsID,  0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+    glBindImageTexture(1, areasID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+    glBindImageTexture(2, trianglesID,  0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+    
     glBindImageTexture(3, _outputGraftCapsID,  0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
     glBindImageTexture(4, _outputGraftAreasID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
 
@@ -125,9 +122,9 @@ PLfloat* plPlannerStage0Shader::dispatch()
     
     // memory barrier
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-        
-    std::cout << "\nCompute complete:\n";     
-                
+
+
+     
     // read output into array            
     glBindTexture(GL_TEXTURE_2D, _outputGraftCapsID);
     
@@ -137,13 +134,5 @@ PLfloat* plPlannerStage0Shader::dispatch()
 
    
     return pixels;
-
 }
-
-void plPlannerStage0Shader::loadOutputTexture()
-{
-    
-
-}
-        
-
+*/

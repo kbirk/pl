@@ -1,29 +1,30 @@
-#ifndef __PL_DEFECT_COMPUTE_SHADER_H__
-#define __PL_DEFECT_COMPUTE_SHADER_H__
+#ifndef __PL_STAGE_0_SHADER_H__
+#define __PL_STAGE_0_SHADER_H__
 
 #include "plCommon.h"
 #include "plShader.h"
 #include "plSiteGrid.h"
 #include "plSpline.h"
 
-#include "plMesh.h"
-
-#define PL_DEFECT_NUM_PERTURBATIONS     4
 #define PL_MAX_GRAFT_CAP_TRIANGLES      500
 
 class plPlannerStage0Shader : public plShader
 {
     public:                    
           
-        plPlannerStage0Shader( const char *computeFile );
+        plPlannerStage0Shader ( const char *computeFile );
         ~plPlannerStage0Shader();
 
         void getUniformLocations();
+        void setMeshSizeUniform ( PLuint size );
         
-        void bufferGridTextures( const plSiteGrid &grid );
+        //void bufferTextures( const plSiteGrid &grid );
         
-        PLfloat* dispatch();        
+        //PLfloat* dispatch();        
         
+        //PLuint outputGraftCapsID()  const { return _outputGraftCapsID;  }  
+        //PLuint outputGraftAreasID() const { return _outputGraftAreasID; }  
+               
     private:
     
         // grid size (number of points/normals)
@@ -31,13 +32,13 @@ class plPlannerStage0Shader : public plShader
         //PLuint        _inputGridSizeID;
         
         // defectsite grid
-        PLuint        _inputGridSize;
-        PLuint        _inputGridPointsID; 
-        PLuint        _inputGridNormalsID; 
+        //PLuint        _inputGridSize;
+        //PLuint        _inputGridPointsID; 
+        //PLuint        _inputGridNormalsID; 
         // defectsite mesh
-        PLuint        _inputSiteMeshSize;  
-        PLuint        _inputSiteMeshSizeID;                  
-        PLuint        _inputSiteMeshTrianglesID;
+        PLuint        _siteMeshSizeID;  
+        //PLuint        _inputSiteMeshSizeID;                  
+        //PLuint        _inputSiteMeshTrianglesID;
         
         //PLfloat       _inputSiteArea;
         //PLuint        _inputSiteAreaID;
@@ -45,8 +46,8 @@ class plPlannerStage0Shader : public plShader
         //PLuint        _inputSiteNormalID;
         
         // possible graft caps and respective areas
-        PLuint        _outputGraftCapsID;
-        PLuint        _outputGraftAreasID;
+        //PLuint        _outputGraftCapsID;
+        //PLuint        _outputGraftAreasID;
 };
 
 

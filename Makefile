@@ -14,7 +14,7 @@ SOURCES = main.cpp PlannerWindow.cpp plAutomaticPlanner.cpp plBoneAndCartilage.c
           plCSV.cpp plDefectSite.cpp plDonorSite.cpp plDraw.cpp plDRBTransform.cpp plEditable.cpp \
           plGraft.cpp plGraftEditor.cpp plIGuide.cpp plIGuideSite.cpp plLineMesh.cpp plMath.cpp plMatrix44.cpp     \
 	      plMatrixStack.cpp plMesh.cpp plMeshCutter.cpp plMinimalShader.cpp plModel.cpp plModelSpecific.cpp \
-	      plOctree.cpp plPhongShader.cpp plPickingShader.cpp plPickingTexture.cpp plPlan.cpp plPlannerStage0Shader.cpp plPlug.cpp \
+	      plOctree.cpp plPhongShader.cpp plPickingShader.cpp plPickingTexture.cpp plPlan.cpp plPlannerStage0Shader.cpp plPlannerStage1Shader.cpp plPlug.cpp \
 	      plPolygon.cpp plProjection.cpp plRenderable.cpp plRenderer.cpp plRenderingPipeline.cpp plShader.cpp plShapeMesh.cpp plSiteGrid.cpp \
 	      plSpline.cpp plString.cpp plTexture.cpp plTextureMesh.cpp plTextureShader.cpp plTrackedObject.cpp \
 	      plTransform.cpp plTriangle.cpp plVector3.cpp plVector4.cpp plWindow.cpp Window.cpp

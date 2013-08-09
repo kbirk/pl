@@ -15,12 +15,10 @@ layout (rgba32f, binding = 0) uniform image2D iGraftCaps;
 layout (r32f,    binding = 1) uniform image1D iGraftAreas;
 layout (rgba32f, binding = 2) uniform image2D iSiteMeshTriangles;
 
+
 // input uniforms
-uniform uint  uSiteGridSize;
 uniform uint  uSiteMeshSize;
 uniform float uSiteArea;
-uniform vec3  uSiteNormal;
-
 
 uniform float uTemperature;
 
@@ -172,15 +170,6 @@ void removeCap( inout state s, in uint index )
     s.count--;
 }
 
-float rand()
-{
-    seed = (seed ^ 61) ^ (seed >> 16);
-    seed *= 9;
-    seed = seed ^ (seed >> 4);
-    seed *= 0x27d4eb2d;
-    seed = seed ^ (seed >> 15);    
-    return ( noise1( seed ) + 1.0 ) / 2.0;
-}
 
 void copyState( inout state nS, in state S )
 {
@@ -191,6 +180,7 @@ void copyState( inout state nS, in state S )
         nS.caps[i] = S.caps[i];
     }
 }
+
 
 int isInState( in state S, in int gid )
 {
@@ -204,45 +194,44 @@ int isInState( in state S, in int gid )
     return -1;
 }
 
+void copyState( inout state s )
+{
+    nS.count = uStateCount;
+    for (uint i=0; i<uStateCount; i++)
+    {    
+        nS.caps[i] = uStateCaps[i];
+    }
+    nS.energy = uStateEnergy;
+}
 
 void simulatedAnnealingIteration()
 {
     // get global invocation id
     int gid = int( gl_GlobalInvocationID.x );    
 
-    // initial state   
-    S.count = 1;
-    S.caps[0] = 0;
-    S.energy = energy(S);
     
-    float temperature = PL_INITIAL_TEMP;
-
-    while (temperature > 0.000001)
+    // copy initial state 
+    state nS; 
+    copyState( nS );
+    
+    // check if inside state
+    int indexInState = isInState( nS, gid );
+    
+    if ( indexInState > 0 )
     {
-        // get copy of previous iteration        
-        state nS;
-        copyState( nS, S );
-        
-        // check if inside state
-        int indexInState = isInState( nS, gid );
-        
-        if ( indexInState > 0 )
-        {
-            // remove self
-            removeCap( nS, indexInState ); 
-        }
-        else
-        {
-            // add self
-            nS.caps[ nS.count++ ] = gid;
-        }
-    
-        nS.energy = energy( nS );
-        
-
-        temperature *= 1-PL_COOLING_RATE;
+        // remove self
+        removeCap( nS, indexInState ); 
     }
+    else
+    {
+        // add self
+        nS.caps[ nS.count++ ] = gid;
+    }
+
+    // calc energy
+    nS.energy = energy( nS );    
    
+    // store state
 }
 
 
