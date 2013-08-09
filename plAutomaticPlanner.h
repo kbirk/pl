@@ -10,9 +10,7 @@
 #include "plMesh.h"
 
 #include "plSiteGrid.h"
-#include "plBuildDefectShader.h"
-
-
+#include "plPlannerStage0Shader.h"
 
 class plAutomaticPlanner
 {
@@ -28,7 +26,7 @@ class plAutomaticPlanner
         static plSeq<plSiteGrid>  _defectSiteGrids;
         
         static void _generateSiteGrids( plPlan &plan );        
-        static void _createGrid ( plSiteGrid &grid, const plSeq<plTriangle> &triangles );          
+        //static void _createGrid ( plSiteGrid &grid, const plSeq<plTriangle> &triangles );          
         static void _dispatchDefectShader( plPlan &plan );      
          
         static plSeq<plMesh> DEBUG_MESH;  
