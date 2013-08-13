@@ -17,6 +17,26 @@ plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &bo
 
 void plSiteGrid::_generateGridPoints()
 {
+    
+    plSet<plPointAndNormal> p;
+    for (PLuint i=0; i < _triangles.size(); i++)
+    {
+        p.insert( plPointAndNormal( _triangles[i].point0(), _triangles[i].normal() ) );
+        p.insert( plPointAndNormal( _triangles[i].point0(), _triangles[i].normal() ) );
+        p.insert( plPointAndNormal( _triangles[i].point0(), _triangles[i].normal() ) );
+    }
+    
+    plSet<plPointAndNormal>::iterator p_itr = p.begin();
+    plSet<plPointAndNormal>::iterator p_end = p.end();
+    
+    for ( ; p_itr != p_end; ++p_itr )
+    {
+        _points.add ( plVector4( p_itr->point,  1) );
+        _normals.add( plVector4( p_itr->normal, 1) );
+    }
+    
+    /*
+
     const PLfloat PLUG_RADIUS  = 2.0f;
     const PLfloat GRID_SPACING = 8.0f;
     
@@ -24,8 +44,6 @@ void plSiteGrid::_generateGridPoints()
     
     for (PLuint i=0; i < _triangles.size(); i++)
     {
-        //PLfloat area = _triangles[i].getArea();
-
         plVector3 e01 = _triangles[i].point1() - _triangles[i].point0();
         plVector3 e12 = _triangles[i].point2() - _triangles[i].point1();
         plVector3 e20 = _triangles[i].point0() - _triangles[i].point2();
@@ -85,6 +103,8 @@ void plSiteGrid::_generateGridPoints()
         }
         
     }
+    
+    */
 }
 
 
@@ -95,6 +115,7 @@ void plSiteGrid::_calcArea()
     {
         _area += _triangles[i].getArea();
     }    
+    std::cout << "\t\tSite area: " << _area << "\n";
 }        
 
 

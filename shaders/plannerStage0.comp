@@ -1,6 +1,6 @@
 #version 430
 
-#define PL_MAX_GRAFT_CAP_TRIANGLES  500
+#define PL_MAX_GRAFT_CAP_TRIANGLES  1000
 
 layout (local_size_x = 1024) in;
 
@@ -10,14 +10,12 @@ layout (rgba32f, binding = 1) uniform image1D iSiteGridNormals;
 layout (rgba32f, binding = 2) uniform image2D iSiteMeshTriangles;
 
 // input uniforms
-//uniform uint  uSiteGridPointCount;
 uniform uint  uSiteMeshSize;
-//uniform float uSiteArea;
-//uniform vec3  uSiteNormal;
 
 // output textures
-layout (rgba32f, binding = 3) uniform image2D oGraftCaps;
-layout (r32f,    binding = 4) uniform image1D oGraftAreas;
+layout (rgba32f, binding = 3) uniform image2D  oGraftCaps;
+layout (r32f,    binding = 4) uniform image1D  oGraftAreas;
+layout (r32ui,   binding = 5) uniform uimage2D oGraftTriangles;
 
 struct triangle
 {
@@ -209,7 +207,7 @@ int intersectTriangle( out triangle tri[2], in gridPoint g, in triangle t, in fl
 
 float area( in triangle t)
 {
-    return 0.5 * cross( (t.p1 - t.p0),  (t.p2 - t.p0) ).length(); 
+    return 0.5 * length( cross( (t.p1 - t.p0),  (t.p2 - t.p0) ) );
 }
 
 
@@ -228,6 +226,7 @@ void main(void)
     
     float area_sum = 0;
     int   num_tri  = 0;
+    int   num_full_tri = 0;
     
     // iterate through each triangle in mesh
     for(uint i=0; i<uSiteMeshSize; i++)
@@ -252,17 +251,31 @@ void main(void)
             // accumulate area
             area_sum += area( tris[j] );
             // store triangle           
-            imageStore( oGraftCaps, ivec2( num_tri*4 + 0, gid ), vec4( tris[j].p0, 1) ); //+ uSiteNormal * gid/50.0, 1) );
+            imageStore( oGraftCaps, ivec2( num_tri*4 + 0, gid ), vec4( tris[j].p0, 1) );
             imageStore( oGraftCaps, ivec2( num_tri*4 + 1, gid ), vec4( tris[j].p1, 1) );
             imageStore( oGraftCaps, ivec2( num_tri*4 + 2, gid ), vec4( tris[j].p2, 1) );
             imageStore( oGraftCaps, ivec2( num_tri*4 + 3, gid ), vec4( tris[j].n,  1) );            
             num_tri++;                   
-        }                 
+        }  
+        
+        // store overlapped triangle indices
+        if (num_results > 0 && num_full_tri < PL_MAX_GRAFT_CAP_TRIANGLES) // store index of full triangle
+        {   
+            float partial_area = 0;
+            
+            for (uint j=0; j<num_results; j++)
+            {
+                partial_area += area( tris[j] );
+            }
+            
+            if ( partial_area > (area( t )*0.5) )
+                imageStore( oGraftTriangles, ivec2( ++num_full_tri, gid ), uvec4( i, 0, 0, 0) );   
+        }
+                       
     }
+    // store number of full triangles overlapped
+    imageStore( oGraftTriangles, ivec2( 0, gid ), uvec4( num_full_tri, 0, 0, 0) );
 
-    // ensure element is -1 to flag end of cap
-    //imageStore( oGraftCaps, ivec2( num_tri*4, gid ), vec4( -1, -1, -1, -1) );
-    
     // write total cap area
     imageStore( oGraftAreas, gid, vec4( area_sum, 0, 0, 0) ); 
 }

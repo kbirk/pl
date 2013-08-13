@@ -8,6 +8,25 @@
 #include "plBoundary.h"
 #include "plMeshCutter.h"
 
+class plPointAndNormal
+{
+
+    public:
+    
+        plVector3 point;
+        plVector3 normal;
+    
+        plPointAndNormal( const plVector3 &p, const plVector3 &n)
+            : point(p), normal(n)
+        {}
+
+        PLbool operator < (const plPointAndNormal &pn) const
+        {       
+            return point.x < pn.point.x || point.y < pn.point.y || point.z < pn.point.z;
+        }
+};
+
+
 class plSiteGrid
 {
     public:

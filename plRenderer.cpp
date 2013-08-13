@@ -241,6 +241,19 @@ void plRenderer::_drawScene()
             
         }
         
+        PLuint count = plAutomaticPlanner::stateGrafts[0];
+        
+        for (PLuint j=1; j<=count; j++)
+        {
+            PLfloat r = (j % 100) * 0.01;
+            PLfloat g = (j % 1000) * 0.001;
+            PLfloat b = (j % 20) * 0.05;
+        
+            plColourStack::load( r, g, b );
+            plAutomaticPlanner::DEBUG_MESH[ plAutomaticPlanner::stateGrafts[j] ].draw();
+        
+        }
+        /*
         for (PLuint j=0; j<plAutomaticPlanner::DEBUG_MESH.size(); j++)
         {
             PLfloat r = (j % 100) * 0.01;
@@ -250,6 +263,7 @@ void plRenderer::_drawScene()
             plColourStack::load( r, g, b );
             plAutomaticPlanner::DEBUG_MESH[j].draw();
         }
+        */
     }
     
     /* DEBUG FOR OCTREES
