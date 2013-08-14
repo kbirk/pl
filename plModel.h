@@ -33,9 +33,12 @@ class plModel : public plRenderable
              
         const plSeq<plTriangle> &triangles() const { return _triangles; }
         const plOctree          &octree()    const { return _octree;    }
-        plString                 filename()  const { return _filename;  }  
+        plString                 filename()  const { return _filename;  }
         
-        void toggleVisibility();        
+        void toggleVisibility();
+        void toggleTransparency();
+        const PLbool       getTransparency() const { return _isTransparent; }
+
         void draw( const plVector3 &colour ) const;
 
         void      getMinMax(plVector3 &min, plVector3 &max) const;        
