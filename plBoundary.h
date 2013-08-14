@@ -41,8 +41,6 @@ class plBoundary : public plRenderable,
         
         virtual void   draw() const;     
         
-        //friend std::ostream& operator << ( std::ostream& out, const plBoundary &b );
-
     protected:
            
         const plBoneAndCartilage *_model;   

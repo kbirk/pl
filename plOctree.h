@@ -11,7 +11,7 @@
 #include "plTransform.h"
 
 // NOTE:    plOctrees are not exclusive, if a triangle is in a node, it will also be in its parent node
-//          as well. This is not as memory efficient, but gives much better performance
+//          as well. This is not as memory efficient, but gives much better performance for queries
 
 // children quadrant indices 
 // (functions rely on specific bitwise AND operations)
@@ -57,6 +57,7 @@ class plOctreeNode
         
 };
 
+
 class plOctree : public plRenderable
 {
     public:
@@ -76,10 +77,11 @@ class plOctree : public plRenderable
         
     private:
            
+        plOctreeNode *_root;   
+           
+        // prevent copy construction and assignment   
         plOctree( const plOctree &o );
         plOctree operator= ( const plOctree &o ) const;    
-    
-        plOctreeNode *_root;
     
         void _fill(const plSeq<plTriangle> &triangles, PLuint depth);
 

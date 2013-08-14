@@ -196,9 +196,7 @@ void plPlan::importFile( plString filename )
             plBoneAndCartilage *model = getElementPointer( _models, index );
             
             _models[index] = new plBoneAndCartilage( csv.data[i][3], csv.data[i+1][3] );
-            i++;
-            
-            
+            i++; // increment pointer to pass next line since both are read
         }
         
         else if (field.compareCaseInsensitive( "defect site") ) // read before boundary
@@ -224,12 +222,16 @@ void plPlan::importFile( plString filename )
             // read graft attribute from row
             graft.importCSV( csv.data[i], _models );
         } 
-        else if (field.compareCaseInsensitive( "iguide" ) ) 
+        else if (field.compareCaseInsensitive( "iguide site" ) ) 
         {  
              // get reference to iGuide
-            plIGuide &iguide = plGetImportReference( _iGuides, csv.data[i][1] ); 
+            plIGuideSite &iguideSite = plGetImportReference( _iGuideSites, csv.data[i][1] ); 
             // read iguide attribute from current row
-            iguide.importCSV( csv.data[i], _models );
+            iguideSite.importCSV( csv.data[i], _models );
+        } 
+        else if (field.compareCaseInsensitive( "iguide" ) ) 
+        {  
+            // TODO: ADD IGUIDE IMPORTING
         } 
         else
         {
@@ -324,19 +326,18 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     for (PLuint i=0; i<p.iGuideSites().size(); i++) 
     {
         const plIGuideSite &iguideSite = p.iGuideSites(i);
-
         out << std::endl;
-        out << "iguide site," << i << ",model,"   << iguideSite.model() << std::endl;
-        out << "iguide site," << i << ",boundary" << iguideSite.boundary << std::endl;  
-        
+        out << "iguide site," << i << ",model,"   << iguideSite.modelID() << std::endl;
+        out << "iguide site," << i << ",boundary" << iguideSite.boundary  << std::endl;  
+        out << std::endl;
     }
-        
-    // iGuides FIX THIS TOM!
-    for (PLuint i=0; i<p.iGuideSites().size(); i++) 
+
+    // iGuides
+    for (PLuint i=0; i<p.iGuides().size(); i++) 
     {   
         const plIGuide &iguide= p.iGuides(i);
         
-        out << "iguide site," << i << ",graft indices";
+        out << "iguide," << i << ",graft indices";
         
         for (PLuint j=0; j<iguide.graftIndices.size(); j++)
         {

@@ -4,7 +4,7 @@
 const plPlan*            plRenderer::_planToDraw             = NULL;
 const plGraftEditor*     plRenderer::_graftEditorToDraw      = NULL;
 const plBoundaryEditor*  plRenderer::_boundaryEditorToDraw   = NULL;
-const plTextureMesh*     plRenderer::_arthroTextureToDraw     = NULL;
+const plTextureMesh*     plRenderer::_arthroTextureToDraw    = NULL;
 plSeq<const plTrackedObject*> plRenderer::_trackedObjectsToDraw;
 
 plMinimalShader*         plRenderer::_minimalShader          = NULL;
@@ -151,9 +151,9 @@ void plRenderer::_beginDrawing()
     glClearColor( 1,1,1,0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
-    plShaderStack::push( _phongShader );
-    glStencilFunc( GL_ALWAYS, 0x00, 0x00);               // only render to bits = 0 (have not been written)
 
+    glStencilFunc( GL_ALWAYS, 0x00, 0x00);               // only render to bits = 0 (have not been written)
+	plShaderStack::push( _phongShader );
 }
 
 
@@ -195,8 +195,8 @@ void plRenderer::_drawScene()
             _boundaryEditorToDraw->drawMenu( *_planToDraw );
             _graftEditorToDraw->drawMenu( *_planToDraw );
         }
-        plCameraStack::pop(); 
-        plProjectionStack::pop();        
+        plProjectionStack::pop(); 
+        plCameraStack::pop();                
         plShaderStack::pop();   
     }   
     
@@ -213,7 +213,8 @@ void plRenderer::_drawScene()
         }
     }
   
-    // automatic planner
+    // DEBUG
+    // GRID POINTS
     for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)
     {
         plColourStack::load( 0.9, 0.6, 0.2 );
@@ -227,6 +228,8 @@ void plRenderer::_drawScene()
         }
     }
     
+    // DEBUG
+    // POTENTIAL GRAFTS
     for (PLuint i=0; i<plAutomaticPlanner::_defectSiteGrids.size(); i++)
     {    
         plColourStack::load( 0.2, 0.6, 0.9 );
@@ -240,6 +243,19 @@ void plRenderer::_drawScene()
             
         }
         
+        PLuint count = plAutomaticPlanner::stateGrafts[0];
+        
+        for (PLuint j=1; j<=count; j++)
+        {
+            PLfloat r = (j % 100) * 0.01;
+            PLfloat g = (j % 1000) * 0.001;
+            PLfloat b = (j % 20) * 0.05;
+        
+            plColourStack::load( r, g, b );
+            plAutomaticPlanner::DEBUG_MESH[ plAutomaticPlanner::stateGrafts[j] ].draw();
+        
+        }
+        /*
         for (PLuint j=0; j<plAutomaticPlanner::DEBUG_MESH.size(); j++)
         {
             PLfloat r = (j % 100) * 0.01;
@@ -249,8 +265,7 @@ void plRenderer::_drawScene()
             plColourStack::load( r, g, b );
             plAutomaticPlanner::DEBUG_MESH[j].draw();
         }
-        
-        
+        */
     }
     
     /* DEBUG FOR OCTREES
