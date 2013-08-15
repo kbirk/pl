@@ -1,6 +1,6 @@
 #version 430
 
-#define PL_MAX_GRAFT_CAP_TRIANGLES  1000
+#define PL_MAX_GRAFTS_PER_SOLUTION  20
 
 layout (local_size_x = 1024) in;
 
@@ -9,13 +9,25 @@ layout (rgba32f, binding = 0) uniform image1D iSiteGridPositions;
 layout (rgba32f, binding = 1) uniform image1D iSiteGridNormals;
 layout (rgba32f, binding = 2) uniform image2D iSiteMeshTriangles;
 
-// input uniforms
-uniform uint  uSiteMeshSize;
+// temporary textures
+layout (r32f,    binding = 3) uniform image2D tOverlappedTriangleAreas;
 
 // output textures
-layout (rgba32f, binding = 3) uniform image2D  oGraftCaps;
-layout (r32f,    binding = 4) uniform image1D  oGraftAreas;
-layout (r32ui,   binding = 5) uniform uimage2D oGraftTriangles;
+layout (r32f,    binding = 4) uniform image1D  oStateEnergies;
+layout (r32ui,   binding = 5) uniform uimage2D oStateIndices;
+layout (rgba32f, binding = 6) uniform image2D  oStatePerturbations;
+layout (r32ui,   binding = 7) uniform uimage1D oStateGraftCounts;
+
+// input uniforms
+uniform uint  uSiteMeshSize;
+uniform float uSiteArea;
+
+uniform float uStateTemperature;
+uniform float uStateEnergy;
+uniform mat4  uStatePerturbations [PL_MAX_GRAFTS_PER_SOLUTION];
+uniform uint  uStateIndices       [PL_MAX_GRAFTS_PER_SOLUTION];
+uniform uint  uStateGraftCount;
+
 
 struct triangle
 {
@@ -30,6 +42,15 @@ struct gridPoint
 {
     vec3 p;
     vec3 n;
+};
+
+
+struct state
+{
+    uint indices       [PL_MAX_GRAFTS_PER_SOLUTION];
+    //mat4 perturbations [PL_MAX_GRAFTS_PER_SOLUTION*4];
+    uint graftCount;
+    float energy;
 };
 
 
@@ -210,24 +231,48 @@ float area( in triangle t)
     return 0.5 * length( cross( (t.p1 - t.p0),  (t.p2 - t.p0) ) );
 }
 
+/*
+float area_covered( in state s )
+{
+    float total_area = 0;
+    for (uint i = 0; i < s.graftCount; i++)
+    {   
+        // add area of cap to sum, includes overlaps
+        total_area += imageLoad( tGraftCapAreas, int(s.indices[i]) ); 
+    }
+    return total_area;
+}
+*/
 
-void main(void)
-{ 
-    // get global invocation id
-    int gid = int(gl_GlobalInvocationID.x);
+float area_uncovered( in state s )
+{       
+    int gid = int( gl_GlobalInvocationID.x ); 
+         
+    float overlapped_area = 0;    
+    // iterate over triangles, if they are in cap, value > 0, add to sum
+    for (uint i = 0; i < uSiteMeshSize; i++)
+    {  
+         overlapped_area += imageLoad( tOverlappedTriangleAreas, ivec2(i, gid) ); 
+    }      
     
-    // get defect site position and normal
-    vec3 position = vec3( imageLoad( iSiteGridPositions, gid ) );
-    vec3 normal   = vec3( imageLoad( iSiteGridNormals,   gid ) );    
+    return uSiteArea - overlapped_area;
+}
+
+float calculateCap( in int index, in mat4 perturbation )
+{   
+    int gid = int( gl_GlobalInvocationID.x ); 
+
+    float radius = 4.0;    
+
+    vec3 position = vec3( perturbation * imageLoad( iSiteGridPositions, index ) );
+    vec3 normal   = mat3(perturbation) * vec3( imageLoad( iSiteGridNormals,   index ) );    
        
     gridPoint g;    
     g.p = position;
     g.n = normal;
     
     float area_sum = 0;
-    int   num_tri  = 0;
-    int   num_full_tri = 0;
-    
+
     // iterate through each triangle in mesh
     for(uint i=0; i<uSiteMeshSize; i++)
     {
@@ -238,46 +283,247 @@ void main(void)
         t.p2 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,2) ) );
         t.n  = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,3) ) ); 
         
-        float radius = 4.0;
-        
         triangle tris[2];   // triangle(s) to be added to graft cap
         int num_results = intersectTriangle( tris, g, t, radius );  // num_results is the number of triangles returned, 0 <= t <= 2
 
-        if (num_tri + num_results > PL_MAX_GRAFT_CAP_TRIANGLES) 
-            break;  // exceeded max number of triangles (this shouldn't happen unless grafts have ridiculously large radii)
+        float tri_area = 0;
 
         for (uint j=0; j<num_results; j++)
         {
             // accumulate area
-            area_sum += area( tris[j] );
-            // store triangle           
-            imageStore( oGraftCaps, ivec2( num_tri*4 + 0, gid ), vec4( tris[j].p0, 1) );
-            imageStore( oGraftCaps, ivec2( num_tri*4 + 1, gid ), vec4( tris[j].p1, 1) );
-            imageStore( oGraftCaps, ivec2( num_tri*4 + 2, gid ), vec4( tris[j].p2, 1) );
-            imageStore( oGraftCaps, ivec2( num_tri*4 + 3, gid ), vec4( tris[j].n,  1) );            
-            num_tri++;                   
+            tri_area += area( tris[j] );              
         }  
         
+        area_sum += tri_area;
+        
         // store overlapped triangle indices
-        if (num_results > 0 && num_full_tri < PL_MAX_GRAFT_CAP_TRIANGLES) // store index of full triangle
+        if (num_results > 0)
         {   
-            float partial_area = 0;
-            
-            for (uint j=0; j<num_results; j++)
-            {
-                partial_area += area( tris[j] );
-            }
-            
-            if ( partial_area > (area( t )*0.5) )
-                imageStore( oGraftTriangles, ivec2( ++num_full_tri, gid ), uvec4( i, 0, 0, 0) );   
+            // if partial area is > 50% full triangle area, flag as overlapped
+            if ( tri_area > (area( t )*0.5) )            
+                imageStore( tOverlappedTriangleAreas, ivec2( i, gid ), vec4( area(t), 0, 0, 0) );  
         }
                        
     }
-    // store number of full triangles overlapped
-    imageStore( oGraftTriangles, ivec2( 0, gid ), uvec4( num_full_tri, 0, 0, 0) );
-
+    
+    return area_sum;
+    
     // write total cap area
-    imageStore( oGraftAreas, gid, vec4( area_sum, 0, 0, 0) ); 
+    //imageStore( tGraftCapAreas, gid, vec4( area_sum, 0, 0, 0) ); 
+
+}
+
+void rotate( inout mat4 mat, in float angle, in vec3 axis ) 
+{
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+
+    // all angles in radians
+    float s = sin(angle*0.017453292);
+    float c = cos(angle*0.017453292);
+
+    float mag = sqrt(x*x + y*y + z*z);
+
+    // zero vector, return identity
+    if (mag == 0.0f) 
+    {
+        mat = mat4(1.0);
+        return;
+    }
+
+    // Rotation matrix is normalized
+    x /= mag;
+    y /= mag;
+    z /= mag;
+
+    float xx, yy, zz, xy, yz, zx, xs, ys, zs, one_c;
+    xx = x * x;
+    yy = y * y;
+    zz = z * z;
+    xy = x * y;
+    yz = y * z;
+    zx = z * x;
+    xs = x * s;
+    ys = y * s;
+    zs = z * s;
+    one_c = 1.0f - c;
+
+    mat = mat4(1.0);
+    
+    mat[0][0] = (one_c * xx) + c;
+    mat[0][1] = (one_c * xy) - zs;
+    mat[0][2] = (one_c * zx) + ys;
+
+    mat[1][0] = (one_c * xy) + zs;
+    mat[1][0] = (one_c * yy) + c;
+    mat[1][0] = (one_c * yz) - xs;
+    
+    mat[2][0] = (one_c * zx) - ys;
+    mat[2][0] = (one_c * yz) + xs;
+    mat[2][0] = (one_c * zz) + c;
+}
+
+
+float energy ( in state s )
+{
+    float total_area_covered = 0;   // includes overlaps
+    for (uint i=0; i<s.graftCount; i++)
+    {
+         // calculate cap returns area from the cap, and also flags any overlapped triangles
+         // in the temporary texture 'tOverlappedTriangleAreas'
+         total_area_covered += calculateCap( int(s.indices[i]), mat4(1.0) );
+    }
+
+    // calculate energy
+    float WEIGHT = 0.4;
+    return area_uncovered( s ) + WEIGHT * total_area_covered; // area_covered( s );
+}
+
+
+void addCap( inout state s, in uint index )
+{    
+    //s.perturbations[s.graftCount] = mat4(1.0);    
+    s.indices[s.graftCount]       = index;      
+    s.graftCount++;    
+}
+
+
+void removeCap( inout state s, in uint index )
+{ 
+    // shift all other elements down
+    for (uint i=index; i<s.graftCount; i++)
+    {
+        if (i+1 == PL_MAX_GRAFTS_PER_SOLUTION)  // max sure doesnt go out of bounds
+        {
+            s.indices[i] = 0;
+            //s.perturbations[i] = mat4(1.0);
+        }
+        //s.perturbations[i] = s.perturbations[i+1];                          
+        s.indices[i]       = s.indices[i+1];       
+    }
+    s.graftCount--;
+}
+
+float randomize( inout float seed )
+{   
+    uint temp = uint(seed);
+    temp = (temp ^ 61) ^ (temp / 65536); // ^ (seed >> 16);
+    temp *= 9;
+    temp = temp ^ (temp / 16);           // (seed >> 4);
+    temp *= 0x27d4eb2d;
+    temp = temp ^ (temp / 32768);        // (seed >> 15);
+    seed = float(temp);
+    return seed;
+}
+
+float rand( in float seed )
+{
+    return fract( sin( randomize( seed ) ) * 43758.5453);
+}
+
+
+void perturbState( inout state s )
+{
+    int gid = int( gl_GlobalInvocationID.x );
+    
+    float seed = (gid * uStateTemperature);    
+    
+    for (uint i=0; i<s.graftCount; i++)
+    {
+        // get random rotation
+        
+        float angle = rand( seed ) * 5.0;
+        float x = rand( seed );
+        float y = rand( seed );
+        float z = rand( seed );    
+        vec3 axis = normalize( vec3( x, y, z ) );
+        mat4 rot;   rotate( rot, angle, axis ); 
+        
+        // get random translation
+        float tx = rand( seed );
+        float ty = rand( seed );
+        float tz = rand( seed ); 
+        vec3 trans = normalize( vec3( x, y, z ) );       
+        trans = trans * rand( seed ) * uStateTemperature/1000.0;
+        
+        //s.perturbations[i] = mat4( rot[0], rot[1], rot[2], vec4(trans,1) );
+    }
+}
+
+int isInState( in state s, in int gid )
+{ 
+    for (int i=0; i<s.graftCount; i++)
+    {
+        if (s.indices[i] == gid)
+        {
+            return i; 
+        }
+    }
+    return -1;
+}
+
+
+void copyGlobalState( inout state s )
+{
+    s.graftCount = uStateGraftCount;
+    for (uint i=0; i<s.graftCount; i++)
+    {    
+        s.indices[i]       = uStateIndices[i];        
+        //s.perturbations[i] = uStatePerturbations[i];
+    }
+    s.energy = uStateEnergy;
+}
+
+
+void main(void)
+{ 
+    // get global invocation id
+    int gid = int( gl_GlobalInvocationID.x );    
+
+    // create local state and copy data from global state 
+    state nS;  copyGlobalState( nS ); 
+        
+    // check if inside state   
+    int indexInState = isInState( nS, gid );
+         
+    if ( indexInState > -1 )
+    {   
+        // remove self 
+        removeCap( nS, uint(indexInState) );         
+    }
+    else
+    {
+        // add self
+        addCap( nS, gid );
+    }
+    
+    //perturbState( nS );
+
+    // calc energy
+    nS.energy = energy( nS );    
+    
+    // store state energy
+    imageStore( oStateEnergies, gid, vec4( nS.energy, 0, 0, 0 ) );
+    // store state graft count
+    imageStore( oStateGraftCounts, gid, uvec4( nS.graftCount, 0, 0, 0 ) );
+    // store state indices    
+    for (int i=0; i<nS.graftCount; i++)
+    {
+        imageStore( oStateIndices, ivec2( i, gid ), uvec4( nS.indices[i], 0, 0, 0) );           
+    }   
+    
+    /*
+    // store state perturbations    
+    for (int i=0; i<PL_MAX_GRAFTS_PER_SOLUTION; i++)
+    {        
+        imageStore( oStatePerturbations, ivec2( i*4+0, gid ), nS.perturbations[i][0] );           
+        imageStore( oStatePerturbations, ivec2( i*4+1, gid ), nS.perturbations[i][1] );
+        imageStore( oStatePerturbations, ivec2( i*4+2, gid ), nS.perturbations[i][2] );
+        imageStore( oStatePerturbations, ivec2( i*4+3, gid ), nS.perturbations[i][3] );
+    }
+    */
+    
 }
 
 

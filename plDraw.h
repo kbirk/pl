@@ -16,7 +16,9 @@ class plDraw
         static void sphere   ( float radius);
         static void sphere   ( const plVector3 &origin, float radius);
         static void cylinder ( float radius, float height); 
+        static void cylinder (const plVector3 &origin, const plVector3 &direction, float radius, float height);
         static void disk     ( const plVector3 &origin, float scale );
+        static void disk     ( const plVector3 &origin, const plVector3 &direction, float scale );
         static void disk     ( float scale );
         static void scope    ( const plTrackedObject &scope );
         static void probe    ( const plTrackedObject &probe );

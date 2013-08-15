@@ -5,6 +5,7 @@
 #include "plShader.h"
 #include "plSiteGrid.h"
 #include "plSpline.h"
+#include "plMatrix44.h"
 
 class plPlannerStage0Shader : public plShader
 {
@@ -14,12 +15,25 @@ class plPlannerStage0Shader : public plShader
         ~plPlannerStage0Shader();
 
         void getUniformLocations();
-        void setMeshSizeUniform ( PLuint size );
+        void setAnnealingUniforms( PLuint size, 
+                                   PLfloat area, 
+                                   PLfloat temp, 
+                                   PLfloat energy, 
+                                   PLfloat count,
+                                   const plSeq<PLuint> &indices,
+                                   const plSeq<plMatrix44> &perturbations );
                
     private:
     
-        // defect site mesh triangle count
-        PLuint        _siteMeshSizeID;  
+        PLuint _siteMeshSizeID;                  
+        PLuint _siteAreaID;
+               
+        PLuint _stateTemperatureID;                
+        PLuint _stateEnergyID;
+        PLuint _stateIndicesID;
+        PLuint _statePerturbationsID;
+        PLuint _stateGraftCountsID;
+            
 };
 
 

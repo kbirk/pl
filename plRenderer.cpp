@@ -241,6 +241,20 @@ void plRenderer::_drawScene()
             
         }
         
+        PLuint count = plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS.size();
+        
+        for (PLuint j=0; j<count; j+=2)
+        {
+            float r = ((float) rand() / (RAND_MAX));
+            float g = ((float) rand() / (RAND_MAX));
+            float b = ((float) rand() / (RAND_MAX));
+            plColourStack::load( r, g, b );
+            plDraw::cylinder( plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j], plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+1], 4.0f, 8.0f );
+            plDraw::disk    ( plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j], plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+1], 4.0f);
+        }
+        
+        
+        /*
         PLuint count = plAutomaticPlanner::stateGrafts[0];
         
         for (PLuint j=1; j<=count; j++)
@@ -253,6 +267,7 @@ void plRenderer::_drawScene()
             plAutomaticPlanner::DEBUG_MESH[ plAutomaticPlanner::stateGrafts[j] ].draw();
         
         }
+        */
         /*
         for (PLuint j=0; j<plAutomaticPlanner::DEBUG_MESH.size(); j++)
         {

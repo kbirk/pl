@@ -100,6 +100,33 @@ void plDraw::cylinder(float radius, float height)
     plModelStack::pop();
 }
 
+void plDraw::cylinder(const plVector3 &origin, const plVector3 &direction, float radius, float height)
+{
+    plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
+
+    plModelStack::push();
+    {
+        plModelStack::translate( origin.x, origin.y, origin.z );
+        plModelStack::mult( rot ); 
+        plModelStack::translate( 0, 0, -height );                  
+        plDraw::cylinder( radius, height );  
+    }
+    plModelStack::pop();
+}
+
+void plDraw::disk(const plVector3 &origin, const plVector3 &direction, float radius)
+{
+    plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
+
+    plModelStack::push();
+    {
+        plModelStack::translate( origin.x, origin.y, origin.z );
+        plModelStack::mult( rot );
+        plDraw::disk( radius );       
+    }
+    plModelStack::pop();
+}
+
 void plDraw::disk(const plVector3 &origin, float radius)
 {
     plModelStack::push();
