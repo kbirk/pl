@@ -17,13 +17,16 @@ class plTrackedObject : public plRenderable
         void            updatePosition( const plDRBTransform &DRBToWorld, const plDRBTransform &FemurToWorld );
 
         // Single line accessors
-        PLbool           isArthroscope()      const  { return _isArthroscope;  }
-        const plVector3 &getPoint()           const  { return _trackedTip;     }
-        const plVector3 &getEnd()             const  { return _trackedEnd;     }
-        const plVector3 &getTipWorldCoords()  const  { return _tipWorldCoords; }
-        const plVector3 &getEndWorldCoords()  const  { return _endWorldCoords; }
-        const plVector3 &getRotationAxis()    const  { return _rotationAxis;   }
-        double           getRotationAngle()   const  { return _rotationAngle;  }
+        PLbool           isArthroscope()      const  { return _isArthroscope;   }
+        const plVector3 &getPoint()           const  { return _trackedTip;      }
+        const plVector3 &getEnd()             const  { return _trackedEnd;      }
+        const plVector3 &getTipWorldCoords()  const  { return _tipWorldCoords;  }
+        const plVector3 &getEndWorldCoords()  const  { return _endWorldCoords;  }
+        const plVector3 &getRotationAxis()    const  { return _rotationAxis;    }
+        double           getRotationAngle()   const  { return _rotationAngle;   }
+        const plVector3 &getAxisX()           const  { return _xAxis;           }
+        const plVector3 &getAxisY()           const  { return _yAxis;           }
+        const plVector3 &getAxisZ()           const  { return _zAxis;           }
         plVector4        getRotationInfo()    const  { return plVector4( _rotationAxis, _rotationAngle); }
 
     private:
@@ -35,6 +38,7 @@ class plTrackedObject : public plRenderable
         plVector3       _zeroVec;
         plVector3       _trackedTip, _tipWorldCoords, _rotationAxis;
         plVector3       _trackedEnd, _endWorldCoords;
+        plVector3       _xAxis, _yAxis, _zAxis;
 
         double          _rotationAngle;
         PLbool          _isArthroscope;

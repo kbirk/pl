@@ -112,6 +112,7 @@ void plRenderer::draw()
     {
         _drawScene();
     }
+
     _endDrawing();
 
     // clear queues from this frame
@@ -148,10 +149,11 @@ void plRenderer::_beginDrawing()
     glEnable( GL_BLEND );
     
     glClearColor( 1,1,1,0 );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    glStencilFunc( GL_ALWAYS, 0x00, 0x00); // always render
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
-    plShaderStack::push( _phongShader );     
+
+    glStencilFunc( GL_ALWAYS, 0x00, 0x00);               // only render to bits = 0 (have not been written)
+	plShaderStack::push( _phongShader );
 }
 
 

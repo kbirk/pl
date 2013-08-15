@@ -1,16 +1,6 @@
 #include "plArthroscope.h"
 
 
-    #define CAPTUREWIDTH    1280
-    #define CAPTUREHEIGHT   720
-
-    x = (CAPTUREWIDTH/2) / (plWindow::width()/2);
-    y = (CAPTUREHEIGHT/2) / (plWindow::height()/2);
-        
-    setBuffers( plVector3(-x,-y,0),
-                plVector3( x,-y,0),
-                plVector3( x, y,0),
-                plVector3(-x, y,0) );
                 
 plArthroscope::plArthroscope() 
 { 
@@ -72,7 +62,6 @@ void plArthroscope::updateImage(ImageManipulation im)
     {
         cvInitUndistortMap(intrinsics, distortion, mapx, mapy); // SLOW SLOW SLOW
         firstTime = false;
-        std::cout << 63 << std::endl;
     }
 
     frame = cvQueryFrame(capture);

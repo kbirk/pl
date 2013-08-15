@@ -102,24 +102,24 @@ void plModel::draw( const plVector3 &colour ) const
         glEnable( GL_STENCIL_TEST );             // if transparent, prevent overwriting pixels during picking
         plColourStack::load( colour.x, colour.y, colour.z, 0.2);
 
-        // Sort by distance        
-        plVector3 viewDir = plCameraStack::direction(); 
-        
-        std::vector<plOrderPair> order;     order.reserve(_triangles.size() );              
-        for (PLuint i=0; i<_triangles.size(); i++) 
+        // Sort by distance
+        plVector3 viewDir = plCameraStack::direction();
+
+        std::vector<plOrderPair> order;     order.reserve(_triangles.size() );
+        for (PLuint i=0; i<_triangles.size(); i++)
         {
             order.push_back( plOrderPair( i, _triangles[i].centroid() * viewDir) );
         }
         std::sort(order.begin(), order.end(), _compareOrderPairs);
-                        
-        plSeq<PLuint> indices(_triangles.size()*3 );	
-	    for (PLuint i = 0; i < order.size(); i++)
-	    {
-	        indices.add( order[i].index*3 );
-	        indices.add( order[i].index*3+1 );
-	        indices.add( order[i].index*3+2 );
-	    }
-        
+
+        plSeq<PLuint> indices(_triangles.size()*3 );
+        for (PLuint i = 0; i < order.size(); i++)
+        {
+            indices.add( order[i].index*3 );
+            indices.add( order[i].index*3+1 );
+            indices.add( order[i].index*3+2 );
+        }
+
         _mesh.draw(indices);
         
         glDisable( GL_STENCIL_TEST ); 
@@ -140,6 +140,20 @@ void plModel::toggleVisibility()
         _isTransparent = false;
     } 
     else 
+    {
+        isVisible = true;
+        _isTransparent = true;
+    }
+}
+
+void plModel::toggleTransparency()
+{
+    if (_isTransparent)
+    {
+        isVisible = true;
+        _isTransparent = false;
+    }
+    else
     {
         isVisible = true;
         _isTransparent = true;
