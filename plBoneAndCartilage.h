@@ -13,8 +13,8 @@ class plBoneAndCartilage
 
         plBoneAndCartilage( plString boneFile, plString cartilageFile );
 
-        void importCSV( const plSeq<plString> &row );
-        void exportCSV( PLuint index );
+        //void importCSV( const plSeq<plString> &row );
+        //void exportCSV( PLuint index );
 
         void draw() const;
 

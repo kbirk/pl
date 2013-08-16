@@ -30,15 +30,15 @@ class plOctreeNode
 {
     public:
 
-        plOctreeNode( const plVector3 &c, PLfloat hw ); 
-
-        ~plOctreeNode();
-
         plVector3                 centre;        // center point of octree node (not strictly needed)    
         PLfloat                   halfWidth;     // half the width of the node volume (not strictly needed)    
         plSeq<plOctreeNode*>      children;      // pointers to the eight children nodes   
         plSeq<const plTriangle*>  contained;     // linked list of objects contained at this node 
-        
+
+        plOctreeNode( const plVector3 &c, PLfloat hw ); 
+
+        ~plOctreeNode();
+
         void    draw  () const;        
         void    insert( const plTriangle &tri, PLuint depth);
         

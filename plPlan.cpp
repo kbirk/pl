@@ -160,7 +160,7 @@ void plPlan::removeIGuideSite( PLuint index)
 
 
 template<class T>
-T &plGetImportReference( plSeq<T*> &ts,  const plString &index )
+T &getImportReference( plSeq<T*> &ts,  const plString &index )
 {
     PLuint j = plString::fromString<PLuint>( index );           
     while (ts.size() < j+1)
@@ -202,7 +202,7 @@ void plPlan::importFile( plString filename )
         else if (field.compareCaseInsensitive( "defect site") ) // read before boundary
         {
             // get reference to defect site
-            plDefectSite &defectSite = plGetImportReference( _defectSites, csv.data[i][1] );
+            plDefectSite &defectSite = getImportReference( _defectSites, csv.data[i][1] );
             // read defect site attribute from current row
             defectSite.importCSV( csv.data[i], _models );                    
         } 
@@ -210,7 +210,7 @@ void plPlan::importFile( plString filename )
         else if (field.compareCaseInsensitive( "donor site") ) // read before boundary
         {
             // get reference to donor region
-            plDonorSite &donorSite = plGetImportReference( _donorSites, csv.data[i][1] ); 
+            plDonorSite &donorSite = getImportReference( _donorSites, csv.data[i][1] ); 
             // read donor region attribute from current row
             donorSite.importCSV( csv.data[i], _models );                  
         } 
@@ -218,14 +218,14 @@ void plPlan::importFile( plString filename )
         else if (field.compareCaseInsensitive( "graft" ) ) 
         {    
             // get reference to graft
-            plGraft &graft = plGetImportReference( _grafts, csv.data[i][1] );             
+            plGraft &graft = getImportReference( _grafts, csv.data[i][1] );             
             // read graft attribute from row
             graft.importCSV( csv.data[i], _models );
         } 
         else if (field.compareCaseInsensitive( "iguide site" ) ) 
         {  
              // get reference to iGuide
-            plIGuideSite &iguideSite = plGetImportReference( _iGuideSites, csv.data[i][1] ); 
+            plIGuideSite &iguideSite = getImportReference( _iGuideSites, csv.data[i][1] ); 
             // read iguide attribute from current row
             iguideSite.importCSV( csv.data[i], _models );
         } 

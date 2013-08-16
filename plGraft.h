@@ -91,9 +91,9 @@ class plGraft : public plRenderable,
         plMesh     _boneMesh;
         plMesh     _cartilageMesh;
 
-        plCap      _cartilageCap;
         plCap      _boneCap;
-        
+        plCap      _cartilageCap;
+                
         void      _setBoneColour     () const;
         void      _setCartilageColour() const;              
         void      _drawGraft() const;

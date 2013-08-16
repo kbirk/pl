@@ -606,7 +606,6 @@ std::ostream& operator << ( std::ostream& stream, const plMatrix44 &m )
        stream << m(i,0) << "\t" << m(i,1) << "\t" << m(i,2) << "\t" << m(i,3) << "\n";
     }
 
-    
     return stream;
 }
 

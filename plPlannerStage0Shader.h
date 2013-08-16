@@ -15,24 +15,27 @@ class plPlannerStage0Shader : public plShader
         ~plPlannerStage0Shader();
 
         void getUniformLocations();
-        void setAnnealingUniforms( PLuint size, 
-                                   PLfloat area, 
+        void setAnnealingUniforms( PLuint  meshSize, 
+                                   PLfloat meshArea, 
+                                   PLuint  gridSize,
                                    PLfloat temp, 
                                    PLfloat energy, 
                                    PLfloat count,
-                                   const plSeq<PLuint> &indices,
+                                   const plSeq<PLuint>     &indices,
                                    const plSeq<plMatrix44> &perturbations );
                
     private:
     
         PLuint _siteMeshSizeID;                  
-        PLuint _siteAreaID;
-               
+        PLuint _siteMeshAreaID;
+        PLuint _siteGridSizeID;
+         
         PLuint _stateTemperatureID;                
         PLuint _stateEnergyID;
+        PLuint _stateGraftCountID;
         PLuint _stateIndicesID;
         PLuint _statePerturbationsID;
-        PLuint _stateGraftCountsID;
+        
             
 };
 

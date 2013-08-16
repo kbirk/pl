@@ -4,8 +4,7 @@
 #include "plCommon.h"
 
 class plEditable
-{
-    
+{   
     public:
 
         plEditable();  

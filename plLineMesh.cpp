@@ -5,6 +5,7 @@ plLineMesh::plLineMesh()
 {
 }
 
+
 plLineMesh::plLineMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
 {            
 	// set VBO and VAO
@@ -15,7 +16,7 @@ plLineMesh::plLineMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &in
 void plLineMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
 {
     // destroy previous just in case
-    destroy();
+    //destroy();
 
     // set number of indices
     _numIndices = indices.size();
@@ -26,11 +27,15 @@ void plLineMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuin
     const GLuint ARRAY_SIZE = TOTAL_SIZE * vertices.size();
     
     // create and bind VAO
-	glGenVertexArrays(1, &_vertexArrayObject);     
+    if (_vertexArrayObject == 0)
+	    glGenVertexArrays(1, &_vertexArrayObject);
+	         
 	glBindVertexArray(_vertexArrayObject);
      
 	// create and bind vertex VBO
-	glGenBuffers(1, &_vertexBufferObject);
+	if (_vertexBufferObject == 0)
+	    glGenBuffers(1, &_vertexBufferObject);
+	    
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferObject); 
     glBufferData(GL_ARRAY_BUFFER, ARRAY_SIZE, &vertices[0], GL_STATIC_DRAW);    
        
@@ -46,6 +51,7 @@ void plLineMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuin
 	// unbind the vertex array object
 	glBindVertexArray(0); 			
 }
+
 
 void plLineMesh::draw() const
 {		

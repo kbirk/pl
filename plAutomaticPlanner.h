@@ -13,11 +13,10 @@
 #include "plPlannerStage0Shader.h"
 #include "plPlannerStage1Shader.h"
 
-#define PL_ANNEALING_INITIAL_TEMPERATURE        1000.0f
+#define PL_ANNEALING_INITIAL_TEMPERATURE        1.0f
 #define PL_ANNEALING_COOLING_RATE               0.1f
 
 #define PL_MAX_GRAFTS_PER_SOLUTION              20
-#define PL_MAX_GRAFT_CAP_TRIANGLES              1000
 
 
 class plAutomaticPlanner
@@ -37,8 +36,7 @@ class plAutomaticPlanner
         static PLuint _gridNormalsTextureID;                 
         static PLuint _siteMeshTextureID;
         
-        // mesh colouring temporary texture      
-        //static PLuint _graftCapAreasTextureID;  
+        // mesh colouring temporary texture       
         static PLuint _overlappingTriangleAreasTextureID;
                    
         // annealing states and energies
@@ -55,9 +53,7 @@ class plAutomaticPlanner
     
         static void _dispatch();      
         static void _dispatchStage0();
-        //static void _dispatchStage1();
-         
-        static plSeq<plMesh> DEBUG_MESH;  
+
                         
 };
 

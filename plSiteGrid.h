@@ -42,8 +42,7 @@ class plSiteGrid
         const plSeq<plTriangle>& triangles()               const { return _triangles;      }
         const plVector4&         points   ( PLuint index ) const { return _points[index];  }
         const plVector4&         normals  ( PLuint index ) const { return _normals[index]; }
-
-            
+           
     private:
         
         plSeq<plTriangle> _triangles;

@@ -77,7 +77,6 @@ void plPickingTexture::unbind()
 }
 
 
-
 plPickingInfo plPickingTexture::readPixel(PLuint x, PLuint y)
 {
     if (_readSinceLastDraw)
