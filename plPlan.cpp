@@ -333,23 +333,30 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     }
 
     // iGuides
-    for (PLuint i=0; i<p.iGuides().size(); i++) 
+    for (PLuint i=0; i<p.iGuides().size(); i++)
     {   
         const plIGuide &iguide= p.iGuides(i);
         
-        out << "iguide," << i << ",graft indices";
-        
-        for (PLuint j=0; j<iguide.graftIndices.size(); j++)
-        {
-            out << "," << iguide.graftIndices[j];
-        }
-        out << std::endl;
+        // site selection
+        out << "iguide," << i << ",site," << iguide.siteIndex << std::endl;
 
-        for (PLuint j=0; j<iguide.kwires.size(); j++)
+        // recipient plugs
+        for (PLuint j=0; j<iguide.recipientIndices.size(); j++)
         {
-            out << "iguide," << i << ",kwire," << j << "," << iguide.kwires[j].position << "," << iguide.kwires[j].direction << std::endl;
+            out << "iguide," << i << ",recipient," << iguide.recipientIndices[j] << std::endl;
         }
-        out << std::endl;
+
+        // harvest plugs
+        for (PLuint j=0; j<iguide.harvestIndices.size(); j++)
+        {
+            out << "iguide," << i << ",harvest," << iguide.harvestIndices[j] << std::endl;
+        }
+
+        // kwires
+        for (PLuint j=0; j<iguide.kWireIndices.size(); j++)
+        {
+            out << "iguide," << i << ",kwire," << iguide.kWireIndices[j] << std::endl;
+        }
         
     }
     
