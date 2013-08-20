@@ -35,11 +35,12 @@ class plSiteGrid
         plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &boundary );
         
         PLuint     size()              const { return _points.size(); }
+        PLuint     meshSize()          const { return _triangles.size(); }
         PLfloat    area()              const { return _area; } 
         plVector3  normal()            const { return _normal; };
         
         const plTriangle&        triangles(PLuint i)       const { return _triangles[i];   }        
-        const plSeq<plTriangle>& triangles()               const { return _triangles;      }
+        //const plSeq<plTriangle>& triangles()               const { return _triangles;      }
         const plVector4&         points   ( PLuint index ) const { return _points[index];  }
         const plVector4&         normals  ( PLuint index ) const { return _normals[index]; }
            

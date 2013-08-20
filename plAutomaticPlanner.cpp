@@ -6,6 +6,9 @@ plSeq<plSiteGrid> plAutomaticPlanner::_defectSiteGrids;
 PLuint            plAutomaticPlanner::_gridPointsTextureID; 
 PLuint            plAutomaticPlanner::_gridNormalsTextureID;                 
 PLuint            plAutomaticPlanner::_siteMeshTextureID;
+
+PLuint            plAutomaticPlanner::_siteDataTextureID;
+
 PLuint            plAutomaticPlanner::_overlappingTriangleAreasTextureID; 
 PLuint            plAutomaticPlanner::_stateEnergiesTextureID;    
 PLuint            plAutomaticPlanner::_stateIndicesTextureID;
@@ -39,8 +42,8 @@ void plAutomaticPlanner::_generateSiteGrids( plPlan &plan )
         plSiteGrid grid( plan.defectSites(i).spline.triangles(), plan.defectSites(i).boundary );
         _defectSiteGrids.add( grid ); 
         
-        std::cout << "\t\t" <<  grid.triangles().size() << " triangles calculated \n";
-        std::cout << "\t\t" <<  grid.size() << " grid points calculated \n";
+        std::cout << "\t\t" <<  grid.meshSize() << " triangles calculated \n";
+        std::cout << "\t\t" <<  grid.size()     << " grid points calculated \n";
     }
     
 
@@ -51,8 +54,8 @@ void plAutomaticPlanner::_generateSiteGrids( plPlan &plan )
         plSiteGrid grid( plan.donorSites(i).model()->cartilage.triangles(), plan.donorSites(i).boundary);
         _donorSiteGrids.add( grid );
         
-        std::cout << "\t\t" <<  grid.triangles().size() << " triangles calculated \n";
-        std::cout << "\t\t" <<  grid.size() << " grid points calculated \n";
+        std::cout << "\t\t" <<  grid.meshSize() << " triangles calculated \n";
+        std::cout << "\t\t" <<  grid.size()     << " grid points calculated \n";
     }    
 }
 
@@ -84,8 +87,34 @@ void plAutomaticPlanner::_bufferTextures()
 {
     plSiteGrid &grid = _defectSiteGrids[0];
 
-    PLuint meshSize = _defectSiteGrids[0].triangles().size();     
+    PLuint meshSize = _defectSiteGrids[0].meshSize();     
     PLuint gridSize = _defectSiteGrids[0].size();
+      
+    plSeq<plVector4> data( (gridSize*2)+(meshSize*4) );
+    
+    for( PLuint i=0; i < gridSize; i++ )
+    {
+        data.add( _defectSiteGrids[0].points(i) );
+    }
+    
+    for( PLuint i=0; i < gridSize; i++ )
+    {
+        data.add( _defectSiteGrids[0].normals(i) );
+    }
+    
+    for( PLuint i=0; i < meshSize; i++ )
+    {
+        data.add( plVector4( _defectSiteGrids[0].triangles(i).point0(), 1.0 ) );
+        data.add( plVector4( _defectSiteGrids[0].triangles(i).point1(), 1.0 ) );
+        data.add( plVector4( _defectSiteGrids[0].triangles(i).point2(), 1.0 ) );
+        data.add( plVector4( _defectSiteGrids[0].triangles(i).normal(), 1.0 ) );
+    }
+    
+    // buffer site data
+    glGenTextures(1, &_siteDataTextureID);
+    glBindTexture(GL_TEXTURE_1D, _siteDataTextureID);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, (gridSize*2)+(meshSize*4), 0, GL_RGBA, GL_FLOAT, &data[0]);
+    reportError("gridPoints");
     
     // buffer grid points 
     glGenTextures(1, &_gridPointsTextureID);
@@ -104,10 +133,10 @@ void plAutomaticPlanner::_bufferTextures()
     
     for (PLuint i=0; i < meshSize; i++)
     {
-        triangles[i]            = plVector4( grid.triangles()[i].point0(), 1);
-        triangles[i+meshSize]   = plVector4( grid.triangles()[i].point1(), 1);
-        triangles[i+meshSize*2] = plVector4( grid.triangles()[i].point2(), 1);
-        triangles[i+meshSize*3] = plVector4( grid.triangles()[i].normal(), 1);
+        triangles[i]            = plVector4( grid.triangles(i).point0(), 1);
+        triangles[i+meshSize]   = plVector4( grid.triangles(i).point1(), 1);
+        triangles[i+meshSize*2] = plVector4( grid.triangles(i).point2(), 1);
+        triangles[i+meshSize*3] = plVector4( grid.triangles(i).normal(), 1);
     }
     
     // buffer site triangles 
@@ -172,6 +201,25 @@ float acceptanceProbability( PLfloat energy, PLfloat newEnergy, PLfloat temperat
     return exp( -(newEnergy - energy) / temperature );
 }
 
+plSeq<PLuint> shuffle( PLuint size )
+{
+    plSeq<PLuint> array(size);
+    for (PLuint i=0; i<size; i++)
+    {
+        array.add( i );
+    }
+    
+    for (PLuint i = 0; i < size-1; i++) 
+    {
+      PLuint j = i + rand() / (RAND_MAX / (size - i) + 1);
+      PLuint t = array[j];
+      array[j] = array[i];
+      array[i] = t;
+    }
+    
+    return array;
+}
+
 
 void plAutomaticPlanner::_dispatchStage0()
 {
@@ -193,9 +241,12 @@ void plAutomaticPlanner::_dispatchStage0()
     std::cout << "Max work group invos: " << params << "\n";
 
     PLuint gridSize   = _defectSiteGrids[0].size();
-    PLuint meshSize   = _defectSiteGrids[0].triangles().size();    
+    PLuint meshSize   = _defectSiteGrids[0].meshSize();    
     PLuint workgroups = ceil( gridSize / (PLfloat) 1024); // ensure enough workgroups are used
 
+    std::cout << "GRID SIZE: " << gridSize << "\n";
+    std::cout << "MESH SIZE: " << meshSize << "\n";
+    
     // compile / link stage 0 shader
     plPlannerStage0Shader stage0("./shaders/plannerStage0.comp");
 
@@ -204,10 +255,12 @@ void plAutomaticPlanner::_dispatchStage0()
     reportError("stage0 bind");
 
     // bind input/output buffers            
+    glBindImageTexture(0, _siteDataTextureID,         0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
+    /*
     glBindImageTexture(0, _gridPointsTextureID,       0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
     glBindImageTexture(1, _gridNormalsTextureID,      0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
     glBindImageTexture(2, _siteMeshTextureID,         0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);    
-    
+    */
     glBindImageTexture(3, _overlappingTriangleAreasTextureID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
        
     glBindImageTexture(4, _stateEnergiesTextureID,      0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F    );
@@ -222,13 +275,10 @@ void plAutomaticPlanner::_dispatchStage0()
     plSeq<PLuint>     stateIndices       (-1, PL_MAX_GRAFTS_PER_SOLUTION);
     plSeq<plMatrix44> statePerturbations (plMatrix44(-1.0), PL_MAX_GRAFTS_PER_SOLUTION);      
 
-	plSeq<PLfloat> overlappingTriangles(0, meshSize*gridSize);  
-
-
     while (stateTemperature > 0.001f)
     {
         // set uniforms
-        stage0.setAnnealingUniforms( _defectSiteGrids[0].triangles().size(), 
+        stage0.setAnnealingUniforms( _defectSiteGrids[0].meshSize(), 
                                      _defectSiteGrids[0].area(), 
                                      _defectSiteGrids[0].size(),
                                      stateTemperature,
@@ -236,7 +286,7 @@ void plAutomaticPlanner::_dispatchStage0()
                                      stateGraftCount,
                                      stateIndices,
                                      statePerturbations );
-                                     
+  
         reportError("stage0 uniforms");
 
         // call compute shader with 1D workgrouping
@@ -244,9 +294,9 @@ void plAutomaticPlanner::_dispatchStage0()
         
         // memory barrier
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);       
-        glMemoryBarrier(GL_UNIFORM_BARRIER_BIT   );
-        reportError("stage0 mem barr");   
-                 
+
+        reportError("stage0 mem barr");  
+               
         plSeq<PLfloat> energies( -1.0, gridSize );
 
         // read energies into array            
@@ -254,25 +304,68 @@ void plAutomaticPlanner::_dispatchStage0()
         glGetTexImage(GL_TEXTURE_1D, 0, GL_RED, GL_FLOAT, &energies[0]);            
         reportError("stage0 get energies");   
         
+        
+        std::cout << "\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nAnnealing temperature: " << stateTemperature << "\n";             
+        /*
+        for (PLuint i=0; i < gridSize; i++)
+        {
+            std::cout << "\n===========================\ni: " << i << " energy: " << energies[i] << "\n";
+        
+            plSeq<PLuint>     graftCounts   (-1, gridSize); 
+            plSeq<PLuint>     indices       (-1, PL_MAX_GRAFTS_PER_SOLUTION*gridSize); 
+            plSeq<plMatrix44> perturbations (plMatrix44(-1.0), PL_MAX_GRAFTS_PER_SOLUTION*gridSize);  
+                      
+            // state indices
+            glBindTexture(GL_TEXTURE_2D, _stateIndicesTextureID);    
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &indices[0]); 
+            reportError("stage0 get indices");
+            
+            // state count
+            glBindTexture(GL_TEXTURE_1D, _stateGraftCountsTextureID);    
+            glGetTexImage(GL_TEXTURE_1D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &graftCounts[0]); 
+            reportError("stage0 get count");
+            
+            // grid perturbations                      
+            glBindTexture(GL_TEXTURE_2D, _statePerturbationsTextureID);    
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &perturbations[0][0]); 
+            reportError("stage0 get pert"); 
+                                            
+            PLuint offset = i*PL_MAX_GRAFTS_PER_SOLUTION;
+
+
+            std::cout << "graft counts: " << graftCounts[i] << "\n";
+            for (PLuint j=0; j < 1; j++)
+            {       
+                std::cout << "graft index: " << indices[offset+j] << "\n" << perturbations[offset+j] << "\n";
+            }
+        } 
+        */
+        
+        
+        
         // iterate through all state energies and find best one
         
+        
+        plSeq<PLuint> randIndices = shuffle( gridSize );
         PLint bestIndex = -1;
-        PLfloat r = ((float) rand() / (RAND_MAX));
+        
         for (PLuint i=0; i < gridSize; i++ )
-        {
-            
-            if ( acceptanceProbability( stateEnergy, energies[i], stateTemperature ) > r )
+        {    
+            PLuint j = randIndices[i];          
+            PLfloat r = ((float) rand() / (RAND_MAX));              
+            if ( acceptanceProbability( stateEnergy, energies[j], stateTemperature ) > r )
             {    
-                //std::cout << "r: " << r << " new e: " << energies[i] << " e: " << stateEnergy << " p: " << acceptanceProbability( stateEnergy, energies[i], stateTemperature ) << "\n";          
-                stateEnergy = energies[i];
-                bestIndex = i;
+                //std::cout << "j: " << j << " new e: " << energies[j] << " e: " << stateEnergy << " p: " << acceptanceProbability( stateEnergy, energies[j], stateTemperature ) << "\n";          
+            
+                stateEnergy = energies[j];
+                bestIndex = j;
             }
-           
-        }
 
+        }
+        
         if ( bestIndex != -1 )
         {
-            std::cout << "\nBest index: " << bestIndex << "\n";
+            //std::cout << "\nBest index: " << bestIndex << "\n";
         
             plSeq<PLuint>     graftCounts   (-1, gridSize); 
             plSeq<PLuint>     indices       (-1, PL_MAX_GRAFTS_PER_SOLUTION*gridSize); 
@@ -297,37 +390,49 @@ void plAutomaticPlanner::_dispatchStage0()
             PLuint offset = (bestIndex)*PL_MAX_GRAFTS_PER_SOLUTION;
             stateGraftCount = graftCounts[bestIndex];
 
-            std::cout << "Index: ";
+            std::cout << "best Index: " << bestIndex << "\n";
             for (PLuint i=0; i < stateGraftCount; i++)
             {
                 stateIndices[i]       = indices[offset+i];
                 statePerturbations[i] = perturbations[offset+i];                 
                 std::cout << stateIndices[i] << "\n" << statePerturbations[i] << "\n";
             }
-
-            
-            // get perturbations
-            std::cout << "\nAnnealing temperature: " << stateTemperature << "\n";    
+              
             std::cout << "New Best energy: " << stateEnergy << ", " << stateGraftCount << " grafts\n";
             
         }
-        
+
         // reset covered areas back to 0
+        plSeq<PLfloat> overlappingTriangles(0, meshSize*gridSize);  
 		glBindTexture(GL_TEXTURE_2D, _overlappingTriangleAreasTextureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, meshSize, gridSize, 0, GL_RED, GL_FLOAT, &overlappingTriangles[0]);
 		
-        stateTemperature -= 0.1; //*= 1.0f-PL_ANNEALING_COOLING_RATE;
+		
+		plSeq<PLfloat> statePerturbations(-1, PL_MAX_GRAFTS_PER_SOLUTION*gridSize*16); // fill with -1's                            
+        glBindTexture(GL_TEXTURE_2D, _statePerturbationsTextureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, PL_MAX_GRAFTS_PER_SOLUTION*4, gridSize, 0, GL_RGBA, GL_FLOAT, &statePerturbations[0]);
+        reportError("statePerturbations");
+		
+		
+		
+        stateTemperature *= 1.0f-PL_ANNEALING_COOLING_RATE;
     }
 
     for (PLuint i=0; i < stateGraftCount; i++)
     {
-        DEBUG_GRAFT_LOCATIONS.add( plVector3( _defectSiteGrids[0].points( stateIndices[i] ).x,
-                                              _defectSiteGrids[0].points( stateIndices[i] ).y,
-                                              _defectSiteGrids[0].points( stateIndices[i] ).z ) );
+        plVector4 p = _defectSiteGrids[0].points( stateIndices[i] );
+        
+        plVector4 n( _defectSiteGrids[0].normals( stateIndices[i] ).x,
+                     _defectSiteGrids[0].normals( stateIndices[i] ).y,
+                     _defectSiteGrids[0].normals( stateIndices[i] ).z,
+                     0.0f ); 
+        
+        plVector4 pp = statePerturbations[i] * p;
+        plVector4 nn = statePerturbations[i] * n;
+        
+        DEBUG_GRAFT_LOCATIONS.add( plVector3( pp.x, pp.y, pp.z ) );
                                               
-        DEBUG_GRAFT_LOCATIONS.add( plVector3( _defectSiteGrids[0].normals( stateIndices[i] ).x,
-                                              _defectSiteGrids[0].normals( stateIndices[i] ).y,
-                                              _defectSiteGrids[0].normals( stateIndices[i] ).z ) );
+        DEBUG_GRAFT_LOCATIONS.add( plVector3( nn.x, nn.y, nn.z ) );
     }
 
 }

@@ -23,6 +23,8 @@ void plPlannerStage0Shader::getUniformLocations()
     _stateGraftCountID    = glGetUniformLocation(_shaderProgramID, "uStateGraftCount"); 
     _stateIndicesID       = glGetUniformLocation(_shaderProgramID, "uStateIndices");
     _statePerturbationsID = glGetUniformLocation(_shaderProgramID, "uStatePerturbations");    
+    
+    _seedID               = glGetUniformLocation(_shaderProgramID, "uSeed");   
 }
 
 void plPlannerStage0Shader::setAnnealingUniforms( PLuint  meshSize, 
@@ -43,4 +45,8 @@ void plPlannerStage0Shader::setAnnealingUniforms( PLuint  meshSize,
     glUniform1ui       ( _stateGraftCountID,  count  ); 
     glUniform1uiv      ( _stateIndicesID, indices.size(), &indices[0] );   
     glUniformMatrix4fv ( _statePerturbationsID, perturbations.size(), false, &perturbations[0][0] );  
+    
+    PLuint seed = rand();
+    std::cout << "seed: " << seed << "\n";
+    glUniform1ui      ( _seedID, seed );     
 }
