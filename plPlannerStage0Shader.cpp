@@ -19,10 +19,13 @@ void plPlannerStage0Shader::getUniformLocations()
     _siteGridSizeID       = glGetUniformLocation(_shaderProgramID, "uSiteGridSize");
     
     _stateTemperatureID   = glGetUniformLocation(_shaderProgramID, "uStateTemperature");   
-    _stateEnergyID        = glGetUniformLocation(_shaderProgramID, "uStateEnergy");
+    _stateEnergyID        = glGetUniformLocation(_shaderProgramID, "uStateEnergy");   
     _stateGraftCountID    = glGetUniformLocation(_shaderProgramID, "uStateGraftCount"); 
-    _stateIndicesID       = glGetUniformLocation(_shaderProgramID, "uStateIndices");
-    _statePerturbationsID = glGetUniformLocation(_shaderProgramID, "uStatePerturbations");    
+    _stateGraftPositionsID = glGetUniformLocation(_shaderProgramID, "uStateGraftPositions"); 
+    _stateGraftNormalsID   = glGetUniformLocation(_shaderProgramID, "uStateGraftNormals"); 
+    _stateGraftRadiiID     = glGetUniformLocation(_shaderProgramID, "uStateGraftRadii"); 
+    //_stateIndicesID       = glGetUniformLocation(_shaderProgramID, "uStateIndices");
+    //_statePerturbationsID = glGetUniformLocation(_shaderProgramID, "uStatePerturbations");    
     
     _seedID               = glGetUniformLocation(_shaderProgramID, "uSeed");   
 }
@@ -33,20 +36,21 @@ void plPlannerStage0Shader::setAnnealingUniforms( PLuint  meshSize,
                                                   PLfloat temp, 
                                                   PLfloat energy, 
                                                   PLfloat count,
-                                                  const plSeq<PLuint>     &indices,
-                                                  const plSeq<plMatrix44> &perturbations )
+                                                  const plSeq<plVector4> &positions,
+                                                  const plSeq<plVector4> &normals,
+                                                  const plSeq<PLfloat>   &radii )
 {
     glUniform1ui  ( _siteMeshSizeID, meshSize );    
     glUniform1f   ( _siteMeshAreaID, meshArea ); 
     glUniform1ui  ( _siteGridSizeID, gridSize ); 
     
-    glUniform1f        ( _stateTemperatureID, temp   );     
-    glUniform1f        ( _stateEnergyID,      energy ); 
-    glUniform1ui       ( _stateGraftCountID,  count  ); 
-    glUniform1uiv      ( _stateIndicesID, indices.size(), &indices[0] );   
-    glUniformMatrix4fv ( _statePerturbationsID, perturbations.size(), false, &perturbations[0][0] );  
+    glUniform1f   ( _stateTemperatureID, temp   );     
+    glUniform1f   ( _stateEnergyID,      energy ); 
+    glUniform1ui  ( _stateGraftCountID,  count  ); 
     
-    PLuint seed = rand();
-    std::cout << "seed: " << seed << "\n";
-    glUniform1ui      ( _seedID, seed );     
+    glUniform4fv  ( _stateGraftPositionsID, positions.size(), &positions[0].x );
+    glUniform4fv  ( _stateGraftNormalsID,   normals.size(),   &normals[0].x   );
+    glUniform1fv  ( _stateGraftRadiiID,     radii.size(),     &radii[0]       );
+
+    glUniform1ui  ( _seedID, rand() );     
 }
