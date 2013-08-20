@@ -36,6 +36,8 @@ class plPlannerStage0Shader : public plShader
         PLuint _stateIndicesID;
         PLuint _statePerturbationsID;
         
+        PLuint _seedID;
+        
             
 };
 

@@ -29,6 +29,8 @@ uniform uint  uStateGraftCount;
 uniform mat4  uStatePerturbations [PL_MAX_GRAFTS_PER_SOLUTION];
 uniform uint  uStateIndices       [PL_MAX_GRAFTS_PER_SOLUTION];
 
+uniform uint uSeed;
+
 struct triangle
 {
     vec3 p0;
@@ -47,12 +49,19 @@ struct gridPoint
 
 struct state
 {
-    uint indices       [PL_MAX_GRAFTS_PER_SOLUTION];
-    mat4 perturbations [PL_MAX_GRAFTS_PER_SOLUTION];
-    uint graftCount;
+    uint  indices       [PL_MAX_GRAFTS_PER_SOLUTION];
+    mat4  perturbations [PL_MAX_GRAFTS_PER_SOLUTION];
+    uint  graftCount;
     float energy;
 };
 
+
+vec3 projectOntoPlane( in vec3 point, in vec3 plane_normal )
+{
+    float dist = dot( point, plane_normal);
+    
+    return point - (dist * plane_normal);
+}
 
 float distToAxis( in vec3 axis, in vec3 v )    
 {
@@ -231,18 +240,6 @@ float area( in triangle t)
     return 0.5 * length( cross( (t.p1 - t.p0),  (t.p2 - t.p0) ) );
 }
 
-/*
-float area_covered( in state s )
-{
-    float total_area = 0;
-    for (uint i = 0; i < s.graftCount; i++)
-    {   
-        // add area of cap to sum, includes overlaps
-        total_area += imageLoad( tGraftCapAreas, int(s.indices[i]) ); 
-    }
-    return total_area;
-}
-*/
 
 float area_uncovered( in state s )
 {       
@@ -270,7 +267,7 @@ float calculateCap( in uint index, in mat4 perturbation )
        
     gridPoint g;    
     g.p = position;
-    g.n = normal;
+    g.n = normalize( normal );
     
     float area_sum = 0;
 
@@ -317,10 +314,10 @@ void rotate( inout mat4 mat, in float angle, in vec3 axis )
     float z = axis.z;
 
     // all angles in radians
-    float s = sin(angle*0.017453292);
-    float c = cos(angle*0.017453292);
+    float s = sin( angle*0.017453292 );
+    float c = cos( angle*0.017453292 );
 
-    float mag = sqrt(x*x + y*y + z*z);
+    float mag = length( axis ); //sqrt(x*x + y*y + z*z);
 
     // zero vector, return identity
     if (mag == 0.0) 
@@ -369,11 +366,11 @@ float energy ( in state s )
     {
          // calculate cap returns area from the cap, and also flags any overlapped triangles
          // in the temporary texture 'tOverlappedTriangleAreas'
-         total_area_covered += calculateCap( s.indices[i], mat4(1.0) );
+         total_area_covered += calculateCap( s.indices[i], s.perturbations[i] ); //mat4(1.0) );
     }
 
     // calculate energy
-    float WEIGHT = 0.8;
+    float WEIGHT = 0.4;
     return area_uncovered( s ) + WEIGHT * total_area_covered; // area_covered( s );
 }
 
@@ -381,7 +378,7 @@ float energy ( in state s )
 void addCap( inout state s, in uint index )
 {    
     int gid = int( gl_GlobalInvocationID.x ); 
-    s.perturbations[s.graftCount] = mat4(gid);    
+    s.perturbations[s.graftCount] = mat4( 1.0 ); //mat4(gid);    
     s.indices[s.graftCount]       = index;      
     s.graftCount++;    
 }
@@ -413,23 +410,19 @@ uint randomize( inout uint seed )
 
 float rand( inout uint seed )
 {
-    float a = randomize( seed );
-    float b = randomize( seed );    
-    return float((a+b)/2.0) * (1.0 / 4294967296.0);
+    float a = randomize( seed );   
+    return float( a/1.000001) * (1.0 / 4294967296.0);  // return 0 <= r < 1 
 }
 
-/*
-void perturbState( inout state s )
+
+void perturbState( inout state s, in uint seed )
 {
-    int gid = int( gl_GlobalInvocationID.x );
-    
-    uint seed = 4; //(gid * uStateTemperature);    
-    
+    float PERTURBATION_SCALE = 5.0 * uStateTemperature;
+       
     for (uint i=0; i<s.graftCount; i++)
     {
-        // get random rotation
-        
-        float angle = rand( seed ) * 5.0;
+        // get random rotation        
+        float angle = ((rand( seed )*2.0)-1.0) * PERTURBATION_SCALE;
         float x = rand( seed );
         float y = rand( seed );
         float z = rand( seed );    
@@ -440,31 +433,20 @@ void perturbState( inout state s )
         float tx = rand( seed );
         float ty = rand( seed );
         float tz = rand( seed ); 
-        vec3 trans = normalize( vec3( x, y, z ) );       
-        trans = trans * rand( seed ); // * uStateTemperature/1000.0;
-        
-        s.perturbations[i] = mat4( rot[0], rot[1], rot[2], vec4(trans,1) );
-    }
-}
-*/
 
-int isInState( in state s, in int gid )
-{ 
-    for (int i=0; i<s.graftCount; i++)
-    {
-        if (s.indices[i] == gid)
-        {
-            return i; 
-        }
+        vec3 projectedTrans = projectOntoPlane( vec3( x, y, z ), mat3(s.perturbations[i]) * vec3( imageLoad( iSiteGridNormals, int(i) ) ) );
+            
+        vec3 trans = normalize(projectedTrans) * ( ((rand( seed )*2.0)-1.0) * PERTURBATION_SCALE);
+        
+        s.perturbations[i] = s.perturbations[i] * mat4( rot[0], rot[1], rot[2], vec4( trans,1) ); //mat4( vec4(1,0,0,0), vec4(0,1,0,0), vec4(0,0,1,0), vec4(trans,1) );
     }
-    return -1;
 }
 
 
 void copyGlobalState( inout state s )
 {
     s.graftCount = uStateGraftCount;
-    for (uint i=0; i<s.graftCount; i++)
+    for (int i=0; i<s.graftCount; i++)
     {    
         s.indices[i]       = uStateIndices[i];        
         s.perturbations[i] = uStatePerturbations[i];
@@ -472,80 +454,41 @@ void copyGlobalState( inout state s )
     s.energy = uStateEnergy;
 }
 
-/*
-void changeState( inout state s )
-{
-    // get global invocation id
-    int gid = int( gl_GlobalInvocationID.x ); 
-    
-    vec3 position = vec3( imageLoad( iSiteGridPositions, gid ) );
-    
-    // iterate through grafts and if there is one within a reasonable permuted distance, we will remove it
-    // if there isnt, we will add it
-    for (uint i=0; i<s.graftCount; i++)
-    { 
-        if ( length( position - s.positions[i] ) >  s.radii[i]/10.0f )
-        {
-            removeCap( s, i );
-            perturbState( s );
-            return;
-        }
-    }        
-        
-    addCap(s, i );
-    perturbState( s ); 
-}
-*/
 
 void main(void)
 { 
     // get global invocation id
-    int gid = int( gl_GlobalInvocationID.x );    
-
+    int gid = int( gl_GlobalInvocationID.x );  
+      
+    // get invocation unique seed value for RNG
+    uint seed = uint( uSeed+gid );  
+       
     // create local state and copy data from global state 
     state nS;  copyGlobalState( nS ); 
-   
-    /*
+       
     // determine which case
     uint changeCase = gid % 3;
-    
-    if (changeCase == 0)
+        
+    if (changeCase == 0 || nS.graftCount == 0)
     {
         // add random
-        addCap( nS, gid );
+        if (nS.graftCount < PL_MAX_GRAFTS_PER_SOLUTION)
+        {
+            addCap( nS, uint( uSiteGridSize*rand( seed ) ) );
+        }
     }
     else if (changeCase == 1)
     {
         // remove random
-        removeCap( nS, gid );
+        removeCap( nS, uint( nS.graftCount*rand( seed ) ) );
     }
-    else
-    {
-        // do not change
-    }
-    */
-    //perturbState( nS );
+   
+    // peturb state
+    perturbState( nS, seed );
     
-     
-    // check if inside state  
-    int indexInState = isInState( nS, gid );
-         
-    if ( indexInState > -1 )
-    {   
-        // remove self 
-        removeCap( nS, indexInState );         
-    }
-    else
-    {
-        // add self
-        addCap( nS, gid );
-    }
-
-    //perturbState( nS );
-
     // calc energy
     nS.energy = energy( nS );    
-
+   
     // store state energy
     imageStore( oStateEnergies, gid, vec4( nS.energy, 0, 0, 0 ) );
 
@@ -557,16 +500,16 @@ void main(void)
     {
         imageStore( oStateIndices, ivec2( i, gid ), uvec4( nS.indices[i], 0, 0, 0) );           
     }   
-
-    uint seed = uint(gid); 
-
+    
     // store state perturbations    
     for (int i=0; i<nS.graftCount; i++)
     {        
-        imageStore( oStatePerturbations, ivec2( i*4+0, gid ), vec4( uStateTemperature, uStateEnergy, rand( seed ) , rand( seed ))   ); //nS.perturbations[i][0] );           
+        imageStore( oStatePerturbations, ivec2( i*4+0, gid ), nS.perturbations[i][0] );           
         imageStore( oStatePerturbations, ivec2( i*4+1, gid ), nS.perturbations[i][1] );
         imageStore( oStatePerturbations, ivec2( i*4+2, gid ), nS.perturbations[i][2] );
         imageStore( oStatePerturbations, ivec2( i*4+3, gid ), nS.perturbations[i][3] );
+        
+        // vec4( uStateTemperature, uStateEnergy, uint( uSiteGridSize*rand( seed ) ) , uint( nS.graftCount*rand( seed ) ) ) ); //
     }
 
 }

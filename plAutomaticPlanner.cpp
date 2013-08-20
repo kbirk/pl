@@ -172,6 +172,25 @@ float acceptanceProbability( PLfloat energy, PLfloat newEnergy, PLfloat temperat
     return exp( -(newEnergy - energy) / temperature );
 }
 
+plSeq<PLuint> shuffle( PLuint size )
+{
+    plSeq<PLuint> array(size);
+    for (PLuint i=0; i<size; i++)
+    {
+        array.add( i );
+    }
+    
+    for (PLuint i = 0; i < size-1; i++) 
+    {
+      PLuint j = i + rand() / (RAND_MAX / (size - i) + 1);
+      PLuint t = array[j];
+      array[j] = array[i];
+      array[i] = t;
+    }
+    
+    return array;
+}
+
 
 void plAutomaticPlanner::_dispatchStage0()
 {
@@ -196,9 +215,12 @@ void plAutomaticPlanner::_dispatchStage0()
     PLuint meshSize   = _defectSiteGrids[0].triangles().size();    
     PLuint workgroups = ceil( gridSize / (PLfloat) 1024); // ensure enough workgroups are used
 
+    std::cout << "GRID SIZE: " << gridSize << "\n";
+    std::cout << "MESH SIZE: " << meshSize << "\n";
+    
     // compile / link stage 0 shader
     plPlannerStage0Shader stage0("./shaders/plannerStage0.comp");
-
+//return;
     // bind shader
     stage0.bind(); 
     reportError("stage0 bind");
@@ -222,9 +244,6 @@ void plAutomaticPlanner::_dispatchStage0()
     plSeq<PLuint>     stateIndices       (-1, PL_MAX_GRAFTS_PER_SOLUTION);
     plSeq<plMatrix44> statePerturbations (plMatrix44(-1.0), PL_MAX_GRAFTS_PER_SOLUTION);      
 
-	plSeq<PLfloat> overlappingTriangles(0, meshSize*gridSize);  
-
-
     while (stateTemperature > 0.001f)
     {
         // set uniforms
@@ -236,7 +255,7 @@ void plAutomaticPlanner::_dispatchStage0()
                                      stateGraftCount,
                                      stateIndices,
                                      statePerturbations );
-                                     
+  
         reportError("stage0 uniforms");
 
         // call compute shader with 1D workgrouping
@@ -244,9 +263,9 @@ void plAutomaticPlanner::_dispatchStage0()
         
         // memory barrier
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);       
-        glMemoryBarrier(GL_UNIFORM_BARRIER_BIT   );
-        reportError("stage0 mem barr");   
-                 
+
+        reportError("stage0 mem barr");  
+               
         plSeq<PLfloat> energies( -1.0, gridSize );
 
         // read energies into array            
@@ -254,25 +273,68 @@ void plAutomaticPlanner::_dispatchStage0()
         glGetTexImage(GL_TEXTURE_1D, 0, GL_RED, GL_FLOAT, &energies[0]);            
         reportError("stage0 get energies");   
         
+        
+        std::cout << "\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nAnnealing temperature: " << stateTemperature << "\n";             
+        /*
+        for (PLuint i=0; i < gridSize; i++)
+        {
+            std::cout << "\n===========================\ni: " << i << " energy: " << energies[i] << "\n";
+        
+            plSeq<PLuint>     graftCounts   (-1, gridSize); 
+            plSeq<PLuint>     indices       (-1, PL_MAX_GRAFTS_PER_SOLUTION*gridSize); 
+            plSeq<plMatrix44> perturbations (plMatrix44(-1.0), PL_MAX_GRAFTS_PER_SOLUTION*gridSize);  
+                      
+            // state indices
+            glBindTexture(GL_TEXTURE_2D, _stateIndicesTextureID);    
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &indices[0]); 
+            reportError("stage0 get indices");
+            
+            // state count
+            glBindTexture(GL_TEXTURE_1D, _stateGraftCountsTextureID);    
+            glGetTexImage(GL_TEXTURE_1D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &graftCounts[0]); 
+            reportError("stage0 get count");
+            
+            // grid perturbations                      
+            glBindTexture(GL_TEXTURE_2D, _statePerturbationsTextureID);    
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &perturbations[0][0]); 
+            reportError("stage0 get pert"); 
+                                            
+            PLuint offset = i*PL_MAX_GRAFTS_PER_SOLUTION;
+
+
+            std::cout << "graft counts: " << graftCounts[i] << "\n";
+            for (PLuint j=0; j < 1; j++)
+            {       
+                std::cout << "graft index: " << indices[offset+j] << "\n" << perturbations[offset+j] << "\n";
+            }
+        } 
+        */
+        
+        
+        
         // iterate through all state energies and find best one
         
+        
+        plSeq<PLuint> randIndices = shuffle( gridSize );
         PLint bestIndex = -1;
-        PLfloat r = ((float) rand() / (RAND_MAX));
+        
         for (PLuint i=0; i < gridSize; i++ )
-        {
-            
-            if ( acceptanceProbability( stateEnergy, energies[i], stateTemperature ) > r )
+        {    
+            PLuint j = randIndices[i];          
+            PLfloat r = ((float) rand() / (RAND_MAX));              
+            if ( acceptanceProbability( stateEnergy, energies[j], stateTemperature ) > r )
             {    
-                //std::cout << "r: " << r << " new e: " << energies[i] << " e: " << stateEnergy << " p: " << acceptanceProbability( stateEnergy, energies[i], stateTemperature ) << "\n";          
-                stateEnergy = energies[i];
-                bestIndex = i;
+                //std::cout << "j: " << j << " new e: " << energies[j] << " e: " << stateEnergy << " p: " << acceptanceProbability( stateEnergy, energies[j], stateTemperature ) << "\n";          
+            
+                stateEnergy = energies[j];
+                bestIndex = j;
             }
-           
-        }
 
+        }
+        
         if ( bestIndex != -1 )
         {
-            std::cout << "\nBest index: " << bestIndex << "\n";
+            //std::cout << "\nBest index: " << bestIndex << "\n";
         
             plSeq<PLuint>     graftCounts   (-1, gridSize); 
             plSeq<PLuint>     indices       (-1, PL_MAX_GRAFTS_PER_SOLUTION*gridSize); 
@@ -297,37 +359,49 @@ void plAutomaticPlanner::_dispatchStage0()
             PLuint offset = (bestIndex)*PL_MAX_GRAFTS_PER_SOLUTION;
             stateGraftCount = graftCounts[bestIndex];
 
-            std::cout << "Index: ";
+            std::cout << "best Index: " << bestIndex << "\n";
             for (PLuint i=0; i < stateGraftCount; i++)
             {
                 stateIndices[i]       = indices[offset+i];
                 statePerturbations[i] = perturbations[offset+i];                 
                 std::cout << stateIndices[i] << "\n" << statePerturbations[i] << "\n";
             }
-
-            
-            // get perturbations
-            std::cout << "\nAnnealing temperature: " << stateTemperature << "\n";    
+              
             std::cout << "New Best energy: " << stateEnergy << ", " << stateGraftCount << " grafts\n";
             
         }
-        
+
         // reset covered areas back to 0
+        plSeq<PLfloat> overlappingTriangles(0, meshSize*gridSize);  
 		glBindTexture(GL_TEXTURE_2D, _overlappingTriangleAreasTextureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, meshSize, gridSize, 0, GL_RED, GL_FLOAT, &overlappingTriangles[0]);
 		
-        stateTemperature -= 0.1; //*= 1.0f-PL_ANNEALING_COOLING_RATE;
+		
+		plSeq<PLfloat> statePerturbations(-1, PL_MAX_GRAFTS_PER_SOLUTION*gridSize*16); // fill with -1's                            
+        glBindTexture(GL_TEXTURE_2D, _statePerturbationsTextureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, PL_MAX_GRAFTS_PER_SOLUTION*4, gridSize, 0, GL_RGBA, GL_FLOAT, &statePerturbations[0]);
+        reportError("statePerturbations");
+		
+		
+		
+        stateTemperature *= 1.0f-PL_ANNEALING_COOLING_RATE;
     }
 
     for (PLuint i=0; i < stateGraftCount; i++)
     {
-        DEBUG_GRAFT_LOCATIONS.add( plVector3( _defectSiteGrids[0].points( stateIndices[i] ).x,
-                                              _defectSiteGrids[0].points( stateIndices[i] ).y,
-                                              _defectSiteGrids[0].points( stateIndices[i] ).z ) );
+        plVector4 p = _defectSiteGrids[0].points( stateIndices[i] );
+        
+        plVector4 n( _defectSiteGrids[0].normals( stateIndices[i] ).x,
+                     _defectSiteGrids[0].normals( stateIndices[i] ).y,
+                     _defectSiteGrids[0].normals( stateIndices[i] ).z,
+                     0.0f ); 
+        
+        plVector4 pp = statePerturbations[i] * p;
+        plVector4 nn = statePerturbations[i] * n;
+        
+        DEBUG_GRAFT_LOCATIONS.add( plVector3( pp.x, pp.y, pp.z ) );
                                               
-        DEBUG_GRAFT_LOCATIONS.add( plVector3( _defectSiteGrids[0].normals( stateIndices[i] ).x,
-                                              _defectSiteGrids[0].normals( stateIndices[i] ).y,
-                                              _defectSiteGrids[0].normals( stateIndices[i] ).z ) );
+        DEBUG_GRAFT_LOCATIONS.add( plVector3( nn.x, nn.y, nn.z ) );
     }
 
 }
