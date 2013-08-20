@@ -7,13 +7,31 @@
 #include "plBoundary.h"
 #include "plRenderable.h"
 #include "plPickingTexture.h"
+#include "plMeshCutter.h"
 
 class plIGuideSite : public plModelSpecific,
                      public plRenderable
 {
+    private:
+        // used in constructing the template base shape
+        class edgeIndices
+        {
+            public:
+                edgeIndices() {}
+                edgeIndices(PLuint t, PLuint vA, PLuint vB) : triangleIndex(t), vertexIndexA(vA), vertexIndexB(vB) {}
+                PLuint triangleIndex;
+                PLuint vertexIndexA;
+                PLuint vertexIndexB;
+        };
+
+        plSeq<edgeIndices> collectOutsideEdges();                       // helper to createTemplateBaseShape
+        plSeq<edgeIndices> collectOutsideEdgesUnsorted();               // helper to collectOutsideEdges
+        plSeq<edgeIndices> collectOutsideEdgesSort(plSeq<edgeIndices>); // helper to collectOutsideEdges
+
     public:
 
-        plBoundary     boundary;
+        plSeq<plTriangle>   templateBase;   // for use in generating iGuides
+        plBoundary          boundary;
 
         plIGuideSite();
         plIGuideSite( PLuint _modelID, const plBoneAndCartilage &_model );
@@ -21,9 +39,9 @@ class plIGuideSite : public plModelSpecific,
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         void draw();
-        
-    private:
-    
+
+        void createTemplateBaseShape( plSeq<plTriangle> &cartilageTris );
+
 };
 
 #endif

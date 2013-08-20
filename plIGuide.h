@@ -10,8 +10,8 @@
 #include "plRenderable.h"
 #include "plPickingTexture.h"
 #include "plGraft.h"
-#include "plMeshCutter.h"
 #include "plPolygon.h"
+#include "plIGuideSite.h"
 
 class plKWire 
 {
@@ -28,19 +28,7 @@ class plIGuide : public plModelSpecific,
 {
 
     private:
-        // used in constructing the template base shape
-        class edgeIndices
-        {
-            public:
-                edgeIndices() {}
-                edgeIndices(PLuint t, PLuint vA, PLuint vB) : triangleIndex(t), vertexIndexA(vA), vertexIndexB(vB) {}
-                PLuint triangleIndex;
-                PLuint vertexIndexA;
-                PLuint vertexIndexB;
-        };
-        plSeq<edgeIndices> collectOutsideEdges();
-        plSeq<edgeIndices> collectOutsideEdgesUnsorted();               // helper to collectOutsideEdges
-        plSeq<edgeIndices> collectOutsideEdgesSort(plSeq<edgeIndices>); // helper to collectOutsideEdges
+
         plSeq<plTriangle>  createTemplatePieceTransformed ( const plSeq<plTriangle> &baseTriObject ,
                                                             const plMatrix44  &plugTransform,
                                                             const PLdouble    &zOffset,
@@ -50,18 +38,17 @@ class plIGuide : public plModelSpecific,
 
     public:
 
-        PLfloat         thickness;
-        plBoundary      boundary;
-        plSeq<PLuint>   graftIndices;
-        plSeq<plGraft*> *grafts;      // pointer to the plan's grafts
-        plSeq<plKWire>  kwires;
+        PLfloat                 thickness;
 
-        // individual pieces that are to be either boolean'ed together or exported to some other program
-        plSeq<plTriangle> templateBase;
-        plSeq<plTriangle> recipientSleeve;
-        plSeq<plTriangle> recipientHole;
-        plSeq<plTriangle> harvestSleeve;
-        plSeq<plTriangle> harvestHole;
+        plSeq<plIGuideSite>     *sites;
+        PLint                   siteIndex;
+
+        plSeq<plGraft>          *grafts;
+        plSeq<PLint>            recipientIndices;      // pointer to the plan's grafts
+        plSeq<PLint>            harvestIndices;
+
+        plSeq<plKWire>          *kWires;
+        plSeq<PLint>            kWireIndices;
 
         plIGuide();
         plIGuide( PLuint _modelID, const plBoneAndCartilage &_model );
@@ -69,7 +56,6 @@ class plIGuide : public plModelSpecific,
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         PLbool generateMeshes();
-        void createTemplateBaseShape(const plSeq<plTriangle> &cartilageTris, const plGraft &graft, const plBoundary &boundary);
 
         void draw();
 };
