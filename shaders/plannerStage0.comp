@@ -2,18 +2,28 @@
 
 #define PL_MAX_GRAFTS_PER_SOLUTION  20
 
+
 layout (local_size_x = 1024) in;
 
 // input textures
+layout (rgba32f, binding = 0) uniform image1D iSiteData;
+/*
 layout (rgba32f, binding = 0) uniform image1D iSiteGridPositions;
 layout (rgba32f, binding = 1) uniform image1D iSiteGridNormals;
 layout (rgba32f, binding = 2) uniform image2D iSiteMeshTriangles;
+*/
 
 // temporary textures
 layout (r32f,    binding = 3) uniform image2D tOverlappedTriangleAreas;
 
 // output textures
-layout (r32f,    binding = 4) uniform image1D  oStateEnergies;
+layout (rg32f,    binding = 4) uniform image1D  oStateEnergies;
+/*
+layout (rgba32f, binding = 5) uniform image2D  oStateGraftPoints;
+layout (rgba32f, binding = 6) uniform image2D  oStateGraftNormals;
+layout (r32f,    binding = 7) uniform image2D  oStateGraftRadii;
+*/
+
 layout (r32ui,   binding = 5) uniform uimage2D oStateIndices;
 layout (rgba32f, binding = 6) uniform image2D  oStatePerturbations;
 layout (r32ui,   binding = 7) uniform uimage1D oStateGraftCounts;
@@ -54,6 +64,40 @@ struct state
     uint  graftCount;
     float energy;
 };
+
+
+
+vec4 iSitePositions( in uint i )
+{
+    //return imageLoad( iSiteGridPositions, int(i) );
+    return imageLoad( iSiteData, int(i) );
+}
+
+vec4 iSiteNormals( in uint i )
+{
+    //return imageLoad( iSiteGridNormals, int(i) );
+    return imageLoad( iSiteData, int(uSiteGridSize) + int(i) );
+}
+
+triangle iSiteTriangles( in uint i )
+{
+    int j = int(uSiteGridSize)*2 + (int(i)*4);
+    triangle t;
+    /*
+    t.p0 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,0) ) );
+    t.p1 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,1) ) );
+    t.p2 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,2) ) );
+    t.n  = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,3) ) ); 
+    */
+    
+    t.p0 = vec3( imageLoad( iSiteData, j+0 ) );
+    t.p1 = vec3( imageLoad( iSiteData, j+1 ) );
+    t.p2 = vec3( imageLoad( iSiteData, j+2 ) );
+    t.n  = vec3( imageLoad( iSiteData, j+3 ) ); 
+    
+    return t;
+}
+
 
 
 vec3 projectOntoPlane( in vec3 point, in vec3 plane_normal )
@@ -262,8 +306,8 @@ float calculateCap( in uint index, in mat4 perturbation )
 
     float radius = 4.0;    
 
-    vec3 position = vec3(perturbation *        imageLoad( iSiteGridPositions, int(index) ) );
-    vec3 normal   = mat3(perturbation) * vec3( imageLoad( iSiteGridNormals,   int(index) ) );    
+    vec3 position = vec3( perturbation * iSitePositions( index ) );     //imageLoad( iSiteGridPositions, int(index) ) );
+    vec3 normal   = mat3(perturbation) * vec3( iSiteNormals( index ) ); //imageLoad( iSiteGridNormals,   int(index) ) );    
        
     gridPoint g;    
     g.p = position;
@@ -275,12 +319,13 @@ float calculateCap( in uint index, in mat4 perturbation )
     for(uint i=0; i<uSiteMeshSize; i++)
     {
         // create triangle struct
-        triangle t;
+        triangle t = iSiteTriangles( i );
+        /*
         t.p0 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,0) ) );
         t.p1 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,1) ) );
         t.p2 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,2) ) );
         t.n  = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,3) ) ); 
-        
+        */
         triangle tris[2];   // triangle(s) to be added to graft cap
         int num_results = intersectTriangle( tris, g, t, radius );  // num_results is the number of triangles returned, 0 <= t <= 2
 
@@ -434,7 +479,7 @@ void perturbState( inout state s, in uint seed )
         float ty = rand( seed );
         float tz = rand( seed ); 
 
-        vec3 projectedTrans = projectOntoPlane( vec3( x, y, z ), mat3(s.perturbations[i]) * vec3( imageLoad( iSiteGridNormals, int(i) ) ) );
+        vec3 projectedTrans = projectOntoPlane( vec3( x, y, z ), mat3(s.perturbations[i]) * vec3( iSiteNormals( i ) ) ); //imageLoad( iSiteGridNormals, int(i) ) ) );
             
         vec3 trans = normalize(projectedTrans) * ( ((rand( seed )*2.0)-1.0) * PERTURBATION_SCALE);
         

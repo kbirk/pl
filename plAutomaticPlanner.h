@@ -32,6 +32,9 @@ class plAutomaticPlanner
         plAutomaticPlanner();
                              
         // defect site textures
+        
+        static PLuint _siteDataTextureID;
+        
         static PLuint _gridPointsTextureID; 
         static PLuint _gridNormalsTextureID;                 
         static PLuint _siteMeshTextureID;

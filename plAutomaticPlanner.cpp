@@ -6,6 +6,9 @@ plSeq<plSiteGrid> plAutomaticPlanner::_defectSiteGrids;
 PLuint            plAutomaticPlanner::_gridPointsTextureID; 
 PLuint            plAutomaticPlanner::_gridNormalsTextureID;                 
 PLuint            plAutomaticPlanner::_siteMeshTextureID;
+
+PLuint            plAutomaticPlanner::_siteDataTextureID;
+
 PLuint            plAutomaticPlanner::_overlappingTriangleAreasTextureID; 
 PLuint            plAutomaticPlanner::_stateEnergiesTextureID;    
 PLuint            plAutomaticPlanner::_stateIndicesTextureID;
@@ -39,8 +42,8 @@ void plAutomaticPlanner::_generateSiteGrids( plPlan &plan )
         plSiteGrid grid( plan.defectSites(i).spline.triangles(), plan.defectSites(i).boundary );
         _defectSiteGrids.add( grid ); 
         
-        std::cout << "\t\t" <<  grid.triangles().size() << " triangles calculated \n";
-        std::cout << "\t\t" <<  grid.size() << " grid points calculated \n";
+        std::cout << "\t\t" <<  grid.meshSize() << " triangles calculated \n";
+        std::cout << "\t\t" <<  grid.size()     << " grid points calculated \n";
     }
     
 
@@ -51,8 +54,8 @@ void plAutomaticPlanner::_generateSiteGrids( plPlan &plan )
         plSiteGrid grid( plan.donorSites(i).model()->cartilage.triangles(), plan.donorSites(i).boundary);
         _donorSiteGrids.add( grid );
         
-        std::cout << "\t\t" <<  grid.triangles().size() << " triangles calculated \n";
-        std::cout << "\t\t" <<  grid.size() << " grid points calculated \n";
+        std::cout << "\t\t" <<  grid.meshSize() << " triangles calculated \n";
+        std::cout << "\t\t" <<  grid.size()     << " grid points calculated \n";
     }    
 }
 
@@ -84,8 +87,34 @@ void plAutomaticPlanner::_bufferTextures()
 {
     plSiteGrid &grid = _defectSiteGrids[0];
 
-    PLuint meshSize = _defectSiteGrids[0].triangles().size();     
+    PLuint meshSize = _defectSiteGrids[0].meshSize();     
     PLuint gridSize = _defectSiteGrids[0].size();
+      
+    plSeq<plVector4> data( (gridSize*2)+(meshSize*4) );
+    
+    for( PLuint i=0; i < gridSize; i++ )
+    {
+        data.add( _defectSiteGrids[0].points(i) );
+    }
+    
+    for( PLuint i=0; i < gridSize; i++ )
+    {
+        data.add( _defectSiteGrids[0].normals(i) );
+    }
+    
+    for( PLuint i=0; i < meshSize; i++ )
+    {
+        data.add( plVector4( _defectSiteGrids[0].triangles(i).point0(), 1.0 ) );
+        data.add( plVector4( _defectSiteGrids[0].triangles(i).point1(), 1.0 ) );
+        data.add( plVector4( _defectSiteGrids[0].triangles(i).point2(), 1.0 ) );
+        data.add( plVector4( _defectSiteGrids[0].triangles(i).normal(), 1.0 ) );
+    }
+    
+    // buffer site data
+    glGenTextures(1, &_siteDataTextureID);
+    glBindTexture(GL_TEXTURE_1D, _siteDataTextureID);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, (gridSize*2)+(meshSize*4), 0, GL_RGBA, GL_FLOAT, &data[0]);
+    reportError("gridPoints");
     
     // buffer grid points 
     glGenTextures(1, &_gridPointsTextureID);
@@ -104,10 +133,10 @@ void plAutomaticPlanner::_bufferTextures()
     
     for (PLuint i=0; i < meshSize; i++)
     {
-        triangles[i]            = plVector4( grid.triangles()[i].point0(), 1);
-        triangles[i+meshSize]   = plVector4( grid.triangles()[i].point1(), 1);
-        triangles[i+meshSize*2] = plVector4( grid.triangles()[i].point2(), 1);
-        triangles[i+meshSize*3] = plVector4( grid.triangles()[i].normal(), 1);
+        triangles[i]            = plVector4( grid.triangles(i).point0(), 1);
+        triangles[i+meshSize]   = plVector4( grid.triangles(i).point1(), 1);
+        triangles[i+meshSize*2] = plVector4( grid.triangles(i).point2(), 1);
+        triangles[i+meshSize*3] = plVector4( grid.triangles(i).normal(), 1);
     }
     
     // buffer site triangles 
@@ -212,7 +241,7 @@ void plAutomaticPlanner::_dispatchStage0()
     std::cout << "Max work group invos: " << params << "\n";
 
     PLuint gridSize   = _defectSiteGrids[0].size();
-    PLuint meshSize   = _defectSiteGrids[0].triangles().size();    
+    PLuint meshSize   = _defectSiteGrids[0].meshSize();    
     PLuint workgroups = ceil( gridSize / (PLfloat) 1024); // ensure enough workgroups are used
 
     std::cout << "GRID SIZE: " << gridSize << "\n";
@@ -220,16 +249,18 @@ void plAutomaticPlanner::_dispatchStage0()
     
     // compile / link stage 0 shader
     plPlannerStage0Shader stage0("./shaders/plannerStage0.comp");
-//return;
+
     // bind shader
     stage0.bind(); 
     reportError("stage0 bind");
 
     // bind input/output buffers            
+    glBindImageTexture(0, _siteDataTextureID,         0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
+    /*
     glBindImageTexture(0, _gridPointsTextureID,       0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
     glBindImageTexture(1, _gridNormalsTextureID,      0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
     glBindImageTexture(2, _siteMeshTextureID,         0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);    
-    
+    */
     glBindImageTexture(3, _overlappingTriangleAreasTextureID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
        
     glBindImageTexture(4, _stateEnergiesTextureID,      0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F    );
@@ -247,7 +278,7 @@ void plAutomaticPlanner::_dispatchStage0()
     while (stateTemperature > 0.001f)
     {
         // set uniforms
-        stage0.setAnnealingUniforms( _defectSiteGrids[0].triangles().size(), 
+        stage0.setAnnealingUniforms( _defectSiteGrids[0].meshSize(), 
                                      _defectSiteGrids[0].area(), 
                                      _defectSiteGrids[0].size(),
                                      stateTemperature,
