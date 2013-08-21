@@ -13,8 +13,10 @@
 #include "plPlannerStage0Shader.h"
 #include "plPlannerStage1Shader.h"
 
-#define PL_ANNEALING_INITIAL_TEMPERATURE        5.0f
-#define PL_ANNEALING_COOLING_RATE               0.1f
+#define PL_ANNEALING_INITIAL_TEMPERATURE        1.0f
+#define PL_ANNEALING_COOLING_RATE               0.025f
+
+#define PL_ANNEALING_THREADS                    256
 
 #define PL_MAX_GRAFTS_PER_SOLUTION              20
 
@@ -31,21 +33,17 @@ class plAutomaticPlanner
     
         plAutomaticPlanner();
                              
-        // defect site textures
-        
+        // defect site textures        
         static PLuint _siteDataTextureID;
-        
-        static PLuint _gridPointsTextureID; 
-        static PLuint _gridNormalsTextureID;                 
-        static PLuint _siteMeshTextureID;
-        
+
         // mesh colouring temporary texture       
         static PLuint _overlappingTriangleAreasTextureID;
                    
         // annealing states and energies
         static PLuint _stateEnergiesTextureID;
-        static PLuint _stateIndicesTextureID;
-        static PLuint _statePerturbationsTextureID;
+        static PLuint _stateGraftPositionsTextureID;
+        static PLuint _stateGraftNormalsTextureID;
+        static PLuint _stateGraftRadiiTextureID;
         static PLuint _stateGraftCountsTextureID;
                                
         static plSeq<plSiteGrid>  _donorSiteGrids;

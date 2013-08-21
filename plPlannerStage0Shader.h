@@ -6,6 +6,7 @@
 #include "plSiteGrid.h"
 #include "plSpline.h"
 #include "plMatrix44.h"
+#include "plVector4.h"
 
 class plPlannerStage0Shader : public plShader
 {
@@ -21,8 +22,9 @@ class plPlannerStage0Shader : public plShader
                                    PLfloat temp, 
                                    PLfloat energy, 
                                    PLfloat count,
-                                   const plSeq<PLuint>     &indices,
-                                   const plSeq<plMatrix44> &perturbations );
+                                   const plSeq<plVector4> &positions,
+                                   const plSeq<plVector4> &normals,
+                                   const plSeq<PLfloat>   &radii );
                
     private:
     
@@ -32,10 +34,13 @@ class plPlannerStage0Shader : public plShader
          
         PLuint _stateTemperatureID;                
         PLuint _stateEnergyID;
+        PLuint _stateGraftPositionsID;
+        PLuint _stateGraftNormalsID;
+        PLuint _stateGraftRadiiID;
         PLuint _stateGraftCountID;
-        PLuint _stateIndicesID;
-        PLuint _statePerturbationsID;
-        
+        //PLuint _stateIndicesID;
+        //PLuint _statePerturbationsID;
+
         PLuint _seedID;
         
             
