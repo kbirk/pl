@@ -1,13 +1,15 @@
-#include "plIGuide.h" 
+#include "plIGuide.h"
 
 plIGuide::plIGuide() 
 {
 }
 
+
 plIGuide::plIGuide( PLuint modelID, const plBoneAndCartilage &model )
     : plModelSpecific( modelID, model )
 {
 }
+
 
 void plIGuide::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
@@ -46,13 +48,29 @@ void plIGuide::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCarti
     }
 }
 
-// ============================= BEGIN TEMPLATE CREATION =================================
 
-/*PLbool plIGuide::generateMeshes()
+PLbool plIGuide::generateIGuideMeshes()
 {
 
-    // TODO: error checking
+    // TODO: error checking as necessary
+    if (site().boundary.size() <= 2)
+    {
+        std::cerr << "Error: Boundary does not have enough points. Aborting." << std::endl;
+        return false;
+    }
 
+
+    // anatomy TODO: change to bone AND cartilage model
+    plString anatomyFilename (prepareFilenameWithVariables(false,'M',0,"bone"));
+    iGuideMeshes.add(plIGuideMesh(anatomyFilename,plSeq<plTriangle>(site().model()->bone.triangles()))  );
+
+
+    // template base TODO: create the template base shape if it needs updating
+    plString templateBaseFilename (prepareFilenameWithVariables(true ,'M',0,"templateBase"));
+    iGuideMeshes.add(plIGuideMesh(templateBaseFilename,site().templateBase));
+
+
+    // plug pieces
     plSeq<plTriangle> roundCylinder;
     plSTL::importFile(roundCylinder, "./templateElements/Generator_Cylinder_Round.stl");
 
@@ -62,74 +80,106 @@ void plIGuide::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCarti
     plSeq<plTriangle> keyCube;
     plSTL::importFile(keyCube, "./templateElements/Generator_Key_Cube.stl");
 
-
-
-    std::cout << "Initializing transforms" << std::endl;
-    plMatrix44 harvestTransform   ( ((*grafts)[0]).harvest.transform.matrix() );
-    plMatrix44 recipientTransform ( ((*grafts)[0]).recipient.transform.matrix() );
-
-
-
-    std::cout << "Initializing variables" << std::endl;
-    PLfloat   cylinderRecipientSupportOffset  ( 12.f );
-
-    plVector3 cylinderRecipientHoleScale   (  8.f, 36.f,  8.f  );
-    plVector3 cylinderRecipientSleeveScale ( 12.f, 30.f, 12.f  );
-    plVector3 cylinderRecipientBaseScale   ( 14.f, 20.f, 14.f  );
-    plVector3 cylinderRecipientHolderScale ( 22.f, 20.f, 22.f  );
-    plVector3 cylinderRecipientSupportScale( 18.f,  4.f, 18.f  );
-
-    plVector3 cylinderHarvestHoleScale     (  8.f, 36.f,  8.f  );
-    plVector3 cylinderHarvestSleeveScale   ( 12.f, 30.f, 12.f  );
-    plVector3 cylinderHarvestBaseScale     ( 14.f, 20.f, 14.f  );
-    plVector3 cylinderHarvestHolderScale   ( 22.f, 20.f, 22.f  );
-
-    plVector3 keyScale                     (  3.f, 29.9f, 4.f );
-    PLfloat   keyHarvestTranslation        (  6.f  );
-    PLfloat   keyRecipientTranslation      (  6.f  );
-
-    PLfloat   keyRotation ( 0.f );
-
     PLfloat   zero        ( 0.f );
     plVector3 zeroVector  ( 0.f, 0.f, 0.f );
 
+    for (PLuint i = 0; i < harvestIndices.size(); i++)
+    {
+        plMatrix44 plugTransform   ( harvestGraft(i).harvest.transform.matrix() );
 
+        PLfloat   keyHarvestTranslation        (  6.f  );
+        PLfloat   keyRotation ( 0.f );
 
-    std::cout << "Transforming meshes" << std::endl;
-    plSeq<plTriangle> cylinderRecipientHole   ( createTemplatePieceTransformed(sharpCylinder, recipientTransform, zero,                           cylinderRecipientHoleScale,   zero,                    zero) );
-    plSeq<plTriangle> cylinderRecipientSleeve ( createTemplatePieceTransformed(roundCylinder, recipientTransform, zero,                           cylinderRecipientSleeveScale, zero,                    zero) );
-    plSeq<plTriangle> cylinderRecipientBase   ( createTemplatePieceTransformed(sharpCylinder, recipientTransform, zero,                           cylinderRecipientBaseScale,   zero,                    zero) );
-    plSeq<plTriangle> cylinderRecipientHolder ( createTemplatePieceTransformed(roundCylinder, recipientTransform, zero,                           cylinderRecipientHolderScale, zero,                    zero) );
-    plSeq<plTriangle> cylinderRecipientSupport( createTemplatePieceTransformed(sharpCylinder, recipientTransform, cylinderRecipientSupportOffset, cylinderRecipientSupportScale,zero,                    zero) );
-    plSeq<plTriangle> keyRecipient            ( createTemplatePieceTransformed(keyCube,       recipientTransform, zero,                           keyScale,                     keyRecipientTranslation, zero) );
+        // TODO: take into account extra diameter of the harvest tool
+        PLfloat   holeDiameter                 ( harvestGraft(i).radius() * 2.f - printerOffset );
+        PLfloat   sleeveDiameter               ( holeDiameter + 4.f   );
+        PLfloat   baseDiameter                 ( sleeveDiameter + 2.f );
+        PLfloat   holderDiameter               ( baseDiameter + 8.f   );
 
-    plSeq<plTriangle> cylinderHarvestHole     ( createTemplatePieceTransformed(sharpCylinder, harvestTransform,   zero,                           cylinderHarvestHoleScale,     zero,                    zero) );
-    plSeq<plTriangle> cylinderHarvestSleeve   ( createTemplatePieceTransformed(roundCylinder, harvestTransform,   zero,                           cylinderHarvestSleeveScale,   zero,                    zero) );
-    plSeq<plTriangle> cylinderHarvestBase     ( createTemplatePieceTransformed(sharpCylinder, harvestTransform,   zero,                           cylinderHarvestBaseScale,     zero,                    zero) );
-    plSeq<plTriangle> cylinderHarvestHolder   ( createTemplatePieceTransformed(roundCylinder, harvestTransform,   zero,                           cylinderHarvestHolderScale,   zero,                    zero) );
-    plSeq<plTriangle> keyHarvest              ( createTemplatePieceTransformed(keyCube,       harvestTransform,   zero,                           keyScale,                     keyHarvestTranslation,   zero) );
+        plVector3 holeScale     ( holeDiameter,   36.f, holeDiameter   );
+        plVector3 sleeveScale   ( sleeveDiameter, 30.f, sleeveDiameter );
+        plVector3 baseScale     ( baseDiameter,   20.f, baseDiameter   );
+        plVector3 holderScale   ( holderDiameter, 20.f, holderDiameter );
+        plVector3 keyScale      ( 3.f, 29.9f, 4.f );
 
+        plSeq<plTriangle> holeTriangles     ( createTemplatePieceTransformed(sharpCylinder, plugTransform,   zero,                           holeScale,     zero,                    zero) );
+        plSeq<plTriangle> sleeveTriangles   ( createTemplatePieceTransformed(roundCylinder, plugTransform,   zero,                           sleeveScale,   zero,                    zero) );
+        plSeq<plTriangle> baseTriangles     ( createTemplatePieceTransformed(sharpCylinder, plugTransform,   zero,                           baseScale,     zero,                    zero) );
+        plSeq<plTriangle> holderTriangles   ( createTemplatePieceTransformed(roundCylinder, plugTransform,   zero,                           holderScale,   zero,                    zero) );
+        plSeq<plTriangle> keyTriangles      ( createTemplatePieceTransformed(keyCube,       plugTransform,   zero,                           keyScale,      keyHarvestTranslation,   zero) );
 
+        plString holeFilename      ( prepareFilenameWithVariables(false,'H',harvestIndices[i],"hole"  ) );
+        plString sleeveFilename    ( prepareFilenameWithVariables(true ,'H',harvestIndices[i],"sleeve") );
+        plString baseFilename      ( prepareFilenameWithVariables(true ,'H',harvestIndices[i],"base"  ) );
+        plString holderFilename    ( prepareFilenameWithVariables(true ,'H',harvestIndices[i],"holder") );
+        plString keyFilename       ( prepareFilenameWithVariables(true ,'H',harvestIndices[i],"key"   ) );
 
-    std::cout << "Exporting Meshes" << std::endl;
-    plSTL::exportFileBinary(cylinderRecipientHole,   "./output/ALRecipientHole.stl"   );
-    plSTL::exportFileBinary(cylinderRecipientSleeve, "./output/ALRecipientSleeve.stl" );
-    plSTL::exportFileBinary(cylinderRecipientBase,   "./output/ALRecipientBase.stl"   );
-    plSTL::exportFileBinary(cylinderRecipientHolder, "./output/ALRecipientHolder.stl" );
-    plSTL::exportFileBinary(cylinderRecipientSupport,"./output/ALRecipientSupport.stl");
-    plSTL::exportFileBinary(keyRecipient,            "./output/ALRecipientKey.stl"    );
-    plSTL::exportFileBinary(cylinderHarvestHole,     "./output/ALHarvestHole.stl"     );
-    plSTL::exportFileBinary(cylinderHarvestSleeve,   "./output/ALHarvestSleeve.stl"   );
-    plSTL::exportFileBinary(cylinderHarvestBase,     "./output/ALHarvestBase.stl"     );
-    plSTL::exportFileBinary(cylinderHarvestHolder,   "./output/ALHarvestHolder.stl"   );
-    plSTL::exportFileBinary(keyHarvest,              "./output/ALHarvestKey.stl"      );
+        iGuideMeshes.add(plIGuideMesh(holeFilename,holeTriangles));
+    }
 
+    for (PLuint i = 0; i < recipientIndices.size(); i++)
+    {
+        plMatrix44 recipientTransform ( recipientGraft(i).recipient.transform.matrix() );
 
+        PLfloat   cylinderRecipientSupportOffset  ( 12.f );
+
+        PLfloat   keyRecipientTranslation      (  6.f  );
+        PLfloat   keyRotation ( 0.f );
+
+        PLfloat   holeDiameter                 ( harvestGraft(i).radius() * 2.f - printerOffset );
+        PLfloat   sleeveDiameter               ( holeDiameter + 4.f   );
+        PLfloat   baseDiameter                 ( sleeveDiameter + 2.f );
+        PLfloat   holderDiameter               ( baseDiameter + 8.f   );
+
+        plVector3 holeScale   ( holeDiameter  , 36.f, holeDiameter   );
+        plVector3 sleeveScale ( sleeveDiameter, 30.f, sleeveDiameter );
+        plVector3 baseScale   ( baseDiameter  , 20.f, baseDiameter   );
+        plVector3 holderScale ( holderDiameter, 20.f, holderDiameter );
+        //plVector3 supportScale( 18.f,  4.f, 18.f  );
+        plVector3 keyScale    (  3.f, 29.9f, 4.f );
+
+        plSeq<plTriangle> holeTriangles   ( createTemplatePieceTransformed(sharpCylinder, recipientTransform, zero,                           holeScale,   zero,                    zero) );
+        plSeq<plTriangle> sleeveTriangles ( createTemplatePieceTransformed(roundCylinder, recipientTransform, zero,                           sleeveScale, zero,                    zero) );
+        plSeq<plTriangle> baseTriangles   ( createTemplatePieceTransformed(sharpCylinder, recipientTransform, zero,                           baseScale,   zero,                    zero) );
+        plSeq<plTriangle> holderTriangles ( createTemplatePieceTransformed(roundCylinder, recipientTransform, zero,                           holderScale, zero,                    zero) );
+        //plSeq<plTriangle> supportTriangles( createTemplatePieceTransformed(sharpCylinder, recipientTransform, cylinderRecipientSupportOffset, supportScale,zero,                    zero) );
+        plSeq<plTriangle> keyTriangles    ( createTemplatePieceTransformed(keyCube,       recipientTransform, zero,                           keyScale,                     keyRecipientTranslation, zero) );
+
+        plString holeFilename      ( prepareFilenameWithVariables(false,'R',harvestIndices[i],"hole"  ) );
+        plString sleeveFilename    ( prepareFilenameWithVariables(true ,'R',harvestIndices[i],"sleeve") );
+        plString baseFilename      ( prepareFilenameWithVariables(true ,'R',harvestIndices[i],"base"  ) );
+        plString holderFilename    ( prepareFilenameWithVariables(true ,'R',harvestIndices[i],"holder") );
+        plString keyFilename       ( prepareFilenameWithVariables(true ,'R',harvestIndices[i],"key"   ) );
+
+    }
 
     return true;
-}*/
+}
 
-// ---------------------- CREATE TRANSFORMED COPY OF PIECE -------------------------
+
+PLbool plIGuide::exportIGuideMeshes(const plString &directory) {
+
+    if (iGuideMeshes.size() == 0)
+    {
+        std::cerr << "Error: No IGuide pieces to export. Did you forget to generate them? Aborting." << std::endl;
+        return false;
+    }
+    // TODO: Compare the number of meshes to what we expect based on the sizes of the various arrays, output a WARNING if it isn't what we expect.
+
+    for (PLuint i = 0; i < iGuideMeshes.size(); i++)
+    {
+        plSTL::exportFileBinary(iGuideMeshes[i].triangles, (directory + iGuideMeshes[i].filename));
+    }
+    return true;
+}
+
+
+plString plIGuide::prepareFilenameWithVariables( PLbool add, PLchar type, PLint graftIndex, const plString &pieceName ) {
+    std::stringstream strstream;
+    strstream << (add?"Add":"Subtract") << type << graftIndex << pieceName;
+    return strstream.str();
+}
+
 
 plSeq<plTriangle> plIGuide::createTemplatePieceTransformed ( const plSeq<plTriangle>& baseTriObject ,
                                                              const plMatrix44&  plugTransform,
@@ -152,8 +202,6 @@ plSeq<plTriangle> plIGuide::createTemplatePieceTransformed ( const plSeq<plTrian
     return outputTriObject;
 }
 
-
-// ============================ END THOMAS' SECTION ================================
 
 void plIGuide::draw() 
 {

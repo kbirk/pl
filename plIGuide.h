@@ -13,10 +13,22 @@
 #include "plPolygon.h"
 #include "plIGuideSite.h"
 
+class plIGuideMesh
+{
+    public:
+
+        plSeq<plTriangle> triangles;
+        plString          filename;
+
+        plIGuideMesh()                                                                                    {}
+        plIGuideMesh(const plString &str, const plSeq<plTriangle> &tris) : triangles(tris), filename(str) {}
+};
+
 class plKWire 
 {
     public:
 
+        PLfloat   thickness;
         plVector3 position;
         plVector3 direction;
   
@@ -36,10 +48,19 @@ class plIGuide : public plModelSpecific,
                                                             const PLdouble    &keyTranslationXAxis,
                                                             const PLdouble    &keyRotationZAxis );
 
+        plString prepareFilenameWithVariables( PLbool add, PLchar type, PLint graftIndex, const plString &pieceName );
+
+
     public:
 
+        // ATTRIBUTES
+        // geometry data
         PLfloat                 thickness;
+        PLfloat                 printerOffset;
 
+        plSeq<plIGuideMesh>     iGuideMeshes;
+
+        // pointers to data needed to construct this thing
         plSeq<plIGuideSite>     *sites;
         PLint                   siteIndex;
 
@@ -50,13 +71,26 @@ class plIGuide : public plModelSpecific,
         plSeq<plKWire>          *kWires;
         plSeq<PLint>            kWireIndices;
 
+
+        // MEMBERS
+        // constructors
         plIGuide();
         plIGuide( PLuint _modelID, const plBoneAndCartilage &_model );
 
+        // accessors (used to not have to dereference plSeq pointers and overall make code a bit more readable)
+        plIGuideSite &site           ()                 { return (*sites)[siteIndex]; }
+        plGraft      &recipientGraft (PLint arrayIndex) { return (*grafts)[recipientIndices[arrayIndex]]; }
+        plGraft      &harvestGraft   (PLint arrayIndex) { return (*grafts)[harvestIndices[arrayIndex]]; }
+        plKWire      &kWire          (PLint arrayIndex) { return (*kWires)[arrayIndex]; }
+
+        // I/O
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
-        PLbool generateMeshes();
+        // core functionality
+        PLbool generateIGuideMeshes ();
+        PLbool exportIGuideMeshes   (const plString &directory);
 
+        // rendering
         void draw();
 };
 
