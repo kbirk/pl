@@ -72,13 +72,13 @@ PLbool plIGuide::generateIGuideMeshes()
 
     // plug pieces
     plSeq<plTriangle> roundCylinder;
-    plSTL::importFile(roundCylinder, "./templateElements/Generator_Cylinder_Round.stl");
+    plSTL::importFile(roundCylinder, "./iGuideElements/Generator_Cylinder_Round.stl");
 
     plSeq<plTriangle> sharpCylinder;
-    plSTL::importFile(sharpCylinder, "./templateElements/Generator_Cylinder_Sharp.stl");
+    plSTL::importFile(sharpCylinder, "./iGuideElements/Generator_Cylinder_Sharp.stl");
 
     plSeq<plTriangle> keyCube;
-    plSTL::importFile(keyCube, "./templateElements/Generator_Key_Cube.stl");
+    plSTL::importFile(keyCube, "./iGuideElements/Generator_Key_Cube.stl");
 
     PLfloat   zero        ( 0.f );
     plVector3 zeroVector  ( 0.f, 0.f, 0.f );
