@@ -16,7 +16,7 @@
 #define PL_ANNEALING_INITIAL_TEMPERATURE        1.0f
 #define PL_ANNEALING_COOLING_RATE               0.025f
 
-#define PL_ANNEALING_THREADS                    256
+#define PL_ANNEALING_THREADS                    512
 
 #define PL_MAX_GRAFTS_PER_SOLUTION              20
 
@@ -37,7 +37,7 @@ class plAutomaticPlanner
         static PLuint _siteDataTextureID;
 
         // mesh colouring temporary texture       
-        static PLuint _overlappingTriangleAreasTextureID;
+        static PLuint _overlappedTrianglesBufferID;
                    
         // annealing states and energies
         static PLuint _stateEnergiesTextureID;

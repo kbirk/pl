@@ -36,11 +36,13 @@ class plSiteGrid
         
         PLuint     size()              const { return _points.size(); }
         PLuint     meshSize()          const { return _triangles.size(); }
+        PLuint     perimSize()         const { return _perimeter.size()/2; }
         PLfloat    area()              const { return _area; } 
         plVector3  normal()            const { return _normal; };
         
-        const plTriangle&        triangles(PLuint i)       const { return _triangles[i];   }        
-        //const plSeq<plTriangle>& triangles()               const { return _triangles;      }
+        PLuint getSSBO() const;
+        
+        const plTriangle&        triangles(PLuint i)       const { return _triangles[i];   }     
         const plVector4&         points   ( PLuint index ) const { return _points[index];  }
         const plVector4&         normals  ( PLuint index ) const { return _normals[index]; }
            
@@ -49,10 +51,12 @@ class plSiteGrid
         plSeq<plTriangle> _triangles;
         plSeq<plVector4>  _points; 
         plSeq<plVector4>  _normals;
+        plSeq<plVector4>  _perimeter;
         PLfloat           _area;
         plVector3         _normal;
         
         void _generateGridPoints();  
+        void _generatePerimeterPoints( const plBoundary &boundary );
         void _calcArea          ();
         void _calcNormal        ();
 };

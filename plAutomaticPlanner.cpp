@@ -5,7 +5,7 @@ plSeq<plSiteGrid> plAutomaticPlanner::_defectSiteGrids;
 
 PLuint            plAutomaticPlanner::_siteDataTextureID;
 
-PLuint            plAutomaticPlanner::_overlappingTriangleAreasTextureID; 
+PLuint            plAutomaticPlanner::_overlappedTrianglesBufferID; 
 PLuint            plAutomaticPlanner::_stateEnergiesTextureID;    
 PLuint            plAutomaticPlanner::_stateGraftPositionsTextureID;
 PLuint            plAutomaticPlanner::_stateGraftNormalsTextureID;
@@ -83,70 +83,84 @@ void reportError( const plString &str  )
 
 void plAutomaticPlanner::_bufferTextures()
 {
-    plSiteGrid &grid = _defectSiteGrids[0];
-
     PLuint meshSize = _defectSiteGrids[0].meshSize();     
-    PLuint gridSize = _defectSiteGrids[0].size();
-      
-    plSeq<plVector4> data( (gridSize*2)+(meshSize*4) );    
-    for( PLuint i=0; i < gridSize; i++ ) { data.add( _defectSiteGrids[0].points(i)  ); }    
-    for( PLuint i=0; i < gridSize; i++ ) { data.add( _defectSiteGrids[0].normals(i) ); }    
-    for( PLuint i=0; i < meshSize; i++ ) { data.add( plVector4( _defectSiteGrids[0].triangles(i).point0(), 1.0 ) ); 
-                                           data.add( plVector4( _defectSiteGrids[0].triangles(i).point1(), 1.0 ) );
-                                           data.add( plVector4( _defectSiteGrids[0].triangles(i).point2(), 1.0 ) );
-                                           data.add( plVector4( _defectSiteGrids[0].triangles(i).normal(), 1.0 ) ); }
-    
-    // buffer site data
-    glGenTextures(1, &_siteDataTextureID);
-    glBindTexture(GL_TEXTURE_1D, _siteDataTextureID);
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, (gridSize*2)+(meshSize*4), 0, GL_RGBA, GL_FLOAT, &data[0]);
-    reportError("site data");
-    
-    // triangle overlap texture 
-    plSeq<PLfloat> overlappedTriangles(0, meshSize*gridSize);  // fill with 0's
 
-    glGenTextures(1, &_overlappingTriangleAreasTextureID);                              
-    glBindTexture(GL_TEXTURE_2D, _overlappingTriangleAreasTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, meshSize, gridSize, 0, GL_RED, GL_FLOAT, &overlappedTriangles[0]);
-    reportError("overlappedTriangles");
+    // site data SSBO
+    _siteDataTextureID = _defectSiteGrids[0].getSSBO();
+
+    // temporary SSBO
+    plSeq<PLfloat> overlappingTriangles(0, meshSize*PL_ANNEALING_THREADS);    
+    glGenBuffers(1, &_overlappedTrianglesBufferID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _overlappedTrianglesBufferID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, (meshSize*PL_ANNEALING_THREADS)*sizeof(PLfloat), &overlappingTriangles[0], GL_STREAM_COPY);
     
+
     // state energy output    
     plSeq<PLfloat> stateEnergies(-1, PL_ANNEALING_THREADS);     // fill with -1's
   
+    glGenBuffers(1, &_stateEnergiesTextureID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateEnergiesTextureID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, PL_ANNEALING_THREADS*sizeof(PLfloat), &stateEnergies[0], GL_STREAM_COPY);
+    
+    /*
     glGenTextures(1, &_stateEnergiesTextureID);                              
     glBindTexture(GL_TEXTURE_1D, _stateEnergiesTextureID);
     glTexImage1D(GL_TEXTURE_1D, 0, GL_R32F, PL_ANNEALING_THREADS, 0, GL_RED, GL_FLOAT, &stateEnergies[0]);
     reportError("stateEnergies");
-
+    */
     // state graft data
     plSeq<PLfloat> statePoints(-1, PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS*4); // fill with -1's    
     plSeq<PLfloat> stateRadii(-1, PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS);   // fill with -1's    
 
+    glGenBuffers(1, &_stateGraftPositionsTextureID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftPositionsTextureID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, (PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS)*sizeof(plVector4), &statePoints[0], GL_STREAM_COPY);
+    
+    /*
     glGenTextures(1, &_stateGraftPositionsTextureID);                              
     glBindTexture(GL_TEXTURE_2D, _stateGraftPositionsTextureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, PL_MAX_GRAFTS_PER_SOLUTION, PL_ANNEALING_THREADS, 0, GL_RGBA, GL_FLOAT, &statePoints[0]);
+    */
     reportError("statePositions");
     
+    glGenBuffers(1, &_stateGraftNormalsTextureID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftNormalsTextureID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, (PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS)*sizeof(plVector4), &statePoints[0], GL_STREAM_COPY);
+    
+    /*
     glGenTextures(1, &_stateGraftNormalsTextureID);                              
     glBindTexture(GL_TEXTURE_2D, _stateGraftNormalsTextureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, PL_MAX_GRAFTS_PER_SOLUTION, PL_ANNEALING_THREADS, 0, GL_RGBA, GL_FLOAT, &statePoints[0]);
+    */
     reportError("stateNormals");
     
+    glGenBuffers(1, &_stateGraftRadiiTextureID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftRadiiTextureID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, (PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS)*sizeof(PLfloat), &stateRadii[0], GL_STREAM_COPY);
+   
+    /*
     glGenTextures(1, &_stateGraftRadiiTextureID);                              
     glBindTexture(GL_TEXTURE_2D, _stateGraftRadiiTextureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, PL_MAX_GRAFTS_PER_SOLUTION, PL_ANNEALING_THREADS, 0, GL_RED, GL_FLOAT, &stateRadii[0]);
+    */
     reportError("stateRadii");
     
     // fill graft counts
     plSeq<PLuint> stateGraftCounts(-1, PL_ANNEALING_THREADS); // fill with -1's
 
+    glGenBuffers(1, &_stateGraftCountsTextureID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftCountsTextureID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, PL_ANNEALING_THREADS*sizeof(PLuint), &stateGraftCounts[0], GL_STREAM_COPY);
+   
+    /*
     glGenTextures(1, &_stateGraftCountsTextureID);                              
     glBindTexture(GL_TEXTURE_1D, _stateGraftCountsTextureID);
     glTexImage1D(GL_TEXTURE_1D, 0, GL_R32UI, PL_ANNEALING_THREADS, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &stateGraftCounts[0]);
+    */
     reportError("stateGraftCounts");
 
-    glBindTexture(GL_TEXTURE_1D, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    //glBindTexture(GL_TEXTURE_1D, 0);
+    //glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -176,6 +190,8 @@ void shuffle( plSeq<PLuint> &array )
 
 void plAutomaticPlanner::_dispatchStage0()
 {
+    DEBUG_GRAFT_LOCATIONS.clear();
+
     PLuint gridSize   = _defectSiteGrids[0].size();
     PLuint meshSize   = _defectSiteGrids[0].meshSize();    
     PLuint workgroups = 1; //ceil( gridSize / (PLfloat) 1024); // ensure enough workgroups are used
@@ -187,61 +203,57 @@ void plAutomaticPlanner::_dispatchStage0()
     stage0.bind(); 
     reportError("stage0 bind");
 
-    // bind input/output buffers            
-    glBindImageTexture(0, _siteDataTextureID,            0, GL_FALSE, 0, GL_READ_ONLY,  GL_RGBA32F);
-    glBindImageTexture(1, _overlappingTriangleAreasTextureID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);       
-    glBindImageTexture(2, _stateEnergiesTextureID,       0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F    );    
-    glBindImageTexture(3, _stateGraftPositionsTextureID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F );
-    glBindImageTexture(4, _stateGraftNormalsTextureID,   0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F );
-    glBindImageTexture(5, _stateGraftRadiiTextureID,     0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F    );   
-    glBindImageTexture(6, _stateGraftCountsTextureID,    0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32UI   );       
+    plSeq<PLfloat> overlappingTriangles(0, meshSize*PL_ANNEALING_THREADS); 
+
+    // bind input/output buffers  
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _siteDataTextureID);           
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, _overlappedTrianglesBufferID);    
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, _stateEnergiesTextureID );
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, _stateGraftPositionsTextureID );
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, _stateGraftNormalsTextureID );
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, _stateGraftRadiiTextureID );
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, _stateGraftCountsTextureID );      
     reportError("stage0 image tex");    
                
-    PLfloat           stateTemperature   (PL_ANNEALING_INITIAL_TEMPERATURE);    
-    PLfloat           stateEnergy        (_defectSiteGrids[0].area());       
-    PLuint            stateGraftCount    (0);
+    PLfloat           stateTemperature   ( PL_ANNEALING_INITIAL_TEMPERATURE );    
+    PLfloat           stateEnergy        ( _defectSiteGrids[0].area() );       
+    PLuint            stateGraftCount    ( 0 );
+    
     plSeq<plVector4>  stateGraftPositions( plVector4(-1,-1,-1,-1), PL_MAX_GRAFTS_PER_SOLUTION );
     plSeq<plVector4>  stateGraftNormals  ( plVector4(-1,-1,-1,-1), PL_MAX_GRAFTS_PER_SOLUTION );
-    plSeq<PLfloat>    stateGraftRadii    (-1, PL_MAX_GRAFTS_PER_SOLUTION);
+    plSeq<PLfloat>    stateGraftRadii    ( -1, PL_MAX_GRAFTS_PER_SOLUTION );
 
     plSeq<PLuint> indexOrder(PL_ANNEALING_THREADS); for (PLuint i=0; i< PL_ANNEALING_THREADS; i++) indexOrder.add(i);
 
-    plSeq<PLfloat>    energies      ( -1.0, PL_ANNEALING_THREADS );
-    plSeq<PLuint>     graftCounts   (-1, PL_ANNEALING_THREADS);             
-    plSeq<plVector4>  graftPositions( plVector4(-1,-1,-1,-1), PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS);
-    plSeq<plVector4>  graftNormals  ( plVector4(-1,-1,-1,-1), PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS);
-    plSeq<PLfloat>    graftRadii    (-1.0, PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS);
-              
+           
     while (stateTemperature > 0.01f)
     {
         // set uniforms
         stage0.setAnnealingUniforms( _defectSiteGrids[0].meshSize(), 
                                      _defectSiteGrids[0].area(), 
                                      _defectSiteGrids[0].size(),
+                                     _defectSiteGrids[0].perimSize(),
                                      stateTemperature,
                                      stateEnergy,
                                      stateGraftCount,
                                      stateGraftPositions,
                                      stateGraftNormals,
                                      stateGraftRadii );                                     
-  
         reportError("stage0 uniforms");
-
+        
+        
         // call compute shader with 1D workgrouping
         glDispatchCompute( workgroups, 1, 1 );
         
-        // memory barrier
-        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);       
+        // memory barrier      
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+         
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateEnergiesTextureID);    
+        PLfloat *energies = (PLfloat*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                                         0, 
+                                                         PL_ANNEALING_THREADS*sizeof(PLfloat),
+                                                         GL_MAP_READ_BIT );    
 
-        reportError("stage0 mem barr");  
-                       
-        // read energies into array            
-        glBindTexture(GL_TEXTURE_1D, _stateEnergiesTextureID);    
-        glGetTexImage(GL_TEXTURE_1D, 0, GL_RED, GL_FLOAT, &energies[0]);            
-        reportError("stage0 get energies");   
-                
-        //std::cout << "\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\nAnnealing temperature: " << stateTemperature << "\n";             
-        
         // iterate through all state energies and find best one
         shuffle( indexOrder );
         PLint bestIndex = -1;        
@@ -256,48 +268,70 @@ void plAutomaticPlanner::_dispatchStage0()
             }
         }
         
+        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+        
         if ( bestIndex != -1 )
         {
-            // state positions
-            glBindTexture(GL_TEXTURE_2D, _stateGraftPositionsTextureID);    
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &graftPositions[0]); 
-            reportError("stage0 get positions");
-            
-            // state normals
-            glBindTexture(GL_TEXTURE_2D, _stateGraftNormalsTextureID);    
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &graftNormals[0]); 
-            reportError("stage0 get normals");
-            
-            // state radii
-            glBindTexture(GL_TEXTURE_2D, _stateGraftRadiiTextureID);    
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, &graftRadii[0]); 
-            reportError("stage0 get radii");     
 
-            // state count
-            glBindTexture(GL_TEXTURE_1D, _stateGraftCountsTextureID);    
-            glGetTexImage(GL_TEXTURE_1D, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &graftCounts[0]); 
-            reportError("stage0 get count");
-                           
-            PLuint offset = bestIndex*PL_MAX_GRAFTS_PER_SOLUTION;
-            stateGraftCount = graftCounts[bestIndex];
-
+            // get graft count
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftCountsTextureID);    
+            
+            PLuint *graftCount = (PLuint*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                                             bestIndex*sizeof(PLuint), 
+                                                             sizeof(PLuint),
+                                                             GL_MAP_READ_BIT );    
+            
+            stateGraftCount = graftCount[0];
+            glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+            
+            // get graft positions
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftPositionsTextureID);    
+            
+            plVector4 *positions = (plVector4*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                                                  (bestIndex*PL_MAX_GRAFTS_PER_SOLUTION)*sizeof(plVector4), 
+                                                                  PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4),
+                                                                  GL_MAP_READ_BIT );    
             for (PLuint i=0; i < stateGraftCount; i++)
-            {
-                stateGraftPositions[i] = graftPositions[offset+i];
-                stateGraftNormals[i]   = graftNormals  [offset+i];
-                stateGraftRadii[i]     = graftRadii    [offset+i];                
+            {                 
+                stateGraftPositions[i] = positions[i];
             }
-              
+            glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+            
+            // get graft normals
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftNormalsTextureID);    
+            
+            plVector4 *normals = (plVector4*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                                                (bestIndex*PL_MAX_GRAFTS_PER_SOLUTION)*sizeof(plVector4), 
+                                                                PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4),
+                                                                GL_MAP_READ_BIT );    
+            for (PLuint i=0; i < stateGraftCount; i++)
+            {                 
+                stateGraftNormals[i] = normals[i];
+            }
+            glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+            
+            
+            // get graft radii
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftRadiiTextureID);    
+            
+            PLfloat *radii = (PLfloat*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                                              (bestIndex*PL_MAX_GRAFTS_PER_SOLUTION)*sizeof(PLfloat), 
+                                                              PL_MAX_GRAFTS_PER_SOLUTION*sizeof(PLfloat),
+                                                              GL_MAP_READ_BIT );    
+            for (PLuint i=0; i < stateGraftCount; i++)
+            {                 
+                stateGraftRadii[i] = radii[i];
+            }
+            glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+            
+             
             std::cout << "New Best energy: " << stateEnergy << ", " << stateGraftCount << " grafts, Annealing temperature: " << stateTemperature << "\n";" \n";
             
         }
 
-        // reset covered areas back to 0
-        
-        plSeq<PLfloat> overlappingTriangles(0, meshSize*PL_ANNEALING_THREADS);  
-		glBindTexture(GL_TEXTURE_2D, _overlappingTriangleAreasTextureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, meshSize, PL_ANNEALING_THREADS, 0, GL_RED, GL_FLOAT, &overlappingTriangles[0]);
-		
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, _overlappedTrianglesBufferID);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, (meshSize*PL_ANNEALING_THREADS)*sizeof(PLfloat), &overlappingTriangles[0],  GL_STREAM_COPY);
+    
         stateTemperature *= 1.0f-PL_ANNEALING_COOLING_RATE;
     }
 
@@ -305,9 +339,11 @@ void plAutomaticPlanner::_dispatchStage0()
     {
         plVector4 p = stateGraftPositions[i];
         plVector4 n = stateGraftNormals[i];
+        PLfloat   r = stateGraftRadii[i];
         
         DEBUG_GRAFT_LOCATIONS.add( plVector3( p.x, p.y, p.z ) );                                              
         DEBUG_GRAFT_LOCATIONS.add( plVector3( n.x, n.y, n.z ) );
+        DEBUG_GRAFT_LOCATIONS.add( plVector3( r, 0.0f, 0.0f ) ); 
     }
 
 }

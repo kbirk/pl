@@ -9,9 +9,35 @@ plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &bo
     // generate interior _triangles
     plMeshCutter::findInteriorMesh( triangles, boundary, _triangles );
       
-    _generateGridPoints();  
+    _generateGridPoints(); 
+    _generatePerimeterPoints( boundary ); 
     _calcArea();
     _calcNormal();   
+    
+    
+}
+
+PLuint plSiteGrid::getSSBO() const
+{
+    PLuint meshSize  = _triangles.size();     
+    PLuint gridSize  = _points.size();
+    PLuint perimSize = _perimeter.size();
+    PLuint dataSize  = (gridSize*2)+(meshSize*4)+perimSize;
+      
+    plSeq<plVector4> data( dataSize );  
+    for ( PLuint i=0; i < gridSize; i++ ) { data.add( _points[i]  ); }    
+    for ( PLuint i=0; i < gridSize; i++ ) { data.add( _normals[i] ); }    
+    for ( PLuint i=0; i < meshSize; i++ ) { data.add( plVector4( _triangles[i].point0(), 1.0 ) ); 
+                                            data.add( plVector4( _triangles[i].point1(), 1.0 ) );
+                                            data.add( plVector4( _triangles[i].point2(), 1.0 ) );
+                                            data.add( plVector4( _triangles[i].normal(), 1.0 ) ); }                                                                                      
+    for ( PLuint i=0; i < perimSize; i++) { data.add( _perimeter[i] ); }    
+
+    PLuint tempBuffer;
+    glGenBuffers(1, &tempBuffer);   
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(plVector4), &data[0], GL_STATIC_READ);
+    return tempBuffer;
 }
 
 
@@ -107,6 +133,22 @@ void plSiteGrid::_generateGridPoints()
     */
 }
 
+void plSiteGrid::_generatePerimeterPoints( const plBoundary &boundary )
+{
+    PLuint size = boundary.size();
+    
+    for (PLuint i=0; i < size; i++)
+    {
+        _perimeter.add( plVector4( boundary.points(i), 1) );
+    }
+
+    for (PLuint i=0; i < size; i++)
+    {
+        plVector3 d = boundary.points((i+1)%size) - boundary.points(i);
+        plVector3 n = 0.5f * (boundary.normals((i+1)%size) + boundary.normals(i));        
+        _perimeter.add( plVector4( (d ^ n).normalize(), 1.0f ) );
+    }
+}
 
 void plSiteGrid::_calcArea()
 {

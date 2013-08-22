@@ -245,14 +245,20 @@ void plRenderer::_drawScene()
         
         PLuint count = plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS.size();
         
-        for (PLuint j=0; j<count; j+=2)
+        for (PLuint j=0; j<count; j+=3)
         {
-            float r = ((float) rand() / (RAND_MAX));
-            float g = ((float) rand() / (RAND_MAX));
-            float b = ((float) rand() / (RAND_MAX));
+            float r = 0.2; //((float) rand() / (RAND_MAX));
+            float g = 0.5; //((float) rand() / (RAND_MAX));
+            float b = 0.2; //((float) rand() / (RAND_MAX));
             plColourStack::load( r, g, b );
-            plDraw::cylinder( plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j], plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+1], 4.0f, 8.0f );
-            plDraw::disk    ( plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j], plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+1], 4.0f);
+            plDraw::cylinder( plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j], 
+                              plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+1], 
+                              plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+2].x, 
+                              8.0f );
+                              
+            plDraw::disk    ( plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j], 
+                              plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+1], 
+                              plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+2].x);
         }
 
     }

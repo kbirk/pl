@@ -19,6 +19,7 @@ class plPlannerStage0Shader : public plShader
         void setAnnealingUniforms( PLuint  meshSize, 
                                    PLfloat meshArea, 
                                    PLuint  gridSize,
+                                   PLuint  perimSize,
                                    PLfloat temp, 
                                    PLfloat energy, 
                                    PLfloat count,
@@ -31,6 +32,7 @@ class plPlannerStage0Shader : public plShader
         PLuint _siteMeshSizeID;                  
         PLuint _siteMeshAreaID;
         PLuint _siteGridSizeID;
+        PLuint _sitePerimSizeID;
          
         PLuint _stateTemperatureID;                
         PLuint _stateEnergyID;
@@ -38,8 +40,6 @@ class plPlannerStage0Shader : public plShader
         PLuint _stateGraftNormalsID;
         PLuint _stateGraftRadiiID;
         PLuint _stateGraftCountID;
-        //PLuint _stateIndicesID;
-        //PLuint _statePerturbationsID;
 
         PLuint _seedID;
         

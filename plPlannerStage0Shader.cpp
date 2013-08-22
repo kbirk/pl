@@ -17,6 +17,7 @@ void plPlannerStage0Shader::getUniformLocations()
     _siteMeshSizeID       = glGetUniformLocation(_shaderProgramID, "uSiteMeshSize");   
     _siteMeshAreaID       = glGetUniformLocation(_shaderProgramID, "uSiteMeshArea");
     _siteGridSizeID       = glGetUniformLocation(_shaderProgramID, "uSiteGridSize");
+    _sitePerimSizeID      = glGetUniformLocation(_shaderProgramID, "uSitePerimSize");
     
     _stateTemperatureID   = glGetUniformLocation(_shaderProgramID, "uStateTemperature");   
     _stateEnergyID        = glGetUniformLocation(_shaderProgramID, "uStateEnergy");   
@@ -24,15 +25,14 @@ void plPlannerStage0Shader::getUniformLocations()
     _stateGraftPositionsID = glGetUniformLocation(_shaderProgramID, "uStateGraftPositions"); 
     _stateGraftNormalsID   = glGetUniformLocation(_shaderProgramID, "uStateGraftNormals"); 
     _stateGraftRadiiID     = glGetUniformLocation(_shaderProgramID, "uStateGraftRadii"); 
-    //_stateIndicesID       = glGetUniformLocation(_shaderProgramID, "uStateIndices");
-    //_statePerturbationsID = glGetUniformLocation(_shaderProgramID, "uStatePerturbations");    
-    
+
     _seedID               = glGetUniformLocation(_shaderProgramID, "uSeed");   
 }
 
 void plPlannerStage0Shader::setAnnealingUniforms( PLuint  meshSize, 
                                                   PLfloat meshArea, 
                                                   PLuint  gridSize,
+                                                  PLuint  perimSize,
                                                   PLfloat temp, 
                                                   PLfloat energy, 
                                                   PLfloat count,
@@ -40,9 +40,10 @@ void plPlannerStage0Shader::setAnnealingUniforms( PLuint  meshSize,
                                                   const plSeq<plVector4> &normals,
                                                   const plSeq<PLfloat>   &radii )
 {
-    glUniform1ui  ( _siteMeshSizeID, meshSize );    
-    glUniform1f   ( _siteMeshAreaID, meshArea ); 
-    glUniform1ui  ( _siteGridSizeID, gridSize ); 
+    glUniform1ui  ( _siteMeshSizeID,  meshSize );    
+    glUniform1f   ( _siteMeshAreaID,  meshArea ); 
+    glUniform1ui  ( _siteGridSizeID,  gridSize ); 
+    glUniform1ui  ( _sitePerimSizeID, perimSize ); 
     
     glUniform1f   ( _stateTemperatureID, temp   );     
     glUniform1f   ( _stateEnergyID,      energy ); 

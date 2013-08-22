@@ -10,6 +10,8 @@ int main( int argc, char **argv )
         abort();
     }
 
+    srand (time(NULL));
+
     // Set up windows
     glutInit( &argc, argv );
     glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
