@@ -10,7 +10,7 @@ int main( int argc, char **argv )
         abort();
     }
 
-    srand (time(NULL));
+    srand ( time(NULL) );
 
     // Set up windows
     glutInit( &argc, argv );

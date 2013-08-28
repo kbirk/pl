@@ -1,37 +1,40 @@
 #version 430
 
-#define PL_MAX_GRAFT_CAP_TRIANGLES  1000
 #define PL_MAX_GRAFTS_PER_SOLUTION  20
+#define PL_MAX_DONOR_SITES          5
+#define PL_MAX_CAP_TRIANGLES        500
 
-layout (local_size_x = 1024) in;
+layout (local_size_x = 16) in;
 
-// input textures
-layout (rgba32f, binding = 0) uniform image2D  iGraftCaps;
-layout (r32f,    binding = 1) uniform image1D  iGraftAreas;
-layout (r32ui,   binding = 2) uniform uimage2D iGraftTriangles;
+// input data
+layout (std430,  binding = 0) buffer defectSiteDataBlock       { vec4 defectSiteData[]; };
+layout (std430,  binding = 0) buffer donorSiteDataBlock        { vec4 donorSiteData[]; };
 
-layout (rgba32f, binding = 3) uniform image2D iSiteMeshTriangles;
+// temporary data
+layout (std430,  binding = 1) buffer tempBuffer0           { vec4 tempDefectTriangles[]; };
+layout (std430,  binding = 2) buffer tempBuffer1           { vec4 tempDonorTriangles[]; };
+
+// state output
+layout (std430,  binding = 5) buffer StateEnergiesBlock   { float stateEnergies      []; };
+layout (std430,  binding = 6) buffer StatePositionBlock   { vec4  stateGraftPositions[]; };
+layout (std430,  binding = 7) buffer StateNormalBlock     { vec4  stateGraftNormals  []; };
 
 // input uniforms
-uniform uint  uSiteMeshSize;
-uniform float uSiteArea;
+uniform uint  uStateGraftCount;
+uniform vec4  uStateGraftPositions [PL_MAX_GRAFTS_PER_SOLUTION];
+uniform vec4  uStateGraftNormals   [PL_MAX_GRAFTS_PER_SOLUTION];
+uniform float uStateGraftRadii     [PL_MAX_GRAFTS_PER_SOLUTION];
 
-uniform float uTemperature;
-uniform float uStateEnergy;
-uniform uint  uStateGrafts[PL_MAX_GRAFTS_PER_SOLUTION];
+uniform uint  uDefectSiteMeshSize;
+uniform uint  uDefectSiteGridSize;
+uniform uint  uDefectSitePerimSize;
 
-// output textures
-layout (r32f,  binding = 4) uniform image1D  oStateEnergies;
-layout (r32ui, binding = 5) uniform uimage2D oStateGrafts;
+uniform uint  uDonorSiteCount;
+uniform uint  uDonorSiteMeshSize        [PL_MAX_DONOR_SITES];
+uniform uint  uDonorSiteGridSize        [PL_MAX_DONOR_SITES];
+uniform uint  uDonorSitePerimSize       [PL_MAX_DONOR_SITES];
 
-// temporary
-layout (r32f, binding = 6) uniform image2D tTriangleAreas;
-
-struct state
-{
-    uint  grafts[PL_MAX_GRAFTS_PER_SOLUTION];
-    float energy;
-};
+uniform uint uSeed;
 
 
 struct triangle
@@ -43,136 +46,391 @@ struct triangle
 };
 
 
+vec4 defectSitePositions( in uint i )
+{
+    return siteData[i];
+}
+
+
+vec4 defectSiteNormals( in uint i )
+{
+    return siteData[uSiteGridSize+i];
+}
+
+
+triangle defectSiteTriangles( in uint i )
+{
+    uint j = uSiteGridSize*2 + i*4;    
+    triangle t;
+    t.p0 = vec3( siteData[j+0] );
+    t.p1 = vec3( siteData[j+1] );
+    t.p2 = vec3( siteData[j+2] );
+    t.n  = vec3( siteData[j+3] );
+    return t;
+}
+
+
+edge defectSiteEdge( in uint i )
+{
+    uint offset = uSiteGridSize*2 + uSiteMeshSize*4;
+    uint j = offset + i;
+    uint k = offset + ( (i+1) % uSitePerimSize );
+    
+    edge e;
+    e.p0 = vec3( siteData[ j ] );
+    e.p1 = vec3( siteData[ k ] );  
+    e.n  = vec3( siteData[ j+uSitePerimSize ] );    
+    return e;
+}
+
+void getSiteAndIndex( inout uint site, inout uint localIndex, in uint gid )
+{
+    localIndex = gid;
+    for (uint i=0; i< site; i++)
+    {
+        if ( localIndex < uSiteGridSize[ i ] )
+        {
+            site = i;
+            break;
+        }
+        localIndex -= uSiteGridSize[ i ];
+    }
+}
+
+
+uint getSiteOffset( in uint site )
+{
+    uint index = 0;
+    for (uint i=0; i< site; i++)
+    {
+        index+= uSiteGridSize[i]*2 + uSiteMeshSize[i]*4 + uSitePerimSize[i]*2;
+    }
+    return;
+}
+
+
+vec4 iSitePositions( in uint site, in uint i )
+{   
+    return siteData[ getSiteOffset( site ) + i];
+}
+
+
+vec4 iSiteNormals( in uint site, in uint i )
+{
+    return siteData[ getSiteOffset( site ) + uSiteGridSize[ site ] + i];
+}
+
+
+triangle iSiteTriangles( in uint site, in uint i )
+{
+    uint j = getSiteOffset( site ) + uSiteGridSize[ site ]*2 + i*4;  
+    triangle t;
+    t.p0 = vec3( siteData[j+0] );
+    t.p1 = vec3( siteData[j+1] );
+    t.p2 = vec3( siteData[j+2] );
+    t.n  = vec3( siteData[j+3] );
+    return t;
+}
+
+
+edge iSiteEdge( in uint site, in uint i )
+{
+    uint offset = getSiteOffset( site ) + uSiteGridSize[ site ]*2 + uSiteMeshSize[ site ]*4; 
+
+    uint j = offset + i;
+    uint k = offset + ( (i+1) % uSitePerimSize[ site ] );
+    
+    edge e;
+    e.p0 = vec3( siteData[ j ] );
+    e.p1 = vec3( siteData[ k ] );  
+    e.n  = vec3( siteData[ j+uSitePerimSize[ site ] ] );    t Intersection(false)
+    return e;
+}
+
+
+uint randomize( inout uint seed )
+{   
+    seed = (seed ^ 61) ^ (seed >> 16);
+    seed *= 9;
+    seed = seed ^ (seed >> 4);
+    seed *= 0x27d4eb2d;
+    seed = seed ^ (seed >> 15);
+    return seed;
+}
+
+
+float rand( inout uint seed )
+{
+    float a = randomize( seed );   
+    return float( a/1.000001) * (1.0 / 4294967296.0);  // return 0 <= r < 1 
+}
+
+
+
 float area( in triangle t)
 {
     return 0.5 * length( cross( (t.p1 - t.p0),  (t.p2 - t.p0) ) );
 }
 
+
+
+float distToAxis( in vec3 axis, in vec3 v )    
+{
+    // v is already in the *local* coordinate system of the graft        
+    return length(v - dot(v, axis)*axis);
+}
+
+
+vec3 pointOnCircumference( in vec3 u, in vec3 v, in float radius )
+{
+    float a = dot( (v-u), (v-u) );
+    float b = 2 * dot( u, (v-u) );
+    float c = dot( u, u ) - radius*radius;
+
+    float radical = b*b - 4*a*c;
+    
+    if (radical < 0) 
+    {
+        // error
+        return vec3(0,0,0);	
+    }
+
+    float root = sqrt(radical);
+
+    float t1 = (-b + root)/(2*a);
+    float t2 = (-b - root)/(2*a);
+
+    float t;
+    if (t1 >= 0 && t1 <= 1 && (t1 <= t2 || t2 <= 0))
+    {
+        t = t1;
+    }
+    else if (t2 >= 0 && t2 <= 1 && (t2 <= t1 || t1 >= 1))
+    {
+        t = t2;
+    }
+    else 
+    {
+        // error
+        return vec3(0,0,0);	
+    }
+
+    return u + t*(v-u);
+    
+}
+
+
+bool intersectTriangle( in vec3 position, in vec3 normal, in triangle t, in float radius ) 
+{
+    if ( dot(t.n, normal) < 0 )
+        return false;
+
+    // get vector from graft centre to triangle point
+    vec3 point0 = t.p0 - position;
+    vec3 point1 = t.p1 - position;
+    vec3 point2 = t.p2 - position;
+    
+    return ( distToAxis( normal, point0 ) < radius ||
+             distToAxis( normal, point1 ) < radius ||
+             distToAxis( normal, point2 ) < radius );
+  
+}
+
+
+void calculateCap( in vec3 position, in vec3 normal, in float radius )
+{ 
+    // get global invocation id
+    int gid = int(gl_GlobalInvocationID.x);
+
+    
+    for(uint i=0; i<uSiteMeshSize; i++)
+    {
+        // create triangle struct
+        triangle t;
+        t.p0 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,0) ) );
+        t.p1 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,1) ) );
+        t.p2 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,2) ) );
+        t.n  = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,3) ) ); 
+        
+        if ( intersectTriangle( position, normal, t, radius ) )
+        {
+            
+        }
+
+        if (num_tri + num_results > PL_MAX_GRAFT_CAP_TRIANGLES) 
+            break;  // exceeded max number of triangles (this shouldn't happen unless grafts have ridiculously large radii)
+
+        for (uint j=0; j<num_results; j++)
+        {
+            // accumulate area
+            area_sum += area( tris[j] );
+            // store triangle           
+            imageStore( oGraftCaps, ivec2( num_tri*4 + 0, gid ), vec4( tris[j].p0, 1) );
+            imageStore( oGraftCaps, ivec2( num_tri*4 + 1, gid ), vec4( tris[j].p1, 1) );
+            imageStore( oGraftCaps, ivec2( num_tri*4 + 2, gid ), vec4( tris[j].p2, 1) );
+            imageStore( oGraftCaps, ivec2( num_tri*4 + 3, gid ), vec4( tris[j].n,  1) );            
+            num_tri++;                   
+        }  
+        
+        // store overlapped triangle indices
+        if (num_results > 0 && num_full_tri < PL_MAX_GRAFT_CAP_TRIANGLES) // store index of full triangle
+        {   
+            float partial_area = 0;
+            
+            for (uint j=0; j<num_results; j++)
+            {
+                partial_area += area( tris[j] );
+            }
+            
+            if ( partial_area > (area( t )*0.5) )
+                imageStore( oGraftTriangles, ivec2( ++num_full_tri, gid ), uvec4( i, 0, 0, 0) );   
+        }
+                       
+    }
+    // store number of full triangles overlapped
+    imageStore( oGraftTriangles, ivec2( 0, gid ), uvec4( num_full_tri, 0, 0, 0) );
+
+    // write total cap area
+    imageStore( oGraftAreas, gid, vec4( area_sum, 0, 0, 0) ); 
+}
+
+void shuffle( inout array )
+{   
+    PLuint size = array.size();
+    for (PLuint i = 0; i < size-1; i++) 
+    {
+      PLuint j = i + rand() / (RAND_MAX / (size - i) + 1);
+      PLuint t = array[j];
+      array[j] = array[i];
+      array[i] = t;
+    }    
+}
+
 /*
 
-void projectCap( int capID )
-{
-    vec3 plane_point = vec3( imageLoad( iSiteMeshTriangles, ivec2(0,0) ) ); // any point will doo
+input:
 
-    for (uint i=0; i<PL_MAX_GRAFT_CAP_TRIANGLES; i++)
-    {       
-        vec3 p = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,0) ) );
-        vec3 v = p - plane_point;
-        
-        float dist = dot( v, n );
-        
-        vec3 projected = p - dist*uSiteNormal; 
-    }
+    state graft 
 
-}
+output:
+
+
+- for each grid point, 
+   
+    - calculate rough cap for grid point (dont need exact, this is simply to reduce triangles for ray intersections )
+    - calculate rouch cap for each graft (dont need exact, this is simply to reduce triangles for ray intersections )
+    - ray intersect each cap along at set of distances and angles around centre using normal
+        - ex, break radius into n distances, for each distance, look at certain angle increments
+    - store RMS for each, if rad extends permiter, discard value
+    
+output:
+
+    - set of valid points, normals, radii and rms to each graft
+    
+    - float[num_grafts][num_points]
+    - RMS of each viable grid point to each cap 
+
+
+
+
+
 */
 
-
-float area_covered( in state s )
+bool rayIntersect( inout vec3 point, inout float t, in vec3 rayStart, in vec3 rayDir, in triangle tri )
 {
-    uint capCount = s.grafts[0];
-    float total_area = 0;
-    for (uint i = 1; i <= capCount; i++)
-    {   
-        // add area of cap to sum, includes overlaps
-        total_area += imageLoad( iGraftAreas, int(s.grafts[i]) ); 
+    // Compute ray/plane intersection
+    float dn = rayDir * tri.n;
+
+    if (dn == 0 )
+    {      
+        return false;   // ray is parallel to plane 
     }
-    return total_area;
+
+    float dist = dot( tri.p0, tri.n );
+
+    float t = (dist - rayStart*tri.n) / dn;
+    
+    if (ignoreBehindRay && t < 0) 
+        return plIntersection(false);   // plane is behind ray
+
+    vec3 point = rayStart + t * rayDir;
+
+    // Compute barycentric coords
+    float totalAreaDiv = 1.0 / dot( cross( (tri.p1-t.p0) , (tri.p2-tri.p0) ) , tri.n);
+    float u = dot( cross((tri.p2-t.p1) , (point - tri.p1)) , tri.n) * totalAreaDiv;
+    float v = dot( cross((tri.p0-t.p2) , (point - tri.p2)) , tri.n) * totalAreaDiv;
+
+    // Reject if outside triangle
+    if (u < 0 || v < 0 || u + v > 1)
+        return false; 
+    
+    return true;
 }
 
 
-float area_uncovered( in state s )
-{       
-    int gid = int( gl_GlobalInvocationID.x ); 
-         
-    uint capCount = s.grafts[0];
-    
-    // for each graft in current state
-    for (uint i = 1; i <= capCount; i++)
-    {   
-        uint num_overlapping_triangles = imageLoad( iGraftTriangles, ivec2(0, s.grafts[i]) );
-        
-        // for each triangle in that graft
-        for (uint j = 1; j <= num_overlapping_triangles; j++)
-        { 
-            // get index of overlapped triangle
-            uint t_index = imageLoad( iGraftTriangles, ivec2(j, s.grafts[i]) );
-            // get triangle
-            triangle t;
-            t.p0 = vec3( imageLoad( iSiteMeshTriangles, ivec2(t_index,0) ) );
-            t.p1 = vec3( imageLoad( iSiteMeshTriangles, ivec2(t_index,1) ) );
-            t.p2 = vec3( imageLoad( iSiteMeshTriangles, ivec2(t_index,2) ) );
-            // set area of triangle to be summed later
-            imageStore( tTriangleAreas, ivec2( t_index, gid ), vec4( area(t), 0, 0, 0) );
-
-        }       
-    }
-    
-    float non_overlap_area = 0;
-    
-    // iterate over triangles, if they are in cap, value > 0, add to sum
-    for (uint i = 0; i < uSiteMeshSize; i++)
-    {  
-         non_overlap_area += imageLoad( tTriangleAreas, ivec2(i, gid) ); 
-    }      
-    
-    return uSiteArea - non_overlap_area;
-}
-
-
-float energy ( in state s )
+bool rayIntersectDefect( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in uint count )
 {
-    float WEIGHT = 0.4;
-    return area_uncovered( s ) + WEIGHT * area_covered( s );
-}
-
-
-void addCap( inout state s, in uint index )
-{    
-    s.grafts[0]++; 
-    uint capCount = s.grafts[0];   
-    s.grafts[capCount] = index;       
-}
-
-
-void removeCap( inout state s, in uint index )
-{
-    uint capCount = s.grafts[0];    
-    // shift all other elements down
-    for (uint i=index; i<=capCount; i++)
+    vec3 closestPoint;
+    float minT;
+    for (uint i=0; i<count*4; i+=4)
     {
-        if (i+1 == PL_MAX_GRAFTS_PER_SOLUTION)  // max sure doesnt go out of bounds
-            s.grafts[i] = 0;
-            
-        s.grafts[i] = s.grafts[i+1];       
-    }
-    s.grafts[0]--;
-}
-
-
-int isInState( in state s, in int gid )
-{
-    uint capCount = s.grafts[0]; 
-    for (int i=1; i<=capCount; i++)
-    {
-        if (s.grafts[i] == gid)
+        triangle t;
+        t.p0 = tempDefectTriangles[ i+0 ];
+        t.p1 = tempDefectTriangles[ i+1 ];
+        t.p2 = tempDefectTriangles[ i+2 ];
+        t.n  = tempDefectTriangles[ i+3 ];
+        vec3 point;
+        float t;
+        rayIntersect( point, t, rayStart, rayDir, t ); 
+        if ( abs( t ) < minT )
         {
-            return i; 
+            minT = abs( t );
+            closestPoint = point;
         }
     }
-    return -1;
 }
 
 
-void copyGlobalState( inout state s )
+
+bool rayIntersectDonor( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in uint count )
 {
-    uint capCount = uStateGrafts[0];
-    s.grafts[0] = capCount;
-    for (uint i=1; i<=capCount; i++)
-    {    
-        s.grafts[i] = uStateGrafts[i];
+    vec3 closestPoint;
+    float minT;
+    for (uint i=0; i<count*4; i+=4)
+    {
+        triangle t;
+        t.p0 = tempDonorTriangles[ i+0 ];
+        t.p1 = tempDonorTriangles[ i+1 ];
+        t.p2 = tempDonorTriangles[ i+2 ];
+        t.n  = tempDonorTriangles[ i+3 ];
+        vec3 point;
+        float t;
+        rayIntersect( point, t, rayStart, rayDir, t ); 
+        if ( abs( t ) < minT )
+        {
+            minT = abs( t );
+            closestPoint = point;
+        }
     }
-    s.energy = uStateEnergy;
+}
+
+
+float calcRMS( in uint defectCount, in uint donorCount )
+{
+    vec3 pos[1];
+    pos[0] = vec3(0,0,0);
+    uint numPoints = 1;
+    
+    float squaredDistanceSum = 0;
+    for (uint i=0; i<numPoints; i++)
+    {
+        vec3 defectPoint, donorPoint;
+        rayIntersectDefect( defectPoint, pos[i], uStateGraftNormal, defectCount );
+        rayIntersectDefect( donorPoint,  pos[i], uStateGraftNormal, donorCount );
+        squaredDistanceSum += distance(defectPoint, donorPoint) * distance(defectPoint, donorPoint);
+    }
+
+    return squaredDistanceSum / float( numPoints );
 }
 
 
@@ -181,35 +439,22 @@ void main(void)
     // get global invocation id
     int gid = int( gl_GlobalInvocationID.x );    
     
-    // copy initial state 
-    state nS; 
-    copyGlobalState( nS );
+    // get invocation unique seed value for RNG
+    uint seed = uint( uSeed*(gid+1) ); 
     
-    // check if inside state
-    int indexInState = isInState( nS, gid );
+    uint site, localIndex;
+    getSiteAndIndex( site, localIndex, gid );
     
-    if ( indexInState > 0 )
+    for (uint i=0; i<uStateGraftCount; i++)
     {
-        // remove self        
-        removeCap( nS, uint(indexInState) );         
-    }
-    else
-    {
-        // add self
-        addCap( nS, gid );
-    }
-
-    // calc energy
-    nS.energy = energy( nS );    
-    
-    // store state energy
-    imageStore( oStateEnergies, gid, vec4( nS.energy, 0, 0, 0 ) );
-    // store state cap indices
-    
-    for (int i=0; i<=nS.grafts[0]; i++)
-    {
-        imageStore( oStateGrafts, ivec2( i, gid ), uvec4( nS.grafts[i], 0, 0, 0) );    
-    }
+        // calculate cap triangles and store in temp buffer
+        uint defectCount = calculateCap( uStateGraftPositions[i], uStateGraftNormal, uStateGraftRadii[i] );
+        // calculate cap triangles and store in temp buffer
+        uint donorCount = calculateCap( iSitePosition( site, localIndex ), uStateGraftNormal, uStateGraftRadii[i] );
+        
+        rmsOutput[gid*PL_MAX_GRAFTS_PER_SOLUTION+1] = calcRMS( defectCount, donorCount );
+        
+    }    
     
 }
 

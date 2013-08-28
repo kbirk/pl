@@ -14,9 +14,11 @@
 #include "plPlannerStage1Shader.h"
 
 #define PL_ANNEALING_INITIAL_TEMPERATURE        1.0f
-#define PL_ANNEALING_COOLING_RATE               0.025f
+#define PL_ANNEALING_COOLING_RATE               0.05f
 
-#define PL_ANNEALING_THREADS                    512
+#define PL_ANNEALING_GROUP_SIZE                 16
+#define PL_ANNEALING_NUM_GROUPS                 16
+#define PL_ANNEALING_INVOCATIONS                PL_ANNEALING_NUM_GROUPS*PL_ANNEALING_GROUP_SIZE
 
 #define PL_MAX_GRAFTS_PER_SOLUTION              20
 
@@ -53,8 +55,8 @@ class plAutomaticPlanner
         static void _bufferTextures();   
     
         static void _dispatch();      
-        static void _dispatchStage0();
-
+        static void _dispatchStage0();  // find defect sites
+        static void _dispatchStage1();  // find donor sites
                         
 };
 

@@ -89,78 +89,40 @@ void plAutomaticPlanner::_bufferTextures()
     _siteDataTextureID = _defectSiteGrids[0].getSSBO();
 
     // temporary SSBO
-    plSeq<PLfloat> overlappingTriangles(0, meshSize*PL_ANNEALING_THREADS);    
+    plSeq<PLfloat> overlappingTriangles(0, meshSize*PL_ANNEALING_INVOCATIONS);   // fill with 0's 
     glGenBuffers(1, &_overlappedTrianglesBufferID);     
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _overlappedTrianglesBufferID);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, (meshSize*PL_ANNEALING_THREADS)*sizeof(PLfloat), &overlappingTriangles[0], GL_STREAM_COPY);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, (meshSize*PL_ANNEALING_INVOCATIONS)*sizeof(PLfloat), &overlappingTriangles[0], GL_STREAM_COPY);
     
-
     // state energy output    
-    plSeq<PLfloat> stateEnergies(-1, PL_ANNEALING_THREADS);     // fill with -1's
+    plSeq<PLfloat> stateEnergies(-1, PL_ANNEALING_INVOCATIONS);     // fill with -1's
   
     glGenBuffers(1, &_stateEnergiesTextureID);     
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateEnergiesTextureID);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, PL_ANNEALING_THREADS*sizeof(PLfloat), &stateEnergies[0], GL_STREAM_COPY);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, PL_ANNEALING_INVOCATIONS*sizeof(PLfloat), &stateEnergies[0], GL_STREAM_COPY);
     
-    /*
-    glGenTextures(1, &_stateEnergiesTextureID);                              
-    glBindTexture(GL_TEXTURE_1D, _stateEnergiesTextureID);
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_R32F, PL_ANNEALING_THREADS, 0, GL_RED, GL_FLOAT, &stateEnergies[0]);
-    reportError("stateEnergies");
-    */
     // state graft data
-    plSeq<PLfloat> statePoints(-1, PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS*4); // fill with -1's    
-    plSeq<PLfloat> stateRadii(-1, PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS);   // fill with -1's    
+    plSeq<PLfloat> statePoints(-1, PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_INVOCATIONS*4); // fill with -1's    
+    plSeq<PLfloat> stateRadii(-1, PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_INVOCATIONS);    // fill with -1's    
 
     glGenBuffers(1, &_stateGraftPositionsTextureID);     
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftPositionsTextureID);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, (PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS)*sizeof(plVector4), &statePoints[0], GL_STREAM_COPY);
-    
-    /*
-    glGenTextures(1, &_stateGraftPositionsTextureID);                              
-    glBindTexture(GL_TEXTURE_2D, _stateGraftPositionsTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, PL_MAX_GRAFTS_PER_SOLUTION, PL_ANNEALING_THREADS, 0, GL_RGBA, GL_FLOAT, &statePoints[0]);
-    */
-    reportError("statePositions");
+    glBufferData(GL_SHADER_STORAGE_BUFFER, (PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_INVOCATIONS)*sizeof(plVector4), &statePoints[0], GL_STREAM_COPY);
     
     glGenBuffers(1, &_stateGraftNormalsTextureID);     
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftNormalsTextureID);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, (PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS)*sizeof(plVector4), &statePoints[0], GL_STREAM_COPY);
-    
-    /*
-    glGenTextures(1, &_stateGraftNormalsTextureID);                              
-    glBindTexture(GL_TEXTURE_2D, _stateGraftNormalsTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, PL_MAX_GRAFTS_PER_SOLUTION, PL_ANNEALING_THREADS, 0, GL_RGBA, GL_FLOAT, &statePoints[0]);
-    */
-    reportError("stateNormals");
+    glBufferData(GL_SHADER_STORAGE_BUFFER, (PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_INVOCATIONS)*sizeof(plVector4), &statePoints[0], GL_STREAM_COPY);
     
     glGenBuffers(1, &_stateGraftRadiiTextureID);     
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftRadiiTextureID);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, (PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_THREADS)*sizeof(PLfloat), &stateRadii[0], GL_STREAM_COPY);
-   
-    /*
-    glGenTextures(1, &_stateGraftRadiiTextureID);                              
-    glBindTexture(GL_TEXTURE_2D, _stateGraftRadiiTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, PL_MAX_GRAFTS_PER_SOLUTION, PL_ANNEALING_THREADS, 0, GL_RED, GL_FLOAT, &stateRadii[0]);
-    */
-    reportError("stateRadii");
+    glBufferData(GL_SHADER_STORAGE_BUFFER, (PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_INVOCATIONS)*sizeof(PLfloat), &stateRadii[0], GL_STREAM_COPY);
     
     // fill graft counts
-    plSeq<PLuint> stateGraftCounts(-1, PL_ANNEALING_THREADS); // fill with -1's
+    plSeq<PLuint> stateGraftCounts(-1, PL_ANNEALING_INVOCATIONS); // fill with -1's
 
     glGenBuffers(1, &_stateGraftCountsTextureID);     
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateGraftCountsTextureID);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, PL_ANNEALING_THREADS*sizeof(PLuint), &stateGraftCounts[0], GL_STREAM_COPY);
-   
-    /*
-    glGenTextures(1, &_stateGraftCountsTextureID);                              
-    glBindTexture(GL_TEXTURE_1D, _stateGraftCountsTextureID);
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_R32UI, PL_ANNEALING_THREADS, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, &stateGraftCounts[0]);
-    */
-    reportError("stateGraftCounts");
-
-    //glBindTexture(GL_TEXTURE_1D, 0);
-    //glBindTexture(GL_TEXTURE_2D, 0);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, PL_ANNEALING_INVOCATIONS*sizeof(PLuint), &stateGraftCounts[0], GL_STREAM_COPY);
 }
 
 
@@ -194,7 +156,7 @@ void plAutomaticPlanner::_dispatchStage0()
 
     PLuint gridSize   = _defectSiteGrids[0].size();
     PLuint meshSize   = _defectSiteGrids[0].meshSize();    
-    PLuint workgroups = 1; //ceil( gridSize / (PLfloat) 1024); // ensure enough workgroups are used
+    PLuint workgroups = PL_ANNEALING_NUM_GROUPS; //ceil( gridSize / (PLfloat) 1024); // ensure enough workgroups are used
     
     // compile / link stage 0 shader
     plPlannerStage0Shader stage0("./shaders/plannerStage0.comp");
@@ -203,7 +165,7 @@ void plAutomaticPlanner::_dispatchStage0()
     stage0.bind(); 
     reportError("stage0 bind");
 
-    plSeq<PLfloat> overlappingTriangles(0, meshSize*PL_ANNEALING_THREADS); 
+    plSeq<PLfloat> overlappingTriangles(0, meshSize*PL_ANNEALING_INVOCATIONS); 
 
     // bind input/output buffers  
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _siteDataTextureID);           
@@ -223,10 +185,10 @@ void plAutomaticPlanner::_dispatchStage0()
     plSeq<plVector4>  stateGraftNormals  ( plVector4(-1,-1,-1,-1), PL_MAX_GRAFTS_PER_SOLUTION );
     plSeq<PLfloat>    stateGraftRadii    ( -1, PL_MAX_GRAFTS_PER_SOLUTION );
 
-    plSeq<PLuint> indexOrder(PL_ANNEALING_THREADS); for (PLuint i=0; i< PL_ANNEALING_THREADS; i++) indexOrder.add(i);
+    plSeq<PLuint> indexOrder(PL_ANNEALING_INVOCATIONS); for (PLuint i=0; i< PL_ANNEALING_INVOCATIONS; i++) indexOrder.add(i);
 
            
-    while (stateTemperature > 0.01f)
+    while ( stateTemperature > 0.01f)
     {
         // set uniforms
         stage0.setAnnealingUniforms( _defectSiteGrids[0].meshSize(), 
@@ -251,13 +213,13 @@ void plAutomaticPlanner::_dispatchStage0()
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, _stateEnergiesTextureID);    
         PLfloat *energies = (PLfloat*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
                                                          0, 
-                                                         PL_ANNEALING_THREADS*sizeof(PLfloat),
+                                                         PL_ANNEALING_INVOCATIONS*sizeof(PLfloat),
                                                          GL_MAP_READ_BIT );    
 
         // iterate through all state energies and find best one
         shuffle( indexOrder );
         PLint bestIndex = -1;        
-        for (PLuint i=0; i < PL_ANNEALING_THREADS; i++ )
+        for (PLuint i=0; i < PL_ANNEALING_INVOCATIONS; i++ )
         {    
             PLuint j = indexOrder[i];          
             PLfloat r = ((float) rand() / (RAND_MAX));              
@@ -330,7 +292,7 @@ void plAutomaticPlanner::_dispatchStage0()
         }
 
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, _overlappedTrianglesBufferID);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, (meshSize*PL_ANNEALING_THREADS)*sizeof(PLfloat), &overlappingTriangles[0],  GL_STREAM_COPY);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, (meshSize*PL_ANNEALING_INVOCATIONS)*sizeof(PLfloat), &overlappingTriangles[0],  GL_STREAM_COPY);
     
         stateTemperature *= 1.0f-PL_ANNEALING_COOLING_RATE;
     }

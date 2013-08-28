@@ -42,8 +42,7 @@ class plPlannerStage0Shader : public plShader
         PLuint _stateGraftCountID;
 
         PLuint _seedID;
-        
-            
+                   
 };
 
 
