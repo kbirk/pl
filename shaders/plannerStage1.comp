@@ -7,34 +7,28 @@
 layout (local_size_x = 16) in;
 
 // input data
-layout (std430,  binding = 0) buffer defectSiteDataBlock       { vec4 defectSiteData[]; };
-layout (std430,  binding = 0) buffer donorSiteDataBlock        { vec4 donorSiteData[]; };
+layout (std430,  binding = 0) buffer defectSiteDataBlock  { vec4 defectSiteData[]; };
+layout (std430,  binding = 0) buffer donorSiteDataBlock   { vec4 donorSiteData[];  };
 
 // temporary data
-layout (std430,  binding = 1) buffer tempBuffer0           { vec4 tempDefectTriangles[]; };
-layout (std430,  binding = 2) buffer tempBuffer1           { vec4 tempDonorTriangles[]; };
+layout (std430,  binding = 1) buffer tempBuffer0          { vec4 tempDefectTriangles[]; };
+layout (std430,  binding = 2) buffer tempBuffer1          { vec4 tempDonorTriangles[]; };
 
 // state output
-layout (std430,  binding = 5) buffer StateEnergiesBlock   { float stateEnergies      []; };
-layout (std430,  binding = 6) buffer StatePositionBlock   { vec4  stateGraftPositions[]; };
-layout (std430,  binding = 7) buffer StateNormalBlock     { vec4  stateGraftNormals  []; };
+layout (std430,  binding = 5) buffer rmsOutputBlock       { float rmsOutput[]; };
 
 // input uniforms
-uniform uint  uStateGraftCount;
-uniform vec4  uStateGraftPositions [PL_MAX_GRAFTS_PER_SOLUTION];
-uniform vec4  uStateGraftNormals   [PL_MAX_GRAFTS_PER_SOLUTION];
-uniform float uStateGraftRadii     [PL_MAX_GRAFTS_PER_SOLUTION];
+uniform uint  uGraftCount;
+uniform vec4  uGraftPositions [PL_MAX_GRAFTS_PER_SOLUTION];
+uniform vec4  uGraftNormals   [PL_MAX_GRAFTS_PER_SOLUTION];
+uniform float uGraftRadii     [PL_MAX_GRAFTS_PER_SOLUTION];
 
 uniform uint  uDefectSiteMeshSize;
-uniform uint  uDefectSiteGridSize;
-uniform uint  uDefectSitePerimSize;
 
 uniform uint  uDonorSiteCount;
-uniform uint  uDonorSiteMeshSize        [PL_MAX_DONOR_SITES];
-uniform uint  uDonorSiteGridSize        [PL_MAX_DONOR_SITES];
-uniform uint  uDonorSitePerimSize       [PL_MAX_DONOR_SITES];
-
-uniform uint uSeed;
+uniform uint  uDonorSiteMeshSize   [PL_MAX_DONOR_SITES];
+uniform uint  uDonorSiteGridSize   [PL_MAX_DONOR_SITES];
+uniform uint  uDonorSitePerimSize  [PL_MAX_DONOR_SITES];
 
 
 struct triangle
@@ -46,104 +40,87 @@ struct triangle
 };
 
 
-vec4 defectSitePositions( in uint i )
+struct edge
 {
-    return siteData[i];
-}
-
-
-vec4 defectSiteNormals( in uint i )
-{
-    return siteData[uSiteGridSize+i];
-}
+    vec3 p0;
+    vec3 p1;
+    vec3 n;
+};
 
 
 triangle defectSiteTriangles( in uint i )
 {
-    uint j = uSiteGridSize*2 + i*4;    
+    uint j = i*4;    
     triangle t;
-    t.p0 = vec3( siteData[j+0] );
-    t.p1 = vec3( siteData[j+1] );
-    t.p2 = vec3( siteData[j+2] );
-    t.n  = vec3( siteData[j+3] );
+    t.p0 = vec3( defectSiteData[j+0] );
+    t.p1 = vec3( defectSiteData[j+1] );
+    t.p2 = vec3( defectSiteData[j+2] );
+    t.n  = vec3( defectSiteData[j+3] );
     return t;
 }
 
 
-edge defectSiteEdge( in uint i )
-{
-    uint offset = uSiteGridSize*2 + uSiteMeshSize*4;
-    uint j = offset + i;
-    uint k = offset + ( (i+1) % uSitePerimSize );
-    
-    edge e;
-    e.p0 = vec3( siteData[ j ] );
-    e.p1 = vec3( siteData[ k ] );  
-    e.n  = vec3( siteData[ j+uSitePerimSize ] );    
-    return e;
-}
-
-void getSiteAndIndex( inout uint site, inout uint localIndex, in uint gid )
+void getDonorSiteAndIndex( inout uint site, inout uint localIndex, in uint gid )
 {
     localIndex = gid;
     for (uint i=0; i< site; i++)
     {
-        if ( localIndex < uSiteGridSize[ i ] )
+        if ( localIndex < uDonorSiteGridSize[ i ] )
         {
             site = i;
             break;
         }
-        localIndex -= uSiteGridSize[ i ];
+        localIndex -= uDonorSiteGridSize[ i ];
     }
 }
 
 
-uint getSiteOffset( in uint site )
+uint getDonorSiteOffset( in uint site )
 {
     uint index = 0;
     for (uint i=0; i< site; i++)
     {
-        index+= uSiteGridSize[i]*2 + uSiteMeshSize[i]*4 + uSitePerimSize[i]*2;
+        index+= uDonorSiteGridSize[i]*2 + uDonorSiteMeshSize[i]*4 + uDonorSitePerimSize[i]*2;
     }
     return;
 }
 
 
-vec4 iSitePositions( in uint site, in uint i )
+vec4 donorSitePositions( in uint site, in uint i )
 {   
-    return siteData[ getSiteOffset( site ) + i];
+    return donorSiteData[ getDonorSiteOffset( site ) + i];
 }
 
 
-vec4 iSiteNormals( in uint site, in uint i )
+vec4 donorSiteNormals( in uint site, in uint i )
 {
-    return siteData[ getSiteOffset( site ) + uSiteGridSize[ site ] + i];
+    return donorSiteData[ getDonorSiteOffset( site ) + uDefectSiteGridSize[ site ] + i];
 }
 
 
-triangle iSiteTriangles( in uint site, in uint i )
+triangle donorSiteTriangles( in uint site, in uint i )
 {
-    uint j = getSiteOffset( site ) + uSiteGridSize[ site ]*2 + i*4;  
+    uint j = getDonorSiteOffset( site ) + uDonorSiteGridSize[ site ]*2 + i*4;  
     triangle t;
-    t.p0 = vec3( siteData[j+0] );
-    t.p1 = vec3( siteData[j+1] );
-    t.p2 = vec3( siteData[j+2] );
-    t.n  = vec3( siteData[j+3] );
+    t.p0 = vec3( donorSiteData[j+0] );
+    t.p1 = vec3( donorSiteData[j+1] );
+    t.p2 = vec3( donorSiteData[j+2] );
+    t.n  = vec3( donorSiteData[j+3] );
     return t;
 }
 
 
-edge iSiteEdge( in uint site, in uint i )
+edge donorSiteEdge( in uint site, in uint i )
 {
-    uint offset = getSiteOffset( site ) + uSiteGridSize[ site ]*2 + uSiteMeshSize[ site ]*4; 
+    uint offset = getDonorSiteOffset( site ) + uDonorSiteGridSize[ site ]*2 + uDonorSiteMeshSize[ site ]*4; 
 
     uint j = offset + i;
-    uint k = offset + ( (i+1) % uSitePerimSize[ site ] );
+    uint k = offset + ( (i+1) % uDonorSitePerimSize[ site ] );
     
     edge e;
-    e.p0 = vec3( siteData[ j ] );
-    e.p1 = vec3( siteData[ k ] );  
-    e.n  = vec3( siteData[ j+uSitePerimSize[ site ] ] );    t Intersection(false)
+    e.p0 = vec3( donorSiteData[ j ] );
+    e.p1 = vec3( donorSiteData[ k ] );  
+    e.n  = vec3( donorSiteData[ j+uDonorSitePerimSize[ site ] ] );
     return e;
 }
 
@@ -166,6 +143,31 @@ float rand( inout uint seed )
 }
 
 
+vec3 closestPointOnSegment( in vec3 p, in edge e)
+{
+    vec3 ab = e.p1 - e.p0;
+    float t = dot( (p - e.p0), ab) / dot(ab, ab);
+    // If outside segment, clamp t (and therefore d) to the closest endpoint
+    t = clamp( t, 0.0, 1.0 );
+    // Compute projected position from the clamped t
+    return e.p0 + t * ab;
+}
+
+
+bool isWithinSite( in uint site, in vec3 pos, in float radius )
+{
+    bool inside = true;
+    for (int i=0; i<uDefectSitePerimSize[ site ]; i++)
+    {
+        edge e = donorSiteEdge( site, i );
+        if ( length( pos - closestPointOnSegment( pos, e) ) < radius )
+        {
+            inside = false;
+        }        
+    }    
+    return inside;
+}
+
 
 float area( in triangle t)
 {
@@ -178,45 +180,6 @@ float distToAxis( in vec3 axis, in vec3 v )
 {
     // v is already in the *local* coordinate system of the graft        
     return length(v - dot(v, axis)*axis);
-}
-
-
-vec3 pointOnCircumference( in vec3 u, in vec3 v, in float radius )
-{
-    float a = dot( (v-u), (v-u) );
-    float b = 2 * dot( u, (v-u) );
-    float c = dot( u, u ) - radius*radius;
-
-    float radical = b*b - 4*a*c;
-    
-    if (radical < 0) 
-    {
-        // error
-        return vec3(0,0,0);	
-    }
-
-    float root = sqrt(radical);
-
-    float t1 = (-b + root)/(2*a);
-    float t2 = (-b - root)/(2*a);
-
-    float t;
-    if (t1 >= 0 && t1 <= 1 && (t1 <= t2 || t2 <= 0))
-    {
-        t = t1;
-    }
-    else if (t2 >= 0 && t2 <= 1 && (t2 <= t1 || t1 >= 1))
-    {
-        t = t2;
-    }
-    else 
-    {
-        // error
-        return vec3(0,0,0);	
-    }
-
-    return u + t*(v-u);
-    
 }
 
 
@@ -237,62 +200,56 @@ bool intersectTriangle( in vec3 position, in vec3 normal, in triangle t, in floa
 }
 
 
-void calculateCap( in vec3 position, in vec3 normal, in float radius )
+void calculateDonorCap( in vec3 position, in vec3 normal, in float radius )
 { 
     // get global invocation id
     int gid = int(gl_GlobalInvocationID.x);
 
+    uint site, localIndex;
+    getSiteAndIndex( site, localIndex, gid );
     
-    for(uint i=0; i<uSiteMeshSize; i++)
+    uint triangleCount = 0;
+    
+    for(uint i=0; i<uDonorSiteMeshSize[ site ]; i++)
     {
         // create triangle struct
-        triangle t;
-        t.p0 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,0) ) );
-        t.p1 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,1) ) );
-        t.p2 = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,2) ) );
-        t.n  = vec3( imageLoad( iSiteMeshTriangles, ivec2(i,3) ) ); 
-        
+        triangle t = donorSiteTriangles( site, i );
+
         if ( intersectTriangle( position, normal, t, radius ) )
         {
-            
+            tempDonorSiteTriangles[ gid * PL_MAX_CAP_TRIANGLES + triangleCount*4 ] = t.p0;
+            tempDonorSiteTriangles[ gid * PL_MAX_CAP_TRIANGLES + triangleCount*4 ] = t.p1;
+            tempDonorSiteTriangles[ gid * PL_MAX_CAP_TRIANGLES + triangleCount*4 ] = t.p2;
+            tempDonorSiteTriangles[ gid * PL_MAX_CAP_TRIANGLES + triangleCount*4 ] = t.n;
         }
-
-        if (num_tri + num_results > PL_MAX_GRAFT_CAP_TRIANGLES) 
-            break;  // exceeded max number of triangles (this shouldn't happen unless grafts have ridiculously large radii)
-
-        for (uint j=0; j<num_results; j++)
-        {
-            // accumulate area
-            area_sum += area( tris[j] );
-            // store triangle           
-            imageStore( oGraftCaps, ivec2( num_tri*4 + 0, gid ), vec4( tris[j].p0, 1) );
-            imageStore( oGraftCaps, ivec2( num_tri*4 + 1, gid ), vec4( tris[j].p1, 1) );
-            imageStore( oGraftCaps, ivec2( num_tri*4 + 2, gid ), vec4( tris[j].p2, 1) );
-            imageStore( oGraftCaps, ivec2( num_tri*4 + 3, gid ), vec4( tris[j].n,  1) );            
-            num_tri++;                   
-        }  
-        
-        // store overlapped triangle indices
-        if (num_results > 0 && num_full_tri < PL_MAX_GRAFT_CAP_TRIANGLES) // store index of full triangle
-        {   
-            float partial_area = 0;
-            
-            for (uint j=0; j<num_results; j++)
-            {
-                partial_area += area( tris[j] );
-            }
-            
-            if ( partial_area > (area( t )*0.5) )
-                imageStore( oGraftTriangles, ivec2( ++num_full_tri, gid ), uvec4( i, 0, 0, 0) );   
-        }
-                       
     }
-    // store number of full triangles overlapped
-    imageStore( oGraftTriangles, ivec2( 0, gid ), uvec4( num_full_tri, 0, 0, 0) );
-
-    // write total cap area
-    imageStore( oGraftAreas, gid, vec4( area_sum, 0, 0, 0) ); 
+    return triangleCount;
 }
+
+
+void calculateDefectCap( in vec3 position, in vec3 normal, in float radius )
+{ 
+    // get global invocation id
+    int gid = int(gl_GlobalInvocationID.x);
+
+    uint triangleCount = 0;
+    
+    for(uint i=0; i<uDefectSiteMeshSize; i++)
+    {
+        // create triangle struct
+        triangle t = defectSiteTriangles( site, i );
+
+        if ( intersectTriangle( position, normal, t, radius ) )
+        {
+            tempDefectSiteTriangles[ gid * PL_MAX_CAP_TRIANGLES + triangleCount*4 ] = t.p0;
+            tempDefectSiteTriangles[ gid * PL_MAX_CAP_TRIANGLES + triangleCount*4 ] = t.p1;
+            tempDefectSiteTriangles[ gid * PL_MAX_CAP_TRIANGLES + triangleCount*4 ] = t.p2;
+            tempDefectSiteTriangles[ gid * PL_MAX_CAP_TRIANGLES + triangleCount*4 ] = t.n;
+        }
+    }
+    return triangleCount;
+}
+
 
 void shuffle( inout array )
 {   
@@ -439,21 +396,31 @@ void main(void)
     // get global invocation id
     int gid = int( gl_GlobalInvocationID.x );    
     
-    // get invocation unique seed value for RNG
-    uint seed = uint( uSeed*(gid+1) ); 
-    
     uint site, localIndex;
     getSiteAndIndex( site, localIndex, gid );
     
-    for (uint i=0; i<uStateGraftCount; i++)
+    vec3 gridPoint = donorSitePosition( site, localIndex );
+    
+    // for each graft
+    for (uint i=0; i<uGraftCount; i++)
     {
-        // calculate cap triangles and store in temp buffer
-        uint defectCount = calculateCap( uStateGraftPositions[i], uStateGraftNormal, uStateGraftRadii[i] );
-        // calculate cap triangles and store in temp buffer
-        uint donorCount = calculateCap( iSitePosition( site, localIndex ), uStateGraftNormal, uStateGraftRadii[i] );
-        
-        rmsOutput[gid*PL_MAX_GRAFTS_PER_SOLUTION+1] = calcRMS( defectCount, donorCount );
-        
+        float rms;
+        if ( isWithinSite( site, gridPoint, uGraftRadii[i] ) )
+        {
+            // calculate defect cap triangles and store in temp buffer
+            uint defectCount = calculateDefectCap( uGraftPositions[i], uGraftNormals[i], uGraftRadii[i] );
+            // calculate cap triangles and store in temp buffer
+            uint donorCount = calculateDonorCap( gridPoint, uGraftNormals[i], uGraftRadii[i] );
+            // calculate rms error
+            rms = calcRMS( defectCount, donorCount );  
+        }
+        else
+        {
+            // doesnt fit in boundary
+            rms = -1;
+        }
+        rmsOutput[ gid*PL_MAX_GRAFTS_PER_SOLUTION + i] = rms;
+             
     }    
     
 }

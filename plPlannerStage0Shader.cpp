@@ -6,12 +6,6 @@ plPlannerStage0Shader::plPlannerStage0Shader(const char *computeFile )
     getUniformLocations();         
 }
 
-
-plPlannerStage0Shader::~plPlannerStage0Shader()
-{
-}
-
-
 void plPlannerStage0Shader::getUniformLocations()
 {
     _siteMeshSizeID       = glGetUniformLocation(_shaderProgramID, "uSiteMeshSize");   
@@ -29,22 +23,26 @@ void plPlannerStage0Shader::getUniformLocations()
     _seedID               = glGetUniformLocation(_shaderProgramID, "uSeed");   
 }
 
-void plPlannerStage0Shader::setAnnealingUniforms( PLuint  meshSize, 
+
+void plPlannerStage0Shader::setSiteUniforms     ( PLuint  meshSize, 
                                                   PLfloat meshArea, 
                                                   PLuint  gridSize,
-                                                  PLuint  perimSize,
-                                                  PLfloat temp, 
-                                                  PLfloat energy, 
-                                                  PLfloat count,
-                                                  const plSeq<plVector4> &positions,
-                                                  const plSeq<plVector4> &normals,
-                                                  const plSeq<PLfloat>   &radii )
+                                                  PLuint  perimSize ) const
 {
     glUniform1ui  ( _siteMeshSizeID,  meshSize );    
     glUniform1f   ( _siteMeshAreaID,  meshArea ); 
     glUniform1ui  ( _siteGridSizeID,  gridSize ); 
-    glUniform1ui  ( _sitePerimSizeID, perimSize ); 
-    
+    glUniform1ui  ( _sitePerimSizeID, perimSize);
+
+}                                                  
+
+void plPlannerStage0Shader::setAnnealingUniforms( PLfloat temp, 
+                                                  PLfloat energy, 
+                                                  PLfloat count,
+                                                  const plSeq<plVector4> &positions,
+                                                  const plSeq<plVector4> &normals,
+                                                  const plSeq<PLfloat>   &radii ) const
+{
     glUniform1f   ( _stateTemperatureID, temp   );     
     glUniform1f   ( _stateEnergyID,      energy ); 
     glUniform1ui  ( _stateGraftCountID,  count  ); 

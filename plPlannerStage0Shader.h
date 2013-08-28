@@ -10,22 +10,24 @@
 
 class plPlannerStage0Shader : public plShader
 {
+
     public:                    
           
         plPlannerStage0Shader ( const char *computeFile );
-        ~plPlannerStage0Shader();
 
         void getUniformLocations();
-        void setAnnealingUniforms( PLuint  meshSize, 
+        
+        void setSiteUniforms     ( PLuint  meshSize, 
                                    PLfloat meshArea, 
                                    PLuint  gridSize,
-                                   PLuint  perimSize,
-                                   PLfloat temp, 
+                                   PLuint  perimSize ) const;
+                                   
+        void setAnnealingUniforms( PLfloat temp, 
                                    PLfloat energy, 
                                    PLfloat count,
                                    const plSeq<plVector4> &positions,
                                    const plSeq<plVector4> &normals,
-                                   const plSeq<PLfloat>   &radii );
+                                   const plSeq<PLfloat>   &radii ) const;
                
     private:
     

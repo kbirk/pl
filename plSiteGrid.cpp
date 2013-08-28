@@ -17,7 +17,7 @@ plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &bo
     
 }
 
-PLuint plSiteGrid::getSSBO() const
+PLuint plSiteGrid::getFullSSBO() const
 {
     PLuint meshSize  = _triangles.size();     
     PLuint gridSize  = _points.size();
@@ -33,6 +33,24 @@ PLuint plSiteGrid::getSSBO() const
                                             data.add( plVector4( _triangles[i].normal(), 1.0 ) ); }                                                                                      
     for ( PLuint i=0; i < perimSize; i++) { data.add( _perimeter[i] ); }    
 
+    PLuint tempBuffer;
+    glGenBuffers(1, &tempBuffer);   
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(plVector4), &data[0], GL_STATIC_READ);
+    return tempBuffer;
+}
+
+PLuint plSiteGrid::getMeshSSBO() const
+{
+    PLuint meshSize  = _triangles.size();     
+    PLuint dataSize  = meshSize*4;
+      
+    plSeq<plVector4> data( dataSize );     
+    for ( PLuint i=0; i < meshSize; i++ ) { data.add( plVector4( _triangles[i].point0(), 1.0 ) ); 
+                                            data.add( plVector4( _triangles[i].point1(), 1.0 ) );
+                                            data.add( plVector4( _triangles[i].point2(), 1.0 ) );
+                                            data.add( plVector4( _triangles[i].normal(), 1.0 ) ); }                                                                                      
+  
     PLuint tempBuffer;
     glGenBuffers(1, &tempBuffer);   
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);

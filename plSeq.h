@@ -84,7 +84,8 @@ plSeq<T>::plSeq( const plSeq<T> &source )
 	for (PLuint i=0; i<_numElements; i++)
 	{
 		_data[i] = source._data[i];
-	}	
+	}
+		
 }
 
 
@@ -219,6 +220,7 @@ void plSeq<T>::reserve(PLuint size)
 	{
 		new_data[i] = _data[i];
     }
+    
 	_storageSize = size;
 	delete [] _data;
 	_data = new_data;
@@ -262,7 +264,7 @@ plSeq<T> &plSeq<T>::operator = (const plSeq<T> &source)
 	_numElements = source._numElements;
 	delete [] _data;
 	_data = new T[ _storageSize ];
-	
+		
 	for (PLuint i=0; i<_numElements; i++)
 	{
 		_data[i] = source._data[i];

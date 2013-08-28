@@ -40,11 +40,12 @@ class plSiteGrid
         PLfloat    area()              const { return _area; } 
         plVector3  normal()            const { return _normal; };
         
-        PLuint getSSBO() const;
+        PLuint getFullSSBO() const;
+        PLuint getMeshSSBO() const;
         
-        const plTriangle&        triangles(PLuint i)       const { return _triangles[i];   }     
+        //const plTriangle&        triangles(PLuint i)       const { return _triangles[i];   }     
         const plVector4&         points   ( PLuint index ) const { return _points[index];  }
-        const plVector4&         normals  ( PLuint index ) const { return _normals[index]; }
+        //const plVector4&         normals  ( PLuint index ) const { return _normals[index]; }
            
     private:
         
