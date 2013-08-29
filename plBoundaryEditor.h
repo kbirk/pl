@@ -23,15 +23,15 @@ class plBoundaryEditor
 
         PLbool  isBoundarySelected() const { return (_selectedBoundary != NULL); }
 
-        PLbool  processMouseClick( plPlan &plan, PLint x, PLint y );
-        PLbool  processMouseDrag ( plPlan &plan, PLint x, PLint y );
+        PLbool  processMouseClick   ( plPlan &plan, PLint x, PLint y );
+        PLbool  processMouseDrag    ( plPlan &plan, PLint x, PLint y );
         PLbool  processJoystickDrag ( plPlan &plan, PLint x, PLint y);
 
-        void    addPoint           ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
-        void    moveSelectedPoint  ( plPlan &plan, PLuint x, PLuint y );
-        void    removeSelectedPoint();
-        void    clearSelectedBoundary();
-        void    removeSelectedSite( plPlan &plan );
+        void    addPoint                ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
+        void    moveSelectedPoint       ( plPlan &plan, PLuint x, PLuint y );
+        void    removeSelectedPoint     ();
+        void    clearSelectedBoundary   ( plPlan &plan );
+        void    removeSelectedSite      ( plPlan &plan );
         void    toggleSelectedVisibility();
 
         void    drawMenu( const plPlan &plan ) const;

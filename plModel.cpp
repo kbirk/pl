@@ -88,10 +88,10 @@ PLbool _compareOrderPairs( const plOrderPair &a, const plOrderPair &b )
 
 void plModel::draw( const plVector3 &colour ) const
 {
-    if (!isVisible)
+    if ( !_isVisible )
         return;
 
-    if (!_isTransparent) 
+    if ( !_isTransparent ) 
     {
         glDisable( GL_STENCIL_TEST );            // if opaque, allow overwriting pixels during picking
         plColourStack::load( colour.x, colour.y, colour.z, 1.0); 
@@ -131,17 +131,17 @@ void plModel::toggleVisibility()
 {
     if (_isTransparent) 
     {
-        isVisible = false;
+        _isVisible = false;
         _isTransparent = false;
     } 
-    else if (!isVisible) 
+    else if (!_isVisible) 
     {
-        isVisible = true;
+        _isVisible = true;
         _isTransparent = false;
     } 
     else 
     {
-        isVisible = true;
+        _isVisible = true;
         _isTransparent = true;
     }
 }
@@ -150,12 +150,12 @@ void plModel::toggleTransparency()
 {
     if (_isTransparent)
     {
-        isVisible = true;
+        _isVisible = true;
         _isTransparent = false;
     }
     else
     {
-        isVisible = true;
+        _isVisible = true;
         _isTransparent = true;
     }
 }

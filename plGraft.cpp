@@ -101,7 +101,7 @@ void plGraft::_setCartilageColour() const
 
 void plGraft::draw() const
 {
-    if (!isVisible)
+    if ( !_isVisible )
         return;
 
     // Draw at harvest location
@@ -150,8 +150,8 @@ void plGraft::_drawGraft() const
 void plGraft::_setCaps()
 {
     // generate cap polygons
-    _findCap( _cartilageCap, harvest.model()->cartilage );
-    _findCap( _boneCap,      harvest.model()->bone      );
+    _findCap( _cartilageCap, harvest.model().cartilage );
+    _findCap( _boneCap,      harvest.model().bone      );
     
     // generate meshes   
     _updateCartilageMesh();

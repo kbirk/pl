@@ -9,7 +9,7 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       _plan( argc, argv ), 
       Window( x, y, width, height, title )
 {  
-    plRenderer::init(); 
+    plInit();
 }
 
 
@@ -20,7 +20,7 @@ void PlannerWindow::display()
     plRenderer::queue( _plan );
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );   
-    
+
     plRenderer::draw();
 
     glutSwapBuffers();
@@ -108,7 +108,7 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
 	        {
                 // delete boundary 
-	            _boundaryEditor.clearSelectedBoundary();
+	            _boundaryEditor.clearSelectedBoundary( _plan );
             }
             else
             {

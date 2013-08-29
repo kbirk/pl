@@ -1,16 +1,17 @@
 #include "plPickingTexture.h"
 
-// plPicking static variables
-plPickingTexture*  plPicking::texture = NULL;
-plPickingInfo      plPicking::value;
-
-// init function
-void plPicking::init(PLuint width, PLuint height)
+namespace plPicking
 {
-    delete texture;
-    texture = new plPickingTexture(1,1);
-}
+    plPickingTexture *texture;
+    plPickingInfo     value;
 
+    void init()
+    {
+        delete texture;
+        texture = new plPickingTexture(1,1);
+    }
+
+}
 ///////////////////////////////////////////////////////////////////////
 
 plPickingTexture::plPickingTexture(GLuint width, GLuint height)

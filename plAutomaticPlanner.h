@@ -24,41 +24,68 @@
 #define PL_MAX_DONOR_SITES                      5
 #define PL_MAX_CAP_TRIANGLES                    500
 
-class plAutomaticPlanner
+
+class Stage0State
 {
     public:
-
-        static void calculate( plPlan &plan );
-           
-        static plSeq<plVector3> DEBUG_GRAFT_LOCATIONS; 
-               
-    //private:
     
-        plAutomaticPlanner();
-                             
-        // defect site textures        
-        static PLuint _siteDataTextureID;
-
-        // mesh colouring temporary texture       
-        static PLuint _overlappedTrianglesBufferID;
-                   
-        // annealing states and energies
-        static PLuint _stateEnergiesTextureID;
-        static PLuint _stateGraftPositionsTextureID;
-        static PLuint _stateGraftNormalsTextureID;
-        static PLuint _stateGraftRadiiTextureID;
-        static PLuint _stateGraftCountsTextureID;
-                               
-        static plSeq<plSiteGrid>  _donorSiteGrids;
-        static plSeq<plSiteGrid>  _defectSiteGrids;
+        PLfloat           temperature;
+        PLfloat           energy;    
+        PLuint            graftCount;  
+        plSeq<plVector4>  graftPositions;
+        plSeq<plVector4>  graftNormals;
+        plSeq<PLfloat>    graftRadii;
+    
+        Stage0State( float initialEnergy )
+            : temperature   ( PL_ANNEALING_INITIAL_TEMPERATURE ),    
+              energy        ( initialEnergy ),    
+              graftCount    ( 0 ),    
+              graftPositions( plVector4(-1,-1,-1,-1), PL_MAX_GRAFTS_PER_SOLUTION ),
+              graftNormals  ( plVector4(-1,-1,-1,-1), PL_MAX_GRAFTS_PER_SOLUTION ),
+              graftRadii    ( -1, PL_MAX_GRAFTS_PER_SOLUTION )
+        {        
+        }
         
-        static void _generateSiteGrids( plPlan &plan );                
-        static void _createStage0Buffers();   
+};
+
+
+namespace plAutomaticPlanner
+{
+    void calculate( plPlan &plan );
+      
+    extern plSeq<plSiteGrid>  _donorSiteGrids;
+    extern plSeq<plSiteGrid>  _defectSiteGrids;  
+           
+    extern plSeq<plVector3> DEBUG_GRAFT_LOCATIONS; 
+
+    /*
+    plAutomaticPlanner();
+      
+    //                     
+    // defect site textures        
+    PLuint _siteDataTextureID;
+
+    // mesh colouring temporary texture       
+    PLuint _overlappedTrianglesBufferID;
+               
+    // annealing states and energies
+    PLuint _stateEnergiesTextureID;
+    PLuint _stateGraftPositionsTextureID;
+    PLuint _stateGraftNormalsTextureID;
+    PLuint _stateGraftRadiiTextureID;
+    PLuint _stateGraftCountsTextureID;
+    //
+                                 
+    plSeq<plSiteGrid>  _donorSiteGrids;
+    plSeq<plSiteGrid>  _defectSiteGrids;
     
-        static void _dispatch();      
-        static void _dispatchStage0();  // find defect sites
-        static void _dispatchStage1();  // find donor sites
-                        
+    PLbool _generateSiteGrids( plPlan &plan );                
+    void _createStage0Buffers();   
+
+    void _dispatch();      
+    void _dispatchStage0();  // find defect sites
+    void _dispatchStage1();  // find donor sites
+    */                    
 };
 
 #endif

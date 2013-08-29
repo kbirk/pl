@@ -263,35 +263,6 @@ void shuffle( inout array )
     }    
 }
 
-/*
-
-input:
-
-    state graft 
-
-output:
-
-
-- for each grid point, 
-   
-    - calculate rough cap for grid point (dont need exact, this is simply to reduce triangles for ray intersections )
-    - calculate rouch cap for each graft (dont need exact, this is simply to reduce triangles for ray intersections )
-    - ray intersect each cap along at set of distances and angles around centre using normal
-        - ex, break radius into n distances, for each distance, look at certain angle increments
-    - store RMS for each, if rad extends permiter, discard value
-    
-output:
-
-    - set of valid points, normals, radii and rms to each graft
-    
-    - float[num_grafts][num_points]
-    - RMS of each viable grid point to each cap 
-
-
-
-
-
-*/
 
 bool rayIntersect( inout vec3 point, inout float t, in vec3 rayStart, in vec3 rayDir, in triangle tri )
 {

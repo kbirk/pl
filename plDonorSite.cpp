@@ -5,7 +5,7 @@ plDonorSite::plDonorSite()
 }
 
 plDonorSite::plDonorSite( PLuint modelID, const plBoneAndCartilage &model )
-    : plModelSpecific( modelID, model ), boundary( model )
+    : plModelSpecific( modelID, model )
 {
 }
 
@@ -24,13 +24,8 @@ void plDonorSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCar
         _model = models[_modelID];
     }                   
     else if (subfield.compareCaseInsensitive( "boundary") )   
-    {       
-        if (_model == NULL)
-        {
-            std::cerr << "plDonorSite importCSV() error: boundary data read before model ID";
-            exit(1);
-        }         
-        boundary.importCSV( row, *_model );  
+    {           
+        boundary.importCSV( row );  
     } 
     else
     {
@@ -40,7 +35,7 @@ void plDonorSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCar
 
 void plDonorSite::draw() const
 {      
-    if (!isVisible)
+    if ( !_isVisible )
         return;
       
     // draw spline boundary 

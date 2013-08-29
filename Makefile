@@ -9,7 +9,7 @@ CXX = g++
 
 OBJECTS = $(patsubst %.cpp,objects/%.o,$(SOURCES))
 
-SOURCES = main.cpp PlannerWindow.cpp plAutomaticPlanner.cpp plBoneAndCartilage.cpp plBoundary.cpp \
+SOURCES = main.cpp PlannerWindow.cpp pl.cpp plAutomaticPlanner.cpp plBoneAndCartilage.cpp plBoundary.cpp \
           plBoundaryEditor.cpp plCamera.cpp plColourMap.cpp plColourMesh.cpp \
           plCSV.cpp plDefectSite.cpp plDonorSite.cpp plDraw.cpp plDRBTransform.cpp plEditable.cpp \
           plGraft.cpp plGraftEditor.cpp plIGuide.cpp plIGuideSite.cpp plLineMesh.cpp plMath.cpp plMatrix44.cpp     \
@@ -73,7 +73,6 @@ objects/plCamera.o: plMesh.h plCamera.h
 objects/plColourMap.o: pl.h plCommon.h plVector3.h
 objects/plColourMesh.o: pl.h plCommon.h plVector3.h plMesh.h plTriangle.h
 objects/plColourMesh.o: plString.h plSeq.h plShader.h
-objects/plComputeShader.o: pl.h plCommon.h plShader.h
 objects/plDefectSite.o: pl.h plCommon.h plVector3.h plSpline.h plVector4.h
 objects/plDefectSite.o: plBoundary.h plSeq.h plRenderable.h plEditable.h
 objects/plDefectSite.o: plPickingShader.h plShader.h plMatrix44.h
@@ -175,7 +174,7 @@ objects/pl.o: plProjection.h plMatrixStack.h plPlan.h plCSV.h plGraft.h
 objects/pl.o: plEditable.h plTransform.h plPolygon.h plBoundary.h
 objects/pl.o: plDefectSite.h plSpline.h plColourMesh.h plColourMap.h
 objects/pl.o: plDonorSite.h plIGuide.h plDraw.h plMinimalShader.h
-objects/pl.o: plGraftEditor.h plBoundaryEditor.h plComputeShader.h
+objects/pl.o: plGraftEditor.h plBoundaryEditor.h 
 objects/plBoundary.o: plBoundary.h pl.h plCommon.h plSeq.h plVector3.h
 objects/plBoundary.o: plRenderable.h plEditable.h plPickingShader.h
 objects/plBoundary.o: plShader.h plMatrix44.h plVector4.h plTriangle.h

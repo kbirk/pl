@@ -19,56 +19,18 @@
 #include "plAutomaticPlanner.h"
 
 
-
-
-class plRenderer
-{
-    public:
-               
-        static void init(); 
-          
-        static void draw();  
-         
-        static void queue ( const plPlan           &plan   );
-        static void queue ( const plGraftEditor    &editor );
-        static void queue ( const plBoundaryEditor &editor );
-        static void queue ( const plTrackedObject  &object ); 
-        static void queue ( const plTextureMesh    &arthroTexture );
-         
-        static void reportError ( const plString &str );
-
-    private: 
-
-        plRenderer() {};
-
-        static const plPlan             *_planToDraw;
-        static const plGraftEditor      *_graftEditorToDraw;
-        static const plBoundaryEditor   *_boundaryEditorToDraw;         
-        static const plTextureMesh      *_arthroTextureToDraw;
-              
-        static plSeq<const plTrackedObject*> _trackedObjectsToDraw;
-        
-        static plMinimalShader  *_minimalShader;
-        static plPhongShader    *_phongShader;
-        static plPickingShader  *_pickingShader; 
-        static plTextureShader  *_textureShader;
-        
-        static void _setOpenGLState();
-        
-        static void _beginPicking();
-        static void _endPicking();
-        
-        static void _beginDrawing();
-        static void _endDrawing();
-        
-        static void _drawScene();
-        static void _drawScenePicking();
-
-        static void _clearRenderQueue();
-        
-        static void _drawArthroTexture();
-        
-};
+namespace plRenderer
+{  
+    void init(); 
+      
+    void draw();  
+     
+    void queue ( const plPlan           &plan   );
+    void queue ( const plGraftEditor    &editor );
+    void queue ( const plBoundaryEditor &editor );
+    void queue ( const plTrackedObject  &object ); 
+    void queue ( const plTextureMesh    &arthroTexture );    
+}
 
 
 

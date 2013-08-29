@@ -1,7 +1,8 @@
-#ifndef __PL_PICKING_FBO_H
-#define	__PL_PICKING_FBO_H
+#ifndef __PL_PICKING_H__
+#define	__PL_PICKING_H__
 
 #include "plCommon.h"
+
 
 class plPickingInfo 
 {
@@ -12,10 +13,8 @@ class plPickingInfo
 	    PLint index;
 	
 	    plPickingInfo()
+	        : type(0), id(0), index(0)
 	    {
-		    type   = 0;
-		    id     = 0;
-		    index  = 0;
 	    }
 };
 
@@ -48,18 +47,18 @@ class plPickingTexture
 };
 
 
-class plPicking
+namespace plPicking
 {
-    public:
+    //public:
 
-        static plPickingInfo     value;
-        static plPickingTexture *texture;
+        extern plPickingInfo     value;
+        extern plPickingTexture *texture;
         
-        static void init( PLuint width, PLuint height );
+        void init();
         
-    private:
+    //private:
     
-        plPicking() {};   
+        //plPicking() {};   
 };
 
 #endif

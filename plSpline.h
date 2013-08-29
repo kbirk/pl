@@ -20,21 +20,25 @@ class plSpline : public plBoundary
     public:
 
         plSpline();
-        plSpline( const plBoneAndCartilage &model );
+        plSpline( const plModel &cartilage );
 
         const plSeq<plTriangle> &triangles() const { return _triangles; }
 
         void   draw() const;           
 
-        void   importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model );
+        void   importCSV( const plSeq<plString> &row, const plModel &cartilage );
 
-        PLuint addPointAndNormal (const plVector3 &point, const plVector3 &normal);
-        void   movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal);
+        PLuint addPointAndNormal   ( const plVector3 &point, const plVector3 &normal );
+        void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal );
         void   removePointAndNormal( PLuint index );
+
+        void   clear();
 
         plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;        
 
     private:
+    
+        const plModel    *_cartilage;
     
         PLtime            _lastUpdate;
         plColourMesh      _surfaceMesh;

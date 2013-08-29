@@ -13,9 +13,6 @@ class plBoneAndCartilage
 
         plBoneAndCartilage( plString boneFile, plString cartilageFile );
 
-        //void importCSV( const plSeq<plString> &row );
-        //void exportCSV( PLuint index );
-
         void draw() const;
 
         void       getMinMax  (plVector3 &min, plVector3 &max)   const;        

@@ -13,7 +13,7 @@ class plModelSpecific
         plModelSpecific( PLuint _modelID, const plBoneAndCartilage &_model );
 
         PLint                     modelID() const { return _modelID; }
-        const plBoneAndCartilage* model()   const { return _model;   }
+        const plBoneAndCartilage& model()   const { return *_model;   }
 
         virtual void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models ) = 0;
 

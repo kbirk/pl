@@ -5,22 +5,14 @@
 #include "plMatrix44.h"
 #include "plRenderingPipeline.h"
 
-class plWindow
+namespace plWindow
 {
-    public:                    
-
-
-        static PLuint    width         ();
-        static PLuint    height        ();
-        static void      reshape       ( PLuint width, PLuint height );
-        static plVector3 mouseToWorld  ( PLint x, PLint y, PLint z );
-        static plVector3 worldToScreen ( PLfloat x, PLfloat y, PLfloat z );
-        static void      mouseToRay    ( plVector3 &rayOrigin, plVector3 &rayDirection, PLint x, PLint y ); 
-
-	private:
-				
-        plWindow() {};
-				
-};
+    PLuint    width         ();
+    PLuint    height        ();
+    void      reshape       ( PLuint width, PLuint height );
+    plVector3 mouseToWorld  ( PLint x, PLint y, PLint z );
+    plVector3 worldToScreen ( PLfloat x, PLfloat y, PLfloat z );
+    void      mouseToRay    ( plVector3 &rayOrigin, plVector3 &rayDirection, PLint x, PLint y ); 				
+}
 
 #endif

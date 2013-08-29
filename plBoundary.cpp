@@ -6,25 +6,19 @@ plBoundary::plBoundary()
 }
 
 
-plBoundary::plBoundary( const plBoneAndCartilage &model )
-    : _showWalls(true), _model(&model)
-{
-}
-
-
 void plBoundary::toggleVisibility()
 {
-    if (isVisible && _showWalls)
+    if (_isVisible && _showWalls)
     {
         _showWalls = false;
     } 
-    else if (isVisible && !_showWalls)
+    else if (_isVisible && !_showWalls)
     {
-        isVisible = false;
+        _isVisible = false;
     }
     else
     {
-        isVisible = true;
+        _isVisible = true;
         _showWalls = true;
     }
 }
@@ -47,10 +41,9 @@ PLuint plBoundary::size() const
 }
 
 
-void plBoundary::importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model )
+void plBoundary::importCSV( const plSeq<plString> &row )
 {
-    // set internal model pointer
-    _model = &model;
+
     // assumes points are counter-clockwise
     for ( PLuint j = 3; j < row.size(); j+=2)
     {               
@@ -391,7 +384,7 @@ void plBoundary::_updateMesh()
 
 void plBoundary::draw() const
 {        
-    if (!isVisible)
+    if ( !_isVisible )
         return;
 
     _setColour();

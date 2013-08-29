@@ -5,28 +5,23 @@
 #include "plShapeMesh.h"
 #include "plTrackedObject.h"
 
-class plDraw
+namespace plDraw
 {
-    public:
 
-        static void arrow    ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
-        static void arrow    ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
-        static void knob     ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
-        static void knob     ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
-        static void sphere   ( float radius);
-        static void sphere   ( const plVector3 &origin, float radius);
-        static void cylinder ( float radius, float height); 
-        static void cylinder ( const plVector3 &origin, const plVector3 &direction, float radius, float height);
-        static void disk     ( const plVector3 &origin, float scale );
-        static void disk     ( const plVector3 &origin, const plVector3 &direction, float scale );
-        static void disk     ( float scale );
-        static void scope    ( const plTrackedObject &scope );
-        static void probe    ( const plTrackedObject &probe );
+    void arrow    ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
+    void arrow    ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
+    void knob     ( const plVector3 &origin, const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
+    void knob     ( const plVector3 &direction, PLfloat length = PL_HANDLE_LENGTH, PLfloat scale = 1.0f);
+    void sphere   ( float radius);
+    void sphere   ( const plVector3 &origin, float radius);
+    void cylinder ( float radius, float height); 
+    void cylinder ( const plVector3 &origin, const plVector3 &direction, float radius, float height);
+    void disk     ( const plVector3 &origin, float scale );
+    void disk     ( const plVector3 &origin, const plVector3 &direction, float scale );
+    void disk     ( float scale );
+    //void scope    ( const plTrackedObject &scope );
+    //void probe    ( const plTrackedObject &probe );
 
-    private:
-
-        plDraw() {};
-
-};
+}
 
 #endif

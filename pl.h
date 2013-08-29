@@ -55,5 +55,7 @@
 #include "plVector4.h"
 #include "plWindow.h"
 
+void plInit();
+
 #endif
 

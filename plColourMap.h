@@ -4,18 +4,12 @@
 #include "plCommon.h"
 #include "plVector3.h"
 
-class plColourMap
+namespace plColourMap
 {
-    public:
-        
-        static plVector3 map(PLfloat k);
 
-    private:
+    // clamps 0 <= k <= 1 and produce colour map value: 0 = blue, 1 = red
+    plVector3 map(PLfloat k);
 
-        plColourMap() {};
-
-        static PLuint _colourMap[PL_COLOURMAP_SIZE][4]; 
-
-};
+}
 
 #endif

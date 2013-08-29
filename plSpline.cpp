@@ -6,14 +6,22 @@ plSpline::plSpline()
 {
 }
 
-plSpline::plSpline( const plBoneAndCartilage &model )
-    : plBoundary(model)
+plSpline::plSpline( const plModel &cartilage )
+    : _cartilage( &cartilage )
 {
 }
 
-void plSpline::importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model )
+void plSpline::clear()
 {
-    plBoundary::importCSV( row, model );
+    plBoundary::clear();
+    _triangles.clear();
+    _octree.clear();
+}
+
+void plSpline::importCSV( const plSeq<plString> &row, const plModel &cartilage  )
+{
+    _cartilage = &cartilage;
+    plBoundary::importCSV( row );
     // construct spline 
     if (size() == 4)
     {
@@ -25,7 +33,7 @@ PLuint plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &nor
 {
     if (size() < 4)
     {
-        PLint ret = plBoundary::addPointAndNormal(point, normal);
+        PLint ret = plBoundary::addPointAndNormal( point, normal );
         
         if (size() == 4)
         {
@@ -54,7 +62,7 @@ void plSpline::removePointAndNormal( PLuint index )
         
 void plSpline::draw() const
 {      
-    if (!isVisible)
+    if ( !_isVisible )
         return;
    
     plPicking::value.type = PL_PICKING_TYPE_DEFECT_CORNERS;
@@ -67,7 +75,7 @@ void plSpline::draw() const
         _surfaceMesh.draw();
     }
     
-    if (_isSelected)
+    if ( _isSelected )
     {
         //_drawSplineSelectionInterface();
     }            
@@ -100,10 +108,10 @@ plSeq<plVector3> plSpline::_averageCornerNormals() const
     plSeq<plVector3> n(4);
 
     // compute averages normals
-    n.add( _model->cartilage.getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
-    n.add( _model->cartilage.getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
-    n.add( _model->cartilage.getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
-    n.add( _model->cartilage.getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
+    n.add( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
+    n.add( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
+    n.add( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
+    n.add( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
     
     return n;
 }
@@ -189,7 +197,7 @@ void plSpline::_computeHermite()
     const PLfloat   INC      = 0.02f;  // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
     const PLuint    NUM_INC  = 1.0f/INC;
     const PLfloat   fNUM_INC = 1.0f/INC;     
-    const PLfloat   MAX_DISTANCE = 1.0f;              // colour map max distance, anything beyond this is dark red   
+    const PLfloat   MAX_DISTANCE = 1.0f;            // colour map max distance, anything beyond this is dark red   
     const plVector3 NO_DATA_COLOUR(0.2, 0.2, 0.2);  // default colour if no data available  
 
     _triangles = plSeq<plTriangle>( NUM_INC*NUM_INC*2 );
@@ -223,7 +231,7 @@ void plSpline::_computeHermite()
             plVector3 pos  = (1.0f-u)*p03 + u*p12 + z*norm;          // inflate this point using normal scaled by z value returned by hermite spline
         
             // intersect cartilage
-            plIntersection intersection = _model->cartilage.rayIntersect( pos+(10.0f*norm), -norm, false, true ); 
+            plIntersection intersection = _cartilage->rayIntersect( pos+(10.0f*norm), -norm, false, true ); 
         
             // get colour value
             plVector3 colour = (intersection.exists) ? plColourMap::map( (intersection.point - pos).squaredLength()/MAX_DISTANCE ) : NO_DATA_COLOUR;

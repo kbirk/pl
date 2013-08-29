@@ -39,6 +39,8 @@ class plOctreeNode
 
         ~plOctreeNode();
 
+        void    clear();
+
         void    draw  () const;        
         void    insert( const plTriangle &tri, PLuint depth);
         
@@ -66,6 +68,8 @@ class plOctree : public plRenderable
         plOctree( const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth );
 
         ~plOctree();
+        
+        void clear();
 
         void build( const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth); 
 

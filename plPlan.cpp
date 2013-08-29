@@ -62,7 +62,7 @@ plPlan::~plPlan()
 
 void plPlan::drawElements() const
 {
-    if (!isVisible)
+    if ( !_isVisible )
         return;
 
     // Draw defect boundary 

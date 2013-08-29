@@ -28,7 +28,7 @@ void plPlannerStage1Shader::setGraftUniforms ( PLuint count,
                                                const plSeq<plVector4> &normals,
                                                const plSeq<PLfloat>   &radii ) const
 {   
-    glUniform1ui  ( _graftCountID, count );     
+    glUniform1ui  ( _graftCountID,     count );     
     glUniform4fv  ( _graftPositionsID, positions.size(), &positions[0].x );   
     glUniform4fv  ( _graftNormalsID,   normals.size(),   &normals[0].x   );
     glUniform4fv  ( _graftRadiiID,     radii.size(),     &radii[0]       );

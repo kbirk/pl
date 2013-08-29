@@ -14,7 +14,6 @@ plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &bo
     _calcArea();
     _calcNormal();   
     
-    
 }
 
 PLuint plSiteGrid::getFullSSBO() const

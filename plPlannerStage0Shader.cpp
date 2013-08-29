@@ -8,19 +8,19 @@ plPlannerStage0Shader::plPlannerStage0Shader(const char *computeFile )
 
 void plPlannerStage0Shader::getUniformLocations()
 {
-    _siteMeshSizeID       = glGetUniformLocation(_shaderProgramID, "uSiteMeshSize");   
-    _siteMeshAreaID       = glGetUniformLocation(_shaderProgramID, "uSiteMeshArea");
-    _siteGridSizeID       = glGetUniformLocation(_shaderProgramID, "uSiteGridSize");
-    _sitePerimSizeID      = glGetUniformLocation(_shaderProgramID, "uSitePerimSize");
+    _siteMeshSizeID        = glGetUniformLocation(_shaderProgramID, "uSiteMeshSize");   
+    _siteMeshAreaID        = glGetUniformLocation(_shaderProgramID, "uSiteMeshArea");
+    _siteGridSizeID        = glGetUniformLocation(_shaderProgramID, "uSiteGridSize");
+    _sitePerimSizeID       = glGetUniformLocation(_shaderProgramID, "uSitePerimSize");
     
-    _stateTemperatureID   = glGetUniformLocation(_shaderProgramID, "uStateTemperature");   
-    _stateEnergyID        = glGetUniformLocation(_shaderProgramID, "uStateEnergy");   
-    _stateGraftCountID    = glGetUniformLocation(_shaderProgramID, "uStateGraftCount"); 
+    _stateTemperatureID    = glGetUniformLocation(_shaderProgramID, "uStateTemperature");   
+    _stateEnergyID         = glGetUniformLocation(_shaderProgramID, "uStateEnergy");   
+    _stateGraftCountID     = glGetUniformLocation(_shaderProgramID, "uStateGraftCount"); 
     _stateGraftPositionsID = glGetUniformLocation(_shaderProgramID, "uStateGraftPositions"); 
     _stateGraftNormalsID   = glGetUniformLocation(_shaderProgramID, "uStateGraftNormals"); 
     _stateGraftRadiiID     = glGetUniformLocation(_shaderProgramID, "uStateGraftRadii"); 
 
-    _seedID               = glGetUniformLocation(_shaderProgramID, "uSeed");   
+    _seedID                = glGetUniformLocation(_shaderProgramID, "uSeed");   
 }
 
 

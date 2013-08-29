@@ -5,7 +5,7 @@ plIGuideSite::plIGuideSite()
 }
 
 plIGuideSite::plIGuideSite( PLuint modelID, const plBoneAndCartilage &model )
-    : plModelSpecific( modelID, model ), boundary( model )
+    : plModelSpecific( modelID, model )
 {
 }
 
@@ -25,13 +25,8 @@ void plIGuideSite::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndC
         _model = models[_modelID];
     }                   
     else if (subfield.compareCaseInsensitive( "boundary") )
-    {      
-        if (_model == NULL)
-        {
-            std::cerr << "plDefectSite importCSV() error: spline data read before model ID";
-            exit(1);
-        }                 
-        boundary.importCSV( row, *_model );        
+    {                
+        boundary.importCSV( row );        
     } 
     else
     {

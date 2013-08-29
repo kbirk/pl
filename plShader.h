@@ -2,6 +2,7 @@
 #define __PL_SHADER_H__
 
 #include "plCommon.h"
+#include "plSeq.h"
 
 // attribute locations, set by VBOs and mirrored in shader files
 #define PL_POSITION_ATTRIBUTE  0
@@ -35,8 +36,32 @@ class plShader
         GLuint _linkProgram();        
         void   _printLinkError();
 
-		
-
 };
+
+
+template< class T >
+PLuint createSSBO( PLuint count, const T &fill )
+{
+    plSeq<T> filler( fill, count );
+
+    PLuint bufferID;
+
+    glGenBuffers(1, &bufferID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, count*sizeof(T), &filler[0], GL_STREAM_COPY);
+    
+    return bufferID;
+} 
+
+
+template< class T >
+T* readSSBO( PLuint index, PLuint count )
+{
+    return (T*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                  index*sizeof(T), 
+                                  count*sizeof(T),
+                                  GL_MAP_READ_BIT );   
+}
+
 
 #endif

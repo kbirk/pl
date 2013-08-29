@@ -1,19 +1,28 @@
 #include "plOctree.h"
  
 plOctree::plOctree()
+    : _root(0)
 {
 } 
  
 plOctree::plOctree( const plVector3 &min, 
                     const plVector3 &max, 
                     const plSeq<plTriangle> &triangles, 
-                    PLuint depth)                    
+                    PLuint depth)   
+    : _root(0)                                    
 {
     build( min, max, triangles, depth );
 }
 
 plOctree::~plOctree()
 {
+    clear();
+}
+
+void plOctree::clear()
+{
+    if ( _root )
+        _root->clear();
     delete _root;
 }
 
@@ -35,6 +44,7 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<p
     PLfloat halfWidth = PL_MAX_OF_2( minMax, maxMax );
     
     // Construct and fill in _root 
+    clear();
     _root = new plOctreeNode( centre, halfWidth );
  
     // traverse and fill sub cubes with triangles until desired depth is reached  
@@ -43,7 +53,7 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<p
 
 void plOctree::draw() const
 {
-    if (!isVisible)
+    if ( !_isVisible )
         return;
 
     _root->draw();
@@ -115,9 +125,19 @@ plOctreeNode::plOctreeNode( const plVector3 &c, PLfloat hw)
 
 plOctreeNode::~plOctreeNode()
 {
-    for (PLuint i=0; i < 8; i++) delete children[i];
+    clear();
 }
 
+
+void plOctreeNode::clear()
+{
+    for (PLuint i=0; i < 8; i++)
+    { 
+        if ( children[i] )
+            children[i]->clear();
+        delete children[i];
+    }
+}
 
 void plOctreeNode::draw() const
 {

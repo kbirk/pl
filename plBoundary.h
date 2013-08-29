@@ -18,8 +18,7 @@ class plBoundary : public plRenderable,
     public:
 
         plBoundary();      
-        plBoundary( const plBoneAndCartilage &model );
-          
+ 
         PLuint size() const;
 
         const plSeq<plVector3> &points () const { return _points;  } 
@@ -28,12 +27,10 @@ class plBoundary : public plRenderable,
         const plVector3        &points ( PLuint index ) const { return _points[index];  }
         const plVector3        &normals( PLuint index ) const { return _normals[index]; }
 
-        const plBoneAndCartilage &model() const { return *_model; }
-
         plVector3 getAverageNormal() const;
 
         virtual void   toggleVisibility();   
-        virtual void   importCSV( const plSeq<plString> &row, const plBoneAndCartilage &model );
+        virtual void   importCSV( const plSeq<plString> &row );
         
         virtual PLuint addPointAndNormal   (const plVector3 &point, const plVector3 &normal);
         virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);
@@ -43,9 +40,7 @@ class plBoundary : public plRenderable,
         virtual void   draw() const;     
         
     protected:
-           
-        const plBoneAndCartilage *_model;   
-           
+
         plSeq<plVector3> _points;       // always in counterclockwise direction
         plSeq<plVector3> _normals;   
         plMesh           _mesh;    

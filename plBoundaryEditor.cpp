@@ -8,6 +8,7 @@ plBoundaryEditor::plBoundaryEditor()
     _selectedPointIndex     = -1;
 }
 
+
 void plBoundaryEditor::clearSelection( plPlan &plan )
 {
     _selectedBoundaryType   = -1;
@@ -18,6 +19,7 @@ void plBoundaryEditor::clearSelection( plPlan &plan )
     _clearDonorSiteBoundaries ( plan );
     _clearIGuideBoundaries    ( plan );
 }
+
 
 PLbool plBoundaryEditor::processMouseClick( plPlan &plan, PLint x, PLint y)
 {
@@ -42,6 +44,7 @@ PLbool plBoundaryEditor::processMouseClick( plPlan &plan, PLint x, PLint y)
     return false;
 }
 
+
 PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
 {
     plPickingInfo pick =  plPicking::texture->lastPick(); // read pick from last click, not what is currently under mouse
@@ -60,6 +63,7 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
     return false;
 }
 
+
 PLbool plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
 {
     if (_selectedBoundary == NULL)
@@ -69,6 +73,7 @@ PLbool plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
     
     return true;
 }
+
 
 void plBoundaryEditor::_clearDefectSiteBoundaries( plPlan &plan  )
 {
@@ -88,6 +93,7 @@ void plBoundaryEditor::_clearDonorSiteBoundaries( plPlan &plan )
     }  
 }
 
+
 void plBoundaryEditor::_clearIGuideBoundaries( plPlan &plan )
 {
     for (PLuint i=0; i<plan.iGuideSites().size(); i++)
@@ -95,6 +101,7 @@ void plBoundaryEditor::_clearIGuideBoundaries( plPlan &plan )
         plan.iGuideSites(i).boundary._clearSelection();       
     }  
 }
+
 
 void plBoundaryEditor::_checkAndSelectBoundary( plBoundary &boundary, PLuint i, PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex)
 {
@@ -109,6 +116,7 @@ void plBoundaryEditor::_checkAndSelectBoundary( plBoundary &boundary, PLuint i, 
     }
 }
 
+
 void plBoundaryEditor::_selectDefectSiteSpline( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex )
 {
     for (PLuint i=0; i<plan.defectSites().size(); i++)
@@ -116,6 +124,7 @@ void plBoundaryEditor::_selectDefectSiteSpline( plPlan &plan, PLuint boundaryInd
         _checkAndSelectBoundary( plan.defectSites(i).spline, i, PL_PICKING_TYPE_DEFECT_CORNERS, boundaryIndex, pointIndex );   
     }  
 }
+
 
 void plBoundaryEditor::_selectDefectSiteBoundary( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex )
 {
@@ -125,6 +134,7 @@ void plBoundaryEditor::_selectDefectSiteBoundary( plPlan &plan, PLuint boundaryI
     }  
 }
 
+
 void plBoundaryEditor::_selectDonorSiteBoundary( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex )
 {
     for (PLuint i=0; i<plan.donorSites().size(); i++)
@@ -132,6 +142,7 @@ void plBoundaryEditor::_selectDonorSiteBoundary( plPlan &plan, PLuint boundaryIn
         _checkAndSelectBoundary( plan.donorSites(i).boundary, i, PL_PICKING_TYPE_DONOR_BOUNDARY, boundaryIndex, pointIndex );    
     }  
 }
+
 
 void plBoundaryEditor::_selectIGuideBoundary( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex )
 {
@@ -157,6 +168,7 @@ void plBoundaryEditor::selectBoundary( plPlan &plan, PLuint boundaryType, PLuint
 
 }
 
+
 plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint x, PLuint y )
 {
     plVector3 rayOrigin, rayDirection;
@@ -164,19 +176,38 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint 
     
     plIntersection intersection( false ); 
 
-    if (_selectedBoundaryType == PL_PICKING_TYPE_DEFECT_BOUNDARY) 
-    {
-        // defect point, intersect spline
-        intersection = plan.defectSites( _selectedSiteIndex ).spline.rayIntersect( rayOrigin, rayDirection );        
-    }
-    else
-    {
-        // other, intersect cartilage
-        intersection = _selectedBoundary->model().cartilage.rayIntersect( rayOrigin, rayDirection); 
+    // depending on boundary type, intersect different models
+    switch ( _selectedBoundaryType )
+    {        
+        case PL_PICKING_TYPE_DEFECT_BOUNDARY:
+        {
+            intersection = plan.defectSites( _selectedSiteIndex ).spline.rayIntersect( rayOrigin, rayDirection );  
+            break;
+        }
+        
+        case PL_PICKING_TYPE_DEFECT_CORNERS:
+        {
+            intersection = plan.defectSites( _selectedSiteIndex ).model().cartilage.rayIntersect( rayOrigin, rayDirection );  
+            break;
+        }
+        
+        case PL_PICKING_TYPE_DONOR_BOUNDARY:
+        {    
+            intersection = plan.donorSites( _selectedSiteIndex).model().cartilage.rayIntersect( rayOrigin, rayDirection); 
+            break;
+        }
+        
+        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
+        {
+            intersection = plan.iGuideSites( _selectedSiteIndex).model().cartilage.rayIntersect( rayOrigin, rayDirection); 
+            break;
+        }    
+            
     }
     
     return intersection;
 }
+
 
 void plBoundaryEditor::moveSelectedPoint( plPlan &plan, PLuint x, PLuint y )
 {
@@ -234,12 +265,18 @@ void plBoundaryEditor::toggleSelectedVisibility()
 }
 
 
-void plBoundaryEditor::clearSelectedBoundary()
+void plBoundaryEditor::clearSelectedBoundary( plPlan &plan )
 {
     if (_selectedBoundary == NULL)
         return;
-
+    
     _selectedBoundary->clear();
+    
+    // clearing corners, destroy defect site boundary
+    if ( PL_PICKING_TYPE_DEFECT_CORNERS )
+    {
+        plan.defectSites( _selectedSiteIndex ).boundary.clear();
+    }
 }
 
 

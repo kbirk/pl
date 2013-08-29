@@ -62,7 +62,7 @@ PLbool plIGuide::generateIGuideMeshes()
 
     // anatomy TODO: change to bone AND cartilage model
     plString anatomyFilename (prepareFilenameWithVariables(false,'M',0,"bone"));
-    iGuideMeshes.add(plIGuideMesh(anatomyFilename,plSeq<plTriangle>(site().model()->bone.triangles()))  );
+    iGuideMeshes.add( plIGuideMesh(anatomyFilename,plSeq<plTriangle>( site().model().bone.triangles() ) ) );
 
 
     // template base TODO: create the template base shape if it needs updating

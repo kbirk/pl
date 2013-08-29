@@ -6,7 +6,7 @@ plDefectSite::plDefectSite()
 
 
 plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage &model )
-    : plModelSpecific( modelID, model ), boundary( model ), spline( model )
+    : plModelSpecific( modelID, model ), spline( model.cartilage )
 {
 }
 
@@ -32,16 +32,11 @@ void plDefectSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCa
             std::cerr << "plDefectSite importCSV() error: spline data read before model ID";
             exit(1);
         }    
-        spline.importCSV( row, *_model );  
+        spline.importCSV( row, _model->cartilage );  
     }
     else if (subfield.compareCaseInsensitive( "boundary") )   
-    {
-        if (_model == NULL)
-        {
-            std::cerr << "plDefectSite importCSV() error: boundary data read before model ID";
-            exit(1);
-        }            
-        boundary.importCSV( row, *_model );  
+    {    
+        boundary.importCSV( row );  
     }  
     else
         std::cerr << "Error importing plan, 'spline': Unrecognized word '" << subfield << "' in third column." << std::endl;      
@@ -50,7 +45,7 @@ void plDefectSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCa
 
 void plDefectSite::draw() const
 {      
-    if (!isVisible)
+    if ( !_isVisible )
         return;
       
     // draw spline boundary 

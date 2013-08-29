@@ -100,7 +100,7 @@ void plGraftEditor::drawMenu( const plPlan &plan ) const
     
 void plGraftEditor::drawHandles() const
 {     
-    if (!_handlesEnabled || _selectedGraft == NULL || !_selectedGraft->isVisible)
+    if ( !_handlesEnabled || _selectedGraft == NULL || !_selectedGraft->isVisible() )
         return;
 
     plModelStack::push( _selectedGraft->transform(_selectedType).matrix() );

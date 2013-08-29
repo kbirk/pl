@@ -1,214 +1,219 @@
 #include "plDraw.h"
  
-
-void plDraw::arrow( const plVector3 &origin, const plVector3 &direction, PLfloat length, PLfloat scale)
+namespace plDraw
 {
-    plModelStack::push(); 
+
+    void arrow( const plVector3 &origin, const plVector3 &direction, PLfloat length, PLfloat scale)
     {
-        // set to origin
-        plModelStack::translate( origin.x, origin.y, origin.z );
-        plDraw::arrow( direction, length, scale);
-    }
-    plModelStack::pop(); 
-}
-
-
-void plDraw::arrow( const plVector3 &direction, PLfloat length, PLfloat scale)
-{      
-    static plShapeMesh cone(PL_HEAD_RADIUS, 0.0f, PL_ARROW_LENGTH, 30, 1);
-
-    plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
-
-    plModelStack::push(); 
-    {               
-        // set to direction
-        plModelStack::mult( rot );  
-        plModelStack::scale(scale, scale, scale); 
-        plDraw::cylinder(scale*PL_HANDLE_RADIUS, length/scale);
-        plModelStack::translate( 0, 0, length/scale );
-        cone.draw();
-        plDraw::disk(PL_HEAD_RADIUS);
-    } 
-    plModelStack::pop();   
-}
-
-
-void plDraw::knob( const plVector3 &origin, const plVector3 &direction, PLfloat length, PLfloat scale)
-{
-    plModelStack::push(); 
-    {
-        // set to origin
-        plModelStack::translate( origin.x, origin.y, origin.z );
-        plDraw::knob( direction, length, scale);
-    }
-    plModelStack::pop();    
-}
-
-
-void plDraw::knob(const plVector3 &direction, PLfloat length, PLfloat scale)
-{
-    plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
-    
-    plModelStack::push(); 
-    {
-        // set to direction
-        plModelStack::mult( rot );
-        plDraw::cylinder(scale*PL_HANDLE_RADIUS, length);
-        plModelStack::translate( 0, 0, length/scale );
-        plDraw::cylinder(scale*PL_HEAD_RADIUS, PL_CIRCLE_LENGTH);
-        plDraw::disk(scale*PL_HEAD_RADIUS);
-        plModelStack::translate( 0, 0, PL_CIRCLE_LENGTH );
-        plDraw::disk(scale*PL_HEAD_RADIUS);
-    } 
-    plModelStack::pop();     
-}
-
-
-void plDraw::sphere(float radius)
-{
-    static plShapeMesh sphere(1, 20, 20);
-
-    plModelStack::push();    
-    {
-        plModelStack::scale(radius, radius, radius);
-        sphere.draw();
-    }
-    plModelStack::pop();
-}
-
-
-void plDraw::sphere(const plVector3 &origin, float radius)
-{
-    plModelStack::push();  
-    {
-        plModelStack::translate( origin.x, origin.y, origin.z );
-        plDraw::sphere( radius );
-    }
-    plModelStack::pop();  
-}
-
-
-void plDraw::cylinder(float radius, float height)
-{
-    static plShapeMesh cylinder(1.0f, 1.0f, 1.0f, 30, 1);    
-
-    plModelStack::push();
-    {
-        plModelStack::scale(radius, radius, height);        
-        cylinder.draw();
-    }
-    plModelStack::pop();
-}
-
-void plDraw::cylinder(const plVector3 &origin, const plVector3 &direction, float radius, float height)
-{
-    plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
-
-    plModelStack::push();
-    {
-        plModelStack::translate( origin.x, origin.y, origin.z );
-        plModelStack::mult( rot ); 
-        plModelStack::translate( 0, 0, -height );                  
-        plDraw::cylinder( radius, height );  
-    }
-    plModelStack::pop();
-}
-
-void plDraw::disk(const plVector3 &origin, const plVector3 &direction, float radius)
-{
-    plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
-
-    plModelStack::push();
-    {
-        plModelStack::translate( origin.x, origin.y, origin.z );
-        plModelStack::mult( rot );
-        plDraw::disk( radius );       
-    }
-    plModelStack::pop();
-}
-
-void plDraw::disk(const plVector3 &origin, float radius)
-{
-    plModelStack::push();
-    {
-        plModelStack::translate( origin.x, origin.y, origin.z );
-        plDraw::disk( radius );       
-    }
-    plModelStack::pop();
-}
-
-void plDraw::disk(float radius)
-{
-    static plShapeMesh disk(0.0f, 1.0f, 20, 20);   
-
-    plModelStack::push();
-    {
-        plModelStack::scale(radius, radius, radius);        
-        disk.draw();
-    }
-    plModelStack::pop();
-}
-
-
-void plDraw::scope( const plTrackedObject &scope )
-{
-    // Draw the TA104 arthroscope
-    static plShapeMesh c1(1.5f, 2.0f, 120.0f, 16, 4);
-    static plShapeMesh c2(4.0f, 4.0f, 30.0f, 16, 4);
-    static plShapeMesh c3(8.0f, 8.0f, 60.0f, 16, 4);
-    static plShapeMesh c4(8.0f, 0.0f, 0.0f, 16, 4);
-
-    if (scope.isVisible)
-        plColourStack::load(0.4, 0.4, 0.4);
-    else
-        plColourStack::load(1.0, 0.25, 0.05);
-
-    plModelStack::push();
-    {
-        plModelStack::translate(scope.getPoint());
-        plModelStack::rotate(scope.getRotationAngle(), scope.getRotationAxis());
-        c1.draw();
-        plModelStack::push();
+        plModelStack::push(); 
         {
-            plModelStack::translate(0, 0, 120);
-            c2.draw();
-            plModelStack::push();
-            {
-                plModelStack::translate(0,0,30);
-                c3.draw();
-                plModelStack::translate(0,0,60);
-                c4.draw();
-            }
-            plModelStack::pop();
-        }    
-        plModelStack::pop();
+            // set to origin
+            plModelStack::translate( origin.x, origin.y, origin.z );
+            arrow( direction, length, scale);
+        }
+        plModelStack::pop(); 
     }
-    plModelStack::pop();
-} 
 
-void plDraw::probe( const plTrackedObject &probe )
-{
-    static plShapeMesh c1(0.0f, 1.0f, 4.0f, 16, 4);
-    static plShapeMesh c2(1.0f, 2.5f, 124.0f, 16, 4);
-    
-    // Draw the TA002 probe
-    if (probe.isVisible)
-        plColourStack::load(0.6, 0.6, 0.6);
-    else
-        plColourStack::load(1.0, 0.3, 0.1);
-   
-    plModelStack::push();
+
+    void arrow( const plVector3 &direction, PLfloat length, PLfloat scale)
+    {      
+        static plShapeMesh cone(PL_HEAD_RADIUS, 0.0f, PL_ARROW_LENGTH, 30, 1);
+
+        plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
+
+        plModelStack::push(); 
+        {               
+            // set to direction
+            plModelStack::mult( rot );  
+            plModelStack::scale(scale, scale, scale); 
+            cylinder(scale*PL_HANDLE_RADIUS, length/scale);
+            plModelStack::translate( 0, 0, length/scale );
+            cone.draw();
+            disk(PL_HEAD_RADIUS);
+        } 
+        plModelStack::pop();   
+    }
+
+
+    void knob( const plVector3 &origin, const plVector3 &direction, PLfloat length, PLfloat scale)
     {
-        plModelStack::translate(probe.getPoint());
-        plModelStack::rotate(probe.getRotationAngle(), probe.getRotationAxis());
-        c1.draw();
-        plModelStack::push();
+        plModelStack::push(); 
         {
-            plModelStack::translate(0, 0, 4);
-            c2.draw();
+            // set to origin
+            plModelStack::translate( origin.x, origin.y, origin.z );
+            knob( direction, length, scale);
+        }
+        plModelStack::pop();    
+    }
+
+
+    void knob(const plVector3 &direction, PLfloat length, PLfloat scale)
+    {
+        plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
+        
+        plModelStack::push(); 
+        {
+            // set to direction
+            plModelStack::mult( rot );
+            cylinder(scale*PL_HANDLE_RADIUS, length);
+            plModelStack::translate( 0, 0, length/scale );
+            cylinder(scale*PL_HEAD_RADIUS, PL_CIRCLE_LENGTH);
+            disk(scale*PL_HEAD_RADIUS);
+            plModelStack::translate( 0, 0, PL_CIRCLE_LENGTH );
+            disk(scale*PL_HEAD_RADIUS);
+        } 
+        plModelStack::pop();     
+    }
+
+
+    void sphere(float radius)
+    {
+        static plShapeMesh sphere(1, 20, 20);
+
+        plModelStack::push();    
+        {
+            plModelStack::scale(radius, radius, radius);
+            sphere.draw();
         }
         plModelStack::pop();
     }
-    plModelStack::pop();
+
+
+    void sphere(const plVector3 &origin, float radius)
+    {
+        plModelStack::push();  
+        {
+            plModelStack::translate( origin.x, origin.y, origin.z );
+            sphere( radius );
+        }
+        plModelStack::pop();  
+    }
+
+
+    void cylinder(float radius, float height)
+    {
+        static plShapeMesh cylinder(1.0f, 1.0f, 1.0f, 30, 1);    
+
+        plModelStack::push();
+        {
+            plModelStack::scale(radius, radius, height);        
+            cylinder.draw();
+        }
+        plModelStack::pop();
+    }
+
+    void cylinder(const plVector3 &origin, const plVector3 &direction, float radius, float height)
+    {
+        plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
+
+        plModelStack::push();
+        {
+            plModelStack::translate( origin.x, origin.y, origin.z );
+            plModelStack::mult( rot ); 
+            plModelStack::translate( 0, 0, -height );                  
+            cylinder( radius, height );  
+        }
+        plModelStack::pop();
+    }
+
+    void disk(const plVector3 &origin, const plVector3 &direction, float radius)
+    {
+        plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
+
+        plModelStack::push();
+        {
+            plModelStack::translate( origin.x, origin.y, origin.z );
+            plModelStack::mult( rot );
+            disk( radius );       
+        }
+        plModelStack::pop();
+    }
+
+    void disk(const plVector3 &origin, float radius)
+    {
+        plModelStack::push();
+        {
+            plModelStack::translate( origin.x, origin.y, origin.z );
+            disk( radius );       
+        }
+        plModelStack::pop();
+    }
+
+    void disk(float radius)
+    {
+        static plShapeMesh disk(0.0f, 1.0f, 20, 20);   
+
+        plModelStack::push();
+        {
+            plModelStack::scale(radius, radius, radius);        
+            disk.draw();
+        }
+        plModelStack::pop();
+    }
+
+    /*
+    void scope( const plTrackedObject &scope )
+    {
+        // Draw the TA104 arthroscope
+        static plShapeMesh c1(1.5f, 2.0f, 120.0f, 16, 4);
+        static plShapeMesh c2(4.0f, 4.0f, 30.0f, 16, 4 );
+        static plShapeMesh c3(8.0f, 8.0f, 60.0f, 16, 4 );
+        static plShapeMesh c4(8.0f, 0.0f, 0.0f, 16, 4  );
+
+        if (scope.isVisible)
+            plColourStack::load(0.4, 0.4, 0.4);
+        else
+            plColourStack::load(1.0, 0.25, 0.05);
+
+        plModelStack::push();
+        {
+            plModelStack::translate(scope.getPoint());
+            plModelStack::rotate(scope.getRotationAngle(), scope.getRotationAxis());
+            c1.draw();
+            plModelStack::push();
+            {
+                plModelStack::translate(0, 0, 120);
+                c2.draw();
+                plModelStack::push();
+                {
+                    plModelStack::translate(0,0,30);
+                    c3.draw();
+                    plModelStack::translate(0,0,60);
+                    c4.draw();
+                }
+                plModelStack::pop();
+            }    
+            plModelStack::pop();
+        }
+        plModelStack::pop();
+    } 
+
+    void probe( const plTrackedObject &probe )
+    {
+        static plShapeMesh c1(0.0f, 1.0f, 4.0f, 16, 4);
+        static plShapeMesh c2(1.0f, 2.5f, 124.0f, 16, 4);
+        
+        // Draw the TA002 probe
+        if (probe.isVisible)
+            plColourStack::load(0.6, 0.6, 0.6);
+        else
+            plColourStack::load(1.0, 0.3, 0.1);
+       
+        plModelStack::push();
+        {
+            plModelStack::translate(probe.getPoint());
+            plModelStack::rotate(probe.getRotationAngle(), probe.getRotationAxis());
+            c1.draw();
+            plModelStack::push();
+            {
+                plModelStack::translate(0, 0, 4);
+                c2.draw();
+            }
+            plModelStack::pop();
+        }
+        plModelStack::pop();
+    }
+    */
+
 }
 

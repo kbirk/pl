@@ -4,6 +4,8 @@
 #include "plCommon.h"
 #include "plRenderable.h"
 #include "plDRBTransform.h"
+#include "plShapeMesh.h"
+#include "plRenderingPipeline.h"
 
 class plTrackedObject : public plRenderable
 {
@@ -29,6 +31,8 @@ class plTrackedObject : public plRenderable
         const plVector3 &getAxisZ()           const  { return _zAxis;           }
         plVector4        getRotationInfo()    const  { return plVector4( _rotationAxis, _rotationAngle); }
 
+        void draw() const;
+
     private:
     
         plDRBTransform   _DRBToTrackedPoint;
@@ -42,6 +46,9 @@ class plTrackedObject : public plRenderable
 
         double          _rotationAngle;
         PLbool          _isArthroscope;
+        
+        void _drawScope() const;
+        void _drawProbe() const;
 
 };
 

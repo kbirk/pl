@@ -2,10 +2,15 @@
 
 plRenderable::plRenderable()
 {  
-    isVisible = true; 
+    _isVisible = true; 
+}
+
+PLbool plRenderable::isVisible() const
+{
+    return _isVisible;
 }
 
 void plRenderable::toggleVisibility()
 {
-    isVisible = !isVisible;
+    _isVisible = !_isVisible;
 }
