@@ -54,7 +54,9 @@ void plColourMesh::setBuffers( const plSeq<plVector3> &interleaved_vertices, con
 	glVertexAttribPointer(PL_COLOUR_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, (GLvoid*)(POS_SIZE+NOR_SIZE));                                
            
     // bind vertex array object
-    glGenBuffers(1, &_vertexBufferIndices);
+    if (_vertexBufferIndices == 0)
+        glGenBuffers(1, &_vertexBufferIndices);
+        
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STREAM_DRAW);
      

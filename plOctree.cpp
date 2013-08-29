@@ -24,6 +24,7 @@ void plOctree::clear()
     if ( _root )
         _root->clear();
     delete _root;
+    _root = 0;
 }
 
 void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth )
