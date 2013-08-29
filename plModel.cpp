@@ -146,6 +146,7 @@ void plModel::toggleVisibility()
     }
 }
 
+
 void plModel::toggleTransparency()
 {
     if (_isTransparent)

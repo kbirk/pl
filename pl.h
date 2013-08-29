@@ -51,6 +51,7 @@
 #include "plTrackedObject.h"
 #include "plTransform.h"
 #include "plTriangle.h"
+#include "plUtility.h"
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plWindow.h"

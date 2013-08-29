@@ -10,6 +10,7 @@ namespace plMath
         return vector - (dist * plane_normal);
     }
 
+
     plVector3 closestPointOnSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b)
     {
         plVector3 ab = b - a;
@@ -21,6 +22,7 @@ namespace plMath
         // Compute projected position from the clamped t
         return a + t * ab;
     }
+    
 
     PLfloat clamp( PLfloat val, PLfloat min, PLfloat max)
     {
@@ -29,11 +31,25 @@ namespace plMath
         return val;
     }
 
+
     void swap( PLfloat &a, PLfloat &b )
     {
         PLfloat temp = a;
         a = b; 
         b = temp;
+    }
+
+
+    void shuffle( plSeq<PLuint> &array )
+    {   
+        PLuint size = array.size();
+        for (PLuint i = 0; i < size-1; i++) 
+        {
+            PLuint j = i + rand() / (RAND_MAX / (size - i) + 1);
+            PLuint t = array[j];
+            array[j] = array[i];
+            array[i] = t;
+        }    
     }
 
 
@@ -201,7 +217,7 @@ namespace plMath
 
     } // end void function()
 
-};
+}
 
 
 

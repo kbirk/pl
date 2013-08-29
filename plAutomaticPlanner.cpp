@@ -2,7 +2,7 @@
 
 namespace plAutomaticPlanner
 {
-    //
+    /*
     // defect site textures        
     PLuint _siteDataTextureID;
 
@@ -15,14 +15,14 @@ namespace plAutomaticPlanner
     PLuint _stateGraftNormalsTextureID;
     PLuint _stateGraftRadiiTextureID;
     PLuint _stateGraftCountsTextureID;
-    //
+    */
                                  
     PLbool _generateSiteGrids( plPlan &plan );                
-    void   _createStage0Buffers();   
+    //void   _createStage0Buffers();   
 
     void   _dispatch();      
     void   _dispatchStage0();  // find defect sites
-    void   _dispatchStage1();  // find donor sites
+    //void   _dispatchStage1();  // find donor sites
 
 
     plSeq<plSiteGrid>  _donorSiteGrids;
@@ -45,7 +45,7 @@ namespace plAutomaticPlanner
         if ( _generateSiteGrids( plan ) )
         {
             // sites successfully constructed
-            _createStage0Buffers();
+            //_createStage0Buffers();
             _dispatch();
         }
 
@@ -111,6 +111,25 @@ namespace plAutomaticPlanner
     }
 
 
+    void _dispatchStage0()
+    {
+        plAnnealingState state = plPlannerStage0::run( _defectSiteGrids[0] );
+    
+        DEBUG_GRAFT_LOCATIONS.clear();
+    
+        for (PLuint i=0; i < state.graftCount; i++)
+        {
+            plVector4 p = state.graftPositions[i];
+            plVector4 n = state.graftNormals  [i];
+            PLfloat   r = state.graftRadii    [i];
+            
+            DEBUG_GRAFT_LOCATIONS.add( plVector3( p.x, p.y, p.z ) );                                              
+            DEBUG_GRAFT_LOCATIONS.add( plVector3( n.x, n.y, n.z ) );
+            DEBUG_GRAFT_LOCATIONS.add( plVector3( r, 0.0f, 0.0f ) ); 
+        }
+    }
+    
+    /*
     void reportError( const plString &str  ) 
     {
         GLuint errnum;
@@ -121,7 +140,7 @@ namespace plAutomaticPlanner
             std::cout << str << " " << errstr << "\n";
         }
     }
-    /*
+    
     template< class T >
     PLuint createSSBO( PLuint count, const T &fill )
     {
@@ -136,6 +155,8 @@ namespace plAutomaticPlanner
         return bufferID;
     } 
     */
+    
+    /*
     void _createStage0Buffers()
     {
         PLuint meshSize = _defectSiteGrids[0].meshSize();     
@@ -153,7 +174,6 @@ namespace plAutomaticPlanner
         _stateGraftRadiiTextureID     = createSSBO( PL_MAX_GRAFTS_PER_SOLUTION*PL_ANNEALING_INVOCATIONS, -1.0f );
         _stateGraftCountsTextureID    = createSSBO( PL_ANNEALING_INVOCATIONS, -1 );
     }
-
 
     float acceptanceProbability( PLfloat energy, PLfloat newEnergy, PLfloat temperature ) 
     {
@@ -177,11 +197,27 @@ namespace plAutomaticPlanner
           array[i] = t;
         }    
     }
-
+    
 
     void _dispatchStage0()
     {
+        plAnnealingState state = plPlannerStage0.run( _defectSiteGrids[0] );
+    
         DEBUG_GRAFT_LOCATIONS.clear();
+    
+        for (PLuint i=0; i < state.graftCount; i++)
+        {
+            plVector4 p = state.graftPositions[i];
+            plVector4 n = state.graftNormals  [i];
+            PLfloat   r = state.graftRadii    [i];
+            
+            DEBUG_GRAFT_LOCATIONS.add( plVector3( p.x, p.y, p.z ) );                                              
+            DEBUG_GRAFT_LOCATIONS.add( plVector3( n.x, n.y, n.z ) );
+            DEBUG_GRAFT_LOCATIONS.add( plVector3( r, 0.0f, 0.0f ) ); 
+        }
+    
+    
+        
       
         PLuint workgroups = PL_ANNEALING_NUM_GROUPS; //ceil( gridSize / (PLfloat) 1024); // ensure enough workgroups are used
         
@@ -276,12 +312,7 @@ namespace plAutomaticPlanner
                                                                       GL_MAP_READ_BIT );    
                                                                       
                 memcpy( &state.graftPositions[0], &positions[0], state.graftCount*sizeof( plVector4 ) );
-                /*                                                       
-                for (PLuint i=0; i < stateGraftCount; i++)
-                {                 
-                    stateGraftPositions[i] = positions[i];
-                }
-                */
+
                 glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
                 
                 // get graft normals
@@ -292,12 +323,7 @@ namespace plAutomaticPlanner
                                                                     PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4),
                                                                     GL_MAP_READ_BIT );   
                 memcpy( &state.graftNormals[0], &normals[0], state.graftCount*sizeof( plVector4 ) );    
-                /*                                                  
-                for (PLuint i=0; i < stateGraftCount; i++)
-                {                 
-                    stateGraftNormals[i] = normals[i];
-                }
-                */
+ 
                 glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
                 
                 
@@ -309,12 +335,7 @@ namespace plAutomaticPlanner
                                                                   PL_MAX_GRAFTS_PER_SOLUTION*sizeof(PLfloat),
                                                                   GL_MAP_READ_BIT );    
                 memcpy( &state.graftRadii[0], &radii[0], state.graftCount*sizeof( PLfloat ) );    
-                /*
-                for (PLuint i=0; i < stateGraftCount; i++)
-                {                 
-                    stateGraftRadii[i] = radii[i];
-                }
-                */
+
                 glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
                 
                  
@@ -350,22 +371,6 @@ namespace plAutomaticPlanner
 
     }
 
-    /*
-    void _dispatchStage0()
-    {
-        DEBUG_GRAFT_LOCATIONS.clear();
-
-        PLuint gridSize   = _defectSiteGrids[0].size();
-        PLuint meshSize   = _defectSiteGrids[0].meshSize();    
-        PLuint workgroups = PL_ANNEALING_NUM_GROUPS; //ceil( gridSize / (PLfloat) 1024); // ensure enough workgroups are used
-        
-        // compile / link stage 0 shader
-        plPlannerStage0Shader stage0("./shaders/plannerStage0.comp");
-
-        // bind shader
-        stage0.bind(); 
-        reportError("stage0 bind");
-    }
     */
 }
 
