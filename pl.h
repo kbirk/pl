@@ -32,6 +32,8 @@
 #include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plPlan.h"
+#include "plPlannerStage0.h"
+#include "plPlannerStage1.h"
 #include "plPlannerStage0Shader.h"
 #include "plPlannerStage1Shader.h"
 #include "plPlug.h"

@@ -6,16 +6,13 @@ namespace plAutomaticPlanner
     PLbool _generateSiteGrids( plPlan &plan );                
 
     void   _dispatch();      
-    void   _dispatchStage0();    // find defect sites
-    //void   _dispatchStage1();    // calc rms of each possibility for donor sites
-    //void   _dispatchStage2();    // find donor sites
-
+    
     plSeq<plSiteGrid>  _donorSiteGrids;
     plSeq<plSiteGrid>  _defectSiteGrids; 
     plSeq<plVector3>   DEBUG_GRAFT_LOCATIONS; 
 
     void calculate( plPlan &plan )
-    {
+    {   
         std::cout << "Calculating Plan ... \n";
         if ( plan.defectSites().size() == 0 )          { std::cerr << "plAutomaticPlanner::calculate() error: No defect sites specified\n";   return; }
         if ( plan.donorSites().size() == 0 )           { std::cerr << "plAutomaticPlanner::calculate() error: No donor sites specified\n";    return; }
@@ -35,9 +32,9 @@ namespace plAutomaticPlanner
 
     PLbool _generateSite( plSeq<plSiteGrid> &grids, const plSeq<plTriangle> &triangles, const plBoundary &boundary )
     {       
-        plSiteGrid grid( triangles, boundary );                
+        plSiteGrid site( triangles, boundary );                
                    
-        if ( grid.size() == 0 )
+        if ( site.gridSize() == 0 )
         {
             _donorSiteGrids.clear();
             _defectSiteGrids.clear();
@@ -45,9 +42,9 @@ namespace plAutomaticPlanner
             return false;
         }
         
-        std::cout << "\t\t" <<  grid.meshSize() << " triangles calculated \n";
-        std::cout << "\t\t" <<  grid.size()     << " grid points calculated \n";
-        grids.add( grid );
+        std::cout << "\t\t" <<  site.meshSize() << " triangles calculated \n";
+        std::cout << "\t\t" <<  site.gridSize() << " grid points calculated \n";
+        grids.add( site );
         return true; 
 
     }    
@@ -83,22 +80,20 @@ namespace plAutomaticPlanner
 
     void _dispatch()
     {    
-        PLtime t0 = plTimer::now();
-
-        _dispatchStage0();
+        PLtime t0, t1;
         
-        PLtime t1 = plTimer::now();
-        std::cout << "\nAutomatic planner stage 0 complete:\n";     
-        std::cout << "\tCompute shader execution time: " << t1 - t0 << " milliseconds \n";
-    }
+        /*
+        // stage 0 timing
+        t0 = plTimer::now();
 
+        plAnnealingState state = plPlannerStage0::run( _defectSiteGrids[0] );    
+        
+        t1 = plTimer::now();
+        std::cout << "\nAutomatic planner stage 0 complete:\n\tCompute shader execution time: " << t1 - t0 << " milliseconds \n";
+        //
 
-    void _dispatchStage0()
-    {
-        plAnnealingState state = plPlannerStage0::run( _defectSiteGrids[0] );
-    
-        DEBUG_GRAFT_LOCATIONS.clear();
-    
+        /////////// DEBUG ////////////
+        DEBUG_GRAFT_LOCATIONS.clear();   
         for (PLuint i=0; i < state.graftCount; i++)
         {
             plVector4 &p = state.graftPositions[i];
@@ -109,8 +104,18 @@ namespace plAutomaticPlanner
             DEBUG_GRAFT_LOCATIONS.add( plVector3( n.x, n.y, n.z ) );
             DEBUG_GRAFT_LOCATIONS.add( plVector3( r, 0.0f, 0.0f ) ); 
         }
+        //////////////////////////////
+        */
+        // stage 1 timing
+        t0 = plTimer::now();
+plAnnealingState state( 1.0 );
+        plPlannerStage1::run( _defectSiteGrids[0], _donorSiteGrids, state );
+        
+        t1 = plTimer::now();
+        std::cout << "\nAutomatic planner stage 1 complete:\n\tCompute shader execution time: " << t1 - t0 << " milliseconds \n";
+        //
     }
  
- 
+
 }
 

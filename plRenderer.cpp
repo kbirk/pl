@@ -252,7 +252,7 @@ namespace plRenderer
         for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)
         {
             plColourStack::load( 0.9, 0.6, 0.2 );
-            for (PLuint j=0; j<plAutomaticPlanner::_donorSiteGrids[i].size(); j++)
+            for (PLuint j=0; j<plAutomaticPlanner::_donorSiteGrids[i].gridSize(); j++)
             {
                 PLfloat x = plAutomaticPlanner::_donorSiteGrids[i].points(j).x;
                 PLfloat y = plAutomaticPlanner::_donorSiteGrids[i].points(j).y;
@@ -268,7 +268,7 @@ namespace plRenderer
         {    
             plColourStack::load( 0.2, 0.6, 0.9 );
             
-            for (PLuint j=0; j<plAutomaticPlanner::_defectSiteGrids[i].size(); j++)
+            for (PLuint j=0; j<plAutomaticPlanner::_defectSiteGrids[i].gridSize(); j++)
             {
                 PLfloat x = plAutomaticPlanner::_defectSiteGrids[i].points(j).x;
                 PLfloat y = plAutomaticPlanner::_defectSiteGrids[i].points(j).y;

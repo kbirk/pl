@@ -14,7 +14,6 @@ class plPlannerStage1Shader : public plShader
     public:                    
           
         plPlannerStage1Shader ( const char *computeFile );
-        ~plPlannerStage1Shader();
 
         void getUniformLocations();
         
@@ -25,9 +24,9 @@ class plPlannerStage1Shader : public plShader
                                
         void setSiteUniforms  ( PLuint defectMeshSize, 
                                 PLuint donorCount,
-                                PLuint donorMeshSize,
-                                PLuint donorGridSize,
-                                PLuint donorPerimSize) const;
+                                const plSeq<PLuint> &donorMeshSize,
+                                const plSeq<PLuint> &donorGridSize,
+                                const plSeq<PLuint> &donorPerimSize) const;
         
     private:
     

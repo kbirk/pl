@@ -7,7 +7,7 @@
 #include "plSiteGrid.h"
 
 #include "plPlannerStage0.h"
-
+#include "plPlannerStage1.h"
 
 namespace plAutomaticPlanner
 {

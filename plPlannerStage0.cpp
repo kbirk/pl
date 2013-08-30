@@ -43,9 +43,7 @@ void plAnnealingState::bindBuffers()
 }
 
 void plAnnealingState::unbindBuffers()
-{
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 );    
+{   
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, 0 );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, 0 );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, 0 );
@@ -144,16 +142,16 @@ namespace plPlannerStage0
         stage0Shader.bind();                            // bind shader  
         stage0Shader.setSiteUniforms( site.meshSize(),  // set defect site uniforms 
                                       site.area(), 
-                                      site.size(), 
+                                      site.gridSize(), 
                                       site.perimSize() ); 
          
-        // generate and bind site and temporary data                              
-        PLuint _siteDataBufferID             = site.getFullSSBO();
-        PLuint _overlappedTrianglesBufferID  = createSSBO( site.meshSize()*PL_STAGE0_INVOCATIONS, 0.0f ); // must initialize with 0s
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, _siteDataBufferID            );           
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, _overlappedTrianglesBufferID );  
+        // generate and bind site and temporary buffers                              
+        PLuint siteDataBufferID             = site.getFullSSBO();
+        PLuint overlappedTrianglesBufferID  = createSSBO( site.meshSize()*PL_STAGE0_INVOCATIONS, 0.0f ); // must initialize with 0s
+        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, siteDataBufferID            );           
+        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, overlappedTrianglesBufferID );  
                       
-        // generate and bind annealing state data    
+        // generate and bind annealing state output buffers    
         plAnnealingState state( site.area() );  // empty state (no plugs) energy set to total site area
         state.createBuffers();                  // create input/output buffers
         state.bindBuffers();                    // bind input/output buffers   
@@ -186,12 +184,15 @@ namespace plPlannerStage0
             state.temperature *= 1.0f-PL_STAGE0_COOLING_RATE;
         }
 
+        // unbind and delete state output buffers
         state.unbindBuffers();  
-        state.destroyBuffers(); // destroy buffers as they are not needed anymore
+        state.destroyBuffers();
         
-        // delete site and temporary data
-        glDeleteBuffers(1, &_siteDataBufferID);
-        glDeleteBuffers(1, &_overlappedTrianglesBufferID);
+        // unbind and delete site and temporary buffers
+        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
+        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 ); 
+        glDeleteBuffers(1, &siteDataBufferID);
+        glDeleteBuffers(1, &overlappedTrianglesBufferID);
         
         return state;
 

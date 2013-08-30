@@ -34,11 +34,11 @@ class plSiteGrid
         plSiteGrid();
         plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &boundary );
         
-        PLuint     size()              const { return _points.size(); }
-        PLuint     meshSize()          const { return _triangles.size(); }
-        PLuint     perimSize()         const { return _perimeter.size()/2; }
-        PLfloat    area()              const { return _area; } 
-        plVector3  normal()            const { return _normal; };
+        PLuint     gridSize()   const { return _points.size(); }
+        PLuint     meshSize()   const { return _triangles.size(); }
+        PLuint     perimSize()  const { return _perimeter.size()/2; }
+        PLfloat    area()       const { return _area; } 
+        plVector3  normal()     const { return _normal; };
         
         PLuint getFullSSBO() const;
         PLuint getMeshSSBO() const;

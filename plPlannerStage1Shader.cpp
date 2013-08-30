@@ -36,15 +36,15 @@ void plPlannerStage1Shader::setGraftUniforms ( PLuint count,
                                
 void plPlannerStage1Shader::setSiteUniforms  ( PLuint defectMeshSize, 
                                                PLuint donorCount,
-                                               PLuint donorMeshSize,
-                                               PLuint donorGridSize,
-                                               PLuint donorPerimSize) const
+                                               const plSeq<PLuint> &donorMeshSize,
+                                               const plSeq<PLuint> &donorGridSize,
+                                               const plSeq<PLuint> &donorPerimSize) const
 {
 
     glUniform1ui  ( _defectSiteMeshSizeID, defectMeshSize );   
     glUniform1ui  ( _donorSiteCountID,     donorCount );   
-    glUniform1ui  ( _donorSiteMeshSizeID,  donorMeshSize );   
-    glUniform1ui  ( _donorSiteGridSizeID,  donorGridSize );   
-    glUniform1ui  ( _donorSitePerimSizeID, donorPerimSize );   
+    glUniform1uiv  ( _donorSiteMeshSizeID,  donorMeshSize.size(),  &donorMeshSize[0] );   
+    glUniform1uiv  ( _donorSiteGridSizeID,  donorGridSize.size(),  &donorGridSize[0] );   
+    glUniform1uiv  ( _donorSitePerimSizeID, donorPerimSize.size(), &donorPerimSize[0] );   
     
 }

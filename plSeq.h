@@ -12,7 +12,7 @@ class plSeq
 
 		plSeq();
 		plSeq( PLuint n );
-		plSeq( const T &t, PLuint n);
+		//plSeq( const T &t, PLuint n);
 		plSeq( const plSeq<T> &source );
 		
 		~plSeq();
@@ -60,7 +60,7 @@ plSeq<T>::plSeq( PLuint n )
 	_data = new T[ _storageSize ];
 }
 
-
+/*
 template<class T>
 plSeq<T>::plSeq( const T &t, PLuint n)
 {
@@ -72,7 +72,7 @@ plSeq<T>::plSeq( const T &t, PLuint n)
 		_data[i] = t;
 	}	
 }
-
+*/
 
 template<class T>
 plSeq<T>::plSeq( const plSeq<T> &source ) 
