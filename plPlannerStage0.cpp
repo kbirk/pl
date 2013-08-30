@@ -4,9 +4,9 @@ plAnnealingState::plAnnealingState( float initialEnergy )
     : temperature   ( PL_STAGE0_INITIAL_TEMPERATURE ),    
       energy        ( initialEnergy ),    
       graftCount    ( 0 ),    
-      graftPositions( plVector4(-1,-1,-1,-1), PL_MAX_GRAFTS_PER_SOLUTION ),
-      graftNormals  ( plVector4(-1,-1,-1,-1), PL_MAX_GRAFTS_PER_SOLUTION ),
-      graftRadii    ( -1, PL_MAX_GRAFTS_PER_SOLUTION )
+      graftPositions( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
+      graftNormals  ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
+      graftRadii    ( PL_MAX_GRAFTS_PER_SOLUTION, -1 )
 {        
 }
 

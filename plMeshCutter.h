@@ -25,21 +25,9 @@ class plCut
         PLbool    processed;
 };
 
-class plMeshCutter
+namespace plMeshCutter
 {
-    public:
-
-        static PLbool  findInteriorMesh        ( const plSeq<plTriangle> &triangles, const plBoundary &walls, plSeq<plTriangle> &interiorTriangles );
-
-    private:
-
-        plMeshCutter() {};
-               
-        static void     _updateInteriorPoints  ( const plTriangle &triangle , plSeq<plVector3> &interiorPoints );
-        static PLbool   _edgeCutsBoundary      ( const plVector3 &edgeVert0, const plVector3 &edgeVert1, const plBoundary &wall, PLuint index, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &wallParam, PLint &intDir );
-        static PLbool   _triangleCutsBoundary  ( const plTriangle &tri, PLbool &triProcessed, const plBoundary &walls, plSeq<plPolygon> &polys, plSeq<plVector3> &interiorPoints );
-        static PLint    _compareEdgeCuts       ( const void* a, const void* b );
-        static PLint    _compareBoundaryCuts   ( const void* a, const void* b );
+    PLbool  findInteriorMesh ( const plSeq<plTriangle> &triangles, const plBoundary &walls, plSeq<plTriangle> &interiorTriangles );
 };
 
 

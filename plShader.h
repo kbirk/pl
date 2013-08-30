@@ -42,7 +42,7 @@ class plShader
 template< class T >
 PLuint createSSBO( PLuint count, const T &fill )
 {
-    plSeq<T> filler( fill, count );
+    plSeq<T> filler( count, fill );
 
     PLuint bufferID;
 

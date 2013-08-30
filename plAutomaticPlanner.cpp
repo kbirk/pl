@@ -2,14 +2,13 @@
 
 namespace plAutomaticPlanner
 {
-                          
-    PLbool _generateSiteGrids( plPlan &plan );                
-
-    void   _dispatch();      
-    
     plSeq<plSiteGrid>  _donorSiteGrids;
     plSeq<plSiteGrid>  _defectSiteGrids; 
     plSeq<plVector3>   DEBUG_GRAFT_LOCATIONS; 
+    
+    PLbool _generateSite     ( plSeq<plSiteGrid> &grids, const plSeq<plTriangle> &triangles, const plBoundary &boundary );                    
+    PLbool _generateSiteGrids( plPlan &plan );                
+    void   _dispatch();      
 
     void calculate( plPlan &plan )
     {   
@@ -25,7 +24,7 @@ namespace plAutomaticPlanner
 
         // generate site grids
         if ( _generateSiteGrids( plan ) )
-        {
+        {            
             _dispatch();
         }
     } 
@@ -33,12 +32,12 @@ namespace plAutomaticPlanner
     PLbool _generateSite( plSeq<plSiteGrid> &grids, const plSeq<plTriangle> &triangles, const plBoundary &boundary )
     {       
         plSiteGrid site( triangles, boundary );                
-                   
+      
         if ( site.gridSize() == 0 )
         {
             _donorSiteGrids.clear();
             _defectSiteGrids.clear();
-            std::cerr << "_generateSiteGrids() error: could not produce site mesh\n";
+            std::cerr << "plAutomaticPlanner::_generateSite() error: could not produce site mesh\n";
             return false;
         }
         
@@ -51,7 +50,6 @@ namespace plAutomaticPlanner
     
     PLbool _generateSiteGrids( plPlan &plan )
     {
-        
         for ( PLuint i = 0; i < plan.defectSites().size(); i++)
         {   
             std::cout << "\tCalculating defect site grid " << i << " \n";
@@ -62,10 +60,11 @@ namespace plAutomaticPlanner
                 return false;
             }
         }
-        
+
         for ( PLuint i = 0; i < plan.donorSites().size(); i++)
         {    
             std::cout << "\tCalculating donor site grid " << i << " \n";
+            
             if ( !_generateSite( _donorSiteGrids, 
                                  plan.donorSites(i).model().cartilage.triangles(), 
                                  plan.donorSites(i).boundary) )
@@ -82,7 +81,6 @@ namespace plAutomaticPlanner
     {    
         PLtime t0, t1;
         
-        /*
         // stage 0 timing
         t0 = plTimer::now();
 
@@ -105,10 +103,10 @@ namespace plAutomaticPlanner
             DEBUG_GRAFT_LOCATIONS.add( plVector3( r, 0.0f, 0.0f ) ); 
         }
         //////////////////////////////
-        */
+
         // stage 1 timing
         t0 = plTimer::now();
-plAnnealingState state( 1.0 );
+
         plPlannerStage1::run( _defectSiteGrids[0], _donorSiteGrids, state );
         
         t1 = plTimer::now();

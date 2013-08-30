@@ -8,7 +8,7 @@ plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &bo
 {
     // generate interior _triangles
     plMeshCutter::findInteriorMesh( triangles, boundary, _triangles );
-      
+
     _generateGridPoints(); 
     _generatePerimeterPoints( boundary ); 
     _calcArea();

@@ -117,7 +117,7 @@ void plOctree::_fill(const plSeq<plTriangle> &triangles, PLuint depth)
 
 
 plOctreeNode::plOctreeNode( const plVector3 &c, PLfloat hw)
-    : children(NULL, 8), centre(c), halfWidth(hw)
+    : children(8, NULL), centre(c), halfWidth(hw)
 {
     // create mesh
     _updateMesh();
