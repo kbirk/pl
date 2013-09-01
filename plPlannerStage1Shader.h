@@ -41,7 +41,8 @@ class plPlannerStage1Shader : public plShader
         PLuint _donorSiteMeshSizeID;
         PLuint _donorSiteGridSizeID;
         PLuint _donorSitePerimSizeID;
-        
+ 
+        PLuint _seedID;       
 };
 
 

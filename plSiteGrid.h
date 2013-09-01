@@ -41,7 +41,10 @@ class plSiteGrid
         plVector3  normal()     const { return _normal; };
         
         PLuint getFullSSBO() const;
+        PLuint getGridSSBO() const;
         PLuint getMeshSSBO() const;
+        
+        plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
         
         //const plTriangle&        triangles(PLuint i)       const { return _triangles[i];   }     
         const plVector4&         points   ( PLuint index ) const { return _points[index];  }
@@ -55,11 +58,12 @@ class plSiteGrid
         plSeq<plVector4>  _perimeter;
         PLfloat           _area;
         plVector3         _normal;
-        
+
         void _generateGridPoints();  
         void _generatePerimeterPoints( const plBoundary &boundary );
         void _calcArea          ();
         void _calcNormal        ();
+        
 };
 
 #endif

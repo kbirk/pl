@@ -107,11 +107,22 @@ namespace plAutomaticPlanner
         // stage 1 timing
         t0 = plTimer::now();
 
-        plPlannerStage1::run( _defectSiteGrids[0], _donorSiteGrids, state );
+        plSeq<PLfloat> rmsData = plPlannerStage1::run( _defectSiteGrids[0], _donorSiteGrids, state );
         
         t1 = plTimer::now();
         std::cout << "\nAutomatic planner stage 1 complete:\n\tCompute shader execution time: " << t1 - t0 << " milliseconds \n";
         //
+        
+        
+        // stage 2 timing
+        t0 = plTimer::now();
+
+        //plSeq<plVector4> donorData = plPlannerStage2::run(  _donorSiteGrids, state );    
+        
+        t1 = plTimer::now();
+        std::cout << "\nAutomatic planner stage 2 complete:\n\tCompute shader execution time: " << t1 - t0 << " milliseconds \n";
+        //
+        
     }
  
 

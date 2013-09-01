@@ -12,12 +12,12 @@
 #define PL_STAGE1_GROUP_SIZE                           256
 
 #define PL_STAGE1_MAX_DONOR_SITES                      5
-#define PL_STAGE1_MAX_CAP_TRIANGLES                    500
+#define PL_STAGE1_MAX_CAP_TRIANGLES                    1024
 
 namespace plPlannerStage1
 {
 
-    void run( const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plAnnealingState &state );
+    plSeq<PLfloat> run( const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plAnnealingState &state );
       
 }
 

@@ -1,10 +1,17 @@
 #version 430
 
-#define PL_MAX_GRAFTS_PER_SOLUTION  20
+#define PL_FLT_MAX                  99999;
+#define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_DONOR_SITES          5
-#define PL_MAX_CAP_TRIANGLES        500
+#define PL_MAX_CAP_TRIANGLES        1024
 
-layout (local_size_x = 16) in;
+#define PL_DONOR_Z                  0, 0, 1
+#define PL_DEFECT_Z                 0, 0, 1
+
+#define PL_NUM_CAP_COMPARISONS      50
+#define PL_NUM_CAP_ANGLES           10
+
+layout (local_size_x = 256) in;
 
 // input data
 layout (std430,  binding = 0) buffer defectSiteDataBlock  { vec4 defectSiteData[]; };
@@ -30,6 +37,9 @@ uniform uint  uDonorSiteMeshSize   [PL_MAX_DONOR_SITES];
 uniform uint  uDonorSiteGridSize   [PL_MAX_DONOR_SITES];
 uniform uint  uDonorSitePerimSize  [PL_MAX_DONOR_SITES];
 
+
+
+uniform uint uSeed;
 
 struct triangle
 {
@@ -61,30 +71,33 @@ triangle defectSiteTriangles( in uint i )
 
 triangle defectCapTriangles( in uint i )
 {
+    uint offset = gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES * 4;
     uint j = i*4;  
     triangle t;
-    t.p0 = vec3( gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + tempDefectTriangles[j+0] );
-    t.p1 = vec3( gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + tempDefectTriangles[j+1] );
-    t.p2 = vec3( gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + tempDefectTriangles[j+2] );
-    t.n  = vec3( gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + tempDefectTriangles[j+3] );
+    t.p0 = vec3( tempDefectTriangles[ offset + j+0 ] );
+    t.p1 = vec3( tempDefectTriangles[ offset + j+1 ] );
+    t.p2 = vec3( tempDefectTriangles[ offset + j+2 ] );
+    t.n  = vec3( tempDefectTriangles[ offset + j+3 ] );
     return t;
 }
 
 
-void defectCapTriangles( in uint i, in triangle t )
+void defectCapTriangles( in uint i, in triangle t, in vec3 position )
 {
+    uint offset = gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES * 4;
     uint j = i*4;
-    tempDefectTriangles[ gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + j+0 ] = vec4( t.p0,  1.0 );
-    tempDefectTriangles[ gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + j+1 ] = vec4( t.p1, 1.0 );
-    tempDefectTriangles[ gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + j+2 ] = vec4( t.p2, 1.0 );
-    tempDefectTriangles[ gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + j+4 ] = vec4( t.n,  1.0 );
+    // subtract position from triangles for normalized coordinate system 
+    tempDefectTriangles[ offset + j+0 ] = vec4( t.p0-position, 1.0 );
+    tempDefectTriangles[ offset + j+1 ] = vec4( t.p1-position, 1.0 );
+    tempDefectTriangles[ offset + j+2 ] = vec4( t.p2-position, 1.0 );
+    tempDefectTriangles[ offset + j+3 ] = vec4( t.n,  1.0 );
 }
 
 
 void getDonorSiteAndIndex( inout uint site, inout uint localIndex )
 {
     localIndex = gl_GlobalInvocationID.x;
-    for (uint i=0; i< site; i++)
+    for (uint i=0; i<uDonorSiteCount; i++)
     {
         if ( localIndex < uDonorSiteGridSize[ i ] )
         {
@@ -98,18 +111,18 @@ void getDonorSiteAndIndex( inout uint site, inout uint localIndex )
 
 uint getDonorSiteOffset( in uint site )
 {
-    uint index = 0;
-    for (uint i=0; i< site; i++)
+    uint offset = 0;
+    for (uint i=0; i<site; i++)
     {
-        index+= uDonorSiteGridSize[i]*2 + uDonorSiteMeshSize[i]*4 + uDonorSitePerimSize[i]*2;
+        offset += uDonorSiteGridSize[i]*2 + uDonorSiteMeshSize[i]*4 + uDonorSitePerimSize[i]*2;
     }
-    return index;
+    return offset;
 }
 
 
 vec4 donorSitePositions( in uint site, in uint i )
 {   
-    return donorSiteData[ getDonorSiteOffset( site ) + i];
+    return donorSiteData[ getDonorSiteOffset( site ) + i ];
 }
 
 
@@ -133,23 +146,26 @@ triangle donorSiteTriangles( in uint site, in uint i )
 
 triangle donorCapTriangles( in uint i )
 {
+    uint offset = gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES * 4;
     uint j = i*4;  
     triangle t;
-    t.p0 = vec3( gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + tempDonorTriangles[j+0] );
-    t.p1 = vec3( gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + tempDonorTriangles[j+1] );
-    t.p2 = vec3( gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + tempDonorTriangles[j+2] );
-    t.n  = vec3( gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + tempDonorTriangles[j+3] );
+    // subtract position from triangles for normalized coordinate system 
+    t.p0 = vec3( tempDonorTriangles[ offset + j+0 ] );
+    t.p1 = vec3( tempDonorTriangles[ offset + j+1 ] );
+    t.p2 = vec3( tempDonorTriangles[ offset + j+2 ] );
+    t.n  = vec3( tempDonorTriangles[ offset + j+3 ] );
     return t;
 }
 
 
-void donorCapTriangles( in uint i, in triangle t )
+void donorCapTriangles( in uint i, in triangle t, in vec3 position )
 {
+    uint offset = gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES * 4;
     uint j = i*4;
-    tempDonorTriangles[ gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + j+0 ] = vec4( t.p0, 1.0 );
-    tempDonorTriangles[ gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + j+1 ] = vec4( t.p1, 1.0 ); 
-    tempDonorTriangles[ gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + j+2 ] = vec4( t.p2, 1.0 );
-    tempDonorTriangles[ gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES + j+3 ] = vec4( t.n,  1.0 );
+    tempDonorTriangles[ offset + j+0 ] = vec4( t.p0-position, 1.0 );
+    tempDonorTriangles[ offset + j+1 ] = vec4( t.p1-position, 1.0 ); 
+    tempDonorTriangles[ offset + j+2 ] = vec4( t.p2-position, 1.0 );
+    tempDonorTriangles[ offset + j+3 ] = vec4( t.n,  1.0 );
 }
 
 
@@ -163,7 +179,7 @@ edge donorSiteEdge( in uint site, in uint i )
     edge e;
     e.p0 = vec3( donorSiteData[ j ] );
     e.p1 = vec3( donorSiteData[ k ] );  
-    e.n  = vec3( donorSiteData[ j+uDonorSitePerimSize[ site ] ] );
+    e.n  = vec3( donorSiteData[ j + uDonorSitePerimSize[ site ] ] );
     return e;
 }
 
@@ -243,21 +259,19 @@ bool intersectTriangle( in vec3 position, in vec3 normal, in triangle t, in floa
 }
 
 
-uint calculateDonorCap( in vec3 position, in vec3 normal, in float radius )
+uint calculateDefectCap( in vec3 position, in vec3 normal, in float radius )
 { 
-    uint site, localIndex;
-    getDonorSiteAndIndex( site, localIndex );
-    
     uint triangleCount = 0;
     
-    for(uint i=0; i<uDonorSiteMeshSize[ site ]; i++)
+    for(uint i=0; i<uDefectSiteMeshSize; i++)
     {
         // create triangle struct
-        triangle t = donorSiteTriangles( site, i );
+        triangle tri = defectSiteTriangles( i );
 
-        if ( intersectTriangle( position, normal, t, radius ) )
+        if ( intersectTriangle( position, normal, tri, radius ) )
         {
-            donorCapTriangles( triangleCount, t );
+            // if intersected by graft cap, add to temp array
+            defectCapTriangles( triangleCount, tri, position );
             triangleCount++;
         }
     }
@@ -265,20 +279,19 @@ uint calculateDonorCap( in vec3 position, in vec3 normal, in float radius )
 }
 
 
-uint calculateDefectCap( in vec3 position, in vec3 normal, in float radius )
-{ 
-    // get global invocation id
-
+uint calculateDonorCap( in uint site, in vec3 position, in vec3 normal, in float radius )
+{    
     uint triangleCount = 0;
     
-    for(uint i=0; i<uDefectSiteMeshSize; i++)
+    for(uint i=0; i<uDonorSiteMeshSize[ site ]; i++)
     {
         // create triangle struct
-        triangle t = defectSiteTriangles( i );
+        triangle tri = donorSiteTriangles( site, i );
 
-        if ( intersectTriangle( position, normal, t, radius ) )
+        if ( intersectTriangle( position, normal, tri, radius ) )
         {
-            defectCapTriangles( triangleCount, t );
+            // if intersected by graft cap, add to temp array
+            donorCapTriangles( triangleCount, tri, position );
             triangleCount++;
         }
     }
@@ -288,122 +301,166 @@ uint calculateDefectCap( in vec3 position, in vec3 normal, in float radius )
 
 bool rayIntersect( inout vec3 point, inout float t, in vec3 rayStart, in vec3 rayDir, in triangle tri )
 {
-    // Compute ray/plane intersection
-    float dn = rayDir * tri.n;
+    bool result = false;
 
-    if (dn == 0 )
+    float dn = dot( rayDir, tri.n );
+
+    if (dn != 0.0 )
     {      
-        return false;   // ray is parallel to plane 
+        float dist = dot( tri.p0, tri.n );
+
+        t = ( dist - dot( rayStart, tri.n ) ) / dn;
+        
+        point = rayStart + t * rayDir;
+
+        // Compute barycentric coords
+        float totalAreaDiv = 1.0 / dot( cross( tri.p1-tri.p0, tri.p2-tri.p0 ), tri.n);
+        float u = dot( cross( tri.p2-tri.p1, point-tri.p1 ), tri.n) * totalAreaDiv;
+        float v = dot( cross( tri.p0-tri.p2, point-tri.p2 ), tri.n) * totalAreaDiv;
+
+        // Reject if outside triangle
+        if (u < -0.0001 || v < -0.0001 || u + v > 1.0001)
+        {
+            result = false; 
+        }
+        else
+        {
+            result = true;
+        }
+    }
+    else
+    {
+        // ray is parallel to plane 
+        result = false;        
     }
 
-    float dist = dot( tri.p0, tri.n );
-
-    t = (dist - rayStart*tri.n) / dn;
-    
-    point = rayStart + t * rayDir;
-
-    // Compute barycentric coords
-    float totalAreaDiv = 1.0 / dot( cross( tri.p1-tri.p0, tri.p2-tri.p0 ) , tri.n);
-    float u = dot( cross( tri.p2-tri.p1, point-tri.p1 ), tri.n) * totalAreaDiv;
-    float v = dot( cross( tri.p0-tri.p2, point-tri.p2 ), tri.n) * totalAreaDiv;
-
-    // Reject if outside triangle
-    if (u < 0 || v < 0 || u + v > 1)
-        return false; 
-    
-    return true;
+    return result;
 }
 
 
-vec3 rayIntersectDefect( in vec3 rayStart, in vec3 rayDir, in uint count )
+bool rayIntersectDefect( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in uint count )
 {
-    vec3 closestPoint;
-    float minT;
-    for (uint i=0; i<count*4; i+=4)
+    bool result = false;
+    float minT = PL_FLT_MAX;
+    for (uint i=0; i<count; i++)
     {
         triangle tri = defectCapTriangles( i );
-        vec3 point;
+        vec3 p;
         float t;
-        if ( rayIntersect( point, t, rayStart, rayDir, tri ) )
+        if ( rayIntersect( p, t, rayStart, rayDir, tri ) )
         { 
+            result = true;
             if ( abs( t ) < minT )
             {
                 minT = abs( t );
-                closestPoint = point;
+                point = p;
             }
         }
     }
-    return closestPoint;
+    return result;
 }
 
 
 
-vec3 rayIntersectDonor( in vec3 rayStart, in vec3 rayDir, in uint count )
+bool rayIntersectDonor( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in uint count )
 {
-    vec3 closestPoint;
-    float minT;
+    bool result = false;
+    float minT = PL_FLT_MAX;
     for (uint i=0; i<count; i++)
     {
         triangle tri = donorCapTriangles( i );
-        vec3 point;
+        vec3 p;
         float t;
-        if ( rayIntersect( point, t, rayStart, rayDir, tri ) )
+        if ( rayIntersect( p, t, rayStart, rayDir, tri ) )
         {
+            result = true;
             if ( abs( t ) < minT )
             {
                 minT = abs( t );
-                closestPoint = point;
+                point = p;
+                
             }
         }
     }
-    return closestPoint;
+    return result;
 }
 
 
-float calcRMS( in uint defectCount, in uint donorCount, in vec3 normal )
+float calcRMS( in uint defectCount, in uint donorCount, in vec3 defectNormal, in vec3 donorNormal, in float radius, inout uint seed )
 {
-    vec3 pos[1];
-    pos[0] = vec3(0,0,0);
-    uint numPoints = 1;
+    // ray intersect at certain points, and calc distance
     
+    // get coordinate systems for grafts
+    vec3 defectX = normalize( cross( defectNormal, vec3(PL_DEFECT_Z) ) );
+    vec3 defectZ = normalize( cross( defectX, defectNormal ) );
+    
+    vec3 donorX = normalize( cross( donorNormal, vec3(PL_DONOR_Z) ) );
+    vec3 donorZ = normalize( cross( donorX, donorNormal ) );
+
+    uint successfulChecks = 0;
     float squaredDistanceSum = 0;
-    for (uint i=0; i<numPoints; i++)
-    {
-        vec3 defectPoint = rayIntersectDefect( pos[i], normal, defectCount );
-        vec3 donorPoint  = rayIntersectDonor ( pos[i], normal, donorCount  );
-        squaredDistanceSum += distance(defectPoint, donorPoint) * distance(defectPoint, donorPoint);
+    
+    for (uint i=0; i<PL_NUM_CAP_COMPARISONS; i++)
+    {    
+        float xScale = (rand( seed )*2.0)-1.0;
+        float zScale = (rand( seed )*2.0)-1.0;
+        float mag    = radius*rand( seed );
+
+        vec3 defectCast = normalize( defectX * xScale + defectZ * zScale ) * mag;
+        vec3 donorCast  = normalize( donorX  * xScale + donorZ  * zScale ) * mag;
+        
+        vec3 defectPoint, donorPoint;
+        bool i0 = rayIntersectDefect( defectPoint, defectCast, defectNormal, defectCount );
+        bool i1 = rayIntersectDonor ( donorPoint,  donorCast,  donorNormal,  donorCount  );   
+        
+        if ( i0 && i1 ) // this should never fail!  
+        {    
+            squaredDistanceSum += distance(defectPoint, donorPoint) * distance(defectPoint, donorPoint);
+            successfulChecks++;
+        }
+        
     }
 
-    return squaredDistanceSum / float( numPoints );
+    return squaredDistanceSum / float( successfulChecks );
 }
 
 
 void main(void)
 { 
+    // get invocation unique seed value for RNG
+    uint seed = uint( uSeed*(gl_GlobalInvocationID.x+1) );
+
+    // get specific defect site and local index of grid point
     uint site, localIndex;
     getDonorSiteAndIndex( site, localIndex );
     
-    vec3 gridPoint = vec3( donorSitePositions( site, localIndex ) );
+    // get grid point
+    vec3 gridPosition = vec3( donorSitePositions( site, localIndex ) );
+    vec3 gridNormal   = vec3( donorSiteNormals  ( site, localIndex ) );
     
-    // for each graft
+    // for each graft in solution
     for (uint i=0; i<uGraftCount; i++)
     {
         float rms;
-        if ( isWithinSite( site, gridPoint, uGraftRadii[i] ) )
+        if ( isWithinSite( site, gridPosition, uGraftRadii[i] ) )
         {
+            vec3 graftPosition = vec3( uGraftPositions[i] );
+            vec3 graftNormal   = vec3( uGraftNormals  [i] );
+            
             // calculate defect cap triangles and store in temp buffer
-            uint defectCount = calculateDefectCap( vec3( uGraftPositions[i] ), vec3( uGraftNormals[i] ), uGraftRadii[i] );
+            uint defectCount = calculateDefectCap( graftPosition, graftNormal, uGraftRadii[i] );
             // calculate cap triangles and store in temp buffer
-            uint donorCount = calculateDonorCap( gridPoint, vec3( uGraftNormals[i] ), uGraftRadii[i] );
+            uint donorCount  = calculateDonorCap( site, gridPosition, gridNormal, uGraftRadii[i] );
             // calculate rms error
-            rms = calcRMS( defectCount, donorCount, vec3( uGraftNormals[i] ) );  
+            rms = calcRMS( defectCount, donorCount, graftNormal, gridNormal, uGraftRadii[i], seed );  
         }
         else
         {
             // doesnt fit in boundary
             rms = -1;
         }
-        rmsOutput[ gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION + i] = rms;
+        rmsOutput[ gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION + i] = rms;
+        //rmsOutput[ gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION + i] = gl_GlobalInvocationID.x;
              
     }    
     

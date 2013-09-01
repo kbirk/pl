@@ -6,14 +6,13 @@ plSiteGrid::plSiteGrid()
 
 plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &boundary )
 {
-    // generate interior _triangles
+    // generate interior triangles
     plMeshCutter::findInteriorMesh( triangles, boundary, _triangles );
 
     _generateGridPoints(); 
     _generatePerimeterPoints( boundary ); 
     _calcArea();
-    _calcNormal();   
-    
+    _calcNormal();          
 }
 
 PLuint plSiteGrid::getFullSSBO() const
@@ -38,6 +37,24 @@ PLuint plSiteGrid::getFullSSBO() const
     glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(plVector4), &data[0], GL_STATIC_READ);
     return tempBuffer;
 }
+
+
+PLuint plSiteGrid::getGridSSBO() const
+{
+    PLuint gridSize  = _points.size();     
+    PLuint dataSize  = gridSize*2;
+      
+    plSeq<plVector4> data( dataSize );  
+    for ( PLuint i=0; i < gridSize; i++ ) { data.add( _points[i]  ); }    
+    for ( PLuint i=0; i < gridSize; i++ ) { data.add( _normals[i] ); }                                                                                     
+  
+    PLuint tempBuffer;
+    glGenBuffers(1, &tempBuffer);   
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(plVector4), &data[0], GL_STATIC_READ);
+    return tempBuffer;
+}
+
 
 PLuint plSiteGrid::getMeshSSBO() const
 {
@@ -186,6 +203,31 @@ void plSiteGrid::_calcNormal()
         _normal = _normal + _triangles[i].normal();
     }  
     _normal = (1/(float)_triangles.size() * _normal).normalize();    
-}               
+}  
+
+
+plIntersection plSiteGrid::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+{
+    PLfloat min = FLT_MAX;
+    plIntersection closestIntersection( false );
+
+    for ( PLuint i = 0; i < _triangles.size(); i++)
+    {  
+        plIntersection intersection = _triangles[i].rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
+        
+        if (intersection.exists)
+        {
+            PLfloat tAbs = fabs(intersection.t);
+            if ( tAbs < min) 
+            {
+                min = tAbs;
+                closestIntersection = intersection;
+            }
+        }
+
+    }
+    
+    return closestIntersection;
+}                 
     
 

@@ -193,6 +193,16 @@ namespace plPlannerStage0
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 ); 
         glDeleteBuffers(1, &siteDataBufferID);
         glDeleteBuffers(1, &overlappedTrianglesBufferID);
+                        
+        // re-compute positions as perturbations will shift them off the mesh surface!
+        for (PLuint i=0; i < state.graftCount; i++)
+        {
+            plVector3 rayOrigin   ( state.graftPositions[i].x, state.graftPositions[i].y, state.graftPositions[i].z );
+            plVector3 rayDirection( state.graftNormals[i].x,   state.graftNormals[i].y,   state.graftNormals[i].z   );
+        
+            plIntersection intersection = site.rayIntersect( rayOrigin, rayDirection );
+            state.graftPositions[i] = plVector4( intersection.point, 1.0 );
+        }
         
         return state;
 

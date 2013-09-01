@@ -19,7 +19,9 @@ void plPlannerStage1Shader::getUniformLocations()
     _donorSiteCountID     = glGetUniformLocation(_shaderProgramID, "uDonorSiteCount");
     _donorSiteMeshSizeID  = glGetUniformLocation(_shaderProgramID, "uDonorSiteMeshSize");
     _donorSiteGridSizeID  = glGetUniformLocation(_shaderProgramID, "uDonorSiteGridSize");
-    _donorSitePerimSizeID = glGetUniformLocation(_shaderProgramID, "uDonorSitePerimSize");    
+    _donorSitePerimSizeID = glGetUniformLocation(_shaderProgramID, "uDonorSitePerimSize");  
+        
+    _seedID                = glGetUniformLocation(_shaderProgramID, "uSeed");    
 }
 
 
@@ -31,8 +33,9 @@ void plPlannerStage1Shader::setGraftUniforms ( PLuint count,
     glUniform1ui  ( _graftCountID,     count );     
     glUniform4fv  ( _graftPositionsID, positions.size(), &positions[0].x );   
     glUniform4fv  ( _graftNormalsID,   normals.size(),   &normals[0].x   );
-    glUniform4fv  ( _graftRadiiID,     radii.size(),     &radii[0]       );
+    glUniform1fv  ( _graftRadiiID,     radii.size(),     &radii[0]       );
 }
+ 
                                
 void plPlannerStage1Shader::setSiteUniforms  ( PLuint defectMeshSize, 
                                                PLuint donorCount,
@@ -41,10 +44,11 @@ void plPlannerStage1Shader::setSiteUniforms  ( PLuint defectMeshSize,
                                                const plSeq<PLuint> &donorPerimSize) const
 {
 
-    glUniform1ui  ( _defectSiteMeshSizeID, defectMeshSize );   
-    glUniform1ui  ( _donorSiteCountID,     donorCount );   
+    glUniform1ui   ( _defectSiteMeshSizeID, defectMeshSize );   
+    glUniform1ui   ( _donorSiteCountID,     donorCount );   
     glUniform1uiv  ( _donorSiteMeshSizeID,  donorMeshSize.size(),  &donorMeshSize[0] );   
     glUniform1uiv  ( _donorSiteGridSizeID,  donorGridSize.size(),  &donorGridSize[0] );   
     glUniform1uiv  ( _donorSitePerimSizeID, donorPerimSize.size(), &donorPerimSize[0] );   
-    
+      
+    glUniform1ui  ( _seedID, rand() );       
 }

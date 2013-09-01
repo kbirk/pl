@@ -1,6 +1,8 @@
 #version 430
 
-#define PL_MAX_GRAFTS_PER_SOLUTION  20
+
+#define PL_ITERATIONS               1
+#define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_RADIUS               4.0
 #define PL_MIN_RADIUS               2.0
 #define PL_OVERLAP_THRESHOLD        0.8
@@ -446,7 +448,7 @@ void main(void)
     state S;   copyGlobalState(  S ); 
     state nS;  copyGlobalState( nS ); 
     
-    for (uint j=0; j < 5; j++)
+    for (uint j=0; j < PL_ITERATIONS; j++)
     {   
         // determine which case
         uint changeCase = uint( rand( seed ) * 3 ); //gid % 3;

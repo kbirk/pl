@@ -257,7 +257,21 @@ namespace plRenderer
                 PLfloat x = plAutomaticPlanner::_donorSiteGrids[i].points(j).x;
                 PLfloat y = plAutomaticPlanner::_donorSiteGrids[i].points(j).y;
                 PLfloat z = plAutomaticPlanner::_donorSiteGrids[i].points(j).z;
-                plDraw::sphere( plVector3(x,y,z), 0.09f );
+                
+                if ( i == 0 && (j == 8 || j == 9 || j == 0) )
+                {
+                    if (j == 0)
+                        plColourStack::load( 1, 0, 0 );   
+                    if (j == 8)
+                        plColourStack::load( 0, 1, 0 ); 
+                    if (j == 9)   
+                        plColourStack::load( 0, 0, 1 ); 
+                        
+                    plDraw::sphere( plVector3(x,y,z), 0.4f );
+                }
+                else
+                    plDraw::sphere( plVector3(x,y,z), 0.09f );
+                
                 
             }
         }

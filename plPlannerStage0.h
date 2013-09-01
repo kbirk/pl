@@ -9,7 +9,7 @@
 #include "plSiteGrid.h"
 #include "plPlannerStage0Shader.h"
 
-#define PL_MAX_GRAFTS_PER_SOLUTION           20
+#define PL_MAX_GRAFTS_PER_SOLUTION           16
 
 #define PL_STAGE0_INITIAL_TEMPERATURE        1.0f
 #define PL_STAGE0_COOLING_RATE               0.05f
