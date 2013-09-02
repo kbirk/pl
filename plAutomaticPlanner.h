@@ -8,6 +8,7 @@
 
 #include "plPlannerStage0.h"
 #include "plPlannerStage1.h"
+#include "plPlannerStage2.h"
 
 namespace plAutomaticPlanner
 {
@@ -16,7 +17,7 @@ namespace plAutomaticPlanner
     extern plSeq<plSiteGrid>  _donorSiteGrids;
     extern plSeq<plSiteGrid>  _defectSiteGrids;  
            
-    extern plSeq<plVector3> DEBUG_GRAFT_LOCATIONS;                   
+    //extern plSeq<plVector3> DEBUG_GRAFT_LOCATIONS;                   
 }
 
 

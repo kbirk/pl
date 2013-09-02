@@ -14,7 +14,7 @@ class plPlug : public plModelSpecific
         plTransform transform; 
 
         plPlug();
-        plPlug( PLuint _modelID, const plBoneAndCartilage &_model );
+        plPlug( PLuint _modelID, const plBoneAndCartilage &_model, const plTransform &t );
 
         void importCSV  ( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 

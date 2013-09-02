@@ -15,26 +15,60 @@ plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &bo
     _calcNormal();          
 }
 
+
+plVector3 plSiteGrid::_calcSmoothNormal( const plVector3 &centroid, const plVector3 &up, PLfloat radius )
+{
+
+    plVector3 normal(0,0,0);        
+    float     radiusSquared = radius * radius;
+    PLint     count = 0;
+    
+    // Find polygons on top of graft
+    for (PLuint i=0; i<_triangles.size(); i++) 
+    {
+        if ( _triangles[i].normal() * up > 0.001 )
+        {        
+            PLfloat dist1 = ( _triangles[i].point0() - centroid ).squaredLength();
+            PLfloat dist2 = ( _triangles[i].point1() - centroid ).squaredLength();
+            PLfloat dist3 = ( _triangles[i].point2() - centroid ).squaredLength();
+           
+            // if any point of triangle is withing radial sphere, accept
+            float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
+
+            if (minDist <= radiusSquared)
+            {        
+                normal = normal + _triangles[i].normal();
+                count++;
+            }
+        }
+    } 
+
+    if (count == 0)
+    {
+        // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
+        std::cout << "No normal found\n";
+        return up;
+    }    
+
+    return (1.0f/(PLfloat)(count) * normal).normalize();      
+}
+
+
 PLuint plSiteGrid::getFullSSBO() const
 {
-    PLuint meshSize  = _triangles.size();     
-    PLuint gridSize  = _points.size();
-    PLuint perimSize = _perimeter.size();
-    PLuint dataSize  = (gridSize*2)+(meshSize*4)+perimSize;
-      
-    plSeq<plVector4> data( dataSize );  
-    for ( PLuint i=0; i < gridSize; i++ ) { data.add( _points[i]  ); }    
-    for ( PLuint i=0; i < gridSize; i++ ) { data.add( _normals[i] ); }    
-    for ( PLuint i=0; i < meshSize; i++ ) { data.add( plVector4( _triangles[i].point0(), 1.0 ) ); 
+    plSeq<plVector4> data( dataSize() );  
+    for ( PLuint i=0; i < gridSize(); i++ ) { data.add( _points[i]  ); }    
+    for ( PLuint i=0; i < gridSize(); i++ ) { data.add( _normals[i] ); }    
+    for ( PLuint i=0; i < meshSize(); i++ ) { data.add( plVector4( _triangles[i].point0(), 1.0 ) ); 
                                             data.add( plVector4( _triangles[i].point1(), 1.0 ) );
                                             data.add( plVector4( _triangles[i].point2(), 1.0 ) );
                                             data.add( plVector4( _triangles[i].normal(), 1.0 ) ); }                                                                                      
-    for ( PLuint i=0; i < perimSize; i++) { data.add( _perimeter[i] ); }    
+    for ( PLuint i=0; i < perimSize()*2; i++) { data.add( _perimeter[i] ); }    
 
     PLuint tempBuffer;
     glGenBuffers(1, &tempBuffer);   
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(plVector4), &data[0], GL_STATIC_READ);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize()*sizeof(plVector4), &data[0], GL_STATIC_READ);
     return tempBuffer;
 }
 
@@ -80,10 +114,11 @@ void plSiteGrid::_generateGridPoints()
     
     plSet<plPointAndNormal> p;
     for (PLuint i=0; i < _triangles.size(); i++)
-    {
-        p.insert( plPointAndNormal( _triangles[i].point0(), _triangles[i].normal() ) );
-        p.insert( plPointAndNormal( _triangles[i].point0(), _triangles[i].normal() ) );
-        p.insert( plPointAndNormal( _triangles[i].point0(), _triangles[i].normal() ) );
+    {   
+        plVector3 smoothNormal = _calcSmoothNormal( _triangles[i].centroid(), _triangles[i].normal(), 4.0f );   
+        p.insert( plPointAndNormal( _triangles[i].point0(), smoothNormal ) );
+        p.insert( plPointAndNormal( _triangles[i].point0(), smoothNormal ) );
+        p.insert( plPointAndNormal( _triangles[i].point0(), smoothNormal ) );
     }
     
     plSet<plPointAndNormal>::iterator p_itr = p.begin();
@@ -229,5 +264,61 @@ plIntersection plSiteGrid::rayIntersect( const plVector3 &rayOrigin, const plVec
     
     return closestIntersection;
 }                 
+
+
+
+
+PLuint getGroupFullSSBO( const plSeq<plSiteGrid> &sites )
+{
+    // find total data size
+    PLuint dataSize  = 0;
+    for (PLuint i=0; i < sites.size(); i++ )
+    {
+        dataSize += sites[i].dataSize();
+    }
+
+    plSeq<plVector4> data( dataSize );  
     
+    for (PLuint i=0; i < sites.size(); i++ )
+    {
+        for ( PLuint j=0; j < sites[i].gridSize(); j++ )   { data.add( sites[i].points(j) );  }    
+        for ( PLuint j=0; j < sites[i].gridSize(); j++ )   { data.add( sites[i].normals(j) ); }    
+        for ( PLuint j=0; j < sites[i].meshSize(); j++ )   { data.add( plVector4( sites[i].triangles(j).point0(), 1.0 ) ); 
+                                                             data.add( plVector4( sites[i].triangles(j).point1(), 1.0 ) );
+                                                             data.add( plVector4( sites[i].triangles(j).point2(), 1.0 ) );
+                                                             data.add( plVector4( sites[i].triangles(j).normal(), 1.0 ) ); }                                                                                      
+        for ( PLuint j=0; j < sites[i].perimSize()*2; j++) { data.add( sites[i].perimeter(j) ); }    
+    }
+    
+    PLuint tempBuffer;
+    glGenBuffers(1, &tempBuffer);   
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(plVector4), &data[0], GL_STATIC_READ);
+    return tempBuffer;
+}
+
+
+PLuint getGroupGridSSBO( const plSeq<plSiteGrid> &sites )
+{
+    // find total data size
+    PLuint dataSize  = 0;
+    for (PLuint i=0; i < sites.size(); i++ )
+    {
+        dataSize += sites[i].gridSize()*2;
+    }
+    
+    plSeq<plVector4> data( dataSize ); 
+    for (PLuint i=0; i < sites.size(); i++ )
+    { 
+        for ( PLuint j=0; j < sites[i].gridSize(); j++ ) { data.add( sites[i].points(j)  ); }    
+        for ( PLuint j=0; j < sites[i].gridSize(); j++ ) { data.add( sites[i].normals(j) ); }                                                                                     
+    }
+    
+    PLuint tempBuffer;
+    glGenBuffers(1, &tempBuffer);   
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(plVector4), &data[0], GL_STATIC_READ);
+    return tempBuffer;
+}
+
 

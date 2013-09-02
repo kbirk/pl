@@ -47,7 +47,7 @@ plVector3 plModel::getAverageNormal( PLfloat radius, const plVector3 &origin, co
 {
     plVector3 normal(0,0,0);
     PLint count = 0;
-    float radiusSquared = radius * radius;  // increasing by factor of two to fruther smooth normal
+    float radiusSquared = radius * radius;
     
     // Find polygons on top of graft
     for (PLuint i=0; i<_triangles.size(); i++) 

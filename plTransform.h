@@ -12,6 +12,8 @@ class plTransform
     public:
 
         plTransform();
+        plTransform( const plVector3 &y, const plVector3 &origin );
+        plTransform( const plVector3 &x, const plVector3 &y, const plVector3 &origin );
 
         const plVector3&          x() const { return _x; }
         const plVector3&          y() const { return _y; }

@@ -4,8 +4,8 @@ plPlug::plPlug()
 {
 }
 
-plPlug::plPlug( PLuint modelID, const plBoneAndCartilage &model )
-    : plModelSpecific( modelID, model )
+plPlug::plPlug( PLuint modelID, const plBoneAndCartilage &model, const plTransform &t  )
+    : transform(t), plModelSpecific( modelID, model )
 {
 }
 

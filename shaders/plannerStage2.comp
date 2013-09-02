@@ -3,26 +3,27 @@
 #define PL_FLT_MAX                  99999
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_DONOR_SITES          5
-#define PL_ITERATIONS               10
+#define PL_ITERATIONS               20
 
 layout (local_size_x = 256) in;
 
 // input data
 layout (std430,  binding = 0) buffer donorSiteDataBlock   { vec4 donorSiteData[];  };
-layout (std430,  binding = 1) buffer rmsOutputBlock       { float rmsInput[];      };
+layout (std430,  binding = 1) buffer rmsInputBlock        { float rmsInput[];      };
 
 // output data
-layout (std430,  binding = 2) buffer tempBuffer0          { vec4 donorOutput[];    };
+layout (std430,  binding = 2) buffer donorPointsBlock     { vec4  donorOutput[];   };
+layout (std430,  binding = 3) buffer totalRmsBlock        { float totalRmsOutput[]; };
 
 // input uniforms
 uniform uint  uGraftCount;
 uniform float uGraftRadii     [PL_MAX_GRAFTS_PER_SOLUTION];
 
+uniform uint  uTotalGridPoints;
 uniform uint  uDonorSiteCount;
 uniform uint  uDonorSiteGridSize   [PL_MAX_DONOR_SITES];
 
 uniform uint uSeed;
-
 
 void getDonorSiteAndIndex( inout uint site, inout uint localIndex, in uint globalIndex )
 {
@@ -82,9 +83,9 @@ float rand( inout uint seed )
 
 void shuffle( inout uint array[PL_MAX_GRAFTS_PER_SOLUTION], in uint size, inout uint seed )
 {   
-    for (uint i = 0; i < size-1; i++) 
+    for (uint i = 0; i < size; i++) 
     {
-        uint j = i + (rand( seed ) * (size - i));
+        uint j = uint(rand( seed ) * float(size) ); //i + uint( rand( seed ) * float(size - i) );
         uint t = array[j];
         array[j] = array[i];
         array[i] = t;
@@ -112,7 +113,7 @@ bool isSelectionValid( in uint gridIndex, in uint graftIndices[PL_MAX_GRAFTS_PER
         uint site, localIndex;
         getDonorSiteAndIndex( site, localIndex, solutionIndices[ i ] );
     
-        float combinedRadius = graftRadii[ graftIndices[solutionCount] ] + graftRadii[ graftIndices[i] ];
+        float combinedRadius = uGraftRadii[ graftIndices[solutionCount] ] + uGraftRadii[ graftIndices[i] ];
     
         if ( distance( donorSitePositions( candidateSite, candidateIndex ),  donorSitePositions( site, localIndex ) ) < combinedRadius )
         {
@@ -126,11 +127,13 @@ bool isSelectionValid( in uint gridIndex, in uint graftIndices[PL_MAX_GRAFTS_PER
 }
 
 
+
 void main(void)
 { 
     // get invocation unique seed value for RNG
     uint seed = uint( uSeed*(gl_GlobalInvocationID.x+1) );
 
+    // set min rms total to max value
     float minTotalRMS = PL_FLT_MAX;
 
     for ( uint k=0; k < PL_ITERATIONS; k++)
@@ -158,11 +161,11 @@ void main(void)
             {
                 float currentRMS = rms( graftIndex, j );
 
-                if ( currentRMS < lowestRMS )
+                if ( currentRMS > 0 && currentRMS < lowestRMS )
                 {
-                    if ( isSelectionValid( j, graftIndices, solutionIndices, i )
-                    {
-                        lowestGridpoint = j;
+                    if ( isSelectionValid( j, graftIndices, solutionIndices, i ) )
+                    {                       
+                        lowestGridpoint = int(j);
                         lowestRMS = currentRMS;
                     }                
                 }
@@ -170,7 +173,8 @@ void main(void)
             
             if ( lowestGridpoint == -1 )
             {
-                // cannot find donor site for graft, abort
+                // cannot find donor site for graft, abort this solution
+                currentTotalRMS = PL_FLT_MAX;
                 break;
             }    
             
@@ -186,18 +190,21 @@ void main(void)
             // save new min RMS
             minTotalRMS = currentTotalRMS;
             
-            // export solution
+            // export harvest locations and normals
             for (uint i=0; i < uGraftCount; i++)
             {
                 uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION * 2;        
                 uint graftIndex = graftIndices[i];
                         
-                uint site, index;
-                getDonorSiteAndIndex( site, index, solutionIndices[i] );
+                uint site, localIndex;
+                getDonorSiteAndIndex( site, localIndex, solutionIndices[i] );
             
-                donorOutput[ offset + graftIndex+0 ] = donorSitePositions( site, localIndex );
-                donorOutput[ offset + graftIndex+1 ] = donorSiteNormals  ( site, localIndex );
+                donorOutput[ offset + graftIndex*2+0 ] = donorSitePositions( site, localIndex );
+                donorOutput[ offset + graftIndex*2+1 ] = donorSiteNormals  ( site, localIndex );
             }
+            
+            // export total rms
+            totalRmsOutput[ gl_GlobalInvocationID.x ] = minTotalRMS;
         }
     
     }

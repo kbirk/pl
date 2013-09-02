@@ -4,6 +4,11 @@ plGraft::plGraft()
 {
 }
 
+plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat length, PLfloat heightOffset )
+    : recipient(r), harvest(h), _radius( radius ), _markDirection( plVector3(1,0,0) ), _length( length ), _heightOffset( heightOffset ) 
+{
+    _setCaps();   
+}
 
 void plGraft::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {

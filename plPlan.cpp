@@ -137,6 +137,11 @@ void plPlan::addIGuideSite( PLuint modelIndex )
     _iGuideSites.add( new plIGuideSite( modelIndex, *_models[modelIndex] ) );
 }
 
+void plPlan::addGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat length, PLfloat heightOffset )
+{
+    _grafts.add( new plGraft( h, r, radius, length, heightOffset ) );
+}
+
 
 void plPlan::removeDefectSite( PLuint index)
 {
@@ -158,6 +163,11 @@ void plPlan::removeIGuideSite( PLuint index)
     _iGuideSites.remove( index );
 }
 
+void plPlan::removeGraft( PLuint index )
+{
+    delete _grafts[index];
+    _grafts.remove( index );
+}
 
 template<class T>
 T &getImportReference( plSeq<T*> &ts,  const plString &index )

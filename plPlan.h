@@ -53,11 +53,13 @@ class plPlan : public plRenderable
         void addDefectSite( PLuint modelIndex = 0 );
         void addDonorSite ( PLuint modelIndex = 0 );
         void addIGuideSite( PLuint modelIndex = 0 );
+        void addGraft     ( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat length = 15.0f, PLfloat heightOffset = 0.0f );
 
-        void removeDefectSite( PLuint index);
-        void removeDonorSite ( PLuint index);
-        void removeIGuideSite( PLuint index);
-
+        void removeDefectSite( PLuint index );
+        void removeDonorSite ( PLuint index );
+        void removeIGuideSite( PLuint index );
+        void removeGraft     ( PLuint index );
+        
         void drawElements() const;
         void drawModels()   const;
 

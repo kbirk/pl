@@ -20,14 +20,16 @@ class plPlannerStage2Shader : public plShader
         void setGraftUniforms ( PLuint count, 
                                 const plSeq<PLfloat> &radii ) const;
                                
-        void setSiteUniforms  ( PLuint donorCount,
-                                const plSeq<PLuint> &donorGridSize) const;
+        void setSiteUniforms  (  PLuint donorCount,
+                                 PLuint totalGridPoints,
+                                 const plSeq<PLuint> &donorGridSize) const;
         
     private:
     
         PLuint _graftCountID;
         PLuint _graftRadiiID;
 
+        PLuint _totalGridPointsID;
         PLuint _donorSiteCountID;
         PLuint _donorSiteGridSizeID;
  

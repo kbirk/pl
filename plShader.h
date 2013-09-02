@@ -55,6 +55,19 @@ PLuint createSSBO( PLuint count, const T &fill )
 
 
 template< class T >
+PLuint createSSBO( const plSeq<T> &array )
+{
+    PLuint bufferID;
+
+    glGenBuffers(1, &bufferID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, array.size()*sizeof(T), &array[0], GL_STREAM_COPY);
+    
+    return bufferID;
+} 
+
+
+template< class T >
 T* readSSBO( PLuint index, PLuint count )
 {
     return (T*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 

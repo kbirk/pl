@@ -258,24 +258,11 @@ namespace plRenderer
                 PLfloat y = plAutomaticPlanner::_donorSiteGrids[i].points(j).y;
                 PLfloat z = plAutomaticPlanner::_donorSiteGrids[i].points(j).z;
                 
-                if ( i == 0 && (j == 8 || j == 9 || j == 0) )
-                {
-                    if (j == 0)
-                        plColourStack::load( 1, 0, 0 );   
-                    if (j == 8)
-                        plColourStack::load( 0, 1, 0 ); 
-                    if (j == 9)   
-                        plColourStack::load( 0, 0, 1 ); 
-                        
-                    plDraw::sphere( plVector3(x,y,z), 0.4f );
-                }
-                else
-                    plDraw::sphere( plVector3(x,y,z), 0.09f );
-                
-                
+                plDraw::sphere( plVector3(x,y,z), 0.09f );
             }
         }
         
+        /*
         // DEBUG
         // POTENTIAL GRAFTS
         for (PLuint i=0; i<plAutomaticPlanner::_defectSiteGrids.size(); i++)
@@ -310,7 +297,7 @@ namespace plRenderer
             }
 
         }
-        
+        */
         /* DEBUG FOR OCTREES
         // set flat shader
         plShaderStack::push( _minimalShader );    

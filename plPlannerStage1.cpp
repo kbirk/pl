@@ -5,6 +5,7 @@ namespace plPlannerStage1
 
     plSeq<PLfloat> run( const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plAnnealingState &state )
     {
+        
         // compile / link stage 1 shader
         plPlannerStage1Shader stage1Shader("./shaders/plannerStage1.comp");
         stage1Shader.bind(); 
@@ -14,7 +15,7 @@ namespace plPlannerStage1
         plSeq<PLuint> donorMeshSizes;
         plSeq<PLuint> donorGridSizes;
         plSeq<PLuint> donorPerimSizes;
-        for (PLuint i=0; i < 1; i++) //donorSites.size(); i++)
+        for (PLuint i=0; i < donorSites.size(); i++)
         {
             totalGridPoints += donorSites[i].gridSize();
             donorMeshSizes.add ( donorSites[i].meshSize()  );
@@ -22,12 +23,15 @@ namespace plPlannerStage1
             donorPerimSizes.add( donorSites[i].perimSize() );
         }
 
+        const PLuint TRIANGLE_BUFFER_SIZE = totalGridPoints*PL_STAGE1_MAX_CAP_TRIANGLES*4;
+        const PLuint RMS_BUFFER_SIZE      = totalGridPoints*PL_MAX_GRAFTS_PER_SOLUTION;      
+
         // generate and fill buffers 
         PLuint defectSiteDataBufferID      = defectSite.getMeshSSBO();
-        PLuint donorSiteDataBufferID       = donorSites[0].getFullSSBO();    
-        PLuint tempDefectTrianglesBufferID = createSSBO( totalGridPoints*PL_STAGE1_MAX_CAP_TRIANGLES*4, plVector4(-1,-1,-1,-1) );
-        PLuint tempDonorTrianglesBufferID  = createSSBO( totalGridPoints*PL_STAGE1_MAX_CAP_TRIANGLES*4, plVector4(-1,-1,-1,-1) );        
-        PLuint rmsOutputBuffer             = createSSBO( totalGridPoints*PL_MAX_GRAFTS_PER_SOLUTION, -1.0f );
+        PLuint donorSiteDataBufferID       = getGroupFullSSBO( donorSites ); //donorSites[0].getFullSSBO();    
+        PLuint tempDefectTrianglesBufferID = createSSBO( TRIANGLE_BUFFER_SIZE, plVector4(-1,-1,-1,-1) );
+        PLuint tempDonorTrianglesBufferID  = createSSBO( TRIANGLE_BUFFER_SIZE, plVector4(-1,-1,-1,-1) );        
+        PLuint rmsOutputBuffer             = createSSBO( RMS_BUFFER_SIZE, -1.0f );
    
         // bind buffers
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, defectSiteDataBufferID      );    
@@ -36,7 +40,7 @@ namespace plPlannerStage1
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, tempDonorTrianglesBufferID  );  
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, rmsOutputBuffer             );  
     
-        PLuint workgroups = ceil( totalGridPoints / (PLfloat) PL_STAGE1_GROUP_SIZE); // ensure enough workgroups are used
+        const PLuint NUM_WORKGROUPS = ceil( totalGridPoints / (PLfloat) PL_STAGE1_GROUP_SIZE); // ensure enough workgroups are used
 
         // set state uniforms
         stage1Shader.setGraftUniforms( state.graftCount,
@@ -45,24 +49,24 @@ namespace plPlannerStage1
                                        state.graftRadii );
 
         stage1Shader.setSiteUniforms( defectSite.meshSize(),
-                                      1, //donorSites.size(),
+                                      donorSites.size(),
                                       donorMeshSizes,
                                       donorGridSizes,
                                       donorPerimSizes );
                                       
         // call compute shader with 1D workgrouping
-        glDispatchCompute( workgroups, 1, 1 );
+        glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
         
         // memory barrier      
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
                                          
 
         // copy rms data into independant buffer
-        plSeq<PLfloat> rmsData( totalGridPoints*PL_MAX_GRAFTS_PER_SOLUTION, -1.0f ); 
+        plSeq<PLfloat> rmsData( RMS_BUFFER_SIZE, -1.0f ); 
                       
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, rmsOutputBuffer);            
-        PLfloat *rms = readSSBO<PLfloat>( 0, totalGridPoints*PL_MAX_GRAFTS_PER_SOLUTION );
-        memcpy( &rmsData[0], &rms[0], totalGridPoints*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( PLfloat ) );    
+        PLfloat *rms = readSSBO<PLfloat>( 0, RMS_BUFFER_SIZE );
+        memcpy( &rmsData[0], &rms[0], RMS_BUFFER_SIZE*sizeof( PLfloat ) );    
         glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 
         // unbind buffers
@@ -79,6 +83,7 @@ namespace plPlannerStage1
         glDeleteBuffers( 1, &tempDonorTrianglesBufferID  );
         glDeleteBuffers( 1, &rmsOutputBuffer             );
 
+        /* DEBUG
         std::cout << "rms: "; 
         for (PLuint i=0; i < 50; i++)
         {
@@ -88,7 +93,8 @@ namespace plPlannerStage1
                 std::cout << "\t" << rmsData[i*PL_MAX_GRAFTS_PER_SOLUTION + j];
             }
         } 
-
+        */
+        
         return rmsData;
     }
 

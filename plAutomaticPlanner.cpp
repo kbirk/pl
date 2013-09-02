@@ -4,11 +4,11 @@ namespace plAutomaticPlanner
 {
     plSeq<plSiteGrid>  _donorSiteGrids;
     plSeq<plSiteGrid>  _defectSiteGrids; 
-    plSeq<plVector3>   DEBUG_GRAFT_LOCATIONS; 
+    //plSeq<plVector3>   DEBUG_GRAFT_LOCATIONS; 
     
     PLbool _generateSite     ( plSeq<plSiteGrid> &grids, const plSeq<plTriangle> &triangles, const plBoundary &boundary );                    
     PLbool _generateSiteGrids( plPlan &plan );                
-    void   _dispatch();      
+    void   _dispatch( plPlan &plan );      
 
     void calculate( plPlan &plan )
     {   
@@ -25,7 +25,7 @@ namespace plAutomaticPlanner
         // generate site grids
         if ( _generateSiteGrids( plan ) )
         {            
-            _dispatch();
+            _dispatch( plan );
         }
     } 
 
@@ -77,7 +77,7 @@ namespace plAutomaticPlanner
     }
 
 
-    void _dispatch()
+    void _dispatch( plPlan &plan )
     {    
         PLtime t0, t1;
         
@@ -89,7 +89,7 @@ namespace plAutomaticPlanner
         t1 = plTimer::now();
         std::cout << "\nAutomatic planner stage 0 complete:\n\tCompute shader execution time: " << t1 - t0 << " milliseconds \n";
         //
-
+        /*
         /////////// DEBUG ////////////
         DEBUG_GRAFT_LOCATIONS.clear();   
         for (PLuint i=0; i < state.graftCount; i++)
@@ -103,7 +103,7 @@ namespace plAutomaticPlanner
             DEBUG_GRAFT_LOCATIONS.add( plVector3( r, 0.0f, 0.0f ) ); 
         }
         //////////////////////////////
-
+        */
         // stage 1 timing
         t0 = plTimer::now();
 
@@ -117,11 +117,32 @@ namespace plAutomaticPlanner
         // stage 2 timing
         t0 = plTimer::now();
 
-        //plSeq<plVector4> donorData = plPlannerStage2::run(  _donorSiteGrids, state );    
+        plSeq<plVector4> donorData = plPlannerStage2::run(  _donorSiteGrids, state, rmsData );    
         
         t1 = plTimer::now();
         std::cout << "\nAutomatic planner stage 2 complete:\n\tCompute shader execution time: " << t1 - t0 << " milliseconds \n";
         //
+        
+        PLuint previousCount = plan.grafts().size();
+        for ( PLuint i=0; i < previousCount; i++ )
+        {
+            plan.removeGraft( 0 );
+        }
+        
+        for ( PLuint i=0; i < state.graftCount; i++ )
+        {
+        
+            plVector3 recipientY      ( state.graftNormals[i].x,   state.graftNormals[i].y,   state.graftNormals[i].z   );
+            plVector3 recipientOrigin ( state.graftPositions[i].x, state.graftPositions[i].y, state.graftPositions[i].z );
+        
+            plVector3 harvestOrigin  ( donorData[i*2+0].x, donorData[i*2+0].y, donorData[i*2+0].z );
+            plVector3 harvestY       ( donorData[i*2+1].x, donorData[i*2+1].y, donorData[i*2+1].z );
+            
+            plPlug recipient( 0, plan.models(0), plTransform( recipientY, recipientOrigin ) );
+            plPlug harvest  ( 0, plan.models(0), plTransform( harvestY,   harvestOrigin   ) );
+            plan.addGraft( harvest, recipient, state.graftRadii[i] );
+        } 
+
         
     }
  

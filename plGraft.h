@@ -55,6 +55,12 @@ class plGraft : public plRenderable,
    
         plGraft();
         
+        plGraft( const plPlug &harvest, 
+                 const plPlug &recipient, 
+                 PLfloat radius,
+                 PLfloat length,
+                 PLfloat heightOffset );
+        
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         PLfloat          heightOffset()  const { return _heightOffset; } 

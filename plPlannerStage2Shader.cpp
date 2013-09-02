@@ -12,10 +12,11 @@ void plPlannerStage2Shader::getUniformLocations()
     _graftCountID         = glGetUniformLocation(_shaderProgramID, "uGraftCount");
     _graftRadiiID         = glGetUniformLocation(_shaderProgramID, "uGraftRadii");
 
+    _totalGridPointsID    = glGetUniformLocation(_shaderProgramID, "uTotalGridPoints");
     _donorSiteCountID     = glGetUniformLocation(_shaderProgramID, "uDonorSiteCount");
     _donorSiteGridSizeID  = glGetUniformLocation(_shaderProgramID, "uDonorSiteGridSize");
         
-    _seedID                = glGetUniformLocation(_shaderProgramID, "uSeed");    
+    _seedID               = glGetUniformLocation(_shaderProgramID, "uSeed");    
 }
 
 
@@ -28,8 +29,10 @@ void plPlannerStage2Shader::setGraftUniforms ( PLuint count,
  
                                
 void plPlannerStage2Shader::setSiteUniforms  ( PLuint donorCount,
+                                               PLuint totalGridPoints,
                                                const plSeq<PLuint> &donorGridSize) const
 { 
+    glUniform1ui   ( _totalGridPointsID,    totalGridPoints );  
     glUniform1ui   ( _donorSiteCountID,     donorCount );   
     glUniform1uiv  ( _donorSiteGridSizeID,  donorGridSize.size(),  &donorGridSize[0] );   
       

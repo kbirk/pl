@@ -8,7 +8,7 @@
 #define PL_DONOR_Z                  0, 0, 1
 #define PL_DEFECT_Z                 0, 0, 1
 
-#define PL_NUM_CAP_COMPARISONS      50
+#define PL_NUM_CAP_COMPARISONS      250
 #define PL_NUM_CAP_ANGLES           10
 
 layout (local_size_x = 256) in;
@@ -37,9 +37,7 @@ uniform uint  uDonorSiteMeshSize   [PL_MAX_DONOR_SITES];
 uniform uint  uDonorSiteGridSize   [PL_MAX_DONOR_SITES];
 uniform uint  uDonorSitePerimSize  [PL_MAX_DONOR_SITES];
 
-
-
-uniform uint uSeed;
+uniform uint  uSeed;
 
 struct triangle
 {
@@ -460,7 +458,6 @@ void main(void)
             rms = -1;
         }
         rmsOutput[ gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION + i] = rms;
-        //rmsOutput[ gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION + i] = gl_GlobalInvocationID.x;
              
     }    
     
