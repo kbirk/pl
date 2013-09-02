@@ -18,9 +18,16 @@ namespace plAutomaticPlanner
         if ( plan.defectSites(0).spline.size() < 4 )   { std::cerr << "plAutomaticPlanner::calculate() error: No defect spline specified\n";  return; } 
         if ( plan.defectSites(0).boundary.size() < 3 ) { std::cerr << "plAutomaticPlanner::calculate() error: No recipient area specified\n"; return; }
 
-        // clear sites
+        // clear previous sites
         _donorSiteGrids.clear();
         _defectSiteGrids.clear();
+
+        // clear previous grafts
+        PLuint previousCount = plan.grafts().size();
+        for ( PLuint i=0; i < previousCount; i++ )
+        {
+            plan.removeGraft( 0 );
+        }
 
         // generate site grids
         if ( _generateSiteGrids( plan ) )
@@ -122,28 +129,23 @@ namespace plAutomaticPlanner
         t1 = plTimer::now();
         std::cout << "\nAutomatic planner stage 2 complete:\n\tCompute shader execution time: " << t1 - t0 << " milliseconds \n";
         //
-        
-        PLuint previousCount = plan.grafts().size();
-        for ( PLuint i=0; i < previousCount; i++ )
+               
+        if ( donorData.size() > 0 )
         {
-            plan.removeGraft( 0 );
-        }
-        
-        for ( PLuint i=0; i < state.graftCount; i++ )
-        {
-        
-            plVector3 recipientY      ( state.graftNormals[i].x,   state.graftNormals[i].y,   state.graftNormals[i].z   );
-            plVector3 recipientOrigin ( state.graftPositions[i].x, state.graftPositions[i].y, state.graftPositions[i].z );
-        
-            plVector3 harvestOrigin  ( donorData[i*2+0].x, donorData[i*2+0].y, donorData[i*2+0].z );
-            plVector3 harvestY       ( donorData[i*2+1].x, donorData[i*2+1].y, donorData[i*2+1].z );
+            for ( PLuint i=0; i < state.graftCount; i++ )
+            {
             
-            plPlug recipient( 0, plan.models(0), plTransform( recipientY, recipientOrigin ) );
-            plPlug harvest  ( 0, plan.models(0), plTransform( harvestY,   harvestOrigin   ) );
-            plan.addGraft( harvest, recipient, state.graftRadii[i] );
-        } 
-
-        
+                plVector3 recipientY      ( state.graftNormals[i].x,   state.graftNormals[i].y,   state.graftNormals[i].z   );
+                plVector3 recipientOrigin ( state.graftPositions[i].x, state.graftPositions[i].y, state.graftPositions[i].z );
+            
+                plVector3 harvestOrigin  ( donorData[i*2+0].x, donorData[i*2+0].y, donorData[i*2+0].z );
+                plVector3 harvestY       ( donorData[i*2+1].x, donorData[i*2+1].y, donorData[i*2+1].z );
+                
+                plPlug recipient( 0, plan.models(0), plTransform( recipientY, recipientOrigin ) );
+                plPlug harvest  ( 0, plan.models(0), plTransform( harvestY,   harvestOrigin   ) );
+                plan.addGraft( harvest, recipient, state.graftRadii[i] );
+            } 
+        }
     }
  
 

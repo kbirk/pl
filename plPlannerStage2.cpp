@@ -62,7 +62,6 @@ namespace plPlannerStage2
         {
             if ( totalRmsData[i] > 0 && totalRmsData[i] < minRMS )
             {
-                std::cout << "New min: " << totalRmsData[i] << "\n";
                 minRMS   = totalRmsData[i];
                 minIndex = i;
             }
@@ -83,6 +82,7 @@ namespace plPlannerStage2
         else
         {
             std::cerr << "Error: Unable to find suitable harvest locations \n";
+            return plSeq<plVector4>();
         }
         
         // unbind buffers

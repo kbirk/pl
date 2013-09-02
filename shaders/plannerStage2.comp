@@ -3,7 +3,7 @@
 #define PL_FLT_MAX                  99999
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_DONOR_SITES          5
-#define PL_ITERATIONS               20
+#define PL_ITERATIONS               50
 
 layout (local_size_x = 256) in;
 
