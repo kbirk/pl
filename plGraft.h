@@ -106,7 +106,7 @@ class plGraft : public plRenderable,
                   
         void      _setCaps();        
         void      _findCap              ( plCap &cap, const plModel &model );
-        bool      _triangleIntersection ( plCap &cap, const plTriangle &triangle ) const; //const plTriangle &tri, plPolygon &p ) const;
+        bool      _triangleIntersection ( plCap &cap, const plTriangle &triangle ) const;
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;
 
         void      _updateCartilageMesh();

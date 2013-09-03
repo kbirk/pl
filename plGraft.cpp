@@ -446,7 +446,6 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
     float dist0 = harvest.transform.squaredDistToAxis( point0 );
     float dist1 = harvest.transform.squaredDistToAxis( point1 );
     float dist2 = harvest.transform.squaredDistToAxis( point2 );
-    float distC = harvest.transform.squaredDistToAxis( centroid );
     // If too far from graft axis, reject.  Note that this will miss
     // some slightly-overlapping triangles!
 
@@ -455,12 +454,24 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
     if (minDist > radiusSquared)
     {
         // no vertices are inside, check if triangle spans across
-        if ( distC < radiusSquared )
-        {
-            // TODO: ADD CASE HERE!
-            // current ignores cases where each triangle point is outside the cylinder
-            // but spans across!
-        }        
+        /*
+        plVector3 e0 = closestPointOnSegment ( plVector3(0, 0, 0), point0, point1 );
+        plVector3 e1 = closestPointOnSegment ( plVector3(0, 0, 0), point1, point2 );
+        plVector3 e2 = closestPointOnSegment ( plVector3(0, 0, 0), point2, point0 );
+      
+        float d0 = harvest.transform.squaredDistToAxis( e0 ); 
+        float d1 = harvest.transform.squaredDistToAxis( e1 ); 
+        float d2 = harvest.transform.squaredDistToAxis( e2 ); 
+        
+        
+        
+        plSeq<PLuint> insideEdges;
+        if ( d0 < radiusSquared ) count++;
+        if ( d1 < radiusSquared ) count++;
+        if ( d2 < radiusSquared ) count++;
+        
+        assert( count < 3 ); // debug
+        */
         return false;
     }
     
@@ -499,7 +510,7 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
     // Find a first vertex that is inside
 
     plVector3 vs[3];
-    float ds[3];
+    float     ds[3];
   
     if (dist0 <= radiusSquared) 
     {
@@ -524,23 +535,23 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
 
     plSeq<plVector3> points(4);
     
-    for (int i=0; i<3; i++) 
+    for ( int i=0; i<3; i++ ) 
     {
         int j = (i+1) % 3;		// vertex at next end of edge
 
-        bool nextInside = (ds[j] <= radiusSquared);
+        bool currentInside = (ds[j] <= radiusSquared);
 
-        if (prevInside && nextInside) 
+        if ( prevInside && currentInside ) 
         {
             // Add inside triangle point
             points.add( vs[j] );
         } 
-        else if (prevInside && !nextInside) 
+        else if ( prevInside && !currentInside ) 
         {
             // Find point on edge of graft
             points.add( _pointOnCircumference(vs[i], vs[j]) );
         } 
-        else if (!prevInside && nextInside) 
+        else if ( !prevInside && currentInside ) 
         {
             // Find entering point and angle 
             points.add( _pointOnCircumference(vs[i], vs[j]) );
@@ -548,11 +559,11 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
             points.add( vs[j] );
         }
 
-        prevInside = nextInside;
+        prevInside = currentInside;
     }
 
     cap.triangles.add( plTriangle( normal, points[0], points[1], points[2] ) );
-    if (points.size() == 4)
+    if ( points.size() == 4 )
     {
         // polygons reach a max of 4 vertices, so if there are 4, create a second triangle
         cap.triangles.add( plTriangle( normal, points[0], points[2], points[3] ) );
@@ -614,6 +625,7 @@ void plGraft::spinMark( PLfloat degrees )
     _updateMarkPosition();
 }
 
+
 void plGraft::_updateMarkPosition()
 {
     // Mark at tool alignment direction on cartilage
@@ -640,6 +652,7 @@ void plGraft::_updateMarkPosition()
     _markPosition.y = minY;
 }
 
+
 const plTransform &plGraft::transform( PLuint type ) const
 {
     switch (type)
@@ -658,6 +671,7 @@ const plTransform &plGraft::transform( PLuint type ) const
             return recipient.transform;   
     } 
 }
+
 
 void plGraft::translate( PLuint type, const plVector3 &translation )
 {       
@@ -681,6 +695,7 @@ void plGraft::translate( PLuint type, const plVector3 &translation )
     } 
 }
 
+
 void plGraft::translateX( PLuint type, PLfloat distance, const plVector3 &planeNormal  )
 {    
     switch (type)
@@ -703,6 +718,7 @@ void plGraft::translateX( PLuint type, PLfloat distance, const plVector3 &planeN
     } 
 }
 
+
 void plGraft::translateZ( PLuint type, PLfloat distance, const plVector3 &planeNormal  )
 {    
     switch (type)
@@ -724,6 +740,7 @@ void plGraft::translateZ( PLuint type, PLfloat distance, const plVector3 &planeN
             break;    
     } 
 }
+
 
 void plGraft::rotate( PLuint type, const plVector3 &axis, PLfloat angleDegrees )
 {    

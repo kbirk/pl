@@ -218,7 +218,7 @@ bool isWithinSite( in uint site, in vec3 pos, in float radius )
     for (int i=0; i<uDonorSitePerimSize[ site ]; i++)
     {
         edge e = donorSiteEdge( site, i );
-        if ( length( pos - closestPointOnSegment( pos, e) ) < radius )
+        if ( distance( pos, closestPointOnSegment( pos, e) ) < radius )
         {
             inside = false;
         }        
@@ -230,7 +230,7 @@ bool isWithinSite( in uint site, in vec3 pos, in float radius )
 float distToAxis( in vec3 axis, in vec3 v )    
 {
     // v is already in the *local* coordinate system of the graft        
-    return length(v - dot(v, axis)*axis);
+    return distance( v, dot(v, axis)*axis );
 }
 
 
@@ -244,9 +244,18 @@ bool intersectTriangle( in vec3 position, in vec3 normal, in triangle t, in floa
     vec3 point1 = t.p1 - position;
     vec3 point2 = t.p2 - position;
     
+    edge e0;  e0.p0 = point0;  e0.p1 = point1;
+    edge e1;  e1.p0 = point1;  e1.p1 = point2;
+    edge e2;  e2.p0 = point2;  e2.p1 = point0;
+    
     return ( distToAxis( normal, point0 ) < radius ||
              distToAxis( normal, point1 ) < radius ||
-             distToAxis( normal, point2 ) < radius );
+             distToAxis( normal, point2 ) < radius ||
+             distance( closestPointOnSegment( position, e0 ), position ) < radius ||
+             distance( closestPointOnSegment( position, e1 ), position ) < radius ||
+             distance( closestPointOnSegment( position, e2 ), position ) < radius );
+    
+    
   
 }
 
