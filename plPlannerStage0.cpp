@@ -176,8 +176,8 @@ namespace plPlannerStage0
             // update the annealing state 
             state.update(); 
             
-            std::cout << "New Best energy: " << state.energy << ", " 
-                      << state.graftCount << " grafts, Annealing temperature: " 
+            std::cout << "\t Energy: " << state.energy << ",\t" 
+                      << state.graftCount << " grafts,\t Temperature: " 
                       << state.temperature << "\n";
 
             // cool temperature

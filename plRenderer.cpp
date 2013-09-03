@@ -261,10 +261,6 @@ namespace plRenderer
                 plDraw::sphere( plVector3(x,y,z), 0.09f );
             }
         }
-        
-        /*
-        // DEBUG
-        // POTENTIAL GRAFTS
         for (PLuint i=0; i<plAutomaticPlanner::_defectSiteGrids.size(); i++)
         {    
             plColourStack::load( 0.2, 0.6, 0.9 );
@@ -277,27 +273,8 @@ namespace plRenderer
                 plDraw::sphere( plVector3(x,y,z), 0.09f );
                 
             }
-            
-            PLuint count = plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS.size();
-            
-            for (PLuint j=0; j<count; j+=3)
-            {
-                float r = 0.2; //((float) rand() / (RAND_MAX));
-                float g = 0.5; //((float) rand() / (RAND_MAX));
-                float b = 0.2; //((float) rand() / (RAND_MAX));
-                plColourStack::load( r, g, b );
-                plDraw::cylinder( plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j], 
-                                  plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+1], 
-                                  plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+2].x, 
-                                  8.0f );
-                                  
-                plDraw::disk    ( plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j], 
-                                  plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+1], 
-                                  plAutomaticPlanner::DEBUG_GRAFT_LOCATIONS[j+2].x);
-            }
-
         }
-        */
+               
         /* DEBUG FOR OCTREES
         // set flat shader
         plShaderStack::push( _minimalShader );    
@@ -312,13 +289,6 @@ namespace plRenderer
             _planToDraw->models(i).cartilage.octree().draw();
         }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        
-        // debug objects
-        for (PLuint i=0; i<_debugToDraw.size(); i++)
-        {
-            _debugToDraw[i]->draw();
-        }
-        plShaderStack::pop(); 
         */
 
     }

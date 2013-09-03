@@ -10,7 +10,6 @@
 
 #define PL_NUM_COMPARISON_SLICES    16
 #define PL_NUM_COMPARISON_RADII     10
-#define PL_NUM_CAP_ANGLES           10
 #define PL_PI                       3.1415927
 
 layout (local_size_x = 256) in;
@@ -226,13 +225,6 @@ bool isWithinSite( in uint site, in vec3 pos, in float radius )
     }    
     return inside;
 }
-
-
-float area( in triangle t)
-{
-    return 0.5 * length( cross( (t.p1 - t.p0),  (t.p2 - t.p0) ) );
-}
-
 
 
 float distToAxis( in vec3 axis, in vec3 v )    

@@ -73,7 +73,7 @@ namespace plPlannerStage2
         // check if solution exists
         if ( minIndex != -1 )
         {                
-            std::cout << "Lowest total RMS: " << minRMS << "\n";     
+            std::cout << "\tTotal RMS: " << minRMS << "\n";     
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, donorOutputBufferID);            
             plVector4 *donors = readSSBO<plVector4>( minIndex*PL_MAX_GRAFTS_PER_SOLUTION*2, state.graftCount*2 );
             memcpy( &donorData[0], &donors[0], state.graftCount*2*sizeof( plVector4 ) );    
@@ -97,10 +97,11 @@ namespace plPlannerStage2
         glDeleteBuffers( 1, &donorOutputBufferID    );
         glDeleteBuffers( 1, &totalRmsOutputBufferID );        
         
+        std::cout << "\tDonor locations and normals:\n";    
         for (PLuint i=0; i < donorData.size()/2; i++)
         {
-            std::cout << "p" << i << ": " << donorData[ i*2 + 0] << "\n";
-            std::cout << "n" << i << ": " << donorData[ i*2 + 1] << "\n";
+            std::cout << "\t\tPosition " << i << ": \t" << donorData[ i*2 + 0] << "\n";
+            std::cout << "\t\tNormal " << i << ": \t" << donorData[ i*2 + 1] << "\n";
         }
         
         return donorData;

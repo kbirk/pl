@@ -140,7 +140,7 @@ void main(void)
     for ( uint k=0; k < PL_ITERATIONS; k++)
     {
         float currentTotalRMS = 0;
-        // grid point indices
+        
         uint solutionIndices[PL_MAX_GRAFTS_PER_SOLUTION];   
         uint graftIndices   [PL_MAX_GRAFTS_PER_SOLUTION];   // shuffled graft indices
         for (uint i=0; i < uGraftCount; i++)

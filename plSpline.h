@@ -13,8 +13,6 @@
 #include "plColourMap.h"
 #include "plModel.h"
 
-#include <future>
-
 class plSpline : public plBoundary
 {
     public:

@@ -4,12 +4,20 @@ plSiteGrid::plSiteGrid()
 {
 }
 
-plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &boundary )
+plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain )
 {
     // generate interior triangles
     plMeshCutter::findInteriorMesh( triangles, boundary, _triangles );
 
-    _generateGridPoints(); 
+    if ( fineGrain )
+    {
+        _generateFineGridPoints(); 
+    }
+    else
+    {
+        _generateCoarseGridPoints(); 
+    }
+    
     _generatePerimeterPoints( boundary ); 
     _calcArea();
     _calcNormal();          
@@ -109,7 +117,7 @@ PLuint plSiteGrid::getMeshSSBO() const
 }
 
 
-void plSiteGrid::_generateGridPoints()
+void plSiteGrid::_generateCoarseGridPoints()
 {
     
     plSet<plPointAndNormal> p;
@@ -129,14 +137,16 @@ void plSiteGrid::_generateGridPoints()
         _points.add ( plVector4( p_itr->point,  1) );
         _normals.add( plVector4( p_itr->normal, 1) );
     }
-    
-    /*
+}    
 
-    const PLfloat PLUG_RADIUS  = 2.0f;
-    const PLfloat GRID_SPACING = 8.0f;
+
+void plSiteGrid::_generateFineGridPoints()
+{
+    const PLfloat GRID_SPACING = 0.5f;
     
-    // randomly select points in each triangle to achieve approx spacing    
+    plSet<plPointAndNormal> p;
     
+    // select points in each triangle at approx spacing    
     for (PLuint i=0; i < _triangles.size(); i++)
     {
         plVector3 e01 = _triangles[i].point1() - _triangles[i].point0();
@@ -185,21 +195,35 @@ void plSiteGrid::_generateGridPoints()
         {
             for (PLfloat k=0; k<uMax; k+= GRID_SPACING)            
             {
-                plVector3 p = origin + k*-u + j*v;
-                plVector3 bCoord = _triangles[i].barycentricCoords( p );
+                plVector3 point = origin + k*-u + j*v;
+                plVector3 bCoord = _triangles[i].barycentricCoords( point );
 
                 if ( bCoord.x < -0.001 || bCoord.y < -0.001 || bCoord.z < -0.001 )
+                {
                     break;  // outside of triangle edge, go to next row
+                }
+                plVector3 smoothNormal = _calcSmoothNormal( _triangles[i].centroid(), _triangles[i].normal(), 4.0f );  
                 
-                _points.add ( plVector4(p, 1) );
-                _normals.add( plVector4(_triangles[i].normal(), 1) ); 
+                
+                p.insert( plPointAndNormal( point, smoothNormal ) );
+                
+                //_points.add ( plVector4(point, 1) );
+                //_normals.add( plVector4( smoothNormal, 1) ); 
                 
             }   
         }
         
     }
     
-    */
+    plSet<plPointAndNormal>::iterator p_itr = p.begin();
+    plSet<plPointAndNormal>::iterator p_end = p.end();
+    
+    for ( ; p_itr != p_end; ++p_itr )
+    {
+        _points.add ( plVector4( p_itr->point,  1) );
+        _normals.add( plVector4( p_itr->normal, 1) );
+    }
+    
 }
 
 void plSiteGrid::_generatePerimeterPoints( const plBoundary &boundary )

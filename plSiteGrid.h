@@ -32,7 +32,7 @@ class plSiteGrid
     public:
     
         plSiteGrid();
-        plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &boundary );
+        plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain = false );
         
         PLuint     gridSize()   const { return _points.size(); }
         PLuint     meshSize()   const { return _triangles.size(); }
@@ -62,7 +62,8 @@ class plSiteGrid
         plVector3         _normal;
 
         plVector3 _calcSmoothNormal( const plVector3 &centroid, const plVector3 &up, PLfloat radius );
-        void _generateGridPoints();  
+        void _generateCoarseGridPoints();  
+        void _generateFineGridPoints();  
         void _generatePerimeterPoints( const plBoundary &boundary );
         void _calcArea          ();
         void _calcNormal        ();
