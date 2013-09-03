@@ -8,8 +8,10 @@
 #define PL_DONOR_Z                  0, 0, 1
 #define PL_DEFECT_Z                 0, 0, 1
 
-#define PL_NUM_CAP_COMPARISONS      250
+#define PL_NUM_COMPARISON_SLICES    16
+#define PL_NUM_COMPARISON_RADII     10
 #define PL_NUM_CAP_ANGLES           10
+#define PL_PI                       3.1415927
 
 layout (local_size_x = 256) in;
 
@@ -398,25 +400,31 @@ float calcRMS( in uint defectCount, in uint donorCount, in vec3 defectNormal, in
     uint successfulChecks = 0;
     float squaredDistanceSum = 0;
     
-    for (uint i=0; i<PL_NUM_CAP_COMPARISONS; i++)
-    {    
-        float xScale = (rand( seed )*2.0)-1.0;
-        float zScale = (rand( seed )*2.0)-1.0;
-        float mag    = radius*rand( seed );
-
-        vec3 defectCast = normalize( defectX * xScale + defectZ * zScale ) * mag;
-        vec3 donorCast  = normalize( donorX  * xScale + donorZ  * zScale ) * mag;
-        
-        vec3 defectPoint, donorPoint;
-        bool i0 = rayIntersectDefect( defectPoint, defectCast, defectNormal, defectCount );
-        bool i1 = rayIntersectDonor ( donorPoint,  donorCast,  donorNormal,  donorCount  );   
-        
-        if ( i0 && i1 ) // this should never fail!  
-        {    
-            squaredDistanceSum += distance(defectPoint, donorPoint) * distance(defectPoint, donorPoint);
-            successfulChecks++;
-        }
-        
+    float dr = (radius / float(PL_NUM_COMPARISON_RADII)) - 0.001;    
+    float da = 2.0f * PL_PI / PL_NUM_COMPARISON_SLICES;
+    
+    for (uint i=1; i<=PL_NUM_COMPARISON_RADII; i++)
+    { 
+        for (uint j=0; j<=PL_NUM_COMPARISON_SLICES; j++)
+        {       
+            float a = (j == PL_NUM_COMPARISON_SLICES) ? 0.0 : j * da;
+                
+            float sa = sin(a);
+            float ca = cos(a);
+    
+            vec3 defectCast = normalize( defectX * sa + -defectZ * ca ) * (dr * i);
+            vec3 donorCast  = normalize( donorX * sa + -donorZ * ca   ) * (dr * i);
+            
+            vec3 defectPoint, donorPoint;
+            bool i0 = rayIntersectDefect( defectPoint, defectCast, defectNormal, defectCount );
+            bool i1 = rayIntersectDonor ( donorPoint,  donorCast,  donorNormal,  donorCount  );   
+            
+            if ( i0 && i1 ) // this should never fail!  
+            {    
+                squaredDistanceSum += distance(defectPoint, donorPoint) * distance(defectPoint, donorPoint);
+                successfulChecks++;
+            }
+        }       
     }
 
     return squaredDistanceSum / float( successfulChecks );

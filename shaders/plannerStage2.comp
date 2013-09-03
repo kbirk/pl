@@ -5,6 +5,7 @@
 #define PL_MAX_DONOR_SITES          5
 #define PL_ITERATIONS               50
 
+
 layout (local_size_x = 256) in;
 
 // input data
