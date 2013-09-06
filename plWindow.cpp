@@ -49,7 +49,7 @@ namespace plWindow
 
         if( output.w == 0.0f)
         {
-             std::cerr << "plWindow unproject error \n";
+             std::cerr << "plWindow mouseToWorld() error \n";
              return plVector3();
         }
 
@@ -66,7 +66,7 @@ namespace plWindow
 
         if (temp2.w == 0.0f)
         {
-            std::cerr << "plWindow project error \n";
+            std::cerr << "plWindow worldToScreen() error \n";
             return plVector3();
         }
         // perspective division

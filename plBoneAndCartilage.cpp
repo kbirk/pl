@@ -1,16 +1,16 @@
 #include "plBoneAndCartilage.h"
 
-
+/*
 plBoneAndCartilage::plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile)
     :   bone(boneFile), cartilage(cartilageFile)
 {      
 }
-/*
+*/
 plBoneAndCartilage::plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile, const plString &combined)
-    :   bone(boneFile), cartilage(cartilageFile), combined(combined)
+    :   bone(boneFile, 5), cartilage(cartilageFile, 7), combined(combined, 5)
 {      
 }
-*/
+
 
 void plBoneAndCartilage::draw() const
 {
@@ -21,6 +21,7 @@ void plBoneAndCartilage::draw() const
     // DRAW CARTILAGE
     plPicking::value.type = PL_PICKING_TYPE_CARTILAGE; 
     cartilage.draw( plVector3(PL_MODEL_CARTILAGE_COLOUR) );
+    
 }
 
 

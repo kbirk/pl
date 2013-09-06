@@ -17,9 +17,9 @@ class plString : public std::string
         bool compare( const plString &str, PLuint num ) const;
         bool compare( const plString &str, PLuint index, PLuint num ) const;       
                      
-        bool compareCaseInsensitive   ( const plString &str2, PLuint num) const;
-        bool compareCaseInsensitive   ( const plString &str2) const;               
-        bool isOnlyWhitespace     () const;        
+        bool compareCaseInsensitive ( const plString &str2, PLuint num) const;
+        bool compareCaseInsensitive ( const plString &str2) const;               
+        bool isOnlyWhitespace       () const;        
         plString withoutFilepath() const;
         
         void stripCharacter             ( char c);

@@ -153,186 +153,192 @@ std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 }
 
 
-void plSTL::importFile( plSeq<plTriangle> &triangles, plString filename)
+namespace plSTL
 {
-    std::cout << "Importing " << filename << "...";
-
-    // just in case, clear seq
-    triangles.clear();
-
-    std::ifstream infile (filename.c_str());
-    if (!infile.good())
+    void _plCheckTypeSizes();
+    
+    void importFile( plSeq<plTriangle> &triangles, const plString &filename)
     {
-        std::cerr << "STL file could not be opened \n";
-        exit(1);
-    }
-    
-    plVector3 n,p0,p1,p2;
-    
-    // First line: ASCII or RAW?
-    plString line;
-    std::getline(infile, line);
-    bool isAscii = line.compareCaseInsensitive( "solid", 5);
+        std::cout << "Importing " << filename << "...";
 
-    if (isAscii) 
-    {      
-        PLchar filler[1024];	// for reading filler text
+        // just in case, clear seq
+        triangles.clear();
 
-        // Read ASCII STL
-        while (!infile.eof()) 
+        std::ifstream infile (filename.c_str());
+        if (!infile.good())
         {
-            
-            std::getline(infile, line);    
-            
-            line.stripPreceedingWhitespace();
-            
-       
-            if (line.compare("facet", 5)) 
-            {   
-                // normal   
-                sscanf(line.c_str(), "%s %s %f %f %f", filler, filler, &n.x, &n.y, &n.z);
-            } 
-            else if (line.compare("vertex", 6)) 
+            std::cerr << "STL file could not be opened \n";
+            exit(1);
+        }
+        
+        plVector3 n,p0,p1,p2;
+        
+        // First line: ASCII or RAW?
+        plString line;
+        std::getline(infile, line);
+        bool isAscii = line.compareCaseInsensitive( "solid", 5);
+
+        if (isAscii) 
+        {      
+            PLchar filler[1024];	// for reading filler text
+
+            // Read ASCII STL
+            while (!infile.eof()) 
             {
-                // vertex 1
-                sscanf(line.c_str(), "%s %f %f %f", filler, &p0.x, &p0.y, &p0.z);
-                // vertex 2
-                std::getline(infile, line); // read next vertex line
-                sscanf(line.c_str(), "%s %f %f %f", filler, &p1.x, &p1.y, &p1.z);
-                // vertex 3
-                std::getline(infile, line); // read next vertex line
-                sscanf(line.c_str(), "%s %f %f %f", filler, &p2.x, &p2.y, &p2.z);
-            } 
-            else if (line.compare("endfacet", 8))
+                
+                std::getline(infile, line);    
+                
+                line.stripPreceedingWhitespace();
+                
+           
+                if (line.compare("facet", 5)) 
+                {   
+                    // normal   
+                    sscanf(line.c_str(), "%s %s %f %f %f", filler, filler, &n.x, &n.y, &n.z);
+                } 
+                else if (line.compare("vertex", 6)) 
+                {
+                    // vertex 1
+                    sscanf(line.c_str(), "%s %f %f %f", filler, &p0.x, &p0.y, &p0.z);
+                    // vertex 2
+                    std::getline(infile, line); // read next vertex line
+                    sscanf(line.c_str(), "%s %f %f %f", filler, &p1.x, &p1.y, &p1.z);
+                    // vertex 3
+                    std::getline(infile, line); // read next vertex line
+                    sscanf(line.c_str(), "%s %f %f %f", filler, &p2.x, &p2.y, &p2.z);
+                } 
+                else if (line.compare("endfacet", 8))
+                {
+                    // end of face, build triangle
+                    triangles.add( plTriangle(n,p0,p1,p2) );                
+                }
+            }
+
+        } 
+        else 
+        {
+            _plCheckTypeSizes();
+
+            // reset file position to beginning
+            infile.seekg(0);
+
+            // Skip 80-byte header       
+            PLchar first80[80]; // create a buffer
+            infile.read( &first80[0], sizeof(PLchar)*80 ); // read to buffer
+            
+            // get number of faces
+            PLuint numTriangles;
+            infile.read( reinterpret_cast<PLchar*>(&numTriangles), sizeof(PLuint));
+            triangles.reserve(numTriangles);
+
+            // Read the triangles
+            for (PLuint i=0; i<numTriangles; i++) 
             {
-                // end of face, build triangle
-                triangles.add( plTriangle(n,p0,p1,p2) );                
+                PLushort nAttr;
+                
+                infile.read(reinterpret_cast<PLchar*>(&n.x),   sizeof(PLfloat)*3);
+                infile.read(reinterpret_cast<PLchar*>(&p0.x),  sizeof(PLfloat)*3);
+                infile.read(reinterpret_cast<PLchar*>(&p1.x),  sizeof(PLfloat)*3);
+                infile.read(reinterpret_cast<PLchar*>(&p2.x),  sizeof(PLfloat)*3);
+                infile.read(reinterpret_cast<PLchar*>(&nAttr), sizeof(PLushort));
+
+                triangles.add( plTriangle( n, p0, p1, p2 ) );
             }
         }
+        
+        infile.close();
+        std::cout << "\t\t\tComplete.\n";
+    }
 
-    } 
-    else 
+
+    void exportFileASCII( const plSeq<plTriangle> &triangles , const plString &filename )
+    {
+        std::ofstream outfile ( filename.c_str() );
+        if ( !outfile.good() )
+        {
+            std::cerr << "STL file could not be written \n";
+            exit(1);
+        }
+
+        outfile << "solid\n";
+
+        for (PLuint i=0; i<triangles.size(); i++) 
+        {
+            outfile << "  facet normal " << triangles[i].normal().x << " " << triangles[i].normal().y << " " << triangles[i].normal().z << "\n" <<
+                       "    outer loop\n" <<
+                       "      vertex " << triangles[i].point0().x << " " << triangles[i].point0().y << " " << triangles[i].point0().z << "\n" <<
+                       "      vertex " << triangles[i].point1().x << " " << triangles[i].point1().y << " " << triangles[i].point1().z << "\n" <<
+                       "      vertex " << triangles[i].point2().x << " " << triangles[i].point2().y << " " << triangles[i].point2().z << "\n" <<
+                       "    endloop\n" <<
+                       "  endfacet\n";
+        }
+
+        outfile <<"endsolid\n";
+
+        outfile.close();
+    }
+
+
+    void exportFileBinary( const plSeq<plTriangle> &triangles , const plString &filename )
     {
         _plCheckTypeSizes();
 
-        // reset file position to beginning
-        infile.seekg(0);
-
-        // Skip 80-byte header       
-        PLchar first80[80]; // create a buffer
-        infile.read( &first80[0], sizeof(PLchar)*80 ); // read to buffer
-        
-        // get number of faces
-        PLuint numTriangles;
-        infile.read( reinterpret_cast<PLchar*>(&numTriangles), sizeof(PLuint));
-        triangles.reserve(numTriangles);
-
-        // Read the triangles
-        for (PLuint i=0; i<numTriangles; i++) 
+        std::ofstream outfile ( filename.c_str(), std::ios::trunc | std::ios::out | std::ios::binary );
+        if ( !outfile.good() )
         {
-            PLushort nAttr;
-            
-            infile.read(reinterpret_cast<PLchar*>(&n.x),   sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&p0.x),  sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&p1.x),  sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&p2.x),  sizeof(PLfloat)*3);
-            infile.read(reinterpret_cast<PLchar*>(&nAttr), sizeof(PLushort));
+            std::cerr << "STL file could not be written \n";
+            exit(1);
+        }
 
-            triangles.add( plTriangle( n, p0, p1, p2 ) );
+        // 80 byte header
+        PLchar header[80];
+        for (PLuint i=0; i<80; i++) 
+        {
+            header[i] = (PLchar)(0);
+        }
+        outfile.write( reinterpret_cast<PLchar*>(header), sizeof(PLchar)*80 );
+
+        // 4 byte size
+        PLuint size = triangles.size();
+        outfile.write( reinterpret_cast<PLchar*>(&size) , sizeof(PLuint) );
+
+        // for each facet, 50 bytes
+        PLushort zeroPLushort(0); // at the end of every facet
+        for (PLuint i=0; i<triangles.size(); i++) 
+        {
+            outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].normal().x) , sizeof(PLfloat)*3 );
+            outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point0().x) , sizeof(PLfloat)*3 );
+            outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point1().x) , sizeof(PLfloat)*3 );
+            outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point2().x) , sizeof(PLfloat)*3 );
+            outfile.write( reinterpret_cast<const PLchar*>(&zeroPLushort)            , sizeof(PLushort)  );
+        }
+
+        outfile.close();
+    }
+
+
+    void _plCheckTypeSizes()
+    {
+        // check to ensure compiler designates compatible bytes to each type
+        if (sizeof(PLuint) != 4)
+        {
+          std::cerr << "Expected PLuint to be 4 bytes, but it is "
+                    << sizeof( PLuint ) << ".  Fix this." << std::endl;
+          exit(1);
+        }
+        if (sizeof(PLushort) != 2)
+        {
+          std::cerr << "Expected PLushort to be 2 bytes, but it is "
+                    << sizeof( PLushort ) << ".  Fix this." << std::endl;
+          exit(1);
+        }
+        if (sizeof(PLfloat) != 4)
+        {
+          std::cerr << "Expected PLfloat to be 4 bytes, but it is "
+                    << sizeof( PLfloat ) << ".  Fix this." << std::endl;
+          exit(1);
         }
     }
-    
-    infile.close();
-    std::cout << "\t\t\tComplete.\n";
-}
 
-
-void plSTL::exportFileASCII( const plSeq<plTriangle> &triangles , plString filename )
-{
-    std::ofstream outfile ( filename.c_str() );
-    if ( !outfile.good() )
-    {
-        std::cerr << "STL file could not be written \n";
-        exit(1);
-    }
-
-    outfile << "solid\n";
-
-    for (PLuint i=0; i<triangles.size(); i++) 
-    {
-        outfile << "  facet normal " << triangles[i].normal().x << " " << triangles[i].normal().y << " " << triangles[i].normal().z << "\n" <<
-                   "    outer loop\n" <<
-                   "      vertex " << triangles[i].point0().x << " " << triangles[i].point0().y << " " << triangles[i].point0().z << "\n" <<
-                   "      vertex " << triangles[i].point1().x << " " << triangles[i].point1().y << " " << triangles[i].point1().z << "\n" <<
-                   "      vertex " << triangles[i].point2().x << " " << triangles[i].point2().y << " " << triangles[i].point2().z << "\n" <<
-                   "    endloop\n" <<
-                   "  endfacet\n";
-    }
-
-    outfile <<"endsolid\n";
-
-    outfile.close();
-}
-
-
-void plSTL::exportFileBinary( const plSeq<plTriangle> &triangles , plString filename )
-{
-    _plCheckTypeSizes();
-
-    std::ofstream outfile ( filename.c_str(), std::ios::trunc | std::ios::out | std::ios::binary );
-    if ( !outfile.good() )
-    {
-        std::cerr << "STL file could not be written \n";
-        exit(1);
-    }
-
-    // 80 byte header
-    PLchar header[80];
-    for (PLuint i=0; i<80; i++) 
-    {
-        header[i] = (PLchar)(0);
-    }
-    outfile.write( reinterpret_cast<PLchar*>(header), sizeof(PLchar)*80 );
-
-    // 4 byte size
-    PLuint size = triangles.size();
-    outfile.write( reinterpret_cast<PLchar*>(&size) , sizeof(PLuint) );
-
-    // for each facet, 50 bytes
-    PLushort zeroPLushort(0); // at the end of every facet
-    for (PLuint i=0; i<triangles.size(); i++) 
-    {
-        outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].normal().x) , sizeof(PLfloat)*3 );
-        outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point0().x) , sizeof(PLfloat)*3 );
-        outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point1().x) , sizeof(PLfloat)*3 );
-        outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point2().x) , sizeof(PLfloat)*3 );
-        outfile.write( reinterpret_cast<const PLchar*>(&zeroPLushort)            , sizeof(PLushort)  );
-    }
-
-    outfile.close();
-}
-
-
-void plSTL::_plCheckTypeSizes()
-{
-    // check to ensure compiler designates compatible bytes to each type
-    if (sizeof(PLuint) != 4)
-    {
-      std::cerr << "Expected PLuint to be 4 bytes, but it is "
-                << sizeof( PLuint ) << ".  Fix this." << std::endl;
-      exit(1);
-    }
-    if (sizeof(PLushort) != 2)
-    {
-      std::cerr << "Expected PLushort to be 2 bytes, but it is "
-                << sizeof( PLushort ) << ".  Fix this." << std::endl;
-      exit(1);
-    }
-    if (sizeof(PLfloat) != 4)
-    {
-      std::cerr << "Expected PLfloat to be 4 bytes, but it is "
-                << sizeof( PLfloat ) << ".  Fix this." << std::endl;
-      exit(1);
-    }
 }
 

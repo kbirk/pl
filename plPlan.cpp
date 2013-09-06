@@ -34,18 +34,18 @@ plPlan::plPlan( int argc, char **argv )
     }
     else
     {
-        // 2+ arguments
-        if ( (argc-1) % 2 != 0)  
+        // 3+ arguments
+        if ( (argc-1) % 3 != 0)  
         {
             std::cerr << "Model files must be submitted in twos (bone and cartilage)\n";
             exit(1);
         }
         
         // load models
-        for (PLint i = 1; i < argc; i+=2)
+        for (PLint i = 1; i < argc; i+=3)
         {
             // model input order: bone, cartilage, bone, cartilage, etc...
-            _models.add( new plBoneAndCartilage( argv[i], argv[i+1] ) );
+            _models.add( new plBoneAndCartilage( argv[i], argv[i+1], argv[i+2] ) );
         }
     }
 
@@ -205,8 +205,8 @@ void plPlan::importFile( plString filename )
             // get pointer to model
             plBoneAndCartilage *model = getElementPointer( _models, index );
             
-            _models[index] = new plBoneAndCartilage( csv.data[i][3], csv.data[i+1][3] );
-            i++; // increment pointer to pass next line since both are read
+            _models[index] = new plBoneAndCartilage( csv.data[i][3], csv.data[i+1][3], csv.data[i+2][3] );
+            i+=2; // increment pointer to pass next line since both are read
         }
         
         else if (field.compareCaseInsensitive( "defect site") ) // read before boundary

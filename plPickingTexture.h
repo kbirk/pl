@@ -49,16 +49,11 @@ class plPickingTexture
 
 namespace plPicking
 {
-    //public:
-
-        extern plPickingInfo     value;
-        extern plPickingTexture *texture;
-        
-        void init();
-        
-    //private:
+    extern plPickingInfo     value;
+    extern plPickingTexture *texture;
     
-        //plPicking() {};   
+    void init();
+  
 };
 
 #endif

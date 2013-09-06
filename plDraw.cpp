@@ -29,7 +29,7 @@ namespace plDraw
             cylinder(scale*PL_HANDLE_RADIUS, length/scale);
             plModelStack::translate( 0, 0, length/scale );
             cone.draw();
-            disk(PL_HEAD_RADIUS);
+            disk(PL_HEAD_RADIUS, true );
         } 
         plModelStack::pop();   
     }
@@ -58,7 +58,7 @@ namespace plDraw
             cylinder(scale*PL_HANDLE_RADIUS, length);
             plModelStack::translate( 0, 0, length/scale );
             cylinder(scale*PL_HEAD_RADIUS, PL_CIRCLE_LENGTH);
-            disk(scale*PL_HEAD_RADIUS);
+            disk(scale*PL_HEAD_RADIUS, true);
             plModelStack::translate( 0, 0, PL_CIRCLE_LENGTH );
             disk(scale*PL_HEAD_RADIUS);
         } 
@@ -116,7 +116,7 @@ namespace plDraw
         plModelStack::pop();
     }
 
-    void disk(const plVector3 &origin, const plVector3 &direction, float radius)
+    void disk(const plVector3 &origin, const plVector3 &direction, float radius, PLbool flip)
     {
         plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
 
@@ -124,28 +124,30 @@ namespace plDraw
         {
             plModelStack::translate( origin.x, origin.y, origin.z );
             plModelStack::mult( rot );
-            disk( radius );       
+            disk( radius, flip );       
         }
         plModelStack::pop();
     }
 
-    void disk(const plVector3 &origin, float radius)
+    void disk(const plVector3 &origin, float radius, PLbool flip)
     {
         plModelStack::push();
         {
             plModelStack::translate( origin.x, origin.y, origin.z );
-            disk( radius );       
+            disk( radius, flip );       
         }
         plModelStack::pop();
     }
 
-    void disk(float radius)
+    void disk(float radius, PLbool flip)
     {
         static plShapeMesh disk(0.0f, 1.0f, 20, 20);   
 
         plModelStack::push();
         {
-            plModelStack::scale(radius, radius, radius);        
+            plModelStack::scale( radius, radius, radius ); 
+            if (flip ) 
+                plModelStack::rotate( 180, plVector3(1,0,0) );   
             disk.draw();
         }
         plModelStack::pop();

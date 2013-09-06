@@ -10,10 +10,10 @@ class plBoneAndCartilage
        
         plModel bone;
 		plModel	cartilage;
-        //plModel	combined;
+        plModel	combined;
 
-        plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile );
-        //plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile, const plString &combinedFile );
+        //plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile );
+        plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile, const plString &combinedFile );
 
         void draw() const;
 

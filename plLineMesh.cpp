@@ -15,9 +15,6 @@ plLineMesh::plLineMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &in
 
 void plLineMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
 {
-    // destroy previous just in case
-    //destroy();
-
     // set number of indices
     _numIndices = indices.size();
 
@@ -44,7 +41,8 @@ void plLineMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuin
 	glVertexAttribPointer(PL_POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, 0); 
 
     // bind vertex array object
-    glGenBuffers(1, &_vertexBufferIndices);
+    if (_vertexBufferIndices == 0)
+        glGenBuffers(1, &_vertexBufferIndices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STATIC_DRAW);
      

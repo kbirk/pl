@@ -1,5 +1,6 @@
 model,0,bone file,./patient1/bone.stl
 model,0,cartilage file,./patient1/cartilage.stl
+model,0,combined file,./patient1/boneandcart.stl
 
 defect site,0,model,0
 defect site,0,spline,103.355 -69.2672 -69.4476,0.644155 -0.610553 -0.460748,97.4878 -78.7957 -57.5051,0.508079 -0.8613 0.004294,76.5831 -83.864 -60.2667,-0.356323 -0.930966 -0.079594,77.1142 -79.8011 -77.4255,0.571093 -0.673973 -0.46863

@@ -16,11 +16,9 @@ namespace plDraw
     void sphere   ( const plVector3 &origin, float radius);
     void cylinder ( float radius, float height); 
     void cylinder ( const plVector3 &origin, const plVector3 &direction, float radius, float height);
-    void disk     ( const plVector3 &origin, float scale );
-    void disk     ( const plVector3 &origin, const plVector3 &direction, float scale );
-    void disk     ( float scale );
-    //void scope    ( const plTrackedObject &scope );
-    //void probe    ( const plTrackedObject &probe );
+    void disk     ( const plVector3 &origin, float scale, PLbool flip = false  );
+    void disk     ( const plVector3 &origin, const plVector3 &direction, float scale, PLbool flip = false  );
+    void disk     ( float scale, PLbool flip = false );
 
 }
 

@@ -75,21 +75,12 @@ class plTriangle
 
 std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
 
-class plSTL
+namespace plSTL
 {
-    public:
-    
-        static void importFile      ( plSeq<plTriangle> &triangles, plString filename );
-        static void exportFileBinary( const plSeq<plTriangle> &triangles , plString filename );
-        static void exportFileASCII ( const plSeq<plTriangle> &triangles , plString filename );
-               
-    private:
-    
-        plSTL() {};
-        
-        static void _plCheckTypeSizes    ();
-
-};
+    void importFile      ( plSeq<plTriangle> &triangles, const plString &filename );
+    void exportFileBinary( const plSeq<plTriangle> &triangles , const plString &filename );
+    void exportFileASCII ( const plSeq<plTriangle> &triangles , const plString &filename );
+}
 
 #endif
 
