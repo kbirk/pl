@@ -14,7 +14,7 @@ namespace plMath
     plVector3 closestPointOnSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b)
     {
         plVector3 ab = b - a;
-        // Project c onto ab, computing parameterized position d(t) = a + t*(b  a)
+        // Project c onto ab, computing parameterized position d(t) = a + t*(b * a)
         PLfloat t = ((point - a) * ab) / (ab * ab);
         // If outside segment, clamp t (and therefore d) to the closest endpoint
         if (t < 0.0f) t = 0.0f;

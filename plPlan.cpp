@@ -24,7 +24,7 @@ plPlan::plPlan( int argc, char **argv )
     {
         // 1 arguments
         plString filename(argv[1]);
-        if (filename.compare(".csv", filename.size()-4, 4))
+        if ( !filename.compare(".csv", filename.size()-4, 4) )
         {
             std::cerr << "Unrecognized suffix on filename '" << filename 
                       << "'. plPlan filenames should have suffix .csv" << std::endl;                

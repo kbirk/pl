@@ -318,7 +318,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
             if (_editAxis == transform.y())  
             {
                 // translating along y
-                _selectedGraft->adjustHeightOffset(distOnAxis);  
+                _selectedGraft->adjustHeightOffset( distOnAxis );  
                 break;              
             }
             

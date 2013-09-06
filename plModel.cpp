@@ -1,11 +1,11 @@
 #include "plModel.h"
 
-plModel::plModel( std::string filename, PLuint octreeDepth )
+plModel::plModel( const plString &filename, PLuint octreeDepth )
     : _filename(filename), _isTransparent(false)
 {
-    if (filename.compare(filename.length()-4, 4, ".stl") != 0)
+    if ( !filename.compare( ".stl", filename.length()-4, 4) )
     {
-        std::cout << "plModel error: Unrecognized suffix on filename '"
+        std::cout << "plModel error: Unrecognized suffix on filename '" << filename
                   << "'. plModel filenames should have suffix .stl" << std::endl;  		
         return;
     }

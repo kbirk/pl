@@ -12,6 +12,7 @@
 #include "plMesh.h"
 #include "plPlug.h"
 #include "plPolygon.h"
+#include "plUtility.h"
 
 
 class plPointAndAngle 
@@ -108,7 +109,7 @@ class plGraft : public plRenderable,
         void      _findCap              ( plCap &cap, const plModel &model );
         bool      _triangleIntersection ( plCap &cap, const plTriangle &triangle ) const;
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;
-
+        bool      _isBeyondHeightThresholds( const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) const;
         void      _updateCartilageMesh();
         void      _updateBoneMesh     ();
         void      _updateMarkPosition ();

@@ -1,16 +1,16 @@
 #include "plBoneAndCartilage.h"
 
-/*
-plBoneAndCartilage::plBoneAndCartilage()
-{           
-}
-*/
 
-plBoneAndCartilage::plBoneAndCartilage( plString boneFile, plString cartilageFile)
+plBoneAndCartilage::plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile)
     :   bone(boneFile), cartilage(cartilageFile)
 {      
 }
-
+/*
+plBoneAndCartilage::plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile, const plString &combined)
+    :   bone(boneFile), cartilage(cartilageFile), combined(combined)
+{      
+}
+*/
 
 void plBoneAndCartilage::draw() const
 {
