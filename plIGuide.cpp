@@ -62,12 +62,12 @@ PLbool plIGuide::generateIGuideMeshes()
 
     // anatomy TODO: change to bone AND cartilage model
     plString anatomyFilename (prepareFilenameWithVariables(false,'M',0,"bone"));
-    iGuideMeshes.add( plIGuideMesh(anatomyFilename,plSeq<plTriangle>( site().model().bone.triangles() ) ) );
+    iGuideMeshesToSubtract.add( plIGuideMesh(anatomyFilename,plSeq<plTriangle>( site().model().bone.triangles() ) ) );
 
 
     // template base TODO: create the template base shape if it needs updating
     plString templateBaseFilename (prepareFilenameWithVariables(true ,'M',0,"templateBase"));
-    iGuideMeshes.add(plIGuideMesh(templateBaseFilename,site().templateBase));
+    iGuideMeshesToAdd.add(plIGuideMesh(templateBaseFilename,site().templateBase));
 
 
     // plug pieces
@@ -114,7 +114,11 @@ PLbool plIGuide::generateIGuideMeshes()
         plString holderFilename    ( prepareFilenameWithVariables(true ,'H',harvestIndices[i],"holder") );
         plString keyFilename       ( prepareFilenameWithVariables(true ,'H',harvestIndices[i],"key"   ) );
 
-        iGuideMeshes.add(plIGuideMesh(holeFilename,holeTriangles));
+        iGuideMeshesToSubtract.add(plIGuideMesh(holeFilename  ,holeTriangles  ));
+        iGuideMeshesToAdd     .add(plIGuideMesh(sleeveFilename,sleeveTriangles));
+        iGuideMeshesToAdd     .add(plIGuideMesh(baseFilename  ,baseTriangles  ));
+        iGuideMeshesToAdd     .add(plIGuideMesh(holderFilename,holderTriangles));
+        iGuideMeshesToAdd     .add(plIGuideMesh(keyFilename   ,keyTriangles   ));
     }
 
     for (PLuint i = 0; i < recipientIndices.size(); i++)
@@ -151,6 +155,11 @@ PLbool plIGuide::generateIGuideMeshes()
         plString holderFilename    ( prepareFilenameWithVariables(true ,'R',harvestIndices[i],"holder") );
         plString keyFilename       ( prepareFilenameWithVariables(true ,'R',harvestIndices[i],"key"   ) );
 
+        iGuideMeshesToSubtract.add(plIGuideMesh(holeFilename  ,holeTriangles  ));
+        iGuideMeshesToAdd     .add(plIGuideMesh(sleeveFilename,sleeveTriangles));
+        iGuideMeshesToAdd     .add(plIGuideMesh(baseFilename  ,baseTriangles  ));
+        iGuideMeshesToAdd     .add(plIGuideMesh(holderFilename,holderTriangles));
+        iGuideMeshesToAdd     .add(plIGuideMesh(keyFilename   ,keyTriangles   ));
     }
 
     return true;
@@ -159,16 +168,20 @@ PLbool plIGuide::generateIGuideMeshes()
 
 PLbool plIGuide::exportIGuideMeshes(const plString &directory) {
 
-    if (iGuideMeshes.size() == 0)
+    if (iGuideMeshesToAdd.size() == 0 && iGuideMeshesToSubtract.size() == 0)
     {
         std::cerr << "Error: No IGuide pieces to export. Did you forget to generate them? Aborting." << std::endl;
         return false;
     }
     // TODO: Compare the number of meshes to what we expect based on the sizes of the various arrays, output a WARNING if it isn't what we expect.
 
-    for (PLuint i = 0; i < iGuideMeshes.size(); i++)
+    for (PLuint i = 0; i < iGuideMeshesToAdd.size(); i++)
     {
-        plSTL::exportFileBinary(iGuideMeshes[i].triangles, (directory + iGuideMeshes[i].filename));
+        plSTL::exportFileBinary(iGuideMeshesToAdd[i].triangles, (directory + iGuideMeshesToAdd[i].filename));
+    }
+    for (PLuint i = 0; i < iGuideMeshesToSubtract.size(); i++)
+    {
+        plSTL::exportFileBinary(iGuideMeshesToSubtract[i].triangles, (directory + iGuideMeshesToSubtract[i].filename));
     }
     return true;
 }
