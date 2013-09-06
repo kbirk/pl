@@ -6,6 +6,7 @@ plMatrixStack::plMatrixStack()
 	_stack.push( plMatrix44() );
 }
 
+
 void plMatrixStack::load( const plMatrix44 &m )  
 {
     if (_stack.size() == 0)
@@ -17,6 +18,7 @@ void plMatrixStack::load( const plMatrix44 &m )
         _stack.top() = m; 
     }
 }
+
 
 void plMatrixStack::push()
 { 
@@ -30,15 +32,18 @@ void plMatrixStack::push()
     }
 }	
 
+
 void plMatrixStack::push( const plMatrix44 &m )  
 { 
     _stack.push(m);
 }	
 
+
 void plMatrixStack::mult( const plMatrix44 &m )  
 {
     _stack.top() = _stack.top() * m; 
 } 
+
 
 void plMatrixStack::pop()
 {
@@ -51,11 +56,13 @@ void plMatrixStack::pop()
 		_stack.top().setIdentity(); // if stack has only 1 matrix, set it to identity
 	}			
 }
+	
 		
 const plMatrix44& plMatrixStack::top(void)		
 { 
      return _stack.top(); 
 }
+
 
 void plMatrixStack::scale(GLfloat x, GLfloat y, GLfloat z)
 {

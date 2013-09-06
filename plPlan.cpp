@@ -137,9 +137,9 @@ void plPlan::addIGuideSite( PLuint modelIndex )
     _iGuideSites.add( new plIGuideSite( modelIndex, *_models[modelIndex] ) );
 }
 
-void plPlan::addGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat length, PLfloat heightOffset )
+void plPlan::addGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat heightOffset, PLfloat length )
 {
-    _grafts.add( new plGraft( h, r, radius, length, heightOffset ) );
+    _grafts.add( new plGraft( h, r, radius, heightOffset, length ) );
 }
 
 

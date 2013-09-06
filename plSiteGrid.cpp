@@ -142,7 +142,7 @@ void plSiteGrid::_generateCoarseGridPoints()
 
 void plSiteGrid::_generateFineGridPoints()
 {
-    const PLfloat GRID_SPACING = 0.5f;
+    const PLfloat GRID_SPACING = 0.4f;
     
     plSet<plPointAndNormal> p;
     
