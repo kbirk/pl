@@ -62,7 +62,7 @@ PLbool plIGuide::generateIGuideMeshes()
 
     // anatomy TODO: change to bone AND cartilage model
     plString anatomyFilename (prepareFilenameWithVariables(false,'M',0,"bone"));
-    iGuideMeshesToSubtract.add( plIGuideMesh(anatomyFilename,plSeq<plTriangle>( site().model().bone.triangles() ) ) );
+    iGuideMeshesToSubtract.add( plIGuideMesh(anatomyFilename,plSeq<plTriangle>( site().model().combined.triangles() ) ) );
 
 
     // template base TODO: create the template base shape if it needs updating
@@ -218,6 +218,14 @@ plSeq<plTriangle> plIGuide::createTemplatePieceTransformed ( const plSeq<plTrian
 
 void plIGuide::draw() 
 {
+    for (PLuint i = 0; i < iGuideMeshesToAdd.size(); i++)
+    {
+        iGuideMeshesToAdd[i].draw();
+    }
+    for (PLuint i = 0; i < iGuideMeshesToSubtract.size(); i++)
+    {
+        iGuideMeshesToSubtract[i].draw();
+    }
     //plPicking::value.type = PL_PICKING_TYPE_IGUIDE_BOUNDARY;
     //boundary.draw();
 }

@@ -87,11 +87,18 @@ void plPlan::drawElements() const
         _grafts[i]->draw();
     }
         
-    // Draw iGuides
+    // Draw iGuideSites
     for ( PLuint i = 0; i < _iGuideSites.size(); i++)
     {            
         plPicking::value.id = i; 
         _iGuideSites[i]->draw();
+    }
+
+    // Draw iGuides
+    for ( PLuint i = 0; i < _iGuides.size(); i++)
+    {
+        plPicking::value.id = i;
+        _iGuides[i]->draw();
     }
 }
 
@@ -167,6 +174,11 @@ void plPlan::removeGraft( PLuint index )
 {
     delete _grafts[index];
     _grafts.remove( index );
+}
+
+void plPlan::generateIGuide( PLuint index )
+{
+    _iGuides[index]->generateIGuideMeshes();
 }
 
 template<class T>
