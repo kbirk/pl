@@ -357,7 +357,7 @@ std::ostream& operator << ( std::ostream& out, const plPlan &p )
     // iGuides
     for (PLuint i=0; i<p.iGuides().size(); i++)
     {   
-        const plIGuide &iguide= p.iGuides(i);
+        const plIGuide &iguide = p.iGuides(i);
         
         // site selection
         out << "iguide," << i << ",site," << iguide.siteIndex << std::endl;

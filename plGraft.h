@@ -30,7 +30,7 @@ class plPointAndAngle
         
         PLbool operator < (const plPointAndAngle &p) const
         {
-            return (angle - p.angle) < -0.05;   // if not a difference by 0.05 degree, toss it
+            return angle < p.angle;
         }
         
 }; 
@@ -42,7 +42,7 @@ class plCap
     public:
 
         plSeq<plTriangle>       triangles;
-        plSeq<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above (?)
+        plSeq<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above
     
         plCap() {}
 };

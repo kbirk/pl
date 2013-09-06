@@ -74,8 +74,6 @@ plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVecto
     {
         PLfloat min = FLT_MAX;
 
-        //std::cout << "triCount: " << triangles.size() << "\n";
-
         // must use iterators for plSet
         plSet<const plTriangle*>::iterator tri_itr = triangles.begin();
         plSet<const plTriangle*>::iterator tri_end = triangles.end();
@@ -273,7 +271,7 @@ PLbool plOctreeNode::rayIntersect( plSet<const plTriangle*> &triangles, const pl
 {
     plVector3 diff;
 
-    PLfloat boxExtents = halfWidth + boxInflation;
+    PLfloat boxExtents = halfWidth + boxInflation;  // box inflation is used to intersect cylinder with box rather than ray, used for grafts
 
 	diff.x = rayOrigin.x - centre.x;
 	if( fabs(diff.x) > boxExtents && diff.x*rayDirection.x>=0.0f)	return false;

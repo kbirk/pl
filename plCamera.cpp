@@ -19,7 +19,7 @@ void plCamera::_defaultInit()
 	up       = plVector3(0,1,0);
 }  
     
-plMatrix44 plCamera::matrix() const 
+plMatrix44 plCamera::getMatrix() const 
 {			 
     plVector3 x, y, z;
 
@@ -123,7 +123,7 @@ void plCamera::rotate( PLint x0, PLint y0, PLint x1, PLint y1 )
     plMatrix44 qm;  qm.setRotation( quat );
 
     // get current modelview matrix (rotation component only)
-    plMatrix44 m = matrix();
+    plMatrix44 m = getMatrix();
     m(0,3) = 0.0f;
     m(1,3) = 0.0f;
     m(2,3) = 0.0f;

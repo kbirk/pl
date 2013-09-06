@@ -66,14 +66,14 @@ namespace plCameraStack
 {
     plMatrixStack _stack;
 
-    void push()				           { _stack.push();           }	
-	void push( const plMatrix44 &m )   { _stack.push(m);          }	
-	void push( const plCamera   &c )   { _stack.push(c.matrix()); }	 
-	void load( const plMatrix44 &m )   { _stack.load(m);          }	
-	void load( const plCamera   &c )   { _stack.load(c.matrix()); }	
-	void pop()                         { _stack.pop();            }
+    void push()				           { _stack.push();              }	
+	void push( const plMatrix44 &m )   { _stack.push(m);             }	
+	void push( const plCamera   &c )   { _stack.push(c.getMatrix()); }	 
+	void load( const plMatrix44 &m )   { _stack.load(m);             }	
+	void load( const plCamera   &c )   { _stack.load(c.getMatrix()); }	
+	void pop()                         { _stack.pop();               }
     
-    const plMatrix44& top()	           { return _stack.top();     } 
+    const plMatrix44& top()	           { return _stack.top();        } 
 
     plVector3 direction()
     {

@@ -102,11 +102,11 @@ PLbool plIGuide::generateIGuideMeshes()
         plVector3 holderScale   ( holderDiameter, 20.f, holderDiameter );
         plVector3 keyScale      ( 3.f, 29.9f, 4.f );
 
-        plSeq<plTriangle> holeTriangles     ( createTemplatePieceTransformed(sharpCylinder, plugTransform,   zero,                           holeScale,     zero,                    zero) );
-        plSeq<plTriangle> sleeveTriangles   ( createTemplatePieceTransformed(roundCylinder, plugTransform,   zero,                           sleeveScale,   zero,                    zero) );
-        plSeq<plTriangle> baseTriangles     ( createTemplatePieceTransformed(sharpCylinder, plugTransform,   zero,                           baseScale,     zero,                    zero) );
-        plSeq<plTriangle> holderTriangles   ( createTemplatePieceTransformed(roundCylinder, plugTransform,   zero,                           holderScale,   zero,                    zero) );
-        plSeq<plTriangle> keyTriangles      ( createTemplatePieceTransformed(keyCube,       plugTransform,   zero,                           keyScale,      keyHarvestTranslation,   zero) );
+        plSeq<plTriangle> holeTriangles     ( createTemplatePieceTransformed(sharpCylinder, plugTransform,   zero, holeScale,     zero,                    zero) );
+        plSeq<plTriangle> sleeveTriangles   ( createTemplatePieceTransformed(roundCylinder, plugTransform,   zero, sleeveScale,   zero,                    zero) );
+        plSeq<plTriangle> baseTriangles     ( createTemplatePieceTransformed(sharpCylinder, plugTransform,   zero, baseScale,     zero,                    zero) );
+        plSeq<plTriangle> holderTriangles   ( createTemplatePieceTransformed(roundCylinder, plugTransform,   zero, holderScale,   zero,                    zero) );
+        plSeq<plTriangle> keyTriangles      ( createTemplatePieceTransformed(keyCube,       plugTransform,   zero, keyScale,      keyHarvestTranslation,   zero) );
 
         plString holeFilename      ( prepareFilenameWithVariables(false,'H',harvestIndices[i],"hole"  ) );
         plString sleeveFilename    ( prepareFilenameWithVariables(true ,'H',harvestIndices[i],"sleeve") );
