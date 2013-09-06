@@ -254,9 +254,6 @@ bool intersectTriangle( in vec3 position, in vec3 normal, in triangle t, in floa
              distance( closestPointOnSegment( position, e0 ), position ) < radius ||
              distance( closestPointOnSegment( position, e1 ), position ) < radius ||
              distance( closestPointOnSegment( position, e2 ), position ) < radius );
-    
-    
-  
 }
 
 

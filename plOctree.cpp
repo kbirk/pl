@@ -290,9 +290,9 @@ PLbool plOctreeNode::rayIntersect( plSet<const plTriangle*> &triangles, const pl
 	fAWdU[2] = fabs(rayDirection.z);
 
 	float f;
-	f = rayDirection.y * diff.z - rayDirection.z * diff.y;	if(fabs(f)>boxExtents*fAWdU[2] + boxExtents*fAWdU[1])	return false;
-	f = rayDirection.z * diff.x - rayDirection.x * diff.z;	if(fabs(f)>boxExtents*fAWdU[2] + boxExtents*fAWdU[0])	return false;
-	f = rayDirection.x * diff.y - rayDirection.y * diff.x;	if(fabs(f)>boxExtents*fAWdU[1] + boxExtents*fAWdU[0])	return false;
+	f = rayDirection.y * diff.z - rayDirection.z * diff.y;	if( fabs(f)>boxExtents*fAWdU[2] + boxExtents*fAWdU[1] ) return false;
+	f = rayDirection.z * diff.x - rayDirection.x * diff.z;	if( fabs(f)>boxExtents*fAWdU[2] + boxExtents*fAWdU[0] )	return false;
+	f = rayDirection.x * diff.y - rayDirection.y * diff.x;	if( fabs(f)>boxExtents*fAWdU[1] + boxExtents*fAWdU[0] )	return false;
 
 	// intersection exists, recurse further
     PLuint childCount = 0;

@@ -214,7 +214,7 @@ plShapeMesh::plShapeMesh(float baseRadius, float topRadius, float height, int sl
 }       
 
 // disk
-plShapeMesh::plShapeMesh(float innerRadius, float outerRadius, int slices, int loops, bool up)
+plShapeMesh::plShapeMesh(float innerRadius, float outerRadius, int slices, int loops, bool up )
 {
     float da, dr;
 

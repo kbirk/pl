@@ -41,7 +41,7 @@ void plString::toLower()
     }
 }
 
-bool plString::compare( const plString &str )
+bool plString::compare( const plString &str ) const
 {
     if (length() != str.length())
     {
@@ -59,7 +59,7 @@ bool plString::compare( const plString &str )
     return true;  
 }
 
-bool plString::compare( const plString &str, PLuint num  )
+bool plString::compare( const plString &str, PLuint num  ) const
 {
     if (num > this->length() || num > str.length())
     {
@@ -77,16 +77,16 @@ bool plString::compare( const plString &str, PLuint num  )
     return true; 
 }
 
-bool plString::compare( const plString &str, PLuint index, PLuint num )
+bool plString::compare( const plString &str, PLuint index, PLuint num ) const
 {
-    if ( (index+num) > this->length() || (index+num) > str.length())
+    if ( (index+num) > this->length() || num > str.length() )
     {
         return false;
     }
     
-    for (PLuint i = index; i < (index+num); i++)
+    for (PLuint i = 0; i < num; i++)
     {
-        if ( (*this)[i] != str[i] )
+        if ( (*this)[i+index] != str[i] )
         {
             return false;
         }

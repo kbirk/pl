@@ -131,9 +131,19 @@ namespace plAutomaticPlanner
             for ( PLuint i=0; i < state.graftCount; i++ )
             {
             
+                //plVector3 rayOrigin   ( state.graftPositions[i].x, state.graftPositions[i].y, state.graftPositions[i].z );
+                //plVector3 rayDirection( state.graftNormals[i].x,   state.graftNormals[i].y,   state.graftNormals[i].z   );        
+                //plIntersection intersection = plan.models(0).bone.rayIntersect( rayOrigin, -rayDirection );
+
+                //plVector3 recipientOrigin ( intersection.point.x, intersection.point.y, intersection.point.z );           
+                plVector3 recipientOrigin ( state.graftPositions[i].x, state.graftPositions[i].y, state.graftPositions[i].z );            
                 plVector3 recipientY      ( state.graftNormals[i].x,   state.graftNormals[i].y,   state.graftNormals[i].z   );
-                plVector3 recipientOrigin ( state.graftPositions[i].x, state.graftPositions[i].y, state.graftPositions[i].z );
-            
+                
+                //rayOrigin    = plVector3( donorData[i*2+0].x, donorData[i*2+0].y, donorData[i*2+0].z );
+                //rayDirection = plVector3( donorData[i*2+1].x, donorData[i*2+1].y, donorData[i*2+1].z );        
+                //intersection = plan.models(0).bone.rayIntersect( rayOrigin, rayDirection );
+                
+                //plVector3 harvestOrigin  ( intersection.point.x, intersection.point.y, intersection.point.z );            
                 plVector3 harvestOrigin  ( donorData[i*2+0].x, donorData[i*2+0].y, donorData[i*2+0].z );
                 plVector3 harvestY       ( donorData[i*2+1].x, donorData[i*2+1].y, donorData[i*2+1].z );
                 
