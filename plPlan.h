@@ -59,6 +59,8 @@ class plPlan : public plRenderable
         void removeDonorSite ( PLuint index );
         void removeIGuideSite( PLuint index );
         void removeGraft     ( PLuint index );
+
+        void generateIGuide  ( PLuint index );
         
         void drawElements() const;
         void drawModels()   const;
