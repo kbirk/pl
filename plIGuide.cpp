@@ -2,12 +2,14 @@
 
 plIGuide::plIGuide() 
 {
+    siteIndex = -1;
 }
 
 
 plIGuide::plIGuide( PLuint modelID, const plBoneAndCartilage &model )
     : plModelSpecific( modelID, model )
 {
+    siteIndex = -1;
 }
 
 
@@ -52,7 +54,14 @@ void plIGuide::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCarti
 PLbool plIGuide::generateIGuideMeshes()
 {
 
+    std::cout << "DEBUG: 10" << std::endl;
     // TODO: error checking as necessary
+    if (siteIndex == -1)
+    {
+        std::cerr << "Error: No site chosen for iGuide. Aborting." << std::endl;
+        return false;
+    }
+    std::cout << "DEBUG: 15" << std::endl;
     if (site().boundary.size() <= 2)
     {
         std::cerr << "Error: Boundary does not have enough points. Aborting." << std::endl;
@@ -60,16 +69,19 @@ PLbool plIGuide::generateIGuideMeshes()
     }
 
 
+    std::cout << "DEBUG: 20" << std::endl;
     // anatomy TODO: change to bone AND cartilage model
     plString anatomyFilename (prepareFilenameWithVariables(false,'M',0,"bone"));
     iGuideMeshesToSubtract.add( plIGuideMesh(anatomyFilename,plSeq<plTriangle>( site().model().combined.triangles() ) ) );
 
 
+    std::cout << "DEBUG: 30" << std::endl;
     // template base TODO: create the template base shape if it needs updating
     plString templateBaseFilename (prepareFilenameWithVariables(true ,'M',0,"templateBase"));
     iGuideMeshesToAdd.add(plIGuideMesh(templateBaseFilename,site().templateBase));
 
 
+    std::cout << "DEBUG: 40" << std::endl;
     // plug pieces
     plSeq<plTriangle> roundCylinder;
     plSTL::importFile(roundCylinder, "./iGuideElements/Generator_Cylinder_Round.stl");
@@ -83,6 +95,7 @@ PLbool plIGuide::generateIGuideMeshes()
     PLfloat   zero        ( 0.f );
     plVector3 zeroVector  ( 0.f, 0.f, 0.f );
 
+    std::cout << "DEBUG: 50" << std::endl;
     for (PLuint i = 0; i < harvestIndices.size(); i++)
     {
         plMatrix44 plugTransform   ( harvestGraft(i).harvest.transform.matrix() );
@@ -114,6 +127,7 @@ PLbool plIGuide::generateIGuideMeshes()
         plString holderFilename    ( prepareFilenameWithVariables(true ,'H',harvestIndices[i],"holder") );
         plString keyFilename       ( prepareFilenameWithVariables(true ,'H',harvestIndices[i],"key"   ) );
 
+        std::cout << "DEBUG: 60" << std::endl;
         iGuideMeshesToSubtract.add(plIGuideMesh(holeFilename  ,holeTriangles  ));
         iGuideMeshesToAdd     .add(plIGuideMesh(sleeveFilename,sleeveTriangles));
         iGuideMeshesToAdd     .add(plIGuideMesh(baseFilename  ,baseTriangles  ));
@@ -121,6 +135,7 @@ PLbool plIGuide::generateIGuideMeshes()
         iGuideMeshesToAdd     .add(plIGuideMesh(keyFilename   ,keyTriangles   ));
     }
 
+    std::cout << "DEBUG: 70" << std::endl;
     for (PLuint i = 0; i < recipientIndices.size(); i++)
     {
         plMatrix44 recipientTransform ( recipientGraft(i).recipient.transform.matrix() );
@@ -155,6 +170,7 @@ PLbool plIGuide::generateIGuideMeshes()
         plString holderFilename    ( prepareFilenameWithVariables(true ,'R',harvestIndices[i],"holder") );
         plString keyFilename       ( prepareFilenameWithVariables(true ,'R',harvestIndices[i],"key"   ) );
 
+        std::cout << "DEBUG: 80" << std::endl;
         iGuideMeshesToSubtract.add(plIGuideMesh(holeFilename  ,holeTriangles  ));
         iGuideMeshesToAdd     .add(plIGuideMesh(sleeveFilename,sleeveTriangles));
         iGuideMeshesToAdd     .add(plIGuideMesh(baseFilename  ,baseTriangles  ));
@@ -162,6 +178,7 @@ PLbool plIGuide::generateIGuideMeshes()
         iGuideMeshesToAdd     .add(plIGuideMesh(keyFilename   ,keyTriangles   ));
     }
 
+    std::cout << "DEBUG: 90" << std::endl;
     return true;
 }
 
