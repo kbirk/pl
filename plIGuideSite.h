@@ -13,6 +13,9 @@ class plIGuideSite : public plModelSpecific,
                      public plRenderable
 {
     private:
+
+        plSeq<plTriangle>   _templateBase;   // for use in generating iGuides
+
         // used in constructing the template base shape
         class edgeIndices
         {
@@ -24,13 +27,16 @@ class plIGuideSite : public plModelSpecific,
                 PLuint vertexIndexB;
         };
 
+        PLbool createTemplateBaseShape( const plSeq<plTriangle> &cartilageTris );
+
         plSeq<edgeIndices> collectOutsideEdges();                       // helper to createTemplateBaseShape
         plSeq<edgeIndices> collectOutsideEdgesUnsorted();               // helper to collectOutsideEdges
         plSeq<edgeIndices> collectOutsideEdgesSort(plSeq<edgeIndices>); // helper to collectOutsideEdges
 
     public:
 
-        plSeq<plTriangle>   templateBase;   // for use in generating iGuides
+        plSeq<plTriangle>   &templateBase( const plSeq<plTriangle> &cartilageTris );
+
         plBoundary          boundary;
 
         plIGuideSite();
@@ -39,8 +45,6 @@ class plIGuideSite : public plModelSpecific,
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         void draw();
-
-        void createTemplateBaseShape( plSeq<plTriangle> &cartilageTris );
 
 };
 

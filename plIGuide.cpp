@@ -53,6 +53,8 @@ void plIGuide::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCarti
 
 PLbool plIGuide::generateIGuideMeshes()
 {
+    iGuideMeshesToAdd.     clear();
+    iGuideMeshesToSubtract.clear();
 
     std::cout << "DEBUG: 10" << std::endl;
     // TODO: error checking as necessary
@@ -78,7 +80,14 @@ PLbool plIGuide::generateIGuideMeshes()
     std::cout << "DEBUG: 30" << std::endl;
     // template base TODO: create the template base shape if it needs updating
     plString templateBaseFilename (prepareFilenameWithVariables(true ,'M',0,"templateBase"));
-    iGuideMeshesToAdd.add(plIGuideMesh(templateBaseFilename,site().templateBase));
+    std::cout << "DEBUG: 32" << std::endl;
+    plSeq<plTriangle> templateBaseTris ( site().templateBase( site().model().combined.triangles() ));
+    std::cout << "DEBUG: 35" << std::endl;
+    if (templateBaseTris.size() > 0)
+    {
+        std::cout << "DEBUG: 37" << std::endl;
+        iGuideMeshesToAdd.add(plIGuideMesh(templateBaseFilename,templateBaseTris));
+    }
 
 
     std::cout << "DEBUG: 40" << std::endl;
