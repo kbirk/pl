@@ -11,8 +11,7 @@
 
 #define PL_STAGE1_GROUP_SIZE                   256
 
-#define PL_STAGE1_NUM_SLICES                   16
-
+#define PL_STAGE1_NUM_DIRECTIONS               16
 
 #define PL_STAGE1_MAX_DONOR_SITES              5
 #define PL_STAGE1_MAX_CAP_TRIANGLES            1024
@@ -39,18 +38,10 @@ class plRmsData
 
         plRmsData() {}  
         
-        void update( PLuint bufferSize, PLuint rmsBuffer, const plVector4 &dir )
-        {
-            plRmsSet set( bufferSize, dir );   
-        
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, rmsBuffer);            
-            PLfloat *rms = readSSBO<PLfloat>( 0, bufferSize );
-            memcpy( &set.rms[0], &rms[0], bufferSize*sizeof( PLfloat ) );    
-            glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+        void update( PLuint bufferSize, PLuint rmsBuffer, const plVector4 &dir );
 
-            sets.add( set );
-        }      
-
+        PLuint getValuesSSBO()     const;
+        PLuint getDirectionsSSBO() const;
 };
 
 namespace plPlannerStage1

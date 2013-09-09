@@ -7,9 +7,8 @@
 
 #define PL_DONOR_Z                  0, 0, 1
 
-#define PL_NUM_GRAFT_ANGLES         16
-#define PL_NUM_COMPARISON_SLICES    16
-#define PL_NUM_COMPARISON_RADII     4
+#define PL_NUM_COMPARISON_SLICES    8
+#define PL_NUM_COMPARISON_RADII     2
 #define PL_PI                       3.1415927
 
 layout (local_size_x = 256) in;
@@ -381,19 +380,19 @@ float calcRMS( in uint defectCount, in uint donorCount, in vec3 defectNormal, in
     float squaredDistanceSum = 0;
     
     float dr = (radius / float(PL_NUM_COMPARISON_RADII)) - 0.001;    
-    float da = 2.0f * PL_PI / PL_NUM_COMPARISON_SLICES;
+    float da = (2.0f * PL_PI) / float(PL_NUM_COMPARISON_SLICES);
     
     for (uint i=1; i<=PL_NUM_COMPARISON_RADII; i++)
     { 
-        for (uint j=0; j<=PL_NUM_COMPARISON_SLICES; j++)
+        for (uint j=0; j < PL_NUM_COMPARISON_SLICES; j++)
         {       
-            float a = (j == PL_NUM_COMPARISON_SLICES) ? 0.0 : j * da;
+            float theta = j * da;
                 
-            float sa = sin(a);
-            float ca = cos(a);
+            float sa = sin( theta );
+            float ca = cos( theta );
     
-            vec3 defectCast = normalize( defectX * sa + -defectZ * ca ) * (dr * i);
-            vec3 donorCast  = normalize( donorX  * sa + -donorZ  * ca ) * (dr * i);
+            vec3 defectCast = normalize( defectX * sa + defectZ * ca ) * (dr * i);
+            vec3 donorCast  = normalize( donorX  * sa + donorZ  * ca ) * (dr * i);
             
             vec3 defectPoint, donorPoint;
             bool i0 = rayIntersectDefect( defectPoint, defectCast, defectNormal, defectCount );

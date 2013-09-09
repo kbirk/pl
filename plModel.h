@@ -57,7 +57,7 @@ class plModel : public plRenderable
         // prevent empty constructor, copy constructor, and assignment, which will invalidate the octree's pointers if rhs is scoped
         plModel();
         plModel( const plModel &m );
-        plModel operator=(const plModel &m) const;
+        plModel operator=( const plModel &m ) const;
 
 };
 

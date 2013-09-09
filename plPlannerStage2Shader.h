@@ -18,6 +18,7 @@ class plPlannerStage2Shader : public plShader
         void getUniformLocations();
         
         void setGraftUniforms ( PLuint count, 
+                                PLuint numDirections,
                                 const plSeq<PLfloat> &radii ) const;
                                
         void setSiteUniforms  (  PLuint donorCount,
@@ -32,6 +33,8 @@ class plPlannerStage2Shader : public plShader
         PLuint _totalGridPointsID;
         PLuint _donorSiteCountID;
         PLuint _donorSiteGridSizeID;
+ 
+        PLuint _numDirectionsID;
  
         PLuint _seedID;       
 };

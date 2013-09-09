@@ -3,20 +3,20 @@
 #define PL_FLT_MAX                  99999
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_DONOR_SITES          5
-#define PL_ITERATIONS               50
-
+#define PL_ITERATIONS               4
+#define PL_PLUG_LENGTH              15.0
 
 layout (local_size_x = 256) in;
 
 // input data
 layout (std430,  binding = 0) buffer donorSiteDataBlock   { vec4 donorSiteData[];  };
-layout (std430,  binding = 1) buffer rmsInputBlock        { float rmsInput[];      };
-
+layout (std430,  binding = 1) buffer rmsValuesBlock       { float rmsValues[];     };
+layout (std430,  binding = 2) buffer rmsDirectionsBlock   { vec4  rmsDirections[]; };
 // output data
-layout (std430,  binding = 2) buffer donorPositionsBlock   { vec4  donorPositionsOutput  []; };
-layout (std430,  binding = 3) buffer donorNormalsBlock     { vec4  donorNormalsOutput    []; };
-layout (std430,  binding = 4) buffer donorDirectionsBlock  { vec4  donorZDirectionOutput []; };
-layout (std430,  binding = 5) buffer totalRmsBlock         { float totalRmsOutput[];         };
+layout (std430,  binding = 3) buffer donorPositionsBlock   { vec4  donorPositionsOutput  []; };
+layout (std430,  binding = 4) buffer donorNormalsBlock     { vec4  donorNormalsOutput    []; };
+layout (std430,  binding = 5) buffer donorDirectionsBlock  { vec4  donorZDirectionOutput []; };
+layout (std430,  binding = 6) buffer totalRmsBlock         { float totalRmsOutput[];         };
 
 // input uniforms
 uniform uint  uGraftCount;
@@ -26,7 +26,9 @@ uniform uint  uTotalGridPoints;
 uniform uint  uDonorSiteCount;
 uniform uint  uDonorSiteGridSize   [PL_MAX_DONOR_SITES];
 
-uniform uint uSeed;
+uniform uint  uNumDirections;
+
+uniform uint  uSeed;
 
 void getDonorSiteAndIndex( inout uint site, inout uint localIndex, in uint globalIndex )
 {
@@ -96,9 +98,9 @@ void shuffle( inout uint array[PL_MAX_GRAFTS_PER_SOLUTION], in uint size, inout 
 }
 
 
-float rms( in uint graftIndex, in uint gridIndex )
+float rms( in uint graftIndex, in uint gridIndex, in uint directionIndex )
 {
-    return rmsInput[ gridIndex*PL_MAX_GRAFTS_PER_SOLUTION + graftIndex ];
+    return rmsValues[ (uTotalGridPoints*PL_MAX_GRAFTS_PER_SOLUTION*directionIndex) + (PL_MAX_GRAFTS_PER_SOLUTION*gridIndex) + graftIndex ];
 }
 
 
@@ -139,12 +141,14 @@ void main(void)
     // set min rms total to max value
     float minTotalRMS = PL_FLT_MAX;
 
-    for ( uint k=0; k < PL_ITERATIONS; k++)
+    for ( uint h=0; h < PL_ITERATIONS; h++)
     {
         float currentTotalRMS = 0;
         
-        uint solutionIndices[PL_MAX_GRAFTS_PER_SOLUTION];   
-        uint graftIndices   [PL_MAX_GRAFTS_PER_SOLUTION];   // shuffled graft indices
+        uint solutionIndices   [PL_MAX_GRAFTS_PER_SOLUTION];   
+        uint solutionDirections[PL_MAX_GRAFTS_PER_SOLUTION]; 
+          
+        uint graftIndices      [PL_MAX_GRAFTS_PER_SOLUTION];   // shuffled graft indices        
         for (uint i=0; i < uGraftCount; i++)
         {
             graftIndices[i] = i;
@@ -156,22 +160,30 @@ void main(void)
         {    
             uint graftIndex = graftIndices[i];
         
-            float lowestRMS = PL_FLT_MAX;
+            float lowestRMS       = PL_FLT_MAX;
             int   lowestGridpoint = -1;
-            
+            int   lowestDirection = -1;
             // for each grid point, find valid with lowest RMS
             for ( uint j=0; j < uTotalGridPoints; j++ )
             {
-                float currentRMS = rms( graftIndex, j );
-
-                if ( currentRMS > 0 && currentRMS < lowestRMS )
+            
+                // for each direction, find valid with lowest RMS
+                for ( uint k=0; k < uNumDirections; k++ )
                 {
-                    if ( isSelectionValid( j, graftIndices, solutionIndices, i ) )
-                    {                       
-                        lowestGridpoint = int(j);
-                        lowestRMS = currentRMS;
-                    }                
+                    float currentRMS = rms( graftIndex, j, k );
+
+                    if ( currentRMS > 0 && currentRMS < lowestRMS )
+                    {
+                        if ( isSelectionValid( j, graftIndices, solutionIndices, i ) )
+                        {     
+                            lowestRMS = currentRMS;                  
+                            lowestGridpoint = int(j);                            
+                            lowestDirection = int(k);
+                        }                
+                    }
+            
                 }
+                
             }
             
             if ( lowestGridpoint == -1 )
@@ -184,8 +196,9 @@ void main(void)
             // increment rms total
             currentTotalRMS += lowestRMS;
             
-            // set gridpoint index for graft
-            solutionIndices[i] = lowestGridpoint;
+            // set gridpoint and direction index for graft
+            solutionIndices   [i] = lowestGridpoint;
+            solutionDirections[i] = lowestDirection;
         }
 
         if ( currentTotalRMS < minTotalRMS )
@@ -204,7 +217,7 @@ void main(void)
             
                 donorPositionsOutput [ offset + graftIndex ] = donorSitePositions( site, localIndex );
                 donorNormalsOutput   [ offset + graftIndex ] = donorSiteNormals  ( site, localIndex );
-                donorZDirectionOutput[ offset + graftIndex ] = donorSiteNormals  ( site, localIndex );                
+                donorZDirectionOutput[ offset + graftIndex ] = rmsDirections[ solutionDirections[i] ];               
             }
             
             // export total rms

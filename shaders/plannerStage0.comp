@@ -3,7 +3,7 @@
 #define PL_ITERATIONS               4
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_RADIUS               4.0
-#define PL_MIN_RADIUS               2.0
+#define PL_MIN_RADIUS               3.0
 #define PL_OVERLAP_THRESHOLD        0.8
 
 layout (local_size_x = 16) in;
@@ -317,7 +317,7 @@ void addCap( inout state s, inout uint seed )
     }
     while ( !isWithinOverlapThreshold( vec3( sitePositions( index ) ), r*PL_OVERLAP_THRESHOLD ) );
     */
-    float radius = uint( rand( seed ) * (PL_MAX_RADIUS-PL_MIN_RADIUS) + PL_MIN_RADIUS + 1); 
+    float radius = uint( rand( seed ) * (PL_MAX_RADIUS-PL_MIN_RADIUS+1) + PL_MIN_RADIUS); 
     uint  index  = uint( uSiteGridSize*rand( seed ) );
     
     if ( isWithinOverlapThreshold( vec3( sitePositions( index ) ), radius*PL_OVERLAP_THRESHOLD ) )

@@ -153,8 +153,8 @@ namespace plPlannerStage0
                       
         // generate and bind annealing state output buffers    
         plDefectState state( site.area() );  // empty state (no plugs) energy set to total site area
-        state.createBuffers();                  // create input/output buffers
-        state.bindBuffers();                    // bind input/output buffers   
+        state.createBuffers();               // create input/output buffers
+        state.bindBuffers();                 // bind input/output buffers   
             
         // simulated annealing                
         while ( state.temperature > 0.01f)

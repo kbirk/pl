@@ -77,4 +77,18 @@ T* readSSBO( PLuint index, PLuint count )
 }
 
 
+template< class T >
+plSeq<T> readSSBO( PLuint bufferID, PLuint index, PLuint count )
+{
+    plSeq<T> ts( count, T() );
+    glBindBuffer( GL_SHADER_STORAGE_BUFFER, bufferID );  
+    T *temp = readSSBO<T>( index, count );                                  
+    memcpy( &ts[0], &temp[0], count*sizeof( T ) );    
+    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);      
+    return ts;                              
+}
+
+
+
+
 #endif

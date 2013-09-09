@@ -14,7 +14,7 @@ void plDonorState::createBuffers()
     _donorPositionsBufferID   = createSSBO( PL_STAGE2_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) );
     _donorNormalsBufferID     = createSSBO( PL_STAGE2_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) );
     _donorZDirectionsBufferID = createSSBO( PL_STAGE2_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) );
-    _totalRMSBufferID         = createSSBO( PL_STAGE2_INVOCATIONS, FLT_MAX );
+    _totalRMSBufferID         = createSSBO( PL_STAGE2_INVOCATIONS, -1.0f );
 }
 
 
@@ -30,18 +30,18 @@ void plDonorState::destroyBuffers()
 
 void plDonorState::bindBuffers()
 {      
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, _donorPositionsBufferID   );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, _donorNormalsBufferID     );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, _donorZDirectionsBufferID );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 5, _totalRMSBufferID         );
+    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, _donorPositionsBufferID   );
+    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, _donorNormalsBufferID     );
+    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 5, _donorZDirectionsBufferID );
+    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 6, _totalRMSBufferID         );
 }
 
 void plDonorState::unbindBuffers()
 {   
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, 0 );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, 0 );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, 0 );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 5, 0 );
+    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 6, 0 );
 }
 
 void plDonorState::update()
@@ -72,6 +72,9 @@ void plDonorState::update()
     }
     else
     {
+        graftPositions.clear();
+        graftNormals.clear();
+        graftZDirections.clear();
         std::cerr << "plDonorState::update() error: Unable to find suitable harvest locations \n";
     }
  
@@ -94,6 +97,7 @@ PLint plDonorState::_getLowestRmsIndex()
 
     for (PLuint i=0; i < PL_STAGE2_INVOCATIONS; i++)
     {
+        //std::cout << totalRmsData[i] << "\n";
         if ( totalRmsData[i] > 0 && totalRmsData[i] < minRMS )
         {
             minRMS   = totalRmsData[i];
@@ -112,8 +116,6 @@ namespace plPlannerStage2
 
     plDonorState run( const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plRmsData &rmsInput )
     {
-        //const PLuint DONOR_OUTPUT_BUFFER_SIZE = PL_STAGE2_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*2;
-
         // compile / link stage 1 shader
         plPlannerStage2Shader stage2Shader("./shaders/plannerStage2.comp");
         stage2Shader.bind(); 
@@ -128,35 +130,21 @@ namespace plPlannerStage2
         }
 
         // generate and fill buffers 
-        PLuint donorSiteDataBufferID    = getGroupGridSSBO( donorSites ); //donorSites[0].getGridSSBO();         
-        PLuint rmsInputBufferID         = createSSBO( rmsInput.sets[0].rms );
-        //PLuint donorPositionsBufferID   = createSSBO( DONOR_OUTPUT_BUFFER_SIZE, plVector4(-1,-1,-1,-1) );
-        //PLuint donorNormalsBufferID     = createSSBO( DONOR_OUTPUT_BUFFER_SIZE, plVector4(-1,-1,-1,-1) );
-        //PLuint donorZDirectionsBufferID = createSSBO( DONOR_OUTPUT_BUFFER_SIZE, plVector4(-1,-1,-1,-1) );
-        //PLuint totalRmsBufferID         = createSSBO( PL_STAGE2_INVOCATIONS, FLT_MAX );
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, donorSiteDataBufferID  );    
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, rmsInputBufferID       );  
-        
-/////////////
+        PLuint donorSiteDataBufferID       = getGroupGridSSBO( donorSites );       
+        PLuint rmsValuesInputBufferID      = rmsInput.getValuesSSBO();
+        PLuint rmsDirectionsInputBufferID  = rmsInput.getDirectionsSSBO(); 
+        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, donorSiteDataBufferID      );    
+        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, rmsValuesInputBufferID     ); 
+        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, rmsDirectionsInputBufferID ); 
 
         // generate and bind donor state output buffers    
         plDonorState donorState; 
         donorState.createBuffers();  // create output buffers
         donorState.bindBuffers();    // bind output buffers   
-////////////////   
-   
-        /*
-        // bind buffers
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, donorSiteDataBufferID  );    
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, rmsInputBufferID       );  
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, donorPositionsBufferID    );  
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, donorNormalsBufferID    );
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, donorZDirectionsBufferID    );
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 5, totalRmsBufferID );
-        */
         
         // set state uniforms
         stage2Shader.setGraftUniforms( defectState.graftCount,
+                                       rmsInput.sets.size(),    // number of individual directions
                                        defectState.graftRadii );
 
         stage2Shader.setSiteUniforms( donorSites.size(),
@@ -171,81 +159,29 @@ namespace plPlannerStage2
 
         // update donor state
         donorState.update();
-
-        /*
-        // copy total rms into client side array
-        plSeq<PLfloat> totalRmsData( PL_STAGE2_INVOCATIONS, -1.0f ); 
-                      
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, totalRmsBufferID);            
-        PLfloat *totalRms = readSSBO<PLfloat>( 0, PL_STAGE2_INVOCATIONS );
-        memcpy( &totalRmsData[0], &totalRms[0], PL_STAGE2_INVOCATIONS*sizeof( PLfloat ) );    
-        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
-        // find invocation with lowest RMS
-        float minRMS   = FLT_MAX;
-        PLint minIndex = -1;    
-
-        for (PLuint i=0; i < PL_STAGE2_INVOCATIONS; i++)
-        {
-            if ( totalRmsData[i] > 0 && totalRmsData[i] < minRMS )
-            {
-                minRMS   = totalRmsData[i];
-                minIndex = i;
-            }
-        }
-
-        // copy donor data into client side array
-        plSeq<plVector4> donorData( defectState.graftCount*2, plVector4(-1,-1,-1,-1) ); 
-            
-        // check if solution exists
-        if ( minIndex != -1 )
-        {                
-            std::cout << "\tTotal RMS: " << minRMS << "\n";     
-            glBindBuffer(GL_SHADER_STORAGE_BUFFER, donorOutputBufferID);            
-            plVector4 *donors = readSSBO<plVector4>( minIndex*PL_MAX_GRAFTS_PER_SOLUTION*2, defectState.graftCount*2 );
-            memcpy( &donorData[0], &donors[0], defectState.graftCount*2*sizeof( plVector4 ) );    
-            glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-        }
-        else
-        {
-            std::cerr << "Error: Unable to find suitable harvest locations \n";
-            return plSeq<plVector4>();
-        }
-        */
         
         // unbind and delete site and rms buffers
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 ); 
-        glDeleteBuffers(1, &donorSiteDataBufferID);
-        glDeleteBuffers(1, &rmsInputBufferID);
+        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, 0 ); 
+        glDeleteBuffers( 1, &donorSiteDataBufferID      );
+        glDeleteBuffers( 1, &rmsValuesInputBufferID     );
+        glDeleteBuffers( 1, &rmsDirectionsInputBufferID );
         
         // unbind and delete state output buffers
         donorState.unbindBuffers();  
         donorState.destroyBuffers();
         
-        
-        
-        /*
-        // unbind buffers
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 );    
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, 0 );
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, 0 ); 
-        
-        // delete buffers
-        glDeleteBuffers( 1, &donorSiteDataBufferID  );
-        glDeleteBuffers( 1, &rmsInputBufferID       );
-        glDeleteBuffers( 1, &donorOutputBufferID    );
-        glDeleteBuffers( 1, &totalRmsBufferID       );        
-        */
-        std::cout << "\tDonor locations and normals:\n";    
-        for (PLuint i=0; i < defectState.graftCount; i++)
+        if (donorState.graftPositions.size() > 0 )
         {
-            std::cout << "\t\tPosition "    << i << ": \t" << donorState.graftPositions[i]   << "\n";
-            std::cout << "\t\tNormal "      << i << ": \t" << donorState.graftNormals[i]     << "\n";
-            std::cout << "\t\tZ Direction " << i << ": \t" << donorState.graftZDirections[i] << "\n";
+            std::cout << "\tDonor locations and normals:\n";    
+            for (PLuint i=0; i < defectState.graftCount; i++)
+            {
+                std::cout << "\t\tPosition "    << i << ": \t" << donorState.graftPositions[i]   << "\n";
+                std::cout << "\t\tNormal "      << i << ": \t" << donorState.graftNormals[i]     << "\n";
+                std::cout << "\t\tZ Direction " << i << ": \t" << donorState.graftZDirections[i] << "\n";
+            }
         }
-        
         return donorState;
         
     }

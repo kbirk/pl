@@ -113,7 +113,7 @@ namespace plAutomaticPlanner
         std::cout << "\n---------------------------- Stage 1 Complete ---------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
         ////////////////////
-               
+           
         // stage 2 timing //
         std::cout << "\n--------------------------- Initiating Stage 2 --------------------------- \n" <<
                        "-------------------------------------------------------------------------- \n";
@@ -135,7 +135,8 @@ namespace plAutomaticPlanner
                        
                 // ray cast from cartilage positions in negative direction of normal to get harvest bone position
                 plVector3 originalHarvestOrigin( donorState.graftPositions[i].x, donorState.graftPositions[i].y, donorState.graftPositions[i].z );
-                plVector3 originalHarvestY     ( donorState.graftNormals[i].x,   donorState.graftNormals[i].y,   donorState.graftNormals[i].z );        
+                plVector3 originalHarvestY     ( donorState.graftNormals[i].x,   donorState.graftNormals[i].y,   donorState.graftNormals[i].z );    
+                     
                 plIntersection intersection = plan.models(0).bone.rayIntersect( originalHarvestOrigin, -originalHarvestY );   
                 // set correct harvest origin to bone intersection point             
                 plVector3 correctHarvestOrigin = intersection.point;            
@@ -144,8 +145,11 @@ namespace plAutomaticPlanner
                 PLfloat cartilageThickness = ( correctHarvestOrigin - originalHarvestOrigin ).length();
             
                 // ray cast from cartilage positions in negative direction of normal to get recipient bone position
-                plVector3 originalRecipientOrigin( defectState.graftPositions[i].x, defectState.graftPositions[i].y, defectState.graftPositions[i].z );
-                plVector3 originalRecipientY     ( defectState.graftNormals[i].x,   defectState.graftNormals[i].y,   defectState.graftNormals[i].z   );        
+                plVector3 originalRecipientOrigin( defectState.graftPositions[i].x,  defectState.graftPositions[i].y,   defectState.graftPositions[i].z );
+                plVector3 originalRecipientY     ( defectState.graftNormals[i].x,    defectState.graftNormals[i].y,     defectState.graftNormals[i].z   );        
+                plVector3 originalRecipientZ     ( donorState.graftZDirections[i].x, donorState.graftZDirections[i].y,  donorState.graftZDirections[i].z ); // use from donor state!
+                plVector3 originalRecipientX = (originalRecipientY ^ originalRecipientZ).normalize();
+                                               
                 intersection = plan.models(0).bone.rayIntersect( originalRecipientOrigin, -originalRecipientY );      
                 // set correct recipient origin to bone intersection point   
                 plVector3 correctRecipientOrigin  = intersection.point; 
@@ -153,7 +157,7 @@ namespace plAutomaticPlanner
                 // get height offset so that cap is flush with cartilage surface, remember to subtract cartilage thickness 
                 PLfloat recipientHeightOffset = ( correctRecipientOrigin - originalRecipientOrigin).length() - cartilageThickness;
                           
-                plPlug recipient( 0, plan.models(0), plTransform( originalRecipientY, correctRecipientOrigin ) );
+                plPlug recipient( 0, plan.models(0), plTransform( originalRecipientX, originalRecipientY, correctRecipientOrigin ) );
                 plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   correctHarvestOrigin   ) );
                 plan.addGraft( harvest, recipient, defectState.graftRadii[i], recipientHeightOffset );
 

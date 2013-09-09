@@ -1,5 +1,55 @@
 #include "plPlannerStage1.h"
 
+
+void plRmsData::update( PLuint bufferSize, PLuint rmsBuffer, const plVector4 &dir )
+{
+    plRmsSet set( bufferSize, dir );   
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, rmsBuffer);            
+    PLfloat *rms = readSSBO<PLfloat>( 0, bufferSize );
+    memcpy( &set.rms[0], &rms[0], bufferSize*sizeof( PLfloat ) );    
+    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+    sets.add( set );
+}  
+
+
+PLuint plRmsData::getValuesSSBO() const
+{                  
+    PLuint dataSize = sets.size() * sets[0].rms.size();
+    
+    plSeq<float> data( dataSize );  
+    for ( PLuint i=0; i < sets.size(); i++ ) 
+    { 
+        for ( PLuint j=0; j < sets[i].rms.size(); j++ ) 
+        {
+            data.add( sets[i].rms[j] ); 
+        }      
+    }
+       
+    PLuint tempBuffer;
+    glGenBuffers(1, &tempBuffer);   
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(float), &data[0], GL_STATIC_READ);
+    return tempBuffer;
+}
+
+
+PLuint plRmsData::getDirectionsSSBO() const
+{
+    PLuint dataSize = sets.size();
+    
+    plSeq<plVector4> data( dataSize );  
+    for ( PLuint i=0; i < sets.size(); i++ ) { data.add( sets[i].direction ); }
+       
+    PLuint tempBuffer;
+    glGenBuffers(1, &tempBuffer);   
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(plVector4), &data[0], GL_STATIC_READ);
+    return tempBuffer;
+}    
+
+
 namespace plPlannerStage1
 {
 
@@ -28,7 +78,7 @@ namespace plPlannerStage1
 
         // generate and fill buffers 
         PLuint defectSiteDataBufferID      = defectSite.getMeshSSBO();
-        PLuint donorSiteDataBufferID       = getGroupFullSSBO( donorSites ); //donorSites[0].getFullSSBO();    
+        PLuint donorSiteDataBufferID       = getGroupFullSSBO( donorSites );   
         PLuint tempDefectTrianglesBufferID = createSSBO( TRIANGLE_BUFFER_SIZE, plVector4(-1,-1,-1,-1) );
         PLuint tempDonorTrianglesBufferID  = createSSBO( TRIANGLE_BUFFER_SIZE, plVector4(-1,-1,-1,-1) );        
         PLuint rmsOutputBuffer             = createSSBO( RMS_BUFFER_SIZE, -1.0f );
@@ -41,8 +91,6 @@ namespace plPlannerStage1
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, rmsOutputBuffer             );  
     
         const PLuint NUM_WORKGROUPS = ceil( totalGridPoints / (PLfloat) PL_STAGE1_GROUP_SIZE); // ensure enough workgroups are used
-
-        plVector4 direction( 0, 0, 1, 1 );
 
         // set state uniforms
         stage1Shader.setGraftUniforms( defectState.graftCount,
@@ -58,14 +106,14 @@ namespace plPlannerStage1
          
         plRmsData rmsData; 
           
-        float da = 2.0f * PL_PI / PL_STAGE1_NUM_SLICES;  
+        float da = (2.0f * PL_PI) / (float)(PL_STAGE1_NUM_DIRECTIONS);  
           
-        for (uint i=0; i<=PL_STAGE1_NUM_SLICES; i++)
+        for (uint i=0; i<PL_STAGE1_NUM_DIRECTIONS; i++)
         {       
-            float a = (i == PL_STAGE1_NUM_SLICES) ? 0.0 : i * da;
+            float theta = i * da;
              
             // get direction    
-            plVector4 direction( sin( a ), 0.0f, -cos( a ), 1.0f );
+            plVector4 direction( sin( theta ), 0.0f, cos( theta ), 1.0f );
             
             // set direction uniform
             stage1Shader.setDirectionUniform( direction );  
@@ -82,18 +130,6 @@ namespace plPlannerStage1
             std::cout << "\t Z Direction: " << direction << "\n";
         }
 
-
-        /*
-        // copy rms data into independant buffer
-        plSeq<PLfloat> rmsData( RMS_BUFFER_SIZE, -1.0f ); 
-                      
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, rmsOutputBuffer);            
-        PLfloat *rms = readSSBO<PLfloat>( 0, RMS_BUFFER_SIZE );
-        memcpy( &rmsData[0], &rms[0], RMS_BUFFER_SIZE*sizeof( PLfloat ) );    
-        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-        */
-        
-        
         // unbind buffers
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 );    
@@ -108,18 +144,16 @@ namespace plPlannerStage1
         glDeleteBuffers( 1, &tempDonorTrianglesBufferID  );
         glDeleteBuffers( 1, &rmsOutputBuffer             );
 
-        /* DEBUG
-        std::cout << "rms: "; 
-        for (PLuint i=0; i < 50; i++)
+        // DEBUG
+        for (PLuint i=0; i < PL_STAGE1_NUM_DIRECTIONS; i++)
         {
-            std::cout << "\nGrid Point: " << i << ",";
-            for (PLuint j=0; j < state.graftCount; j++)
+            std::cout << " dir: " << i << "\n";
+            for (PLuint j=0; j < 10; j++)
             {
-                std::cout << "\t" << rmsData[i*PL_MAX_GRAFTS_PER_SOLUTION + j];
+                std::cout << "rms:\t" << rmsData.sets[i].rms[j] << "\n";
             }
-        } 
-        */
-        
+        }
+
         return rmsData;
     }
 
