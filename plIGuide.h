@@ -13,15 +13,14 @@
 #include "plPolygon.h"
 #include "plIGuideSite.h"
 
-class plIGuideMesh : public plMesh
+class plIGuideModel : public plModel
 {
     public:
 
         plSeq<plTriangle> triangles;
         plString          filename;
 
-        plIGuideMesh()                                                                                                  {}
-        plIGuideMesh(const plString &str, const plSeq<plTriangle> &tris) : plMesh(tris), triangles(tris), filename(str) {}
+        plIGuideModel(const plString &str, const plSeq<plTriangle> &tris) : plModel(tris,0), triangles(tris), filename(str) {}
 };
 
 class plKWire 
@@ -58,8 +57,8 @@ class plIGuide : public plModelSpecific,
         PLfloat                 thickness;
         PLfloat                 printerOffset;
 
-        plSeq<plIGuideMesh>     iGuideMeshesToAdd;
-        plSeq<plIGuideMesh>     iGuideMeshesToSubtract;
+        plSeq<plModel*>         iGuideModelsToAdd;
+        plSeq<plModel*>         iGuideModelsToSubtract;
 
         // pointers to data needed to construct this thing
         plSeq<plIGuideSite*>    *sites;
@@ -88,8 +87,9 @@ class plIGuide : public plModelSpecific,
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         // core functionality
-        PLbool generateIGuideMeshes ();
-        PLbool exportIGuideMeshes   (const plString &directory);
+        PLbool generateIGuideModels ();
+        PLbool exportIGuideModels   (const plString &directory);
+        void   clearIGuideModels    ();
 
         // rendering
         void draw();

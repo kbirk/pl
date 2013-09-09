@@ -178,7 +178,7 @@ void plPlan::removeGraft( PLuint index )
 
 void plPlan::generateIGuide( PLuint index )
 {
-    _iGuides[index]->generateIGuideMeshes();
+    _iGuides[index]->generateIGuideModels();
 }
 
 plIGuide &plPlan::getImportReference( plSeq<plIGuide*> &ts,  const plString &index )
