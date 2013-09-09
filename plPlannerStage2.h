@@ -14,11 +14,39 @@
 #define PL_STAGE2_NUM_GROUPS                 16
 #define PL_STAGE2_INVOCATIONS                PL_STAGE2_NUM_GROUPS*PL_STAGE2_GROUP_SIZE
 
+class plDonorState
+{
+    public:
+     
+        plSeq<plVector4>  graftPositions;
+        plSeq<plVector4>  graftNormals;
+        plSeq<plVector4>  graftZDirections;
+    
+        plDonorState();
+        
+        void createBuffers ();
+        void destroyBuffers();
+        
+        void bindBuffers  ();
+        void unbindBuffers();
+        
+        void update(); 
+        
+    private:
+    
+        PLuint _donorPositionsBufferID;
+        PLuint _donorNormalsBufferID;
+        PLuint _donorZDirectionsBufferID;       
+        PLuint _totalRMSBufferID; 
+          
+        PLint  _getLowestRmsIndex(); 
+            
+};
+
 
 namespace plPlannerStage2
 {
-    plSeq<plVector4> run( const plSeq<plSiteGrid> &donorSites, const plAnnealingState &state, const plSeq<PLfloat> &rmsInput );
-      
+    plDonorState run( const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plRmsData &rmsInput );      
 }
 
 

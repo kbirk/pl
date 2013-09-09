@@ -28,6 +28,8 @@ class plPlannerStage1Shader : public plShader
                                 const plSeq<PLuint> &donorGridSize,
                                 const plSeq<PLuint> &donorPerimSize) const;
         
+        void setDirectionUniform ( const plVector4 &direction ) const;
+        
     private:
     
         PLuint _graftCountID;
@@ -42,7 +44,7 @@ class plPlannerStage1Shader : public plShader
         PLuint _donorSiteGridSizeID;
         PLuint _donorSitePerimSizeID;
  
-        PLuint _seedID;       
+        PLuint _directionID;       
 };
 
 

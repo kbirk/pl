@@ -41,7 +41,7 @@ class plModel : public plRenderable
 
         void draw( const plVector3 &colour ) const;
 
-        void      getMinMax(plVector3 &min, plVector3 &max) const;        
+        void      getMinMax       ( plVector3 &min, plVector3 &max ) const;        
         plVector3 getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
                 
         plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;

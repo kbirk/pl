@@ -13,8 +13,10 @@ layout (std430,  binding = 0) buffer donorSiteDataBlock   { vec4 donorSiteData[]
 layout (std430,  binding = 1) buffer rmsInputBlock        { float rmsInput[];      };
 
 // output data
-layout (std430,  binding = 2) buffer donorPointsBlock     { vec4  donorOutput[];   };
-layout (std430,  binding = 3) buffer totalRmsBlock        { float totalRmsOutput[]; };
+layout (std430,  binding = 2) buffer donorPositionsBlock   { vec4  donorPositionsOutput  []; };
+layout (std430,  binding = 3) buffer donorNormalsBlock     { vec4  donorNormalsOutput    []; };
+layout (std430,  binding = 4) buffer donorDirectionsBlock  { vec4  donorZDirectionOutput []; };
+layout (std430,  binding = 5) buffer totalRmsBlock         { float totalRmsOutput[];         };
 
 // input uniforms
 uniform uint  uGraftCount;
@@ -194,14 +196,15 @@ void main(void)
             // export harvest locations and normals
             for (uint i=0; i < uGraftCount; i++)
             {
-                uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION * 2;        
+                uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;        
                 uint graftIndex = graftIndices[i];
                         
                 uint site, localIndex;
                 getDonorSiteAndIndex( site, localIndex, solutionIndices[i] );
             
-                donorOutput[ offset + graftIndex*2+0 ] = donorSitePositions( site, localIndex );
-                donorOutput[ offset + graftIndex*2+1 ] = donorSiteNormals  ( site, localIndex );
+                donorPositionsOutput [ offset + graftIndex ] = donorSitePositions( site, localIndex );
+                donorNormalsOutput   [ offset + graftIndex ] = donorSiteNormals  ( site, localIndex );
+                donorZDirectionOutput[ offset + graftIndex ] = donorSiteNormals  ( site, localIndex );                
             }
             
             // export total rms

@@ -3,7 +3,7 @@
 namespace plPlannerStage1
 {
 
-    plSeq<PLfloat> run( const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plAnnealingState &state )
+    plRmsData run( const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState )
     {
         
         // compile / link stage 1 shader
@@ -42,25 +42,48 @@ namespace plPlannerStage1
     
         const PLuint NUM_WORKGROUPS = ceil( totalGridPoints / (PLfloat) PL_STAGE1_GROUP_SIZE); // ensure enough workgroups are used
 
-        // set state uniforms
-        stage1Shader.setGraftUniforms( state.graftCount,
-                                       state.graftPositions,
-                                       state.graftNormals,
-                                       state.graftRadii );
+        plVector4 direction( 0, 0, 1, 1 );
 
+        // set state uniforms
+        stage1Shader.setGraftUniforms( defectState.graftCount,
+                                       defectState.graftPositions,
+                                       defectState.graftNormals,
+                                       defectState.graftRadii );
+        // set site uniforms
         stage1Shader.setSiteUniforms( defectSite.meshSize(),
                                       donorSites.size(),
                                       donorMeshSizes,
                                       donorGridSizes,
                                       donorPerimSizes );
-                                      
-        // call compute shader with 1D workgrouping
-        glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
-        
-        // memory barrier      
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-                                         
+         
+        plRmsData rmsData; 
+          
+        float da = 2.0f * PL_PI / PL_STAGE1_NUM_SLICES;  
+          
+        for (uint i=0; i<=PL_STAGE1_NUM_SLICES; i++)
+        {       
+            float a = (i == PL_STAGE1_NUM_SLICES) ? 0.0 : i * da;
+             
+            // get direction    
+            plVector4 direction( sin( a ), 0.0f, -cos( a ), 1.0f );
+            
+            // set direction uniform
+            stage1Shader.setDirectionUniform( direction );  
+                                                
+            // call compute shader with 1D workgrouping
+            glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
+            
+            // memory barrier      
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
+            // update for direction  
+            rmsData.update( RMS_BUFFER_SIZE, rmsOutputBuffer, direction );
+        
+            std::cout << "\t Z Direction: " << direction << "\n";
+        }
+
+
+        /*
         // copy rms data into independant buffer
         plSeq<PLfloat> rmsData( RMS_BUFFER_SIZE, -1.0f ); 
                       
@@ -68,7 +91,9 @@ namespace plPlannerStage1
         PLfloat *rms = readSSBO<PLfloat>( 0, RMS_BUFFER_SIZE );
         memcpy( &rmsData[0], &rms[0], RMS_BUFFER_SIZE*sizeof( PLfloat ) );    
         glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
+        */
+        
+        
         // unbind buffers
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 );    

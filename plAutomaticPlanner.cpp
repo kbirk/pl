@@ -95,7 +95,7 @@ namespace plAutomaticPlanner
                        "-------------------------------------------------------------------------- \n";
         t0 = plTimer::now();
 
-        plAnnealingState state = plPlannerStage0::run( _defectSiteGrids[0] );    
+        plDefectState defectState = plPlannerStage0::run( _defectSiteGrids[0] );    
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 0 Complete --------------------------- \n" <<
@@ -107,7 +107,7 @@ namespace plAutomaticPlanner
                        "-------------------------------------------------------------------------- \n";
         t0 = plTimer::now();
 
-        plSeq<PLfloat> rmsData = plPlannerStage1::run( _defectSiteGrids[0], _donorSiteGrids, state );
+        plRmsData rmsData = plPlannerStage1::run( _defectSiteGrids[0], _donorSiteGrids, defectState );
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 1 Complete ---------------------------- \n" <<
@@ -119,23 +119,23 @@ namespace plAutomaticPlanner
                        "-------------------------------------------------------------------------- \n";
         t0 = plTimer::now();
 
-        plSeq<plVector4> donorData = plPlannerStage2::run(  _donorSiteGrids, state, rmsData );    
+        plDonorState donorState = plPlannerStage2::run( _donorSiteGrids, defectState, rmsData );    
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 2 Complete --------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
         ////////////////////
                
-        if ( donorData.size() > 0 )
+        if ( donorState.graftPositions.size() > 0 )
         {
-            for ( PLuint i=0; i < state.graftCount; i++ )
+            for ( PLuint i=0; i < defectState.graftCount; i++ )
             {    
                 // all graft origins generated from the planner shaders have their origins flush with the cartilage surface, these
                 // must be changed to be flush with the bone surface for mouse drag editing to behave nicely
                        
                 // ray cast from cartilage positions in negative direction of normal to get harvest bone position
-                plVector3 originalHarvestOrigin( donorData[i*2+0].x, donorData[i*2+0].y, donorData[i*2+0].z );
-                plVector3 originalHarvestY     ( donorData[i*2+1].x, donorData[i*2+1].y, donorData[i*2+1].z );        
+                plVector3 originalHarvestOrigin( donorState.graftPositions[i].x, donorState.graftPositions[i].y, donorState.graftPositions[i].z );
+                plVector3 originalHarvestY     ( donorState.graftNormals[i].x,   donorState.graftNormals[i].y,   donorState.graftNormals[i].z );        
                 plIntersection intersection = plan.models(0).bone.rayIntersect( originalHarvestOrigin, -originalHarvestY );   
                 // set correct harvest origin to bone intersection point             
                 plVector3 correctHarvestOrigin = intersection.point;            
@@ -144,8 +144,8 @@ namespace plAutomaticPlanner
                 PLfloat cartilageThickness = ( correctHarvestOrigin - originalHarvestOrigin ).length();
             
                 // ray cast from cartilage positions in negative direction of normal to get recipient bone position
-                plVector3 originalRecipientOrigin( state.graftPositions[i].x, state.graftPositions[i].y, state.graftPositions[i].z );
-                plVector3 originalRecipientY     ( state.graftNormals[i].x,   state.graftNormals[i].y,   state.graftNormals[i].z   );        
+                plVector3 originalRecipientOrigin( defectState.graftPositions[i].x, defectState.graftPositions[i].y, defectState.graftPositions[i].z );
+                plVector3 originalRecipientY     ( defectState.graftNormals[i].x,   defectState.graftNormals[i].y,   defectState.graftNormals[i].z   );        
                 intersection = plan.models(0).bone.rayIntersect( originalRecipientOrigin, -originalRecipientY );      
                 // set correct recipient origin to bone intersection point   
                 plVector3 correctRecipientOrigin  = intersection.point; 
@@ -155,7 +155,7 @@ namespace plAutomaticPlanner
                           
                 plPlug recipient( 0, plan.models(0), plTransform( originalRecipientY, correctRecipientOrigin ) );
                 plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   correctHarvestOrigin   ) );
-                plan.addGraft( harvest, recipient, state.graftRadii[i], recipientHeightOffset );
+                plan.addGraft( harvest, recipient, defectState.graftRadii[i], recipientHeightOffset );
 
             } 
         }
