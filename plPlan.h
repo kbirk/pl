@@ -25,7 +25,11 @@ class plPlan : public plRenderable
 
         void importFile( plString filename );        
         void exportFile( plString filename );
-         
+
+        template<class T>
+        T        &getImportReference( plSeq<T*> &ts,         const plString &index );
+        plIGuide &getImportReference( plSeq<plIGuide*> &ts,  const plString &index );
+
         // non-const reference getters          
         plDefectSite&       defectSites( PLuint index )        { return *_defectSites[index]; }
         plDonorSite&        donorSites ( PLuint index )        { return *_donorSites[index];  }
@@ -69,12 +73,13 @@ class plPlan : public plRenderable
 
     private: 
     
-        plSeq<plDefectSite*>       _defectSites;        
+        plSeq<plDefectSite*>       _defectSites;
         plSeq<plDonorSite*>        _donorSites;
-        plSeq<plIGuideSite*>       _iGuideSites;  
-        plSeq<plIGuide*>           _iGuides;                
-        plSeq<plGraft*>            _grafts;        
-        plSeq<plBoneAndCartilage*> _models;     
+        plSeq<plIGuideSite*>       _iGuideSites;
+        plSeq<plIGuide*>           _iGuides;
+        plSeq<plKWire*>            _kWires;
+        plSeq<plGraft*>            _grafts;
+        plSeq<plBoneAndCartilage*> _models;
 };
 
 std::ostream& operator << ( std::ostream& out, const plPlan &p );

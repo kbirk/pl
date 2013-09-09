@@ -10,6 +10,8 @@
 #include "plPickingTexture.h"
 #include "plRenderingPipeline.h"
 
+#define PL_MODEL_DEFAULT_OCTREE_DEPTH 7
+
 // used to order triangles for drawing transparent meshes
 class plOrderPair
 {
@@ -28,9 +30,10 @@ class plOrderPair
 class plModel : public plRenderable
 {
     public:
-        
-        plModel( const plString &filename, PLuint octreeDepth = 7 );
-             
+
+        plModel( const plSeq<plTriangle> &triangles, const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
+        plModel(                                     const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
+
         const plSeq<plTriangle> &triangles() const { return _triangles; }
         const plOctree          &octree()    const { return _octree;    }
         const plString          &filename()  const { return _filename;  }

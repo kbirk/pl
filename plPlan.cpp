@@ -178,11 +178,24 @@ void plPlan::removeGraft( PLuint index )
 
 void plPlan::generateIGuide( PLuint index )
 {
-    _iGuides[index]->generateIGuideMeshes();
+    _iGuides[index]->generateIGuideModels();
+}
+
+plIGuide &plPlan::getImportReference( plSeq<plIGuide*> &ts,  const plString &index )
+{
+    PLuint j = plString::fromString<PLuint>( index );
+    while (ts.size() < j+1)
+    {
+        ts.add( new plIGuide() );  // add new elements until index exists
+        ts[ts.size()-1]->grafts = &_grafts;
+        ts[ts.size()-1]->sites  = &_iGuideSites;
+        ts[ts.size()-1]->kWires = &_kWires;
+    }
+    return *ts[j];
 }
 
 template<class T>
-T &getImportReference( plSeq<T*> &ts,  const plString &index )
+T &plPlan::getImportReference( plSeq<T*> &ts,  const plString &index )
 {
     PLuint j = plString::fromString<PLuint>( index );           
     while (ts.size() < j+1)
@@ -232,7 +245,7 @@ void plPlan::importFile( plString filename )
         else if (field.compareCaseInsensitive( "donor site") ) // read before boundary
         {
             // get reference to donor region
-            plDonorSite &donorSite = getImportReference( _donorSites, csv.data[i][1] ); 
+            plDonorSite &donorSite = getImportReference( _donorSites, csv.data[i][1] );
             // read donor region attribute from current row
             donorSite.importCSV( csv.data[i], _models );                  
         } 
@@ -240,20 +253,23 @@ void plPlan::importFile( plString filename )
         else if (field.compareCaseInsensitive( "graft" ) ) 
         {    
             // get reference to graft
-            plGraft &graft = getImportReference( _grafts, csv.data[i][1] );             
+            plGraft &graft = getImportReference( _grafts, csv.data[i][1] );
             // read graft attribute from row
             graft.importCSV( csv.data[i], _models );
         } 
         else if (field.compareCaseInsensitive( "iguide site" ) ) 
         {  
-             // get reference to iGuide
-            plIGuideSite &iguideSite = getImportReference( _iGuideSites, csv.data[i][1] ); 
-            // read iguide attribute from current row
+             // get reference to iGuideSite
+            plIGuideSite &iguideSite = getImportReference( _iGuideSites, csv.data[i][1] );
+            // read iguidesite attribute from current row
             iguideSite.importCSV( csv.data[i], _models );
         } 
         else if (field.compareCaseInsensitive( "iguide" ) ) 
-        {  
-            // TODO: ADD IGUIDE IMPORTING
+        {
+            // get reference to iGuide
+            plIGuide &iGuide = getImportReference ( _iGuides, csv.data[i][1]);
+            // read iguide attribute from current row
+            iGuide.importCSV( csv.data[i], _models );
         } 
         else
         {
