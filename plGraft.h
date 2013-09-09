@@ -30,7 +30,7 @@ class plPointAndAngle
         
         PLbool operator < (const plPointAndAngle &p) const
         {
-            return (angle - p.angle) < -0.05;   // if not a difference by 0.05 degree, toss it
+            return angle < p.angle;
         }
         
 }; 
@@ -42,7 +42,7 @@ class plCap
     public:
 
         plSeq<plTriangle>       triangles;
-        plSeq<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above (?)
+        plSeq<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above
     
         plCap() {}
 };
@@ -59,8 +59,8 @@ class plGraft : public plRenderable,
         plGraft( const plPlug &harvest, 
                  const plPlug &recipient, 
                  PLfloat radius,
-                 PLfloat length,
-                 PLfloat heightOffset );
+                 PLfloat heightOffset,
+                 PLfloat length );
         
         void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
@@ -107,6 +107,9 @@ class plGraft : public plRenderable,
                   
         void      _setCaps();        
         void      _findCap              ( plCap &cap, const plModel &model );
+        plSeq<plVector3> _pointsOutsideTriangles( plVector3 *verts, PLfloat radiusSquared ) const;
+        plSeq<plVector3> _pointsInsideTriangles ( plVector3 *verts, PLfloat *dist, PLfloat radiusSquared ) const;
+
         bool      _triangleIntersection ( plCap &cap, const plTriangle &triangle ) const;
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;
         bool      _isBeyondHeightThresholds( const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) const;

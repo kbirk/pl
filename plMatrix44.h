@@ -30,9 +30,9 @@ class plMatrix44
 			       PLfloat c1r3, PLfloat c2r3, PLfloat c3r3, PLfloat c4r3, 
 			       PLfloat c1r4, PLfloat c2r4, PLfloat c3r4, PLfloat c4r4);
 			       
-		plMatrix44(const plMatrix44 &m);        // copy constructor
+		plMatrix44(const plMatrix44 &m);            // copy constructor
 
-        PLbool importFile( const plString &file );             // openCV xml input file
+        PLbool importFile( const plString &file );  // openCV xml input file
 
 		void setRow(int row, PLfloat x, PLfloat y, PLfloat z, PLfloat w);
 		void setColumn(int col, PLfloat x, PLfloat y, PLfloat z, PLfloat w);

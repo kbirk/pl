@@ -1,11 +1,6 @@
 #include "plBoneAndCartilage.h"
 
-/*
-plBoneAndCartilage::plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile)
-    :   bone(boneFile), cartilage(cartilageFile)
-{      
-}
-*/
+
 plBoneAndCartilage::plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile, const plString &combined)
     :   bone(boneFile, 5), cartilage(cartilageFile, 7), combined(combined, 5)
 {      
@@ -47,25 +42,5 @@ plVector3 plBoneAndCartilage::getCentroid() const
     return 0.5f * (max + min);    
 }   
 
-/*
-void plBoneAndCartilage::importCSV( const plSeq<plString> &row )
-{
-    // fill in the field            
-    plString subfield = row[2];
-
-    if (subfield.compareCaseInsensitive( "bone file") )
-    {
-        bone = plModel( row[3] );
-    }                        
-    else if (subfield.compareCaseInsensitive( "cartilage file") )
-    {
-        cartilage = plModel( row[3] );
-    }        
-    else
-    {
-        std::cerr << "Error importing plan, 'model': Unrecognized word '" << subfield << "' in third column." << std::endl;    
-    }    
-}
-*/
 
 

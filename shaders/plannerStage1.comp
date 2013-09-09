@@ -8,6 +8,7 @@
 #define PL_DONOR_Z                  0, 0, 1
 #define PL_DEFECT_Z                 0, 0, 1
 
+#define PL_NUM_GRAFT_ANGLES         16
 #define PL_NUM_COMPARISON_SLICES    16
 #define PL_NUM_COMPARISON_RADII     10
 #define PL_PI                       3.1415927
@@ -419,7 +420,8 @@ float calcRMS( in uint defectCount, in uint donorCount, in vec3 defectNormal, in
             
             if ( i0 && i1 ) // this should never fail!  
             {    
-                squaredDistanceSum += distance(defectPoint, donorPoint) * distance(defectPoint, donorPoint);
+                float distance = distance(defectPoint, donorPoint);                
+                squaredDistanceSum += distance * distance;
                 successfulChecks++;
             }
         }       

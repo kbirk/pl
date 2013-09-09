@@ -4,7 +4,7 @@ plGraft::plGraft()
 {
 }
 
-plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat length, PLfloat heightOffset )
+plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat heightOffset, PLfloat length )
     : recipient(r), harvest(h), _radius( radius ), _markDirection( plVector3(1,0,0) ), _length( length ), _heightOffset( heightOffset ) 
 {
     _setCaps();   
@@ -112,7 +112,7 @@ void plGraft::draw() const
     // Draw at harvest location
     plModelStack::push( harvest.transform.matrix() );
     {
-        plPicking::value.index = PL_PICKING_INDEX_GRAFT_DONOR;              
+        plPicking::value.index = PL_PICKING_INDEX_GRAFT_DONOR;           
         _drawGraft();
     }
     plModelStack::pop();
@@ -248,7 +248,7 @@ void plGraft::_updateCartilageMesh()
                 }
         
                 indices.add(interleaved_vertices.size()/2);
-                interleaved_vertices.add( _boneCap.perimeter[b].point );         // position
+                interleaved_vertices.add( _boneCap.perimeter[b].point );        // position
                 interleaved_vertices.add( n );                                  // normal
             }
             stepsLeft--;
@@ -389,25 +389,25 @@ void plGraft::_findCap( plCap &cap, const plModel &model )
     } 
 
     // calc just under radius
-    PLfloat subSquaredRadius = 0.97f * _radius * _radius;
+    PLfloat subSquaredRadius = 0.999f * _radius * _radius;
 
-    // Find vertices of polygons along perimeter of graft
-    plSet<plPointAndAngle> angles;    // reserve at least as much space needed
-
-    // if point is very close to radius, assume perimeter point
+    // find vertices of polygons along perimeter of graft, put in set to ignore duplicates
+    plSet<plPointAndAngle> angles;
+  
     for (PLuint i=0; i<cap.triangles.size(); i++) 
     {
         const plVector3 &p0 = cap.triangles[i].point0();
         const plVector3 &p1 = cap.triangles[i].point1();
         const plVector3 &p2 = cap.triangles[i].point2();
-
-        if ((p0.x*p0.x + p0.z*p0.z) > subSquaredRadius) 
+        
+        // if point is very close to radius, assume perimeter point
+        if ( (p0.x*p0.x + p0.z*p0.z) > subSquaredRadius) 
             angles.insert( plPointAndAngle( atan2( p0.x, p0.z ), p0 ) );
             
-        if ((p1.x*p1.x + p1.z*p1.z) > subSquaredRadius) 
+        if ( (p1.x*p1.x + p1.z*p1.z) > subSquaredRadius) 
             angles.insert( plPointAndAngle( atan2( p1.x, p1.z ), p1 ) );
             
-        if ((p2.x*p2.x + p2.z*p2.z) > subSquaredRadius) 
+        if ( (p2.x*p2.x + p2.z*p2.z) > subSquaredRadius) 
             angles.insert( plPointAndAngle( atan2( p2.x, p2.z ), p2 ) );
   
     }   
@@ -442,127 +442,91 @@ bool plGraft::_isBeyondHeightThresholds( const plVector3 &p0, const plVector3 &p
 }
 
 
-bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) const
+plSeq<plVector3> plGraft::_pointsOutsideTriangles( plVector3 *verts, PLfloat radiusSquared ) const
 {
-    // if triangle is overlapping cap, cut it (if necessary) and add it to cap triangle list
-    if (triangle.normal() * harvest.transform.y() < 0)
-        return false;
-
-    float radiusSquared = _radius * _radius;
-
-    plVector3 verts[3];
-    verts[0] = harvest.transform.applyInverse( triangle.point0() );
-    verts[1] = harvest.transform.applyInverse( triangle.point1() );
-    verts[2] = harvest.transform.applyInverse( triangle.point2() );
+    // closest points on each segment
+    plVector3 e[3];
+    e[0] = plMath::closestPointOnSegment( plVector3(0, 0, 0), verts[0], verts[1] );
+    e[1] = plMath::closestPointOnSegment( plVector3(0, 0, 0), verts[1], verts[2] );
+    e[2] = plMath::closestPointOnSegment( plVector3(0, 0, 0), verts[2], verts[0] );
+  
+    // distances from each point to centre
+    float d[3];
+    d[0] = harvest.transform.squaredDistToAxis( e[0] ); 
+    d[1] = harvest.transform.squaredDistToAxis( e[1] ); 
+    d[2] = harvest.transform.squaredDistToAxis( e[2] ); 
     
-    // Compute distance to graft axis
-    float dist[3];
-    dist[0] = harvest.transform.squaredDistToAxis( verts[0] );
-    dist[1] = harvest.transform.squaredDistToAxis( verts[1] );
-    dist[2] = harvest.transform.squaredDistToAxis( verts[2] );
-        
-    float minDist = PL_MIN_OF_3( dist[0], dist[1], dist[2] );
+    // indexs of inside points
+    plSeq<PLuint> insideEdges;
+    if ( d[0] < radiusSquared ) insideEdges.add( 0 );
+    if ( d[1] < radiusSquared ) insideEdges.add( 1 );
+    if ( d[2] < radiusSquared ) insideEdges.add( 2 );
     
-    if (minDist > radiusSquared)
-    {        
-        // no vertices are inside, check if triangle spans across
-        plVector3 e[3];
-        e[0] = plMath::closestPointOnSegment( plVector3(0, 0, 0), verts[0], verts[1] );
-        e[1] = plMath::closestPointOnSegment( plVector3(0, 0, 0), verts[1], verts[2] );
-        e[2] = plMath::closestPointOnSegment( plVector3(0, 0, 0), verts[2], verts[0] );
-      
-        float d[3];
-        d[0] = harvest.transform.squaredDistToAxis( e[0] ); 
-        d[1] = harvest.transform.squaredDistToAxis( e[1] ); 
-        d[2] = harvest.transform.squaredDistToAxis( e[2] ); 
-        
-        plSeq<PLuint> insideEdges;
-        if ( d[0] < radiusSquared ) insideEdges.add( 0 );
-        if ( d[1] < radiusSquared ) insideEdges.add( 1 );
-        if ( d[2] < radiusSquared ) insideEdges.add( 2 );
-
-        // At least some of the triangle is inside
-        plVector3 normal = harvest.transform.applyNormalInverse( triangle.normal() );
-
-        switch ( insideEdges.size() )
-        {
-            case 0:
-            {           
-                return false;
-            }   
-            case 1:
-            {
-                plVector3 &m0 = e[ insideEdges[0] ];
-                plVector3 &m1 = e[ (insideEdges[0]+1) % 3 ];
-                plVector3 &m2 = e[ (insideEdges[0]+2) % 3 ];
-                
-                plVector3 &m0p0 = verts[ insideEdges[0] ];                
-                plVector3 &m0p1 = verts[ (insideEdges[0]+1) % 3 ]; 
-                plVector3 &m0p2 = verts[ (insideEdges[0]+2) % 3 ];
-                
-                plSeq<plVector3> points(4);
-                points.add( _pointOnCircumference( m0, m0p1 ) );
-                points.add( _pointOnCircumference( m1, m0 ) );
-                points.add( _pointOnCircumference( m2, m0 ) );
-                points.add( _pointOnCircumference( m0p0, m0 ) );
-                
-                // polygons reach a max of 4 vertices, so if there are 4, create a second triangle
-                cap.triangles.add( plTriangle( normal, points[0], points[1], points[2] ) );
-                cap.triangles.add( plTriangle( normal, points[0], points[2], points[3] ) );
-                return true;
-            }    
-            case 2:
-            {   
-                // two edges are inside
-                if ( d[ insideEdges[0] ] > d[ insideEdges[1] ] )
-                {
-                    // swap so edge 0 is closer than edge 2
-                    plUtility::swap( insideEdges[0], insideEdges[1] );                 
-                }
-                
-                plVector3 &m0 = e[ insideEdges[0] ];
-                plVector3 &m1 = e[ insideEdges[1] ];
-                
-                // points before closest points on two closest triangle edges
-                plVector3 &m0p0 = verts[ insideEdges[0] ];                
-                plVector3 &m1p0 = verts[ insideEdges[1] ];
-                // points after closest points on two closest triangle egdes
-                plVector3 &m0p1 = verts[ (insideEdges[0]+1) % 3 ]; 
-                plVector3 &m1p1 = verts[ (insideEdges[1]+1) % 3 ];
-                
-                plSeq<plVector3> points(4);
-                points.add( _pointOnCircumference( m0, m0p1 ) );
-                points.add( _pointOnCircumference( m1p0, m1 ) );
-                points.add( _pointOnCircumference( m1, m1p1 ) );
-                points.add( _pointOnCircumference( m0p0, m0 ) ); 
-                
-                cap.triangles.add( plTriangle( normal, points[0], points[1], points[2] ) );
-                cap.triangles.add( plTriangle( normal, points[0], points[2], points[3] ) );
-                
-                return true;             
-            }
-            case 3:
-            {
-                std::cout << "3 inside" << "\n";
-                return false;
-            }
-        }
-
-    }
+    plSeq<plVector3> points(4);
     
-    // if too far above or below graft origin, reject.
-    if ( _isBeyondHeightThresholds( verts[0], verts[1], verts[2] ) ) return false;
-    
-    // At least some of the triangle is inside
-    plVector3 normal = harvest.transform.applyNormalInverse( triangle.normal() );
-
-    // if all points of triangle are withing radius, accept whole triangle, exit early
-    if ( PL_MAX_OF_3( dist[0], dist[1], dist[2] ) <= radiusSquared ) 
+    switch ( insideEdges.size() )
     {
-        cap.triangles.add( plTriangle( normal, verts[0], verts[1], verts[2] ) );
-        return true;
+        case 0:
+        {    
+            // no edges overlap       
+            break;
+        }   
+        case 1:
+        {
+            // one edge overlaps
+            plVector3 &m0 = e[ insideEdges[0] ];
+            plVector3 &m1 = e[ (insideEdges[0]+1) % 3 ];
+            plVector3 &m2 = e[ (insideEdges[0]+2) % 3 ];
+            
+            // points before and after inside closest point
+            plVector3 &m0p0 = verts[ insideEdges[0] ];                
+            plVector3 &m0p1 = verts[ (insideEdges[0]+1) % 3 ]; 
+
+            points.add( _pointOnCircumference( m0, m0p1 ) );
+            points.add( _pointOnCircumference( m1, m0 ) );
+            points.add( _pointOnCircumference( m2, m0 ) );
+            points.add( _pointOnCircumference( m0p0, m0 ) );
+            
+            break;
+        }    
+        case 2:
+        {   
+            // two edges overlap
+            if ( d[ insideEdges[0] ] > d[ insideEdges[1] ] )
+            {
+                // swap so first index is closer than second
+                plUtility::swap( insideEdges[0], insideEdges[1] );                 
+            }
+            
+            plVector3 &m0 = e[ insideEdges[0] ];
+            plVector3 &m1 = e[ insideEdges[1] ];
+            
+            // points before the two closest points
+            plVector3 &m0p0 = verts[ insideEdges[0] ];                
+            plVector3 &m1p0 = verts[ insideEdges[1] ];
+            // points after the two closest points
+            plVector3 &m0p1 = verts[ (insideEdges[0]+1) % 3 ]; 
+            plVector3 &m1p1 = verts[ (insideEdges[1]+1) % 3 ];
+            
+            points.add( _pointOnCircumference( m0, m0p1 ) );
+            points.add( _pointOnCircumference( m1p0, m1 ) );
+            points.add( _pointOnCircumference( m1, m1p1 ) );
+            points.add( _pointOnCircumference( m0p0, m0 ) ); 
+            
+            break;            
+        }
+        case 3:
+        {
+            // three edges overlap, results in 6 triangles, TODO
+            break;
+        }
     }
     
+    return points;
+}
+
+plSeq<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloat *dist, PLfloat radiusSquared ) const
+{
     // at least one point is within radius, set it as first point
     if (dist[0] <= radiusSquared) 
     {
@@ -629,8 +593,67 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
 
         prevInside = currentInside; // update prev with current
     }
+    
+    return points;
+}
 
+bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) const
+{
+    // if triangle is overlapping cap, cut it (if necessary) and add it to cap triangle list
+    if (triangle.normal() * harvest.transform.y() < 0)
+        return false;
+
+    // get squared radius
+    float radiusSquared = _radius * _radius;
+
+    // get triangle verts relative to graft local coordinate system
+    plVector3 verts[3];
+    verts[0] = harvest.transform.applyInverse( triangle.point0() );
+    verts[1] = harvest.transform.applyInverse( triangle.point1() );
+    verts[2] = harvest.transform.applyInverse( triangle.point2() );
+    
+    // if too far above or below graft origin, reject.
+    if ( _isBeyondHeightThresholds( verts[0], verts[1], verts[2] ) ) 
+        return false;
+    
+    // Compute distance to graft axis
+    float dist[3];
+    dist[0] = harvest.transform.squaredDistToAxis( verts[0] );
+    dist[1] = harvest.transform.squaredDistToAxis( verts[1] );
+    dist[2] = harvest.transform.squaredDistToAxis( verts[2] );
+          
+    float minDist = PL_MIN_OF_3( dist[0], dist[1], dist[2] );
+    float maxDist = PL_MAX_OF_3( dist[0], dist[1], dist[2] );
+       
+    // At least some of the triangle is inside
+    plVector3 normal = harvest.transform.applyNormalInverse( triangle.normal() );   
+       
+    // if all points of triangle are withing radius, accept whole triangle, exit early
+    if ( maxDist <= radiusSquared ) 
+    {
+        cap.triangles.add( plTriangle( normal, verts[0], verts[1], verts[2] ) );
+        return true;
+    }  
+    
+    plSeq<plVector3> points(6);
+    
+    if (minDist > radiusSquared)
+    {  
+        // all points outside of triangle, triangle may overlap  
+        points = _pointsOutsideTriangles( verts, radiusSquared ); 
+    }
+    else
+    {
+        // at least one point is inside triangle
+        points = _pointsInsideTriangles( verts, dist, radiusSquared );    
+    }
+    
+    if ( points.size() == 0 )
+        return false;
+
+    // add first triangle
     cap.triangles.add( plTriangle( normal, points[0], points[1], points[2] ) );
+    
     if ( points.size() >= 4 )
     {
         // if there are 4 points, create a second triangle

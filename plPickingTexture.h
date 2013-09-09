@@ -54,7 +54,7 @@ namespace plPicking
     
     void init();
   
-};
+}
 
 #endif
 
