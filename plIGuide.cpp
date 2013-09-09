@@ -262,11 +262,11 @@ void plIGuide::draw()
 {
     for (PLuint i = 0; i < iGuideModelsToAdd.size(); i++)
     {
-        iGuideModelsToAdd[i]->draw( plVector3( 0.9f,0.9f,1.0f ) );
+        iGuideModelsToAdd[i]->draw( plVector3( 0.75f,0.75f,1.0f ) );
     }
     for (PLuint i = 0; i < iGuideModelsToSubtract.size(); i++)
     {
-        iGuideModelsToSubtract[i]->draw( plVector3( 1.0f,0.9f,0.9f ) );
+        iGuideModelsToSubtract[i]->draw( plVector3( 1.0f,0.75f,0.75f ) );
     }
     //plPicking::value.type = PL_PICKING_TYPE_IGUIDE_BOUNDARY;
     //boundary.draw();
