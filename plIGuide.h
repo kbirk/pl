@@ -13,15 +13,6 @@
 #include "plPolygon.h"
 #include "plIGuideSite.h"
 
-class plIGuideModel : public plModel
-{
-    public:
-
-        plSeq<plTriangle> triangles;
-        plString          filename;
-
-        plIGuideModel(const plString &str, const plSeq<plTriangle> &tris) : plModel(tris,0), triangles(tris), filename(str) {}
-};
 
 class plKWire 
 {
