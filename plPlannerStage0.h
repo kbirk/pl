@@ -19,7 +19,7 @@
 #define PL_STAGE0_INVOCATIONS                PL_STAGE0_NUM_GROUPS*PL_STAGE0_GROUP_SIZE
 
 
-class plAnnealingState
+class plDefectState
 {
     public:
     
@@ -30,7 +30,7 @@ class plAnnealingState
         plSeq<plVector4>  graftNormals;
         plSeq<PLfloat>    graftRadii;
     
-        plAnnealingState( float initialEnergy );
+        plDefectState( float initialEnergy );
         
         void createBuffers ();
         void destroyBuffers();
@@ -58,7 +58,7 @@ class plAnnealingState
 namespace plPlannerStage0
 {
 
-    plAnnealingState run( const plSiteGrid &site );
+    plDefectState run( const plSiteGrid &site );
 
 }
 

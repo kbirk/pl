@@ -21,7 +21,7 @@ void plPlannerStage1Shader::getUniformLocations()
     _donorSiteGridSizeID  = glGetUniformLocation(_shaderProgramID, "uDonorSiteGridSize");
     _donorSitePerimSizeID = glGetUniformLocation(_shaderProgramID, "uDonorSitePerimSize");  
         
-    _seedID               = glGetUniformLocation(_shaderProgramID, "uSeed");    
+    _directionID          = glGetUniformLocation(_shaderProgramID, "uDefectZ");    
 }
 
 
@@ -50,5 +50,10 @@ void plPlannerStage1Shader::setSiteUniforms  ( PLuint defectMeshSize,
     glUniform1uiv  ( _donorSiteGridSizeID,  donorGridSize.size(),  &donorGridSize[0] );   
     glUniform1uiv  ( _donorSitePerimSizeID, donorPerimSize.size(), &donorPerimSize[0] );   
       
-    glUniform1ui   ( _seedID, rand() );       
+          
+}
+
+void plPlannerStage1Shader::setDirectionUniform ( const plVector4 &direction ) const
+{
+    glUniform4fv  ( _directionID, 1, &direction.x );
 }

@@ -48,13 +48,12 @@ plShapeMesh::plShapeMesh(float halfWidth)
 // sphere
 plShapeMesh::plShapeMesh(float radius, int slices, int stacks) 
 {
-    float rho, drho, theta, dtheta;
+    float rho, theta;
     float x, y, z;
-    int imin, imax;
     PLint base;
 
-    drho = PL_PI / stacks;
-    dtheta = 2.0f * PL_PI / slices;
+    float drho = PL_PI / stacks;
+    float dtheta = 2.0f * PL_PI / slices;
     
     plSeq<plVector3> interleaved_vertices; 
     plSeq<PLuint>    indices;
@@ -81,8 +80,8 @@ plShapeMesh::plShapeMesh(float radius, int slices, int stacks)
         indices.add(j+1);
     }
      
-    imin = 1;
-    imax = stacks - 1;
+    int imin = 1;
+    int imax = stacks - 1;
 
     // draw intermediate stacks as quad strips
     for (int i = imin; i < imax; i++) 
@@ -155,19 +154,14 @@ plShapeMesh::plShapeMesh(float radius, int slices, int stacks)
 // cylinder
 plShapeMesh::plShapeMesh(float baseRadius, float topRadius, float height, int slices, int stacks) 
 {
- 
-    float da, r, dr, dz;
-    float x, y, z, nz;
+    float da = 2.0f * PL_PI / slices;
+    float dr = (topRadius - baseRadius) / stacks;
+    float dz = height / stacks;
+    float nz = (baseRadius - topRadius) / height;
 
-    da = 2.0f * PL_PI / slices;
-    dr = (topRadius - baseRadius) / stacks;
-    dz = height / stacks;
-    nz = (baseRadius - topRadius) / height;
-   
-    // Z component of normal vectors
-
-    z = 0.0f;
-    r = baseRadius;
+    float sa, ca;
+    float z = 0.0f;
+    float r = baseRadius;
     
     plSeq<plVector3> interleaved_vertices; 
     plSeq<PLuint>    indices;
@@ -177,21 +171,17 @@ plShapeMesh::plShapeMesh(float baseRadius, float topRadius, float height, int sl
         PLint base = interleaved_vertices.size()/2;
         
         for (int i = 0; i <= slices; i++) 
-        {
-            if (i == slices) 
-            {
-                x = sin(0.0f);
-                y = cos(0.0f);
-            } else {
-                x = sin((i * da));
-                y = cos((i * da));
-            }
+        {        
+            float a = (i == slices) ? 0.0f : i * da;
+                
+            sa = sin(a);
+            ca = cos(a);
             
-            interleaved_vertices.add( plVector3(x * r, y * r, z) );  // position
-            interleaved_vertices.add( plVector3(x, y, nz) );         // normal
+            interleaved_vertices.add( plVector3( sa * r, ca * r, z) );  // position
+            interleaved_vertices.add( plVector3( sa, ca, nz) );         // normal
 
-            interleaved_vertices.add( plVector3( x * (r + dr), y * (r + dr), z + dz) );  // position
-            interleaved_vertices.add( plVector3(x, y, nz) );                             // normal                        
+            interleaved_vertices.add( plVector3( sa * (r + dr), ca * (r + dr), z + dz) );  // position
+            interleaved_vertices.add( plVector3( sa, ca, nz) );                             // normal                        
         } 
         
         for (int i = 0; i < slices*2; i+=2) 
@@ -216,12 +206,10 @@ plShapeMesh::plShapeMesh(float baseRadius, float topRadius, float height, int sl
 // disk
 plShapeMesh::plShapeMesh(float innerRadius, float outerRadius, int slices, int loops, bool up )
 {
-    float da, dr;
-
     plVector3 normal = (up) ? plVector3(0.0f, 0.0f, 1.0f) : plVector3(0.0f, 0.0f, -1.0f);
 
-    da = 2.0f * PL_PI / slices;
-    dr = (outerRadius - innerRadius) /  loops;
+    float da = 2.0f * PL_PI / slices;
+    float dr = (outerRadius - innerRadius) /  loops;
 
     float sa, ca;
     float r1 = innerRadius;

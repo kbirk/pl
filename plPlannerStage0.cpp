@@ -1,6 +1,6 @@
 #include "plPlannerStage0.h"
 
-plAnnealingState::plAnnealingState( float initialEnergy )
+plDefectState::plDefectState( float initialEnergy )
     : temperature   ( PL_STAGE0_INITIAL_TEMPERATURE ),    
       energy        ( initialEnergy ),    
       graftCount    ( 0 ),    
@@ -10,7 +10,7 @@ plAnnealingState::plAnnealingState( float initialEnergy )
 {        
 }
 
-void plAnnealingState::createBuffers()
+void plDefectState::createBuffers()
 {
     // create state buffers  
     _energiesBufferID       = createSSBO( PL_STAGE0_INVOCATIONS, -1.0f );
@@ -21,7 +21,7 @@ void plAnnealingState::createBuffers()
 }
 
 
-void plAnnealingState::destroyBuffers()
+void plDefectState::destroyBuffers()
 {
     // delete buffer objects
     glDeleteBuffers( 1, &_energiesBufferID       );
@@ -32,7 +32,7 @@ void plAnnealingState::destroyBuffers()
 }
 
 
-void plAnnealingState::bindBuffers()
+void plDefectState::bindBuffers()
 {
        
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, _energiesBufferID       );
@@ -42,7 +42,7 @@ void plAnnealingState::bindBuffers()
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 6, _graftCountsBufferID    );
 }
 
-void plAnnealingState::unbindBuffers()
+void plDefectState::unbindBuffers()
 {   
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, 0 );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, 0 );
@@ -52,13 +52,13 @@ void plAnnealingState::unbindBuffers()
 }
 
 
-void plAnnealingState::update()
+void plDefectState::update()
 {
     PLint bestIndex = _updateEnergy();
     _updateGrafts( bestIndex );
 }
 
-float plAnnealingState::_acceptanceProbability( PLfloat energy, PLfloat newEnergy, PLfloat temperature ) 
+float plDefectState::_acceptanceProbability( PLfloat energy, PLfloat newEnergy, PLfloat temperature ) 
 {
     // If the new solution is better, accept it
     if (newEnergy < energy) 
@@ -69,7 +69,7 @@ float plAnnealingState::_acceptanceProbability( PLfloat energy, PLfloat newEnerg
     return exp( -(newEnergy - energy) / temperature );
 }
 
-PLint plAnnealingState::_updateEnergy()
+PLint plDefectState::_updateEnergy()
 {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _energiesBufferID);    
     
@@ -100,7 +100,7 @@ PLint plAnnealingState::_updateEnergy()
 }
 
 
-void plAnnealingState::_updateGrafts( PLint index )
+void plDefectState::_updateGrafts( PLint index )
 {
     if ( index != -1 )
     {
@@ -135,7 +135,7 @@ void plAnnealingState::_updateGrafts( PLint index )
 namespace plPlannerStage0
 {
 
-    plAnnealingState run( const plSiteGrid &site )
+    plDefectState run( const plSiteGrid &site )
     {
         // compile / link stage 0 shader
         plPlannerStage0Shader stage0Shader("./shaders/plannerStage0.comp");
@@ -152,7 +152,7 @@ namespace plPlannerStage0
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, overlappedTrianglesBufferID );  
                       
         // generate and bind annealing state output buffers    
-        plAnnealingState state( site.area() );  // empty state (no plugs) energy set to total site area
+        plDefectState state( site.area() );  // empty state (no plugs) energy set to total site area
         state.createBuffers();                  // create input/output buffers
         state.bindBuffers();                    // bind input/output buffers   
             

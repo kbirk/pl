@@ -18,7 +18,8 @@ class plSeq
 		~plSeq();
 	
 		void add( const T &x );
-		void add( const plSeq<T> &s );		
+		void add( const plSeq<T> &s );	
+		void fill( PLuint n, const T &t );	
 		void remove();
 		void remove( PLuint i );
 		void shift( PLuint i );
@@ -64,13 +65,8 @@ plSeq<T>::plSeq( PLuint n )
 template<class T>
 plSeq<T>::plSeq( PLuint n, const T &t )
 {
-    _storageSize = n;
-	_numElements = n;
-	_data = new T[ _storageSize ];
-	for (PLuint i=0; i<_numElements; i++)
-	{
-		_data[i] = t;
-	}	
+	_data = NULL; // fill() calls delete, will seq fault if this isn't set to NULL
+	fill( n, t );	
 }
 
 
@@ -124,6 +120,19 @@ void plSeq<T>::add( const plSeq<T> &s )
 	    _data[ _numElements+i ] = s[i];	
 	}
 	_numElements+=s.size();	
+}
+
+template<class T>
+void plSeq<T>::fill( PLuint n, const T &t )
+{
+    delete [] _data;
+    _storageSize = n;
+	_numElements = n;
+	_data = new T[ _storageSize ];
+	for (PLuint i=0; i<_numElements; i++)
+	{
+		_data[i] = t;
+	}	
 }
 
 template<class T>	
