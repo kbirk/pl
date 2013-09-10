@@ -93,7 +93,7 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
         case 'm':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_MARKER );      break; 
         case 'v':   _graftEditor.toggleSelectedVisibility();  
                     _boundaryEditor.toggleSelectedVisibility();                 break;
-        case 'g':   _plan.generateIGuide(0);                                    break; // TODO: This is broken at the moment. Need to not have static 0 here
+        case 'g':   _plan.generateIGuide(1);                                    break; // TODO: This is broken at the moment. Need to not have static 0 here
         case 'O':   _plan.exportFile("plan");                                   break;
 
         case 'D':   _plan.addDonorSite();                                       break;

@@ -57,6 +57,7 @@ PLbool plIGuideSite::createTemplateBaseShape( const plSeq<plTriangle> &cartilage
         std::cerr << "Error in plIGuideSite::createTemplateBaseShape(): findInteriorMesh() failed. Aborting iGuideSite surface calculation." << std::endl;
         return false;
     }
+    plSTL::exportFileBinary(_templateBase,"debug_triangles_temporary.stl");
     plSeq<edgeIndices> outsideEdges (collectOutsideEdges());
 
     // store these for bookkeeping. This is the index where upper (extruded) edges/triangles will start

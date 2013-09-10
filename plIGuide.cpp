@@ -82,7 +82,7 @@ PLbool plIGuide::generateIGuideModels()
     // template base TODO: recreate the template base shape ONLY if it needs updating
     plString templateBaseFilename (prepareFilenameWithVariables(true ,'M',0,"templateBase"));
     std::cout << "DEBUG: 32" << std::endl;
-    plSeq<plTriangle> templateBaseTris ( site().templateBase( site().model().cartilage.triangles() ));
+    plSeq<plTriangle> templateBaseTris ( site().templateBase( site().model().combined.triangles() ));
     std::cout << "DEBUG: 35" << std::endl;
     if (templateBaseTris.size() > 0)
     {
