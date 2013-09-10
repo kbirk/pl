@@ -152,10 +152,10 @@ namespace plAutomaticPlanner
                                                
                 intersection = plan.models(0).bone.rayIntersect( originalRecipientOrigin, -originalRecipientY );      
                 // set correct recipient origin to bone intersection point   
-                plVector3 correctRecipientOrigin  = intersection.point; 
+                plVector3 correctRecipientOrigin = intersection.point; 
 
                 // get height offset so that cap is flush with cartilage surface, remember to subtract cartilage thickness 
-                PLfloat recipientHeightOffset = ( correctRecipientOrigin - originalRecipientOrigin).length() - cartilageThickness;
+                PLfloat recipientHeightOffset = ( correctRecipientOrigin - originalRecipientOrigin ).length() - cartilageThickness;
                           
                 plPlug recipient( 0, plan.models(0), plTransform( originalRecipientX, originalRecipientY, correctRecipientOrigin ) );
                 plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   correctHarvestOrigin   ) );

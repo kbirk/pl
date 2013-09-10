@@ -5,7 +5,7 @@ plGraft::plGraft()
 }
 
 plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat heightOffset, PLfloat length )
-    : recipient(r), harvest(h), _radius( radius ), _markDirection( plVector3(1,0,0) ), _length( length ), _heightOffset( heightOffset ) 
+    : recipient(r), harvest(h), _radius( radius ), _markDirection( plVector3(0,0,1) ), _length( length ), _heightOffset( heightOffset ) 
 {
     _setCaps();   
 }

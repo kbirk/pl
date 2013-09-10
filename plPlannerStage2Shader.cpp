@@ -40,5 +40,11 @@ void plPlannerStage2Shader::setSiteUniforms  ( PLuint donorCount,
     glUniform1ui   ( _donorSiteCountID,     donorCount );   
     glUniform1uiv  ( _donorSiteGridSizeID,  donorGridSize.size(),  &donorGridSize[0] );   
       
-    glUniform1ui  ( _seedID, rand() );       
+          
+}
+
+
+void plPlannerStage2Shader::setSeedUniform ( PLfloat seed ) const
+{
+    glUniform1ui  ( _seedID, rand() * seed ); 
 }

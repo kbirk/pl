@@ -26,9 +26,9 @@ class plPlan : public plRenderable
         void importFile( plString filename );        
         void exportFile( plString filename );
 
-        template<class T>
-        T        &getImportReference( plSeq<T*> &ts,         const plString &index );
-        plIGuide &getImportReference( plSeq<plIGuide*> &ts,  const plString &index );
+        //template<class T>
+        //T        &getImportReference( plSeq<T*> &ts,         const plString &index );
+        plIGuide &getIGuideImportReference( plSeq<plIGuide*> &ts,  const plString &index );
 
         // non-const reference getters          
         plDefectSite&       defectSites( PLuint index )        { return *_defectSites[index]; }

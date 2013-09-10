@@ -25,6 +25,8 @@ class plPlannerStage2Shader : public plShader
                                  PLuint totalGridPoints,
                                  const plSeq<PLuint> &donorGridSize) const;
         
+        void setSeedUniform ( PLfloat seed ) const;
+        
     private:
     
         PLuint _graftCountID;

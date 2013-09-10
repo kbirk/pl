@@ -181,7 +181,7 @@ void plPlan::generateIGuide( PLuint index )
     _iGuides[index]->generateIGuideModels();
 }
 
-plIGuide &plPlan::getImportReference( plSeq<plIGuide*> &ts,  const plString &index )
+plIGuide &plPlan::getIGuideImportReference( plSeq<plIGuide*> &ts,  const plString &index )
 {
     PLuint j = plString::fromString<PLuint>( index );
     while (ts.size() < j+1)
@@ -195,7 +195,7 @@ plIGuide &plPlan::getImportReference( plSeq<plIGuide*> &ts,  const plString &ind
 }
 
 template<class T>
-T &plPlan::getImportReference( plSeq<T*> &ts,  const plString &index )
+T &getImportReference( plSeq<T*> &ts,  const plString &index )
 {
     PLuint j = plString::fromString<PLuint>( index );           
     while (ts.size() < j+1)

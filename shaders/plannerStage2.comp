@@ -90,7 +90,7 @@ void shuffle( inout uint array[PL_MAX_GRAFTS_PER_SOLUTION], in uint size, inout 
 {   
     for (uint i = 0; i < size; i++) 
     {
-        uint j = uint(rand( seed ) * float(size) ); //i + uint( rand( seed ) * float(size - i) );
+        uint j = uint( rand( seed ) * float( size ) ); //i + uint( rand( seed ) * float(size - i) );
         uint t = array[j];
         array[j] = array[i];
         array[i] = t;
@@ -138,93 +138,81 @@ void main(void)
     // get invocation unique seed value for RNG
     uint seed = uint( uSeed*(gl_GlobalInvocationID.x+1) );
 
-    // set min rms total to max value
-    float minTotalRMS = PL_FLT_MAX;
-
-    for ( uint h=0; h < PL_ITERATIONS; h++)
-    {
-        float currentTotalRMS = 0;
-        
-        uint solutionIndices   [PL_MAX_GRAFTS_PER_SOLUTION];   
-        uint solutionDirections[PL_MAX_GRAFTS_PER_SOLUTION]; 
-          
-        uint graftIndices      [PL_MAX_GRAFTS_PER_SOLUTION];   // shuffled graft indices        
-        for (uint i=0; i < uGraftCount; i++)
-        {
-            graftIndices[i] = i;
-        }
-        shuffle( graftIndices, uGraftCount, seed );
-        
-        // for each graft
-        for ( uint i=0; i < uGraftCount; i++ )
-        {    
-            uint graftIndex = graftIndices[i];
-        
-            float lowestRMS       = PL_FLT_MAX;
-            int   lowestGridpoint = -1;
-            int   lowestDirection = -1;
-            // for each grid point, find valid with lowest RMS
-            for ( uint j=0; j < uTotalGridPoints; j++ )
-            {
-            
-                // for each direction, find valid with lowest RMS
-                for ( uint k=0; k < uNumDirections; k++ )
-                {
-                    float currentRMS = rms( graftIndex, j, k );
-
-                    if ( currentRMS > 0 && currentRMS < lowestRMS )
-                    {
-                        if ( isSelectionValid( j, graftIndices, solutionIndices, i ) )
-                        {     
-                            lowestRMS = currentRMS;                  
-                            lowestGridpoint = int(j);                            
-                            lowestDirection = int(k);
-                        }                
-                    }
-            
-                }
-                
-            }
-            
-            if ( lowestGridpoint == -1 )
-            {
-                // cannot find donor site for graft, abort this solution
-                currentTotalRMS = PL_FLT_MAX;
-                break;
-            }    
-            
-            // increment rms total
-            currentTotalRMS += lowestRMS;
-            
-            // set gridpoint and direction index for graft
-            solutionIndices   [i] = lowestGridpoint;
-            solutionDirections[i] = lowestDirection;
-        }
-
-        if ( currentTotalRMS < minTotalRMS )
-        {
-            // save new min RMS
-            minTotalRMS = currentTotalRMS;
-            
-            // export harvest locations and normals
-            for (uint i=0; i < uGraftCount; i++)
-            {
-                uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;        
-                uint graftIndex = graftIndices[i];
-                        
-                uint site, localIndex;
-                getDonorSiteAndIndex( site, localIndex, solutionIndices[i] );
-            
-                donorPositionsOutput [ offset + graftIndex ] = donorSitePositions( site, localIndex );
-                donorNormalsOutput   [ offset + graftIndex ] = donorSiteNormals  ( site, localIndex );
-                donorZDirectionOutput[ offset + graftIndex ] = rmsDirections[ solutionDirections[i] ];               
-            }
-            
-            // export total rms
-            totalRmsOutput[ gl_GlobalInvocationID.x ] = minTotalRMS;
-        }
+    float totalRMS = 0;
     
+    uint solutionIndices   [PL_MAX_GRAFTS_PER_SOLUTION];   
+    uint solutionDirections[PL_MAX_GRAFTS_PER_SOLUTION]; 
+      
+    uint graftIndices      [PL_MAX_GRAFTS_PER_SOLUTION];   // shuffled graft indices        
+    for (uint i=0; i < uGraftCount; i++)
+    {
+        graftIndices[i] = i;
     }
+    shuffle( graftIndices, uGraftCount, seed );
+    
+    // for each graft
+    for ( uint i=0; i < uGraftCount; i++ )
+    {    
+        uint graftIndex = graftIndices[i];
+    
+        float lowestRMS       = PL_FLT_MAX;
+        int   lowestGridpoint = -1;
+        int   lowestDirection = -1;
+        // for each grid point, find valid with lowest RMS
+        for ( uint j=0; j < uTotalGridPoints; j++ )
+        {
+        
+            // for each direction, find valid with lowest RMS
+            for ( uint k=uNumDirections/2; k < uNumDirections; k++ )
+            {            
+                float currentRMS = rms( graftIndex, j, k );
+
+                if ( currentRMS > 0 && currentRMS < lowestRMS )
+                {
+                    if ( isSelectionValid( j, graftIndices, solutionIndices, i ) )
+                    {     
+                        lowestRMS = currentRMS;                  
+                        lowestGridpoint = int(j);                            
+                        lowestDirection = int(k);
+                    }                
+                }
+        
+            }
+            
+        }
+        
+        if ( lowestGridpoint == -1 )
+        {
+            // cannot find donor site for graft, abort this solution
+            return;
+        }    
+        
+        // increment rms total
+        totalRMS += lowestRMS;
+        
+        // set gridpoint and direction index for graft
+        solutionIndices   [i] = lowestGridpoint;
+        solutionDirections[i] = lowestDirection;
+    }
+
+
+    // export harvest locations and normals
+    for (uint i=0; i < uGraftCount; i++)
+    {
+        uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;        
+        uint graftIndex = graftIndices[i];
+                
+        uint site, localIndex;
+        getDonorSiteAndIndex( site, localIndex, solutionIndices[i] );
+    
+        donorPositionsOutput [ offset + graftIndex ] = donorSitePositions( site, localIndex );
+        donorNormalsOutput   [ offset + graftIndex ] = donorSiteNormals  ( site, localIndex );
+        donorZDirectionOutput[ offset + graftIndex ] = rmsDirections[ solutionDirections[i] ];               
+    }
+    
+    // export total rms
+    totalRmsOutput[ gl_GlobalInvocationID.x ] = totalRMS;
+
     
 }
 

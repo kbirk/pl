@@ -8,7 +8,7 @@
 #define PL_DONOR_Z                  0, 0, 1
 
 #define PL_NUM_COMPARISON_SLICES    8
-#define PL_NUM_COMPARISON_RADII     2
+#define PL_NUM_COMPARISON_RADII     4
 #define PL_PI                       3.1415927
 
 layout (local_size_x = 256) in;
@@ -182,14 +182,20 @@ edge donorSiteEdge( in uint site, in uint i )
 }
 
 
-vec3 closestPointOnSegment( in vec3 p, in edge e)
+vec3 closestPointOnSegment( in vec3 p, in vec3 a, in vec3 b)
 {
-    vec3 ab = e.p1 - e.p0;
-    float t = dot( (p - e.p0), ab) / dot(ab, ab);
+    vec3 ab = b - a;
+    float t = dot( (p - a), ab) / dot(ab, ab);
     // If outside segment, clamp t (and therefore d) to the closest endpoint
     t = clamp( t, 0.0, 1.0 );
     // Compute projected position from the clamped t
-    return e.p0 + t * ab;
+    return a + (t * ab);
+}
+
+
+vec3 closestPointOnSegment( in vec3 p, in edge e)
+{
+    return closestPointOnSegment( p, e.p0, e.p1 );
 }
 
 
@@ -199,7 +205,7 @@ bool isWithinSite( in uint site, in vec3 pos, in float radius )
     for (int i=0; i<uDonorSitePerimSize[ site ]; i++)
     {
         edge e = donorSiteEdge( site, i );
-        if ( distance( pos, closestPointOnSegment( pos, e) ) < radius )
+        if ( distance( pos, closestPointOnSegment( pos, e ) ) < radius )
         {
             inside = false;
         }        
@@ -211,13 +217,13 @@ bool isWithinSite( in uint site, in vec3 pos, in float radius )
 float distToAxis( in vec3 axis, in vec3 v )    
 {
     // v is already in the *local* coordinate system of the graft        
-    return distance( v, dot(v, axis)*axis );
+    return distance( v, dot( v, axis )*axis );
 }
 
 
 bool intersectTriangle( in vec3 position, in vec3 normal, in triangle t, in float radius ) 
 {
-    if ( dot(t.n, normal) < 0 )
+    if ( dot( t.n, normal ) < 0 )
         return false;
 
     // get vector from graft centre to triangle point
@@ -225,16 +231,12 @@ bool intersectTriangle( in vec3 position, in vec3 normal, in triangle t, in floa
     vec3 point1 = t.p1 - position;
     vec3 point2 = t.p2 - position;
     
-    edge e0;  e0.p0 = point0;  e0.p1 = point1;
-    edge e1;  e1.p0 = point1;  e1.p1 = point2;
-    edge e2;  e2.p0 = point2;  e2.p1 = point0;
-    
-    return ( distToAxis( normal, point0 ) < radius ||
+    return ( distToAxis( normal, point0 ) < radius ||   // check vertices first
              distToAxis( normal, point1 ) < radius ||
              distToAxis( normal, point2 ) < radius ||
-             distance( closestPointOnSegment( position, e0 ), position ) < radius ||
-             distance( closestPointOnSegment( position, e1 ), position ) < radius ||
-             distance( closestPointOnSegment( position, e2 ), position ) < radius );
+             distance( closestPointOnSegment( position, t.p0, t.p1 ), position ) < radius ||    // check edges after (in case no vertex is inside)
+             distance( closestPointOnSegment( position, t.p1, t.p2 ), position ) < radius ||
+             distance( closestPointOnSegment( position, t.p2, t.p0 ), position ) < radius );
 }
 
 
@@ -356,8 +358,7 @@ bool rayIntersectDonor( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in u
             if ( abs( t ) < minT )
             {
                 minT = abs( t );
-                point = p;
-                
+                point = p;                
             }
         }
     }
@@ -376,10 +377,10 @@ float calcRMS( in uint defectCount, in uint donorCount, in vec3 defectNormal, in
     vec3 donorX = normalize( cross( donorNormal, vec3( PL_DONOR_Z ) ) );
     vec3 donorZ = normalize( cross( donorX, donorNormal ) );
 
-    uint successfulChecks = 0;
+    uint  successfulChecks   = 0;
     float squaredDistanceSum = 0;
     
-    float dr = (radius / float(PL_NUM_COMPARISON_RADII)) - 0.001;    
+    float dr = (radius / float(PL_NUM_COMPARISON_RADII)) * 0.8; //- 0.01;     // SOMETHING IS WRONG EHRE!!
     float da = (2.0f * PL_PI) / float(PL_NUM_COMPARISON_SLICES);
     
     for (uint i=1; i<=PL_NUM_COMPARISON_RADII; i++)
@@ -400,9 +401,13 @@ float calcRMS( in uint defectCount, in uint donorCount, in vec3 defectNormal, in
             
             if ( i0 && i1 ) // this should never fail!  
             {    
-                float distance = distance(defectPoint, donorPoint);                
+                float distance = distance( defectPoint, donorPoint );                
                 squaredDistanceSum += distance * distance;
                 successfulChecks++;
+            }
+            else
+            {
+                squaredDistanceSum += 10000.0;
             }
         }       
     }
@@ -442,8 +447,7 @@ void main(void)
             // doesnt fit in boundary
             rms = -1;
         }
-        rmsOutput[ gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION + i] = rms;
-             
+        rmsOutput[ gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION + i] = rms;            
     }    
     
 }

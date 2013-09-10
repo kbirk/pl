@@ -11,7 +11,7 @@
 
 #define PL_STAGE1_GROUP_SIZE                   256
 
-#define PL_STAGE1_NUM_DIRECTIONS               16
+#define PL_STAGE1_NUM_DIRECTIONS               32
 
 #define PL_STAGE1_MAX_DONOR_SITES              5
 #define PL_STAGE1_MAX_CAP_TRIANGLES            1024

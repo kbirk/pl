@@ -11,8 +11,10 @@
 #include "plPlannerStage2Shader.h"
 
 #define PL_STAGE2_GROUP_SIZE                 256
-#define PL_STAGE2_NUM_GROUPS                 16
+#define PL_STAGE2_NUM_GROUPS                 1
 #define PL_STAGE2_INVOCATIONS                PL_STAGE2_NUM_GROUPS*PL_STAGE2_GROUP_SIZE
+
+#define PL_STAGE2_ITERATIONS                 8
 
 class plDonorState
 {
@@ -21,6 +23,8 @@ class plDonorState
         plSeq<plVector4>  graftPositions;
         plSeq<plVector4>  graftNormals;
         plSeq<plVector4>  graftZDirections;
+    
+        float             totalRms;
     
         plDonorState();
         

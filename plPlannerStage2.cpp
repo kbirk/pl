@@ -3,7 +3,8 @@
 plDonorState::plDonorState()
     : graftPositions  ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
       graftNormals    ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
-      graftZDirections( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) )
+      graftZDirections( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
+      totalRms        ( FLT_MAX )
 {
 }
 
@@ -50,7 +51,8 @@ void plDonorState::update()
     PLint index = _getLowestRmsIndex();    
 
     if ( index != -1 )
-    {                
+    {              
+        // new lowest rms  
         graftPositions.fill  ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1, -1, -1, -1) ); 
         graftNormals.fill    ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1, -1, -1, -1) ); 
         graftZDirections.fill( PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1, -1, -1, -1) ); 
@@ -70,14 +72,7 @@ void plDonorState::update()
         memcpy( &graftZDirections[0], &directions[0], PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) );    
         glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
     }
-    else
-    {
-        graftPositions.clear();
-        graftNormals.clear();
-        graftZDirections.clear();
-        std::cerr << "plDonorState::update() error: Unable to find suitable harvest locations \n";
-    }
- 
+
 }
 
 
@@ -87,8 +82,8 @@ PLint plDonorState::_getLowestRmsIndex()
     plSeq<PLfloat> totalRmsData( PL_STAGE2_INVOCATIONS, -1.0f ); 
                   
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _totalRMSBufferID);            
-    PLfloat *totalRms = readSSBO<PLfloat>( 0, PL_STAGE2_INVOCATIONS );
-    memcpy( &totalRmsData[0], &totalRms[0], PL_STAGE2_INVOCATIONS*sizeof( PLfloat ) );    
+    PLfloat *tempRms = readSSBO<PLfloat>( 0, PL_STAGE2_INVOCATIONS );
+    memcpy( &totalRmsData[0], &tempRms[0], PL_STAGE2_INVOCATIONS*sizeof( PLfloat ) );    
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 
     // find invocation with lowest RMS
@@ -97,16 +92,17 @@ PLint plDonorState::_getLowestRmsIndex()
 
     for (PLuint i=0; i < PL_STAGE2_INVOCATIONS; i++)
     {
-        //std::cout << totalRmsData[i] << "\n";
         if ( totalRmsData[i] > 0 && totalRmsData[i] < minRMS )
         {
             minRMS   = totalRmsData[i];
             minIndex = i;
         }
     }
+
+    if ( totalRms < minRMS )    // local state is worse than current state
+        return -1;  
     
-    std::cout << "\tLowest Total RMS: " << minRMS << "\n"; 
-    
+    totalRms = minRMS;    
     return minIndex;
 }
 
@@ -137,6 +133,8 @@ namespace plPlannerStage2
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, rmsValuesInputBufferID     ); 
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, rmsDirectionsInputBufferID ); 
 
+        
+
         // generate and bind donor state output buffers    
         plDonorState donorState; 
         donorState.createBuffers();  // create output buffers
@@ -150,15 +148,32 @@ namespace plPlannerStage2
         stage2Shader.setSiteUniforms( donorSites.size(),
                                       totalGridPoints,
                                       donorGridSizes);
-                                      
-        // call compute shader with 1D workgrouping
-        glDispatchCompute( PL_STAGE2_NUM_GROUPS, 1, 1 );
+            
+        for (PLuint i=0; i<PL_STAGE2_ITERATIONS; i++ )
+        {
+            // update seed uniform
+            stage2Shader.setSeedUniform( i );
         
-        // memory barrier      
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            // call compute shader with 1D workgrouping
+            glDispatchCompute( PL_STAGE2_NUM_GROUPS, 1, 1 );
+            
+            // memory barrier      
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-        // update donor state
-        donorState.update();
+            // update donor state
+            donorState.update();
+            
+            std:: cout << "\tIteration " << i <<", Current lowest total RMS: " << donorState.totalRms << "\n";
+        }    
+         
+        // no state found                              
+        if ( donorState.totalRms == FLT_MAX )
+        {
+            donorState.graftPositions.clear();
+            donorState.graftNormals.clear();
+            donorState.graftZDirections.clear();
+            std::cerr << "plPlannerStage2::run() error: Unable to find suitable harvest locations \n";
+        }    
         
         // unbind and delete site and rms buffers
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
