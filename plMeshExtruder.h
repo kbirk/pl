@@ -24,6 +24,8 @@ class plEdgeIndices
 
 namespace plMeshExtruder
 {
+    // returns an empty plSeq if there is an error or failure.
+    // else returns an extruded version of the input mesh, in the direction and magnitude provided as inputs
     plSeq<plTriangle> extrudeMesh(const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction);
 }
 

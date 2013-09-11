@@ -111,9 +111,10 @@ namespace plMeshExtruder
     }
 
 
+    // return an empty plSeq if this fails.
     plSeq<plTriangle> extrudeMesh(const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction)
     {
-        plSeq<plTriangle>    outputTriangles; // create a copy of existing triangles, because they will essentially become part of the offset
+        plSeq<plTriangle>    outputTriangles;
 
         if (inputTriangles.size() == 0)
         {
@@ -140,7 +141,7 @@ namespace plMeshExtruder
             return outputTriangles;
         }
 
-        outputTriangles.add(inputTriangles);
+        outputTriangles.add(inputTriangles); // create a copy of existing triangles, because they will essentially become part of the offset
 
         // store these for bookkeeping. This is the index where upper (extruded) edges/triangles will start
         PLuint indexOfUpperEdges     = outsideEdges.size();
