@@ -28,7 +28,7 @@ class plCut
 namespace plMeshCutter
 {
     PLbool  findInteriorMesh ( plSeq<plTriangle> &interiorTriangles, const plSeq<plTriangle> &triangles, const plBoundary &walls );
-};
+}
 
 
 

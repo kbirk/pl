@@ -19,14 +19,11 @@ PLbool plIGuide::generateIGuideModels()
     iGuideModelsToAdd.clear();
     iGuideModelsToSubtract.clear();
 
-    std::cout << "DEBUG: 10" << std::endl;
-    // TODO: error checking as necessary
     if ( site == NULL )
     {
         std::cerr << "Error: No site chosen for iGuide. Aborting." << std::endl;
         return false;
     }
-    std::cout << "DEBUG: 15" << std::endl;
     if (site->boundary.size() <= 2)
     {
         std::cerr << "Error: Boundary does not have enough points. Aborting." << std::endl;
@@ -34,26 +31,20 @@ PLbool plIGuide::generateIGuideModels()
     }
 
 
-    std::cout << "DEBUG: 20" << std::endl;
     plString anatomyFilename ( _prepareFilenameWithVariables(false,'M',0,"bone") );
     iGuideModelsToSubtract.add( new plModel( plSeq<plTriangle>( site->model().combined.triangles() ), anatomyFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
 
-    std::cout << "DEBUG: 30" << std::endl;
     // template base TODO: recreate the template base shape ONLY if it needs updating
     plString templateBaseFilename ( _prepareFilenameWithVariables(true ,'M',0,"templateBase") );
-    
-    std::cout << "DEBUG: 35" << std::endl;
     
     // generate template base
     if ( site->generateTemplateBase() )
     {
         // if successful
-        std::cout << "DEBUG: 37" << std::endl;
         iGuideModelsToAdd.add( new plModel( site->templateBase(), templateBaseFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS) );
     }
 
 
-    std::cout << "DEBUG: 40" << std::endl;
     // plug pieces
     plSeq<plTriangle> roundCylinder;
     plSTL::importFile( roundCylinder, "./iGuideElements/Generator_Cylinder_Round.stl" );
@@ -66,8 +57,6 @@ PLbool plIGuide::generateIGuideModels()
 
     PLfloat   zero        ( 0.f );
     plVector3 zeroVector  ( 0.f, 0.f, 0.f );
-
-    std::cout << "DEBUG: 50" << std::endl;
     
     for ( PLuint i = 0; i < plugs.size(); i++ )
     {   
@@ -109,7 +98,6 @@ PLbool plIGuide::generateIGuideModels()
         plString holderFilename  ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "holder") );
         plString keyFilename     ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "key"   ) );
 
-        std::cout << "DEBUG: 60" << std::endl;
         iGuideModelsToSubtract.add( new plModel( holeTriangles  , holeFilename  , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( sleeveTriangles, sleeveFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( baseTriangles  , baseFilename  , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
