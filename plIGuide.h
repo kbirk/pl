@@ -75,11 +75,12 @@ class plIGuide : public plRenderable
         plSeq<PLuint>           kWireIDs;
 
         plSeq<const plSpline*>  splines;
+        plSeq<PLuint>           defectIDs;
         
         // MEMBERS
         // constructors
         plIGuide();
-        plIGuide( plIGuideSite *s, PLuint sid, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k, const plSeq<PLuint> &kids, const plSeq<const plSpline*> splines );
+        plIGuide( plIGuideSite *s, PLuint sid, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k, const plSeq<PLuint> &kids, const plSeq<const plSpline*> splines, plSeq<PLuint> &defectIDs );
 
         // core functionality
         PLbool generateIGuideModels ();

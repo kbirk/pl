@@ -1,0 +1,29 @@
+#ifndef __PL_CHECKERBOARD_H__
+#define __PL_CHECKERBOARD_H__
+
+#include "plCommon.h"
+#include "plRenderable.h"
+#include "plRenderingPipeline.h"
+#include "plTransform.h"
+#include "plColourMesh.h"
+
+class plCheckerBoard : public plRenderable
+{
+    public:
+
+        plTransform transform;
+
+        plCheckerBoard( PLfloat blocksize );
+        
+        void draw() const;
+
+    private:
+
+        plColourMesh _mesh;
+        
+        void _generate( PLfloat blocksize ); 
+
+};  
+
+
+#endif

@@ -30,18 +30,6 @@ void plSpline::clear()
     _triangles.clear();
 }
 
-/*
-void plSpline::importCSV( const plSeq<plString> &row, const plModel &cartilage  )
-{
-    _cartilage = &cartilage;
-    plBoundary::importCSV( row );
-    // construct spline 
-    if (size() == 4)
-    {
-        _computeHermite();
-    }
-}
-*/
 
 PLuint plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &normal)
 {
