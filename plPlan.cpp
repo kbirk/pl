@@ -280,14 +280,15 @@ void plPlan::importFile( const plString &filename )
             PLuint  defectSiteCount( std::stoi( csv.data[++i][1] ) );
 
             plSeq<const plSpline*> splines;
-            plSeq<PLuint>          defectSiteIDs;
+            plSeq<PLuint>          defectIDs;
             for (PLuint j=0; j<defectSiteCount; j++)
             {
                 PLuint  defectID ( std::stoi( csv.data[i][2+(j)] ) );
-                splines.add(&(_defectSites[defectID]->spline));
+                defectIDs.add(defectID);
+                splines.add( &(_defectSites[defectID]->spline ) );
             }
 
-            _iGuides.add( new plIGuide( _iGuideSites[ siteID ], siteID, plugs, kWires, kWireIDs, splines ) );
+            _iGuides.add( new plIGuide( _iGuideSites[ siteID ], siteID, plugs, kWires, kWireIDs, splines, defectIDs ) );
         } 
         else
         {
@@ -379,6 +380,14 @@ void plPlan::exportFile( const plString &filename )
             {  
                 out << ", " << _iGuides[i]->kWireIDs[j];
             }
+
+            out << std::endl;
+            out << "\tsplines, " << _iGuides[i]->defectIDs.size();
+            for (PLuint j=0; j<_iGuides[i]->defectIDs.size(); j++)
+            {
+                out << ", " << _iGuides[i]->defectIDs[j];
+            }
+
             out << std::endl << std::endl;
         }
     
