@@ -236,7 +236,7 @@ namespace plMeshExtruder
 
             if (unsortedEdgeIndex == unsortedEdges.size() || (unsortedEdges.size() == 0 && currentVertex != finalVertex)) // should not happen if the edges contain a closed surface
             {
-                std::cerr << "Error in plIGuide::collectOutsideEdges: the edges don't contain a closed surface! Aborting." << std::endl;
+                std::cerr << "Error in plIGuide::collectOutsideEdges: either the edges don't contain a closed surface, or there is more than one unclosed mesh in the input! Aborting." << std::endl;
                 exit(1);
             }
             else
