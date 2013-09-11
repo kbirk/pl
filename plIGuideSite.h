@@ -8,23 +8,7 @@
 #include "plRenderable.h"
 #include "plPickingTexture.h"
 #include "plMeshCutter.h"
-
-
-// used in constructing the template base shape
-class plEdgeIndices
-{
-    public:
-    
-        PLuint triangleIndex;
-        PLuint vertexIndexA;
-        PLuint vertexIndexB;
-    
-        plEdgeIndices() {}
-        plEdgeIndices( PLuint t, PLuint vA, PLuint vB)  
-            : triangleIndex(t), vertexIndexA(vA), vertexIndexB(vB) 
-        {}
-        
-};
+#include "plMeshExtruder.h"
 
 
 class plIGuideSite : public plModelSpecific,
@@ -39,7 +23,7 @@ class plIGuideSite : public plModelSpecific,
         plIGuideSite( PLuint _modelID, const plBoneAndCartilage &_model );
         plIGuideSite( PLuint _modelID, const plBoneAndCartilage &_model, const plBoundary &b );
 
-        const plSeq<plTriangle> &templateBase() const { return _templateBase; };
+        const plSeq<plTriangle> &templateBase() const { return _templateBase; }
 
         PLbool generateTemplateBase();
 
@@ -47,11 +31,7 @@ class plIGuideSite : public plModelSpecific,
 
     private:
  
-        plSeq<plTriangle>    _templateBase;                                         // for use in generating iGuides     
-		
-        plSeq<plEdgeIndices> _collectOutsideEdges         ();                       // helper to createTemplateBaseShape
-        plSeq<plEdgeIndices> _collectOutsideEdgesUnsorted ();                       // helper to collectOutsideEdges
-        plSeq<plEdgeIndices> _collectOutsideEdgesSort     ( plSeq<plEdgeIndices> ); // helper to collectOutsideEdges
+        plSeq<plTriangle>    _templateBase;                                         // for use in generating iGuides
 
 };
 
