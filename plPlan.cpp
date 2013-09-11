@@ -277,7 +277,18 @@ void plPlan::importFile( const plString &filename )
                 
                 
             }
-            _iGuides.add( new plIGuide( _iGuideSites[ siteID ], siteID, plugs, kWires, kWireIDs ) );
+
+            PLuint  defectSiteCount( std::stoi( csv.data[++i][1] ) );
+
+            plSeq<const plSpline*> splines;
+            plSeq<PLuint>          defectSiteIDs;
+            for (PLuint j=0; j<defectSiteCount; j++)
+            {
+                PLuint  defectID ( std::stoi( csv.data[i][2+(j)] ) );
+                splines.add(&(_defectSites[defectID]->spline));
+            }
+
+            _iGuides.add( new plIGuide( _iGuideSites[ siteID ], siteID, plugs, kWires, kWireIDs, splines ) );
         } 
         else
         {
