@@ -284,7 +284,7 @@ void plPlan::importFile( const plString &filename )
             for (PLuint j=0; j<defectSiteCount; j++)
             {
                 PLuint  defectID ( std::stoi( csv.data[i][2+(j)] ) );
-                splines.add(&(_defectSites[defectID]->spline));
+                splines.add( &(_defectSites[defectID]->spline) );
             }
 
             _iGuides.add( new plIGuide( _iGuideSites[ siteID ], siteID, plugs, kWires, kWireIDs, splines ) );
