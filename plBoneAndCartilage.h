@@ -16,10 +16,12 @@ class plBoneAndCartilage
 
         void draw() const;
 
-        void       getMinMax  ( plVector3 &min, plVector3 &max ) const;        
         plVector3  getCentroid() const;     
 
     private:
+
+        void       getMinMax  ( plVector3 &min, plVector3 &max ) const;        
+        
 
         // prevent empty constructor, copy constructor, and assignment, which will invalidate the octree's pointers if rhs is scoped
         plBoneAndCartilage();

@@ -23,12 +23,12 @@ class plPlan : public plRenderable
         
         ~plPlan();
 
-        void importFile( plString filename );        
-        void exportFile( plString filename );
+        void importFile( const plString &filename );        
+        void exportFile( const plString &filename );
 
         //template<class T>
         //T        &getImportReference( plSeq<T*> &ts,         const plString &index );
-        plIGuide &getIGuideImportReference( plSeq<plIGuide*> &ts,  const plString &index );
+        //plIGuide &getIGuideImportReference( plSeq<plIGuide*> &ts,  const plString &index );
 
         // non-const reference getters          
         plDefectSite&       defectSites( PLuint index )        { return *_defectSites[index]; }
@@ -82,7 +82,7 @@ class plPlan : public plRenderable
         plSeq<plBoneAndCartilage*> _models;
 };
 
-std::ostream& operator << ( std::ostream& out, const plPlan &p );
+//std::ostream& operator << ( std::ostream& out, const plPlan &p );
 
 #endif
 

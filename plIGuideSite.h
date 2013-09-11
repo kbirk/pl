@@ -9,42 +9,52 @@
 #include "plPickingTexture.h"
 #include "plMeshCutter.h"
 
+
+// used in constructing the template base shape
+class plEdgeIndices
+{
+    public:
+    
+        PLuint triangleIndex;
+        PLuint vertexIndexA;
+        PLuint vertexIndexB;
+    
+        plEdgeIndices() {}
+        plEdgeIndices( PLuint t, PLuint vA, PLuint vB)  
+            : triangleIndex(t), vertexIndexA(vA), vertexIndexB(vB) 
+        {}
+        
+};
+
+
+
 class plIGuideSite : public plModelSpecific,
                      public plRenderable
-{
-    private:
-
-        plSeq<plTriangle>   _templateBase;   // for use in generating iGuides
-
-        // used in constructing the template base shape
-        class edgeIndices
-        {
-            public:
-                edgeIndices() {}
-                edgeIndices(PLuint t, PLuint vA, PLuint vB) : triangleIndex(t), vertexIndexA(vA), vertexIndexB(vB) {}
-                PLuint triangleIndex;
-                PLuint vertexIndexA;
-                PLuint vertexIndexB;
-        };
-
-        PLbool createTemplateBaseShape( const plSeq<plTriangle> &cartilageTris );
-
-        plSeq<edgeIndices> collectOutsideEdges();                       // helper to createTemplateBaseShape
-        plSeq<edgeIndices> collectOutsideEdgesUnsorted();               // helper to collectOutsideEdges
-        plSeq<edgeIndices> collectOutsideEdgesSort(plSeq<edgeIndices>); // helper to collectOutsideEdges
+{    
 
     public:
-
-        plSeq<plTriangle>   &templateBase( const plSeq<plTriangle> &cartilageTris );
-
-        plBoundary          boundary;
+        
+        plBoundary boundary;
 
         plIGuideSite();
         plIGuideSite( PLuint _modelID, const plBoneAndCartilage &_model );
+        plIGuideSite( PLuint _modelID, const plBoneAndCartilage &_model, const plBoundary &b );
 
-        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
+        const plSeq<plTriangle> &templateBase() const { return _templateBase; };
+
+        PLbool generateTemplateBase();
+
+        //void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         void draw();
+
+    private:
+ 
+        plSeq<plTriangle>    _templateBase;   // for use in generating iGuides     
+		
+        plSeq<plEdgeIndices> _collectOutsideEdges         ();                         // helper to createTemplateBaseShape
+        plSeq<plEdgeIndices> _collectOutsideEdgesUnsorted ();                 // helper to collectOutsideEdges
+        plSeq<plEdgeIndices> _collectOutsideEdgesSort     ( plSeq<plEdgeIndices> ); // helper to collectOutsideEdges
 
 };
 

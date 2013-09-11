@@ -108,7 +108,7 @@ namespace plPlannerStage1
           
         float da = (2.0f * PL_PI) / (float)(PL_STAGE1_NUM_DIRECTIONS);  
           
-        for (uint i=0; i<PL_STAGE1_NUM_DIRECTIONS; i++)
+        for (PLuint i=0; i<PL_STAGE1_NUM_DIRECTIONS; i++)
         {       
             float theta = i * da;
              

@@ -17,7 +17,7 @@ plVector3::plVector3( PLchar *string )
     sscanf( string, "%f %f %f", &x, &y, &z );
 }
 
-plVector3::plVector3( plString str ) 
+plVector3::plVector3( const plString &str ) 
 {
     sscanf( str.c_str(), "%f %f %f", &x, &y, &z );
 }

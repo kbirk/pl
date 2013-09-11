@@ -60,12 +60,13 @@ class plGraft : public plRenderable,
                  const plPlug &recipient, 
                  PLfloat radius,
                  PLfloat heightOffset,
-                 PLfloat length );
+                 PLfloat length,
+                 const plVector3 &markDirection = plVector3(0,0,1) );
         
-        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
+        //void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         PLfloat          heightOffset()  const { return _heightOffset; } 
-        PLfloat          radius()        const { return _radius; } 
+        const PLfloat   &radius()        const { return _radius; } 
         PLfloat          length()        const { return _length; } 
         const plVector3 &markDirection() const { return _markDirection; } 
         

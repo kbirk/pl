@@ -12,6 +12,7 @@ class plTransform
     public:
 
         plTransform();
+        plTransform( const plSeq<plString> &row );
         plTransform( const plVector3 &y, const plVector3 &origin );
         plTransform( const plVector3 &x, const plVector3 &y, const plVector3 &origin );
 

@@ -15,7 +15,7 @@ class plVector4
 		plVector4( const plVector3 &v, PLfloat ww );
 		plVector4( PLfloat xx, PLfloat yy, PLfloat zz, PLfloat ww );
 		plVector4( PLchar *string );  
-		plVector4( plString str );
+		plVector4( const plString &str );
 
 		PLbool 	  operator == (const plVector4 &p) const;
 		PLbool 	  operator != (const plVector4 &p) const;

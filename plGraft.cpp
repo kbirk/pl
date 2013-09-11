@@ -4,12 +4,13 @@ plGraft::plGraft()
 {
 }
 
-plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat heightOffset, PLfloat length )
-    : recipient(r), harvest(h), _radius( radius ), _markDirection( plVector3(0,0,1) ), _length( length ), _heightOffset( heightOffset ) 
+plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat heightOffset, PLfloat length, const plVector3 &markDirection  )
+    : recipient(r), harvest(h), _radius( radius ), _markDirection( markDirection ), _length( length ), _heightOffset( heightOffset ) 
 {
     _setCaps();   
 }
 
+/*
 void plGraft::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     // Fill in the field            
@@ -46,7 +47,7 @@ void plGraft::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartil
     else
         std::cerr << "Error in plan, 'graft': Unrecognized word '" << subfield << "' in third column." << std::endl;
 }
-
+*/
 
 void plGraft::_setBoneColour() const
 {

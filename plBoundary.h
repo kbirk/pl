@@ -18,6 +18,7 @@ class plBoundary : public plRenderable,
     public:
 
         plBoundary();      
+        plBoundary( const plSeq<plString> &row );
  
         PLuint size() const;
 
@@ -30,7 +31,7 @@ class plBoundary : public plRenderable,
         plVector3 getAverageNormal() const;
 
         virtual void   toggleVisibility();   
-        virtual void   importCSV           ( const plSeq<plString> &row );        
+        //virtual void   importCSV           ( const plSeq<plString> &row );        
         virtual PLuint addPointAndNormal   ( const plVector3 &point, const plVector3 &normal);
         virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);
         virtual void   removePointAndNormal( PLuint index );
@@ -50,6 +51,8 @@ class plBoundary : public plRenderable,
 };
 
 std::ostream& operator << ( std::ostream& out, const plBoundary &b );
+
+std::istream& operator >> ( std::istream& is, plBoundary &b );
 
 #endif
 

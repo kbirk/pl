@@ -181,7 +181,7 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint 
     {        
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
         {
-            intersection = plan.defectSites( _selectedSiteIndex ).spline.rayIntersect( rayOrigin, rayDirection );  
+            intersection = plMath::rayIntersect( plan.defectSites( _selectedSiteIndex ).spline.triangles(), rayOrigin, rayDirection );  
             break;
         }
         

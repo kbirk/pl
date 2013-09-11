@@ -31,9 +31,9 @@ class plModel : public plRenderable
 {
     public:
 
+        plModel( const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
         plModel( const plSeq<plTriangle> &triangles, const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
-        plModel(                                     const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
-
+        
         const plSeq<plTriangle> &triangles() const { return _triangles; }
         const plOctree          &octree()    const { return _octree;    }
         const plString          &filename()  const { return _filename;  }

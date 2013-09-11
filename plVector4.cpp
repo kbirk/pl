@@ -20,7 +20,7 @@ plVector4::plVector4( PLchar *string )
 	sscanf( string, "%f %f %f %f", &x, &y, &z, &w );
 }
 
-plVector4::plVector4( plString str ) 
+plVector4::plVector4( const plString &str ) 
 {
 	sscanf( str.c_str(), "%f %f %f %f", &x, &y, &z, &w );
 }

@@ -14,6 +14,33 @@
 #include "plIGuideSite.h"
 
 
+class plPlugInfo
+{
+
+    public:
+    
+        const plTransform &transform() const { return *_transform; } 
+        PLfloat            radius   () const { return *_radius;    }
+        PLuint             type     () const { return _type;       }
+        PLuint             graftID  () const { return _graftID;    }
+
+        plPlugInfo() {}
+        plPlugInfo( const plTransform *transform, const PLfloat *radius, PLuint type, PLuint id ) 
+            : _transform( transform ), _radius( radius ), _type( type ), _graftID( id )
+        {        
+        }
+    
+    private:
+    
+        const plTransform *_transform;
+        const PLfloat     *_radius;
+        PLuint             _type;
+        PLuint             _graftID;    
+        
+
+};
+
+
 class plKWire 
 {
     public:
@@ -25,21 +52,9 @@ class plKWire
         plKWire() {}
 };
 
-class plIGuide : public plModelSpecific,
-                 public plRenderable
+
+class plIGuide : public plRenderable
 {
-
-    private:
-
-        plSeq<plTriangle>  createTemplatePieceTransformed ( const plSeq<plTriangle> &baseTriObject ,
-                                                            const plMatrix44  &plugTransform,
-                                                            const PLdouble    &zOffset,
-                                                            const plVector3   &scale,
-                                                            const PLdouble    &keyTranslationXAxis,
-                                                            const PLdouble    &keyRotationZAxis );
-
-        plString prepareFilenameWithVariables( PLbool add, PLchar type, PLint graftIndex, const plString &pieceName );
-
 
     public:
 
@@ -51,39 +66,45 @@ class plIGuide : public plModelSpecific,
         plSeq<plModel*>         iGuideModelsToAdd;
         plSeq<plModel*>         iGuideModelsToSubtract;
 
-        // pointers to data needed to construct this thing
-        plSeq<plIGuideSite*>    *sites;
-        PLint                   siteIndex;
-
-        plSeq<plGraft*>         *grafts;
-        plSeq<PLint>            recipientIndices;      // pointer to the plan's grafts
-        plSeq<PLint>            harvestIndices;
-
-        plSeq<plKWire*>         *kWires;
-        plSeq<PLint>            kWireIndices;
-
+        plIGuideSite           *site;
+        //const plKWire          *kwire;
+        plSeq<plPlugInfo>       plugs;
+        plSeq<plKWire*>         kWires;
 
         // MEMBERS
         // constructors
         plIGuide();
-        plIGuide( PLuint _modelID, const plBoneAndCartilage &_model );
+        plIGuide( plIGuideSite *s, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k );
 
         // accessors (used to not have to dereference plSeq pointers and overall make code a bit more readable)
-        plIGuideSite &site           ()                 { return *((*sites)[siteIndex]); }
-        plGraft      &recipientGraft (PLint arrayIndex) { return *((*grafts)[recipientIndices[arrayIndex]]); }
-        plGraft      &harvestGraft   (PLint arrayIndex) { return *((*grafts)[harvestIndices[arrayIndex]]); }
-        plKWire      &kWire          (PLint arrayIndex) { return *((*kWires)[arrayIndex]); }
+        //plIGuideSite &site           ()                 { return *((*sites)[siteIndex]); }
+        //plGraft      &recipientGraft (PLint arrayIndex) { return *((*grafts)[recipientIndices[arrayIndex]]); }
+        //plGraft      &harvestGraft   (PLint arrayIndex) { return *((*grafts)[harvestIndices[arrayIndex]]); }
+        //plKWire      &kWire          (PLint arrayIndex) { return *((*kWires)[arrayIndex]); }
 
         // I/O
-        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
+        //void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         // core functionality
         PLbool generateIGuideModels ();
-        PLbool exportIGuideModels   (const plString &directory);
+        PLbool exportIGuideModels   ( const plString &directory );
         void   clearIGuideModels    ();
 
         // rendering
         void draw();
+        
+    private:
+
+	    plString			_prepareFilenameWithVariables   ( PLbool add, PLchar type, PLint graftIndex, const plString &pieceName );
+        plSeq<plTriangle>	_createTemplatePieceTransformed ( const plSeq<plTriangle> &baseTriObject,
+                                                              const plMatrix44  &plugTransform,
+                                                              const PLdouble    &zOffset,
+                                                              const plVector3   &scale,
+                                                              const PLdouble    &keyTranslationXAxis,
+                                                              const PLdouble    &keyRotationZAxis );
+      
+		
+    
 };
 
 

@@ -7,7 +7,7 @@ plSiteGrid::plSiteGrid()
 plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain )
 {
     // generate interior triangles
-    plMeshCutter::findInteriorMesh( triangles, boundary, _triangles );
+    plMeshCutter::findInteriorMesh( _triangles, triangles, boundary );
 
     if ( fineGrain )
     {
@@ -264,7 +264,7 @@ void plSiteGrid::_calcNormal()
     _normal = (1/(float)_triangles.size() * _normal).normalize();    
 }  
 
-
+/*
 plIntersection plSiteGrid::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 {
     PLfloat min = FLT_MAX;
@@ -288,7 +288,7 @@ plIntersection plSiteGrid::rayIntersect( const plVector3 &rayOrigin, const plVec
     
     return closestIntersection;
 }                 
-
+*/
 
 
 

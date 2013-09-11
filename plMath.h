@@ -15,14 +15,16 @@ namespace plMath
     PLfloat   fsqrt                 ( PLfloat x );
     PLfloat   clamp                 ( PLfloat val, PLfloat min = -1, PLfloat max = 1);
 
-	void  convexPolysToTris         ( const plSeq<plPolygon> &polys, plSeq<plTriangle> &tris);
-	void  concavePolysToTris        ( const plSeq<plPolygon> &polys, plSeq<plTriangle> &tris);
-	void  concavePolysToTrisHelper  ( const plPolygon&, plSeq<plTriangle>&, PLfloat&);
+    plIntersection rayIntersect     ( const plSeq<plTriangle> &triangles, 
+                                      const plVector3 &rayOrigin, 
+                                      const plVector3 &rayDirection, 
+                                      PLbool ignoreBehindRay = false, 
+                                      PLbool backFaceCull    = false );
+
+	void convexPolysToTris         ( plSeq<plTriangle> &tris, const plSeq<plPolygon> &polys );
+	void concavePolysToTris        ( plSeq<plTriangle> &tris, const plSeq<plPolygon> &polys );
 
 };
 
 #endif
-
-
-
 

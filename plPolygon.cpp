@@ -23,6 +23,7 @@ plVector3 plEdge::otherPt(const plVector3 &point, const PLfloat &epsilon)
         return pt2;
     else if ((pt2 - point).length() <= epsilon)
         return pt1;
+        
     // shouldn't proceed past here if one of this edge's points are used, but this basically just says that no match was found
     std::cout << "Warning in plEdge::otherPt() - point " << point << " was not found! returning vector of zeros!" << std::endl;
     return plVector3(0,0,0);
@@ -38,9 +39,10 @@ PLbool plEdge::equals(const plEdge &e2, const PLfloat &epsilon)
 
 PLbool plEdge::operator==(const plEdge &e2)
 {
-    if ( ( e2.pt1 == pt1 && e2.pt2 == pt2 ) ||
-         ( e2.pt2 == pt1 && e2.pt1 == pt2 ) )
+    if ( ( e2.pt1 == pt1 && e2.pt2 == pt2 ) || ( e2.pt2 == pt1 && e2.pt1 == pt2 ) )
+    {
         return true;
+    }
     return false;
 }
 

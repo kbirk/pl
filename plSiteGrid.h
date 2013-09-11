@@ -45,8 +45,10 @@ class plSiteGrid
         PLuint getGridSSBO() const;
         PLuint getMeshSSBO() const;
         
-        plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
-        
+        //plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
+
+        const plSeq<plTriangle> &triangles() const { return _triangles; }
+
         const plTriangle&  triangles ( PLuint index ) const { return _triangles[index]; }     
         const plVector4&   points    ( PLuint index ) const { return _points[index];    }
         const plVector4&   normals   ( PLuint index ) const { return _normals[index];   }

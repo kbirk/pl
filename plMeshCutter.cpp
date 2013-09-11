@@ -20,7 +20,7 @@ namespace plMeshCutter
     PLint   _compareEdgeCuts       ( const void* a, const void* b );
     PLint   _compareBoundaryCuts   ( const void* a, const void* b );
 
-    PLbool findInteriorMesh( const plSeq<plTriangle> &triangles, const plBoundary &boundary, plSeq<plTriangle> &interiorTriangles )
+    PLbool findInteriorMesh( plSeq<plTriangle> &interiorTriangles, const plSeq<plTriangle> &triangles, const plBoundary &boundary )
     {
         // set all the processed flags to false
         plSeq<PLbool> trianglesProcessedFlag( triangles.size(), false );
@@ -68,7 +68,7 @@ namespace plMeshCutter
        }
 
         // convert polygons to triangles for the output
-        plMath::concavePolysToTris(interiorPolygons, interiorTriangles);
+        plMath::concavePolysToTris( interiorTriangles, interiorPolygons );
 
         return true;
     } 

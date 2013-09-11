@@ -63,11 +63,11 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
             break; 
             
         case 'W':   
-            _camera.exportViewParams( ".view" + plString::toString(currentView ) );   
+            _camera.exportViewParams( ".view" + std::to_string( currentView ) );   
             break;
             
         case 'R':   
-            _camera.importViewParams( ".view" + plString::toString( currentView ) );   
+            _camera.importViewParams( ".view" + std::to_string( currentView ) );
             break;  
        
         case '1':
@@ -118,6 +118,10 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
 	        }
             break;
         } 
+        
+        case 'H':
+            std::cout << plTimer::now() << "\n";
+            break;
     }
     
     glutPostRedisplay();

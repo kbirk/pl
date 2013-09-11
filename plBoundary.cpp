@@ -5,6 +5,18 @@ plBoundary::plBoundary()
 {
 }
 
+plBoundary::plBoundary( const plSeq<plString> &row )
+    : _showWalls(true)
+{
+    // assumes points are counter-clockwise
+    for ( PLuint j = 0; j < row.size(); j+=2)
+    {               
+        _points.add ( plVector3( row[j] ) );                  
+        _normals.add( plVector3( row[j+1] ) );
+    } 
+    // construct mesh
+    _updateMesh(); 
+}
 
 void plBoundary::toggleVisibility()
 {
@@ -40,7 +52,7 @@ PLuint plBoundary::size() const
     return _points.size();
 }
 
-
+/*
 void plBoundary::importCSV( const plSeq<plString> &row )
 {
 
@@ -53,7 +65,7 @@ void plBoundary::importCSV( const plSeq<plString> &row )
     // construct mesh
     _updateMesh(); 
 }
-
+*/
 
 PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
 {
@@ -423,4 +435,10 @@ std::ostream& operator << ( std::ostream& out, const plBoundary &b )
     return out;
 }
 
+std::istream& operator >> ( std::istream& is, plBoundary &b )
+{
+
+    
+
+}
 

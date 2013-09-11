@@ -10,6 +10,14 @@ plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage &model )
 {
 }
 
+
+plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage &model, const plSpline &s, const plBoundary &b )
+    : plModelSpecific( modelID, model ), spline( s ), boundary( b )
+{
+}
+
+
+/*
 void plDefectSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     // Fill in the field            
@@ -41,7 +49,7 @@ void plDefectSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCa
     else
         std::cerr << "Error importing plan, 'spline': Unrecognized word '" << subfield << "' in third column." << std::endl;      
 }
-
+*/
 
 void plDefectSite::draw() const
 {      

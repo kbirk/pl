@@ -13,7 +13,7 @@ class plVector3
 		plVector3();
 		plVector3( PLfloat xx, PLfloat yy, PLfloat zz );
 		plVector3( PLchar *string );  
-		plVector3( plString str );
+		plVector3( const plString &str );
 
 		PLbool 	  operator == (const plVector3 &p) const;
 		PLbool 	  operator != (const plVector3 &p) const;

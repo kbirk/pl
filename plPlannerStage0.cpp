@@ -200,7 +200,7 @@ namespace plPlannerStage0
             plVector3 rayOrigin   ( state.graftPositions[i].x, state.graftPositions[i].y, state.graftPositions[i].z );
             plVector3 rayDirection( state.graftNormals[i].x,   state.graftNormals[i].y,   state.graftNormals[i].z   );
         
-            plIntersection intersection = site.rayIntersect( rayOrigin, rayDirection );
+            plIntersection intersection = plMath::rayIntersect( site.triangles(), rayOrigin, rayDirection );
             state.graftPositions[i] = plVector4( intersection.point, 1.0 );
         }
         

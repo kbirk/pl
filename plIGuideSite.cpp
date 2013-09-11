@@ -4,11 +4,19 @@ plIGuideSite::plIGuideSite()
 {
 }
 
+
 plIGuideSite::plIGuideSite( PLuint modelID, const plBoneAndCartilage &model )
     : plModelSpecific( modelID, model )
 {
 }
 
+
+plIGuideSite::plIGuideSite( PLuint modelID, const plBoneAndCartilage &model, const plBoundary &b )
+    : plModelSpecific( modelID, model ), boundary( b )
+{
+}
+
+/*
 void plIGuideSite::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     // Fill in the field
@@ -33,6 +41,8 @@ void plIGuideSite::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndC
         std::cerr << "Error importing plan,'iguide': Unrecognized word '" << subfield << "' in third column." << std::endl;
     }
 }
+*/
+
 
 void plIGuideSite::draw() 
 {
@@ -40,28 +50,23 @@ void plIGuideSite::draw()
     boundary.draw();
 }
 
-plSeq<plTriangle> &plIGuideSite::templateBase( const plSeq<plTriangle> &cartilageTris )
-{
-    createTemplateBaseShape(cartilageTris);
-    return _templateBase;
-}
 
-PLbool plIGuideSite::createTemplateBaseShape( const plSeq<plTriangle> &cartilageTris )
+PLbool plIGuideSite::generateTemplateBase()
 {
 
     _templateBase.clear();
 
     // find the surface for the iGuide
-    if (!plMeshCutter::findInteriorMesh( cartilageTris , boundary , _templateBase )) // find surface
+    if ( !plMeshCutter::findInteriorMesh( _templateBase, _model->cartilage.triangles(), boundary ) ) // find surface
     {
-        std::cerr << "Error in plIGuideSite::createTemplateBaseShape(): findInteriorMesh() failed. Aborting iGuideSite surface calculation." << std::endl;
+        std::cerr << "Error in plIGuideSite::_create_templateBaseShape(): findInteriorMesh() failed. Aborting iGuideSite surface calculation." << std::endl;
         return false;
     }
-    plSeq<edgeIndices> outsideEdges (collectOutsideEdges());
+    plSeq<plEdgeIndices> outsideEdges = _collectOutsideEdges();
 
     // store these for bookkeeping. This is the index where upper (extruded) edges/triangles will start
-    PLuint indexOfUpperEdges (outsideEdges.size());
-    PLuint indexOfUpperTriangles (_templateBase.size());
+    PLuint indexOfUpperEdges     = outsideEdges.size();
+    PLuint indexOfUpperTriangles = _templateBase.size();
 
     // we need to extrude a bunch of these triangles in the direction of the average normal
     PLfloat offsetMagnitude(5.f);
@@ -73,7 +78,7 @@ PLbool plIGuideSite::createTemplateBaseShape( const plSeq<plTriangle> &cartilage
         plVector3 point2( _templateBase[i].point2() + offset );
         plVector3 normal( _templateBase[i].normal() );
         _templateBase.add( plTriangle(normal,point0,point1,point2) );
-    } // end for
+    }
 
     // update edgeIndices
     for (PLuint i = 0; i < indexOfUpperEdges; i++)
@@ -86,7 +91,7 @@ PLbool plIGuideSite::createTemplateBaseShape( const plSeq<plTriangle> &cartilage
     for (PLuint i = 0; i < indexOfUpperTriangles; i++)
     {
         _templateBase[i].swapVertices0And1(); // reverses the normal
-    } // end for
+    }
 
     // update edgeIndices
     for (PLuint i = 0; i < indexOfUpperEdges; i++)
@@ -110,29 +115,30 @@ PLbool plIGuideSite::createTemplateBaseShape( const plSeq<plTriangle> &cartilage
         _templateBase.add(plTriangle(_templateBase[lowerTriangleIndex][lowerVertexIndexB],
                                     _templateBase[upperTriangleIndex][upperVertexIndexB],
                                     _templateBase[upperTriangleIndex][upperVertexIndexA] ) );
-    } // end for
+    }
 
+	return true;
 }
 
 
 // ---------------------------------- COLLECT OUTSIDE EDGES ---------------------------------
 
-plSeq<plIGuideSite::edgeIndices> plIGuideSite::collectOutsideEdges()
+plSeq<plEdgeIndices> plIGuideSite::_collectOutsideEdges()
 {
-    plSeq<plIGuideSite::edgeIndices> edges;
-    edges = collectOutsideEdgesUnsorted();
-    edges = collectOutsideEdgesSort(edges);
+    plSeq<plEdgeIndices> edges;
+    edges = _collectOutsideEdgesUnsorted();
+    edges = _collectOutsideEdgesSort( edges );
     return edges;
 }
 
 // helper to collectOutsideEdges
-plSeq<plIGuideSite::edgeIndices> plIGuideSite::collectOutsideEdgesUnsorted()
+plSeq<plEdgeIndices> plIGuideSite::_collectOutsideEdgesUnsorted()
 {
     // all edges that are on the border will be unique -
     // that is to say, it will occur exactly once within the set of triangles.
     // any edge that occurs twice must be between two faces, and is therefore not on the border
 
-    plSeq<plIGuideSite::edgeIndices> unsortedEdges;  // this stores the indices for bookkeeping and future manipulation
+    plSeq<plEdgeIndices> unsortedEdges;  // this stores the indices for bookkeeping and future manipulation
     for (PLuint triangleIndex = 0; triangleIndex < _templateBase.size(); triangleIndex++)
     {
         // examine each edge
@@ -161,7 +167,7 @@ plSeq<plIGuideSite::edgeIndices> plIGuideSite::collectOutsideEdgesUnsorted()
 
             if (unsortedEdgeIndex == unsortedEdges.size()) // if the edge does not already exist, add it to the list
             {
-                unsortedEdges.add( plIGuideSite::edgeIndices(triangleIndex, vertexIndex, ((vertexIndex+1)%3) ) );
+                unsortedEdges.add( plEdgeIndices(triangleIndex, vertexIndex, ((vertexIndex+1)%3) ) );
             }
             else // if the edge DOES exist, it must be between two faces and therefore can't be on the border... so remove it
             {
@@ -173,10 +179,10 @@ plSeq<plIGuideSite::edgeIndices> plIGuideSite::collectOutsideEdgesUnsorted()
 }
 
 // helper to collectOutsideEdges
-plSeq<plIGuideSite::edgeIndices> plIGuideSite::collectOutsideEdgesSort(plSeq<plIGuideSite::edgeIndices> unsortedEdges)
+plSeq<plEdgeIndices> plIGuideSite::_collectOutsideEdgesSort( plSeq<plEdgeIndices> unsortedEdges )
 {
     // traverse along the edges and return to the first vertex
-    plSeq<plIGuideSite::edgeIndices> sortedEdges;  // this stores the indices for bookkeeping and future manipulation
+    plSeq<plEdgeIndices> sortedEdges;  // this stores the indices for bookkeeping and future manipulation
 
     plVector3 finalVertex   = _templateBase[unsortedEdges[0].triangleIndex][unsortedEdges[0].vertexIndexA]; // the final vertex should be this, this should be checked
     plVector3 currentVertex = _templateBase[unsortedEdges[0].triangleIndex][unsortedEdges[0].vertexIndexB]; // the current vertex, we'll look to 'hop' to another edge with this vertex
@@ -184,7 +190,7 @@ plSeq<plIGuideSite::edgeIndices> plIGuideSite::collectOutsideEdgesSort(plSeq<plI
     sortedEdges.add(unsortedEdges[0]); // first edge, arbitrarily chosen to be here
     unsortedEdges.remove(0);           // don't need to search here, so remove it from the list of unsorted edges
 
-    while (unsortedEdges.size())
+    while ( unsortedEdges.size() )
     {
         // search for the current vertex in the list of edges. It will appear as the first vertex in an ordered pair, since all edges are counter-clockwise
         PLuint unsortedEdgeIndex;
@@ -218,4 +224,3 @@ plSeq<plIGuideSite::edgeIndices> plIGuideSite::collectOutsideEdgesSort(plSeq<plI
 
     return sortedEdges;
 }
-

@@ -6,18 +6,31 @@ plSpline::plSpline()
 {
 }
 
+
 plSpline::plSpline( const plModel &cartilage )
     : _cartilage( &cartilage )
 {
 }
 
+
+plSpline::plSpline( const plSeq<plString> &row, const plModel &cartilage )
+    : plBoundary( row ), _cartilage( &cartilage )
+{
+    // construct spline 
+    if (size() == 4)
+    {
+        _computeHermite();
+    }
+}
+
+
 void plSpline::clear()
 {
     plBoundary::clear();
     _triangles.clear();
-    _octree.clear();
 }
 
+/*
 void plSpline::importCSV( const plSeq<plString> &row, const plModel &cartilage  )
 {
     _cartilage = &cartilage;
@@ -28,6 +41,7 @@ void plSpline::importCSV( const plSeq<plString> &row, const plModel &cartilage  
         _computeHermite();
     }
 }
+*/
 
 PLuint plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &normal)
 {
@@ -44,6 +58,7 @@ PLuint plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &nor
     return -1;
 }
 
+
 void plSpline::movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal)
 {
     plBoundary::movePointAndNormal( index, point, normal );
@@ -55,10 +70,12 @@ void plSpline::movePointAndNormal( PLuint index, const plVector3 &point, const p
 
 }
 
+
 void plSpline::removePointAndNormal( PLuint index )
 {
     plBoundary::removePointAndNormal(index);   
 }
+  
         
 void plSpline::draw() const
 {      
@@ -80,6 +97,7 @@ void plSpline::draw() const
         //_drawSplineSelectionInterface();
     }            
 }
+
 
 PLfloat Q( PLfloat s, PLfloat t, const plSeq<PLfloat> &st, const plSeq<PLfloat> &tt)
 {
@@ -115,6 +133,7 @@ plSeq<plVector3> plSpline::_averageCornerNormals() const
     
     return n;
 }
+
 
 void plSpline::_computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const plSeq<plVector3> &p, const plSeq<plVector3> &n ) const
 {
@@ -283,13 +302,15 @@ void plSpline::_computeHermite()
     }   
 
     _surfaceMesh.setBuffers( interleaved_vertices, indices );
-         
+    
+    /*     
     // get min and max extents of model
     plVector3 min, max;
     _getMinMax(min,max);
     
     // build octree       
     _octree.build( min, max, _triangles, 1 );           
+    */
     
     // update timer to store time of last update
     _lastUpdate = plTimer::now();
@@ -300,7 +321,8 @@ PLuint plSpline::_timeSinceLastUpdate()
 {
     return plTimer::now() - _lastUpdate;
 }
-  
+ 
+/* 
 void plSpline::_getMinMax(plVector3 &min, plVector3 &max) const
 {
     min = plVector3(FLT_MAX, FLT_MAX, FLT_MAX);
@@ -326,6 +348,7 @@ plIntersection plSpline::rayIntersect( const plVector3 &rayOrigin, const plVecto
     // intersect the octree
     return _octree.rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
 }    
+*/          
     
     
 /*

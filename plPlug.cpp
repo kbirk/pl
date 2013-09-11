@@ -9,6 +9,7 @@ plPlug::plPlug( PLuint modelID, const plBoneAndCartilage &model, const plTransfo
 {
 }
 
+/*
 void plPlug::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     // Fill in the field            
@@ -29,6 +30,7 @@ void plPlug::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartila
         transform.importCSV( row );
     }
 }
+*/
 
 void plPlug::translate( const plVector3 &translation )
 {        

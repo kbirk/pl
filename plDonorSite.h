@@ -17,8 +17,9 @@ class plDonorSite : public plModelSpecific,
                 
         plDonorSite();
         plDonorSite( PLuint _modelID, const plBoneAndCartilage &_model );
-
-        void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
+        plDonorSite( PLuint _modelID, const plBoneAndCartilage &_model, const plBoundary &b );
+        
+        //void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         void draw() const;      
 };

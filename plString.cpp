@@ -6,17 +6,20 @@ plString::plString()
 
 }
 
+
 plString::plString (const std::string &str)
     : std::string( str ) 
 {
 
 }
 
+
 plString::plString (const char* s)
     : std::string( s ) 
 {
 
 }
+
 
 bool plString::importFile( const std::string &filename)      
 {
@@ -31,7 +34,8 @@ bool plString::importFile( const std::string &filename)
         in.close();
     }  
     return true;
-}    
+}  
+  
 
 void plString::toLower()
 {
@@ -40,6 +44,7 @@ void plString::toLower()
         (*this)[i] = tolower((*this)[i]);
     }
 }
+
 
 bool plString::compare( const plString &str ) const
 {
@@ -59,6 +64,7 @@ bool plString::compare( const plString &str ) const
     return true;  
 }
 
+
 bool plString::compare( const plString &str, PLuint num  ) const
 {
     if (num > this->length() || num > str.length())
@@ -76,6 +82,7 @@ bool plString::compare( const plString &str, PLuint num  ) const
     
     return true; 
 }
+
 
 bool plString::compare( const plString &str, PLuint index, PLuint num ) const
 {
@@ -114,6 +121,7 @@ bool plString::compareCaseInsensitive( const plString &str, PLuint num) const
     return true; 
 }
 
+
 bool plString::compareCaseInsensitive( const plString &str) const
 {
     if (length() != str.length())
@@ -132,17 +140,20 @@ bool plString::compareCaseInsensitive( const plString &str) const
     return true;   
 }
 
-plString plString::operator + ( const plString &s) const
+/*
+plString plString::operator + ( const plString &s ) const
 {
     std::stringstream str;
     str << *this << s << "\0";
     return str.str();
 }
+*/
 
 void plString::stripCharacter( char c)
 {
     erase( std::remove( begin(), end(), c), end() ); 
 }  
+
 
 void plString::stripPreceedingWhitespace()
 {
@@ -150,6 +161,7 @@ void plString::stripPreceedingWhitespace()
     if (startpos < length())
         *this = substr( startpos );
 }  
+
 
 plString plString::withoutFilepath() const
 {
@@ -159,6 +171,7 @@ plString plString::withoutFilepath() const
     else
         return *this;    
 }
+
 
 bool plString::isOnlyWhitespace() const
 {

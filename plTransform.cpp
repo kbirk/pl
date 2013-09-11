@@ -18,6 +18,13 @@ plTransform::plTransform( const plVector3 &x, const plVector3 &y, const plVector
     _compute();
 }
 
+plTransform::plTransform( const plSeq<plString> &row )
+{
+    _origin = plVector3( row[0] );
+    _x      = plVector3( row[1] );
+    _y      = plVector3( row[2] ); 
+    _compute();
+}
 
 void plTransform::importCSV( const plSeq<plString> &row )
 {

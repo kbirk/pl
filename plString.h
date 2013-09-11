@@ -11,7 +11,7 @@ class plString : public std::string
         plString(const std::string& str);
         plString(const char* s);
           
-        bool importFile( const std::string &filename);          
+        bool importFile( const std::string &filename );          
            
         bool compare( const plString &str ) const;
         bool compare( const plString &str, PLuint num ) const;
@@ -26,17 +26,18 @@ class plString : public std::string
         void stripPreceedingWhitespace  ();
         void toLower();
         
-        plString operator + (const plString &s) const;  
+        //plString operator + (const plString &s) const;  
 
+        /*
         template <class T>
         static plString toString( const T &t );
 
         template <class T>
         static T fromString( const plString &str );
-               
+        */       
 };
 
-
+/*
 template <class T>
 plString plString::toString( const T &t )
 {
@@ -53,5 +54,6 @@ T plString::fromString( const plString &str )
     ss >> val;
     return val;
 }
+*/
 
 #endif

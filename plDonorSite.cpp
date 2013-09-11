@@ -4,11 +4,20 @@ plDonorSite::plDonorSite()
 {
 }
 
+
 plDonorSite::plDonorSite( PLuint modelID, const plBoneAndCartilage &model )
     : plModelSpecific( modelID, model )
 {
 }
 
+
+plDonorSite::plDonorSite( PLuint modelID, const plBoneAndCartilage &model, const plBoundary &b  )
+    : plModelSpecific( modelID, model ), boundary( b )
+{
+}
+
+
+/*
 void plDonorSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
 {
     plString subfield = row[2];
@@ -32,6 +41,8 @@ void plDonorSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCar
         std::cerr << "Error importing plan, 'boundary': Unrecognized word '" << subfield << "' in third column." << std::endl;     
     }
 }
+*/
+
 
 void plDonorSite::draw() const
 {      
