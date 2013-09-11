@@ -102,6 +102,10 @@ namespace plMeshExtruder
     {
         plSeq<plEdgeIndices> edges;
         edges = _collectOutsideEdgesUnsorted( inputTriangles );
+        if (edges.size() == 0)
+        {
+            return edges; // don't proceed, let the calling function catch this.
+        }
         edges = _collectOutsideEdgesSort( edges, inputTriangles );
         return edges;
     }
@@ -110,8 +114,33 @@ namespace plMeshExtruder
     plSeq<plTriangle> extrudeMesh(const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction)
     {
         plSeq<plTriangle>    outputTriangles; // create a copy of existing triangles, because they will essentially become part of the offset
-        outputTriangles.add(inputTriangles);
+
+        if (inputTriangles.size() == 0)
+        {
+            std::cerr << "Error in plMeshExtruder::extrudeMesh(): No triangles in input. Aborting." << std::endl;
+            return outputTriangles;
+        }
+        if (magnitude == 0)
+        {
+            std::cerr << "Error in plMeshExtruder::extrudeMesh(): Magnitude of zero results in no extrusion. Aborting." << std::endl;
+            return outputTriangles;
+        }
+        plVector3 zeroVector(0.f,0.f,0.f);
+        if (direction == zeroVector)
+        {
+            std::cerr << "Error in plMeshExtruder::extrudeMesh(): Direction of zero results in no extrusion. Aborting." << std::endl;
+            return outputTriangles;
+        }
+
         plSeq<plEdgeIndices> outsideEdges = _collectOutsideEdges(inputTriangles);
+
+        if (outsideEdges.size() == 0)
+        {
+            std::cerr << "Error in plMeshExtruder::extrudeMesh(): No surrounding edges found. Is the mesh closed? Aborting." << std::endl;
+            return outputTriangles;
+        }
+
+        outputTriangles.add(inputTriangles);
 
         // store these for bookkeeping. This is the index where upper (extruded) edges/triangles will start
         PLuint indexOfUpperEdges     = outsideEdges.size();
