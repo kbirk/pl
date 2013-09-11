@@ -70,14 +70,13 @@ class plIGuide : public plRenderable
         PLuint                  siteID;
         
         plSeq<plPlugInfo>       plugs;
-        
         plSeq<plKWire*>         kWires;
         plSeq<PLuint>           kWireIDs;
         
         // MEMBERS
         // constructors
         plIGuide();
-        plIGuide( plIGuideSite *s, PLuint sid, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k, const plSeq<PLuint> &kids );
+        plIGuide( plIGuideSite *s, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k );
 
         // core functionality
         PLbool generateIGuideModels ();
@@ -86,6 +85,8 @@ class plIGuide : public plRenderable
 
         // rendering
         void draw();
+
+        void toggleVisibility();
         
     private:
 
