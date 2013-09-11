@@ -1,4 +1,4 @@
-#include "plSpline.h" 
+#include "plSpline.h"
 
 
 plSpline::plSpline() 
@@ -74,6 +74,20 @@ void plSpline::movePointAndNormal( PLuint index, const plVector3 &point, const p
 void plSpline::removePointAndNormal( PLuint index )
 {
     plBoundary::removePointAndNormal(index);   
+}
+
+
+plVector3 plSpline::getAverageNormalOverCorners()
+{
+    plVector3        averageNormalOverCorners(0.f,0.f,0.f);
+    plSeq<plVector3> cornerNormals(_averageCornerNormals());
+
+    for (PLuint i = 0; i < 4; i++)
+    {
+        averageNormalOverCorners = averageNormalOverCorners + cornerNormals[i];
+    }
+
+    return averageNormalOverCorners.normalize();
 }
   
         

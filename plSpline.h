@@ -29,6 +29,8 @@ class plSpline : public plBoundary
         void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal );
         void   removePointAndNormal( PLuint index );
 
+        plVector3 getAverageNormalOverCorners();
+
         void   clear();
 
     private:
