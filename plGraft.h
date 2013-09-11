@@ -62,8 +62,6 @@ class plGraft : public plRenderable,
                  PLfloat heightOffset,
                  PLfloat length,
                  const plVector3 &markDirection = plVector3(0,0,1) );
-        
-        //void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         PLfloat          heightOffset()  const { return _heightOffset; } 
         const PLfloat   &radius()        const { return _radius; } 

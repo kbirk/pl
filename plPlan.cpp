@@ -172,16 +172,13 @@ void plPlan::removeIGuideSite( PLuint index)
     _iGuideSites.remove( index );
 }
 
+
 void plPlan::removeGraft( PLuint index )
 {
     delete _grafts[index];
     _grafts.remove( index );
 }
 
-void plPlan::generateIGuide( PLuint index )
-{
-    _iGuides[index]->generateIGuideModels();
-}
 
 /*
 plIGuide &plPlan::getIGuideImportReference( plSeq<plIGuide*> &ts,  const plString &index )

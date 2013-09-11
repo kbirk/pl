@@ -4,50 +4,13 @@ plGraft::plGraft()
 {
 }
 
+
 plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat heightOffset, PLfloat length, const plVector3 &markDirection  )
     : recipient(r), harvest(h), _radius( radius ), _markDirection( markDirection ), _length( length ), _heightOffset( heightOffset ) 
 {
     _setCaps();   
 }
 
-/*
-void plGraft::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
-{
-    // Fill in the field            
-    plString subfield = row[2];
-
-    if (subfield.compareCaseInsensitive( "harvest" ) )
-    {
-        harvest.importCSV( row, models );        
-        // check if transform, if so, set caps
-        if (row[3].compareCaseInsensitive( "transform" ) )
-        {
-            if (harvest.modelID() == -1 || _radius == 0)
-            {
-                std::cerr << "plGraft importCSV() error: harvest transform read before model ID or radius";
-                exit(1);
-            }  
-            _setCaps();
-        }           
-    }                  
-    else if (subfield.compareCaseInsensitive( "recipient" ) )
-        recipient.importCSV( row, models );   
-
-    else if (subfield.compareCaseInsensitive( "height offset" ) )
-        _heightOffset = atof( row[3].c_str() );
-                       
-    else if (subfield.compareCaseInsensitive( "radius" ) )
-        _radius = atof( row[3].c_str() );
-        
-    else if (subfield.compareCaseInsensitive( "length" ) )
-        _length = atof( row[3].c_str() );
-       
-    else if (subfield.compareCaseInsensitive( "mark direction" ) )
-        _markDirection = plVector3( row[3] ).normalize();
-    else
-        std::cerr << "Error in plan, 'graft': Unrecognized word '" << subfield << "' in third column." << std::endl;
-}
-*/
 
 void plGraft::_setBoneColour() const
 {
@@ -77,6 +40,7 @@ void plGraft::_setBoneColour() const
     }
 }
 
+
 void plGraft::_setCartilageColour() const
 {
     if (_isSelected)
@@ -104,6 +68,7 @@ void plGraft::_setCartilageColour() const
         }
     }      
 }
+
 
 void plGraft::draw() const
 {

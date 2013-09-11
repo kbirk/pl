@@ -199,7 +199,7 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint 
         
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
         {
-            intersection = plan.iGuideSites( _selectedSiteIndex).model().cartilage.rayIntersect( rayOrigin, rayDirection); 
+            intersection = plan.iGuideSites( _selectedSiteIndex).model().combined.rayIntersect( rayOrigin, rayDirection);
             break;
         }    
             

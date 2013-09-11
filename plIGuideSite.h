@@ -27,7 +27,6 @@ class plEdgeIndices
 };
 
 
-
 class plIGuideSite : public plModelSpecific,
                      public plRenderable
 {    
@@ -44,16 +43,14 @@ class plIGuideSite : public plModelSpecific,
 
         PLbool generateTemplateBase();
 
-        //void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
-
-        void draw();
+        void draw() const;
 
     private:
  
-        plSeq<plTriangle>    _templateBase;   // for use in generating iGuides     
+        plSeq<plTriangle>    _templateBase;                                         // for use in generating iGuides     
 		
-        plSeq<plEdgeIndices> _collectOutsideEdges         ();                         // helper to createTemplateBaseShape
-        plSeq<plEdgeIndices> _collectOutsideEdgesUnsorted ();                 // helper to collectOutsideEdges
+        plSeq<plEdgeIndices> _collectOutsideEdges         ();                       // helper to createTemplateBaseShape
+        plSeq<plEdgeIndices> _collectOutsideEdgesUnsorted ();                       // helper to collectOutsideEdges
         plSeq<plEdgeIndices> _collectOutsideEdgesSort     ( plSeq<plEdgeIndices> ); // helper to collectOutsideEdges
 
 };

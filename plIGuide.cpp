@@ -11,44 +11,6 @@ plIGuide::plIGuide( plIGuideSite *s, const plSeq<plPlugInfo> &p, const plSeq<plK
 {
 }
 
-/*
-void plIGuide::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
-{
-    // Fill in the field
-    plString subfield = row[2];
-
-    if (subfield.compareCaseInsensitive( "model") )
-    {
-        _modelID = plString::fromString<PLint>( row[3] );
-        if (models.size() <= _modelID )
-        {
-            std::cerr << "plDefectSite importCSV() error: model ID read before model data";
-            exit(1);
-        }
-        _model = models[_modelID];
-    }
-    else if (subfield.compareCaseInsensitive( "site") )
-    {
-        siteIndex = atoi( row[3].c_str() );
-    }
-    else if (subfield.compareCaseInsensitive( "recipient" ) )
-    {
-        recipientIndices.add( atoi( row[3].c_str() ) );
-    }
-    else if (subfield.compareCaseInsensitive( "harvest" ) )
-    {
-        harvestIndices.add( atoi( row[3].c_str() ) );
-    }
-    else if (subfield.compareCaseInsensitive( "kwire" ))
-    {
-        kWireIndices.add( atoi( row[3].c_str() ) );
-    }
-    else
-    {
-        std::cerr << "Error importing plan,'iguide': Unrecognized word '" << subfield << "' in third column." << std::endl;
-    }
-}
-*/
 
 PLbool plIGuide::generateIGuideModels()
 {
@@ -71,6 +33,7 @@ PLbool plIGuide::generateIGuideModels()
         return false;
     }
 
+
     std::cout << "DEBUG: 20" << std::endl;
     plString anatomyFilename ( _prepareFilenameWithVariables(false,'M',0,"bone") );
     iGuideModelsToSubtract.add( new plModel( plSeq<plTriangle>( site->model().combined.triangles() ), anatomyFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
@@ -89,6 +52,7 @@ PLbool plIGuide::generateIGuideModels()
         iGuideModelsToAdd.add( new plModel( site->templateBase(), templateBaseFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS) );
     }
 
+
     std::cout << "DEBUG: 40" << std::endl;
     // plug pieces
     plSeq<plTriangle> roundCylinder;
@@ -100,6 +64,7 @@ PLbool plIGuide::generateIGuideModels()
     plSeq<plTriangle> keyCube;
     plSTL::importFile( keyCube, "./iGuideElements/Generator_Key_Cube.stl" );
 
+    PLfloat   zero        ( 0.f );
     plVector3 zeroVector  ( 0.f, 0.f, 0.f );
 
     std::cout << "DEBUG: 50" << std::endl;

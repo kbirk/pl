@@ -302,16 +302,7 @@ void plSpline::_computeHermite()
     }   
 
     _surfaceMesh.setBuffers( interleaved_vertices, indices );
-    
-    /*     
-    // get min and max extents of model
-    plVector3 min, max;
-    _getMinMax(min,max);
-    
-    // build octree       
-    _octree.build( min, max, _triangles, 1 );           
-    */
-    
+
     // update timer to store time of last update
     _lastUpdate = plTimer::now();
 }
@@ -322,34 +313,7 @@ PLuint plSpline::_timeSinceLastUpdate()
     return plTimer::now() - _lastUpdate;
 }
  
-/* 
-void plSpline::_getMinMax(plVector3 &min, plVector3 &max) const
-{
-    min = plVector3(FLT_MAX, FLT_MAX, FLT_MAX);
-    max = -1 * min;
 
-    for ( PLuint i = 0; i < _triangles.size(); i++)
-    {  
-        const plVector3 &v = _triangles[i].centroid();
-
-        if (v.x < min.x) min.x = v.x;
-        if (v.y < min.y) min.y = v.y;
-        if (v.z < min.z) min.z = v.z;
-
-        if (v.x > max.x) max.x = v.x;
-        if (v.y > max.y) max.y = v.y;
-        if (v.z > max.z) max.z = v.z;
-    }
-}  
-  
-  
-plIntersection plSpline::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull ) const
-{
-    // intersect the octree
-    return _octree.rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
-}    
-*/          
-    
     
 /*
 void plSpline::_drawSplineSelectionInterface() const

@@ -17,40 +17,6 @@ plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage &model, con
 }
 
 
-/*
-void plDefectSite::importCSV(const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
-{
-    // Fill in the field            
-    plString subfield = row[2];
-    
-    if (subfield.compareCaseInsensitive( "model") )
-    {
-        _modelID = plString::fromString<PLint>( row[3] ); 
-        if (models.size() <= _modelID )
-        {
-            std::cerr << "plDefectSite importCSV() error: model ID read before model data";
-            exit(1);
-        }
-        _model = models[_modelID];
-    }                   
-    else if (subfield.compareCaseInsensitive( "spline") ) 
-    {     
-        if (_model == NULL)
-        {
-            std::cerr << "plDefectSite importCSV() error: spline data read before model ID";
-            exit(1);
-        }    
-        spline.importCSV( row, _model->cartilage );  
-    }
-    else if (subfield.compareCaseInsensitive( "boundary") )   
-    {    
-        boundary.importCSV( row );  
-    }  
-    else
-        std::cerr << "Error importing plan, 'spline': Unrecognized word '" << subfield << "' in third column." << std::endl;      
-}
-*/
-
 void plDefectSite::draw() const
 {      
     if ( !_isVisible )

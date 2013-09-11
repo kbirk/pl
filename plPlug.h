@@ -16,8 +16,6 @@ class plPlug : public plModelSpecific
         plPlug();
         plPlug( PLuint _modelID, const plBoneAndCartilage &_model, const plTransform &t );
 
-        //void importCSV  ( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
-
         void translate  ( const plVector3 &translation );
         void translateX ( PLfloat distance, const plVector3 &planeNormal );
         void translateZ ( PLfloat distance, const plVector3 &planeNormal );

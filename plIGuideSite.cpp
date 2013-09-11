@@ -16,35 +16,8 @@ plIGuideSite::plIGuideSite( PLuint modelID, const plBoneAndCartilage &model, con
 {
 }
 
-/*
-void plIGuideSite::importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models )
-{
-    // Fill in the field
-    plString subfield = row[2];
-    
-    if (subfield.compareCaseInsensitive( "model") )
-    {
-        _modelID = plString::fromString<PLint>( row[3] ); 
-        if (models.size() <= _modelID )
-        {
-            std::cerr << "plDefectSite importCSV() error: model ID read before model data";
-            exit(1);
-        }
-        _model = models[_modelID];
-    }                   
-    else if (subfield.compareCaseInsensitive( "boundary") )
-    {                
-        boundary.importCSV( row );        
-    } 
-    else
-    {
-        std::cerr << "Error importing plan,'iguide': Unrecognized word '" << subfield << "' in third column." << std::endl;
-    }
-}
-*/
 
-
-void plIGuideSite::draw() 
+void plIGuideSite::draw() const
 {
     plPicking::value.type = PL_PICKING_TYPE_IGUIDE_BOUNDARY; 
     boundary.draw();
@@ -57,7 +30,7 @@ PLbool plIGuideSite::generateTemplateBase()
     _templateBase.clear();
 
     // find the surface for the iGuide
-    if ( !plMeshCutter::findInteriorMesh( _templateBase, _model->cartilage.triangles(), boundary ) ) // find surface
+    if ( !plMeshCutter::findInteriorMesh( _templateBase, _model->combined.triangles(), boundary ) ) // find surface
     {
         std::cerr << "Error in plIGuideSite::_create_templateBaseShape(): findInteriorMesh() failed. Aborting iGuideSite surface calculation." << std::endl;
         return false;
@@ -224,3 +197,4 @@ plSeq<plEdgeIndices> plIGuideSite::_collectOutsideEdgesSort( plSeq<plEdgeIndices
 
     return sortedEdges;
 }
+

@@ -21,8 +21,6 @@ class plDefectSite : public plModelSpecific,
         plDefectSite( PLuint _modelID, const plBoneAndCartilage &_model );
         plDefectSite( PLuint _modelID, const plBoneAndCartilage &_model, const plSpline &s, const plBoundary &b );
 
-        //void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
-
         void draw() const;   
                 
 };

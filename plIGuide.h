@@ -67,7 +67,6 @@ class plIGuide : public plRenderable
         plSeq<plModel*>         iGuideModelsToSubtract;
 
         plIGuideSite           *site;
-        //const plKWire          *kwire;
         plSeq<plPlugInfo>       plugs;
         plSeq<plKWire*>         kWires;
 
@@ -75,15 +74,6 @@ class plIGuide : public plRenderable
         // constructors
         plIGuide();
         plIGuide( plIGuideSite *s, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k );
-
-        // accessors (used to not have to dereference plSeq pointers and overall make code a bit more readable)
-        //plIGuideSite &site           ()                 { return *((*sites)[siteIndex]); }
-        //plGraft      &recipientGraft (PLint arrayIndex) { return *((*grafts)[recipientIndices[arrayIndex]]); }
-        //plGraft      &harvestGraft   (PLint arrayIndex) { return *((*grafts)[harvestIndices[arrayIndex]]); }
-        //plKWire      &kWire          (PLint arrayIndex) { return *((*kWires)[arrayIndex]); }
-
-        // I/O
-        //void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models );
 
         // core functionality
         PLbool generateIGuideModels ();
