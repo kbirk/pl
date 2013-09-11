@@ -6,6 +6,12 @@ plTexture::plTexture()
     _registerWithOpenGL();
 }
 
+plTexture::~plTexture()
+{
+    glDeleteTextures(1, &_textureID);
+
+}
+
 void plTexture::bind() const
 {
 	// bind textures AFTER binding shader AND BEFORE drawing arrays 
@@ -60,6 +66,7 @@ void plTexture::updateFromArthroImage( PLchar *image, PLint dimx, PLint dimy )
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     */
+
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, dimx, dimy, 0, GL_BGR, GL_UNSIGNED_BYTE, image );
 }
 
