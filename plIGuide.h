@@ -12,6 +12,7 @@
 #include "plGraft.h"
 #include "plPolygon.h"
 #include "plIGuideSite.h"
+#include "plSpline.h"
 
 
 class plPlugInfo
@@ -66,17 +67,19 @@ class plIGuide : public plRenderable
         plSeq<plModel*>         iGuideModelsToAdd;
         plSeq<plModel*>         iGuideModelsToSubtract;
 
-        plIGuideSite           *site;
+        plIGuideSite            *site;
         PLuint                  siteID;
         
         plSeq<plPlugInfo>       plugs;
         plSeq<plKWire*>         kWires;
         plSeq<PLuint>           kWireIDs;
+
+        plSeq<const plSpline*>  splines;
         
         // MEMBERS
         // constructors
         plIGuide();
-        plIGuide( plIGuideSite *s, PLuint sid, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k, const plSeq<PLuint> &kids );
+        plIGuide( plIGuideSite *s, PLuint sid, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k, const plSeq<PLuint> &kids, const plSeq<const plSpline*> splines );
 
         // core functionality
         PLbool generateIGuideModels ();
