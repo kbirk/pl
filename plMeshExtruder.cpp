@@ -3,6 +3,7 @@
 namespace plMeshExtruder
 {
 
+    /*
     // helper to collectOutsideEdges
     plSeq<plEdgePointers> _collectOutsideEdgesUnsorted( const plSeq<plTriangle>& triangles )
     {
@@ -156,10 +157,7 @@ namespace plMeshExtruder
 
         return outputTriangles;
     }
-
-
-
-/*
+    */
 
     // helper to collectOutsideEdges
     plSeq<plEdgeIndices> _collectOutsideEdgesUnsorted(const plSeq<plTriangle>& inputTriangles)
@@ -356,5 +354,5 @@ namespace plMeshExtruder
         return outputTriangles;
 
     }
-*/
+
 }

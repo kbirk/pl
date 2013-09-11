@@ -4,7 +4,7 @@
 #include "plTriangle.h"
 #include "plSeq.h"
 
-/*
+
 // used in constructing the template base shape
 class plEdgeIndices
 {
@@ -21,8 +21,8 @@ class plEdgeIndices
 
 };
 
-*/
 
+/*
 class plEdgePointers
 {
     public:
@@ -35,7 +35,7 @@ class plEdgePointers
             : p0(pp0), p1(pp1)
         {}
 };
-
+*/
 
 namespace plMeshExtruder
 {
