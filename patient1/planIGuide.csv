@@ -74,24 +74,29 @@ iguide
 	site_id, 0
 	plugs,   2, 0, 1, 0, 2
 	kwires,  0
+    defect,  1, 0
 
 iguide
 	site_id, 0
 	plugs,   2, 1, 1, 1, 2
 	kwires,  0
+    defect,  1, 0
 
 iguide
 	site_id, 0
 	plugs,   2, 2, 1, 2, 2
 	kwires,  0
+    defect,  1, 0
 
 iguide
 	site_id, 0
 	plugs,   2, 3, 1, 3, 2
 	kwires,  0
+    defect,  1, 0
 
 iguide
 	site_id, 0
 	plugs,   2, 4, 1, 4, 2
 	kwires,  0
+    defect,  1, 0
 
