@@ -12,6 +12,8 @@ class plTexture
         plTexture();
         plTexture( char *filename );
 
+        ~plTexture();
+
         void bind() const;  // bind textures AFTER binding shader AND BEFORE drawing arrays 
         void unbind() const;
 

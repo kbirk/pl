@@ -25,5 +25,7 @@ class plCheckerBoard : public plRenderable
 
 };  
 
+bool readCheckerBoardCalib(plVector3 &origin, plVector3 &xAxis, plVector3 &yAxis);
+
 
 #endif

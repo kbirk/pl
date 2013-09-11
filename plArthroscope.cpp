@@ -25,7 +25,11 @@ plArthroscope::plArthroscope()
     std::cout << "Intrinsics and Distortion matrices loaded successfully." << std::endl;
 
     image = cvCreateImage(cvSize(CAPTUREWIDTH, CAPTUREHEIGHT), COLORDEPTH, NUMCHANNELS); // added September 12 2011
-//    img = new PLchar[ TEXTURE_SIZE  * TEXTURE_SIZE  * 3 ];
+
+    WIDTH   = CAPTUREWIDTH;
+    HEIGHT  = CAPTUREHEIGHT;
+
+    //    img = new PLchar[ TEXTURE_SIZE  * TEXTURE_SIZE  * 3 ];
     
 //    for (int i = 0; i < TEXTURE_SIZE  * TEXTURE_SIZE  * 4; i+=4)
 //    {
@@ -65,19 +69,18 @@ void plArthroscope::updateImage(ImageManipulation im)
     }
 
     frame = cvQueryFrame(capture);
-
     cvResize(frame, image, 0);
-    image->origin = frame->origin;
 
     // undistortion step
     if (im == CAMERA_IMAGE_UNDISTORT)
     {
-        static IplImage *temp;
+        IplImage *temp;
         temp = cvCloneImage(image);
         cvRemap(temp, image, mapx, mapy); // undistort image
         cvReleaseImage(&temp);
     }
 
+/*
     int image_center_x = image->width/2;
     int image_center_y = image->height/2;
 
@@ -87,10 +90,11 @@ void plArthroscope::updateImage(ImageManipulation im)
 
     int colOffset = image_center_x - CAMERA_RADIUS * (1 + TEXTURE_SCALE_FACTOR / 2) ;
     int rowOffset = image_center_y - CAMERA_RADIUS;
-
+*/
     img = image->imageData;
     WIDTH = image->width;
     HEIGHT = image->height;
+
 
 /*
     PLbyte *imgPtr = &img[0];
