@@ -25,6 +25,7 @@ namespace plRenderer
     const plTextureMesh*     _arthroTextureToDraw  = NULL;
     const plTrackedObject*   _probeToDraw          = NULL;
     const plTrackedObject*   _scopeToDraw          = NULL;
+    const plCheckerBoard*    _checkerBoardToDraw   = NULL;
 
     plMinimalShader*         _minimalShader        = NULL;
     plPhongShader*           _phongShader          = NULL; 
@@ -110,6 +111,15 @@ namespace plRenderer
         }
     }
 
+
+    void queue( const plCheckerBoard &checkerboard )
+    {
+        if (_checkerBoardToDraw != NULL)
+            std::cerr << "plRenderer queue() error: plCheckerBoard already queued to draw, overridding previous \n";
+            
+        _checkerBoardToDraw = &checkerboard;
+    }
+    
 
     void reportError( const plString &str  ) 
     {
