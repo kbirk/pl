@@ -66,7 +66,7 @@ class plIGuide : public plRenderable
         plSeq<plModel*>         iGuideModelsToAdd;
         plSeq<plModel*>         iGuideModelsToSubtract;
 
-        plIGuideSite           *site;
+        plIGuideSite            *site;
         plSeq<plPlugInfo>       plugs;
         plSeq<plKWire*>         kWires;
 
@@ -82,6 +82,8 @@ class plIGuide : public plRenderable
 
         // rendering
         void draw();
+
+        void toggleVisibility();
         
     private:
 

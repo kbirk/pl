@@ -202,3 +202,15 @@ void plIGuide::draw()
 }
 
 
+void plIGuide::toggleVisibility()
+{
+    for (PLuint i = 0; i < iGuideModelsToAdd.size(); i++)
+    {
+        iGuideModelsToAdd[i]->toggleVisibility();
+    }
+    for (PLuint i = 0; i < iGuideModelsToSubtract.size(); i++)
+    {
+        iGuideModelsToSubtract[i]->toggleVisibility();
+    }
+}
+
