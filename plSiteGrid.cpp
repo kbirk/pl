@@ -264,33 +264,6 @@ void plSiteGrid::_calcNormal()
     _normal = (1/(float)_triangles.size() * _normal).normalize();    
 }  
 
-/*
-plIntersection plSiteGrid::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull ) const
-{
-    PLfloat min = FLT_MAX;
-    plIntersection closestIntersection( false );
-
-    for ( PLuint i = 0; i < _triangles.size(); i++)
-    {  
-        plIntersection intersection = _triangles[i].rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
-        
-        if (intersection.exists)
-        {
-            PLfloat tAbs = fabs(intersection.t);
-            if ( tAbs < min) 
-            {
-                min = tAbs;
-                closestIntersection = intersection;
-            }
-        }
-
-    }
-    
-    return closestIntersection;
-}                 
-*/
-
-
 
 PLuint getGroupFullSSBO( const plSeq<plSiteGrid> &sites )
 {

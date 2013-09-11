@@ -39,7 +39,7 @@ class plSpline : public plBoundary
         plColourMesh      _surfaceMesh;
         plSeq<plTriangle> _triangles;
 
-        plSeq<plVector3> _averageCornerNormals() const;
+        plSeq<plVector3>  _averageCornerNormals() const;
               
         void    _computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const plSeq<plVector3> &p, const plSeq<plVector3> &n ) const;
         void    _computeHermite();

@@ -212,8 +212,8 @@ void plSpline::_computeHermite()
     plSeq<plVector3> points ( (NUM_INC+1)*(NUM_INC+1) );
     plSeq<plVector3> colours( (NUM_INC+1)*(NUM_INC+1) );
     
-    plSeq<plVector3> interleaved_vertices( NUM_INC * NUM_INC * 6 * 3 );
-    plSeq<PLuint>    indices             ( NUM_INC * NUM_INC * 6 );
+    plSeq<plVector3> vertices( NUM_INC * NUM_INC * 6 * 3 );
+    plSeq<PLuint>    indices ( NUM_INC * NUM_INC * 6 );
 
     for (PLuint j=0; j <= NUM_INC; j++)
     {
@@ -259,27 +259,12 @@ void plSpline::_computeHermite()
                 _triangles.add( plTriangle( normal, points[i0], points[i1], points[i2]) );
                 _triangles.add( plTriangle( normal, points[i0], points[i2], points[i3]) );
 
-                PLuint base = interleaved_vertices.size() / 3;
+                PLuint base = vertices.size() / 3;
 
-                // point 0
-                interleaved_vertices.add( points[i0] );     // vertex
-                interleaved_vertices.add( normal );         // normal
-                interleaved_vertices.add( colours[i0] );    // colour
-
-                // point 1
-                interleaved_vertices.add( points[i1] );
-                interleaved_vertices.add( normal );
-                interleaved_vertices.add( colours[i1] );
-                
-                // point 2
-                interleaved_vertices.add( points[i2] );
-                interleaved_vertices.add( normal );
-                interleaved_vertices.add( colours[i2] );
-
-                // point 3
-                interleaved_vertices.add( points[i3] );
-                interleaved_vertices.add( normal );
-                interleaved_vertices.add( colours[i3] );
+                vertices.add( points[i0] );  vertices.add( normal );  vertices.add( colours[i0] );  // point 0
+                vertices.add( points[i1] );  vertices.add( normal );  vertices.add( colours[i1] );  // point 1
+                vertices.add( points[i2] );  vertices.add( normal );  vertices.add( colours[i2] );  // point 2
+                vertices.add( points[i3] );  vertices.add( normal );  vertices.add( colours[i3] );  // point 3
 
                 // triangle indices
                 indices.add( base );   indices.add( base+1 );   indices.add( base+2 );
@@ -289,7 +274,7 @@ void plSpline::_computeHermite()
             
     }   
 
-    _surfaceMesh.setBuffers( interleaved_vertices, indices );
+    _surfaceMesh.setBuffers( vertices, indices );
 
     // update timer to store time of last update
     _lastUpdate = plTimer::now();
