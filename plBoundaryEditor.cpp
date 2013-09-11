@@ -187,13 +187,13 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint 
         
         case PL_PICKING_TYPE_DEFECT_CORNERS:
         {
-            intersection = plan.defectSites( _selectedSiteIndex ).model().cartilage.rayIntersect( rayOrigin, rayDirection );  
+            intersection = plan.defectSites( _selectedSiteIndex ).model().combined.rayIntersect( rayOrigin, rayDirection );  
             break;
         }
         
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
         {    
-            intersection = plan.donorSites( _selectedSiteIndex).model().cartilage.rayIntersect( rayOrigin, rayDirection); 
+            intersection = plan.donorSites( _selectedSiteIndex).model().combined.rayIntersect( rayOrigin, rayDirection); 
             break;
         }
         

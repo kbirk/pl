@@ -362,11 +362,11 @@ void plPlan::exportFile( const plString &filename )
         }
          
         // iGuides
-        for (PLuint i=0; i<_grafts.size(); i++) 
+        for (PLuint i=0; i<_iGuides.size(); i++) 
         {
             out << "iguide"      << std::endl
                 << "\tsite_id, " << _iGuides[i]->siteID  << std::endl
-                << "\tplugs,   " <<_iGuides[i]->plugs.size();
+                << "\tplugs,   " << _iGuides[i]->plugs.size();
                 
             for (PLuint j=0; j<_iGuides[i]->plugs.size(); j++)
             {  

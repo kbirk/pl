@@ -37,9 +37,7 @@ PLbool plIGuideSite::generateTemplateBase()
     }
 
     float magnitudeOfOffset(5.0);
-    std::cout << "Entering extrudeMesh()" << std::endl;
     _templateBase = plMeshExtruder::extrudeMesh(_templateBase, magnitudeOfOffset, boundary.getAverageNormal());
-    std::cout << "Exiting extrudeMesh()" << std::endl;
 
 	return true;
 }
