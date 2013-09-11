@@ -9,7 +9,7 @@ plBoundary::plBoundary( const plSeq<plString> &row )
     : _showWalls(true)
 {
     // assumes points are counter-clockwise
-    for ( PLuint j = 0; j < row.size(); j+=2)
+    for ( PLuint j = 1; j < row.size(); j+=2)
     {               
         _points.add ( plVector3( row[j] ) );                  
         _normals.add( plVector3( row[j+1] ) );
@@ -415,8 +415,8 @@ std::ostream& operator << ( std::ostream& out, const plBoundary &b )
 {
     for (PLuint j=0; j<b.size(); j++)
     {
-        out << "," << b.points(j);
-        out << "," << b.normals(j);
+        if (j != 0) out << ","; 
+        out << b.points(j) << "," << b.normals(j);
     }
     return out;
 }

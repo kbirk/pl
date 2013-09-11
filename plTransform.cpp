@@ -18,21 +18,15 @@ plTransform::plTransform( const plVector3 &x, const plVector3 &y, const plVector
     _compute();
 }
 
+
 plTransform::plTransform( const plSeq<plString> &row )
 {
-    _origin = plVector3( row[0] );
-    _x      = plVector3( row[1] );
-    _y      = plVector3( row[2] ); 
+    _origin = plVector3( row[1] );
+    _x      = plVector3( row[2] );
+    _y      = plVector3( row[3] ); 
     _compute();
 }
 
-void plTransform::importCSV( const plSeq<plString> &row )
-{
-    _origin = plVector3( row[4] );
-    _x      = plVector3( row[5] );
-    _y      = plVector3( row[6] ); 
-    _compute();
-}
 
 void plTransform::_compute() 
 {
@@ -57,6 +51,7 @@ void plTransform::set( const plVector3 &x, const plVector3 &y)
     _compute();
 }
 
+
 void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &origin)
 {
     _x = x.normalize();
@@ -64,6 +59,7 @@ void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &
     _origin = origin;
     _compute();
 }
+
 
 void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &z, const plVector3 &origin )
 {
@@ -74,16 +70,19 @@ void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &
     _compute();
 }
 
+
 plVector3 plTransform::applyInverse( const plVector3 &v ) const
 {
     plVector3 p = v-_origin;
     return plVector3( p*_x, p*_y, p*_z );
 } 
 
+
 plVector3 plTransform::applyNormalInverse( const plVector3 &v ) const
 {
     return plVector3( v*_x, v*_y, v*_z );
 }
+
 
 PLfloat plTransform::squaredDistToAxis( const plVector3 &v ) const    
 {
@@ -92,6 +91,7 @@ PLfloat plTransform::squaredDistToAxis( const plVector3 &v ) const
     return (v - (v*axis)*axis).squaredLength();
 }
 
+
 PLfloat plTransform::projectedDistOnAxis( const plVector3 &v ) const  
 {
     // v is already in the *local* coordinate system of the graft 
@@ -99,10 +99,9 @@ PLfloat plTransform::projectedDistOnAxis( const plVector3 &v ) const
     return v*axis;
 }
 
+
 std::ostream& operator << ( std::ostream& out, const plTransform &t )
 {
-    out << "," << t._origin; 
-    out << "," << t._x;
-    out << "," << t._y;  
+    out << t._origin << "," << t._x << "," << t._y;  
     return out;
 }

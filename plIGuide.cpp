@@ -6,8 +6,8 @@ plIGuide::plIGuide()
 }
 
 
-plIGuide::plIGuide( plIGuideSite *s, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k )
-    : site( s ), plugs( p ), kWires( k )
+plIGuide::plIGuide( plIGuideSite *s, PLuint sid, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k, const plSeq<PLuint> &kids )
+    : site( s ), siteID( sid ), plugs( p ), kWires( k ), kWireIDs( kids )
 {
 }
 
