@@ -244,8 +244,8 @@ void plBoundary::_updateMesh()
 
     plVector3 n = getAverageNormal();
 
-    plSeq<plVector3> interleaved_vertices( _points.size() * 10 );
-    plSeq<PLuint>    indices             ( _points.size() * 6 * 4 );
+    plSeq<plVector3> vertices( _points.size() * 10 );
+    plSeq<PLuint>    indices ( _points.size() * 6 * 4 );
 
     for (PLuint i = 0; i < _points.size(); i++)
     {        
@@ -282,40 +282,40 @@ void plBoundary::_updateMesh()
         plVector3 g = f + PL_BOUNDARY_MESH_HEIGHT * n;
         plVector3 h = e + PL_BOUNDARY_MESH_HEIGHT * n;
 
-        PLuint base = interleaved_vertices.size()/2;
+        PLuint base = vertices.size()/2;
 
         // "right" quad
-        interleaved_vertices.add(a);    // position
-        interleaved_vertices.add(t1);   // normal
+        vertices.add(a);    // position
+        vertices.add(t1);   // normal
         
-        interleaved_vertices.add(b);    // position
-        interleaved_vertices.add(t1);   // normal
+        vertices.add(b);    // position
+        vertices.add(t1);   // normal
         
-        interleaved_vertices.add(c);    // position
-        interleaved_vertices.add(t1);   // normal
+        vertices.add(c);    // position
+        vertices.add(t1);   // normal
         
-        interleaved_vertices.add(d);    // position
-        interleaved_vertices.add(t1);   // normal
+        vertices.add(d);    // position
+        vertices.add(t1);   // normal
         
         // top ridge 
-        interleaved_vertices.add(0.5 * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
-        interleaved_vertices.add(n);    // normal
+        vertices.add(0.5 * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
+        vertices.add(n);    // normal
         
-        interleaved_vertices.add(0.5 * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
-        interleaved_vertices.add(n);    // normal       
+        vertices.add(0.5 * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
+        vertices.add(n);    // normal       
          
         // "left" quad
-        interleaved_vertices.add(e);    // position
-        interleaved_vertices.add(-t1);  // normal
+        vertices.add(e);    // position
+        vertices.add(-t1);  // normal
         
-        interleaved_vertices.add(f);    // position
-        interleaved_vertices.add(-t1);  // normal
+        vertices.add(f);    // position
+        vertices.add(-t1);  // normal
         
-        interleaved_vertices.add(g);    // position
-        interleaved_vertices.add(-t1);  // normal
+        vertices.add(g);    // position
+        vertices.add(-t1);  // normal
         
-        interleaved_vertices.add(h);    // position
-        interleaved_vertices.add(-t1);  // normal
+        vertices.add(h);    // position
+        vertices.add(-t1);  // normal
 
         // triangle indices
         indices.add(base+0);    indices.add(base+1);    indices.add(base+2);
@@ -337,18 +337,18 @@ void plBoundary::_updateMesh()
             plVector3 frontNormal = -backNormal;
 
             // "back" wall ridge
-            interleaved_vertices.add(0.5f * (a+e) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
-            interleaved_vertices.add(backNormal);   // normal
+            vertices.add(0.5f * (a+e) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
+            vertices.add(backNormal);   // normal
         
-            interleaved_vertices.add(0.5f * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
-            interleaved_vertices.add(backNormal);   // normal
+            vertices.add(0.5f * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
+            vertices.add(backNormal);   // normal
 
             // "front" wall ridge
-            interleaved_vertices.add(0.5f * (b+f) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
-            interleaved_vertices.add(frontNormal);   // normal
+            vertices.add(0.5f * (b+f) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
+            vertices.add(frontNormal);   // normal
         
-            interleaved_vertices.add(0.5f * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
-            interleaved_vertices.add(frontNormal);   // normal
+            vertices.add(0.5f * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
+            vertices.add(frontNormal);   // normal
 
             // "back" indices
             indices.add(base+6);    indices.add(base+10);    indices.add(base+11);
@@ -376,7 +376,7 @@ void plBoundary::_updateMesh()
 
     
 
-    _mesh.setBuffers(interleaved_vertices, indices);
+    _mesh.setBuffers(vertices, indices);
 }
 
 

@@ -199,7 +199,7 @@ void plPlan::importFile( const plString &filename )
             _models.add( new plBoneAndCartilage( modelBoneFile, modelCartFile, modelCombFile ) );
 
         }        
-        else if (field.compareCaseInsensitive( "defect_site") ) // read before boundary
+        else if (field.compareCaseInsensitive( "defect_site") )
         {
             std::cout << "Loading defect site... \n";  
             
@@ -210,7 +210,7 @@ void plPlan::importFile( const plString &filename )
             _defectSites.add ( new plDefectSite( modelID, *_models[ modelID ], spline, boundary ) );
 
         }
-        else if (field.compareCaseInsensitive( "donor_site") ) // read before boundary
+        else if (field.compareCaseInsensitive( "donor_site") )
         {
             std::cout << "Loading donor site... \n";
             
@@ -220,12 +220,12 @@ void plPlan::importFile( const plString &filename )
             _donorSites.add ( new plDonorSite( modelID, *_models[ modelID ], boundary ) );
     
         }  
-        else if (field.compareCaseInsensitive( "iGuide_site") ) // read before boundary
+        else if (field.compareCaseInsensitive( "iGuide_site") )
         {
             std::cout << "Loading iGuide site... \n";  
             
             PLuint     modelID  ( std::stoi( csv.data[++i][1] ) );    
-            plBoundary boundary ( csv.data[++i]    );
+            plBoundary boundary ( csv.data[++i] );
             
             _iGuideSites.add ( new plIGuideSite( modelID, *_models[ modelID ], boundary ) );
     
@@ -235,14 +235,14 @@ void plPlan::importFile( const plString &filename )
             std::cout << "Loading graft... \n";       
             
             PLuint      recipientModelID   ( std::stoi( csv.data[++i][1] ) );     
-            plTransform recipientTransform ( csv.data[++i]    );
+            plTransform recipientTransform (            csv.data[++i]      );
             PLuint      harvestModelID     ( std::stoi( csv.data[++i][1] ) );   
-            plTransform harvestTransform   ( csv.data[++i]    );
+            plTransform harvestTransform   (            csv.data[++i]      );
             
             PLfloat     radius             ( std::stof( csv.data[++i][1] ) );   
             PLfloat     length             ( std::stof( csv.data[++i][1] ) );   
             PLfloat     heightOffset       ( std::stof( csv.data[++i][1] ) );             
-            plVector3   markDirection      ( csv.data[++i][1] );
+            plVector3   markDirection      (            csv.data[++i][1]   );
             
             plPlug      recipientPlug( recipientModelID, *_models[ recipientModelID ], recipientTransform );
             plPlug      harvestPlug  ( harvestModelID,   *_models[ harvestModelID   ], harvestTransform   );
@@ -274,8 +274,7 @@ void plPlan::importFile( const plString &filename )
             {  
                 PLuint  kWireID ( std::stoi( csv.data[i][2+j] ) ); 
                 // yadda yadda
-                
-                
+                   
             }
             _iGuides.add( new plIGuide( _iGuideSites[ siteID ], siteID, plugs, kWires, kWireIDs ) );
         } 
@@ -349,8 +348,7 @@ void plPlan::exportFile( const plString &filename )
                 << "\tmark_direction,      " << _grafts[i]->markDirection()       << std::endl
                 << std::endl;
         }
-    
-        
+         
         // iGuides
         for (PLuint i=0; i<_grafts.size(); i++) 
         {
