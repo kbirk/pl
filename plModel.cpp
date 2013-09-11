@@ -3,7 +3,6 @@
 plModel::plModel( const plSeq<plTriangle> &triangles, const plString &filename, PLuint octreeDepth )
     : _triangles(triangles), _filename(filename), _isTransparent(false)
 {
-    std::cout << "Entering constructor. DEBUG ONLY. " << std::endl;
     if ( !filename.compare( ".stl", filename.length()-4, 4) )
     {
         std::cout << "plModel error: Unrecognized suffix on filename '" << filename

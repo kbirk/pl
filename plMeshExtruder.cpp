@@ -3,7 +3,7 @@
 namespace plMeshExtruder
 {
 
-    /*
+    
     // helper to collectOutsideEdges
     plSeq<plEdgePointers> _collectOutsideEdgesUnsorted( const plSeq<plTriangle>& triangles )
     {
@@ -100,7 +100,6 @@ namespace plMeshExtruder
             return edges; // don't proceed, let the calling function catch this.
         }
         edges = _collectOutsideEdgesSort( edges );
-        std::cout << "derp";
         return edges;
     }
 
@@ -108,13 +107,14 @@ namespace plMeshExtruder
     // return an empty plSeq if this fails.
     plSeq<plTriangle> extrudeMesh( const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction )
     {
-        if ( inputTriangles.size() == 0)         std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input\n"; return plSeq<plTriangle>();
-        if ( magnitude == 0)                     std::cerr << "plMeshExtruder::extrudeMesh() error: Magnitude of zero\n";     return plSeq<plTriangle>();
-        if ( direction.squaredLength() == 0.0f ) std::cerr << "plMeshExtruder::extrudeMesh() error: Direction of zero\n";     return plSeq<plTriangle>();
+        if ( inputTriangles.size() == 0)         { std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input\n"; return plSeq<plTriangle>(); }
+        if ( magnitude == 0)                     { std::cerr << "plMeshExtruder::extrudeMesh() error: Magnitude of zero\n";     return plSeq<plTriangle>(); }
+        if ( direction.squaredLength() == 0.0f ) { std::cerr << "plMeshExtruder::extrudeMesh() error: Direction of zero\n";     return plSeq<plTriangle>(); }
 
         plSeq<plEdgePointers> outsideEdges = _collectOutsideEdges( inputTriangles );
 
-        if (outsideEdges.size() == 0)           std::cerr << "plMeshExtruder::extrudeMesh() error: No surrounding edges found\n"; return plSeq<plTriangle>();
+        if (outsideEdges.size() == 0)            { std::cerr << "plMeshExtruder::extrudeMesh() error: No surrounding edges found\n"; return plSeq<plTriangle>(); }
+
 
         plSeq<plTriangle> outputTriangles( inputTriangles.size() * 2 + outsideEdges.size() * 2 ); // allocate enough space
 
@@ -155,9 +155,13 @@ namespace plMeshExtruder
             outputTriangles.add( plTriangle( p0, p2, p3 ) ); 
         }
 
+
+        std::cout << "YEAH!\n";
+        
         return outputTriangles;
     }
-    */
+    
+    /*
 
     // helper to collectOutsideEdges
     plSeq<plEdgeIndices> _collectOutsideEdgesUnsorted(const plSeq<plTriangle>& inputTriangles)
@@ -354,5 +358,6 @@ namespace plMeshExtruder
         return outputTriangles;
 
     }
+    */
 
 }

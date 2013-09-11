@@ -32,7 +32,7 @@ PLbool plIGuideSite::generateTemplateBase()
     // find the surface for the iGuide
     if ( !plMeshCutter::findInteriorMesh( _templateBase, _model->combined.triangles(), boundary ) ) // find surface
     {
-        std::cerr << "Error in plIGuideSite::_create_templateBaseShape(): findInteriorMesh() failed. Aborting iGuideSite surface calculation." << std::endl;
+        std::cerr << "Error in plIGuideSite::generateTemplateBase(): findInteriorMesh() failed. Aborting iGuideSite surface calculation." << std::endl;
         return false;
     }
 

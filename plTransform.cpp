@@ -1,9 +1,10 @@
 #include "plTransform.h"
 
-plTransform::plTransform() 
+plTransform::plTransform()
+    : _x( plVector3( 1,0,0 ) ), _y( plVector3( 0, 1, 0) ), _origin( plVector3( 0, 0, 0) )
 {
+    _compute();
 }
-
 
 plTransform::plTransform( const plVector3 &y, const plVector3 &origin )
     : _x( (y ^ plVector3(1,0,0)).normalize() ), _y( y ), _origin( origin )
