@@ -76,7 +76,7 @@ class plIGuide : public plRenderable
         // MEMBERS
         // constructors
         plIGuide();
-        plIGuide( plIGuideSite *s, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k );
+        plIGuide( plIGuideSite *s, PLuint sid, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k, const plSeq<PLuint> &kids );
 
         // core functionality
         PLbool generateIGuideModels ();
