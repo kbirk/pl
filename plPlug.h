@@ -20,7 +20,10 @@ class plPlug : public plModelSpecific
         void translateX ( PLfloat distance, const plVector3 &planeNormal );
         void translateZ ( PLfloat distance, const plVector3 &planeNormal );
         void rotate     ( const plVector3 &axis, PLfloat angleDegrees );
-           
+        
+    private:
+    
+        PLbool _surfaceIntersection( plVector3 &point, plVector3 &normal, const plVector3 &translation ) const;       
 };
 
 #endif

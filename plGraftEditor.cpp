@@ -178,7 +178,6 @@ void plGraftEditor::drawHandles() const
 }
 
 
-
 PLbool plGraftEditor::processMouseClick( plPlan &plan, PLint x, PLint y )
 {
     plPickingInfo pick = plPicking::texture->readPixel(x,y);
@@ -224,6 +223,7 @@ PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
     return false;
 }
 
+
 PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLfloat x, PLfloat y, PLbool flag )
 {
     if (_selectedGraft == NULL)    
@@ -246,6 +246,7 @@ PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLfloat x, PLfloat y, P
     translateSelected( 0.3 * translation );
     return true;
 }
+
 
 void plGraftEditor::selectGraft( plPlan &plan, PLuint index, PLuint type )
 {   
@@ -346,7 +347,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
 
             plVector3 screenAxisNormal(-_screenEditAxis.y, _screenEditAxis.x, 0 );
             PLfloat angle = -(screenDragVector * screenAxisNormal);
-            _selectedGraft->rotate( _selectedType, _editAxis, angle);          
+            _selectedGraft->rotate( _selectedType, _editAxis, angle );          
             break;
         }
         

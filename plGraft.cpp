@@ -5,8 +5,8 @@ plGraft::plGraft()
 }
 
 
-plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat heightOffset, PLfloat length, const plVector3 &markDirection  )
-    : recipient(r), harvest(h), _radius( radius ), _markDirection( markDirection ), _length( length ), _heightOffset( heightOffset ) 
+plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat cartilageThickness, PLfloat heightOffset, PLfloat length, const plVector3 &markDirection  )
+    : recipient(r), harvest(h), _radius( radius ), _markDirection( markDirection ), _length( length ), _cartilageThickness( cartilageThickness ), _heightOffset( heightOffset ) 
 {
     _setCaps();   
 }
@@ -83,7 +83,6 @@ void plGraft::draw() const
     }
     plModelStack::pop();
 
-
     // Draw at recipient location
     plModelStack::push( recipient.transform.matrix() );
     {
@@ -92,7 +91,6 @@ void plGraft::draw() const
         _drawGraft();
     }
     plModelStack::pop();
-
 }
 
 
@@ -126,10 +124,11 @@ void plGraft::_setCaps()
     
     // generate meshes   
     _updateCartilageMesh();
-
     _updateBoneMesh(); 
 
-    _updateMarkPosition();  
+    // update values
+    _updateMarkPosition();      
+    _updateCartilageThickness();
 }
 
 
@@ -137,26 +136,26 @@ void plGraft::_updateCartilageMesh()
 {
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
-    plSeq<plVector3> interleaved_vertices;
+    plSeq<plVector3> vertices;
     plSeq<PLuint>    indices;
     
     for (PLuint i = 0; i < _cartilageCap.triangles.size(); i++)
     {
-        PLint base = interleaved_vertices.size()/2;
+        PLint base = vertices.size()/2;
         
         const plVector3 &p0 = _cartilageCap.triangles[i].point0();
         const plVector3 &p1 = _cartilageCap.triangles[i].point1();
         const plVector3 &p2 = _cartilageCap.triangles[i].point2();
         const plVector3 &n  = _cartilageCap.triangles[i].normal();
         
-        interleaved_vertices.add( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
-        interleaved_vertices.add( n );                                     // normal
+        vertices.add( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
+        vertices.add( n );                                     // normal
 
-        interleaved_vertices.add( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
-        interleaved_vertices.add( n );                                     // normal
+        vertices.add( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
+        vertices.add( n );                                     // normal
         
-        interleaved_vertices.add( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
-        interleaved_vertices.add( n );                                     // normal
+        vertices.add( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
+        vertices.add( n );                                     // normal
 
         indices.add(base+0);
         indices.add(base+1); 
@@ -181,13 +180,13 @@ void plGraft::_updateCartilageMesh()
         
             plVector3 n = (_cartilageCap.perimeter[c].point).normalize();
     
-            indices.add(interleaved_vertices.size()/2);
-            interleaved_vertices.add( _cartilageCap.perimeter[c].point );   // position
-            interleaved_vertices.add( n );                                  // normal
+            indices.add(vertices.size()/2);
+            vertices.add( _cartilageCap.perimeter[c].point );   // position
+            vertices.add( n );                                  // normal
             
-            indices.add(interleaved_vertices.size()/2);
-            interleaved_vertices.add( _boneCap.perimeter[b].point );        // position
-            interleaved_vertices.add( n );                                  // normal
+            indices.add(vertices.size()/2);
+            vertices.add( _boneCap.perimeter[b].point );        // position
+            vertices.add( n );                                  // normal
         
             if (cAngle < bAngle) 
             {	
@@ -199,9 +198,9 @@ void plGraft::_updateCartilageMesh()
                     cOffset = 2 * PL_PI;
                 }
         
-                indices.add(interleaved_vertices.size()/2);
-                interleaved_vertices.add( _cartilageCap.perimeter[c].point );    // position
-                interleaved_vertices.add( n );                                  // normal
+                indices.add(vertices.size()/2);
+                vertices.add( _cartilageCap.perimeter[c].point );    // position
+                vertices.add( n );                                  // normal
             }  
             else 
             {			
@@ -213,9 +212,9 @@ void plGraft::_updateCartilageMesh()
                     bOffset = 2 * PL_PI;
                 }
         
-                indices.add(interleaved_vertices.size()/2);
-                interleaved_vertices.add( _boneCap.perimeter[b].point );        // position
-                interleaved_vertices.add( n );                                  // normal
+                indices.add(vertices.size()/2);
+                vertices.add( _boneCap.perimeter[b].point );        // position
+                vertices.add( n );                                  // normal
             }
             stepsLeft--;
         }
@@ -223,7 +222,7 @@ void plGraft::_updateCartilageMesh()
 
     if (indices.size() > 0)
     {   
-        _cartilageMesh.setBuffers(interleaved_vertices, indices);  
+        _cartilageMesh.setBuffers(vertices, indices);  
     }
 }
 
@@ -232,26 +231,26 @@ void plGraft::_updateBoneMesh()
 {        
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
-    plSeq<plVector3> interleaved_vertices;
+    plSeq<plVector3> vertices;
     plSeq<PLuint>    indices; 
     
     for (PLuint i = 0; i < _boneCap.triangles.size(); i++)
     {
-        PLint base = interleaved_vertices.size()/2;
+        PLint base = vertices.size()/2;
         
         const plVector3 &p0 = _boneCap.triangles[i].point0();
         const plVector3 &p1 = _boneCap.triangles[i].point1();
         const plVector3 &p2 = _boneCap.triangles[i].point2();
         const plVector3 &n  = _boneCap.triangles[i].normal();
         
-        interleaved_vertices.add( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
-        interleaved_vertices.add( n );                                     // normal
+        vertices.add( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
+        vertices.add( n );                                     // normal
 
-        interleaved_vertices.add( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
-        interleaved_vertices.add( n );                                     // normal
+        vertices.add( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
+        vertices.add( n );                                     // normal
         
-        interleaved_vertices.add( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
-        interleaved_vertices.add( n );                                     // normal
+        vertices.add( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
+        vertices.add( n );                                     // normal
 
         indices.add(base+0);
         indices.add(base+1); 
@@ -265,7 +264,7 @@ void plGraft::_updateBoneMesh()
 
     if (_boneCap.perimeter.size() > 0) 
     {
-        PLint base = interleaved_vertices.size()/2;
+        PLint base = vertices.size()/2;
 
         float theta = _boneCap.perimeter[0].angle;
         plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
@@ -274,14 +273,14 @@ void plGraft::_updateBoneMesh()
         plVector3 prevBot = centreBottom + _radius * cos(theta) * z + _radius * sin(theta) * x;
 
         // top side
-        interleaved_vertices.add( prevTop ); // position
-        interleaved_vertices.add( n);        // normal
+        vertices.add( prevTop ); // position
+        vertices.add( n);        // normal
         // bottom side
-        interleaved_vertices.add( prevBot ); // position
-        interleaved_vertices.add( n);        // normal
+        vertices.add( prevBot ); // position
+        vertices.add( n);        // normal
         // bottom bottom
-        interleaved_vertices.add( prevBot ); // position 
-        interleaved_vertices.add( -y);       // normal
+        vertices.add( prevBot ); // position 
+        vertices.add( -y);       // normal
         
         for (PLuint i=0; i<_boneCap.perimeter.size(); i++) 
         {
@@ -291,27 +290,27 @@ void plGraft::_updateBoneMesh()
 
             plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
             // top side
-            interleaved_vertices.add( top ); // position
-            interleaved_vertices.add( n);    // normal
+            vertices.add( top ); // position
+            vertices.add( n);    // normal
             // bottom side    
-            interleaved_vertices.add( bot ); // position
-            interleaved_vertices.add( n);    // normal
+            vertices.add( bot ); // position
+            vertices.add( n);    // normal
             // bottom bottom
-            interleaved_vertices.add( bot ); // position 
-            interleaved_vertices.add( -y);   // normal
+            vertices.add( bot ); // position 
+            vertices.add( -y);   // normal
         }
         // top side
-        interleaved_vertices.add( prevTop ); // position
-        interleaved_vertices.add( n);        // normal
+        vertices.add( prevTop ); // position
+        vertices.add( n);        // normal
         // bottom side
-        interleaved_vertices.add( prevBot ); // position
-        interleaved_vertices.add( n);        // normal
+        vertices.add( prevBot ); // position
+        vertices.add( n);        // normal
         // bottom bottom
-        interleaved_vertices.add( prevBot ); // position 
-        interleaved_vertices.add( -y);       // normal
+        vertices.add( prevBot ); // position 
+        vertices.add( -y);       // normal
         // bottom centre point
-        interleaved_vertices.add( centreBottom );   // position
-        interleaved_vertices.add( -y );             // normal  
+        vertices.add( centreBottom );   // position
+        vertices.add( -y );             // normal  
         
         for (PLuint j = 0; j <= _boneCap.perimeter.size()*3; j+=3) 
         {
@@ -325,13 +324,13 @@ void plGraft::_updateBoneMesh()
             indices.add(base+j+3);
             // bottom t3
             indices.add(base+j+2);
-            indices.add(interleaved_vertices.size()/2 - 1);
+            indices.add(vertices.size()/2 - 1);
             indices.add(base+j+5);
         }
 
     }
 
-    _boneMesh.setBuffers(interleaved_vertices, indices);
+    _boneMesh.setBuffers(vertices, indices);
 }
 
 
@@ -639,9 +638,11 @@ plVector3 plGraft::_pointOnCircumference( const plVector3 &u, const plVector3 &v
     plVector3 uProj(u.x, 0.0f, u.z ); // ignore component along y axis
     plVector3 vProj(v.x, 0.0f, v.z );
 
-    float a = (vProj-uProj)*(vProj-uProj);
-    float b = 2*(uProj*(vProj-uProj));
-    float c = uProj*uProj-_radius*_radius;
+    plVector3 uvProj = vProj-uProj;
+
+    float a = uvProj * uvProj;
+    float b = 2*( uProj * uvProj );
+    float c = (uProj * uProj)-(_radius * _radius);
 
     float radical = b*b - 4*a*c;
     
@@ -676,15 +677,6 @@ plVector3 plGraft::_pointOnCircumference( const plVector3 &u, const plVector3 &v
 }
 
 
-void plGraft::spinMark( PLfloat degrees )
-{
-    plVector3 axis(0,1,0);
-    plMatrix44 rot; rot.setRotationD( degrees, axis );     
-    _markDirection = (rot * _markDirection).normalize();    
-    _updateMarkPosition();
-}
-
-
 void plGraft::_updateMarkPosition()
 {
     // Mark at tool alignment direction on cartilage
@@ -712,17 +704,35 @@ void plGraft::_updateMarkPosition()
 }
 
 
+void plGraft::_updateCartilageThickness()
+{
+    // intersect cartilage and bone
+    plIntersection boneIntersection = harvest.model().bone.rayIntersect     ( harvest.transform.origin(), -harvest.transform.y() );  
+    plIntersection cartIntersection = harvest.model().cartilage.rayIntersect( harvest.transform.origin(), -harvest.transform.y() );  
+
+    if ( boneIntersection.exists )
+    {     
+        // calculate new cartilage thickness
+        _cartilageThickness = ( !cartIntersection.exists ) ? 0.0f : ( boneIntersection.point - cartIntersection.point ).length();        
+    } 
+}
+
+
+void plGraft::spinMark( PLfloat degrees )
+{
+    plVector3 axis(0,1,0);
+    plMatrix44 rot; rot.setRotationD( degrees, axis );     
+    _markDirection = (rot * _markDirection).normalize();    
+    _updateMarkPosition();
+}
+
+
 const plTransform &plGraft::transform( PLuint type ) const
 {
     switch (type)
     {
-        case PL_PICKING_INDEX_GRAFT_DONOR:
-        
-            return harvest.transform;
-        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:
-        
-            return recipient.transform;
+        case PL_PICKING_INDEX_GRAFT_DONOR:      return harvest.transform;        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:     return recipient.transform;
             
         default:
         
@@ -738,7 +748,7 @@ void plGraft::translate( PLuint type, const plVector3 &translation )
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
         
-            harvest.translate( translation );
+            harvest.translate( translation );            
             _setCaps();
             break;
         

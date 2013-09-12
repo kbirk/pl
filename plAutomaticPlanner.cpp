@@ -160,7 +160,7 @@ namespace plAutomaticPlanner
                           
                 plPlug recipient( 0, plan.models(0), plTransform( originalRecipientX, originalRecipientY, correctRecipientOrigin ) );
                 plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   correctHarvestOrigin   ) );
-                plan.addGraft( harvest, recipient, defectState.graftRadii[i], recipientHeightOffset );
+                plan.addGraft( harvest, recipient, defectState.graftRadii[i], cartilageThickness, recipientHeightOffset );
 
             } 
         }

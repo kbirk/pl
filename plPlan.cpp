@@ -146,9 +146,9 @@ void plPlan::addIGuideSite( PLuint modelIndex )
     _iGuideSites.add( new plIGuideSite( modelIndex, *_models[modelIndex] ) );
 }
 
-void plPlan::addGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat heightOffset, PLfloat length )
+void plPlan::addGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat cartilageThickness, PLfloat heightOffset, PLfloat length )
 {
-    _grafts.add( new plGraft( h, r, radius, heightOffset, length ) );
+    _grafts.add( new plGraft( h, r, radius, cartilageThickness, heightOffset, length ) );
 }
 
 
@@ -197,7 +197,6 @@ void plPlan::importFile( const plString &filename )
             plString modelCombFile ( csv.data[++i][1] );
             
             _models.add( new plBoneAndCartilage( modelBoneFile, modelCartFile, modelCombFile ) );
-
         }        
         else if (field.compareCaseInsensitive( "defect_site") )
         {
@@ -237,17 +236,17 @@ void plPlan::importFile( const plString &filename )
             PLuint      recipientModelID   ( std::stoi( csv.data[++i][1] ) );     
             plTransform recipientTransform (            csv.data[++i]      );
             PLuint      harvestModelID     ( std::stoi( csv.data[++i][1] ) );   
-            plTransform harvestTransform   (            csv.data[++i]      );
-            
-            PLfloat     radius             ( std::stof( csv.data[++i][1] ) );   
-            PLfloat     length             ( std::stof( csv.data[++i][1] ) );   
+            plTransform harvestTransform   (            csv.data[++i]      );            
+            PLfloat     radius             ( std::stof( csv.data[++i][1] ) );  
+            PLfloat     cartilageThickness ( std::stof( csv.data[++i][1] ) );  
+            PLfloat     length             ( std::stof( csv.data[++i][1] ) );                
             PLfloat     heightOffset       ( std::stof( csv.data[++i][1] ) );             
             plVector3   markDirection      (            csv.data[++i][1]   );
             
-            plPlug      recipientPlug( recipientModelID, *_models[ recipientModelID ], recipientTransform );
-            plPlug      harvestPlug  ( harvestModelID,   *_models[ harvestModelID   ], harvestTransform   );
+            plPlug      recipientPlug ( recipientModelID, *_models[ recipientModelID ], recipientTransform );
+            plPlug      harvestPlug   ( harvestModelID,   *_models[ harvestModelID   ], harvestTransform   );
 
-            _grafts.add( new plGraft( harvestPlug, recipientPlug, radius, heightOffset, length, markDirection ) );
+            _grafts.add( new plGraft( harvestPlug, recipientPlug, radius, cartilageThickness, heightOffset, length, markDirection ) );
         }        
         else if (field.compareCaseInsensitive( "iguide" ) ) 
         {
@@ -284,8 +283,8 @@ void plPlan::importFile( const plString &filename )
             for (PLuint j=0; j<defectSiteCount; j++)
             {
                 PLuint  defectID ( std::stoi( csv.data[i][2+(j)] ) );
-                defectIDs.add(defectID);
-                splines.add( &(_defectSites[defectID]->spline ) );
+                defectIDs.add    ( defectID );
+                splines.add      ( &(_defectSites[defectID]->spline ) );
             }
 
             _iGuides.add( new plIGuide( _iGuideSites[ siteID ], siteID, plugs, kWires, kWireIDs, splines, defectIDs ) );
@@ -355,7 +354,8 @@ void plPlan::exportFile( const plString &filename )
                 << "\tharvest_model_id,    " << _grafts[i]->harvest.modelID()     << std::endl
                 << "\tharvest_transform,   " << _grafts[i]->harvest.transform     << std::endl
                 << "\tradius,              " << _grafts[i]->radius()              << std::endl
-                << "\tlength,              " << _grafts[i]->length()              << std::endl
+                << "\tcartilage_thickness, " << _grafts[i]->cartilageThickness()  << std::endl
+                << "\tlength,              " << _grafts[i]->length()              << std::endl               
                 << "\theight_offset,       " << _grafts[i]->heightOffset()        << std::endl
                 << "\tmark_direction,      " << _grafts[i]->markDirection()       << std::endl
                 << std::endl;
@@ -409,27 +409,3 @@ void plPlan::clear()
     _grafts.clear();
     _iGuides.clear();
 }
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

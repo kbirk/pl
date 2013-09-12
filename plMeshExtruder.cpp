@@ -2,8 +2,6 @@
 
 namespace plMeshExtruder
 {
-
-    
     // helper to collectOutsideEdges
     plSeq<plEdgePointers> _collectOutsideEdgesUnsorted( const plSeq<plTriangle>& triangles )
     {
@@ -95,33 +93,26 @@ namespace plMeshExtruder
     plSeq<plEdgePointers> _collectOutsideEdges(const plSeq<plTriangle>& triangles)
     {
         plSeq<plEdgePointers> edges = _collectOutsideEdgesUnsorted( triangles );
-        if (edges.size() == 0)
-        {
-            return edges; // don't proceed, let the calling function catch this.
-        }
-        edges = _collectOutsideEdgesSort( edges );
-        return edges;
+        return _collectOutsideEdgesSort( edges );
     }
 
 
     // return an empty plSeq if this fails.
     plSeq<plTriangle> extrudeMesh( const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction )
     {
-        if ( inputTriangles.size() == 0)         { std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input\n"; return plSeq<plTriangle>(); }
-        if ( magnitude == 0)                     { std::cerr << "plMeshExtruder::extrudeMesh() error: Magnitude of zero\n";     return plSeq<plTriangle>(); }
-        if ( direction.squaredLength() == 0.0f ) { std::cerr << "plMeshExtruder::extrudeMesh() error: Direction of zero\n";     return plSeq<plTriangle>(); }
+        if ( inputTriangles.size()     == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input\n"; return plSeq<plTriangle>(); }
+        if ( magnitude                 == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Magnitude of zero\n";     return plSeq<plTriangle>(); }
+        if ( direction.squaredLength() == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Direction of zero\n";     return plSeq<plTriangle>(); }
 
         plSeq<plEdgePointers> outsideEdges = _collectOutsideEdges( inputTriangles );
 
-        if (outsideEdges.size() == 0)            { std::cerr << "plMeshExtruder::extrudeMesh() error: No surrounding edges found\n"; return plSeq<plTriangle>(); }
+        if (outsideEdges.size()        == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No surrounding edges found\n"; return plSeq<plTriangle>(); }
 
-
-        plSeq<plTriangle> outputTriangles( inputTriangles.size() * 2 + outsideEdges.size() * 2 ); // allocate enough space
+        plSeq<plTriangle> outputTriangles( inputTriangles.size() * 2 + outsideEdges.size() * 2 ); // allocate enough memory
 
         outputTriangles.add( inputTriangles ); // add existing triangles
 
-        // store these for bookkeeping. This is the index where upper (extruded) edges/triangles will start
-        //PLuint indexOfUpperEdges     = outsideEdges.size();
+        // store this for bookkeeping. This is the index where upper (extruded) edges/triangles will start
         PLuint indexOfUpperTriangles = outputTriangles.size();
 
         // we need to extrude a bunch of these triangles in the direction of the average normal
@@ -133,8 +124,7 @@ namespace plMeshExtruder
             plVector3 point1( inputTriangles[i].point1() + offset );
             plVector3 point2( inputTriangles[i].point2() + offset );
             plVector3 normal( inputTriangles[i].normal() );
-            outputTriangles.add( plTriangle( normal, point0, point1, point2 ) );  
-                    
+            outputTriangles.add( plTriangle( normal, point0, point1, point2 ) );                     
         }
 
         // reverse normals of bottom side
@@ -155,9 +145,6 @@ namespace plMeshExtruder
             outputTriangles.add( plTriangle( p0, p2, p3 ) ); 
         }
 
-
-        std::cout << "YEAH!\n";
-        
         return outputTriangles;
     }
     

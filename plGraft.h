@@ -59,14 +59,16 @@ class plGraft : public plRenderable,
         plGraft( const plPlug &harvest, 
                  const plPlug &recipient, 
                  PLfloat radius,
+                 PLfloat cartilageThickness,
                  PLfloat heightOffset,
-                 PLfloat length,
+                 PLfloat length,                
                  const plVector3 &markDirection = plVector3(0,0,1) );
 
-        PLfloat          heightOffset()  const { return _heightOffset; } 
-        const PLfloat   &radius()        const { return _radius; } 
-        PLfloat          length()        const { return _length; } 
-        const plVector3 &markDirection() const { return _markDirection; } 
+        PLfloat          heightOffset()       const { return _heightOffset; } 
+        const PLfloat   &radius()             const { return _radius; } 
+        PLfloat          length()             const { return _length; } 
+        const PLfloat   &cartilageThickness() const { return _cartilageThickness; }     
+        const plVector3 &markDirection()      const { return _markDirection; } 
         
         void adjustHeightOffset ( PLfloat adjustment) { _heightOffset += adjustment; } 
         void adjustRadius       ( PLfloat adjustment) { _radius += adjustment; if (_radius < 0) _radius = 0; _updateCartilageMesh(); _updateBoneMesh(); } 
@@ -91,6 +93,7 @@ class plGraft : public plRenderable,
         PLfloat    _heightOffset;
         PLfloat    _radius;
         PLfloat    _length;
+        PLfloat    _cartilageThickness;
         plVector3  _markDirection;
         plVector3  _markPosition;
 
@@ -115,6 +118,7 @@ class plGraft : public plRenderable,
         void      _updateCartilageMesh();
         void      _updateBoneMesh     ();
         void      _updateMarkPosition ();
+        void      _updateCartilageThickness();
         
 };
 

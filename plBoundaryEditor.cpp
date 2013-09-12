@@ -204,7 +204,7 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint 
         }    
             
     }
-    
+
     return intersection;
 }
 
@@ -220,6 +220,7 @@ void plBoundaryEditor::moveSelectedPoint( plPlan &plan, PLuint x, PLuint y )
     {            
         _selectedBoundary->movePointAndNormal( _selectedPointIndex, intersection.point, intersection.normal);
     }
+
 
 }
 

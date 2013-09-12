@@ -76,6 +76,7 @@ void plTriangle::_recalculate()
    _calcRadius();
 } 
 
+
 void plTriangle::_calcRadius()
 {
     _radius = PL_MAX_OF_3( (_points[0] - _centroid).length(),
@@ -83,8 +84,7 @@ void plTriangle::_calcRadius()
                           (_points[2] - _centroid).length() );
 }
 
-// Compute plane/ray intersection, and then the local coordinates 
-// to see whether the intersection point is inside.
+
 plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVector3 &rayDir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 {
     // Compute ray/plane intersection
@@ -115,9 +115,6 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
 }
 
 
-// obtained from: http://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
-// Compute barycentric coordinates (u, v, w) for
-// point p with respect to triangle (a, b, c)
 plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint )
 {
     // we're assuming that testPoint is in-plane with the triangle.
@@ -136,6 +133,7 @@ plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint )
     PLfloat u = 1.0f - v - w;
     return plVector3(u,v,w);
 }
+
 
 PLfloat plTriangle::getArea() const
 {
@@ -171,7 +169,7 @@ namespace plSTL
             exit(1);
         }
         
-        plVector3 n,p0,p1,p2;
+        plVector3 n, p0, p1, p2;
         
         // First line: ASCII or RAW?
         plString line;
@@ -228,19 +226,19 @@ namespace plSTL
             
             // get number of faces
             PLuint numTriangles;
-            infile.read( reinterpret_cast<PLchar*>(&numTriangles), sizeof(PLuint));
-            triangles.reserve(numTriangles);
+            infile.read( reinterpret_cast<PLchar*>( &numTriangles ), sizeof(PLuint));
+            triangles.reserve( numTriangles );
 
             // Read the triangles
             for (PLuint i=0; i<numTriangles; i++) 
             {
                 PLushort nAttr;
                 
-                infile.read(reinterpret_cast<PLchar*>(&n.x),   sizeof(PLfloat)*3);
-                infile.read(reinterpret_cast<PLchar*>(&p0.x),  sizeof(PLfloat)*3);
-                infile.read(reinterpret_cast<PLchar*>(&p1.x),  sizeof(PLfloat)*3);
-                infile.read(reinterpret_cast<PLchar*>(&p2.x),  sizeof(PLfloat)*3);
-                infile.read(reinterpret_cast<PLchar*>(&nAttr), sizeof(PLushort));
+                infile.read(reinterpret_cast<PLchar*>( &n.x ),   sizeof(PLfloat)*3 );
+                infile.read(reinterpret_cast<PLchar*>( &p0.x ),  sizeof(PLfloat)*3 );
+                infile.read(reinterpret_cast<PLchar*>( &p1.x ),  sizeof(PLfloat)*3 );
+                infile.read(reinterpret_cast<PLchar*>( &p2.x ),  sizeof(PLfloat)*3 );
+                infile.read(reinterpret_cast<PLchar*>( &nAttr ), sizeof(PLushort)  );
 
                 triangles.add( plTriangle( n, p0, p1, p2 ) );
             }
@@ -306,11 +304,11 @@ namespace plSTL
         PLushort zeroPLushort(0); // at the end of every facet
         for (PLuint i=0; i<triangles.size(); i++) 
         {
-            outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].normal().x) , sizeof(PLfloat)*3 );
-            outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point0().x) , sizeof(PLfloat)*3 );
-            outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point1().x) , sizeof(PLfloat)*3 );
-            outfile.write( reinterpret_cast<const PLchar*>(&triangles[i].point2().x) , sizeof(PLfloat)*3 );
-            outfile.write( reinterpret_cast<const PLchar*>(&zeroPLushort)            , sizeof(PLushort)  );
+            outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].normal().x) , sizeof(PLfloat)*3 );
+            outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].point0().x) , sizeof(PLfloat)*3 );
+            outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].point1().x) , sizeof(PLfloat)*3 );
+            outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].point2().x) , sizeof(PLfloat)*3 );
+            outfile.write( reinterpret_cast<const PLchar*>( &zeroPLushort)            , sizeof(PLushort)  );
         }
 
         outfile.close();

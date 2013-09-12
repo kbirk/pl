@@ -31,9 +31,9 @@ plTransform::plTransform( const plSeq<plString> &row )
 
 void plTransform::_compute() 
 {
-    _z = (_x ^ _y).normalize(); // re-compute z to ensure it is orthogonal to x and y
+    _z = ( _x ^ _y ).normalize(); // re-compute z to ensure it is orthogonal to x and y
 
-    if (fabs(_x*_y) > 0.001) 
+    if (fabs( _x * _y ) > 0.001) 
     {
         std::cerr << "x and y are not perpendicular (dot product = " << _x*_y << std::endl;
     }

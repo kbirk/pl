@@ -30,10 +30,8 @@ PLbool plIGuide::generateIGuideModels()
         return false;
     }
 
-
     plString anatomyFilename ( _prepareFilenameWithVariables(false,'M',0,"bone") );
     iGuideModelsToSubtract.add( new plModel( plSeq<plTriangle>( site->model().combined.triangles() ), anatomyFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
-
 
     // template base TODO: recreate the template base shape ONLY if it needs updating
 
@@ -52,11 +50,11 @@ PLbool plIGuide::generateIGuideModels()
     {
         // get data from splines
         plSeq<plTriangle> splineTriangles;
-        splineTriangles.add(splines[i]->triangles());
-        plVector3 splineOffsetDirection(splines[i]->getAverageNormal());
+        splineTriangles.add( splines[i]->triangles() );
+        plVector3 splineOffsetDirection( splines[i]->getAverageNormal() );
 
         // move base triangles so that they don't push down on the grafts in the actual surgery
-        plVector3 baseOverDefectTranslation(safetyMarginOverDefect*splineOffsetDirection);
+        plVector3 baseOverDefectTranslation( safetyMarginOverDefect*splineOffsetDirection );
         plMatrix44 baseOverDefectTranslationMatrix(baseOverDefectTranslation);
         for (PLuint j = 0; j < splineTriangles.size(); j++)
         {
@@ -237,4 +235,3 @@ void plIGuide::toggleVisibility()
         iGuideModelsToSubtract[i]->toggleVisibility();
     }
 }
-

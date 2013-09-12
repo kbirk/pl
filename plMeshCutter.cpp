@@ -65,11 +65,11 @@ namespace plMeshCutter
                     } 
                 }
             }
-       }
+        }
 
         // convert polygons to triangles for the output
         plMath::concavePolysToTris( interiorTriangles, interiorPolygons );
-
+		
         return true;
     } 
 

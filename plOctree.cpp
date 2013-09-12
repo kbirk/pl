@@ -40,8 +40,8 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<p
     // find largest distance component, becomes half width
     plVector3 minDiff = min - centre;
     plVector3 maxDiff = max - centre;
-    PLfloat minMax = PL_MAX_OF_3( fabs(minDiff.x), fabs(minDiff.y), fabs(minDiff.z) );
-    PLfloat maxMax = PL_MAX_OF_3( fabs(maxDiff.x), fabs(maxDiff.y), fabs(maxDiff.z) );       
+    PLfloat minMax    = PL_MAX_OF_3( fabs(minDiff.x), fabs(minDiff.y), fabs(minDiff.z) );
+    PLfloat maxMax    = PL_MAX_OF_3( fabs(maxDiff.x), fabs(maxDiff.y), fabs(maxDiff.z) );       
     PLfloat halfWidth = PL_MAX_OF_2( minMax, maxMax );
     
     // Construct and fill in _root 
@@ -201,7 +201,7 @@ void plOctreeNode::_insertChild( PLuint index, const plTriangle &tri, PLuint dep
 {
     if (children[index] != NULL)    
     {     
-        // child already exists, recursively insemaxAABB  
+        // child already exists, recursively insert
         children[index]->insert( tri, depth-1 );
     }    
     else   

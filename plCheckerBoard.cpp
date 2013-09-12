@@ -68,15 +68,69 @@ void plCheckerBoard::draw() const
     
 }
 
+/*
+plVector3::plVector3( PLchar *string ) 
+{
+    sscanf( string, "%f %f %f", &x, &y, &z );
+}
+
+plVector3::plVector3( const plString &str ) 
+{
+    sscanf( str.c_str(), "%f %f %f", &x, &y, &z );
+}
+*/
+
+
 // This actually reads in three points, the origin and a step along each axis
 PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xAxis, plVector3 &yAxis )
 {
+    const char * checkerBoardCalibFile = "data/registration/checkerBoard";
+    
+    std::ifstream infile ( checkerBoardCalibFile );
+    
+    if (!infile.good())
+    {
+        std::cerr << "plCheckerBoard::readCheckerBoardCalib() error: cannot open file, " << strerror(errno) << std::endl;
+        return false;
+    }
+    
+    plString line;
+    std::getline(infile, line);
+    if ( sscanf( line.c_str(), "%f %f %f", &origin.x, &origin.y, &origin.z ) != 3 )
+    {
+        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
+        return false;
+    }
+    std::getline(infile, line);
+    if ( sscanf( line.c_str(), "%f %f %f", &origin.x, &origin.y, &origin.z ) != 3 )
+    {
+        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
+        return false;
+    }
+    std::getline(infile, line);
+    if ( sscanf( line.c_str(), "%f %f %f", &xAxis.x, &xAxis.y, &xAxis.z ) != 3 )
+    {
+        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
+        return false;
+    }
+    std::getline(infile, line);
+    if ( sscanf( line.c_str(), "%f %f %f", &yAxis.x, &yAxis.y, &yAxis.z ) != 3 )
+    {
+        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
+        return false;
+    }
+
+    std::cout << "Successfully read from: " << checkerBoardCalibFile << std::endl;
+    return true;
+    
+    /*
     FILE *fileIn;
     const char * checkerBoardCalibFile = "data/registration/checkerBoard";
     char oneLine[255];
 
     fileIn = fopen(checkerBoardCalibFile, "r");
-    if (fileIn == NULL){
+    if (fileIn == NULL)
+    {
         std::cerr << "Error opening " << checkerBoardCalibFile << " -- " << strerror(errno) << std::endl;
         return false;
     }
@@ -101,4 +155,5 @@ PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xAxis, plVector3 &yA
     fclose(fileIn);
     std::cout << "Successfully read from: " << checkerBoardCalibFile << std::endl;
     return true;
+    */
 }
