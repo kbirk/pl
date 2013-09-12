@@ -1,5 +1,6 @@
 #include "plPlan.h"
 
+
 plPlan::plPlan( plString filename )
 {
     if (filename.compare(".csv", filename.size()-4, 4))
@@ -107,6 +108,8 @@ void plPlan::drawElements() const
 void plPlan::drawModels() const
 {
     // draw models (draw last for proper transparency blending)
+    plPicking::value.index = -1; 
+    
     for (PLuint i =0; i < _models.size(); i++)
     {            
         plPicking::value.id = i;    
@@ -126,6 +129,7 @@ void plPlan::addDefectSite( PLuint modelIndex )
     _defectSites.add( new plDefectSite( modelIndex, *_models[modelIndex] ) );
 }
 
+
 void plPlan::addDonorSite( PLuint modelIndex )
 {
     if ( _models.size() < modelIndex+1 )
@@ -136,6 +140,7 @@ void plPlan::addDonorSite( PLuint modelIndex )
     _donorSites.add( new plDonorSite( modelIndex, *_models[modelIndex] ) );
 }
 
+
 void plPlan::addIGuideSite( PLuint modelIndex )
 {
     if ( _models.size() < modelIndex+1 )
@@ -145,6 +150,7 @@ void plPlan::addIGuideSite( PLuint modelIndex )
     }
     _iGuideSites.add( new plIGuideSite( modelIndex, *_models[modelIndex] ) );
 }
+
 
 void plPlan::addGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat cartilageThickness, PLfloat heightOffset, PLfloat length )
 {
@@ -260,16 +266,16 @@ void plPlan::importFile( const plString &filename )
             {   
                 PLuint  graftID ( std::stoi( csv.data[i][2+(j*2)] ) ); 
                 PLuint  type    ( std::stoi( csv.data[i][3+(j*2)] ) );
-                plTransform *t = ( PL_PICKING_INDEX_GRAFT_DONOR == type ) ? &(_grafts[ graftID ]->harvest.transform) : &(_grafts[ graftID ]->recipient.transform); 
-                
-                plugs.add( plPlugInfo( t, &( _grafts[ graftID]->radius() ), type, graftID ) );
+                const plTransform *transform  ( &( _grafts[ graftID ]->transform( type ) ) );
+                const PLfloat     *radius     ( &( _grafts[ graftID ]->radius() ) );
+                plugs.add( plPlugInfo( transform, radius, type, graftID ) );
             }
             
-            PLuint  kwireCount ( std::stoi( csv.data[++i][1] ) );  
+            PLuint  kWireCount ( std::stoi( csv.data[++i][1] ) );  
             
             plSeq<plKWire*> kWires;    
             plSeq<PLuint>   kWireIDs;         
-            for (PLuint j=0; j<kwireCount; j++)   
+            for (PLuint j=0; j<kWireCount; j++)   
             {  
                 PLuint  kWireID ( std::stoi( csv.data[i][2+j] ) ); 
                 // yadda yadda
@@ -349,10 +355,10 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_grafts.size(); i++) 
         {
             out << "graft"                   << std::endl
-                << "\trecipient_model_id,  " << _grafts[i]->recipient.modelID()   << std::endl
-                << "\trecipient_transform, " << _grafts[i]->recipient.transform   << std::endl
-                << "\tharvest_model_id,    " << _grafts[i]->harvest.modelID()     << std::endl
-                << "\tharvest_transform,   " << _grafts[i]->harvest.transform     << std::endl
+                << "\trecipient_model_id,  " << _grafts[i]->recipient().modelID() << std::endl
+                << "\trecipient_transform, " << _grafts[i]->recipient().transform << std::endl
+                << "\tharvest_model_id,    " << _grafts[i]->harvest().modelID()   << std::endl
+                << "\tharvest_transform,   " << _grafts[i]->recipient().transform << std::endl
                 << "\tradius,              " << _grafts[i]->radius()              << std::endl
                 << "\tcartilage_thickness, " << _grafts[i]->cartilageThickness()  << std::endl
                 << "\tlength,              " << _grafts[i]->length()              << std::endl               

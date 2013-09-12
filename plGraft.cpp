@@ -5,8 +5,8 @@ plGraft::plGraft()
 }
 
 
-plGraft::plGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat cartilageThickness, PLfloat heightOffset, PLfloat length, const plVector3 &markDirection  )
-    : recipient(r), harvest(h), _radius( radius ), _markDirection( markDirection ), _length( length ), _cartilageThickness( cartilageThickness ), _heightOffset( heightOffset ) 
+plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat cartilageThickness, PLfloat heightOffset, PLfloat length, const plVector3 &markDirection  )
+    : _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length ), _cartilageThickness( cartilageThickness ), _heightOffset( heightOffset ) 
 {
     _setCaps();   
 }
@@ -76,7 +76,7 @@ void plGraft::draw() const
         return;
 
     // Draw at harvest location
-    plModelStack::push( harvest.transform.matrix() );
+    plModelStack::push( _harvest.transform.matrix() );
     {
         plPicking::value.index = PL_PICKING_INDEX_GRAFT_DONOR;           
         _drawGraft();
@@ -84,7 +84,7 @@ void plGraft::draw() const
     plModelStack::pop();
 
     // Draw at recipient location
-    plModelStack::push( recipient.transform.matrix() );
+    plModelStack::push( _recipient.transform.matrix() );
     {
         plModelStack::translate( 0, _heightOffset, 0 );
         plPicking::value.index = PL_PICKING_INDEX_GRAFT_DEFECT;
@@ -119,8 +119,8 @@ void plGraft::_drawGraft() const
 void plGraft::_setCaps()
 {
     // generate cap polygons
-    _findCap( _cartilageCap, harvest.model().cartilage );
-    _findCap( _boneCap,      harvest.model().bone      );
+    _findCap( _cartilageCap, _harvest.model().cartilage );
+    _findCap( _boneCap,      _harvest.model().bone      );
     
     // generate meshes   
     _updateCartilageMesh();
@@ -342,7 +342,7 @@ void plGraft::_findCap( plCap &cap, const plModel &model )
 
     plSet<const plTriangle*> triangles;
 
-    model.octree().graftIntersect( triangles, harvest.transform, _radius );
+    model.octree().graftIntersect( triangles, _harvest.transform, _radius );
 
     // must use iterators for set
     plSet<const plTriangle*>::iterator tri_itr = triangles.begin();
@@ -396,9 +396,9 @@ void plGraft::_findCap( plCap &cap, const plModel &model )
 bool plGraft::_isBeyondHeightThresholds( const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) const
 {
     const PLfloat VERTICAL_THRESHOLD = 8.0f;
-    float proj0 = harvest.transform.projectedDistOnAxis( p0 );
-    float proj1 = harvest.transform.projectedDistOnAxis( p1 );
-    float proj2 = harvest.transform.projectedDistOnAxis( p2 );
+    float proj0 = _harvest.transform.projectedDistOnAxis( p0 );
+    float proj1 = _harvest.transform.projectedDistOnAxis( p1 );
+    float proj2 = _harvest.transform.projectedDistOnAxis( p2 );
 
     float maxProj = PL_MAX_OF_3( proj0, proj1, proj2 );
     float minProj = PL_MIN_OF_3( proj0, proj1, proj2 );
@@ -417,9 +417,9 @@ plSeq<plVector3> plGraft::_pointsOutsideTriangles( plVector3 *verts, PLfloat rad
   
     // distances from each point to centre
     float d[3];
-    d[0] = harvest.transform.squaredDistToAxis( e[0] ); 
-    d[1] = harvest.transform.squaredDistToAxis( e[1] ); 
-    d[2] = harvest.transform.squaredDistToAxis( e[2] ); 
+    d[0] = _harvest.transform.squaredDistToAxis( e[0] ); 
+    d[1] = _harvest.transform.squaredDistToAxis( e[1] ); 
+    d[2] = _harvest.transform.squaredDistToAxis( e[2] ); 
     
     // indexs of inside points
     plSeq<PLuint> insideEdges;
@@ -547,7 +547,7 @@ plSeq<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloat *dis
         {
             // check closest point on edge to see if it crosses into graft
             plVector3 m = plMath::closestPointOnSegment ( plVector3(0, 0, 0), verts[i], verts[j] );
-            float     d = harvest.transform.squaredDistToAxis( m ); 
+            float     d = _harvest.transform.squaredDistToAxis( m ); 
             if ( d < radiusSquared )
             {
                 // inside
@@ -565,7 +565,7 @@ plSeq<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloat *dis
 bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) const
 {
     // if triangle is overlapping cap, cut it (if necessary) and add it to cap triangle list
-    if (triangle.normal() * harvest.transform.y() < 0)
+    if (triangle.normal() * _harvest.transform.y() < 0)
         return false;
 
     // get squared radius
@@ -573,9 +573,9 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
 
     // get triangle verts relative to graft local coordinate system
     plVector3 verts[3];
-    verts[0] = harvest.transform.applyInverse( triangle.point0() );
-    verts[1] = harvest.transform.applyInverse( triangle.point1() );
-    verts[2] = harvest.transform.applyInverse( triangle.point2() );
+    verts[0] = _harvest.transform.applyInverse( triangle.point0() );
+    verts[1] = _harvest.transform.applyInverse( triangle.point1() );
+    verts[2] = _harvest.transform.applyInverse( triangle.point2() );
     
     // if too far above or below graft origin, reject.
     if ( _isBeyondHeightThresholds( verts[0], verts[1], verts[2] ) ) 
@@ -583,15 +583,15 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
     
     // Compute distance to graft axis
     float dist[3];
-    dist[0] = harvest.transform.squaredDistToAxis( verts[0] );
-    dist[1] = harvest.transform.squaredDistToAxis( verts[1] );
-    dist[2] = harvest.transform.squaredDistToAxis( verts[2] );
+    dist[0] = _harvest.transform.squaredDistToAxis( verts[0] );
+    dist[1] = _harvest.transform.squaredDistToAxis( verts[1] );
+    dist[2] = _harvest.transform.squaredDistToAxis( verts[2] );
           
     float minDist = PL_MIN_OF_3( dist[0], dist[1], dist[2] );
     float maxDist = PL_MAX_OF_3( dist[0], dist[1], dist[2] );
        
     // At least some of the triangle is inside
-    plVector3 normal = harvest.transform.applyNormalInverse( triangle.normal() );   
+    plVector3 normal = _harvest.transform.applyNormalInverse( triangle.normal() );   
        
     // if all points of triangle are withing radius, accept whole triangle, exit early
     if ( maxDist <= radiusSquared ) 
@@ -707,8 +707,8 @@ void plGraft::_updateMarkPosition()
 void plGraft::_updateCartilageThickness()
 {
     // intersect cartilage and bone
-    plIntersection boneIntersection = harvest.model().bone.rayIntersect     ( harvest.transform.origin(), -harvest.transform.y() );  
-    plIntersection cartIntersection = harvest.model().cartilage.rayIntersect( harvest.transform.origin(), -harvest.transform.y() );  
+    plIntersection boneIntersection = _harvest.model().bone.rayIntersect     ( _harvest.transform.origin(), -_harvest.transform.y() );  
+    plIntersection cartIntersection = _harvest.model().cartilage.rayIntersect( _harvest.transform.origin(), -_harvest.transform.y() );  
 
     if ( boneIntersection.exists )
     {     
@@ -731,13 +731,28 @@ const plTransform &plGraft::transform( PLuint type ) const
 {
     switch (type)
     {
-        case PL_PICKING_INDEX_GRAFT_DONOR:      return harvest.transform;        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:     return recipient.transform;
+        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.transform;        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.transform;
             
         default:
         
             std::cerr << "plGraft transform() error: invalid type enumeration provided, defaulting to recipient \n";
-            return recipient.transform;   
+            return _recipient.transform;   
+    } 
+}
+
+
+const plPlug &plGraft::plug( PLuint type ) const
+{
+    switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest;        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient;
+            
+        default:
+        
+            std::cerr << "plGraft plug() error: invalid type enumeration provided, defaulting to recipient \n";
+            return _recipient;   
     } 
 }
 
@@ -748,13 +763,13 @@ void plGraft::translate( PLuint type, const plVector3 &translation )
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
         
-            harvest.translate( translation );            
+            _harvest.translate( translation );            
             _setCaps();
             break;
         
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
-            recipient.translate( translation );
+            _recipient.translate( translation );
             break;
             
         default:
@@ -771,13 +786,13 @@ void plGraft::translateX( PLuint type, PLfloat distance, const plVector3 &planeN
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
         
-            harvest.translateX( distance, planeNormal );
+            _harvest.translateX( distance, planeNormal );
             _setCaps();
             break;
         
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
-            recipient.translateX( distance, planeNormal );
+            _recipient.translateX( distance, planeNormal );
             break;
             
         default:
@@ -794,13 +809,13 @@ void plGraft::translateZ( PLuint type, PLfloat distance, const plVector3 &planeN
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
         
-            harvest.translateZ( distance, planeNormal );
+            _harvest.translateZ( distance, planeNormal );
             _setCaps();
             break;
         
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
-            recipient.translateZ( distance, planeNormal );
+            _recipient.translateZ( distance, planeNormal );
             break;
             
         default:
@@ -817,13 +832,13 @@ void plGraft::rotate( PLuint type, const plVector3 &axis, PLfloat angleDegrees )
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
         
-            harvest.rotate( axis, angleDegrees );
+            _harvest.rotate( axis, angleDegrees );
             _setCaps();
             break;
         
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
-            recipient.rotate( axis, angleDegrees );
+            _recipient.rotate( axis, angleDegrees );
             break;
             
         default:

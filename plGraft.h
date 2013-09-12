@@ -71,11 +71,14 @@ class plGraft : public plRenderable,
         const plVector3 &markDirection()      const { return _markDirection; } 
         
         void adjustHeightOffset ( PLfloat adjustment) { _heightOffset += adjustment; } 
-        void adjustRadius       ( PLfloat adjustment) { _radius += adjustment; if (_radius < 0) _radius = 0; _updateCartilageMesh(); _updateBoneMesh(); } 
-        void adjustLength       ( PLfloat adjustment) { _length += adjustment; if (_length < 0) _length = 0; _updateCartilageMesh(); _updateBoneMesh(); } 
+        void adjustRadius       ( PLfloat adjustment) { _radius += adjustment; if (_radius < 0) _radius = 0; _setCaps(); } 
+        void adjustLength       ( PLfloat adjustment) { _length += adjustment; if (_length < 0) _length = 0; _setCaps(); } 
 
-        const plTransform &transform( PLuint type ) const;
-
+        const plTransform &transform ( PLuint type ) const;
+        const plPlug      &plug      ( PLuint type ) const;
+        const plPlug      &harvest   () const { return _harvest;   }
+        const plPlug      &recipient () const { return _recipient; }
+        
         void translate  ( PLuint type, const plVector3 &translation );
         void translateX ( PLuint type, PLfloat distance, const plVector3 &planeNormal );
         void translateZ ( PLuint type, PLfloat distance, const plVector3 &planeNormal );
@@ -85,10 +88,12 @@ class plGraft : public plRenderable,
         void draw() const;
 
         // make these private, currently public for graft exporting 
-        plPlug  recipient;
-        plPlug  harvest;  
+        
           
     private:
+
+        plPlug     _recipient;
+        plPlug     _harvest;  
 
         PLfloat    _heightOffset;
         PLfloat    _radius;

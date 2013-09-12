@@ -11,7 +11,7 @@ namespace plRenderer
     void _beginDrawing();
     void _endDrawing();
     
-    void _drawScene();
+    void _drawScene( PLuint x, PLuint y );
     void _drawScenePicking();
 
     void _clearRenderQueue();
@@ -143,7 +143,7 @@ namespace plRenderer
     }
 
 
-    void draw()
+    void draw( PLuint x, PLuint y )
     {
         _setOpenGLState();
 
@@ -157,7 +157,7 @@ namespace plRenderer
         // normal draw
         _beginDrawing();
         {
-            _drawScene();
+            _drawScene( x, y );
         }
 
         _endDrawing();
@@ -209,7 +209,7 @@ namespace plRenderer
     }
 
 
-    void _drawScene()
+    void _drawScene( PLuint x, PLuint y )
     {
         // arthro texture
         if (_arthroTextureToDraw != NULL)
@@ -238,8 +238,8 @@ namespace plRenderer
             plCameraStack::push( plMatrix44() );                                                        // identity viewing matrix
             plProjectionStack::push( plMatrix44( 0, plWindow::width(), 0, plWindow::height(), -1, 1) ); // ortho, viewport dimensions
             {
-                _boundaryEditorToDraw->drawMenu( *_planToDraw );
-                _graftEditorToDraw->drawMenu( *_planToDraw );
+                _boundaryEditorToDraw->drawMenu( *_planToDraw, x, y );
+                _graftEditorToDraw->drawMenu   ( *_planToDraw, x, y );
             }
             plProjectionStack::pop(); 
             plCameraStack::pop();                
@@ -368,8 +368,8 @@ namespace plRenderer
             plCameraStack::push( plMatrix44() );                                                        // identity viewing matrix   
             plProjectionStack::push( plMatrix44( 0, plWindow::width(), 0, plWindow::height(), -1, 1) ); // ortho, viewport dimensions
             {
-                _boundaryEditorToDraw->drawMenu( *_planToDraw );
-                _graftEditorToDraw->drawMenu( *_planToDraw );
+                _boundaryEditorToDraw->drawMenu( *_planToDraw, 0, 0 );
+                _graftEditorToDraw->drawMenu   ( *_planToDraw, 0, 0 );
             }
             plCameraStack::pop(); 
             plProjectionStack::pop();

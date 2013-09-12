@@ -7,6 +7,7 @@ plGraftEditor::plGraftEditor()
     _selectedGraft  = NULL; 
     _selectedType   = -1;
     _handlesEnabled = true;
+    _draggingMenu   = false;
 }
 
 
@@ -39,13 +40,10 @@ void plGraftEditor::setEditMode( PLuint editMode )
 }
 
 
-void plGraftEditor::drawMenu( const plPlan &plan ) const
+void plGraftEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
 { 
     // menu interface
 
-    PLfloat windowWidth  = glutGet(GLUT_WINDOW_WIDTH);
-    PLfloat windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
-    
     const PLfloat HORIZONTAL_BUFFER    = 50;
     const PLfloat VERTICAL_BUFFER      = 50;
     const PLfloat HORIZONTAL_SPACING   = 40;
@@ -53,7 +51,7 @@ void plGraftEditor::drawMenu( const plPlan &plan ) const
     const PLfloat CIRCLE_RADIUS        = 14;
     const PLfloat HARVEST_HORIZONTAL   = HORIZONTAL_BUFFER;
     const PLfloat RECIPIENT_HORIZONTAL = (HORIZONTAL_BUFFER + CIRCLE_RADIUS + HORIZONTAL_SPACING);      
-    const PLfloat INITIAL_VERTICAL     = windowHeight - VERTICAL_BUFFER;
+    const PLfloat INITIAL_VERTICAL     = plWindow::height() - VERTICAL_BUFFER;
      
     PLfloat count = 0;
     plPicking::value.index = -1;    
@@ -93,6 +91,21 @@ void plGraftEditor::drawMenu( const plPlan &plan ) const
             
             count++;
         }
+        
+        // dragged menu item
+        if ( _draggingMenu )
+        {   
+            if ( _selectedType == PL_PICKING_INDEX_GRAFT_DONOR )
+            {
+                plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL ); 
+            }
+            else
+            {     
+                plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
+            }   
+            plDraw::disk( plVector3( x, y, 0), CIRCLE_RADIUS );            
+        }
+        
 
     }
     plModelStack::pop();
@@ -219,12 +232,25 @@ PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
 
             _dragHandle( plan, x, y );
             return true;
+         
+        case PL_PICKING_TYPE_GRAFT: 
+  
+            _draggingMenu = true;  
+            return true;  
+                    
     }
     return false;
 }
 
 
-PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLfloat x, PLfloat y, PLbool flag )
+PLbool plGraftEditor::processMouseRelease( plPlan &plan, PLint x, PLint y )
+{
+    _draggingMenu = false;
+    return true;   
+}
+
+
+PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLint x, PLint y )
 {
     if (_selectedGraft == NULL)    
         return false;                 // no graft selected

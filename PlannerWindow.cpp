@@ -21,13 +21,13 @@ void PlannerWindow::display()
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );   
 
-    plRenderer::draw();
+    plRenderer::draw( _previousMouse.x, _previousMouse.y );
 
     glutSwapBuffers();
 }
 
 
-void PlannerWindow::setCursor(int x, int y)
+void PlannerWindow::setCursor(int mx, int my)
 {
     switch (_button)
     {   
@@ -49,7 +49,7 @@ void PlannerWindow::setCursor(int x, int y)
 }
 
 
-void PlannerWindow::keyAction( unsigned char key, int x, int y )
+void PlannerWindow::keyAction( unsigned char key, int mx, int my )
 {
     static int currentView = 0;
 
@@ -103,7 +103,10 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
 
         case 'P':   plAutomaticPlanner::calculate(_plan);                       break;
 
-        case 'N':   _plan.clear();                                              break;     
+        case 'N':   _plan.clear();  
+                    _graftEditor.clearSelection   ( _plan );   
+                    _boundaryEditor.clearSelection( _plan );                                          
+                    break;     
 
         case 127:	 // delete 
         {   
@@ -129,26 +132,30 @@ void PlannerWindow::keyAction( unsigned char key, int x, int y )
 }
 
 
-void PlannerWindow::passiveMouseMotion( int x, int y )
+void PlannerWindow::passiveMouseMotion( int mx, int my )
 {   
     // do nothing   
 }
 
-void PlannerWindow::activeMouseMotion( int x, int y )
+void PlannerWindow::activeMouseMotion( int mx, int my )
 {    
+    // convert from GLUT window coords to OpenGL coords
+    PLuint x = mx;
+    PLuint y = glutGet(GLUT_WINDOW_HEIGHT)-my;
+
     switch (_button)
     {
         case GLUT_LEFT_BUTTON: 
 
             // process drag movements 
-            _graftEditor.processMouseDrag   ( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y );   
-            _boundaryEditor.processMouseDrag( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y );  
+            _graftEditor.processMouseDrag   ( _plan, x, y );   
+            _boundaryEditor.processMouseDrag( _plan, x, y );  
             break;       
 
         case GLUT_MIDDLE_BUTTON:    
             
             // zoom camera
-            _camera.zoom(_previousMouse.y - y);                             
+            _camera.zoom( y - _previousMouse.y );                             
             break;
 
         case GLUT_RIGHT_BUTTON:
@@ -162,9 +169,9 @@ void PlannerWindow::activeMouseMotion( int x, int y )
             else
 		    {
 			    _camera.translate(_previousMouse.x - x,
-			                      (glutGet(GLUT_WINDOW_HEIGHT) - _previousMouse.y) - (glutGet(GLUT_WINDOW_HEIGHT) - y) );
+			                      _previousMouse.y - y );
             }
-            break;
+            break;  
     }
 
     // update mouse position on drag    
@@ -177,30 +184,40 @@ void PlannerWindow::activeMouseMotion( int x, int y )
 
 
 // Record button state when mouse button is pressed or released
-void PlannerWindow::mouseAction( int button, int state, int x, int y )
+void PlannerWindow::mouseAction( int button, int state, int mx, int my )
 {
     // NOTE: this function ALWAYS executes BEFORE activeMouseMotion()
     
+    // convert from GLUT window coords to OpenGL coords
+    PLuint x = mx;
+    PLuint y = glutGet(GLUT_WINDOW_HEIGHT)-my;
+        
     switch (state)
     {
-        case GLUT_UP:           _button = GLUT_NO_BUTTON;   return;  // button release, do not process any further (don't want to select anything upon a release)
-        case GLUT_DOWN:         _button = button;           break;   // button press
+        case GLUT_UP:           
+        {
+            _graftEditor.processMouseRelease   ( _plan, x, y ); 
+            _boundaryEditor.processMouseRelease( _plan, x, y ); 
+            _button = GLUT_NO_BUTTON;  
+            break; 
+        }
+        case GLUT_DOWN:  _button = button;  break;   // button press
     }
     
-    switch (button)
+    switch (_button)
     {   
         case GLUT_LEFT_BUTTON:  
-            
+
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
 	        {
                 // add new point
-                _boundaryEditor.addPoint( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
+                _boundaryEditor.addPoint( _plan, x, y ); 
             }
             else
             {
                 // process mouse clicks 
-                _graftEditor.processMouseClick   ( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y);    
-                _boundaryEditor.processMouseClick( _plan, x, glutGet(GLUT_WINDOW_HEIGHT)-y); 
+                _graftEditor.processMouseClick   ( _plan, x, y );    
+                _boundaryEditor.processMouseClick( _plan, x, y ); 
             }
             break;
     }    

@@ -15,6 +15,9 @@ class plMesh
 		plMesh(const plSeq<plTriangle> &triangles);        
         plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices);
 
+        //plMesh( const plMesh &mesh );
+        //plMesh& operator = ( const plMesh &mesh ); 
+
         void triangleToInterleaved(const plSeq<plTriangle> &triangles);
         void destroy();       
         
@@ -25,7 +28,8 @@ class plMesh
         
     protected:
 
-        GLuint _numIndices;
+        GLuint _numIndices; // num indices needed by glDrawElements
+        GLuint _numBytes;   // size of vertex buffer
 
         GLuint _vertexBufferIndices;
         GLuint _vertexBufferObject;	    // vertex buffer objects

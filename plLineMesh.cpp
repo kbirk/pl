@@ -15,13 +15,15 @@ plLineMesh::plLineMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &in
 
 void plLineMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
 {
-    // set number of indices
-    _numIndices = indices.size();
-
     // size of each vertex 
 	const GLuint POS_SIZE = sizeof(GLfloat)*3;
     const GLuint TOTAL_SIZE = POS_SIZE;  
     const GLuint ARRAY_SIZE = TOTAL_SIZE * vertices.size();
+    
+    // set number of indices
+    _numIndices = indices.size();
+    // set buffer size
+    _numBytes = ARRAY_SIZE;
     
     // create and bind VAO
     if (_vertexArrayObject == 0)
@@ -40,9 +42,10 @@ void plLineMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuin
 	glEnableVertexAttribArray(PL_POSITION_ATTRIBUTE);
 	glVertexAttribPointer(PL_POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, 0); 
 
-    // bind vertex array object
+    // create and bind index VBO
     if (_vertexBufferIndices == 0)
         glGenBuffers(1, &_vertexBufferIndices);
+        
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STATIC_DRAW);
      

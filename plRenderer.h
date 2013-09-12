@@ -23,7 +23,7 @@ namespace plRenderer
 {  
     void init(); 
       
-    void draw();  
+    void draw( PLuint x, PLuint y );  
      
     void queue ( const plPlan           &plan   );
     void queue ( const plGraftEditor    &editor );

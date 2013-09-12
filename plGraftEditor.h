@@ -31,13 +31,14 @@ class plGraftEditor
         void    setEditMode( PLuint editMode );
 
         void    drawHandles() const;
-        void    drawMenu( const plPlan &plan ) const;
+        void    drawMenu( const plPlan &plan, PLuint x, PLuint y ) const;
         
         PLbool  isGraftSelected() const { return (_selectedGraft != NULL); }    
 
         PLbool  processMouseClick   ( plPlan &plan, PLint x, PLint y );
         PLbool  processMouseDrag    ( plPlan &plan, PLint x, PLint y );
-        PLbool  processJoystickDrag ( plPlan &plan, PLfloat x, PLfloat y, PLbool flag );
+        PLbool  processMouseRelease ( plPlan &plan, PLint x, PLint y );
+        PLbool  processJoystickDrag ( plPlan &plan, PLint x, PLint y );
             
         void    translateSelected ( const plVector3 &translation );
         void    rotateSelected    ( const plVector3 &axis, PLfloat angle_degrees );
@@ -46,6 +47,8 @@ class plGraftEditor
         void    toggleSelectedVisibility();
 
     private: 
+    
+        PLbool      _draggingMenu;
     
         PLint       _editMode;
         plVector3   _editAxis;

@@ -6,6 +6,7 @@ plBoundaryEditor::plBoundaryEditor()
     _selectedSiteIndex      = -1;
     _selectedBoundary       = NULL;
     _selectedPointIndex     = -1;
+    _draggingMenu           = false;
 }
 
 
@@ -51,13 +52,16 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
 
     switch (pick.type) 
     {  
+        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:   
+        
+            _draggingMenu = ( _selectedPointIndex < 0 ); // drag menu if a point isn't selected
+            // no break here, it should continue to process moveSelectedPoint()
+        
         case PL_PICKING_TYPE_DEFECT_CORNERS:
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
         
             moveSelectedPoint( plan, x, y );
-
             return true; 
     }
     return false;
@@ -72,6 +76,13 @@ PLbool plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
     moveSelectedPoint( plan, x, y );
     
     return true;
+}
+
+
+PLbool plBoundaryEditor::processMouseRelease( plPlan &plan, PLint x, PLint y )
+{
+    _draggingMenu = false;
+    return true;   
 }
 
 
@@ -211,7 +222,7 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint 
 
 void plBoundaryEditor::moveSelectedPoint( plPlan &plan, PLuint x, PLuint y )
 {
-    if (_selectedBoundary == NULL || _selectedPointIndex < 0) // no boundary or point is selected
+    if ( _selectedBoundary == NULL || _selectedPointIndex < 0 ) // no boundary or point is selected
         return;         
 
     plIntersection intersection = _getBoundaryIntersection( plan, x, y );
@@ -220,7 +231,6 @@ void plBoundaryEditor::moveSelectedPoint( plPlan &plan, PLuint x, PLuint y )
     {            
         _selectedBoundary->movePointAndNormal( _selectedPointIndex, intersection.point, intersection.normal);
     }
-
 
 }
 
@@ -274,27 +284,24 @@ void plBoundaryEditor::clearSelectedBoundary( plPlan &plan )
     _selectedBoundary->clear();
     
     // clearing corners, destroy defect site boundary
-    if ( PL_PICKING_TYPE_DEFECT_CORNERS )
+    if ( _selectedBoundaryType == PL_PICKING_TYPE_DEFECT_CORNERS )
     {
         plan.defectSites( _selectedSiteIndex ).boundary.clear();
     }
 }
 
 
-void plBoundaryEditor::drawMenu( const plPlan &plan ) const
+void plBoundaryEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
 {
 
-    PLfloat windowWidth  = glutGet(GLUT_WINDOW_WIDTH);
-    PLfloat windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
-    
     const PLfloat HORIZONTAL_BUFFER   = 50;
     const PLfloat VERTICAL_BUFFER     = 50;
     const PLfloat HORIZONTAL_SPACING  = 40;
     const PLfloat VERTICAL_SPACING    = 40;     
     const PLfloat CIRCLE_RADIUS       = 14;
-    const PLfloat CORNER_HORIZONTAL   = windowWidth - (HORIZONTAL_BUFFER + CIRCLE_RADIUS + HORIZONTAL_SPACING);  
-    const PLfloat BOUNDARY_HORIZONTAL = windowWidth - HORIZONTAL_BUFFER;
-    const PLfloat INITIAL_VERTICAL    = windowHeight - VERTICAL_BUFFER;
+    const PLfloat CORNER_HORIZONTAL   = plWindow::width() - (HORIZONTAL_BUFFER + CIRCLE_RADIUS + HORIZONTAL_SPACING);  
+    const PLfloat BOUNDARY_HORIZONTAL = plWindow::width() - HORIZONTAL_BUFFER;
+    const PLfloat INITIAL_VERTICAL    = plWindow::height() - VERTICAL_BUFFER;
      
     PLfloat count = 0;
     plPicking::value.index = -1;    
@@ -371,7 +378,15 @@ void plBoundaryEditor::drawMenu( const plPlan &plan ) const
             count++;
         }
 
-
+        // dragged menu item
+        if ( _draggingMenu )
+        {   
+            if ( _selectedBoundaryType == PL_PICKING_TYPE_IGUIDE_BOUNDARY )
+            {
+                plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR_DULL ); 
+            } 
+            plDraw::disk( plVector3( x, y, 0), CIRCLE_RADIUS );            
+        }
     }
     plModelStack::pop();
 

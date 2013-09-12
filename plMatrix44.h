@@ -55,11 +55,11 @@ class plMatrix44
 
 		plMatrix44 inverse() const;
 
-		plMatrix44 operator= ( const plMatrix44 &m); 
-		PLfloat&   operator[]( int index)			   { return _data[index]; }
-		PLfloat    operator[]( int index) const	       { return _data[index]; }
-		PLfloat&   operator()( int row, int col)	   { return _data[(col*4) + row]; }
-		PLfloat    operator()( int row, int col) const { return _data[(col*4) + row]; }
+		plMatrix44 &operator= ( const plMatrix44 &m); 
+		PLfloat&    operator[]( int index)			   { return _data[index]; }
+		PLfloat     operator[]( int index) const	       { return _data[index]; }
+		PLfloat&    operator()( int row, int col)	   { return _data[(col*4) + row]; }
+		PLfloat     operator()( int row, int col) const { return _data[(col*4) + row]; }
 
 		plMatrix44  operator- () const;        // negation
 		plMatrix44  operator+ ( const plMatrix44 &m) const;

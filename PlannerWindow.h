@@ -16,11 +16,11 @@ class PlannerWindow : public Window
         PlannerWindow( int x, int y, int width, int height, std::string title, int argc, char **argv );
       
         void display           ();        
-        void mouseAction       ( int button, int state, int x, int y );
-        void passiveMouseMotion( int x, int y);
-        void activeMouseMotion ( int x, int y );       
-        void keyAction         ( unsigned char key, int x, int y );      
-        void setCursor         (int x, int y);
+        void mouseAction       ( int button, int state, int mx, int my );
+        void passiveMouseMotion( int mx, int my);
+        void activeMouseMotion ( int mx, int my );       
+        void keyAction         ( unsigned char key, int mx, int my );      
+        void setCursor         ( int mx, int my );
                 
     protected:
         

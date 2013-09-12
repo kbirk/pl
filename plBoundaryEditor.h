@@ -25,7 +25,8 @@ class plBoundaryEditor
 
         PLbool  processMouseClick   ( plPlan &plan, PLint x, PLint y );
         PLbool  processMouseDrag    ( plPlan &plan, PLint x, PLint y );
-        PLbool  processJoystickDrag ( plPlan &plan, PLint x, PLint y);
+        PLbool  processMouseRelease ( plPlan &plan, PLint x, PLint y );
+        PLbool  processJoystickDrag ( plPlan &plan, PLint x, PLint y );
 
         void    addPoint                ( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint = true );
         void    moveSelectedPoint       ( plPlan &plan, PLuint x, PLuint y );
@@ -34,9 +35,11 @@ class plBoundaryEditor
         void    removeSelectedSite      ( plPlan &plan );
         void    toggleSelectedVisibility();
 
-        void    drawMenu( const plPlan &plan ) const;
+        void    drawMenu( const plPlan &plan, PLuint x, PLuint y ) const;
 
     private: 
+    
+        PLbool      _draggingMenu;
     
         PLint       _selectedBoundaryType;  
         PLint       _selectedSiteIndex;    // use this and above to determine which pl*Site 

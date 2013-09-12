@@ -203,7 +203,7 @@ void plMatrix44::setScale(const plVector3 s)
 
 
 // assignment
-plMatrix44 plMatrix44::operator=(const plMatrix44 &m) 
+plMatrix44 &plMatrix44::operator=(const plMatrix44 &m) 
 { 
 	// copy data
 	memcpy(_data, m._data, sizeof(PLfloat)*16);

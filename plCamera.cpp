@@ -110,7 +110,7 @@ void plCamera::translate(PLint x, PLint y)
     plVector3 zdir = (position - lookat).normalize();
     plVector3 xdir = (ydir ^ zdir).normalize();
     
-    lookat = lookat + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);
+    lookat   = lookat   + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);
     position = position + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);  
    
 }
@@ -157,11 +157,15 @@ void plCamera::rotate( PLint x0, PLint y0, PLint x1, PLint y1 )
 void calc_p(PLint x, PLint y, PLfloat p[])
 {
     PLfloat r,s;
-    PLint width = glutGet(GLUT_WINDOW_WIDTH);
-    PLint height = glutGet(GLUT_WINDOW_HEIGHT);
     
-    p[0] = 2.0*(x - 0.5*width)/width;
-    p[1] = -2.0*(y - 0.5*height)/height;
+    GLint viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport );
+
+    PLint width  = viewport[2];
+    PLint height = viewport[3];
+    
+    p[0] =  2.0 * ( x - 0.5*width ) / width;
+    p[1] = -2.0 * ( -(y-height) - 0.5*height ) / height;
     r = p[0]*p[0] + p[1]*p[1];
     if (r > 1.0) 
     {
