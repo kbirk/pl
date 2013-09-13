@@ -93,8 +93,8 @@ void plMesh::triangleToInterleaved(const plSeq<plTriangle> &triangles)
 void plMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
 {
     // size of each vertex 
-	const GLuint POS_SIZE = sizeof(GLfloat)*3;
-	const GLuint NOR_SIZE = sizeof(GLfloat)*3;
+	const GLuint POS_SIZE = sizeof( plVector3 );
+	const GLuint NOR_SIZE = sizeof( plVector3 );
     const GLuint TOTAL_SIZE = POS_SIZE + NOR_SIZE ;  
     const GLuint ARRAY_SIZE = TOTAL_SIZE * vertices.size()/2;
     

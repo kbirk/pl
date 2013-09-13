@@ -111,7 +111,7 @@ void plCheckerBoard::_generate( PLfloat blocksize )
             }
             
             // top side
-            if ( j == width_blocks-2 )
+            if ( j == height_blocks-2 )
             {
                 base = vertices.size()/3;
              
@@ -140,11 +140,51 @@ void plCheckerBoard::draw() const
    
     plModelStack::push( transform.matrix() );
     {
+        if ( _isTransparent )
+            plColourStack::load( PL_COLOUR_MESH_TRANSPARENT_COLOUR ); 
+        else
+            plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR ); 
+            
         _mesh.draw();
     }
     plModelStack::pop();
     
     
+}
+
+
+void plCheckerBoard::toggleVisibility()
+{
+    if (_isTransparent) 
+    {
+        _isVisible = false;
+        _isTransparent = false;
+    } 
+    else if (!_isVisible) 
+    {
+        _isVisible = true;
+        _isTransparent = false;
+    } 
+    else 
+    {
+        _isVisible = true;
+        _isTransparent = true;
+    }
+}
+
+
+void plCheckerBoard::toggleTransparency()
+{
+    if (_isTransparent)
+    {
+        _isVisible = true;
+        _isTransparent = false;
+    }
+    else
+    {
+        _isVisible = true;
+        _isTransparent = true;
+    }
 }
 
 

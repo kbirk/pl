@@ -13,20 +13,18 @@ class plMesh
 		
 		plMesh();		
 		plMesh( const plSeq<plTriangle> &triangles );        
-        plMesh( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices );
+        plMesh( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices );
 
         //~plMesh();
-
         //plMesh( const plMesh &mesh );
         //plMesh& operator = ( const plMesh &mesh ); 
 
-        void triangleToInterleaved(const plSeq<plTriangle> &triangles);
+        void triangleToInterleaved( const plSeq<plTriangle> &triangles );
         void destroy();       
         
-        virtual void setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices);
-        virtual void draw() const;	
-        	
-		void draw(const plSeq<PLuint> &indices) const;
+        virtual void setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);
+        virtual void draw() const;	        	
+		virtual void draw( const plSeq<PLuint> &indices ) const;    // draw with newly defined index order ( for transparency sorting )
         
     protected:
 
