@@ -111,7 +111,7 @@ void plCheckerBoard::_generate( PLfloat blocksize )
             }
             
             // top side
-            if ( j == height_blocks-2 )
+            if ( j == width_blocks-2 )
             {
                 base = vertices.size()/3;
              
@@ -132,6 +132,7 @@ void plCheckerBoard::_generate( PLfloat blocksize )
     _mesh.setBuffers( vertices, indices );
 }
 
+
 void plCheckerBoard::draw() const
 {      
     if ( !_isVisible )
@@ -147,9 +148,9 @@ void plCheckerBoard::draw() const
 }
 
 
-// This actually reads in three points, the origin and a step along each axis
 PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xStep, plVector3 &yStep )
 {
+    // This actually reads in three points, the origin and a step along each axis
     const char * checkerBoardCalibFile = "data/registration/checkerBoard";
     
     std::ifstream infile ( checkerBoardCalibFile );
@@ -161,12 +162,6 @@ PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xStep, plVector3 &yS
     }
     
     plString line;
-    std::getline(infile, line);
-    if ( sscanf( line.c_str(), "%f %f %f", &origin.x, &origin.y, &origin.z ) != 3 )
-    {
-        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
-        return false;
-    }
     std::getline(infile, line);
     if ( sscanf( line.c_str(), "%f %f %f", &origin.x, &origin.y, &origin.z ) != 3 )
     {
@@ -188,4 +183,5 @@ PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xStep, plVector3 &yS
 
     std::cout << "Successfully read from: " << checkerBoardCalibFile << std::endl;
     return true;
+
 }
