@@ -53,11 +53,11 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
     switch (pick.type) 
     {  
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY:   
+        case PL_PICKING_TYPE_DEFECT_CORNERS:
         
             _draggingMenu = ( _selectedPointIndex < 0 ); // drag menu if a point isn't selected
             // no break here, it should continue to process moveSelectedPoint()
-        
-        case PL_PICKING_TYPE_DEFECT_CORNERS:
+                
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
         
@@ -384,6 +384,10 @@ void plBoundaryEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
             if ( _selectedBoundaryType == PL_PICKING_TYPE_IGUIDE_BOUNDARY )
             {
                 plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR_DULL ); 
+            } 
+            else if ( _selectedBoundaryType == PL_PICKING_TYPE_DEFECT_CORNERS )
+            {
+                plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
             } 
             plDraw::disk( plVector3( x, y, 0), CIRCLE_RADIUS );            
         }

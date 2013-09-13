@@ -90,7 +90,6 @@ void plSpline::draw() const
     if (size() == 4)
     {
         plPicking::value.type = PL_PICKING_TYPE_DEFECT_SPLINE;       
-        plColourStack::load(PL_DEFECT_SPLINE_COLOUR);  
         _surfaceMesh.draw();
     }
     

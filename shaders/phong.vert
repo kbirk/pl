@@ -19,7 +19,7 @@ void main()
 {
     // if vertex colour attribute is unspecified, all indices are 1
     // if vertex colour is unspecified, use uniform, else use vertex colour (for colour meshes)       
-    if (cColour == vec4(0,0,0,0))
+    if ( cColour == vec4(0,0,0,0) )
         cColourInterp = vColour;
     else
         cColourInterp = cColour;

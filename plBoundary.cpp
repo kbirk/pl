@@ -5,6 +5,7 @@ plBoundary::plBoundary()
 {
 }
 
+
 plBoundary::plBoundary( const plSeq<plString> &row )
     : _showWalls(true)
 {
@@ -17,6 +18,7 @@ plBoundary::plBoundary( const plSeq<plString> &row )
     // construct mesh
     _updateMesh(); 
 }
+
 
 void plBoundary::toggleVisibility()
 {
@@ -171,6 +173,7 @@ void plBoundary::removePointAndNormal( PLuint index )
     _normals.remove(index);
     _updateMesh(); 
 }
+
 
 void plBoundary::clear()
 {

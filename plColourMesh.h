@@ -13,6 +13,8 @@ class plColourMesh : public plMesh
         plColourMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices);
      
         void setBuffers( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices);
+        
+        void draw() const;	
 };
 
 #endif

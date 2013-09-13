@@ -63,3 +63,13 @@ void plColourMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLu
 	glBindVertexArray(0); 			
 }
 
+
+void plColourMesh::draw() const
+{	
+    // for phong shader to use vertex attribute colour, the uniform colour must be (0, 0, 0, 0)
+    plColourStack::load( PL_COLOUR_MESH_IGNORE_UNIFORM_COLOUR );  
+    // call parent draw
+    plMesh::draw();    
+}
+
+

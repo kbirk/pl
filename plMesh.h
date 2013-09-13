@@ -12,8 +12,10 @@ class plMesh
     public:
 		
 		plMesh();		
-		plMesh(const plSeq<plTriangle> &triangles);        
-        plMesh(const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices);
+		plMesh( const plSeq<plTriangle> &triangles );        
+        plMesh( const plSeq<plVector3> &interleaved_vertices, const plSeq<PLuint> &indices );
+
+        //~plMesh();
 
         //plMesh( const plMesh &mesh );
         //plMesh& operator = ( const plMesh &mesh ); 
@@ -28,12 +30,14 @@ class plMesh
         
     protected:
 
-        GLuint _numIndices; // num indices needed by glDrawElements
-        GLuint _numBytes;   // size of vertex buffer
+        GLuint _numIndices;             // num indices needed by glDrawElements
+        GLuint _numBytes;               // size of vertex buffer
 
         GLuint _vertexBufferIndices;
         GLuint _vertexBufferObject;	    // vertex buffer objects
 		GLuint _vertexArrayObject;	    // vertex array object
+		
+		
 
 };
 

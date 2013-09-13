@@ -22,6 +22,14 @@ plMesh::plMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
 }
 
 /*
+plMesh::~plMesh()
+{
+    glDeleteBuffers(1, &_vertexBufferObject);	    // delete buffer objects
+    glDeleteBuffers(1, &_vertexBufferIndices);      // delete indices
+	glDeleteVertexArrays(1, &_vertexArrayObject);	// delete VAO
+}
+*/
+/*
 plMesh::plMesh( const plMesh &mesh )
 {
     /*
@@ -45,6 +53,7 @@ plMesh& plMesh::operator = ( const plMesh &mesh )
     return *this;
 }
 */
+
 
 void plMesh::destroy()
 {            

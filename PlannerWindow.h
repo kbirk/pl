@@ -23,7 +23,7 @@ class PlannerWindow : public Window
         void setCursor         ( int mx, int my );
                 
     protected:
-        
+
         // planner
         plPlan           _plan;
 

@@ -9,10 +9,10 @@ plCheckerBoard::plCheckerBoard( PLfloat blocksize )
 void plCheckerBoard::_generate( PLfloat blocksize )
 {  
     
-    PLuint  width_blocks  = 8;
+    PLint  width_blocks   = 8;
     PLfloat width         = width_blocks * blocksize; 
       
-    PLuint  height_blocks = 9;
+    PLint  height_blocks  = 9;
     PLfloat height        = height_blocks * blocksize;
     
     PLbool black = true;
@@ -25,7 +25,7 @@ void plCheckerBoard::_generate( PLfloat blocksize )
         PLfloat width_pos  = i * blocksize;
 
         for (PLint j = -1; j < height_blocks-1; j++)
-        {        
+        {       
             PLfloat height_pos = j * blocksize;
             
             plVector3 v0( width_pos, height_pos, 0.0f );
@@ -68,20 +68,7 @@ void plCheckerBoard::draw() const
     
 }
 
-/*
-plVector3::plVector3( PLchar *string ) 
-{
-    sscanf( string, "%f %f %f", &x, &y, &z );
-}
 
-plVector3::plVector3( const plString &str ) 
-{
-    sscanf( str.c_str(), "%f %f %f", &x, &y, &z );
-}
-*/
-
-
-// This actually reads in three points, the origin and a step along each axis
 PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xAxis, plVector3 &yAxis )
 {
     const char * checkerBoardCalibFile = "data/registration/checkerBoard";

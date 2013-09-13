@@ -46,10 +46,6 @@
 #define PL_BOUNDARY_DONOR_COLOUR                 0.40, 0.40, 0.80
 #define PL_BOUNDARY_IGUIDE_COLOUR                0.20, 0.53, 0.45
 
-// SPLINE MACROS
-
-#define PL_DEFECT_SPLINE_COLOUR                  0, 0, 0, 0
-
 // COLOUR PICKING   
 
 // TYPE
@@ -82,6 +78,8 @@
 #define PL_PICKING_INDEX_GRAFT_DEFECT            2 
 
 // DRAW MACROS
+
+#define PL_COLOUR_MESH_IGNORE_UNIFORM_COLOUR     0, 0, 0, 0
 
 #define PL_HANDLE_RADIUS                         0.6f
 #define PL_HANDLE_LENGTH                         7.0f

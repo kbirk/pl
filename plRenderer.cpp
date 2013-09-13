@@ -54,6 +54,7 @@ namespace plRenderer
         _arthroTextureToDraw  = NULL;
         _probeToDraw          = NULL;
         _scopeToDraw          = NULL;
+        _checkerBoardToDraw   = NULL;
     }
 
 
@@ -258,6 +259,10 @@ namespace plRenderer
             _scopeToDraw->draw();
         }
         
+        if (_checkerBoardToDraw != NULL)
+        {
+            _checkerBoardToDraw->draw();
+        }
         /* DEBUG FOR GRID POINTS
         for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)
         {
