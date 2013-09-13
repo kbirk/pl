@@ -89,7 +89,8 @@ void plSpline::draw() const
     
     if (size() == 4)
     {
-        plPicking::value.type = PL_PICKING_TYPE_DEFECT_SPLINE;       
+        plPicking::value.type  = PL_PICKING_TYPE_DEFECT_CORNERS; //PL_PICKING_TYPE_DEFECT_SPLINE;  
+        plPicking::value.index = -1;     
         _surfaceMesh.draw();
     }
     

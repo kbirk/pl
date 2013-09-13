@@ -69,7 +69,8 @@ void plCheckerBoard::draw() const
 }
 
 
-PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xAxis, plVector3 &yAxis )
+// This actually reads in three points, the origin and a step along each axis
+PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xStep, plVector3 &yStep )
 {
     const char * checkerBoardCalibFile = "data/registration/checkerBoard";
     
@@ -95,13 +96,13 @@ PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xAxis, plVector3 &yA
         return false;
     }
     std::getline(infile, line);
-    if ( sscanf( line.c_str(), "%f %f %f", &xAxis.x, &xAxis.y, &xAxis.z ) != 3 )
+    if ( sscanf( line.c_str(), "%f %f %f", &xStep.x, &xStep.y, &xStep.z ) != 3 )
     {
         std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
         return false;
     }
     std::getline(infile, line);
-    if ( sscanf( line.c_str(), "%f %f %f", &yAxis.x, &yAxis.y, &yAxis.z ) != 3 )
+    if ( sscanf( line.c_str(), "%f %f %f", &yStep.x, &yStep.y, &yStep.z ) != 3 )
     {
         std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
         return false;
