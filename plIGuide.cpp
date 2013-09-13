@@ -3,12 +3,14 @@
 plIGuide::plIGuide() 
     : site( NULL ) 
 {
+    toolDepth = 43.5;
 }
 
 
 plIGuide::plIGuide( plIGuideSite *s, PLuint sid, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k, const plSeq<PLuint> &kids, const plSeq<const plSpline*> splns, plSeq<PLuint> &dids )
     : site( s ), siteID( sid ), plugs( p ), kWires( k ), kWireIDs( kids ), splines(splns), defectIDs(dids)
 {
+    toolDepth = 43.5;
 }
 
 
@@ -89,34 +91,41 @@ PLbool plIGuide::generateIGuideModels()
     
     for ( PLuint i = 0; i < plugs.size(); i++ )
     {   
-        plMatrix44 plugTransform = plugs[i].transform().matrix();
+        plMatrix44 cylinderToPlugTransform           = plugs[i].transform().matrix();
+        plVector4  plugToCartilageSurfaceTranslation = plVector4( ( plugs[i].cartilageThickness() + ( ( plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR ) ? 0.f : plugs[i].heightOffset() ) ) *
+                                                                  ( plugs[i].transform().matrix()*plVector4(0.f,1.f,0.f,0.f) ) );
+        plMatrix44 plugToCartilageSurfaceTransform   = plMatrix44(plugToCartilageSurfaceTranslation.x,plugToCartilageSurfaceTranslation.y,plugToCartilageSurfaceTranslation.z);
+
+        plMatrix44 cylinderToCartilageSurfaceTransform = plugToCartilageSurfaceTransform * cylinderToPlugTransform;
         
         PLfloat   keyTranslation = 6.f;
         PLfloat   keyRotation    = 0.f;
         
         //if ( plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR )
-            PLfloat   holeDiameter   = plugs[i].radius() * 2.f - printerOffset;
-            
-        PLfloat   sleeveDiameter = holeDiameter + 4.f;
-        PLfloat   baseDiameter   = sleeveDiameter + 2.f;
-        PLfloat   holderDiameter = baseDiameter + 8.f;
+
+        PLfloat   holeDiameter   = plugs[i].radius();
+        PLfloat   sleeveDiameter = holeDiameter + 2.f;
+        PLfloat   baseDiameter   = sleeveDiameter + 1.f;
+        PLfloat   holderDiameter = baseDiameter + 4.f;
+
+        PLfloat sleeveHeight = toolDepth - plugs[i].length() - plugs[i].cartilageThickness();
         
         plVector3 holeScale   ( holeDiameter,   36.f, holeDiameter   );
-        plVector3 sleeveScale ( sleeveDiameter, 30.f, sleeveDiameter );
-        plVector3 baseScale   ( baseDiameter,   20.f, baseDiameter   );
-        plVector3 holderScale ( holderDiameter, 20.f, holderDiameter );
+        plVector3 sleeveScale ( sleeveDiameter, sleeveHeight, sleeveDiameter );
+        //plVector3 baseScale   ( baseDiameter,   20.f, baseDiameter   );
+        plVector3 holderScale ( holderDiameter, 10.f, holderDiameter );
         plVector3 keyScale    ( 3.f, 29.9f, 4.f );
-        plVector3 correctScale( holderDiameter, thicknessOverDefect, holderDiameter   );
-        
+        plVector3 correctScale( holderDiameter, thicknessOverDefect - 1.f, holderDiameter   );
+
         //if ( plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR )
             //plVector3 supportScale( 18.f,  4.f, 18.f  );
         
-        plSeq<plTriangle> holeTriangles   ( _createTemplatePieceTransformed(sharpCylinder,   plugTransform, 0.0f, holeScale,    0.0f,           0.0f) );
-        plSeq<plTriangle> sleeveTriangles ( _createTemplatePieceTransformed(roundCylinder,   plugTransform, 0.0f, sleeveScale,  0.0f,           0.0f) );
-        plSeq<plTriangle> baseTriangles   ( _createTemplatePieceTransformed(sharpCylinder,   plugTransform, 0.0f, baseScale,    0.0f,           0.0f) );
-        plSeq<plTriangle> holderTriangles ( _createTemplatePieceTransformed(roundCylinder,   plugTransform, 0.0f, holderScale,  0.0f,           0.0f) );
-        plSeq<plTriangle> keyTriangles    ( _createTemplatePieceTransformed(keyCube,         plugTransform, 0.0f, keyScale,     keyTranslation, 0.0f) );
-        plSeq<plTriangle> correctTriangles( _createTemplatePieceTransformed(correctCylinder, plugTransform, 0.0f, correctScale, 0.0f,           0.0f) );
+        plSeq<plTriangle> holeTriangles   ( _createTemplatePieceTransformed(sharpCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, holeScale,    0.0f,           0.0f) );
+        plSeq<plTriangle> sleeveTriangles ( _createTemplatePieceTransformed(roundCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, sleeveScale,  0.0f,           0.0f) );
+        //plSeq<plTriangle> baseTriangles   ( _createTemplatePieceTransformed(sharpCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, baseScale,    0.0f,           0.0f) );
+        plSeq<plTriangle> holderTriangles ( _createTemplatePieceTransformed(roundCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, holderScale,  0.0f,           0.0f) );
+        plSeq<plTriangle> keyTriangles    ( _createTemplatePieceTransformed(keyCube,         cylinderToCartilageSurfaceTransform, 0.0f, keyScale,     keyTranslation, 0.0f) );
+        plSeq<plTriangle> correctTriangles( _createTemplatePieceTransformed(correctCylinder, cylinderToCartilageSurfaceTransform, 0.0f, correctScale, 0.0f,           0.0f) );
 
         //if (plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR)
             //plSeq<plTriangle> supportTriangles( createTemplatePieceTransformed(sharpCylinder, recipientTransform, cylinderRecipientSupportOffset, supportScale, 0.0f, 0.0f) );
@@ -125,18 +134,18 @@ PLbool plIGuide::generateIGuideModels()
             
         plString holeFilename    ( _prepareFilenameWithVariables(false, typeLetter, plugs[i].graftID(), "hole"       ) );
         plString sleeveFilename  ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "sleeve"     ) );
-        plString baseFilename    ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "base"       ) );
+        //plString baseFilename    ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "base"       ) );
         plString holderFilename  ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "holder"     ) );
         plString keyFilename     ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "key"        ) );
         plString correctFilename ( _prepareFilenameWithVariables(false, typeLetter, plugs[i].graftID(), "correction" ) );
 
         iGuideModelsToSubtract.add( new plModel( holeTriangles   , holeFilename   , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( sleeveTriangles , sleeveFilename , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
-        iGuideModelsToAdd.add     ( new plModel( baseTriangles   , baseFilename   , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+        //iGuideModelsToAdd.add     ( new plModel( baseTriangles   , baseFilename   , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( holderTriangles , holderFilename , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( keyTriangles    , keyFilename    , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
-        if (plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR)
-            iGuideModelsToSubtract.add( new plModel( correctTriangles, correctFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+        iGuideModelsToSubtract.add( new plModel( correctTriangles, correctFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+        //if (plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR)
     }
     
     return true;
@@ -164,10 +173,22 @@ PLbool plIGuide::exportIGuideModels( const plString &directory )
 }
 
 
-plString plIGuide::_prepareFilenameWithVariables( PLbool add, PLchar type, PLint graftIndex, const plString &pieceName ) 
+plString plIGuide::_prepareFilenameWithVariables( PLint operation, PLchar type, PLint graftIndex, const plString &pieceName )
 {
     std::stringstream strstream;
-    strstream << (add?"Add":"Subtract") << type << graftIndex << pieceName << ".stl";
+    switch (operation) // TODO: a DEFINE or enum or something
+    {
+    case 0:
+        strstream << "Subtract";
+        break;
+    case 1:
+        strstream << "Add";
+        break;
+    case 2:
+        strstream << "Intersect";
+        break;
+    }
+    strstream << type << graftIndex << pieceName << ".stl";
     return strstream.str();
 }
 
@@ -217,7 +238,7 @@ void plIGuide::draw()
     }
     for (PLuint i = 0; i < iGuideModelsToSubtract.size(); i++)
     {
-        //iGuideModelsToSubtract[i]->draw( plVector3( 1.0f,0.75f,0.75f ) );
+        iGuideModelsToSubtract[i]->draw( plVector3( 1.0f,0.75f,0.75f ) );
     }
     //plPicking::value.type = PL_PICKING_TYPE_IGUIDE_BOUNDARY;
     //boundary.draw();

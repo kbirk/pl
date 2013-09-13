@@ -20,21 +20,28 @@ class plPlugInfo
 
     public:
     
-        const plTransform &transform() const { return *_transform; } 
-        PLfloat            radius   () const { return *_radius;    }
-        PLuint             type     () const { return _type;       }
-        PLuint             graftID  () const { return _graftID;    }
+        const plTransform &transform          () const { return *_transform;           }
+        PLfloat            radius             () const { return *_radius;              }
+        PLfloat            cartilageThickness () const { return *_cartilageThickness;  }
+        PLfloat            length             () const { return *_length;              }
+        PLfloat            heightOffset       () const { return *_heightOffset;        }
+        PLuint             type               () const { return _type;                 }
+        PLuint             graftID            () const { return _graftID;              }
 
         plPlugInfo() {}
-        plPlugInfo( const plTransform *transform, const PLfloat *radius, PLuint type, PLuint id ) 
-            : _transform( transform ), _radius( radius ), _type( type ), _graftID( id )
+        plPlugInfo( const plTransform *transform, const PLfloat *radius, const PLfloat *thickness, const PLfloat *length, const PLfloat *heightOffset, PLuint type, PLuint id )
+            : _transform( transform ), _radius( radius ), _cartilageThickness( thickness ), _length(length), _heightOffset(heightOffset), _type( type ), _graftID( id )
         {        
+            std::cout << "type: " << type << std::endl;
         }
     
     private:
     
         const plTransform *_transform;
         const PLfloat     *_radius;
+        const PLfloat     *_cartilageThickness;
+        const PLfloat     *_length;
+        const PLfloat     *_heightOffset;
         PLuint             _type;
         PLuint             _graftID;    
         
@@ -61,6 +68,7 @@ class plIGuide : public plRenderable
 
         // ATTRIBUTES
         // geometry data
+        PLfloat                 toolDepth;
         PLfloat                 thickness;
         PLfloat                 printerOffset;
 
@@ -94,7 +102,7 @@ class plIGuide : public plRenderable
         
     private:
 
-	    plString			_prepareFilenameWithVariables   ( PLbool add, PLchar type, PLint graftIndex, const plString &pieceName );
+        plString			_prepareFilenameWithVariables   ( PLint operation, PLchar type, PLint graftIndex, const plString &pieceName );
         plSeq<plTriangle>	_createTemplatePieceTransformed ( const plSeq<plTriangle> &baseTriObject,
                                                               const plMatrix44  &plugTransform,
                                                               const PLdouble    &zOffset,
