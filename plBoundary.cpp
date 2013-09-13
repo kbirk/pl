@@ -391,7 +391,7 @@ void plBoundary::draw() const
     _setColour();
         
     // draw walls
-    if (_showWalls && _points.size() > 1)
+    if ( _showWalls && _points.size() > 1 )
     {
         plPicking::value.index = -1; // draw walls with index of -1
         _mesh.draw();
@@ -404,7 +404,7 @@ void plBoundary::draw() const
             
         if (_isSelected && _selectedValue == i)   // is the current point selected?
         {
-            plDraw::sphere( _points[i], 1.5);
+            plDraw::sphere( _points[i], 1.5 );
         }
         else
         {

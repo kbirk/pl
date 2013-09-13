@@ -79,7 +79,8 @@
 
 // DRAW MACROS
 
-#define PL_COLOUR_MESH_IGNORE_UNIFORM_COLOUR     0, 0, 0, 0
+#define PL_COLOUR_MESH_OPAQUE_COLOUR             0, 0, 0, 0
+#define PL_COLOUR_MESH_TRANSPARENT_COLOUR        -1, -1, -1, 0
 
 #define PL_HANDLE_RADIUS                         0.6f
 #define PL_HANDLE_LENGTH                         7.0f

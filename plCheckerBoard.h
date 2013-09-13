@@ -15,9 +15,14 @@ class plCheckerBoard : public plRenderable
 
         plCheckerBoard( PLfloat blocksize );
         
+        void   toggleVisibility  ();
+        void   toggleTransparency();
+        
         void draw() const;
 
     private:
+
+        PLbool _isTransparent;
 
         plColourMesh _mesh;
         

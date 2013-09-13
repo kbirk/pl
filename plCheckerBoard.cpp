@@ -39,6 +39,7 @@ void plCheckerBoard::_generate( PLfloat blocksize )
             
             PLuint base = vertices.size()/3;
             
+            // front side
             vertices.add( v0 ); vertices.add( n ); vertices.add( c );
             vertices.add( v1 ); vertices.add( n ); vertices.add( c );
             vertices.add( v2 ); vertices.add( n ); vertices.add( c );
@@ -46,13 +47,91 @@ void plCheckerBoard::_generate( PLfloat blocksize )
             
             indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
             indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 );
+            
+            base = vertices.size()/3;
+            
+            // back side 
+            vertices.add( v1 + blocksize*-n); vertices.add( -n ); vertices.add( c );
+            vertices.add( v0 + blocksize*-n); vertices.add( -n ); vertices.add( c );
+            vertices.add( v3 + blocksize*-n); vertices.add( -n ); vertices.add( c );
+            vertices.add( v2 + blocksize*-n); vertices.add( -n ); vertices.add( c );
+            
+            indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
+            indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 ); 
                    
             black = !black;
+            
+            // left side
+            if ( i == -1 )
+            {
+                base = vertices.size()/3;
+             
+                plVector3 leftNormal = ( n^(v3 - v0) ).normalize();
+             
+                vertices.add( v3 + blocksize*-n); vertices.add( leftNormal ); vertices.add( c );
+                vertices.add( v0 + blocksize*-n); vertices.add( leftNormal ); vertices.add( c );
+                vertices.add( v0 );               vertices.add( leftNormal ); vertices.add( c );
+                vertices.add( v3 );               vertices.add( leftNormal ); vertices.add( c );
+                
+                indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
+                indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 );  
+            
+            }
+
+            // right side
+            if ( i == width_blocks-2 )
+            {
+                base = vertices.size()/3;
+             
+                plVector3 rightNormal = ( n^(v1 - v2) ).normalize();
+             
+                vertices.add( v1 + blocksize*-n); vertices.add( rightNormal ); vertices.add( c );
+                vertices.add( v2 + blocksize*-n); vertices.add( rightNormal ); vertices.add( c );
+                vertices.add( v2 );               vertices.add( rightNormal ); vertices.add( c );
+                vertices.add( v1 );               vertices.add( rightNormal ); vertices.add( c );
+                
+                indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
+                indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 );  
+            }
+            
+            // bottom side
+            if ( j == -1 )
+            {
+                base = vertices.size()/3;
+             
+                plVector3 bottomNormal = ( n^(v0 - v1) ).normalize();
+             
+                vertices.add( v0 + blocksize*-n); vertices.add( bottomNormal ); vertices.add( c );
+                vertices.add( v1 + blocksize*-n); vertices.add( bottomNormal ); vertices.add( c );
+                vertices.add( v1 );               vertices.add( bottomNormal ); vertices.add( c );
+                vertices.add( v0 );               vertices.add( bottomNormal ); vertices.add( c );
+                
+                indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
+                indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 ); 
+            }
+            
+            // top side
+            if ( j == height_blocks-2 )
+            {
+                base = vertices.size()/3;
+             
+                plVector3 topNormal = ( n^(v2 - v3) ).normalize();
+             
+                vertices.add( v2 + blocksize*-n); vertices.add( topNormal ); vertices.add( c );
+                vertices.add( v3 + blocksize*-n); vertices.add( topNormal ); vertices.add( c );
+                vertices.add( v3 );               vertices.add( topNormal ); vertices.add( c );
+                vertices.add( v2 );               vertices.add( topNormal ); vertices.add( c );
+                
+                indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
+                indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 ); 
+            }
+            
         }
     }
     
     _mesh.setBuffers( vertices, indices );
 }
+
 
 void plCheckerBoard::draw() const
 {      
@@ -61,6 +140,11 @@ void plCheckerBoard::draw() const
    
     plModelStack::push( transform.matrix() );
     {
+        if ( _isTransparent )
+            plColourStack::load( PL_COLOUR_MESH_TRANSPARENT_COLOUR ); 
+        else
+            plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR ); 
+            
         _mesh.draw();
     }
     plModelStack::pop();
@@ -69,8 +153,44 @@ void plCheckerBoard::draw() const
 }
 
 
-PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xAxis, plVector3 &yAxis )
+void plCheckerBoard::toggleVisibility()
 {
+    if (_isTransparent) 
+    {
+        _isVisible = false;
+        _isTransparent = false;
+    } 
+    else if (!_isVisible) 
+    {
+        _isVisible = true;
+        _isTransparent = false;
+    } 
+    else 
+    {
+        _isVisible = true;
+        _isTransparent = true;
+    }
+}
+
+
+void plCheckerBoard::toggleTransparency()
+{
+    if (_isTransparent)
+    {
+        _isVisible = true;
+        _isTransparent = false;
+    }
+    else
+    {
+        _isVisible = true;
+        _isTransparent = true;
+    }
+}
+
+
+PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xStep, plVector3 &yStep )
+{
+    // This actually reads in three points, the origin and a step along each axis
     const char * checkerBoardCalibFile = "data/registration/checkerBoard";
     
     std::ifstream infile ( checkerBoardCalibFile );
@@ -89,19 +209,13 @@ PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xAxis, plVector3 &yA
         return false;
     }
     std::getline(infile, line);
-    if ( sscanf( line.c_str(), "%f %f %f", &origin.x, &origin.y, &origin.z ) != 3 )
+    if ( sscanf( line.c_str(), "%f %f %f", &xStep.x, &xStep.y, &xStep.z ) != 3 )
     {
         std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
         return false;
     }
     std::getline(infile, line);
-    if ( sscanf( line.c_str(), "%f %f %f", &xAxis.x, &xAxis.y, &xAxis.z ) != 3 )
-    {
-        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
-        return false;
-    }
-    std::getline(infile, line);
-    if ( sscanf( line.c_str(), "%f %f %f", &yAxis.x, &yAxis.y, &yAxis.z ) != 3 )
+    if ( sscanf( line.c_str(), "%f %f %f", &yStep.x, &yStep.y, &yStep.z ) != 3 )
     {
         std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
         return false;
@@ -109,38 +223,5 @@ PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xAxis, plVector3 &yA
 
     std::cout << "Successfully read from: " << checkerBoardCalibFile << std::endl;
     return true;
-    
-    /*
-    FILE *fileIn;
-    const char * checkerBoardCalibFile = "data/registration/checkerBoard";
-    char oneLine[255];
 
-    fileIn = fopen(checkerBoardCalibFile, "r");
-    if (fileIn == NULL)
-    {
-        std::cerr << "Error opening " << checkerBoardCalibFile << " -- " << strerror(errno) << std::endl;
-        return false;
-    }
-    fgets(oneLine, 255, fileIn);
-    if ( sscanf(oneLine, "%f %f %f", &origin.x, &origin.y, &origin.z ) != 3 )
-    {
-        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
-        return false;
-    }
-    fgets(oneLine, 255, fileIn);
-    if ( sscanf(oneLine, "%f %f %f", &xAxis.x, &xAxis.y, &xAxis.z ) != 3)
-    {
-        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
-        return false;
-    }
-    fgets(oneLine, 255, fileIn);
-    if ( sscanf(oneLine, "%f %f %f", &yAxis.x, &yAxis.y, &yAxis.z ) != 3 )
-    {
-        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
-        return false;
-    }
-    fclose(fileIn);
-    std::cout << "Successfully read from: " << checkerBoardCalibFile << std::endl;
-    return true;
-    */
 }

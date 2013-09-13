@@ -138,16 +138,16 @@ void plModel::draw( const plVector3 &colour ) const
         }
         std::sort(order.begin(), order.end(), _compareOrderPairs);
 
-        plSeq<PLuint> indices(_triangles.size()*3 );
+        plSeq<PLuint> indices( _triangles.size()*3 );
         for (PLuint i = 0; i < order.size(); i++)
         {
             indices.add( order[i].index*3 );
             indices.add( order[i].index*3+1 );
             indices.add( order[i].index*3+2 );
-        }
-
+        }        
         _mesh.draw(indices);
-        
+
+        _mesh.draw();
         glDisable( GL_STENCIL_TEST ); 
     } 
 }
