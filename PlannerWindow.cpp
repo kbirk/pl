@@ -95,6 +95,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'v':   _graftEditor.toggleSelectedVisibility();  
                     _boundaryEditor.toggleSelectedVisibility();                 break;
         case 'g':   _plan.iGuides(0).generateIGuideModels();                    break; // TODO: This is broken at the moment. Need to not have static 0 here
+        case 'e':   _plan.iGuides(0).exportIGuideModels("output/");             break;
         case 'O':   _plan.exportFile("plan");                                   break;
 
         case 'D':   _plan.addDonorSite();                                       break;

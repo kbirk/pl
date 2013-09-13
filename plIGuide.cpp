@@ -132,12 +132,12 @@ PLbool plIGuide::generateIGuideModels()
 
         PLchar typeLetter = (plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR) ? 'H' : 'R';
             
-        plString holeFilename    ( _prepareFilenameWithVariables(false, typeLetter, plugs[i].graftID(), "hole"       ) );
-        plString sleeveFilename  ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "sleeve"     ) );
+        plString holeFilename    ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE   , typeLetter, plugs[i].graftID(), "hole"       ) );
+        plString sleeveFilename  ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "sleeve"     ) );
         //plString baseFilename    ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "base"       ) );
-        plString holderFilename  ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "holder"     ) );
-        plString keyFilename     ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "key"        ) );
-        plString correctFilename ( _prepareFilenameWithVariables(false, typeLetter, plugs[i].graftID(), "correction" ) );
+        plString holderFilename  ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "holder"     ) );
+        plString keyFilename     ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "key"        ) );
+        plString correctFilename ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_INTERSECTION , typeLetter, plugs[i].graftID(), "correction" ) );
 
         iGuideModelsToSubtract.add( new plModel( holeTriangles   , holeFilename   , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( sleeveTriangles , sleeveFilename , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
@@ -176,19 +176,20 @@ PLbool plIGuide::exportIGuideModels( const plString &directory )
 plString plIGuide::_prepareFilenameWithVariables( PLint operation, PLchar type, PLint graftIndex, const plString &pieceName )
 {
     std::stringstream strstream;
+    strstream << type << graftIndex;
     switch (operation) // TODO: a DEFINE or enum or something
     {
-    case 0:
-        strstream << "Subtract";
+    case PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE:
+        strstream << "Difference";
         break;
-    case 1:
-        strstream << "Add";
+    case PL_IGUIDE_BOOLEAN_MESH_UNION:
+        strstream << "Union";
         break;
-    case 2:
+    case PL_IGUIDE_BOOLEAN_MESH_INTERSECTION:
         strstream << "Intersect";
         break;
     }
-    strstream << type << graftIndex << pieceName << ".stl";
+    strstream << pieceName << ".stl";
     return strstream.str();
 }
 
