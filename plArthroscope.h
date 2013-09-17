@@ -20,6 +20,7 @@ enum ImageManipulation
     CAMERA_IMAGE_UNDISTORT 
 };
 
+// lil' guy sai's gonna be makin changes up in here!
 class plArthroscope 
 {
 
