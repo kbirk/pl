@@ -101,7 +101,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'S':   _plan.addDefectSite();                                      break;
         case 'G':   _plan.addIGuideSite();                                      break;
 
-        case 'P':   plAutomaticPlanner::calculate(_plan);                       break;
+        case 'P':   plAutomaticPlanner::calculate( _plan );                     break;
 
         case 'N':   _plan.clear();  
                     _graftEditor.clearSelection   ( _plan );   

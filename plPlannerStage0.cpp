@@ -1,8 +1,8 @@
 #include "plPlannerStage0.h"
 
-plDefectState::plDefectState( float initialEnergy )
+plDefectState::plDefectState()
     : temperature   ( PL_STAGE0_INITIAL_TEMPERATURE ),    
-      energy        ( initialEnergy ),    
+      energy        ( 0 ),    
       graftCount    ( 0 ),    
       graftPositions( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
       graftNormals  ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
@@ -127,6 +127,8 @@ void plDefectState::_updateGrafts( PLint index )
         PLfloat *radii = readSSBO<PLfloat>( index*PL_MAX_GRAFTS_PER_SOLUTION, PL_MAX_GRAFTS_PER_SOLUTION );
         memcpy( &graftRadii[0], &radii[0], graftCount*sizeof( PLfloat ) );    
         glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+        
+        glBindBuffer( GL_SHADER_STORAGE_BUFFER, 0 );
     }
             
 } 
@@ -135,7 +137,7 @@ void plDefectState::_updateGrafts( PLint index )
 namespace plPlannerStage0
 {
 
-    plDefectState run( const plSiteGrid &site )
+    void run( plDefectState &state, const plSiteGrid &site )
     {
         // compile / link stage 0 shader
         plPlannerStage0Shader stage0Shader("./shaders/plannerStage0.comp");
@@ -152,9 +154,9 @@ namespace plPlannerStage0
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, overlappedTrianglesBufferID );  
                       
         // generate and bind annealing state output buffers    
-        plDefectState state( site.area() );  // empty state (no plugs) energy set to total site area
-        state.createBuffers();               // create input/output buffers
-        state.bindBuffers();                 // bind input/output buffers   
+        state.energy = site.area();  // empty state (no plugs) energy set to total site area
+        state.createBuffers();       // create input/output buffers
+        state.bindBuffers();         // bind input/output buffers   
             
         // simulated annealing                
         while ( state.temperature > 0.01f)
@@ -171,14 +173,14 @@ namespace plPlannerStage0
             glDispatchCompute( PL_STAGE0_NUM_GROUPS, 1, 1 );
             
             // memory barrier      
-            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            glMemoryBarrier(GL_ALL_BARRIER_BITS); //GL_SHADER_STORAGE_BARRIER_BIT);
             
             // update the annealing state 
             state.update(); 
             
             std::cout << "\t Energy: " << state.energy << ",\t" 
                       << state.graftCount << " grafts,\t Temperature: " 
-                      << state.temperature << "\n";
+                      << state.temperature << std::endl;
 
             // cool temperature
             state.temperature *= 1.0f-PL_STAGE0_COOLING_RATE;
@@ -203,8 +205,6 @@ namespace plPlannerStage0
             plIntersection intersection = plMath::rayIntersect( site.triangles(), rayOrigin, rayDirection );
             state.graftPositions[i] = plVector4( intersection.point, 1.0 );
         }
-        
-        return state;
 
     }
 

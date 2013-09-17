@@ -30,7 +30,7 @@ class plDefectState
         plSeq<plVector4>  graftNormals;
         plSeq<PLfloat>    graftRadii;
     
-        plDefectState( float initialEnergy );
+        plDefectState();
         
         void createBuffers ();
         void destroyBuffers();
@@ -58,7 +58,7 @@ class plDefectState
 namespace plPlannerStage0
 {
 
-    plDefectState run( const plSiteGrid &site );
+    void run( plDefectState &state, const plSiteGrid &site );
 
 }
 

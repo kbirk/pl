@@ -91,30 +91,34 @@ namespace plAutomaticPlanner
     {    
         PLtime t0, t1;
         
+        plDefectState defectState;
+        plRmsData     rmsData;
+        
         // stage 0 timing //
         std::cout << "\n--------------------------- Initiating Stage 0 --------------------------- \n" <<
                        "-------------------------------------------------------------------------- \n";
         t0 = plTimer::now();
 
-        plDefectState defectState = plPlannerStage0::run( _defectSiteGrids[0] );    
+        plPlannerStage0::run( defectState, _defectSiteGrids[0] );    
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 0 Complete --------------------------- \n" <<
-                       "------------------------- Execution time: " << t1 - t0 << " ms ---------------------- \n";
+                       "------------------------- Execution time: " << t1 - t0 << " ms ----------------------" << std::endl;
         ////////////////////
-        
+
+
         // stage 1 timing //
         std::cout << "\n--------------------------- Initiating Stage 1 --------------------------- \n" <<
-                       "-------------------------------------------------------------------------- \n";
+                       "--------------------------------------------------------------------------" << std::endl;
         t0 = plTimer::now();
 
-        plRmsData rmsData = plPlannerStage1::run( _defectSiteGrids[0], _donorSiteGrids, defectState );
+        plPlannerStage1::run( rmsData, _defectSiteGrids[0], _donorSiteGrids, defectState );
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 1 Complete ---------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
+
         ////////////////////
-           
         // stage 2 timing //
         std::cout << "\n--------------------------- Initiating Stage 2 --------------------------- \n" <<
                        "-------------------------------------------------------------------------- \n";

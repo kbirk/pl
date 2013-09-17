@@ -23,7 +23,8 @@ class plPlannerStage2Shader : public plShader
                                
         void setSiteUniforms  (  PLuint donorCount,
                                  PLuint totalGridPoints,
-                                 const plSeq<PLuint> &donorGridSize) const;
+                                 const plSeq<PLuint> &donorGridSize,
+                                 const plSeq<PLuint> &donorDataOffset) const;
         
         void setSeedUniform ( PLfloat seed ) const;
         
@@ -35,7 +36,8 @@ class plPlannerStage2Shader : public plShader
         PLuint _totalGridPointsID;
         PLuint _donorSiteCountID;
         PLuint _donorSiteGridSizeID;
- 
+        PLuint _donorSiteDataOffsetID;
+        
         PLuint _numDirectionsID;
  
         PLuint _seedID;       

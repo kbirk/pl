@@ -9,7 +9,7 @@
 #include "plPlannerStage0.h"
 #include "plPlannerStage1Shader.h"
 
-#define PL_STAGE1_GROUP_SIZE                   256
+#define PL_STAGE1_GROUP_SIZE                   1024
 
 #define PL_STAGE1_NUM_DIRECTIONS               32
 
@@ -47,7 +47,7 @@ class plRmsData
 namespace plPlannerStage1
 {
 
-    plRmsData run( const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState );
+    void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState );
       
 }
 

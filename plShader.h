@@ -40,6 +40,17 @@ class plShader
 
 
 template< class T >
+PLuint createSSBO( PLuint count )
+{
+    PLuint bufferID;
+    glGenBuffers(1, &bufferID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, count*sizeof(T), NULL, GL_STREAM_COPY);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    return bufferID;
+} 
+
+template< class T >
 PLuint createSSBO( PLuint count, const T &fill )
 {
     plSeq<T> filler( count, fill );
@@ -49,7 +60,7 @@ PLuint createSSBO( PLuint count, const T &fill )
     glGenBuffers(1, &bufferID);     
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferID);
     glBufferData(GL_SHADER_STORAGE_BUFFER, count*sizeof(T), &filler[0], GL_STREAM_COPY);
-    
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     return bufferID;
 } 
 
@@ -62,7 +73,7 @@ PLuint createSSBO( const plSeq<T> &array )
     glGenBuffers(1, &bufferID);     
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferID);
     glBufferData(GL_SHADER_STORAGE_BUFFER, array.size()*sizeof(T), &array[0], GL_STREAM_COPY);
-    
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     return bufferID;
 } 
 

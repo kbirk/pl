@@ -26,7 +26,8 @@ class plPlannerStage1Shader : public plShader
                                 PLuint donorCount,
                                 const plSeq<PLuint> &donorMeshSize,
                                 const plSeq<PLuint> &donorGridSize,
-                                const plSeq<PLuint> &donorPerimSize) const;
+                                const plSeq<PLuint> &donorPerimSize,
+                                const plSeq<PLuint> &donorDataOffset) const;
         
         void setDirectionUniform ( const plVector4 &direction ) const;
         
@@ -43,7 +44,8 @@ class plPlannerStage1Shader : public plShader
         PLuint _donorSiteMeshSizeID;
         PLuint _donorSiteGridSizeID;
         PLuint _donorSitePerimSizeID;
- 
+        PLuint _donorSiteDataOffsetID;
+        
         PLuint _directionID;       
 };
 

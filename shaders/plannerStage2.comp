@@ -3,7 +3,6 @@
 #define PL_FLT_MAX                  99999
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_DONOR_SITES          5
-#define PL_ITERATIONS               4
 #define PL_PLUG_LENGTH              15.0
 
 layout (local_size_x = 256) in;
@@ -25,6 +24,7 @@ uniform float uGraftRadii     [PL_MAX_GRAFTS_PER_SOLUTION];
 uniform uint  uTotalGridPoints;
 uniform uint  uDonorSiteCount;
 uniform uint  uDonorSiteGridSize   [PL_MAX_DONOR_SITES];
+uniform uint  uDonorSiteDataOffset [PL_MAX_DONOR_SITES];
 
 uniform uint  uNumDirections;
 
@@ -45,26 +45,15 @@ void getDonorSiteAndIndex( inout uint site, inout uint localIndex, in uint globa
 }
 
 
-uint getDonorSiteOffset( in uint site )
-{
-    uint offset = 0;
-    for (uint i=0; i<site; i++)
-    {
-        offset += uDonorSiteGridSize[i]*2;
-    }
-    return offset;
-}
-
-
 vec4 donorSitePositions( in uint site, in uint i )
 {   
-    return donorSiteData[ getDonorSiteOffset( site ) + i ];
+    return donorSiteData[ uDonorSiteDataOffset[ site ] + i ];
 }
 
 
 vec4 donorSiteNormals( in uint site, in uint i )
 {
-    return donorSiteData[ getDonorSiteOffset( site ) + uDonorSiteGridSize[ site ] + i];
+    return donorSiteData[ uDonorSiteDataOffset[ site ] + uDonorSiteGridSize[ site ] + i];
 }
 
 

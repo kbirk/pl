@@ -1,6 +1,6 @@
 #version 430
 
-#define PL_ITERATIONS               4
+#define PL_ITERATIONS               1
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_RADIUS               4.0
 #define PL_MIN_RADIUS               3.0
@@ -406,6 +406,7 @@ void copyState( inout state s, in state S )
     s.energy = S.energy;
 }
 
+
 void copyGlobalState( inout state s )
 {
     s.graftCount = uStateGraftCount;
@@ -450,7 +451,7 @@ void main(void)
     for (uint j=0; j < PL_ITERATIONS; j++)
     {   
         // determine which case
-        uint changeCase = uint( rand( seed ) * 3 ); //gid % 3;
+        uint changeCase = uint( rand( seed ) * 3 );
             
         if (nS.graftCount == 0 || changeCase == 0)
         {

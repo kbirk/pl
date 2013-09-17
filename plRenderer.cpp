@@ -263,7 +263,7 @@ namespace plRenderer
         {
             _checkerBoardToDraw->draw();
         }
-        /* DEBUG FOR GRID POINTS
+        // DEBUG FOR GRID POINTS
         for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)
         {
             plColourStack::load( 0.9, 0.6, 0.2 );
@@ -289,7 +289,7 @@ namespace plRenderer
                 
             }
         }
-        */
+        
                
         /* DEBUG FOR OCTREES
         // set flat shader

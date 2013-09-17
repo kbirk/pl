@@ -119,10 +119,16 @@ namespace plPlannerStage2
         // calc total grid points (invocations)
         PLuint totalGridPoints = 0;
         plSeq<PLuint> donorGridSizes;
+        plSeq<PLuint> donorByteOffset;
         for (PLuint i=0; i < donorSites.size(); i++)
         {
             totalGridPoints += donorSites[i].gridSize();
             donorGridSizes.add ( donorSites[i].gridSize()  );
+            if ( i == 0)
+                donorByteOffset.add ( 0 );
+            else
+                donorByteOffset.add ( donorSites[i-1].gridSize()*2 );
+
         }
 
         // generate and fill buffers 
@@ -147,7 +153,8 @@ namespace plPlannerStage2
 
         stage2Shader.setSiteUniforms( donorSites.size(),
                                       totalGridPoints,
-                                      donorGridSizes);
+                                      donorGridSizes,
+                                      donorByteOffset );
             
         for (PLuint i=0; i<PL_STAGE2_ITERATIONS; i++ )
         {

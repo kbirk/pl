@@ -11,7 +11,7 @@
 #define PL_NUM_COMPARISON_RADII     4
 #define PL_PI                       3.1415927
 
-layout (local_size_x = 256) in;
+layout (local_size_x = 1024) in;
 
 // input data
 layout (std430,  binding = 0) buffer defectSiteDataBlock  { vec4 defectSiteData[]; };
@@ -36,6 +36,7 @@ uniform uint  uDonorSiteCount;
 uniform uint  uDonorSiteMeshSize   [PL_MAX_DONOR_SITES];
 uniform uint  uDonorSiteGridSize   [PL_MAX_DONOR_SITES];
 uniform uint  uDonorSitePerimSize  [PL_MAX_DONOR_SITES];
+uniform uint  uDonorSiteDataOffset [PL_MAX_DONOR_SITES];
 
 uniform vec4  uDefectZ;
 
@@ -107,32 +108,21 @@ void getDonorSiteAndIndex( inout uint site, inout uint localIndex )
 }
 
 
-uint getDonorSiteOffset( in uint site )
-{
-    uint offset = 0;
-    for (uint i=0; i<site; i++)
-    {
-        offset += uDonorSiteGridSize[i]*2 + uDonorSiteMeshSize[i]*4 + uDonorSitePerimSize[i]*2;
-    }
-    return offset;
-}
-
-
 vec4 donorSitePositions( in uint site, in uint i )
 {   
-    return donorSiteData[ getDonorSiteOffset( site ) + i ];
+    return donorSiteData[ uDonorSiteDataOffset[ site ] + i ];
 }
 
 
 vec4 donorSiteNormals( in uint site, in uint i )
 {
-    return donorSiteData[ getDonorSiteOffset( site ) + uDonorSiteGridSize[ site ] + i];
+    return donorSiteData[ uDonorSiteDataOffset[ site ] + uDonorSiteGridSize[ site ] + i];
 }
 
 
 triangle donorSiteTriangles( in uint site, in uint i )
 {
-    uint j = getDonorSiteOffset( site ) + uDonorSiteGridSize[ site ]*2 + i*4;  
+    uint j = uDonorSiteDataOffset[ site ] + uDonorSiteGridSize[ site ]*2 + i*4;  
     triangle t;
     t.p0 = vec3( donorSiteData[j+0] );
     t.p1 = vec3( donorSiteData[j+1] );
@@ -169,7 +159,7 @@ void donorCapTriangles( in uint i, in triangle t, in vec3 position )
 
 edge donorSiteEdge( in uint site, in uint i )
 {
-    uint offset = getDonorSiteOffset( site ) + uDonorSiteGridSize[ site ]*2 + uDonorSiteMeshSize[ site ]*4; 
+    uint offset = uDonorSiteDataOffset[ site ] + uDonorSiteGridSize[ site ]*2 + uDonorSiteMeshSize[ site ]*4; 
 
     uint j = offset + i;
     uint k = offset + ( (i+1) % uDonorSitePerimSize[ site ] );
@@ -447,7 +437,7 @@ void main(void)
             // doesnt fit in boundary
             rms = -1;
         }
-        rmsOutput[ gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION + i] = rms;            
+        rmsOutput[ gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION + i ] = rms;            
     }    
     
 }

@@ -53,7 +53,7 @@ PLuint plRmsData::getDirectionsSSBO() const
 namespace plPlannerStage1
 {
 
-    plRmsData run( const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState )
+    void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState )
     {
         
         // compile / link stage 1 shader
@@ -62,15 +62,20 @@ namespace plPlannerStage1
         
         // calc total grid points (invocations)
         PLuint totalGridPoints = 0;
-        plSeq<PLuint> donorMeshSizes;
         plSeq<PLuint> donorGridSizes;
+        plSeq<PLuint> donorMeshSizes;       
         plSeq<PLuint> donorPerimSizes;
+        plSeq<PLuint> donorByteOffset;
         for (PLuint i=0; i < donorSites.size(); i++)
         {
-            totalGridPoints += donorSites[i].gridSize();
-            donorMeshSizes.add ( donorSites[i].meshSize()  );
-            donorGridSizes.add ( donorSites[i].gridSize()  );
-            donorPerimSizes.add( donorSites[i].perimSize() );
+            totalGridPoints +=  donorSites[i].gridSize();
+            donorGridSizes.add  ( donorSites[i].gridSize()  );
+            donorMeshSizes.add  ( donorSites[i].meshSize()  );           
+            donorPerimSizes.add ( donorSites[i].perimSize() );
+            if ( i == 0)
+                donorByteOffset.add ( 0 );
+            else
+                donorByteOffset.add ( donorSites[i-1].gridSize()*2 + donorSites[i-1].meshSize()*4 + donorSites[i-1].perimSize()*2 );
         }
 
         const PLuint TRIANGLE_BUFFER_SIZE = totalGridPoints*PL_STAGE1_MAX_CAP_TRIANGLES*4;
@@ -79,9 +84,9 @@ namespace plPlannerStage1
         // generate and fill buffers 
         PLuint defectSiteDataBufferID      = defectSite.getMeshSSBO();
         PLuint donorSiteDataBufferID       = getGroupFullSSBO( donorSites );   
-        PLuint tempDefectTrianglesBufferID = createSSBO( TRIANGLE_BUFFER_SIZE, plVector4(-1,-1,-1,-1) );
-        PLuint tempDonorTrianglesBufferID  = createSSBO( TRIANGLE_BUFFER_SIZE, plVector4(-1,-1,-1,-1) );        
-        PLuint rmsOutputBuffer             = createSSBO( RMS_BUFFER_SIZE, -1.0f );
+        PLuint tempDefectTrianglesBufferID = createSSBO<plVector4>( TRIANGLE_BUFFER_SIZE );
+        PLuint tempDonorTrianglesBufferID  = createSSBO<plVector4>( TRIANGLE_BUFFER_SIZE );        
+        PLuint rmsOutputBuffer             = createSSBO<PLfloat>( RMS_BUFFER_SIZE );
    
         // bind buffers
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, defectSiteDataBufferID      );    
@@ -102,10 +107,10 @@ namespace plPlannerStage1
                                       donorSites.size(),
                                       donorMeshSizes,
                                       donorGridSizes,
-                                      donorPerimSizes );
+                                      donorPerimSizes,
+                                      donorByteOffset );
+        
          
-        plRmsData rmsData; 
-          
         float da = (2.0f * PL_PI) / (float)(PL_STAGE1_NUM_DIRECTIONS);  
           
         for (PLuint i=0; i<PL_STAGE1_NUM_DIRECTIONS; i++)
@@ -122,14 +127,15 @@ namespace plPlannerStage1
             glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
             
             // memory barrier      
-            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            glMemoryBarrier(GL_ALL_BARRIER_BITS); //GL_SHADER_STORAGE_BARRIER_BIT);
 
             // update for direction  
             rmsData.update( RMS_BUFFER_SIZE, rmsOutputBuffer, direction );
         
-            std::cout << "\t Z Direction: " << direction << "\n";
-        }
+            std::cout << "\t Z Direction: " << direction << std::endl;
 
+        }
+        
         // unbind buffers
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 );    
@@ -145,6 +151,7 @@ namespace plPlannerStage1
         glDeleteBuffers( 1, &rmsOutputBuffer             );
 
         // DEBUG
+        /*
         for (PLuint i=0; i < PL_STAGE1_NUM_DIRECTIONS; i++)
         {
             std::cout << " dir: " << i << "\n";
@@ -153,8 +160,8 @@ namespace plPlannerStage1
                 std::cout << "rms:\t" << rmsData.sets[i].rms[j] << "\n";
             }
         }
+        */
 
-        return rmsData;
     }
 
 }
