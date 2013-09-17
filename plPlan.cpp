@@ -266,9 +266,12 @@ void plPlan::importFile( const plString &filename )
             {   
                 PLuint  graftID ( std::stoi( csv.data[i][2+(j*2)] ) ); 
                 PLuint  type    ( std::stoi( csv.data[i][3+(j*2)] ) );
-                const plTransform *transform  ( &( _grafts[ graftID ]->transform( type ) ) );
-                const PLfloat     *radius     ( &( _grafts[ graftID ]->radius() ) );
-                plugs.add( plPlugInfo( transform, radius, type, graftID ) );
+                const plTransform *transform    ( &( _grafts[ graftID ]->transform( type ) ) );
+                const PLfloat     *radius       ( &( _grafts[ graftID ]->radius() ) );
+                const PLfloat     *thickness    ( &( _grafts[ graftID ]->cartilageThickness() ) );
+                const PLfloat     *length       ( &( _grafts[ graftID ]->length() ) );
+                const PLfloat     *heightOffset ( &( _grafts[ graftID ]->heightOffset() ) );
+                plugs.add( plPlugInfo( transform, radius, thickness, length, heightOffset, type, graftID ) );
             }
             
             PLuint  kWireCount ( std::stoi( csv.data[++i][1] ) );  

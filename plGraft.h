@@ -64,9 +64,9 @@ class plGraft : public plRenderable,
                  PLfloat length,                
                  const plVector3 &markDirection = plVector3(0,0,1) );
 
-        PLfloat          heightOffset()       const { return _heightOffset; } 
+        const PLfloat   &heightOffset()       const { return _heightOffset; }
         const PLfloat   &radius()             const { return _radius; } 
-        PLfloat          length()             const { return _length; } 
+        const PLfloat   &length()             const { return _length; }
         const PLfloat   &cartilageThickness() const { return _cartilageThickness; }     
         const plVector3 &markDirection()      const { return _markDirection; } 
         

@@ -90,6 +90,12 @@
 #define PL_SLICE_NUM                             30
 #define PL_STACK_NUM                             1
  
+// IGUIDE BOOLEAN MESH OPERATIONS
+
+#define PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE        0
+#define PL_IGUIDE_BOOLEAN_MESH_UNION             1
+#define PL_IGUIDE_BOOLEAN_MESH_INTERSECTION      2
+
 // OTHER MACROS
 
 #define PL_COLOURMAP_SIZE                        512
