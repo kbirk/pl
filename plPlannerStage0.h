@@ -18,6 +18,8 @@
 #define PL_STAGE0_NUM_GROUPS                 16
 #define PL_STAGE0_INVOCATIONS                PL_STAGE0_NUM_GROUPS*PL_STAGE0_GROUP_SIZE
 
+#define PL_STAGE0_ITERATIONS                 4
+
 
 class plDefectState
 {

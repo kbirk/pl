@@ -20,6 +20,8 @@ void plPlannerStage0Shader::getUniformLocations()
     _stateGraftNormalsID   = glGetUniformLocation(_shaderProgramID, "uStateGraftNormals"); 
     _stateGraftRadiiID     = glGetUniformLocation(_shaderProgramID, "uStateGraftRadii"); 
 
+    _loadLocalID           = glGetUniformLocation(_shaderProgramID, "uLoadLocal");
+
     _seedID                = glGetUniformLocation(_shaderProgramID, "uSeed");   
 }
 
@@ -33,7 +35,6 @@ void plPlannerStage0Shader::setSiteUniforms     ( PLuint  meshSize,
     glUniform1f   ( _siteMeshAreaID,  meshArea ); 
     glUniform1ui  ( _siteGridSizeID,  gridSize ); 
     glUniform1ui  ( _sitePerimSizeID, perimSize);
-
 }                                                  
 
 void plPlannerStage0Shader::setAnnealingUniforms( PLfloat temp, 
@@ -49,7 +50,11 @@ void plPlannerStage0Shader::setAnnealingUniforms( PLfloat temp,
     
     glUniform4fv  ( _stateGraftPositionsID, positions.size(), &positions[0].x );
     glUniform4fv  ( _stateGraftNormalsID,   normals.size(),   &normals[0].x   );
-    glUniform1fv  ( _stateGraftRadiiID,     radii.size(),     &radii[0]       );
+    glUniform1fv  ( _stateGraftRadiiID,     radii.size(),     &radii[0]       );  
+}
 
-    glUniform1ui  ( _seedID, rand() );     
+void plPlannerStage0Shader::setLocalLoadUniform( PLuint load ) const
+{
+    glUniform1i  ( _loadLocalID, load );   
+    glUniform1ui ( _seedID, rand() );  
 }

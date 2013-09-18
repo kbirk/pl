@@ -28,6 +28,8 @@ class plPlannerStage0Shader : public plShader
                                    const plSeq<plVector4> &positions,
                                    const plSeq<plVector4> &normals,
                                    const plSeq<PLfloat>   &radii ) const;
+         
+        void setLocalLoadUniform( PLuint load ) const;
                
     private:
     
@@ -42,6 +44,8 @@ class plPlannerStage0Shader : public plShader
         PLuint _stateGraftNormalsID;
         PLuint _stateGraftRadiiID;
         PLuint _stateGraftCountID;
+
+        PLuint _loadLocalID;
 
         PLuint _seedID;
                    

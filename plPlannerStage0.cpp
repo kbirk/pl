@@ -159,8 +159,10 @@ namespace plPlannerStage0
         state.bindBuffers();         // bind input/output buffers   
             
         // simulated annealing                
-        while ( state.temperature > 0.01f)
+        while ( state.temperature > 0.01f )
         {
+            stage0Shader.setLocalLoadUniform( 0 );
+        
             // set annealing uniforms
             stage0Shader.setAnnealingUniforms( state.temperature,
                                                state.energy,
@@ -169,21 +171,28 @@ namespace plPlannerStage0
                                                state.graftNormals,
                                                state.graftRadii ); 
 
-            // call compute shader with 1D workgrouping
-            glDispatchCompute( PL_STAGE0_NUM_GROUPS, 1, 1 );
-            
-            // memory barrier      
-            glMemoryBarrier(GL_ALL_BARRIER_BITS); //GL_SHADER_STORAGE_BARRIER_BIT);
+            for ( PLuint i=0; i<PL_STAGE0_ITERATIONS; i++ )
+            {                   
+                // call compute shader with 1D workgrouping
+                glDispatchCompute( PL_STAGE0_NUM_GROUPS, 1, 1 );
+                
+                // memory barrier      
+                glMemoryBarrier( GL_ALL_BARRIER_BITS );
+
+                stage0Shader.setLocalLoadUniform( 1 );
+            }
+
+            // cool temperature
+            state.temperature *= 1.0f - PL_STAGE0_COOLING_RATE;
             
             // update the annealing state 
             state.update(); 
-            
+               
             std::cout << "\t Energy: " << state.energy << ",\t" 
-                      << state.graftCount << " grafts,\t Temperature: " 
-                      << state.temperature << std::endl;
-
-            // cool temperature
-            state.temperature *= 1.0f-PL_STAGE0_COOLING_RATE;
+                          << state.graftCount << " grafts,\t Temperature: " 
+                          << state.temperature << std::endl;   
+                
+            
         }
 
         // unbind and delete state output buffers

@@ -109,8 +109,7 @@ namespace plPlannerStage1
                                       donorGridSizes,
                                       donorPerimSizes,
                                       donorByteOffset );
-        
-         
+                
         float da = (2.0f * PL_PI) / (float)(PL_STAGE1_NUM_DIRECTIONS);  
           
         for (PLuint i=0; i<PL_STAGE1_NUM_DIRECTIONS; i++)
