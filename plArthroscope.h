@@ -20,7 +20,6 @@ enum ImageManipulation
     CAMERA_IMAGE_UNDISTORT 
 };
 
-// lil' guy sai's gonna be makin changes up in here!
 class plArthroscope 
 {
 
@@ -40,7 +39,8 @@ class plArthroscope
 
         void updateImage(ImageManipulation im);
 
-        CvMat* getIntrinsics();
+        CvMat*      getIntrinsics();
+        plMatrix44  plGetIntrinsics();
         
     private:
     
@@ -56,6 +56,8 @@ class plArthroscope
         //Input camera intrinsics
         CvMat* intrinsics;
         CvMat* distortion;
+
+        plMatrix44 plIntrinsics;
 };
 
 

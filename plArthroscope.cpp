@@ -29,6 +29,12 @@ plArthroscope::plArthroscope()
     WIDTH   = CAPTUREWIDTH;
     HEIGHT  = CAPTUREHEIGHT;
 
+    for (int row = 0; row < 3; row++){
+        for (int col = 0; col < 3; col++){
+            plIntrinsics(row, col) = cvGetReal2D(intrinsics, row, col);
+        }
+    }
+
     //    img = new PLchar[ TEXTURE_SIZE  * TEXTURE_SIZE  * 3 ];
     
 //    for (int i = 0; i < TEXTURE_SIZE  * TEXTURE_SIZE  * 4; i+=4)
@@ -56,6 +62,11 @@ PLchar *plArthroscope::getImage()
 CvMat* plArthroscope::getIntrinsics() 
 { 
     return intrinsics; 
+}
+
+plMatrix44 plArthroscope::plGetIntrinsics()
+{
+    return plIntrinsics;
 }
 
 void plArthroscope::updateImage(ImageManipulation im)
