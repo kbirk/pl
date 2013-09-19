@@ -37,6 +37,7 @@ void plPlannerStage0Shader::setSiteUniforms     ( PLuint  meshSize,
     glUniform1ui  ( _sitePerimSizeID, perimSize);
 }                                                  
 
+
 void plPlannerStage0Shader::setAnnealingUniforms( PLfloat temp, 
                                                   PLfloat energy, 
                                                   PLfloat count,
@@ -53,8 +54,9 @@ void plPlannerStage0Shader::setAnnealingUniforms( PLfloat temp,
     glUniform1fv  ( _stateGraftRadiiID,     radii.size(),     &radii[0]       );  
 }
 
+
 void plPlannerStage0Shader::setLocalLoadUniform( PLuint load ) const
 {
-    glUniform1i  ( _loadLocalID, load );   
-    glUniform1ui ( _seedID, rand() );  
+    glUniform1ui ( _loadLocalID, load   );   
+    glUniform1ui ( _seedID,      rand() );  
 }

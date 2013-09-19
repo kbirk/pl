@@ -171,7 +171,7 @@ namespace plPlannerStage0
                                                state.graftNormals,
                                                state.graftRadii ); 
 
-            for ( PLuint i=0; i<PL_STAGE0_ITERATIONS; i++ )
+            for ( PLint i=PL_STAGE0_ITERATIONS; i>=0; i-- )
             {                   
                 // call compute shader with 1D workgrouping
                 glDispatchCompute( PL_STAGE0_NUM_GROUPS, 1, 1 );
@@ -179,11 +179,11 @@ namespace plPlannerStage0
                 // memory barrier      
                 glMemoryBarrier( GL_ALL_BARRIER_BITS );
 
-                stage0Shader.setLocalLoadUniform( 1 );
+                stage0Shader.setLocalLoadUniform( i );
             }
 
             // cool temperature
-            state.temperature *= 1.0f - PL_STAGE0_COOLING_RATE;
+            state.temperature -= PL_STAGE0_COOLING_RATE; //*= 1.0f - PL_STAGE0_COOLING_RATE;
             
             // update the annealing state 
             state.update(); 

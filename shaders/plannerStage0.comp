@@ -6,6 +6,8 @@
 #define PL_MIN_RADIUS               3.0
 #define PL_OVERLAP_THRESHOLD        0.8
 
+#define PL_MIN_PERTURBATION         0.05
+
 layout (local_size_x = 16) in;
 
 // shader storage buffer objects
@@ -363,13 +365,14 @@ void removeCap( inout state s, inout uint seed )
 
 void perturbState( inout state s, inout uint seed )
 {
-    float PERTURBATION_SCALE = uStateTemperature; //(2.0 * uStateTemperature) + 1.0; // at minimum perturbation will range 0 - 0.5   
+    
+    float perturbationScale = ( uStateTemperature > PL_MIN_PERTURBATION ) ? uStateTemperature : rand( seed ) * PL_MIN_PERTURBATION; //(2.0 * uStateTemperature) + 1.0; // at minimum perturbation will range 0 - 0.5   
              
     for (uint i=0; i<s.graftCount; i++)
     {
         /*
         // get random rotation        
-        float angle = ((rand( seed )*2.0)-1.0) * PERTURBATION_SCALE;
+        float angle = ((rand( seed )*2.0)-1.0) * perturbationScale;
         float x = rand( seed );
         float y = rand( seed );
         float z = rand( seed );    
@@ -389,7 +392,7 @@ void perturbState( inout state s, inout uint seed )
 
             vec3 projectedTrans = projectOntoPlane( vec3( tx, ty, tz ), vec3( s.normals[i] ) );
                 
-            trans = normalize( projectedTrans ) * ( ((rand( seed )*2.0)-1.0) * PERTURBATION_SCALE);
+            trans = normalize( projectedTrans ) * ( ((rand( seed )*2.0)-1.0) * perturbationScale);
             c++;
         }
         while ( !isValidPerturbation( vec3( s.positions[i] ) + trans, s.radii[i]*PL_OVERLAP_THRESHOLD ) && c < 3 );    
@@ -403,11 +406,11 @@ void perturbState( inout state s, inout uint seed )
         float tz = rand( seed ); 
 
         vec3 projectedTrans = projectOntoPlane( vec3( tx, ty, tz ), vec3( s.normals[i] ) );           
-        vec3 trans          = normalize( projectedTrans ) * ( ((rand( seed )*2.0)-1.0) * PERTURBATION_SCALE);
+        vec3 trans          = normalize( projectedTrans ) * ( ((rand( seed )*2.0)-1.0) * perturbationScale);
 
         if ( isValidPerturbation( vec3( s.positions[i] ) + trans, s.radii[i]*PL_OVERLAP_THRESHOLD ) )    
         {
-            s.positions[i] = s.positions[i] + vec4(trans, 1.0);
+            s.positions[i] = s.positions[i] + vec4( trans, 1.0 );
         }
             
         //s.normals  [i] = vec4( normalize( mat3( rot[0], rot[1], rot[2]) * vec3(s.normals[i]) ), 1.0 );
@@ -473,6 +476,73 @@ float acceptanceProbability( in float energy, in float newEnergy)
     return result;
 }
 
+
+/*
+
+
+void main(void)
+{ 
+    // get global invocation id
+    int gid = int( gl_GlobalInvocationID.x );  
+      
+
+    // get invocation unique seed value for RNG
+    uint seed = uint( uSeed*(gid+1) );  
+       
+    // create local state and copy data from global state 
+    state S;   copyGlobalState(  S ); 
+    state nS;  copyGlobalState( nS ); 
+    
+    for (uint j=0; j < PL_ITERATIONS; j++)
+    {   
+        // determine which case
+        uint changeCase = uint( rand( seed ) * 3 );
+            
+        if (nS.graftCount == 0 || changeCase == 0)
+        {
+            // add random
+            if (nS.graftCount < PL_MAX_GRAFTS_PER_SOLUTION)
+            {
+                addCap( nS, seed );
+            }
+        }
+        else if (changeCase == 1)
+        {
+            // remove random
+            removeCap( nS, seed );
+        }
+        
+        // peturb state
+        perturbState( nS, seed );
+        
+        // calc energy
+        nS.energy = energy( nS );
+        
+        if ( acceptanceProbability( S.energy, nS.energy ) > rand( seed ) )
+        {
+            copyState( S, nS );
+        }  
+    }
+    
+    // store state energy
+    stateEnergies[gid] = S.energy;
+
+    // store state graft count
+    stateGraftCounts[gid] = S.graftCount;
+
+    // store state positions, normals, and radii  
+    uint offset = gid*PL_MAX_GRAFTS_PER_SOLUTION;  
+    for (int i=0; i<S.graftCount; i++)
+    {
+        stateGraftPositions[offset+i] = S.positions[i];
+        stateGraftNormals  [offset+i] = S.normals  [i]; 
+        stateGraftRadii    [offset+i] = S.radii    [i];   
+    }
+    
+}
+*/
+
+
 void main(void)
 { 
     // get global invocation id
@@ -482,17 +552,16 @@ void main(void)
     uint seed = uint( uSeed*(gid+1) );  
             
     // acquire current state (whether global or local)  
-    state S, nS;   
-    if ( uLoadLocal == 1 )  
+    state nS;   
+    if ( uLoadLocal > 0 )  
     { 
-        copyLocalState( S  );
+        copyLocalState( nS );
     }
     else   
     {
-        copyGlobalState( S ); 
+        copyGlobalState( nS ); 
     }
-    copyState( nS, S );
-        
+
     // determine which case
     uint changeCase = uint( rand( seed ) * 3 );
         
@@ -513,32 +582,26 @@ void main(void)
     // peturb state
     perturbState( nS, seed );
     
-    // calc energy
-    nS.energy = energy( nS );
-                
-    if ( acceptanceProbability( S.energy, nS.energy ) > rand( seed ) )
+    if ( uLoadLocal == 1 )
     {
-        copyState( S, nS );            
-    } 
+        // calc energy
+        nS.energy = energy( nS );             
+    }
     
     // store state energy
-    stateEnergies[gid] = S.energy;
-
+    stateEnergies[gid] = nS.energy;
+    
     // store state graft count
-    stateGraftCounts[gid] = S.graftCount;
+    stateGraftCounts[gid] = nS.graftCount;
 
     // store state positions, normals, and radii  
     uint offset = gid*PL_MAX_GRAFTS_PER_SOLUTION;  
-    for (int i=0; i<S.graftCount; i++)
+    for (int i=0; i<nS.graftCount; i++)
     {
-        stateGraftPositions[offset+i] = S.positions[i];
-        stateGraftNormals  [offset+i] = S.normals  [i]; 
-        stateGraftRadii    [offset+i] = S.radii    [i];   
+        stateGraftPositions[offset+i] = nS.positions[i];
+        stateGraftNormals  [offset+i] = nS.normals  [i]; 
+        stateGraftRadii    [offset+i] = nS.radii    [i];   
     } 
-   
-    
-    
-    
 }
 
 

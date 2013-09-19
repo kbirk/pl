@@ -12,7 +12,7 @@
 #define PL_MAX_GRAFTS_PER_SOLUTION           16
 
 #define PL_STAGE0_INITIAL_TEMPERATURE        1.0f
-#define PL_STAGE0_COOLING_RATE               0.05f
+#define PL_STAGE0_COOLING_RATE               0.005f //0.05f
 
 #define PL_STAGE0_GROUP_SIZE                 16
 #define PL_STAGE0_NUM_GROUPS                 16
