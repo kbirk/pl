@@ -26,6 +26,7 @@ class plSeq
 		void compress();
 		void clear(); 
 		void reserve(PLuint size);
+		plSeq<T> extract( PLuint index, PLuint num ) const;
 		PLuint size() const; 
 
         T & back();
@@ -235,6 +236,18 @@ void plSeq<T>::reserve(PLuint size)
 	_data = new_data;
 }
 
+template<class T>
+plSeq<T> plSeq<T>::extract( PLuint index, PLuint num ) const
+{
+    plSeq<T> ts( num );
+    
+    for (PLuint i=index; i < index+num; i++)
+    {
+        ts.add( _data[i] );
+    }
+    
+    return ts;
+}
 
 template<class T>
 PLuint plSeq<T>::size() const 

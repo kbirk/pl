@@ -14,7 +14,7 @@
 #define PL_STAGE0_INITIAL_TEMPERATURE        1.0f
 #define PL_STAGE0_COOLING_RATE               0.005f //0.05f
 
-#define PL_STAGE0_GROUP_SIZE                 16
+#define PL_STAGE0_GROUP_SIZE                 64
 #define PL_STAGE0_NUM_GROUPS                 16
 #define PL_STAGE0_INVOCATIONS                PL_STAGE0_NUM_GROUPS*PL_STAGE0_GROUP_SIZE
 
@@ -24,15 +24,29 @@
 class plDefectState
 {
     public:
-    
-        PLfloat           temperature;
-        PLfloat           energy;    
+  
         PLuint            graftCount;  
         plSeq<plVector4>  graftPositions;
         plSeq<plVector4>  graftNormals;
         plSeq<PLfloat>    graftRadii;
     
-        plDefectState();
+        plDefectState() {};
+}; 
+
+
+class plAnnealingGroup
+{
+    public:
+            
+        plSeq<PLfloat>    energies;    
+        plSeq<PLuint>     graftCounts;  
+        plSeq<plVector4>  graftPositions;
+        plSeq<plVector4>  graftNormals;
+        plSeq<PLfloat>    graftRadii;
+    
+        PLfloat           temperature;
+    
+        plAnnealingGroup( PLfloat initialEnergy );
         
         void createBuffers ();
         void destroyBuffers();
@@ -40,9 +54,18 @@ class plDefectState
         void bindBuffers  ();
         void unbindBuffers();
         
-        void update(); 
+        void convergeGroups();
+        void convergeGlobal();
+        
+        void updateGroupBuffer() const;
+        
+        PLint getCurrentBest() const;
+        
+        void getGlobalSolution( plDefectState &state );
          
     private:
+            
+        PLuint _groupStateBufferID;    
             
         PLuint _energiesBufferID;
         PLuint _graftPositionsBufferID;
@@ -50,10 +73,10 @@ class plDefectState
         PLuint _graftRadiiBufferID;
         PLuint _graftCountsBufferID;
 
-        PLfloat _acceptanceProbability( PLfloat energy, PLfloat newEnergy, PLfloat temperature ); 
+        PLfloat _acceptanceProbability( PLfloat energy, PLfloat newEnergy ); 
 
-        PLint _updateEnergy  ();
-        void  _updateGrafts  ( PLint index );               
+        PLint _updateEnergy  ( PLuint groupIndex);
+        void  _updateGrafts  ( PLuint groupIndex, PLint localIndex );               
 };
 
 

@@ -38,6 +38,52 @@ class plShader
 
 };
 
+/*
+
+template< class T >
+PLuint createBO( PLuint type, PLuint size, const T *array )
+{
+    PLuint bufferID;
+    glGenBuffers(1, &bufferID);     
+    glBindBuffer(type, bufferID);
+    glBufferData(type, size*sizeof(T), array, GL_STREAM_COPY);
+    glBindBuffer(type, 0);
+    return bufferID;
+} 
+
+
+template< class T >
+PLuint createBO( PLuint type, plSeq<T> array )
+{
+    return createBO( type, array.size(), &array[0] );
+} 
+
+
+template< class T >
+PLuint createBO( PLuint type, PLuint count, const T &fill )
+{
+    plSeq<T> array( count, fill );
+    return createBO( type, array );
+} 
+
+
+template< class T >
+PLuint createBO( PLuint type, PLuint count )
+{
+    return createBO( type, count, NULL );
+} 
+
+
+template< class T >
+T* readBO( PLuint type, PLuint index, PLuint count )
+{
+    return (T*) glMapBufferRange( type, 
+                                  index*sizeof(T), 
+                                  count*sizeof(T),
+                                  GL_MAP_READ_BIT );   
+}
+*/
+
 
 template< class T >
 PLuint createSSBO( PLuint count )
@@ -76,6 +122,9 @@ PLuint createSSBO( const plSeq<T> &array )
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     return bufferID;
 } 
+
+
+PLuint createSSBO( PLuint numBytes, const GLvoid *buffer );
 
 
 template< class T >

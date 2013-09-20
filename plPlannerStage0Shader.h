@@ -21,14 +21,17 @@ class plPlannerStage0Shader : public plShader
                                    PLfloat meshArea, 
                                    PLuint  gridSize,
                                    PLuint  perimSize ) const;
-                                   
+         
+        void setTemperatureUniform( PLfloat temp ) const; 
+        
+        /*                           
         void setAnnealingUniforms( PLfloat temp, 
-                                   PLfloat energy, 
-                                   PLfloat count,
+                                   const plSeq<PLfloat>   &energies, 
+                                   const plSeq<PLuint>    &counts,
                                    const plSeq<plVector4> &positions,
                                    const plSeq<plVector4> &normals,
                                    const plSeq<PLfloat>   &radii ) const;
-         
+        */ 
         void setLocalLoadUniform( PLuint load ) const;
                
     private:
@@ -37,14 +40,15 @@ class plPlannerStage0Shader : public plShader
         PLuint _siteMeshAreaID;
         PLuint _siteGridSizeID;
         PLuint _sitePerimSizeID;
-         
-        PLuint _stateTemperatureID;                
+                
+        PLuint _stateTemperatureID;    
+        /*             
         PLuint _stateEnergyID;
         PLuint _stateGraftPositionsID;
         PLuint _stateGraftNormalsID;
         PLuint _stateGraftRadiiID;
         PLuint _stateGraftCountID;
-
+        */
         PLuint _loadLocalID;
 
         PLuint _seedID;
