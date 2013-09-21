@@ -25,6 +25,38 @@ namespace plMath
         // Compute projected position from the clamped t
         return a + t * ab;
     }
+
+    PLbool closestPointsBetweenSegments(const plVector3 &edge1Point1, const plVector3 &edge1Point2, const plVector3 &edge2Point1, const plVector3 &edge2Point2, plVector3& closestPointEdge1, plVector3& closestPointEdge2, PLfloat& distanceBetweenLines)
+    {
+        plVector3 edge1Direction = edge1Point2 - edge1Point1;
+        plVector3 edge2Direction = edge2Point2 - edge2Point1;
+
+        plVector3 symbolicIntersectionDirection = edge1Direction ^ edge2Direction;
+
+        // if lines are parallel, then there is no clear closest point between the two
+        if (symbolicIntersectionDirection == plVector3(0,0,0))
+        {
+            distanceBetweenLines = (closestPointOnSegment(edge2Point1,edge1Point1,edge1Point2) - edge2Point1).length();
+            return false;
+        }
+
+        plMatrix44 linearEquationMatrix(
+                    -edge1Direction.x                , -edge1Direction.y                ,   -edge1Direction.z                , 0.f,
+                     edge2Direction.x                ,  edge2Direction.y                ,    edge2Direction.z                , 0.f,
+                     symbolicIntersectionDirection.x ,  symbolicIntersectionDirection.y ,    symbolicIntersectionDirection.z , 0.f,
+                     0.f, 0.f, 0.f, 1.f);
+        plVector3 linearEquationLeftSide = edge1Point1-edge2Point1;
+
+        plVector3 params = linearEquationMatrix.inverse() * linearEquationLeftSide;
+        // params.x is the parameter along edge1
+        // params.y is the parameter along edge2
+
+        closestPointEdge1 = edge1Point1 + (params.x * edge1Direction);
+        closestPointEdge2 = edge2Point1 + (params.y * edge2Direction);
+        distanceBetweenLines = (closestPointEdge1 - closestPointEdge2).length();
+        return true;
+
+    }
     
 
     PLfloat clamp( PLfloat val, PLfloat min, PLfloat max)

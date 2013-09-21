@@ -21,7 +21,7 @@ class plSeq
 		void add( const plSeq<T> &s );	
 		void fill( PLuint n, const T &t );	
 		void remove();
-		void remove( PLuint i );
+        void remove( PLuint i );
 		void shift( PLuint i );
 		void compress();
 		void clear(); 

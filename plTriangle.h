@@ -58,9 +58,13 @@ class plTriangle
 		                             PLbool ignoreBehindRay = false, 
 		                             PLbool backFaceCull = false ) const; 
 
-        plVector3 barycentricCoords(const plVector3 &point);
+        plVector3 barycentricCoords( const plVector3 &point );
+
+        PLbool contains( const plVector3& ) const;
         
         PLfloat getArea() const;
+
+        PLbool operator== ( const plTriangle& ) const;
 
     private:
     

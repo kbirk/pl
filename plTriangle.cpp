@@ -134,10 +134,24 @@ plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint )
     return plVector3(u,v,w);
 }
 
+PLbool plTriangle::contains( const plVector3& pt ) const {
+    for ( PLuint i = 0; i < _points.size(); i++ )
+        if ( _points[i] == pt )
+            return true;
+    return false;
+}
 
 PLfloat plTriangle::getArea() const
 {
     return 0.5f * ( (_points[1] - _points[0]) ^ (_points[2] - _points[0]) ).length(); 
+}
+
+PLbool plTriangle::operator== ( const plTriangle& other ) const
+{
+    return (_points[0] == other._points[0] &&
+            _points[1] == other._points[1] &&
+            _points[2] == other._points[2] &&
+            _normal    == other._normal);
 }
 
 // I/O operators
