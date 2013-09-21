@@ -3,6 +3,8 @@
 plCheckerBoard::plCheckerBoard( PLfloat blocksize ) 
 {           
     _generate( blocksize );
+    _isTransparent = false;
+    _isVisible     = true;
 }
 
 
