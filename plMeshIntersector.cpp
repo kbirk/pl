@@ -97,9 +97,10 @@ PLbool plMeshIntersectorConnectivityData::splitEdgeOnVect( PLuint edgeIndex, plV
     return true;
 }
 
+// add a vertex somewhere in the middle of the triangle, then divide the triangle into three smaller triangles.
 PLbool plMeshIntersectorConnectivityData::splitFaceOnVect( PLuint faceIndex, plVector3& vertex )
 {
-    // add a vertex somewhere in the middle of the triangle, then divide the triangle into three smaller triangles.
+    // find all existing cells, have them available in case they're needed later
     plMeshIntersectorConnectivityDataFace face = faces[faceIndex]; // this will eventually be removed from the list of faces
 
     plMeshIntersectorConnectivityDataVert& vert0;
@@ -155,6 +156,7 @@ PLbool plMeshIntersectorConnectivityData::splitFaceOnVect( PLuint faceIndex, plV
         }
     }
 
+    // create the new cells, storing their eventual indices
     plMeshIntersectorConnectivityDataVert vertN; // N = New
     PLuint vertNindex = verts.size();
 
@@ -172,6 +174,7 @@ PLbool plMeshIntersectorConnectivityData::splitFaceOnVect( PLuint faceIndex, plV
     PLuint face12Nindex(faces.size());
     PLuint face20Nindex(faces.size()+1);
 
+    // fill the cells with data
     vertN.vert = vertex;
     vertN.faceIndices.add(face01Nindex);
     vertN.faceIndices.add(face12Nindex);
@@ -222,6 +225,7 @@ PLbool plMeshIntersectorConnectivityData::splitFaceOnVect( PLuint faceIndex, plV
     edgeN1.faceIndices.add(face12Nindex);
     edgeN1.faceIndices.add(face20Nindex);
 
+    // add the cells to our arrays
     verts.add(vertN);
 
     faces[faceIndex] = face01N;
