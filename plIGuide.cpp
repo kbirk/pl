@@ -46,8 +46,10 @@ PLbool plIGuide::generateIGuideModels()
     }
 
     // generate base over the defect site
-    PLfloat safetyMarginOverDefect(0.f); // 2mm safety margin
-    PLfloat thicknessOverDefect   (5.f);
+    PLfloat baseTranslation(1.01f);
+    PLfloat baseThickness  (5.00f);
+    PLfloat interiorTranslation(-10.0f);
+    PLfloat interiorThickness  (11.0f);
     for (PLuint i = 0; i < splines.size(); i++)
     {
         // get data from splines
@@ -55,23 +57,18 @@ PLbool plIGuide::generateIGuideModels()
         splineTriangles.add( splines[i]->triangles() );
         plVector3 splineOffsetDirection( splines[i]->getAverageNormal() );
 
-        // move base triangles so that they don't push down on the grafts in the actual surgery
-        plVector3 baseOverDefectTranslation( safetyMarginOverDefect*splineOffsetDirection );
-        plMatrix44 baseOverDefectTranslationMatrix(baseOverDefectTranslation);
-        for (PLuint j = 0; j < splineTriangles.size(); j++)
-        {
-            splineTriangles[j] = baseOverDefectTranslationMatrix*splineTriangles[j];
-        }
-
         // create the base shape over the defect site
-        splineTriangles = plMeshExtruder::extrudeMesh(splineTriangles,thicknessOverDefect,splineOffsetDirection);
+        plSeq<plTriangle> baseOverDefectTriangles;
+        baseOverDefectTriangles = plMeshExtruder::extrudeMesh(splineTriangles,baseThickness,baseTranslation,splineOffsetDirection);
+        plString baseOverDefectFilename ( _prepareFilenameWithVariables(true ,'S',i,"templateBase") );
+        iGuideModelsToAdd.add( new plModel(baseOverDefectTriangles,baseOverDefectFilename,PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
 
-        // store it
-        plString splineFilename ( _prepareFilenameWithVariables(true ,'S',i,"templateBase") );
-        iGuideModelsToAdd.add( new plModel(splineTriangles,splineFilename,PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+        // create the defect site volume
+        plSeq<plTriangle> interiorDefectTriangles;
+        interiorDefectTriangles = plMeshExtruder::extrudeMesh(splineTriangles,interiorThickness,interiorTranslation,splineOffsetDirection);
+        plString interiorDefectFilename ( _prepareFilenameWithVariables(false ,'M',i,"defectInterior") );
+        iGuideModelsToSubtract.add( new plModel(interiorDefectTriangles,interiorDefectFilename,PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
     }
-
-
 
     // plug pieces
     plSeq<plTriangle> roundCylinder;
@@ -103,26 +100,27 @@ PLbool plIGuide::generateIGuideModels()
         
         //if ( plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR )
 
-        PLfloat   holeDiameter   = plugs[i].radius();
-        PLfloat   sleeveDiameter = holeDiameter + 2.f;
-        PLfloat   baseDiameter   = sleeveDiameter + 1.f;
-        PLfloat   holderDiameter = baseDiameter + 4.f;
+        PLfloat   holeDiameter    = plugs[i].radius();
+        PLfloat   sleeveDiameter  = holeDiameter   + 2.f ;
+        PLfloat   baseDiameter    = sleeveDiameter + 1.f ;
+        PLfloat   holderDiameter  = baseDiameter   + 4.f ;
+        PLfloat   correctDiameter = holderDiameter + 0.1f;
 
-        PLfloat sleeveHeight = toolDepth - plugs[i].length() - plugs[i].cartilageThickness();
+        PLfloat   sleeveHeight = toolDepth - plugs[i].length() - plugs[i].cartilageThickness();
         
         plVector3 holeScale   ( holeDiameter,   36.f, holeDiameter   );
         plVector3 sleeveScale ( sleeveDiameter, sleeveHeight, sleeveDiameter );
-        //plVector3 baseScale   ( baseDiameter,   20.f, baseDiameter   );
+        plVector3 baseScale   ( baseDiameter,   20.f, baseDiameter   );
         plVector3 holderScale ( holderDiameter, 10.f, holderDiameter );
         plVector3 keyScale    ( 3.f, 29.9f, 4.f );
-        plVector3 correctScale( holderDiameter, thicknessOverDefect - 1.f, holderDiameter   );
+        plVector3 correctScale( correctDiameter, baseThickness - 1.f, correctDiameter   );
 
         //if ( plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR )
             //plVector3 supportScale( 18.f,  4.f, 18.f  );
         
         plSeq<plTriangle> holeTriangles   ( _createTemplatePieceTransformed(sharpCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, holeScale,    0.0f,           0.0f) );
         plSeq<plTriangle> sleeveTriangles ( _createTemplatePieceTransformed(roundCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, sleeveScale,  0.0f,           0.0f) );
-        //plSeq<plTriangle> baseTriangles   ( _createTemplatePieceTransformed(sharpCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, baseScale,    0.0f,           0.0f) );
+        plSeq<plTriangle> baseTriangles   ( _createTemplatePieceTransformed(sharpCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, baseScale,    0.0f,           0.0f) );
         plSeq<plTriangle> holderTriangles ( _createTemplatePieceTransformed(roundCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, holderScale,  0.0f,           0.0f) );
         plSeq<plTriangle> keyTriangles    ( _createTemplatePieceTransformed(keyCube,         cylinderToCartilageSurfaceTransform, 0.0f, keyScale,     keyTranslation, 0.0f) );
         plSeq<plTriangle> correctTriangles( _createTemplatePieceTransformed(correctCylinder, cylinderToCartilageSurfaceTransform, 0.0f, correctScale, 0.0f,           0.0f) );
@@ -134,14 +132,14 @@ PLbool plIGuide::generateIGuideModels()
             
         plString holeFilename    ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE   , typeLetter, plugs[i].graftID(), "hole"       ) );
         plString sleeveFilename  ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "sleeve"     ) );
-        //plString baseFilename    ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "base"       ) );
+        plString baseFilename    ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "base"       ) );
         plString holderFilename  ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "holder"     ) );
         plString keyFilename     ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "key"        ) );
         plString correctFilename ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_INTERSECTION , typeLetter, plugs[i].graftID(), "correction" ) );
 
         iGuideModelsToSubtract.add( new plModel( holeTriangles   , holeFilename   , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( sleeveTriangles , sleeveFilename , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
-        //iGuideModelsToAdd.add     ( new plModel( baseTriangles   , baseFilename   , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+        iGuideModelsToAdd.add     ( new plModel( baseTriangles   , baseFilename   , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( holderTriangles , holderFilename , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( keyTriangles    , keyFilename    , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToSubtract.add( new plModel( correctTriangles, correctFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );

@@ -96,35 +96,23 @@ namespace plMeshExtruder
         return _collectOutsideEdgesSort( edges );
     }
 
-
-    // return an empty plSeq if this fails.
-    plSeq<plTriangle> extrudeMesh( const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction )
+    void _prepareTopAndBottomOfExtrusion( const plSeq<plTriangle>& inputTriangles, const plVector3& offset, plSeq<plTriangle>& outputTriangles )
     {
-        if ( inputTriangles.size()     == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input\n"; return plSeq<plTriangle>(); }
-        if ( magnitude                 == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Magnitude of zero\n";     return plSeq<plTriangle>(); }
-        if ( direction.squaredLength() == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Direction of zero\n";     return plSeq<plTriangle>(); }
+        if (outputTriangles.size() > 0)
+            std::cout << "plMeshExtruder::_prepareTopAndBottomOfExtrusion() Warning: outputTriangles had contents before entering function. Clearing." << std::endl;
 
-        plSeq<plEdgePointers> outsideEdges = _collectOutsideEdges( inputTriangles );
-
-        if (outsideEdges.size()        == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No surrounding edges found\n"; return plSeq<plTriangle>(); }
-
-        plSeq<plTriangle> outputTriangles( inputTriangles.size() * 2 + outsideEdges.size() * 2 ); // allocate enough memory
+        outputTriangles.clear();
 
         outputTriangles.add( inputTriangles ); // add existing triangles
 
-        // store this for bookkeeping. This is the index where upper (extruded) edges/triangles will start
         PLuint indexOfUpperTriangles = outputTriangles.size();
-
-        // we need to extrude a bunch of these triangles in the direction of the average normal
-        plVector3 offset ( magnitude * direction.normalize() );
-        
-        for (PLuint i = 0; i < inputTriangles.size(); i++)
-        {            
-            plVector3 point0( inputTriangles[i].point0() + offset );
-            plVector3 point1( inputTriangles[i].point1() + offset );
-            plVector3 point2( inputTriangles[i].point2() + offset );
-            plVector3 normal( inputTriangles[i].normal() );
-            outputTriangles.add( plTriangle( normal, point0, point1, point2 ) );                     
+        for (PLuint i = 0; i < indexOfUpperTriangles; i++)
+        {
+            plVector3 point0( outputTriangles[i].point0() + offset );
+            plVector3 point1( outputTriangles[i].point1() + offset );
+            plVector3 point2( outputTriangles[i].point2() + offset );
+            plVector3 normal( outputTriangles[i].normal() );
+            outputTriangles.add( plTriangle( normal, point0, point1, point2 ) );
         }
 
         // reverse normals of bottom side
@@ -132,7 +120,10 @@ namespace plMeshExtruder
         {
             outputTriangles[i].swapVertices0And1(); // reverses the normal
         }
-        
+    }
+
+    void _prepareSidesOfExtrusionFlat( const plSeq<plEdgePointers>& outsideEdges, const plVector3& offset, plSeq<plTriangle>& outputTrianglesToAddTo )
+    {
         // now fill in the sides of the template with triangles
         for (PLuint i = 0; i < outsideEdges.size(); i++)
         {
@@ -140,14 +131,107 @@ namespace plMeshExtruder
             const plVector3 &p1 = *outsideEdges[i].p1;
             plVector3 p2 = *outsideEdges[i].p1 + offset;
             plVector3 p3 = *outsideEdges[i].p0 + offset;
-        
-            outputTriangles.add( plTriangle( p0, p1, p2 ) );
-            outputTriangles.add( plTriangle( p0, p2, p3 ) ); 
+
+            outputTrianglesToAddTo.add( plTriangle( p0, p1, p2 ) );
+            outputTrianglesToAddTo.add( plTriangle( p0, p2, p3 ) );
         }
+    }
+
+    void _prepareSidesOfExtrusionSmooth( const plSeq<plEdgePointers>& outsideEdges, const plVector3& offset, const PLuint numDivisions, plSeq<plTriangle>& outputTrianglesToAddTo )
+    {
+        // first determine an evenly-spaced set of floating point numbers, so we can determine a smooth circle shape using cos() and sin() later
+        plSeq<PLfloat> divisionParameters;
+        divisionParameters.add(0.f);
+        for (PLuint i = 0; i < numDivisions; i++)
+            divisionParameters.add( PLfloat(PL_PI) * PLfloat(i+1) / PLfloat(numDivisions+1) );
+        divisionParameters.add(PL_PI);
+
+        // now fill in the sides of the template with triangles
+        for (PLuint i = 0; i < outsideEdges.size(); i++)
+        {
+            plVector3 relativeX( 0.5f * ( (offset^(*outsideEdges[i].p0 - *outsideEdges[i].p1)).normalize() * offset.length() ) );
+            plVector3 relativeY( 0.5f * offset );
+            for (PLuint j = 0; j < numDivisions; j++)
+            {
+                plVector3 p0, p1, p2, p3;
+                if (j == 0) // avoid roundoff error for this case
+                {
+                    p0 = *outsideEdges[i].p0;
+                    p1 = *outsideEdges[i].p1;
+                }
+                else
+                {
+                    PLfloat paramX(  sin(divisionParameters[j]) );
+                    PLfloat paramY( -cos(divisionParameters[j]) );
+                    p0 = *outsideEdges[i].p0 + 0.5f * offset + paramX * relativeX + paramY * relativeY;
+                    p1 = *outsideEdges[i].p1 + 0.5f * offset + paramX * relativeX + paramY * relativeY;
+                }
+
+                if (j == numDivisions-1) // avoid roundoff error for this case
+                {
+                    p2 = *outsideEdges[i].p1 + offset;
+                    p3 = *outsideEdges[i].p0 + offset;
+                }
+                else
+                {
+                    PLfloat paramX(  sin(divisionParameters[j+1]) );
+                    PLfloat paramY( -cos(divisionParameters[j+1]) );
+                    p2 = *outsideEdges[i].p1 + 0.5f * offset + paramX * relativeX + paramY * relativeY;
+                    p3 = *outsideEdges[i].p0 + 0.5f * offset + paramX * relativeX + paramY * relativeY;
+                }
+
+                outputTrianglesToAddTo.add( plTriangle( p0, p1, p2 ) );
+                outputTrianglesToAddTo.add( plTriangle( p0, p2, p3 ) );
+            }
+        }
+    }
+
+    // return an empty plSeq if this fails.
+    plSeq<plTriangle> extrudeMesh( const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction )
+    {
+        // error checking
+        if ( inputTriangles.size()     == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input!\n";     return plSeq<plTriangle>(); }
+        if ( magnitude                 <= 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Magnitude of zero or less!\n"; return plSeq<plTriangle>(); }
+        if ( direction.squaredLength() == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Direction of zero!\n";         return plSeq<plTriangle>(); }
+
+        plSeq<plEdgePointers> outsideEdges = _collectOutsideEdges( inputTriangles );
+
+        if (outsideEdges.size()        == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No surrounding edges found\n"; return plSeq<plTriangle>(); }
+
+        plSeq<plTriangle> outputTriangles( inputTriangles.size() * 2 + outsideEdges.size() * 2 ); // allocate enough memory
+
+        // we need to extrude a bunch of these triangles in the direction of the average normal
+        plVector3 offset ( magnitude * direction.normalize() );
+
+        _prepareTopAndBottomOfExtrusion( inputTriangles, offset, outputTriangles );
+        _prepareSidesOfExtrusionFlat   ( outsideEdges,   offset, outputTriangles );
 
         return outputTriangles;
     }
     
+    // return an empty plSeq if this fails.
+    plSeq<plTriangle> extrudeMesh( const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const PLfloat preTranslation, const plVector3& direction )
+    {
+        // error checking
+        if ( inputTriangles.size()     == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input!\n";     return plSeq<plTriangle>(); }
+        if ( magnitude                 <= 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Magnitude of zero or less!\n"; return plSeq<plTriangle>(); }
+        if ( direction.squaredLength() == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Direction of zero!\n";         return plSeq<plTriangle>(); }
+
+        // apply the translation to the triangles before sending it to be extruded.
+        plVector3  preTranslationVector(preTranslation*direction);
+        plMatrix44 preTranslationMatrix;
+        preTranslationMatrix.setTranslation(preTranslationVector);
+
+        plSeq<plTriangle> preTranslatedTriangles;
+        for (PLuint i = 0; i < inputTriangles.size(); i++)
+        {
+            preTranslatedTriangles.add(preTranslationMatrix * inputTriangles[i]);
+        }
+
+        // call the normal extrude function now
+        return extrudeMesh(preTranslatedTriangles,magnitude,direction);
+    }
+
     /*
 
     // helper to collectOutsideEdges

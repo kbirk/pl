@@ -38,8 +38,9 @@ PLbool plIGuideSite::generateTemplateBase()
 
 	std::cout << "TEMPLATE SIZE: " << _templateBase.size() << "\n";
 
-    float magnitudeOfOffset(5.0);
-    _templateBase = plMeshExtruder::extrudeMesh( _templateBase, magnitudeOfOffset, boundary.getAverageNormal() );
+    float magnitudeOfOffset      ( 5.10f);
+    float preTranslationOfSurface(-0.10f);
+    _templateBase = plMeshExtruder::extrudeMesh( _templateBase, magnitudeOfOffset, preTranslationOfSurface, boundary.getAverageNormal() );
 
 	return true;
 }
