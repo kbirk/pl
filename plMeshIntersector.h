@@ -10,7 +10,10 @@ namespace plMeshIntersector
 {
     class plMeshIntersectorConnectivityData
     {
-      private:
+
+      public:
+
+        plMeshIntersectorConnectivityData();
 
         class plMeshIntersectorConnectivityDataVert
         {
@@ -57,22 +60,30 @@ namespace plMeshIntersector
             PLbool operator==(const plMeshIntersectorConnectivityDataFace&);
         };
 
+        plSeq<plMeshIntersectorConnectivityDataVert> verts;
+        plSeq<plMeshIntersectorConnectivityDataEdge> edges;
+        plSeq<plMeshIntersectorConnectivityDataFace> faces;
+
+        PLbool intersect(const plSeq<plTriangle> &, plSeq<plTriangle> &);
+
+      private:
+
         PLbool _splitEdgeOnVect(PLuint edgeIndex, const plVector3& vertex);
         PLbool _splitFaceOnVect(PLuint faceIndex, const plVector3& vertex);
 
         PLbool _importTriSeq(const plSeq<plTriangle>&);
         PLbool _exportTriSeq(      plSeq<plTriangle>&);
 
-      public:
-        plSeq<plMeshIntersectorConnectivityDataVert> verts;
-        plSeq<plMeshIntersectorConnectivityDataEdge> edges;
-        plSeq<plMeshIntersectorConnectivityDataFace> faces;
+        PLbool _checkArraySizes();
 
-        PLbool intersect(const plSeq<plTriangle> &, plSeq<plTriangle> &);
     };
 
     PLbool intersect(const plSeq<plTriangle> &, plSeq<plTriangle> &);
 
 }
+
+std::ostream& operator << ( std::ostream &stream, const plMeshIntersector::plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataVert &p );
+std::ostream& operator << ( std::ostream &stream, const plMeshIntersector::plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge &p );
+std::ostream& operator << ( std::ostream &stream, const plMeshIntersector::plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataFace &p );
 
 #endif // PLMESHINTERSECTOR_H

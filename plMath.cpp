@@ -132,6 +132,12 @@ namespace plMath
     }
     */
 
+    plVector3 plClosestPointOnPlane(const plVector3 &lineDirection, const plVector3 &linePoint, const plVector3 &planeNormal, const plVector3 &planePoint)
+    {
+        PLfloat t = ((planePoint - linePoint)*planeNormal)/(lineDirection*planeNormal);
+        return (t * lineDirection) + linePoint;
+    }
+
     plIntersection rayIntersect( const plSeq<plTriangle> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull )
     {
         PLfloat min = FLT_MAX;

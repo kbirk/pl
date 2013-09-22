@@ -14,6 +14,7 @@ namespace plMath
     plVector3 projectVectorOnPlane         ( const plVector3 &vector, const plVector3 &plane_normal);
     plVector3 closestPointOnSegment        ( const plVector3 &point, const plVector3 &a, const plVector3 &b);
     PLbool    closestPointsBetweenSegments ( const plVector3 &e1Pt1, const plVector3 &e1Pt2, const plVector3 &e2Pt1, const plVector3 &e2Pt2, plVector3& closestPointEdge1, plVector3& closestPointEdge2, PLfloat& distanceBetweenLines);
+    plVector3 plClosestPointOnPlane        ( const plVector3 &linDir, const plVector3 &linPt, const plVector3 &plnN, const plVector3 &plnPt);
     PLfloat   fsqrt                        ( PLfloat x );
     PLfloat   clamp                        ( PLfloat val, PLfloat min = -1, PLfloat max = 1);
 
