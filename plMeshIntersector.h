@@ -57,8 +57,8 @@ namespace plMeshIntersector
             PLbool operator==(const plMeshIntersectorConnectivityDataFace&);
         };
 
-        PLbool _splitEdgeOnVect(PLuint edgeIndex, PLuint vertIndex);
-        PLbool _splitFaceOnVect(PLuint faceIndex, PLuint vertIndex);
+        PLbool _splitEdgeOnVect(PLuint edgeIndex, const plVector3& vertex);
+        PLbool _splitFaceOnVect(PLuint faceIndex, const plVector3& vertex);
 
         PLbool _importTriSeq(const plSeq<plTriangle>&);
         PLbool _exportTriSeq(      plSeq<plTriangle>&);

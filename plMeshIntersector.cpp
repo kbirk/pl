@@ -101,7 +101,7 @@ namespace plMeshIntersector
         return true;
     }
 
-    PLbool plMeshIntersectorConnectivityData::_splitEdgeOnVect( PLuint edgeIndex, plVector3& vertex )
+    PLbool plMeshIntersectorConnectivityData::_splitEdgeOnVect( PLuint edgeIndex, const plVector3& vertex )
     {
         // find all existing cells, have them available in case they're needed later
         // split the current edge into two pieces
@@ -109,10 +109,10 @@ namespace plMeshIntersector
         // find all existing cells, have them available in case they're needed later
         plMeshIntersectorConnectivityDataEdge edgeAB = edges[edgeIndex];
 
-        plMeshIntersectorConnectivityDataVert& vertA;
-        plMeshIntersectorConnectivityDataVert& vertB;
         PLuint vertAindex = edges[edgeIndex].vertIndices[0];
         PLuint vertBindex = edges[edgeIndex].vertIndices[1];
+        plMeshIntersectorConnectivityDataVert& vertA = verts[vertAindex];
+        plMeshIntersectorConnectivityDataVert& vertB = verts[vertBindex];
 
         // create the new cells, storing their eventual indices
         plMeshIntersectorConnectivityDataEdge edgeAN;
@@ -172,18 +172,18 @@ namespace plMeshIntersector
             for (PLuint j = 0; j < 3; j++)
             {
                 PLuint currentEdgeIndex = faceABC.edgeIndices[j];
-                if (edges[currentEdgeIndex].edge == plEdge(vertA,vertC))
+                if (edges[currentEdgeIndex].edge == plEdge(vertA.vert,vertC.vert))
                     edgeACindex = currentEdgeIndex;
-                else if (edges[currentEdgeIndex].edge == plEdge(vertB,vertC))
+                else if (edges[currentEdgeIndex].edge == plEdge(vertB.vert,vertC.vert))
                     edgeBCindex = currentEdgeIndex;
             }
             plMeshIntersectorConnectivityDataEdge& edgeAC = edges[edgeACindex];
             plMeshIntersectorConnectivityDataEdge& edgeBC = edges[edgeBCindex];
 
             PLbool faceOrientationABC(false); // either ABC or CBA
-            if ((faceABC.face.point0() == vertA && faceABC.face.point1() == vertB) ||
-                (faceABC.face.point1() == vertA && faceABC.face.point2() == vertB) ||
-                (faceABC.face.point2() == vertA && faceABC.face.point0() == vertB))
+            if ((faceABC.face.point0() == vertA.vert && faceABC.face.point1() == vertB.vert) ||
+                (faceABC.face.point1() == vertA.vert && faceABC.face.point2() == vertB.vert) ||
+                (faceABC.face.point2() == vertA.vert && faceABC.face.point0() == vertB.vert))
                 faceOrientationABC = true; // otherwise false, as already been set
 
             // create the new cells, storing their eventual indices
@@ -197,8 +197,8 @@ namespace plMeshIntersector
 
             // now fill the cells with stuff!
             edgeNC.edge = plEdge(vertN.vert,vertC.vert);
-            edgeNC.vertIndices.add(vertN);
-            edgeNC.vertIndices.add(vertC);
+            edgeNC.vertIndices.add(vertNindex);
+            edgeNC.vertIndices.add(vertCindex);
             edgeNC.faceIndices.add(faceANCindex);
             edgeNC.faceIndices.add(faceBNCindex);
 
@@ -219,7 +219,7 @@ namespace plMeshIntersector
             faceANC.edgeIndices.add(edgeANindex);
             faceANC.edgeIndices.add(edgeNCindex);
             faceANC.edgeIndices.add(edgeACindex);
-            faceBNC.edgeIndices.add(edgeBNindex);
+            faceBNC.edgeIndices.add(edgeNBindex);
             faceBNC.edgeIndices.add(edgeNCindex);
             faceBNC.edgeIndices.add(edgeBCindex);
 
@@ -230,7 +230,7 @@ namespace plMeshIntersector
 
             // update anything else that has been affected by what we just did
             edgeAN.faceIndices.add(faceANCindex);
-            edgeBN.faceIndices.add(faceBNCindex);
+            edgeNB.faceIndices.add(faceBNCindex);
 
             edgeBC.faceIndices.remove(edgeBC.faceIndices.findIndex(faceABCindex));
             edgeBC.faceIndices.add(faceBNCindex); // don't need to do this for edgeAC, since ABC == ANC
@@ -249,7 +249,7 @@ namespace plMeshIntersector
     }
 
     // add a vertex somewhere in the middle of the triangle, then divide the triangle into three smaller triangles.
-    PLbool plMeshIntersectorConnectivityData::_splitFaceOnVect( PLuint faceIndex, plVector3& vertex )
+    PLbool plMeshIntersectorConnectivityData::_splitFaceOnVect( PLuint faceIndex, const plVector3& vertex )
     {
         // find all existing cells, have them available in case they're needed later
         plMeshIntersectorConnectivityDataFace face = faces[faceIndex]; // this will eventually be removed from the list of faces
@@ -556,7 +556,7 @@ namespace plMeshIntersector
         // edge-face intersections
         for (PLuint i = 0; i < faces.size(); i++)
         {
-            for (PLuint j = 0; j < edge.size(); j++)
+            for (PLuint j = 0; j < edges.size(); j++)
             {
                 if (faces[i].intersectsEdge(edges[j],intersectionPoint))
                 {
