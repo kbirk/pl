@@ -46,16 +46,18 @@ class plMeshIntersectorConnectivityData
         PLbool operator==(const plMeshIntersectorConnectivityDataFace&);
     };
 
+    PLbool _splitEdgeOnVect(PLuint edgeIndex, PLuint vertIndex);
+    PLbool _splitFaceOnVect(PLuint faceIndex, PLuint vertIndex);
+
+    PLbool _importTriSeq(const plSeq<plTriangle>&);
+    PLbool _exportTriSeq(      plSeq<plTriangle>&);
+
   public:
     plSeq<plMeshIntersectorConnectivityDataVert> verts;
     plSeq<plMeshIntersectorConnectivityDataEdge> edges;
     plSeq<plMeshIntersectorConnectivityDataFace> faces;
 
-    //PLbool removeDuplicateVect(PLuint vert1Index, PLuint vert2Index);
-
-    PLbool splitEdgeOnVect(PLuint edgeIndex, PLuint vertIndex);
-    PLbool splitFaceOnVect(PLuint faceIndex, PLuint vertIndex);
-
+    intersect(const plSeq<plTriangle> &);
 };
 
 #endif // PLMESHINTERSECTOR_H
