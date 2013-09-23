@@ -34,9 +34,19 @@ namespace plMath
         if (!intersectTwoLines(edge1Point1,edge2Point1,edge1Direction,edge2Direction,t1,t2))
             return false;
 
+        if (t1 < 0.f)
+            t1 = 0.f;
+        else if (t1 > 1.f)
+            t1 = 1.f;
+        if (t2 < 0.f)
+            t2 = 0.f;
+        else if (t2 > 1.f)
+            t2 = 1.f;
+
         closestPointEdge1 = edge1Point1 + (t1 * edge1Direction);
         closestPointEdge2 = edge2Point1 + (t2 * edge2Direction);
         distanceBetweenLines = (closestPointEdge1 - closestPointEdge2).length();
+
         return true;
 
     }

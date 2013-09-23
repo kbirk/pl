@@ -42,7 +42,6 @@ namespace plMeshIntersector
 
     PLbool plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge::intersectsEdge(const plMeshIntersectorConnectivityDataEdge& other, plVector3& intersection)
     {
-        std::cout << "Try 1" << std::endl;
         if (this->edge.contains(other.edge.pt1) || this->edge.contains(other.edge.pt2))
             return false;
 
@@ -50,11 +49,10 @@ namespace plMeshIntersector
         plVector3 pointOnOther;
         PLfloat   distance;
 
-        std::cout << "2" << std::endl;
         if (!plMath::closestPointsBetweenSegments(edge.pt1,edge.pt2,other.edge.pt1,other.edge.pt2,pointOnThis,pointOnOther,distance))
             return false;
 
-        std::cout << "3: " << pointOnThis << " | " << pointOnOther << " | distance = " << distance << std::endl;
+        std::cout << "intersectsEdge(): " << pointOnThis << " | " << pointOnOther << " | distance = " << distance << std::endl;
         if (distance >  PL_EPSILON)
             return false;
         intersection = pointOnThis;
@@ -171,6 +169,16 @@ namespace plMeshIntersector
         // add to cell arrays (vertN is added before because we need a reference)
         edges[edgeABindex] = edgeAN;
         edges.add(edgeNB);
+
+        std::cout << "vertAindex: " <<vertAindex << std::endl;
+        std::cout << "vertBindex: " <<vertBindex << std::endl;
+        std::cout << "vertNindex: " <<vertNindex << std::endl;
+        std::cout << "edgeANindex: "<<edgeANindex << std::endl;
+        std::cout << "edgeNBindex: "<<edgeNBindex << std::endl;
+
+        // update anything else that might be affected:
+        verts[vertBindex].edgeIndices.remove(verts[vertBindex].edgeIndices.findIndex(edgeANindex));
+        verts[vertBindex].edgeIndices.add(edgeNBindex);
 
         // split any attached faces each into two pieces... one at a time
         for (PLuint i = 0; i < faceIndicesToSplit.size(); i++)
@@ -442,6 +450,14 @@ namespace plMeshIntersector
         edges[edge12index].faceIndices.add(face12Nindex);
         edges[edge20index].faceIndices.remove(edges[edge20index].faceIndices.findIndex(faceIndex));
         edges[edge20index].faceIndices.add(face20Nindex); // edge01 doesn't need this because faceIndex == face01Nindex
+
+        std::cout << "vert0index: " << vert0index << std::endl;
+        std::cout << "vert1index: " << vert1index << std::endl;
+        std::cout << "vert2index: " << vert2index << std::endl;
+        std::cout << "edge01index: " << edge01index << std::endl;
+        std::cout << "edge12index: " << edge12index << std::endl;
+        std::cout << "edge20index: " << edge20index << std::endl;
+        std::cout << "face012index: " << faceIndex << std::endl;
 
         return true;
     }
@@ -847,10 +863,12 @@ namespace plMeshIntersector
                 if (edges[i].intersectsEdge(edges[j],intersectionPoint))
                 {
                     _checkForAllErrors();
-                    std::cout << "A" << std::endl;
+                    std::cout << "A " << i << " | " << intersectionPoint << std::endl;
+                    std::cout << edges[i] << std::endl;
                     _splitEdgeOnVect(i,intersectionPoint);
                     if (!_checkForAllErrors()) exit(1);
-                    std::cout << "B" << std::endl;
+                    std::cout << "B " << j << " | " << intersectionPoint << std::endl;
+                    std::cout << edges[j] << std::endl;
                     _splitEdgeOnVect(j,intersectionPoint);
                     _checkForAllErrors();
                     i--;
