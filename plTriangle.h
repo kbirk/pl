@@ -60,7 +60,7 @@ class plTriangle
 
         plVector3 barycentricCoords( const plVector3 &point );
 
-        PLbool contains( const plVector3& ) const;
+        PLbool contains( const plVector3&, const PLfloat& epsilon=PL_EPSILON ) const;
         
         PLfloat getArea() const;
 

@@ -30,7 +30,7 @@ namespace plMeshIntersector
 
     PLbool plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge::intersectsVert(const plMeshIntersectorConnectivityDataVert& vert)
     {
-        if (edge.contains(vert.vert)) // if it is on the edge, this is not an intersection
+        if (edge.contains(vert.vert, PL_EPSILON)) // if it is on the edge, this is not an intersection
             return false;
 
         // TODO: try the next one with an epsilon comparison, rather than exact
@@ -42,7 +42,7 @@ namespace plMeshIntersector
 
     PLbool plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge::intersectsEdge(const plMeshIntersectorConnectivityDataEdge& other, plVector3& intersection)
     {
-        if (this->edge.contains(other.edge.pt1) || this->edge.contains(other.edge.pt2))
+        if (this->edge.contains(other.edge.pt1, PL_EPSILON) || this->edge.contains(other.edge.pt2, PL_EPSILON))
             return false;
 
         plVector3 pointOnThis;
@@ -62,7 +62,7 @@ namespace plMeshIntersector
     PLbool plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataFace::intersectsVert(const plMeshIntersectorConnectivityDataVert &vert)
     {
         // don't consider vertices that are a part of this triangle
-        if (face.contains(vert.vert))
+        if (face.contains(vert.vert, PL_EPSILON))
             return false;
 
         // first see if it's even in the plane
@@ -76,13 +76,19 @@ namespace plMeshIntersector
             barycentricCoords.z < 0.f || barycentricCoords.z > 1.f)
             return false;
 
+        // on the edge, don't consider as an intersection
+        if (fabs(barycentricCoords.x) <= PL_EPSILON ||
+            fabs(barycentricCoords.y) <= PL_EPSILON ||
+            fabs(barycentricCoords.z) <= PL_EPSILON )
+            return false;
+
         return true;
     }
 
     PLbool plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataFace::intersectsEdge(const plMeshIntersectorConnectivityDataEdge& edge, plVector3& intersection)
     {
         // don't consider edges that are a part of this triangle
-        if (face.contains(edge.edge.pt1) || face.contains(edge.edge.pt2))
+        if (face.contains(edge.edge.pt1, PL_EPSILON) || face.contains(edge.edge.pt2, PL_EPSILON))
             return false;
 
         // first find the line intersection with the plane
@@ -179,6 +185,7 @@ namespace plMeshIntersector
         //std::cout << "vertNindex: " <<vertNindex << std::endl;
         //std::cout << "edgeANindex: "<<edgeANindex << std::endl;
         //std::cout << "edgeNBindex: "<<edgeNBindex << std::endl;
+        //std::cout << "-----------" << std::endl;
 
         // update anything else that might be affected:
         verts[vertBindex].edgeIndices.remove(verts[vertBindex].edgeIndices.findIndex(edgeANindex));
@@ -210,18 +217,41 @@ namespace plMeshIntersector
                 return false;
             }
             PLuint vertCindex((PLuint)vertCsearchIndex);
+            if (vertCindex == vertNindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is N vertex. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
             plMeshIntersectorConnectivityDataVert& vertC = verts[vertCindex];
 
-            PLuint edgeACindex;
-            PLuint edgeBCindex;
+            PLint edgeACsearchIndex(-1);
+            PLint edgeBCsearchIndex(-1);
             for (PLuint j = 0; j < 3; j++)
             {
                 PLuint currentEdgeIndex = faces[faceABCindex].edgeIndices[j];
                 if (edges[currentEdgeIndex].edge == plEdge(verts[vertAindex].vert,verts[vertCindex].vert))
-                    edgeACindex = currentEdgeIndex;
+                    edgeACsearchIndex = currentEdgeIndex;
                 else if (edges[currentEdgeIndex].edge == plEdge(verts[vertBindex].vert,verts[vertCindex].vert))
-                    edgeBCindex = currentEdgeIndex;
+                    edgeBCsearchIndex = currentEdgeIndex;
             }
+            if (edgeACsearchIndex == -1)
+            {
+                std::cerr << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the AC edge. Aborting operation." << std::endl;
+                std::cerr << verts[vertAindex] << std::endl;
+                std::cerr << verts[vertCindex] << std::endl;
+                std::cerr << faces[faceABCindex] << std::endl;
+                return false;
+            }
+            if (edgeBCsearchIndex == -1)
+            {
+                std::cerr << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the BC edge. Aborting operation." << std::endl;
+                std::cerr << verts[vertBindex] << std::endl;
+                std::cerr << verts[vertCindex] << std::endl;
+                std::cerr << faces[faceABCindex] << std::endl;
+                return false;
+            }
+            PLuint edgeACindex((PLuint)edgeACsearchIndex);
+            PLuint edgeBCindex((PLuint)edgeBCsearchIndex);
             plMeshIntersectorConnectivityDataEdge& edgeAC = edges[edgeACindex];
             plMeshIntersectorConnectivityDataEdge& edgeBC = edges[edgeBCindex];
 
@@ -297,6 +327,15 @@ namespace plMeshIntersector
 
             verts[vertNindex].edgeIndices.add(edgeNCindex);
             verts[vertCindex].edgeIndices.add(edgeNCindex);
+
+            //std::cout << "vertAindex: " <<vertAindex << std::endl;
+            //std::cout << "vertBindex: " <<vertBindex << std::endl;
+            //std::cout << "vertCindex: " <<vertCindex << std::endl;
+            //std::cout << "vertNindex: " <<vertNindex << std::endl;
+            //std::cout << "edgeANindex: "<<edgeANindex << std::endl;
+            //std::cout << "edgeNBindex: "<<edgeNBindex << std::endl;
+            //std::cout << "edgeNCindex: "<<edgeNCindex << std::endl;
+            //std::cout << "-----------" << std::endl;
         }
 
         return true;
@@ -329,14 +368,14 @@ namespace plMeshIntersector
         PLint edge20searchIndex(-1);
         for (PLuint i = 0; i < face.edgeIndices.size(); i++)
         {
-            if (edges[face.edgeIndices[i]].edge.contains(face.face.point0()) &&
-                edges[face.edgeIndices[i]].edge.contains(face.face.point1()) )
+            if (edges[face.edgeIndices[i]].edge.contains(face.face.point0(), PL_EPSILON) &&
+                edges[face.edgeIndices[i]].edge.contains(face.face.point1(), PL_EPSILON) )
                 edge01searchIndex = face.edgeIndices[i];
-            if (edges[face.edgeIndices[i]].edge.contains(face.face.point1()) &&
-                edges[face.edgeIndices[i]].edge.contains(face.face.point2()) )
+            if (edges[face.edgeIndices[i]].edge.contains(face.face.point1(), PL_EPSILON) &&
+                edges[face.edgeIndices[i]].edge.contains(face.face.point2(), PL_EPSILON) )
                 edge12searchIndex = face.edgeIndices[i];
-            if (edges[face.edgeIndices[i]].edge.contains(face.face.point2()) &&
-                edges[face.edgeIndices[i]].edge.contains(face.face.point0()) )
+            if (edges[face.edgeIndices[i]].edge.contains(face.face.point2(), PL_EPSILON) &&
+                edges[face.edgeIndices[i]].edge.contains(face.face.point0(), PL_EPSILON) )
                 edge20searchIndex = face.edgeIndices[i];
         }
         if (edge01searchIndex == -1 || edge12searchIndex == -1 || edge20searchIndex == -1)
@@ -705,7 +744,8 @@ namespace plMeshIntersector
         PLbool good(true);
         for (PLuint i = 0; i < faces.size(); i++)
         {
-            if (((faces[i].face.point1())-(faces[i].face.point0()) ^ (faces[i].face.point2())-(faces[i].face.point0())).length() <= PL_EPSILON)
+            if (( ((faces[i].face.point1())-(faces[i].face.point0())).normalize() ^
+                  ((faces[i].face.point2())-(faces[i].face.point0())).normalize()).length() <= PL_EPSILON*PL_EPSILON )
             {
                 std::cout << "Warning in plMeshIntersectorConnectivityData::_checkNoSliverTriangles(): face " << i << " appears to be ultra thin. This is bad." << std::endl;
                 good = false;
@@ -717,7 +757,7 @@ namespace plMeshIntersector
 
     PLbool plMeshIntersectorConnectivityData::_checkForAllErrors()
     {
-        return _checkNoDuplicates() && _checkArraySizes() && _checkBidirectionalConnections();// && _checkNoSliverTriangles();
+        return _checkNoDuplicates() && _checkArraySizes() && _checkBidirectionalConnections() && _checkNoSliverTriangles();
     }
 
     void plMeshIntersectorConnectivityData::_reportSizes()
@@ -738,7 +778,7 @@ namespace plMeshIntersector
             PLint vert0index,vert1index,vert2index;
             plMeshIntersectorConnectivityDataVert vert0;
             vert0.vert = currentTriangle[0];
-            vert0index = verts.findIndex(vert0);
+            _findVert(vert0.vert,vert0index);
             PLbool vert0existed(true);
             if (vert0index == -1)
             {
@@ -748,7 +788,7 @@ namespace plMeshIntersector
             }
             plMeshIntersectorConnectivityDataVert vert1;
             vert1.vert = currentTriangle[1];
-            vert1index = verts.findIndex(vert1);
+            _findVert(vert1.vert,vert1index);
             PLbool vert1existed(true);
             if (vert1index == -1)
             {
@@ -758,7 +798,7 @@ namespace plMeshIntersector
             }
             plMeshIntersectorConnectivityDataVert vert2;
             vert2.vert = currentTriangle[2];
-            vert2index = verts.findIndex(vert2);
+            _findVert(vert2.vert,vert2index);
             PLbool vert2existed(true);
             if (vert2index == -1)
             {
@@ -769,7 +809,7 @@ namespace plMeshIntersector
 
             PLint edge01index, edge12index, edge20index;
             plMeshIntersectorConnectivityDataEdge edge01;
-            edge01.edge = plEdge(vert0.vert,vert1.vert);
+            edge01.edge = plEdge(verts[vert0index].vert,verts[vert1index].vert);
             edge01index = edges.findIndex(edge01);
             if (edge01index == -1)
             {
@@ -779,7 +819,7 @@ namespace plMeshIntersector
                 edges[edge01index].vertIndices.add((PLuint)vert1index);
             }
             plMeshIntersectorConnectivityDataEdge edge12;
-            edge12.edge = plEdge(vert1.vert,vert2.vert);
+            edge12.edge = plEdge(verts[vert1index].vert,verts[vert2index].vert);
             edge12index = edges.findIndex(edge12);
             if (edge12index == -1)
             {
@@ -789,7 +829,7 @@ namespace plMeshIntersector
                 edges[edge12index].vertIndices.add((PLuint)vert2index);
             }
             plMeshIntersectorConnectivityDataEdge edge20;
-            edge20.edge = plEdge(vert2.vert,vert0.vert);
+            edge20.edge = plEdge(verts[vert2index].vert,verts[vert0index].vert);
             edge20index = edges.findIndex(edge20);
             if (edge20index == -1)
             {
@@ -800,7 +840,7 @@ namespace plMeshIntersector
             }
 
             plMeshIntersectorConnectivityDataFace face012;
-            face012.face = currentTriangle;
+            face012.face = plTriangle(verts[vert0index].vert,verts[vert1index].vert,verts[vert2index].vert);
             PLint face012index = faces.size();
             faces.add(face012);
 
@@ -850,11 +890,13 @@ namespace plMeshIntersector
 
         // intersectionPoint is going to be reused as necessary
         plVector3 intersectionPoint;
-        _checkForAllErrors();
+
+        if (!_checkForAllErrors()) return false;
 
         PLuint vertsSize(0);
         PLuint edgesSize(0);
         PLuint facesSize(0);
+        _reportSizes();
 
         while (vertsSize != verts.size() || edgesSize != edges.size() || facesSize != faces.size())
         {
@@ -862,89 +904,83 @@ namespace plMeshIntersector
             edgesSize = edges.size();
             facesSize = faces.size();
 
-            std::cout << "20" << std::endl;
+            std::cout << "Detecting vert-edge intersections" << std::endl;
             // vertex-edge intersections
-            _reportSizes();
-            if (!_checkForAllErrors()) exit(1);
             for (PLuint i = 0; i < edges.size(); i++)
             {
                 for (PLuint j = 0; j < verts.size(); j++)
                 {
                     if (edges[i].intersectsVert(verts[j]))
                     {
-                        if (!_checkForAllErrors()) exit(1);
                         _splitEdgeOnVect(i,verts[j].vert);
-                        if (!_checkForAllErrors()) exit(1);
+                        if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
                         i--;
                         break; // restart edge iteration, since it may need to be split again! you never know!
                     }
                 }
             }
-
-            std::cout << "40" << std::endl;
-            // vertex-face intersections
             _reportSizes();
-            _checkForAllErrors();
+
+            std::cout << "Detecting vert-face intersections" << std::endl;
+            // vertex-face intersections
             for (PLuint i = 0; i < faces.size(); i++)
             {
                 for (PLuint j = 0; j < verts.size(); j++)
                 {
                     if (faces[i].intersectsVert(verts[j]))
                     {
-                        if (!_checkForAllErrors()) exit(1);
                         _splitFaceOnVect(i,verts[j].vert);
-                        if (!_checkForAllErrors()) exit(1);
+                        if (!_checkForAllErrors()) return false;
                         i--;
                         break;
                     }
                 }
             }
-
-            std::cout << "60" << std::endl;
-            // edge-edge intersections
             _reportSizes();
-            _checkForAllErrors();
+
+            std::cout << "Detecting edge-edge intersections" << std::endl;
+            // edge-edge intersections
             for (PLuint i = 0; i < edges.size(); i++)
             {
                 for (PLuint j = i+1; j < edges.size(); j++)
                 {
                     if (edges[i].intersectsEdge(edges[j],intersectionPoint))
                     {
-                        if (!_checkForAllErrors()) exit(1);
                         _splitEdgeOnVect(i,intersectionPoint);
-                        if (!_checkForAllErrors()) exit(1);
+                        if (!_checkForAllErrors()) return false;
                         _splitEdgeOnVect(j,intersectionPoint);
-                        if (!_checkForAllErrors()) exit(1);
+                        if (!_checkForAllErrors()) return false;
                         i--;
                         break; // restart edge iteration, since it may need to be split again! you never know!
                     }
                 }
             }
-
-            std::cout << "80" << std::endl;
-            // edge-face intersections
             _reportSizes();
-            _checkForAllErrors();
+
+            std::cout << "Detecting edge-face intersections" << std::endl;
+            // edge-face intersections
             for (PLuint i = 0; i < faces.size(); i++)
             {
                 for (PLuint j = 0; j < edges.size(); j++)
                 {
                     if (faces[i].intersectsEdge(edges[j],intersectionPoint))
                     {
-                        if (!_checkForAllErrors()) exit(1);
                         _splitFaceOnVect(i,intersectionPoint);
-                        if (!_checkForAllErrors()) exit(1);
+                        if (!_checkForAllErrors()) { std::cout << faces[i] << std::endl; std::cout << edges[j] << std::endl; _exportTriSeq(outputTris); return false;}
                         _splitEdgeOnVect(j,intersectionPoint);
-                        if (!_checkForAllErrors()) exit(1);
+                        if (!_checkForAllErrors()) { std::cout << faces[i] << std::endl; std::cout << edges[j] << std::endl; _exportTriSeq(outputTris); return false;}
                         i--;
                         break;
                     }
                 }
             }
+            _reportSizes();
         }
 
-        if (!_checkForAllErrors()) exit(1);
-        std::cout << "100" << std::endl;
+        // should be good, but for sanity's sake...
+        if (!_checkForAllErrors()) return false;
+
+        std::cout << "Done." << std::endl;
         _reportSizes();
         _exportTriSeq(outputTris);
 
