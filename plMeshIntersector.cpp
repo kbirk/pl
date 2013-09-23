@@ -114,6 +114,14 @@ namespace plMeshIntersector
             fabs(barycentricCoords.z) <= PL_EPSILON )
             return false;
 
+        // if on one of the face edges, don't consider as an intersection
+        if (edge.edge.contains(intersection,PL_EPSILON))
+            return false;
+
+        // if on one of the face vertices, don't consider as an intersection
+        if (face.contains(intersection,PL_EPSILON))
+            return false;
+
         return true;
     }
 
@@ -154,6 +162,16 @@ namespace plMeshIntersector
         PLint  vertNsearchIndex;
         _findVert(vertex, vertNsearchIndex);
         PLuint vertNindex; // we need to determine this
+        if ((PLuint)vertNsearchIndex == vertAindex)
+        {
+            std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): N vertex is A vertex. This is possibly due to epsilon being too large. Aborting this particular edge split, but beware of future errors." << std::endl;
+            return false;
+        }
+        if ((PLuint)vertNsearchIndex == vertBindex)
+        {
+            std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): N vertex is B vertex. This is possibly due to epsilon being too large. Aborting this particular edge split, but beware of future errors." << std::endl;
+            return false;
+        }
         if (vertNsearchIndex == -1)
         {
             vertNindex = verts.size();
@@ -192,6 +210,7 @@ namespace plMeshIntersector
         verts[vertBindex].edgeIndices.add(edgeNBindex);
 
         // split any attached faces each into two pieces... one at a time
+        plSeq<PLuint> allCverts; // used for error checking
         for (PLuint i = 0; i < faceIndicesToSplit.size(); i++)
         {
             // find all existing cells, have them available in case they're needed later
@@ -217,9 +236,25 @@ namespace plMeshIntersector
                 return false;
             }
             PLuint vertCindex((PLuint)vertCsearchIndex);
+            if (allCverts.findIndex(vertCindex) != -1)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is being added more than once. This is very bad, possibly some rare situation that hasn't been considered? Aborting." << std::endl;
+                return false;
+            }
+            allCverts.add(vertCindex);
             if (vertCindex == vertNindex)
             {
                 std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is N vertex. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
+            if (vertCindex == vertAindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is A vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
+                continue;
+            }
+            if (vertCindex == vertBindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is B vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
                 continue;
             }
             plMeshIntersectorConnectivityDataVert& vertC = verts[vertCindex];
@@ -252,6 +287,26 @@ namespace plMeshIntersector
             }
             PLuint edgeACindex((PLuint)edgeACsearchIndex);
             PLuint edgeBCindex((PLuint)edgeBCsearchIndex);
+            if (edgeBCindex == edgeANindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): BC edge is AN edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
+            if (edgeACindex == edgeANindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is AN edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
+            if (edgeBCindex == edgeNBindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): BC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
+            if (edgeACindex == edgeNBindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
             plMeshIntersectorConnectivityDataEdge& edgeAC = edges[edgeACindex];
             plMeshIntersectorConnectivityDataEdge& edgeBC = edges[edgeBCindex];
 
@@ -494,6 +549,7 @@ namespace plMeshIntersector
         edges[edge20index].faceIndices.remove(edges[edge20index].faceIndices.findIndex(faceIndex));
         edges[edge20index].faceIndices.add(face20Nindex); // edge01 doesn't need this because faceIndex == face01Nindex
 
+        //std::cout << "vertNindex: " << vertNindex << std::endl;
         //std::cout << "vert0index: " << vert0index << std::endl;
         //std::cout << "vert1index: " << vert1index << std::endl;
         //std::cout << "vert2index: " << vert2index << std::endl;
@@ -501,6 +557,7 @@ namespace plMeshIntersector
         //std::cout << "edge12index: " << edge12index << std::endl;
         //std::cout << "edge20index: " << edge20index << std::endl;
         //std::cout << "face012index: " << faceIndex << std::endl;
+        //std::cout << "-----------" << std::endl;
 
         return true;
     }

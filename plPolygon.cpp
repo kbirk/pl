@@ -12,12 +12,12 @@ plEdge::plEdge(const plVector3 &v1, const plVector3 &v2)
     pt2 = v2;
 }
 
-PLbool plEdge::contains(const plVector3 &point, const PLfloat &epsilon)
+PLbool plEdge::contains(const plVector3 &point, const PLfloat &epsilon) const
 {
     return ((pt1 - point).length() <= epsilon || (pt2 - point).length() <= epsilon);
 }
 
-plVector3 plEdge::otherPt(const plVector3 &point, const PLfloat &epsilon)
+plVector3 plEdge::otherPt(const plVector3 &point, const PLfloat &epsilon) const
 {
     if ((pt1 - point).length() <= epsilon)
         return pt2;
@@ -29,7 +29,7 @@ plVector3 plEdge::otherPt(const plVector3 &point, const PLfloat &epsilon)
     return plVector3(0,0,0);
 }
 
-PLbool plEdge::equals(const plEdge &e2, const PLfloat &epsilon)
+PLbool plEdge::equals(const plEdge &e2, const PLfloat &epsilon) const
 {
     if ( ( (e2.pt1 - pt1).length() <= epsilon && (e2.pt2 - pt2).length() <= epsilon ) ||
          ( (e2.pt2 - pt1).length() <= epsilon && (e2.pt1 - pt2).length() <= epsilon ) )
@@ -37,7 +37,7 @@ PLbool plEdge::equals(const plEdge &e2, const PLfloat &epsilon)
     return false;
 }
 
-PLbool plEdge::operator==(const plEdge &e2)
+PLbool plEdge::operator==(const plEdge &e2) const
 {
     if ( ( e2.pt1 == pt1 && e2.pt2 == pt2 ) || ( e2.pt2 == pt1 && e2.pt1 == pt2 ) )
     {
