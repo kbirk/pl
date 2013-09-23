@@ -30,29 +30,12 @@ namespace plMath
     {
         plVector3 edge1Direction = edge1Point2 - edge1Point1;
         plVector3 edge2Direction = edge2Point2 - edge2Point1;
-
-        plVector3 symbolicIntersectionDirection = edge1Direction ^ edge2Direction;
-
-        // if lines are parallel, then there is no clear closest point between the two
-        if (symbolicIntersectionDirection == plVector3(0,0,0))
-        {
-            distanceBetweenLines = (closestPointOnSegment(edge2Point1,edge1Point1,edge1Point2) - edge2Point1).length();
+        PLfloat t1, t2;
+        if (!intersectTwoLines(edge1Point1,edge2Point1,edge1Direction,edge2Direction,t1,t2))
             return false;
-        }
 
-        plMatrix44 linearEquationMatrix(
-                    -edge1Direction.x                , -edge1Direction.y                ,   -edge1Direction.z                , 0.f,
-                     edge2Direction.x                ,  edge2Direction.y                ,    edge2Direction.z                , 0.f,
-                     symbolicIntersectionDirection.x ,  symbolicIntersectionDirection.y ,    symbolicIntersectionDirection.z , 0.f,
-                     0.f, 0.f, 0.f, 1.f);
-        plVector3 linearEquationLeftSide = edge1Point1-edge2Point1;
-
-        plVector3 params = linearEquationMatrix.inverse() * linearEquationLeftSide;
-        // params.x is the parameter along edge1
-        // params.y is the parameter along edge2
-
-        closestPointEdge1 = edge1Point1 + (params.x * edge1Direction);
-        closestPointEdge2 = edge2Point1 + (params.y * edge2Direction);
+        closestPointEdge1 = edge1Point1 + (t1 * edge1Direction);
+        closestPointEdge2 = edge2Point1 + (t2 * edge2Direction);
         distanceBetweenLines = (closestPointEdge1 - closestPointEdge2).length();
         return true;
 
@@ -132,11 +115,75 @@ namespace plMath
     }
     */
 
-    plVector3 plClosestPointOnPlane(const plVector3 &lineDirection, const plVector3 &linePoint, const plVector3 &planeNormal, const plVector3 &planePoint)
+    plVector3 closestPointOnPlane(const plVector3 &lineDirection, const plVector3 &linePoint, const plVector3 &planeNormal, const plVector3 &planePoint)
     {
         PLfloat t = ((planePoint - linePoint)*planeNormal)/(lineDirection*planeNormal);
         return (t * lineDirection) + linePoint;
     }
+
+    // solve for x and y in this thing:
+    //    [ a11 a12 ] [ x ]   [ b1 ]
+    //    [ a21 a22 ] [ y ] = [ b2 ]
+    PLbool solveMatrix22Equation(PLfloat a11, PLfloat a12, PLfloat a21, PLfloat a22, PLfloat b1, PLfloat b2, PLfloat &x, PLfloat &y)
+    {
+        // basically, make the inverse, store in matrix d:
+        PLfloat determinant = a11 * a22 - a21 * a12;
+
+        if (fabs(determinant) <= PL_EPSILON) // singularity, no solution exists
+            return false;
+
+        PLfloat d11 (  a22 / determinant );
+        PLfloat d12 ( -a12 / determinant );
+        PLfloat d21 ( -a21 / determinant );
+        PLfloat d22 (  a11 / determinant );
+
+        // now if both sides are left-multiplied by d, we have:
+        // [ x ]   [ d11 d12 ] [ b1 ]
+        // [ y ] = [ d21 d22 ] [ b2 ]
+        // which is our solution
+        x = d11 * b1 + d12 * b2;
+        y = d21 * b1 + d22 * b2;
+
+        return true;
+    } // end plSolveMatrix22Equation
+
+    // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+    PLbool intersectTwoLines(const plVector3 &edge1Point, const plVector3 &edge2Point, const plVector3 &edge1Direction, const plVector3 &edge2Direction, PLfloat &edge1Param, PLfloat &edge2Param)
+    {
+        // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+        edge1Param = 0.f;
+        edge2Param = 0.f;
+        plVector3 crossProductRightSideEdge1 ((edge2Point-edge1Point)^edge2Direction);
+        plVector3 crossProductRightSideEdge2 ((edge2Point-edge1Point)^edge1Direction);
+        plVector3 crossProductLeftSide  (edge1Direction^edge2Direction);
+        PLfloat   numCalculations(0.f);
+        if (fabs(crossProductLeftSide.x) > PL_EPSILON)
+        {
+            edge1Param += crossProductRightSideEdge1.x/crossProductLeftSide.x;
+            edge2Param += crossProductRightSideEdge2.x/crossProductLeftSide.x;
+            numCalculations+=1.f;
+        }
+        if (fabs(crossProductLeftSide.y) > PL_EPSILON)
+        {
+            edge1Param += crossProductRightSideEdge1.y/crossProductLeftSide.y;
+            edge2Param += crossProductRightSideEdge2.y/crossProductLeftSide.y;
+            numCalculations+=1.f;
+        }
+        if (fabs(crossProductLeftSide.z) > PL_EPSILON)
+        {
+            edge1Param += crossProductRightSideEdge1.z/crossProductLeftSide.z;
+            edge2Param += crossProductRightSideEdge2.z/crossProductLeftSide.z;
+            numCalculations+=1.f;
+        }
+        if (numCalculations == 0.f) // lines are parallel and do not intersect
+            return false;
+
+        edge1Param /= numCalculations;
+        edge2Param /= numCalculations;
+
+        return true;
+    }
+
 
     plIntersection rayIntersect( const plSeq<plTriangle> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull )
     {

@@ -14,7 +14,8 @@ namespace plMath
     plVector3 projectVectorOnPlane         ( const plVector3 &vector, const plVector3 &plane_normal);
     plVector3 closestPointOnSegment        ( const plVector3 &point, const plVector3 &a, const plVector3 &b);
     PLbool    closestPointsBetweenSegments ( const plVector3 &e1Pt1, const plVector3 &e1Pt2, const plVector3 &e2Pt1, const plVector3 &e2Pt2, plVector3& closestPointEdge1, plVector3& closestPointEdge2, PLfloat& distanceBetweenLines);
-    plVector3 plClosestPointOnPlane        ( const plVector3 &linDir, const plVector3 &linPt, const plVector3 &plnN, const plVector3 &plnPt);
+    plVector3 closestPointOnPlane          ( const plVector3 &linDir, const plVector3 &linPt, const plVector3 &plnN, const plVector3 &plnPt);
+    PLbool    intersectTwoLines            ( const plVector3 &edge1Pt1, const plVector3 &edge1Pt2, const plVector3 &edge2Pt1, const plVector3 &edge2Pt2, PLfloat &edge1Param, PLfloat &edge2Param);
     PLfloat   fsqrt                        ( PLfloat x );
     PLfloat   clamp                        ( PLfloat val, PLfloat min = -1, PLfloat max = 1);
 
@@ -23,6 +24,8 @@ namespace plMath
                                       const plVector3 &rayDirection, 
                                       PLbool ignoreBehindRay = false, 
                                       PLbool backFaceCull    = false );
+
+    PLbool solveMatrix22Equation(PLfloat a11, PLfloat a12, PLfloat a21, PLfloat a22, PLfloat b1, PLfloat b2, PLfloat &x, PLfloat &y);
 
 	void convexPolysToTris         ( plSeq<plTriangle> &tris, const plSeq<plPolygon> &polys );
 	void concavePolysToTris        ( plSeq<plTriangle> &tris, const plSeq<plPolygon> &polys );

@@ -68,6 +68,8 @@ namespace plMeshIntersector
 
       private:
 
+        PLbool _findVert( const plVector3& vertex, PLint &index );
+
         PLbool _splitEdgeOnVect(PLuint edgeIndex, const plVector3& vertex);
         PLbool _splitFaceOnVect(PLuint faceIndex, const plVector3& vertex);
 
@@ -75,6 +77,11 @@ namespace plMeshIntersector
         PLbool _exportTriSeq(      plSeq<plTriangle>&);
 
         PLbool _checkArraySizes();
+        PLbool _checkNoDuplicates();
+        PLbool _checkBidirectionalConnections();
+        PLbool _checkForAllErrors();
+
+        void   _reportSizes();
 
     };
 
