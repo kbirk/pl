@@ -79,6 +79,7 @@ namespace plMeshIntersector
         PLbool _checkArraySizes();
         PLbool _checkNoDuplicates();
         PLbool _checkBidirectionalConnections();
+        PLbool _checkNoSliverTriangles();
         PLbool _checkForAllErrors();
 
         void   _reportSizes();
