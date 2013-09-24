@@ -12,35 +12,59 @@
 #define PL_MAX_GRAFTS_PER_SOLUTION           16
 
 #define PL_STAGE0_INITIAL_TEMPERATURE        1.0f
-#define PL_STAGE0_COOLING_RATE               0.05f
+#define PL_STAGE0_COOLING_RATE               0.005f //0.05f
 
-#define PL_STAGE0_GROUP_SIZE                 16
+#define PL_CONVERGE_ITRS(a)                  (PLuint( (PL_STAGE0_INITIAL_TEMPERATURE - a) / PL_STAGE0_COOLING_RATE))
+#define PL_GLOBAL_CONVERGE_START             PL_CONVERGE_ITRS( 0.25f )
+//#define PL_GLOBAL_CONVERGE_INC               1000
+
+#define PL_STAGE0_GROUP_SIZE                 64
 #define PL_STAGE0_NUM_GROUPS                 16
 #define PL_STAGE0_INVOCATIONS                PL_STAGE0_NUM_GROUPS*PL_STAGE0_GROUP_SIZE
+
+#define PL_STAGE0_ITERATIONS                 4
 
 
 class plDefectState
 {
     public:
-    
-        PLfloat           temperature;
-        PLfloat           energy;    
+  
         PLuint            graftCount;  
         plSeq<plVector4>  graftPositions;
         plSeq<plVector4>  graftNormals;
         plSeq<PLfloat>    graftRadii;
     
-        plDefectState();
+        plDefectState() {};
+}; 
+
+
+class plAnnealingGroup
+{
+    public:
+            
+        plSeq<PLfloat>    energies;    
+        plSeq<PLuint>     graftCounts;  
+        plSeq<plVector4>  graftPositions;
+        plSeq<plVector4>  graftNormals;
+        plSeq<PLfloat>    graftRadii;
+    
+        PLfloat           temperature;
+    
+        plAnnealingGroup( PLfloat initialEnergy );        
+        ~plAnnealingGroup();
         
-        void createBuffers ();
-        void destroyBuffers();
+        void convergeWorkGroups();
+        void convergeGlobal();
         
-        void bindBuffers  ();
-        void unbindBuffers();
+        void updateGroupBuffer() const;
         
-        void update(); 
+        PLint getCurrentBest() const;
+        
+        void getGlobalSolution( plDefectState &state );
          
     private:
+            
+        PLuint _groupStateBufferID;    
             
         PLuint _energiesBufferID;
         PLuint _graftPositionsBufferID;
@@ -48,10 +72,16 @@ class plDefectState
         PLuint _graftRadiiBufferID;
         PLuint _graftCountsBufferID;
 
-        PLfloat _acceptanceProbability( PLfloat energy, PLfloat newEnergy, PLfloat temperature ); 
+        void _createBuffers ();
+        void _destroyBuffers();
+        
+        void _bindBuffers  ();
+        void _unbindBuffers();
 
-        PLint _updateEnergy  ();
-        void  _updateGrafts  ( PLint index );               
+        PLfloat _acceptanceProbability( PLfloat energy, PLfloat newEnergy ); 
+
+        PLint _updateEnergy     ( PLuint groupIndex);
+        void  _updateWorkGroups ( PLuint groupIndex, PLint localIndex );               
 };
 
 

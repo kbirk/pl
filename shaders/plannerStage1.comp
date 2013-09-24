@@ -395,10 +395,10 @@ float calcRMS( in uint defectCount, in uint donorCount, in vec3 defectNormal, in
                 squaredDistanceSum += distance * distance;
                 successfulChecks++;
             }
-            else
-            {
-                squaredDistanceSum += 10000.0;
-            }
+            //else
+            //{
+                //squaredDistanceSum += 10000.0;
+            //}
         }       
     }
 
