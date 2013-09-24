@@ -33,7 +33,6 @@ namespace plMeshIntersector
         if (edge.contains(vert.vert, PL_EPSILON)) // if it is on the edge, this is not an intersection
             return false;
 
-        // TODO: try the next one with an epsilon comparison, rather than exact
         if ((plMath::closestPointOnSegment(vert.vert,edge.pt1,edge.pt2) - vert.vert).length() > PL_EPSILON ) // if it's NOT on the line
             return false;
 
@@ -56,6 +55,14 @@ namespace plMeshIntersector
             return false;
         intersection = pointOnThis;
 
+        // check just to make sure the intersection isn't in fact already a vertex...
+        std::cout << intersection << std::endl;
+        std::cout << edge << std::endl;
+        std::cout << other.edge << std::endl;
+        std::cout << "---------------\n";
+        if (edge.contains(intersection, PL_EPSILON) || other.edge.contains(intersection, PL_EPSILON))
+            return false;
+
         return true;
     }
 
@@ -77,9 +84,9 @@ namespace plMeshIntersector
             return false;
 
         // on the edge, don't consider as an intersection
-        if (fabs(barycentricCoords.x) <= PL_EPSILON ||
-            fabs(barycentricCoords.y) <= PL_EPSILON ||
-            fabs(barycentricCoords.z) <= PL_EPSILON )
+        if ((plMath::closestPointOnSegment(vert.vert,face.point0(),face.point1()) - vert.vert).length() <= PL_EPSILON ||
+            (plMath::closestPointOnSegment(vert.vert,face.point1(),face.point2()) - vert.vert).length() <= PL_EPSILON ||
+            (plMath::closestPointOnSegment(vert.vert,face.point2(),face.point0()) - vert.vert).length() <= PL_EPSILON )
             return false;
 
         return true;
@@ -109,9 +116,9 @@ namespace plMeshIntersector
             return false;
 
         // on the edge, don't consider as an intersection
-        if (fabs(barycentricCoords.x) <= PL_EPSILON ||
-            fabs(barycentricCoords.y) <= PL_EPSILON ||
-            fabs(barycentricCoords.z) <= PL_EPSILON )
+        if ((plMath::closestPointOnSegment(intersection,face.point0(),face.point1()) - intersection).length() <= PL_EPSILON ||
+            (plMath::closestPointOnSegment(intersection,face.point1(),face.point2()) - intersection).length() <= PL_EPSILON ||
+            (plMath::closestPointOnSegment(intersection,face.point2(),face.point0()) - intersection).length() <= PL_EPSILON )
             return false;
 
         // if on one of the face edges, don't consider as an intersection
@@ -802,7 +809,7 @@ namespace plMeshIntersector
         for (PLuint i = 0; i < faces.size(); i++)
         {
             if (( ((faces[i].face.point1())-(faces[i].face.point0())).normalize() ^
-                  ((faces[i].face.point2())-(faces[i].face.point0())).normalize()).length() <= PL_EPSILON*PL_EPSILON )
+                  ((faces[i].face.point2())-(faces[i].face.point0())).normalize()).length() <= PL_EPSILON )
             {
                 std::cout << "Warning in plMeshIntersectorConnectivityData::_checkNoSliverTriangles(): face " << i << " appears to be ultra thin. This is bad." << std::endl;
                 good = false;
@@ -970,7 +977,7 @@ namespace plMeshIntersector
                     if (edges[i].intersectsVert(verts[j]))
                     {
                         _splitEdgeOnVect(i,verts[j].vert);
-                        if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
+                        if (!_checkForAllErrors()) { return false;}
                         i--;
                         break; // restart edge iteration, since it may need to be split again! you never know!
                     }
@@ -1032,6 +1039,8 @@ namespace plMeshIntersector
                 }
             }
             _reportSizes();
+
+            _exportTriSeq(outputTris); // TODO: This is temporary.
         }
 
         // should be good, but for sanity's sake...
