@@ -1,6 +1,7 @@
 #version 430
 
 #define PL_NUM_WORKGROUPS           16
+#define PL_WORKGROUP_SIZE           64
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_RADIUS               4.0
 #define PL_MIN_RADIUS               3.0
@@ -8,7 +9,7 @@
 
 #define PL_MIN_PERTURBATION         0.05
 
-layout (local_size_x = 64) in;
+layout (local_size_x = PL_WORKGROUP_SIZE) in;
 
 // shader storage buffer objects
 layout (std430,  binding = 0) buffer siteDataBlock        { vec4 siteData[]; };
@@ -16,15 +17,15 @@ layout (std430,  binding = 0) buffer siteDataBlock        { vec4 siteData[]; };
 // temporary buffer
 layout (std430,  binding = 1) buffer tempBuffer           { float overlappedTriangles[]; };
 
-// output buffers
+// invocation output buffers
 layout (std430,  binding = 2) buffer invoEnergiesBlock    { float invoEnergies      []; };
 layout (std430,  binding = 3) buffer StatePositionBlock   { vec4  invoGraftPositions[]; };
 layout (std430,  binding = 4) buffer StateNormalBlock     { vec4  invoGraftNormals  []; };
 layout (std430,  binding = 5) buffer StateRadiiBlock      { float invoGraftRadii    []; };
 layout (std430,  binding = 6) buffer StateGraftCountBlock { uint  invoGraftCounts   []; };
 
-
-layout (std430,  binding = 7) buffer workGroupStates
+// work group input buffers
+layout ( std430, binding = 7 ) buffer workGroupStates
 {
     float groupEnergies       [ PL_NUM_WORKGROUPS ];
     uint  groupGraftCounts    [ PL_NUM_WORKGROUPS ];
@@ -40,22 +41,9 @@ uniform float uSiteMeshArea;
 uniform uint  uSiteGridSize;
 uniform uint  uSitePerimSize;
 
-/*
-// current best state uniforms
-uniform GroupStateUniforms
-{
-    float uStateTemperature;
-    float uinvoEnergies       [PL_NUM_WORKGROUPS];
-    uint  uinvoGraftCounts    [PL_NUM_WORKGROUPS];
-    vec4  uinvoGraftPositions [PL_NUM_WORKGROUPS*PL_MAX_GRAFTS_PER_SOLUTION];
-    vec4  uinvoGraftNormals   [PL_NUM_WORKGROUPS*PL_MAX_GRAFTS_PER_SOLUTION];
-    float uinvoGraftRadii     [PL_NUM_WORKGROUPS*PL_MAX_GRAFTS_PER_SOLUTION];
-};
-*/
-
-uniform float uStateTemperature;
-uniform uint uSeed;
-uniform uint uLoadLocal;
+uniform float uTemperature;
+uniform uint  uSeed;
+uniform uint  uLoadLocal;
 
 
 struct triangle
@@ -134,17 +122,20 @@ edge siteEdge( in uint i )
     return e;
 }
 
+
 vec3 projectOntoPlane( in vec3 point, in vec3 plane_normal )
 {
     float dist = dot( point, plane_normal);    
     return point - (dist * plane_normal);
 }
 
+
 float distToAxis( in vec3 axis, in vec3 v )    
 {
     // v is already in the *local* coordinate system of the graft        
     return distance( v, dot(v, axis)*axis );
 }
+
 
 vec3 closestPointOnSegment( in vec3 p, in edge e)
 {
@@ -155,6 +146,7 @@ vec3 closestPointOnSegment( in vec3 p, in edge e)
     // Compute projected position from the clamped t
     return e.p0 + t * ab;
 }
+
 
 bool isWithinOverlapThreshold( in vec3 pos, in float threshold )
 {
@@ -169,6 +161,7 @@ bool isWithinOverlapThreshold( in vec3 pos, in float threshold )
     }    
     return inside;
 }
+
 
 bool isValidPerturbation( in vec3 pos, in float threshold )
 {
@@ -185,6 +178,7 @@ bool isValidPerturbation( in vec3 pos, in float threshold )
     return inside;
 }
 
+
 uint randomize( inout uint seed )
 {   
     seed = (seed ^ 61) ^ (seed >> 16);
@@ -194,6 +188,7 @@ uint randomize( inout uint seed )
     seed = seed ^ (seed >> 15);
     return seed;
 }
+
 
 float rand( inout uint seed )
 {
@@ -383,7 +378,7 @@ void removeCap( inout state s, inout uint seed )
 void perturbState( inout state s, inout uint seed )
 {
     
-    float perturbationScale = ( uStateTemperature > PL_MIN_PERTURBATION ) ? uStateTemperature : rand( seed ) * PL_MIN_PERTURBATION; //(2.0 * uStateTemperature) + 1.0; // at minimum perturbation will range 0 - 0.5   
+    float perturbationScale = ( uTemperature > PL_MIN_PERTURBATION ) ? uTemperature : rand( seed ) * PL_MIN_PERTURBATION; //(2.0 * uTemperature) + 1.0; // at minimum perturbation will range 0 - 0.5   
              
     for (uint i=0; i<s.graftCount; i++)
     {
@@ -435,7 +430,7 @@ void perturbState( inout state s, inout uint seed )
     }
 }
 
-
+/*
 void copyState( inout state s, in state S )
 {
     s.graftCount = S.graftCount;
@@ -447,7 +442,7 @@ void copyState( inout state s, in state S )
     }
     s.energy = S.energy;
 }
-
+*/
 
 void copyGlobalState( inout state s )
 {
@@ -480,89 +475,6 @@ void copyLocalState( inout state s )
     }    
 }
 
-/*
-float acceptanceProbability( in float energy, in float newEnergy) 
-{
-    float result;
-    // If the new solution is better, accept it
-    if (newEnergy < energy) 
-    {
-        result = 1.0;
-    }
-    else
-    {
-        // If the new solution is worse, calculate an acceptance probability
-        result = exp( -(newEnergy - energy) / uStateTemperature );
-    }
-    return result;
-}
-*/
-
-/*
-
-
-void main(void)
-{ 
-    // get global invocation id
-    int gid = int( gl_GlobalInvocationID.x );  
-      
-
-    // get invocation unique seed value for RNG
-    uint seed = uint( uSeed*(gid+1) );  
-       
-    // create local state and copy data from global state 
-    state S;   copyGlobalState(  S ); 
-    state nS;  copyGlobalState( nS ); 
-    
-    for (uint j=0; j < PL_ITERATIONS; j++)
-    {   
-        // determine which case
-        uint changeCase = uint( rand( seed ) * 3 );
-            
-        if (nS.graftCount == 0 || changeCase == 0)
-        {
-            // add random
-            if (nS.graftCount < PL_MAX_GRAFTS_PER_SOLUTION)
-            {
-                addCap( nS, seed );
-            }
-        }
-        else if (changeCase == 1)
-        {
-            // remove random
-            removeCap( nS, seed );
-        }
-        
-        // peturb state
-        perturbState( nS, seed );
-        
-        // calc energy
-        nS.energy = energy( nS );
-        
-        if ( acceptanceProbability( S.energy, nS.energy ) > rand( seed ) )
-        {
-            copyState( S, nS );
-        }  
-    }
-    
-    // store state energy
-    invoEnergies[gid] = S.energy;
-
-    // store state graft count
-    invoGraftCounts[gid] = S.graftCount;
-
-    // store state positions, normals, and radii  
-    uint offset = gid*PL_MAX_GRAFTS_PER_SOLUTION;  
-    for (int i=0; i<S.graftCount; i++)
-    {
-        invoGraftPositions[offset+i] = S.positions[i];
-        invoGraftNormals  [offset+i] = S.normals  [i]; 
-        invoGraftRadii    [offset+i] = S.radii    [i];   
-    }
-    
-}
-*/
-
 
 void main(void)
 { 
@@ -582,8 +494,7 @@ void main(void)
     {       
         copyGlobalState( nS );         
     }
-
-    
+   
     // determine which case
     uint changeCase = uint( rand( seed ) * 3 );
         
@@ -606,7 +517,7 @@ void main(void)
     
     if ( uLoadLocal == 1 )
     {
-        // calc energy
+        // calc energy on last local iteration
         nS.energy = energy( nS );             
     }
     

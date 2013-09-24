@@ -7,21 +7,19 @@ plAnnealingGroup::plAnnealingGroup( PLfloat initialEnergy )
       graftPositions( PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
       graftNormals  ( PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
       graftRadii    ( PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION, -1.0 )
-{        
+{ 
+    _createBuffers();      // create input/output buffers
+    _bindBuffers();        // bind input/output buffers   
+    updateGroupBuffer();   // upload group states to GPU    
 }
 
-void reportError( const plString &str  ) 
-    {
-        GLuint errnum;
-        const char *errstr;
-        while (errnum = glGetError()) 
-        {
-            errstr = reinterpret_cast<const char*> (gluErrorString(errnum));
-            std::cout << str << " " << errstr << "\n";
-        }
-    }
+plAnnealingGroup::~plAnnealingGroup()
+{
+    _unbindBuffers();
+    _destroyBuffers();
+}
 
-void plAnnealingGroup::createBuffers()
+void plAnnealingGroup::_createBuffers()
 {
     // SSBOs 
     _energiesBufferID       = createSSBO( PL_STAGE0_INVOCATIONS, -1.0f );
@@ -30,37 +28,18 @@ void plAnnealingGroup::createBuffers()
     _graftRadiiBufferID     = createSSBO( PL_MAX_GRAFTS_PER_SOLUTION*PL_STAGE0_INVOCATIONS, -1.0f );
     _graftCountsBufferID    = createSSBO( PL_STAGE0_INVOCATIONS, -1 );
     
-    
+        
     PLuint bufferSize =  PL_STAGE0_NUM_GROUPS * sizeof(PLfloat) +                                   // energies
                          PL_STAGE0_NUM_GROUPS * sizeof(PLuint) +                                    // counts
                          PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION * sizeof(plVector4)*2 +    // positions, normals
                          PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION * sizeof(PLfloat);         // radii
     
-    _groupStateBufferID = createSSBO( bufferSize, (GLvoid*)(NULL) ); //(const GLvoid*)(this) );
+    _groupStateBufferID = createSSBO( bufferSize, (GLvoid*)(NULL) );
 
-    // UBO
-    /*
-    _groupUniformBufferID  = createBO<( GL_UNIFORM_BUFFER, 
-    
-    glGenBuffers( 1, &_groupStates );
-    glBindBuffer( GL_UNIFORM_BUFFER, _groupStates );
-
-    PLuint bufferSize = ( sizeof(PLfloat)                                                            // temperature
-                          PL_STAGE0_NUM_GROUPS * sizeof(PLfloat) +                                   // energies
-                          PL_STAGE0_NUM_GROUPS * sizeof(PLuint) +                                    // counts
-                          PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION)* sizeof(plVector4)*2 +    // positions, normals
-                          PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION * sizeof(PLfloat);         // radii
-                         
-                                                
-                         //////////////HERE!!
-    
-    glBufferData( GL_UNIFORM_BUFFER, bufferSize, this, GL_STREAM_COPY );
-    glBindBuffer( GL_UNIFORM_BUFFER, 0 );
-    */
 }
 
 
-void plAnnealingGroup::destroyBuffers()
+void plAnnealingGroup::_destroyBuffers()
 {
     // delete buffer objects
     glDeleteBuffers( 1, &_energiesBufferID       );
@@ -72,7 +51,7 @@ void plAnnealingGroup::destroyBuffers()
 }
 
 
-void plAnnealingGroup::bindBuffers()
+void plAnnealingGroup::_bindBuffers()
 {       
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, _energiesBufferID       );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, _graftPositionsBufferID );
@@ -82,7 +61,7 @@ void plAnnealingGroup::bindBuffers()
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 7, _groupStateBufferID     );
 }
 
-void plAnnealingGroup::unbindBuffers()
+void plAnnealingGroup::_unbindBuffers()
 {   
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, 0 );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, 0 );
@@ -95,81 +74,42 @@ void plAnnealingGroup::unbindBuffers()
 
 void plAnnealingGroup::updateGroupBuffer() const
 {
-    /*
-    PLuint bufferSize =  PL_STAGE0_NUM_GROUPS * sizeof(PLfloat) +                                   // energies
-                         PL_STAGE0_NUM_GROUPS * sizeof(PLuint) +                                    // counts
-                         PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION * sizeof(plVector4)*2 +    // positions, normals
-                         PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION * sizeof(PLfloat);         // radii
-                          
-    glBindBuffer( GL_SHADER_STORAGE_BUFFER, _groupStateBufferID );     
-    glBufferData( GL_SHADER_STORAGE_BUFFER, bufferSize, (const GLvoid*)(&energies[0]), GL_STREAM_COPY );
-    glBindBuffer( GL_SHADER_STORAGE_BUFFER, 0 );
-    */
+    PLuint byteOffset = 0;  
        
-    // energies
-    glBindBuffer( GL_SHADER_STORAGE_BUFFER, _groupStateBufferID );            
-    PLfloat *groupEnergies = (PLfloat*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
-                                                          0, 
-                                                          energies.size()*sizeof(PLfloat), 
-                                                          GL_MAP_READ_BIT );                                                                                           
-    memcpy( groupEnergies, &energies[0], energies.size()*sizeof( PLfloat ) );
-    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
+    // energies        
+    copyToSSBO( _groupStateBufferID, energies, byteOffset );
+    byteOffset += energies.size()*sizeof(PLfloat);
     
-    // graft counts           
-    PLuint *groupCounts = (PLuint*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
-                                                      energies.size()*sizeof(PLfloat), 
-                                                      graftCounts.size()*sizeof(PLuint), 
-                                                      GL_MAP_READ_BIT );                                                                                           
-    memcpy( groupCounts, &graftCounts[0], graftCounts.size()*sizeof( PLuint ) );
-    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
+    // graft counts              
+    copyToSSBO( _groupStateBufferID, graftCounts, byteOffset );
+    byteOffset += graftCounts.size()*sizeof(PLuint);
+     
+    // graft positions 
+    copyToSSBO( _groupStateBufferID, graftPositions, byteOffset );
+    byteOffset += graftPositions.size()*sizeof(plVector4);
+         
+    // graft normals 
+    copyToSSBO( _groupStateBufferID, graftNormals, byteOffset );
+    byteOffset += graftNormals.size()*sizeof(plVector4);
     
-    // graft positions          
-    plVector4 *groupPositions = (plVector4*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
-                                                               energies.size()*sizeof(PLfloat) + graftCounts.size()*sizeof(PLuint), 
-                                                               graftPositions.size()*sizeof(plVector4), 
-                                                               GL_MAP_READ_BIT );                                                                                           
-    memcpy( groupPositions, &graftPositions[0], graftPositions.size()*sizeof( plVector4 ) );
-    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-    
-    // graft normals          
-    plVector4 *groupNormals = (plVector4*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
-                                                             energies.size()*sizeof(PLfloat) + graftCounts.size()*sizeof(PLuint) + graftPositions.size()*sizeof(plVector4), 
-                                                             graftNormals.size()*sizeof(plVector4), 
-                                                             GL_MAP_READ_BIT );                                                                                           
-    memcpy( groupNormals, &graftNormals[0], graftNormals.size()*sizeof( plVector4 ) );
-    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-    
-    // graft radii           
-    PLfloat *groupRadii = (PLfloat*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
-                                                       energies.size()*sizeof(PLfloat) + graftCounts.size()*sizeof(PLuint) + graftPositions.size()*sizeof(plVector4) + graftNormals.size()*sizeof(plVector4), 
-                                                       graftRadii.size()*sizeof(PLfloat), 
-                                                       GL_MAP_READ_BIT );                                                                                           
-    memcpy( groupRadii, &graftRadii[0], graftRadii.size()*sizeof( PLfloat ) );
-    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-    
-    /*
-    glBindBuffer( GL_SHADER_STORAGE_BUFFER, _groupStateBufferID );    
-    PLuint *groupEnergies = readSSBO<PLuint>( PL_STAGE0_NUM_GROUPS, PL_STAGE0_NUM_GROUPS );                                                 
-    memcpy( &groupEnergies, &energies[0], PL_STAGE0_NUM_GROUPS*sizeof( PLuint ) );
-    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-    */
+    // graft radii 
+    copyToSSBO( _groupStateBufferID, graftRadii, byteOffset );
     
 }
 
 
-void plAnnealingGroup::convergeGroups()
+void plAnnealingGroup::convergeWorkGroups()
 {
     // for each workgroup, converge to local best
     for (PLuint i=0; i < PL_STAGE0_NUM_GROUPS; i++)
     {
         // find best energy
         PLint bestLocalIndex = _updateEnergy( i );
-        
-        //std::cout << "Group: " << i << ", best index: " << bestLocalIndex << ", best energy: " << energies[i] << std::endl;
-        
+
         // update the graft data for workgroup
-        _updateGrafts( i, bestLocalIndex );   
+        _updateWorkGroups( i, bestLocalIndex );   
     }
+    updateGroupBuffer();   // upload group states to GPU  
 }
 
 
@@ -211,6 +151,7 @@ PLint plAnnealingGroup::getCurrentBest() const
     return index;
 }
 
+
 void plAnnealingGroup::getGlobalSolution( plDefectState &state )
 {
     PLint bestGroup = getCurrentBest();
@@ -218,8 +159,7 @@ void plAnnealingGroup::getGlobalSolution( plDefectState &state )
     state.graftCount     = graftCounts[ bestGroup ];  
     state.graftPositions = graftPositions.extract ( bestGroup*PL_MAX_GRAFTS_PER_SOLUTION, graftCounts[ bestGroup ] );
     state.graftNormals   = graftNormals.extract   ( bestGroup*PL_MAX_GRAFTS_PER_SOLUTION, graftCounts[ bestGroup ] );
-    state.graftRadii     = graftRadii.extract     ( bestGroup*PL_MAX_GRAFTS_PER_SOLUTION, graftCounts[ bestGroup ] );
-    
+    state.graftRadii     = graftRadii.extract     ( bestGroup*PL_MAX_GRAFTS_PER_SOLUTION, graftCounts[ bestGroup ] );   
 }
 
 
@@ -240,15 +180,7 @@ PLint plAnnealingGroup::_updateEnergy( PLuint groupIndex )
     glBindBuffer( GL_SHADER_STORAGE_BUFFER, _energiesBufferID );    
     
     PLfloat *newEnergies = readSSBO<PLfloat>( groupIndex*PL_STAGE0_GROUP_SIZE, PL_STAGE0_GROUP_SIZE ); //groupIndex*PL_STAGE0_GROUP_SIZE, PL_STAGE0_GROUP_SIZE );
-    
-    /*
-    std::cout << "energies: ";
-    for (PLuint i=0; i < PL_STAGE0_GROUP_SIZE; i++)
-    {
-         std::cout << newEnergies[i] << ", ";
-    }
-    std::cout << std::endl;
-    */
+
     // randomize order each iteration to prevent bias    
     plSeq<PLuint> indexOrder( PL_STAGE0_GROUP_SIZE ); for (PLuint i=0; i<PL_STAGE0_GROUP_SIZE; i++) indexOrder.add(i);
     plUtility::shuffle( indexOrder );
@@ -258,7 +190,7 @@ PLint plAnnealingGroup::_updateEnergy( PLuint groupIndex )
     for (PLuint i=0; i < PL_STAGE0_GROUP_SIZE; i++ )
     {    
         // global index in energies array
-        PLuint j = indexOrder[i];                                // local index
+        PLuint j = indexOrder[i];                   // local index
         PLfloat r = ((float) rand() / (RAND_MAX));
         if ( _acceptanceProbability( energies[groupIndex], newEnergies[j] ) > r )
         {    
@@ -274,43 +206,29 @@ PLint plAnnealingGroup::_updateEnergy( PLuint groupIndex )
 }
 
 
-void plAnnealingGroup::_updateGrafts( PLuint groupIndex, PLint localIndex )
+void plAnnealingGroup::_updateWorkGroups( PLuint groupIndex, PLint localIndex )
 {
     if ( localIndex != -1 )
-    {
-        PLuint j =  (groupIndex * PL_STAGE0_GROUP_SIZE) + localIndex;
-    
+    {    
+        // get reference to starting index of specific work group
+        PLuint    &graftCountStart     = graftCounts   [ groupIndex ];
         plVector4 &graftPositionsStart = graftPositions[ groupIndex*PL_MAX_GRAFTS_PER_SOLUTION ];
         plVector4 &graftNormalsStart   = graftNormals  [ groupIndex*PL_MAX_GRAFTS_PER_SOLUTION ];
         PLfloat   &graftRadiiStart     = graftRadii    [ groupIndex*PL_MAX_GRAFTS_PER_SOLUTION ];
 
-        // get graft count
-        glBindBuffer( GL_SHADER_STORAGE_BUFFER, _graftCountsBufferID );            
-        PLuint *counts = readSSBO<PLuint>( j, 1 );
-        graftCounts[ groupIndex ] = counts[0];
-        glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-        
-        PLuint k =  (groupIndex * PL_STAGE0_GROUP_SIZE * PL_MAX_GRAFTS_PER_SOLUTION) + (localIndex * PL_MAX_GRAFTS_PER_SOLUTION);
+        PLuint indexOffset = ( (groupIndex * PL_STAGE0_GROUP_SIZE) + localIndex) ; 
+          
+        // get graft count        
+        copyFromSSBO( &graftCountStart, _graftCountsBufferID, indexOffset * sizeof( PLuint ), sizeof(PLuint) );
+
+        indexOffset =  (groupIndex * PL_STAGE0_GROUP_SIZE * PL_MAX_GRAFTS_PER_SOLUTION) + (localIndex * PL_MAX_GRAFTS_PER_SOLUTION);
         
         // get graft positions
-        glBindBuffer( GL_SHADER_STORAGE_BUFFER, _graftPositionsBufferID );    
-        plVector4 *positions = readSSBO<plVector4>( k, PL_MAX_GRAFTS_PER_SOLUTION );                                                 
-        memcpy( &graftPositionsStart, &positions[0], graftCounts[ groupIndex ]*sizeof( plVector4 ) );
-        glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-
+        copyFromSSBO( &graftPositionsStart, _graftPositionsBufferID, indexOffset * sizeof( plVector4 ), graftCounts[ groupIndex ]*sizeof( plVector4 ) );        
         // get graft normals
-        glBindBuffer( GL_SHADER_STORAGE_BUFFER, _graftNormalsBufferID );    
-        plVector4 *normals = readSSBO<plVector4>( k, PL_MAX_GRAFTS_PER_SOLUTION );
-        memcpy( &graftNormalsStart, &normals[0], graftCounts[ groupIndex ]*sizeof( plVector4 ) );    
-        glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-               
+        copyFromSSBO( &graftNormalsStart,   _graftNormalsBufferID,   indexOffset * sizeof( plVector4 ), graftCounts[ groupIndex ]*sizeof( plVector4 ) );       
         // get graft radii
-        glBindBuffer( GL_SHADER_STORAGE_BUFFER, _graftRadiiBufferID );            
-        PLfloat *radii = readSSBO<PLfloat>( k, PL_MAX_GRAFTS_PER_SOLUTION );
-        memcpy( &graftRadiiStart, &radii[0], graftCounts[ groupIndex ]*sizeof( PLfloat ) );    
-        glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-        
-        glBindBuffer( GL_SHADER_STORAGE_BUFFER, 0 );
+        copyFromSSBO( &graftRadiiStart,     _graftRadiiBufferID,      indexOffset * sizeof( PLfloat ), graftCounts[ groupIndex ]*sizeof( PLfloat ) );
     }     
 } 
 
@@ -337,13 +255,8 @@ namespace plPlannerStage0
         // generate and bind annealing state output buffers    
         plAnnealingGroup states( site.area() ); // empty state (no plugs) energy set to total site area
         
-        // put in constructor
-        states.createBuffers();       // create input/output buffers
-        states.bindBuffers();         // bind input/output buffers   
-        states.updateGroupBuffer(); 
-        //
-        
         PLuint count = 0;
+        
         // simulated annealing                
         while ( states.temperature > 0.01f )
         {
@@ -358,17 +271,15 @@ namespace plPlannerStage0
                 // memory barrier      
                 glMemoryBarrier( GL_ALL_BARRIER_BITS );
 
-                //std::cout << "Itr: " << i << std::endl;
-
                 stage0Shader.setLocalLoadUniform( i );
             }
 
             // cool temperature
-            states.temperature -= PL_STAGE0_COOLING_RATE; //*= 1.0f - PL_STAGE0_COOLING_RATE;
+            states.temperature -= PL_STAGE0_COOLING_RATE;
             
             // update the annealing state 
-            states.convergeGroups();               
-            states.updateGroupBuffer();  
+            states.convergeWorkGroups();               
+            //states.updateGroupBuffer();  
                
             PLint bestGroup = states.getCurrentBest();   
                
@@ -377,23 +288,21 @@ namespace plPlannerStage0
                           << states.temperature << std::endl;   
             
             /*    
-            if (count > 10)
+            if (count > PL_GLOBAL_CONVERGE_START)
             {
-                states.convergeGlobal();
-                count = 0;
+                if ( count % PL_GLOBAL_CONVERGE_INC == 0 )
+                {
+                    states.convergeGlobal();
+                }
+                
             }
-            count++;
             */
+            count++;
+            
         }
 
+        // load global solution from annealing state to defect state
         states.getGlobalSolution( defectState );
-
-        // unbind and delete state output buffers
-        // put in destructor
-        states.unbindBuffers();  
-        states.destroyBuffers();
-        //
-        
         
         // unbind and delete site and temporary buffers
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           

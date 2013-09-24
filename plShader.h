@@ -148,6 +148,53 @@ plSeq<T> readSSBO( PLuint bufferID, PLuint index, PLuint count )
     return ts;                              
 }
 
+/*
+GLvoid* readSSBO( PLuint byteOffset, PLuint numBytes )
+{
+    return (GLvoid*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                       byteOffset, 
+                                       numBytes,
+                                       GL_MAP_READ_BIT );     
+}
+*/
+
+template< class T >
+void copyToSSBO( PLuint bufferID, const plSeq<T> &ts, PLuint byteOffset )
+{
+    glBindBuffer( GL_SHADER_STORAGE_BUFFER, bufferID );            
+    T *mappedBuffer = (T*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                              byteOffset, 
+                                              ts.size()*sizeof(T), 
+                                              GL_MAP_READ_BIT );                                                                                           
+    memcpy( mappedBuffer, &ts[0], ts.size()*sizeof( T ) );
+    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );     
+}
+
+
+template< class T >   
+void copyFromSSBO( plSeq<T> &ts, PLuint bufferID, PLuint byteOffset )
+{
+    glBindBuffer( GL_SHADER_STORAGE_BUFFER, bufferID );    
+    T *mappedBuffer = (T*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                              byteOffset, 
+                                              ts.size()*sizeof(T), 
+                                              GL_MAP_READ_BIT );                                                  
+    memcpy( &ts[0], &mappedBuffer[0], ts.size()*sizeof(T) );
+    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
+}
+
+
+template< class T >   
+void copyFromSSBO( T *ts, PLuint bufferID, PLuint byteOffset, PLuint numBytes )
+{
+    glBindBuffer( GL_SHADER_STORAGE_BUFFER, bufferID );    
+    T *mappedBuffer = (T*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
+                                             byteOffset, 
+                                             numBytes, 
+                                             GL_MAP_READ_BIT );                                                                                      
+    memcpy( ts, &mappedBuffer[0], numBytes );
+    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
+}
 
 
 

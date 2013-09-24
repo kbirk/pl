@@ -6,10 +6,20 @@ plDonorState::plDonorState()
       graftZDirections( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
       totalRms        ( FLT_MAX )
 {
+    _createBuffers();
+    _bindBuffers();
+    
 }
 
 
-void plDonorState::createBuffers()
+plDonorState::~plDonorState()
+{
+    _unbindBuffers();
+    _destroyBuffers();
+}
+
+
+void plDonorState::_createBuffers()
 {
     // create state buffers  
     _donorPositionsBufferID   = createSSBO( PL_STAGE2_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) );
@@ -19,7 +29,7 @@ void plDonorState::createBuffers()
 }
 
 
-void plDonorState::destroyBuffers()
+void plDonorState::_destroyBuffers()
 {
     // delete buffer objects
     glDeleteBuffers( 1, &_donorPositionsBufferID   );
@@ -29,7 +39,7 @@ void plDonorState::destroyBuffers()
 }
 
 
-void plDonorState::bindBuffers()
+void plDonorState::_bindBuffers()
 {      
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, _donorPositionsBufferID   );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, _donorNormalsBufferID     );
@@ -37,7 +47,7 @@ void plDonorState::bindBuffers()
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 6, _totalRMSBufferID         );
 }
 
-void plDonorState::unbindBuffers()
+void plDonorState::_unbindBuffers()
 {   
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, 0 );
     glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, 0 );
@@ -138,14 +148,10 @@ namespace plPlannerStage2
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, donorSiteDataBufferID      );    
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, rmsValuesInputBufferID     ); 
         glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, rmsDirectionsInputBufferID ); 
-
-        
-
+       
         // generate and bind donor state output buffers    
         plDonorState donorState; 
-        donorState.createBuffers();  // create output buffers
-        donorState.bindBuffers();    // bind output buffers   
-        
+
         // set state uniforms
         stage2Shader.setGraftUniforms( defectState.graftCount,
                                        rmsInput.sets.size(),    // number of individual directions
@@ -189,10 +195,6 @@ namespace plPlannerStage2
         glDeleteBuffers( 1, &donorSiteDataBufferID      );
         glDeleteBuffers( 1, &rmsValuesInputBufferID     );
         glDeleteBuffers( 1, &rmsDirectionsInputBufferID );
-        
-        // unbind and delete state output buffers
-        donorState.unbindBuffers();  
-        donorState.destroyBuffers();
         
         if (donorState.graftPositions.size() > 0 )
         {
