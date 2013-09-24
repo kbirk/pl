@@ -14,7 +14,7 @@
 #define PL_STAGE2_NUM_GROUPS                 1
 #define PL_STAGE2_INVOCATIONS                PL_STAGE2_NUM_GROUPS*PL_STAGE2_GROUP_SIZE
 
-#define PL_STAGE2_ITERATIONS                 8
+#define PL_STAGE2_ITERATIONS                 16
 
 class plDonorState
 {
@@ -28,12 +28,8 @@ class plDonorState
     
         plDonorState();
         
-        void createBuffers ();
-        void destroyBuffers();
-        
-        void bindBuffers  ();
-        void unbindBuffers();
-        
+        ~plDonorState();
+
         void update(); 
         
     private:
@@ -42,6 +38,12 @@ class plDonorState
         PLuint _donorNormalsBufferID;
         PLuint _donorZDirectionsBufferID;       
         PLuint _totalRMSBufferID; 
+        
+        void _createBuffers ();
+        void _destroyBuffers();
+        
+        void _bindBuffers  ();
+        void _unbindBuffers();
           
         PLint  _getLowestRmsIndex(); 
             

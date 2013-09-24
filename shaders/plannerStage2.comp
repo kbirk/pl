@@ -138,6 +138,8 @@ void main(void)
         graftIndices[i] = i;
     }
     shuffle( graftIndices, uGraftCount, seed );
+    shuffle( graftIndices, uGraftCount, seed );
+    shuffle( graftIndices, uGraftCount, seed );
     
     // for each graft
     for ( uint i=0; i < uGraftCount; i++ )

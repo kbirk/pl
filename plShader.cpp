@@ -125,6 +125,7 @@ GLuint plShader::_createShader(const char *shaderFile, GLenum shaderType)
     return shader;          
 }
 
+
 GLuint plShader::_compileShader(GLuint shader)
 {
     // compile vertex shader
@@ -135,6 +136,7 @@ GLuint plShader::_compileShader(GLuint shader)
     // return error code
     return result; 
 }
+
 
 void plShader::_printCompileError(GLuint shader)
 {
@@ -148,6 +150,7 @@ void plShader::_printCompileError(GLuint shader)
 	fprintf(stdout, "%s\n", &errorMessage[0]);
 }
 
+
 GLuint plShader::_linkProgram()
 {
     // link shader program
@@ -158,6 +161,7 @@ GLuint plShader::_linkProgram()
     // return error code
     return result; 
 }
+
 
 void plShader::_printLinkError()
 {
@@ -171,4 +175,16 @@ void plShader::_printLinkError()
 	fprintf(stdout, "%s\n", &errorMessage[0]);
 }
 
+
+PLuint createSSBO( PLuint numBytes, const GLvoid *buffer )
+{
+    PLuint bufferID;
+    glGenBuffers(1, &bufferID);     
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferID);
+    std::cout << "before!\n";
+    glBufferData(GL_SHADER_STORAGE_BUFFER, numBytes, buffer, GL_STREAM_COPY);
+    std::cout << "after!\n";
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    return bufferID;
+} 
 

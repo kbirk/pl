@@ -216,7 +216,7 @@ void plSpline::_computeHermite()
     // find tangents in the s and t planes
     plSeq<PLfloat> st(4), tt(4); _computeTangents( st, tt, p, n );
     
-    const PLfloat   INC      = 0.02f;  // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
+    const PLfloat   INC      = 0.015f;  // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
     const PLuint    NUM_INC  = 1.0f/INC;
     const PLfloat   fNUM_INC = 1.0f/INC;     
     const PLfloat   MAX_DISTANCE = 1.0f;            // colour map max distance, anything beyond this is dark red   
