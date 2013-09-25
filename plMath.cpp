@@ -194,6 +194,40 @@ namespace plMath
         return true;
     }
 
+    // another version of the above function that may be worth trying, may be more accurate and/or faster
+    /*PLbool intersectTwoLines(const plVector3 &edge1Point, const plVector3 &edge2Point, const plVector3 &edge1Direction, const plVector3 &edge2Direction, PLfloat &edge1Param, PLfloat &edge2Param)
+    {
+        // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+        edge1Param = 0.f;
+        edge2Param = 0.f;
+        plVector3 crossProductRightSideEdge1 ((edge2Point-edge1Point)^edge2Direction);
+        plVector3 crossProductRightSideEdge2 ((edge2Point-edge1Point)^edge1Direction);
+        plVector3 crossProductLeftSide  (edge1Direction^edge2Direction);
+        PLfloat   maximumSolution(0.f);
+        if (fabs(crossProductLeftSide.x) > PL_EPSILON && fabs(crossProductLeftSide.x) > maximumSolution)
+        {
+            maximumSolution = fabs(crossProductLeftSide.x);
+            edge1Param = crossProductRightSideEdge1.x/crossProductLeftSide.x;
+            edge2Param = crossProductRightSideEdge2.x/crossProductLeftSide.x;
+        }
+        if (fabs(crossProductLeftSide.y) > PL_EPSILON && fabs(crossProductLeftSide.y) > maximumSolution)
+        {
+            maximumSolution = fabs(crossProductLeftSide.y);
+            edge1Param = crossProductRightSideEdge1.y/crossProductLeftSide.y;
+            edge2Param = crossProductRightSideEdge2.y/crossProductLeftSide.y;
+        }
+        if (fabs(crossProductLeftSide.z) > PL_EPSILON && fabs(crossProductLeftSide.z) > maximumSolution)
+        {
+            maximumSolution = fabs(crossProductLeftSide.z);
+            edge1Param = crossProductRightSideEdge1.z/crossProductLeftSide.z;
+            edge2Param = crossProductRightSideEdge2.z/crossProductLeftSide.z;
+        }
+        if (maximumSolution <= PL_EPSILON) // lines are parallel and do not intersect
+            return false;
+
+        return true;
+    }*/
+
 
     plIntersection rayIntersect( const plSeq<plTriangle> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull )
     {

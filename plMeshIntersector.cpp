@@ -33,7 +33,6 @@ namespace plMeshIntersector
         if (edge.contains(vert.vert, PL_EPSILON)) // if it is on the edge, this is not an intersection
             return false;
 
-        // TODO: try the next one with an epsilon comparison, rather than exact
         if ((plMath::closestPointOnSegment(vert.vert,edge.pt1,edge.pt2) - vert.vert).length() > PL_EPSILON ) // if it's NOT on the line
             return false;
 
@@ -56,6 +55,10 @@ namespace plMeshIntersector
             return false;
         intersection = pointOnThis;
 
+        // check just to make sure the intersection isn't in fact already a vertex...
+        if (edge.contains(intersection, PL_EPSILON) || other.edge.contains(intersection, PL_EPSILON))
+            return false;
+
         return true;
     }
 
@@ -77,9 +80,9 @@ namespace plMeshIntersector
             return false;
 
         // on the edge, don't consider as an intersection
-        if (fabs(barycentricCoords.x) <= PL_EPSILON ||
-            fabs(barycentricCoords.y) <= PL_EPSILON ||
-            fabs(barycentricCoords.z) <= PL_EPSILON )
+        if ((plMath::closestPointOnSegment(vert.vert,face.point0(),face.point1()) - vert.vert).length() <= PL_EPSILON ||
+            (plMath::closestPointOnSegment(vert.vert,face.point1(),face.point2()) - vert.vert).length() <= PL_EPSILON ||
+            (plMath::closestPointOnSegment(vert.vert,face.point2(),face.point0()) - vert.vert).length() <= PL_EPSILON )
             return false;
 
         return true;
@@ -109,9 +112,17 @@ namespace plMeshIntersector
             return false;
 
         // on the edge, don't consider as an intersection
-        if (fabs(barycentricCoords.x) <= PL_EPSILON ||
-            fabs(barycentricCoords.y) <= PL_EPSILON ||
-            fabs(barycentricCoords.z) <= PL_EPSILON )
+        if ((plMath::closestPointOnSegment(intersection,face.point0(),face.point1()) - intersection).length() <= PL_EPSILON ||
+            (plMath::closestPointOnSegment(intersection,face.point1(),face.point2()) - intersection).length() <= PL_EPSILON ||
+            (plMath::closestPointOnSegment(intersection,face.point2(),face.point0()) - intersection).length() <= PL_EPSILON )
+            return false;
+
+        // if on one of the face edges, don't consider as an intersection
+        if (edge.edge.contains(intersection,PL_EPSILON))
+            return false;
+
+        // if on one of the face vertices, don't consider as an intersection
+        if (face.contains(intersection,PL_EPSILON))
             return false;
 
         return true;
@@ -119,15 +130,17 @@ namespace plMeshIntersector
 
     PLbool plMeshIntersectorConnectivityData::_findVert( const plVector3& vertex, PLint &index )
     {
+        index = -1;
         for (PLuint i = 0; i < verts.size(); i++)
         {
             if ((verts[i].vert - vertex).length() <= PL_EPSILON)
             {
-                index = i;
-                return true;
+                if (index == -1)
+                    index = i;
+                else
+                    std::cout << "Warning in plMeshIntersectorConnectivityData::_findVert(): More than one candidate for vertex " << vertex << ". This could mean that epsilon is set too large. Continuing with the first result, but beware future errors." << std::endl;
             }
         }
-        index = -1;
         return true;
     }
 
@@ -152,8 +165,18 @@ namespace plMeshIntersector
 
         plMeshIntersectorConnectivityDataVert vertNsearch; vertNsearch.vert = vertex;
         PLint  vertNsearchIndex;
-        _findVert(vertex, vertNsearchIndex);
+        vertNsearchIndex = verts.findIndex(vertNsearch);
         PLuint vertNindex; // we need to determine this
+        if ((PLuint)vertNsearchIndex == vertAindex)
+        {
+            std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): N vertex is A vertex. This is possibly due to epsilon being too large. Aborting this particular edge split, but beware of future errors." << std::endl;
+            return false;
+        }
+        if ((PLuint)vertNsearchIndex == vertBindex)
+        {
+            std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): N vertex is B vertex. This is possibly due to epsilon being too large. Aborting this particular edge split, but beware of future errors." << std::endl;
+            return false;
+        }
         if (vertNsearchIndex == -1)
         {
             vertNindex = verts.size();
@@ -191,7 +214,7 @@ namespace plMeshIntersector
         verts[vertBindex].edgeIndices.remove(verts[vertBindex].edgeIndices.findIndex(edgeANindex));
         verts[vertBindex].edgeIndices.add(edgeNBindex);
 
-        // split any attached faces each into two pieces... one at a time
+        // split any attached faces each into two pieces...
         for (PLuint i = 0; i < faceIndicesToSplit.size(); i++)
         {
             // find all existing cells, have them available in case they're needed later
@@ -220,6 +243,16 @@ namespace plMeshIntersector
             if (vertCindex == vertNindex)
             {
                 std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is N vertex. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
+            if (vertCindex == vertAindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is A vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
+                continue;
+            }
+            if (vertCindex == vertBindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is B vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
                 continue;
             }
             plMeshIntersectorConnectivityDataVert& vertC = verts[vertCindex];
@@ -252,6 +285,26 @@ namespace plMeshIntersector
             }
             PLuint edgeACindex((PLuint)edgeACsearchIndex);
             PLuint edgeBCindex((PLuint)edgeBCsearchIndex);
+            if (edgeBCindex == edgeANindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): BC edge is AN edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
+            if (edgeACindex == edgeANindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is AN edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
+            if (edgeBCindex == edgeNBindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): BC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
+            if (edgeACindex == edgeNBindex)
+            {
+                std::cerr << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
+                continue;
+            }
             plMeshIntersectorConnectivityDataEdge& edgeAC = edges[edgeACindex];
             plMeshIntersectorConnectivityDataEdge& edgeBC = edges[edgeBCindex];
 
@@ -394,7 +447,7 @@ namespace plMeshIntersector
         // create the new cells, storing their eventual indices
         plMeshIntersectorConnectivityDataVert vertNsearch; vertNsearch.vert = vertex;
         PLint  vertNsearchIndex;
-        _findVert(vertex, vertNsearchIndex);
+        vertNsearchIndex = verts.findIndex(vertNsearch);
         PLuint vertNindex; // we need to determine this
         if (vertNsearchIndex == -1)
         {
@@ -494,6 +547,7 @@ namespace plMeshIntersector
         edges[edge20index].faceIndices.remove(edges[edge20index].faceIndices.findIndex(faceIndex));
         edges[edge20index].faceIndices.add(face20Nindex); // edge01 doesn't need this because faceIndex == face01Nindex
 
+        //std::cout << "vertNindex: " << vertNindex << std::endl;
         //std::cout << "vert0index: " << vert0index << std::endl;
         //std::cout << "vert1index: " << vert1index << std::endl;
         //std::cout << "vert2index: " << vert2index << std::endl;
@@ -501,6 +555,7 @@ namespace plMeshIntersector
         //std::cout << "edge12index: " << edge12index << std::endl;
         //std::cout << "edge20index: " << edge20index << std::endl;
         //std::cout << "face012index: " << faceIndex << std::endl;
+        //std::cout << "-----------" << std::endl;
 
         return true;
     }
@@ -745,7 +800,7 @@ namespace plMeshIntersector
         for (PLuint i = 0; i < faces.size(); i++)
         {
             if (( ((faces[i].face.point1())-(faces[i].face.point0())).normalize() ^
-                  ((faces[i].face.point2())-(faces[i].face.point0())).normalize()).length() <= PL_EPSILON*PL_EPSILON )
+                  ((faces[i].face.point2())-(faces[i].face.point0())).normalize()).length() <= PL_EPSILON*PL_EPSILON ) // TODO: Declare a constant and/or use PL_EPSILON
             {
                 std::cout << "Warning in plMeshIntersectorConnectivityData::_checkNoSliverTriangles(): face " << i << " appears to be ultra thin. This is bad." << std::endl;
                 good = false;
@@ -757,7 +812,7 @@ namespace plMeshIntersector
 
     PLbool plMeshIntersectorConnectivityData::_checkForAllErrors()
     {
-        return _checkNoDuplicates() && _checkArraySizes() && _checkBidirectionalConnections() && _checkNoSliverTriangles();
+        return _checkNoDuplicates() && _checkArraySizes() && _checkBidirectionalConnections();// && _checkNoSliverTriangles();
     }
 
     void plMeshIntersectorConnectivityData::_reportSizes()
@@ -893,50 +948,50 @@ namespace plMeshIntersector
 
         if (!_checkForAllErrors()) return false;
 
+        _reportSizes();
+
+        std::cout << "Detecting vert-edge intersections" << std::endl;
+        // vertex-edge intersections
+        for (PLuint i = 0; i < edges.size(); i++)
+        {
+            for (PLuint j = 0; j < verts.size(); j++)
+            {
+                if (edges[i].intersectsVert(verts[j]))
+                {
+                    _splitEdgeOnVect(i,verts[j].vert);
+                    if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
+                    i--;
+                    break; // restart edge iteration, since it may need to be split again! you never know!
+                }
+            }
+        }
+        _reportSizes();
+
+        std::cout << "Detecting vert-face intersections" << std::endl;
+        // vertex-face intersections
+        for (PLuint i = 0; i < faces.size(); i++)
+        {
+            for (PLuint j = 0; j < verts.size(); j++)
+            {
+                if (faces[i].intersectsVert(verts[j]))
+                {
+                    _splitFaceOnVect(i,verts[j].vert);
+                    if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
+                    i--;
+                    break;
+                }
+            }
+        }
+        _reportSizes();
+
         PLuint vertsSize(0);
         PLuint edgesSize(0);
         PLuint facesSize(0);
-        _reportSizes();
-
         while (vertsSize != verts.size() || edgesSize != edges.size() || facesSize != faces.size())
         {
             vertsSize = verts.size();
             edgesSize = edges.size();
             facesSize = faces.size();
-
-            std::cout << "Detecting vert-edge intersections" << std::endl;
-            // vertex-edge intersections
-            for (PLuint i = 0; i < edges.size(); i++)
-            {
-                for (PLuint j = 0; j < verts.size(); j++)
-                {
-                    if (edges[i].intersectsVert(verts[j]))
-                    {
-                        _splitEdgeOnVect(i,verts[j].vert);
-                        if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
-                        i--;
-                        break; // restart edge iteration, since it may need to be split again! you never know!
-                    }
-                }
-            }
-            _reportSizes();
-
-            std::cout << "Detecting vert-face intersections" << std::endl;
-            // vertex-face intersections
-            for (PLuint i = 0; i < faces.size(); i++)
-            {
-                for (PLuint j = 0; j < verts.size(); j++)
-                {
-                    if (faces[i].intersectsVert(verts[j]))
-                    {
-                        _splitFaceOnVect(i,verts[j].vert);
-                        if (!_checkForAllErrors()) return false;
-                        i--;
-                        break;
-                    }
-                }
-            }
-            _reportSizes();
 
             std::cout << "Detecting edge-edge intersections" << std::endl;
             // edge-edge intersections
@@ -947,9 +1002,9 @@ namespace plMeshIntersector
                     if (edges[i].intersectsEdge(edges[j],intersectionPoint))
                     {
                         _splitEdgeOnVect(i,intersectionPoint);
-                        if (!_checkForAllErrors()) return false;
+                        if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
                         _splitEdgeOnVect(j,intersectionPoint);
-                        if (!_checkForAllErrors()) return false;
+                        if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
                         i--;
                         break; // restart edge iteration, since it may need to be split again! you never know!
                     }
@@ -965,10 +1020,11 @@ namespace plMeshIntersector
                 {
                     if (faces[i].intersectsEdge(edges[j],intersectionPoint))
                     {
-                        _splitFaceOnVect(i,intersectionPoint);
-                        if (!_checkForAllErrors()) { std::cout << faces[i] << std::endl; std::cout << edges[j] << std::endl; _exportTriSeq(outputTris); return false;}
+                        PLuint edgesSoFar(edges.size());
                         _splitEdgeOnVect(j,intersectionPoint);
-                        if (!_checkForAllErrors()) { std::cout << faces[i] << std::endl; std::cout << edges[j] << std::endl; _exportTriSeq(outputTris); return false;}
+                        if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
+                        _splitFaceOnVect(i,intersectionPoint);
+                        if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
                         i--;
                         break;
                     }
@@ -978,7 +1034,7 @@ namespace plMeshIntersector
         }
 
         // should be good, but for sanity's sake...
-        if (!_checkForAllErrors()) return false;
+        if (!_checkForAllErrors()) { _exportTriSeq(outputTris); return false;}
 
         std::cout << "Done." << std::endl;
         _reportSizes();
