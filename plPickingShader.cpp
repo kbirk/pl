@@ -15,10 +15,10 @@ void plPickingShader::getUniformLocations()
 	_blueID    = glGetUniformLocation(_shaderProgramID, "uBlueBits");  			 
 }
 
-void plPickingShader::setPickingUniforms(const plPickingInfo &pi) const
+void plPickingShader::setPickingUniforms( PLint type, PLint id, PLint index ) const // const plPickingInfo &pi ) const
 {            
-    glUniform1i(_redID,   pi.type);	
-    glUniform1i(_greenID, pi.id);	
-	glUniform1i(_blueID,  pi.index);
+    glUniform1i( _redID,   type  );	
+    glUniform1i( _greenID, id    );	
+	glUniform1i( _blueID,  index );
 }
 		

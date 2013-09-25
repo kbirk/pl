@@ -137,7 +137,7 @@ namespace plShaderStack
         {
             // picking shader
             const plPickingShader *shader = static_cast<const plPickingShader*>(_stack.top());
-            shader->setPickingUniforms( plPicking::value );
+            shader->setPickingUniforms( plPicking::value.type, plPicking::value.id, plPicking::value.index );
         }
         else if ( dynamic_cast<const plPhongShader*>( _stack.top() ) )
         {

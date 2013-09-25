@@ -51,7 +51,7 @@ void plGraftEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
     const PLfloat CIRCLE_RADIUS        = 14;
     const PLfloat HARVEST_HORIZONTAL   = HORIZONTAL_BUFFER;
     const PLfloat RECIPIENT_HORIZONTAL = (HORIZONTAL_BUFFER + CIRCLE_RADIUS + HORIZONTAL_SPACING);      
-    const PLfloat INITIAL_VERTICAL     = plWindow::height() - VERTICAL_BUFFER;
+    const PLfloat INITIAL_VERTICAL     = plWindow::viewportHeight() - VERTICAL_BUFFER;
      
     PLfloat count = 0;
     plPicking::value.index = -1;    
@@ -103,7 +103,7 @@ void plGraftEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
             {     
                 plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
             }   
-            plDraw::disk( plVector3( x, y, 0), CIRCLE_RADIUS );            
+            plDraw::disk( plVector3( plWindow::windowToViewportX( x ), plWindow::windowToViewportY( y ), 0), CIRCLE_RADIUS );            
         }
         
 

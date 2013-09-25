@@ -154,7 +154,7 @@ namespace plRenderer
             _drawScenePicking();
         }
         _endPicking();
-            
+  
         // normal draw
         _beginDrawing();
         {
@@ -196,7 +196,7 @@ namespace plRenderer
     {
         glEnable( GL_BLEND );
         
-        glClearColor( 0,0,0,0 );
+        glClearColor( 0.137, 0.137, 0.137, 1 );
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
         glStencilFunc( GL_ALWAYS, 0x00, 0x00);               // only render to bits = 0 (have not been written)
@@ -236,8 +236,10 @@ namespace plRenderer
         {
             // set flat shader
             plShaderStack::push( _minimalShader );  
-            plCameraStack::push( plMatrix44() );                                                        // identity viewing matrix
-            plProjectionStack::push( plMatrix44( 0, plWindow::width(), 0, plWindow::height(), -1, 1) ); // ortho, viewport dimensions
+            plCameraStack::push( plMatrix44() );                                // identity viewing matrix
+            plProjectionStack::push( plMatrix44( 0, plWindow::viewportWidth(),  // ortho, viewport dimensions
+                                                 0, plWindow::viewportHeight(), 
+                                                 -1, 1) ); 
             {
                 _boundaryEditorToDraw->drawMenu( *_planToDraw, x, y );
                 _graftEditorToDraw->drawMenu   ( *_planToDraw, x, y );
@@ -370,8 +372,10 @@ namespace plRenderer
         // draw editor menus
         if ( (_boundaryEditorToDraw != NULL || _graftEditorToDraw != NULL) && _planToDraw != NULL)
         {        
-            plCameraStack::push( plMatrix44() );                                                        // identity viewing matrix   
-            plProjectionStack::push( plMatrix44( 0, plWindow::width(), 0, plWindow::height(), -1, 1) ); // ortho, viewport dimensions
+            plCameraStack::push( plMatrix44() );                                // identity viewing matrix
+            plProjectionStack::push( plMatrix44( 0, plWindow::viewportWidth(),  // ortho, viewport dimensions
+                                                 0, plWindow::viewportHeight(), 
+                                                 -1, 1) ); 
             {
                 _boundaryEditorToDraw->drawMenu( *_planToDraw, 0, 0 );
                 _graftEditorToDraw->drawMenu   ( *_planToDraw, 0, 0 );

@@ -2,7 +2,7 @@
 #define _PL_COMMON_H__
 
 // MODEL MACROS  
-            
+
 #define PL_MODEL_BONE_COLOUR                     0.80, 0.80, 0.80
 #define PL_MODEL_CARTILAGE_COLOUR                0.50, 0.20, 0.20       
 
@@ -105,6 +105,8 @@
 #define PL_MAX_OF_2(a,b)                         (a>=b ? a : b)     
 #define PL_MIN_OF_3(a,b,c)                       (a<=b ? (a<=c ? a : c) : (b<=c ? b : c))
 #define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c)) 
+
+#define PL_ASPECT_RATIO                          ( 1280.0f / 720.0f ) 
 
 
 #ifdef WIN32

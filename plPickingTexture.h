@@ -13,7 +13,7 @@ class plPickingInfo
 	    PLint index;
 	
 	    plPickingInfo()
-	        : type(0), id(0), index(0)
+	        : type(-1), id(-1), index(-1)
 	    {
 	    }
 };
