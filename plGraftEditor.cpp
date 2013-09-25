@@ -193,7 +193,7 @@ void plGraftEditor::drawHandles() const
 
 PLbool plGraftEditor::processMouseClick( plPlan &plan, PLint x, PLint y )
 {
-    plPickingInfo pick = plPicking::texture->readPixel(x,y);
+    plPickingInfo pick = plPicking::texture->readPixel( x, y );
 
     switch (pick.type) 
     {     
@@ -258,7 +258,9 @@ PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLint x, PLint y )
     plVector3 translation( -y, 0, x);
     
     if (translation.squaredLength() > 1)
+    {
         translation = translation.normalize();
+    }
     
     plVector3 localXAxis = (plCameraStack::direction() ^ _selectedGraft->transform(_selectedType).y()).normalize();
     plVector3 localZAxis = (_selectedGraft->transform(_selectedType).y() ^ localXAxis).normalize();
@@ -269,7 +271,7 @@ PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLint x, PLint y )
                   (translation * localZAxis) * localZAxis;
 
     // translate by local coords
-    translateSelected( 0.3 * translation );
+    translateSelected( 0.3f * translation );
     return true;
 }
 

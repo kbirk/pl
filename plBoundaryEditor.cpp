@@ -24,7 +24,7 @@ void plBoundaryEditor::clearSelection( plPlan &plan )
 
 PLbool plBoundaryEditor::processMouseClick( plPlan &plan, PLint x, PLint y)
 {
-    plPickingInfo pick = plPicking::texture->readPixel(x,y);
+    plPickingInfo pick = plPicking::texture->readPixel( x, y );
 
     switch (pick.type) 
     {  
@@ -73,9 +73,12 @@ PLbool plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
     if (_selectedBoundary == NULL)
         return false;
     
+    return processMouseDrag( plan, x, y );
+    /*
     moveSelectedPoint( plan, x, y );
     
     return true;
+    */
 }
 
 
