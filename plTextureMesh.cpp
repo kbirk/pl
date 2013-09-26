@@ -1,13 +1,24 @@
 #include "plTextureMesh.h"
 
 plTextureMesh::plTextureMesh() 
-    : plMesh()
+    : plMesh(), texture( 0, 0 )
 {
 }
 
 
-plTextureMesh::plTextureMesh( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft)              
-    : plMesh()
+plTextureMesh::plTextureMesh( PLuint width, PLuint height ) 
+    : plMesh(), texture( width, height )
+{
+    // default ortho coords
+    setBuffers( plVector3(-1,-1, 0), 
+                plVector3( 1,-1, 0),
+                plVector3( 1, 1, 0),
+                plVector3(-1, 1, 0) );
+}
+
+
+plTextureMesh::plTextureMesh( PLuint width, PLuint height, const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft)              
+    : plMesh(), texture( width, height )
 {
 	// set VBO and VAO
     setBuffers( bottemLeft, bottemRight, topRight, topLeft);
@@ -15,7 +26,7 @@ plTextureMesh::plTextureMesh( const plVector3 &bottemLeft, const plVector3 &bott
 
 
 plTextureMesh::plTextureMesh( const plTextureMesh &mesh )
-    : plMesh()
+    : plMesh(), texture( mesh.texture )
 {
     _copyMesh( mesh );
 }
@@ -24,6 +35,7 @@ plTextureMesh::plTextureMesh( const plTextureMesh &mesh )
 plTextureMesh& plTextureMesh::operator = ( const plTextureMesh &mesh ) 
 { 
     _copyMesh( mesh );
+    texture = mesh.texture;
     return *this;
 }
 
