@@ -136,15 +136,15 @@ void plCheckerBoard::_generate( PLfloat blocksize )
 }
 
 
-void updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL )
+void plCheckerBoard::updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL )
 {
     plVector3 checkerOriginTrans = currentFemurDRBToWorld.applyInverseTransform( _calibOrigin );
     checkerOriginTrans = femurDRBToFemurSTL.applyTransform( checkerOriginTrans );
 
-    plVector3 checkerXTrans  = currentFemurDRBToWorld.applyInverseTransform( calibXAxisPoint );
+    plVector3 checkerXTrans  = currentFemurDRBToWorld.applyInverseTransform( _calibXAxisPoint );
     checkerXTrans  = femurDRBToFemurSTL.applyTransform(checkerXTrans);
 
-    plVector3 checkerYTrans  = currentFemurDRBToWorld.applyInverseTransform( calibYAxisPoint );
+    plVector3 checkerYTrans  = currentFemurDRBToWorld.applyInverseTransform( _calibYAxisPoint );
     checkerYTrans  = femurDRBToFemurSTL.applyTransform(checkerYTrans);
 
     plVector3 checkerXAxis  = ( checkerXTrans - checkerOriginTrans ).normalize();
@@ -158,7 +158,7 @@ void updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBT
     */
     checkerYAxis = ( (checkerXAxis ^ checkerYAxis) ^ checkerXAxis );
     
-    transform.set( checkerXAxis, checkerYAxis, checkerOriginTrans );
+    _transform.set( checkerXAxis, checkerYAxis, checkerOriginTrans );
 }
         
 
@@ -167,7 +167,7 @@ void plCheckerBoard::draw() const
     if ( !_isVisible )
         return;
    
-    plModelStack::push( transform.matrix() );
+    plModelStack::push( _transform.matrix() );
     {
         if ( _isTransparent )
             plColourStack::load( PL_COLOUR_MESH_TRANSPARENT_COLOUR ); 
@@ -217,7 +217,7 @@ void plCheckerBoard::toggleTransparency()
 }
 
 
-PLbool plCheckerBoard::_readCheckerBoardCalib( plVector3 &origin, plVector3 &xStep, plVector3 &yStep )
+PLbool plCheckerBoard::_readCheckerBoardCalib()
 {
     // This actually reads in three points, the origin and a step along each axis
     const char * checkerBoardCalibFile = "data/registration/checkerBoard";
