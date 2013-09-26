@@ -3,7 +3,6 @@
 
 #include "plCommon.h"
 #include "plMinimalShader.h"
-#include "plPickingTexture.h"
 
 class plPickingShader : public plMinimalShader
 {
@@ -12,7 +11,7 @@ class plPickingShader : public plMinimalShader
         plPickingShader(const char *vertexFile, const char *fragmentFile);
       
         void getUniformLocations();
-		void setPickingUniforms(const plPickingInfo &pi) const;
+		void setPickingUniforms( PLint type, PLint id, PLint index ) const;
 		
     private:
 	

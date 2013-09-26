@@ -92,7 +92,7 @@ void plCamera::importViewParams( std::string filename )
 }
 
 
-void plCamera::zoom(PLfloat z)
+void plCamera::zoom( PLfloat z )
 {     
     const PLfloat ZOOM_SENSITIVITY = 0.005f;
  
@@ -158,11 +158,11 @@ void calc_p(PLint x, PLint y, PLfloat p[])
 {
     PLfloat r,s;
     
+    // normally use plWindow:: for these, however this would cause a circular dependancy, so it is done manually
     GLint viewport[4];
     glGetIntegerv( GL_VIEWPORT, viewport );
-
-    PLint width  = viewport[2];
-    PLint height = viewport[3];
+    PLint width  = viewport[2] + viewport[0]*2;
+    PLint height = viewport[3] + viewport[1]*2;
     
     p[0] =  2.0 * ( x - 0.5*width ) / width;
     p[1] = -2.0 * ( -(y-height) - 0.5*height ) / height;

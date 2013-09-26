@@ -28,7 +28,8 @@ void plPickingTexture::destroy()
     glDeleteTextures(1, &_depthStencilTexture);
 }
 
-void plPickingTexture::setFBO(PLuint width, PLuint height)
+
+void plPickingTexture::setFBO( PLuint width, PLuint height )
 {
     // destroy previous buffer
     destroy();
@@ -62,12 +63,14 @@ void plPickingTexture::setFBO(PLuint width, PLuint height)
     // Restore the default framebuffer
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
+    std::cout << "Texture width: " << width << ", Texture height: " << height << std::endl;
 }
 
 
 void plPickingTexture::bind()
-{    
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo);
+{   
+    glBindFramebuffer( GL_DRAW_FRAMEBUFFER, _fbo );   
     _readSinceLastDraw = false;
 }
 
@@ -78,7 +81,7 @@ void plPickingTexture::unbind()
 }
 
 
-plPickingInfo plPickingTexture::readPixel(PLuint x, PLuint y)
+plPickingInfo plPickingTexture::readPixel( PLuint x, PLuint y )
 {
     if (_readSinceLastDraw)
     {
@@ -86,31 +89,32 @@ plPickingInfo plPickingTexture::readPixel(PLuint x, PLuint y)
     }
 
     _readSinceLastDraw = true;
+        
+    glBindFramebuffer( GL_READ_FRAMEBUFFER, _fbo );
+    glReadBuffer     ( GL_COLOR_ATTACHMENT0 );
 
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, _fbo);
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glReadPixels( x, y, 1, 1, GL_RGB_INTEGER, GL_INT, &_lastPick);
 
-    glReadPixels(x, y, 1, 1, GL_RGB_INTEGER, GL_INT, &_lastPick);
-
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    
+    glReadBuffer     ( GL_NONE );
+    glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
+        
     std::cout << "picking: " << _lastPick.type << " " << _lastPick.id << " " << _lastPick.index << "\n"; 
     
     return _lastPick;
+    
 }
 
 
-PLfloat plPickingTexture::readDepth(PLuint x, PLuint y)
+PLfloat plPickingTexture::readDepth( PLuint x, PLuint y )
 {
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, _fbo);
-    glReadBuffer(GL_DEPTH_ATTACHMENT);
+    glBindFramebuffer( GL_READ_FRAMEBUFFER, _fbo );
+    glReadBuffer     ( GL_DEPTH_ATTACHMENT );
 
     PLfloat depth;
     glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
 
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glReadBuffer     ( GL_NONE) ;
+    glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
     
     return depth;
 }

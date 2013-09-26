@@ -7,7 +7,7 @@ namespace plWindow
     {
         GLint viewport[4];
         glGetIntegerv( GL_VIEWPORT, viewport );
-        return viewport[2];
+        return viewport[2] + viewport[0]*2;
     }
 
 
@@ -15,14 +15,69 @@ namespace plWindow
     {
         GLint viewport[4];
         glGetIntegerv( GL_VIEWPORT, viewport );
+        return viewport[3] + viewport[1]*2;
+    }
+
+
+    PLuint viewportWidth()
+    {
+        GLint viewport[4];
+        glGetIntegerv( GL_VIEWPORT, viewport );
+        return viewport[2];
+    }
+
+
+    PLuint viewportHeight()
+    {
+        GLint viewport[4];
+        glGetIntegerv( GL_VIEWPORT, viewport );
         return viewport[3];
+    }
+    
+
+    PLint windowToViewportX( PLint x )
+    {
+        GLint viewport[4];
+        glGetIntegerv( GL_VIEWPORT, viewport );
+        return x - viewport[0];
+    }
+    
+    
+    PLint windowToViewportY( PLint y )
+    {
+        GLint viewport[4];
+        glGetIntegerv( GL_VIEWPORT, viewport );
+        return y - viewport[1];
     }
 
 
     void reshape( PLuint width, PLuint height )
     {    
-        plProjectionStack::load( plProjection( 7.0f, (PLfloat)(width) / (PLfloat)(height), 10.0f, 15000.0f) );    
-        plPicking::texture->setFBO(width, height); 
+        
+        float viewportHeight = width / PL_ASPECT_RATIO ;
+        float viewportWidth;
+        float vBuffer, hBuffer;
+        if (viewportHeight <= height)
+        {
+            vBuffer = (height-viewportHeight)*0.5f;
+            hBuffer = 0;
+            viewportWidth = width;
+
+        }
+        else
+        {
+            viewportWidth = height * PL_ASPECT_RATIO;
+            viewportHeight = height;
+            hBuffer = (width-viewportWidth)*0.5f;
+            vBuffer = 0;
+
+        }
+        glViewport( hBuffer, vBuffer, viewportWidth, viewportHeight );
+        
+        plProjectionStack::load( plProjection( 7.0f, PL_ASPECT_RATIO, 10.0f, 15000.0f) );    
+        
+        // use window size dimensions for picking texture, while not as memory efficient it allows us to keep the current viewport and use native window coords
+        plPicking::texture->setFBO( width, height ); 
     }
 
 
@@ -61,8 +116,8 @@ namespace plWindow
 
     plVector3 worldToScreen( PLfloat x, PLfloat y, PLfloat z ) 
     {
-        plVector4 temp1 = (plCameraStack::top() * plModelStack::top()) * plVector4(x,y,z,1);
-        plVector4 temp2 =  plProjectionStack::top() * temp1;
+        plVector4 temp1 = ( plCameraStack::top() * plModelStack::top() ) * plVector4(x,y,z,1);
+        plVector4 temp2 = plProjectionStack::top() * temp1;
 
         if (temp2.w == 0.0f)
         {
@@ -84,7 +139,7 @@ namespace plWindow
     }
 
 
-    void mouseToRay( plVector3 &rayOrigin, plVector3 &rayDirection, PLint x, PLint y ) 
+    void cameraToMouseRay( plVector3 &rayOrigin, plVector3 &rayDirection, PLint x, PLint y ) 
     {
         plVector3 mouseInWorld = mouseToWorld(x, y, 0);  
 

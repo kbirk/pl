@@ -16,7 +16,7 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
 void PlannerWindow::display()
 {
     plCameraStack::load( _camera );
-
+    
     plRenderer::queue( _plan );
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );   
@@ -27,12 +27,12 @@ void PlannerWindow::display()
 }
 
 
-void PlannerWindow::setCursor(int mx, int my)
+void PlannerWindow::setCursor( int mx, int my )
 {
     switch (_button)
     {   
         case GLUT_MIDDLE_BUTTON:        glutSetCursor( GLUT_CURSOR_CROSSHAIR );     break;      // middle button:   zoom
-        case GLUT_LEFT_BUTTON:          glutSetCursor(GLUT_CURSOR_INFO);            break;      // left button:     click / drag 
+        case GLUT_LEFT_BUTTON:          glutSetCursor( GLUT_CURSOR_INFO );          break;      // left button:     click / drag 
         case GLUT_RIGHT_BUTTON: 
            
             // right button:    translate / rotate 
@@ -141,10 +141,10 @@ void PlannerWindow::passiveMouseMotion( int mx, int my )
 void PlannerWindow::activeMouseMotion( int mx, int my )
 {    
     // convert from GLUT window coords to OpenGL coords
-    PLuint x = mx;
-    PLuint y = glutGet(GLUT_WINDOW_HEIGHT)-my;
+    PLint x = mx;
+    PLint y = glutGet(GLUT_WINDOW_HEIGHT)-my;
 
-    switch (_button)
+    switch ( _button )
     {
         case GLUT_LEFT_BUTTON: 
 
@@ -165,12 +165,12 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
             // _previousMouse has already been updated in mouseAction() by this point
             if (_cameraMode == CAMERA_ROTATION_MODE)
             {
-                _camera.rotate(_previousMouse.x, _previousMouse.y, x, y);
+                _camera.rotate( _previousMouse.x, _previousMouse.y, x, y );
             }
             else
 		    {
-			    _camera.translate(_previousMouse.x - x,
-			                      _previousMouse.y - y );
+			    _camera.translate( _previousMouse.x - x,
+			                       _previousMouse.y - y );
             }
             break;  
     }
@@ -190,8 +190,8 @@ void PlannerWindow::mouseAction( int button, int state, int mx, int my )
     // NOTE: this function ALWAYS executes BEFORE activeMouseMotion()
     
     // convert from GLUT window coords to OpenGL coords
-    PLuint x = mx;
-    PLuint y = glutGet(GLUT_WINDOW_HEIGHT)-my;
+    PLint x = mx;
+    PLint y = glutGet(GLUT_WINDOW_HEIGHT)-my;
         
     switch (state)
     {
