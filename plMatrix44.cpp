@@ -284,6 +284,16 @@ plTriangle plMatrix44::operator*(const plTriangle &tri) const
     return plTriangle( normal3, point0, point1, point2 );
 }
 
+plSeq<plTriangle> plMatrix44::operator*(const plSeq<plTriangle> &tris) const
+{
+    plSeq<plTriangle> output;
+    for (PLuint i = 0; i < tris.size(); i++)
+    {
+        output.add((*this) * tris[i]);
+    }
+    return output;
+}
+
 
 // matrix multiplication
 plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const 

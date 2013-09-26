@@ -96,6 +96,13 @@
 #define PL_IGUIDE_BOOLEAN_MESH_UNION             1
 #define PL_IGUIDE_BOOLEAN_MESH_INTERSECTION      2
 
+// LOGGING
+
+#define PL_LOGGER_LEVEL_ERROR                    10
+#define PL_LOGGER_LEVEL_WARNING                  20
+#define PL_LOGGER_LEVEL_INFO                     30
+#define PL_LOGGER_LEVEL_DEBUG                    40
+
 // OTHER MACROS
 
 #define PL_COLOURMAP_SIZE                        512

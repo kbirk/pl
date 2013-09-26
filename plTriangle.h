@@ -58,7 +58,7 @@ class plTriangle
 		                             PLbool ignoreBehindRay = false, 
 		                             PLbool backFaceCull = false ) const; 
 
-        plVector3 barycentricCoords( const plVector3 &point );
+        plVector3 barycentricCoords( const plVector3 &point ) const;
 
         PLbool contains( const plVector3&, const PLfloat& epsilon=PL_EPSILON ) const;
         

@@ -115,7 +115,7 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
 }
 
 
-plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint )
+plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint ) const
 {
     // we're assuming that testPoint is in-plane with the triangle.
     plVector3 v0 = _points[1] - _points[0],
