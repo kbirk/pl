@@ -63,8 +63,6 @@ void plPickingTexture::setFBO( PLuint width, PLuint height )
     // Restore the default framebuffer
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
-    std::cout << "Texture width: " << width << ", Texture height: " << height << std::endl;
 }
 
 

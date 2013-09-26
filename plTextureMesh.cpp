@@ -14,6 +14,20 @@ plTextureMesh::plTextureMesh( const plVector3 &bottemLeft, const plVector3 &bott
 }
 
 
+plTextureMesh::plTextureMesh( const plTextureMesh &mesh )
+    : plMesh()
+{
+    _copyMesh( mesh );
+}
+
+
+plTextureMesh& plTextureMesh::operator = ( const plTextureMesh &mesh ) 
+{ 
+    _copyMesh( mesh );
+    return *this;
+}
+
+
 void plTextureMesh::setBuffers( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft)
 {
     plSeq<plVector3> vertices(8);
@@ -70,6 +84,7 @@ void plTextureMesh::setBuffers( const plVector3 &bottemLeft, const plVector3 &bo
 	// unbind the vertex array object
 	glBindVertexArray(0); 			
 }
+
 
 void plTextureMesh::draw() const
 {	

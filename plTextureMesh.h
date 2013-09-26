@@ -13,6 +13,9 @@ class plTextureMesh : public plMesh
 		
 		plTextureMesh();		
 		plTextureMesh( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft );              
+        plTextureMesh( const plTextureMesh &mesh );
+        
+        plTextureMesh& operator = ( const plTextureMesh &mesh ); 
 
         void setBuffers( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft );
         void draw() const;

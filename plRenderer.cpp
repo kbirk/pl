@@ -314,19 +314,17 @@ namespace plRenderer
 
     void _drawArthroTexture()
     {
-        PLfloat xmargin = (plWindow::width() / plWindow::height()- 1) / 2.0;
-        
-        plMatrix44 ortho( -1, 1, -1, 1, -1, 1);
+        plMatrix44 ortho( -1, 1, -1, 1, -1, 1 );
 
         plMatrix44 camera( 1, 0,  0, 0,
                            0, 1,  0, 0,
                            0, 0, -1, 0,
                            0, 0,  0, 1 ); 
-                           
-        plShaderStack::push( _textureShader );                   
-        plProjectionStack::push( ortho );   // ortho projection
-        plModelStack::push( plMatrix44() ); // identity model matrix
-        plCameraStack::push( camera );      // default camera matrix
+                  
+        plShaderStack::push    ( _textureShader );                   
+        plProjectionStack::push( ortho );        // ortho projection
+        plModelStack::push     ( plMatrix44() ); // identity model matrix
+        plCameraStack::push    ( camera );       // default camera matrix
         {
             glDisable( GL_DEPTH_TEST );
 

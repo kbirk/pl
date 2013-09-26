@@ -26,7 +26,6 @@ void plIGuideSite::draw() const
 
 PLbool plIGuideSite::generateTemplateBase()
 {
-
     _templateBase.clear();
 
     // find the surface for the iGuide
@@ -35,8 +34,6 @@ PLbool plIGuideSite::generateTemplateBase()
         std::cerr << "Error in plIGuideSite::generateTemplateBase(): findInteriorMesh() failed. Aborting iGuideSite surface calculation." << std::endl;
         return false;
     }
-
-	std::cout << "TEMPLATE SIZE: " << _templateBase.size() << "\n";
 
     float magnitudeOfOffset      ( 5.10f);
     float preTranslationOfSurface(-0.10f);

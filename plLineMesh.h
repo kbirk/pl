@@ -10,6 +10,9 @@ class plLineMesh : public plMesh
 		
 		plLineMesh();		     
         plLineMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices); 
+        plLineMesh( const plLineMesh &mesh );
+        
+        plLineMesh& operator = ( const plLineMesh &mesh ); 
         
         void setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);
 
