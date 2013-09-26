@@ -3,8 +3,9 @@
 plCheckerBoard::plCheckerBoard( PLfloat blocksize ) 
 {           
     _generate( blocksize );
-    _isTransparent = false;
+    _isTransparent = true;
     _isVisible     = true;
+    _readCheckerBoardCalib();
 }
 
 
@@ -135,6 +136,32 @@ void plCheckerBoard::_generate( PLfloat blocksize )
 }
 
 
+void updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL )
+{
+    plVector3 checkerOriginTrans = currentFemurDRBToWorld.applyInverseTransform( _calibOrigin );
+    checkerOriginTrans = femurDRBToFemurSTL.applyTransform( checkerOriginTrans );
+
+    plVector3 checkerXTrans  = currentFemurDRBToWorld.applyInverseTransform( calibXAxisPoint );
+    checkerXTrans  = femurDRBToFemurSTL.applyTransform(checkerXTrans);
+
+    plVector3 checkerYTrans  = currentFemurDRBToWorld.applyInverseTransform( calibYAxisPoint );
+    checkerYTrans  = femurDRBToFemurSTL.applyTransform(checkerYTrans);
+
+    plVector3 checkerXAxis  = ( checkerXTrans - checkerOriginTrans ).normalize();
+    plVector3 checkerYAxis  = ( checkerYTrans - checkerOriginTrans ).normalize();
+
+    /*
+        the above axes aren't perfectly perpindicular (as they're generated from
+        sampled points) so here we are forcing orthogonality.
+            zAxis = xAxis x yAxis. 
+            yAxis(fixed) = zAxis x xAxis
+    */
+    checkerYAxis = ( (checkerXAxis ^ checkerYAxis) ^ checkerXAxis );
+    
+    transform.set( checkerXAxis, checkerYAxis, checkerOriginTrans );
+}
+        
+
 void plCheckerBoard::draw() const
 {      
     if ( !_isVisible )
@@ -190,7 +217,7 @@ void plCheckerBoard::toggleTransparency()
 }
 
 
-PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xStep, plVector3 &yStep )
+PLbool plCheckerBoard::_readCheckerBoardCalib( plVector3 &origin, plVector3 &xStep, plVector3 &yStep )
 {
     // This actually reads in three points, the origin and a step along each axis
     const char * checkerBoardCalibFile = "data/registration/checkerBoard";
@@ -205,19 +232,19 @@ PLbool readCheckerBoardCalib( plVector3 &origin, plVector3 &xStep, plVector3 &yS
     
     plString line;
     std::getline(infile, line);
-    if ( sscanf( line.c_str(), "%f %f %f", &origin.x, &origin.y, &origin.z ) != 3 )
+    if ( sscanf( line.c_str(), "%f %f %f", &_calibOrigin.x, &_calibOrigin.y, &_calibOrigin.z ) != 3 )
     {
         std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
         return false;
     }
     std::getline(infile, line);
-    if ( sscanf( line.c_str(), "%f %f %f", &xStep.x, &xStep.y, &xStep.z ) != 3 )
+    if ( sscanf( line.c_str(), "%f %f %f", &_calibXAxisPoint.x, &_calibXAxisPoint.y, &_calibXAxisPoint.z ) != 3 )
     {
         std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
         return false;
     }
     std::getline(infile, line);
-    if ( sscanf( line.c_str(), "%f %f %f", &yStep.x, &yStep.y, &yStep.z ) != 3 )
+    if ( sscanf( line.c_str(), "%f %f %f", &_calibYAxisPoint.x, &_calibYAxisPoint.y, &_calibYAxisPoint.z ) != 3 )
     {
         std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
         return false;

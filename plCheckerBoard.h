@@ -6,31 +6,36 @@
 #include "plRenderingPipeline.h"
 #include "plTransform.h"
 #include "plColourMesh.h"
+#include "plDRBTransform.h"
 
 class plCheckerBoard : public plRenderable
 {
     public:
-
-        plTransform transform;
-
         plCheckerBoard( PLfloat blocksize );
         
-        void   toggleVisibility  ();
-        void   toggleTransparency();
+        void toggleVisibility  ();
+        void toggleTransparency();
+        
+        void updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL );
         
         void draw() const;
 
     private:
 
-        PLbool _isTransparent;
-
+        PLbool       _isTransparent;
         plColourMesh _mesh;
+        plTransform  _transform;
+        
+        plVector3   _calibOrigin, 
+                    _calibXAxisPoint, 
+                    _calibYAxisPoint;
         
         void _generate( PLfloat blocksize ); 
+        bool _readCheckerBoardCalib();
 
 };  
 
-bool readCheckerBoardCalib(plVector3 &origin, plVector3 &xAxis, plVector3 &yAxis);
+
 
 
 #endif
