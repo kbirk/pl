@@ -72,7 +72,7 @@ namespace plMeshIntersector
             PLfloat u = 1.0f - v - w;
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
-            std::cout << "params: " << v << " " << w << " " << u << std::endl;
+            std::cout << "params: " << u << " " << v << " " << w << std::endl;
 
             if (edge.edge.pt1 != faces[edge.faceIndices[i]].face.point0() && edge.edge.pt2 != faces[edge.faceIndices[i]].face.point0())
             {
@@ -159,7 +159,7 @@ namespace plMeshIntersector
         PLfloat u = 1.0f - v - w;
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
-        std::cout << "params: " << v << " " << w << " " << u << std::endl;
+        std::cout << "params: " << u << " " << v << " " << w << std::endl;
 
         // on the edge, don't consider as an intersection
         if ((plMath::closestPointOnSegment(vert.vert,face.face.point0(),face.face.point1()) - vert.vert).length() <= _epsilon ||
