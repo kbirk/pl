@@ -25,7 +25,6 @@ plMesh::plMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
 
 plMesh::~plMesh()
 {
-    std::cout << "DESTRUCTOR\n";
     _destroy();
 }
 
@@ -33,14 +32,12 @@ plMesh::~plMesh()
 plMesh::plMesh( const plMesh &mesh )
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
-    std::cout << "COPY CONSTRUCTOR\n";
     _copyMesh( mesh );
 }
 
 
 plMesh& plMesh::operator = ( const plMesh &mesh ) 
 { 
-    std::cout << "ASSIGNMENT\n";
     _copyMesh( mesh );
     return *this;
 }
