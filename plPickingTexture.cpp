@@ -36,27 +36,27 @@ void plPickingTexture::setFBO( PLuint width, PLuint height )
     
     // Create the FBO
     glGenFramebuffers(1, &_fbo);    
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
 
     // Create the texture object for the primitive information buffer
     glGenTextures(1, &_pickingTexture);
     glBindTexture(GL_TEXTURE_2D, _pickingTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32I, width, height, 0, GL_RGB_INTEGER, GL_INT, NULL);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pickingTexture, 0);    
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pickingTexture, 0);    
 
     // create stencil / depth buffer
     glGenRenderbuffers(1, &_depthStencilTexture);
 	glBindRenderbuffer(GL_RENDERBUFFER, _depthStencilTexture);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthStencilTexture);
-	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthStencilTexture);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,   GL_RENDERBUFFER, _depthStencilTexture);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthStencilTexture);
 
     // Verify that the FBO is correct
-    GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    GLenum errorCode = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
-    if (Status != GL_FRAMEBUFFER_COMPLETE) 
+    if (errorCode != GL_FRAMEBUFFER_COMPLETE) 
     {
-        printf("FB error, status: 0x%x\n", Status);
+        std::cerr << "plPickingTexture::setFBO() error: " << errorCode << std::endl;
         return;
     }
     
