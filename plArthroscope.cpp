@@ -49,11 +49,6 @@ const PLchar* plArthroscope::getImage() const
     return img;
 }
 
-const CvMat* plArthroscope::getIntrinsics() const
-{ 
-    return intrinsics; 
-}
-
 const plMatrix44& plArthroscope::getIntrinsics() const
 {
     return plIntrinsics;
