@@ -47,47 +47,77 @@ namespace plMeshIntersector
         plVector3 barycentricCoords;
         for (PLuint i = 0; i < edge.faceIndices.size();i++)
         {
-            //if (faces[edge.faceIndices[i]].face.contains(vert.vert),_epsilon)
-            //    return false;
 
             barycentricCoords = faces[edge.faceIndices[i]].face.barycentricCoords(vert.vert);
-            for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
-            std::cout << "Barycentric weights: " << barycentricCoords << std::endl;
-            plVector3 v0 = (faces[edge.faceIndices[i]].face.point1() - faces[edge.faceIndices[i]].face.point0()).normalize(),
-                      v1 = (faces[edge.faceIndices[i]].face.point2() - faces[edge.faceIndices[i]].face.point0()).normalize(),
-                      v2 = (vert.vert          - faces[edge.faceIndices[i]].face.point0()).normalize();
+            /*if ((vert.vert - plVector3(1.965,1.965,2.0)).length() <= 0.01 && ((edge.edge.pt1-plVector3(2,2,2)).length() <= 0.01 || (edge.edge.pt2-plVector3(2,2,2)).length() <= 0.01) )
+            {
+                for (PLuint i=0;i<depth;i++)
+                    std::cout << "\t";
+                std::cout << "Edge being considered is " << edge.edge.pt1 << " - " << edge.edge.pt2 << " being split on " << vert.vert << std::endl;
+                for (PLuint i=0;i<depth;i++)
+                    std::cout << "\t";
+                std::cout << "For face " << faces[edge.faceIndices[i]].face.point0() << " | " << faces[edge.faceIndices[i]].face.point1() << " | " << faces[edge.faceIndices[i]].face.point2() << std::endl;
 
-            PLfloat d00 = (v0*v0);
-            PLfloat d01 = (v0*v1);
-            PLfloat d11 = (v1*v1);
-            PLfloat d20 = (v2*v0);
-            PLfloat d21 = (v2*v1);
-            PLdouble denom = d00 * d11 - d01 * d01;
-            for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
-            std::cout << "denom: " << denom << std::endl;
-            PLfloat v = (d11 * d20 - d01 * d21) / denom;
-            PLfloat w = (d00 * d21 - d01 * d20) / denom;
-            PLfloat u = 1.0f - v - w;
-            for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
-            std::cout << "params: " << u << " " << v << " " << w << std::endl;
+                for (PLuint i=0;i<depth;i++)
+                    std::cout << "\t";
+                std::cout << "Barycentric weights: " << barycentricCoords << std::endl;
+                plVector3 v0 = (faces[edge.faceIndices[i]].face.point1() - faces[edge.faceIndices[i]].face.point0()).normalize(),
+                          v1 = (faces[edge.faceIndices[i]].face.point2() - faces[edge.faceIndices[i]].face.point0()).normalize(),
+                          v2 = (vert.vert          - faces[edge.faceIndices[i]].face.point0()).normalize();
+
+                PLfloat d00 = (v0*v0);
+                PLfloat d01 = (v0*v1);
+                PLfloat d11 = (v1*v1);
+                PLfloat d20 = (v2*v0);
+                PLfloat d21 = (v2*v1);
+                PLfloat denom = d00 * d11 - d01 * d01;
+                for (PLuint i=0;i<depth;i++)
+                    std::cout << "\t";
+                std::cout << "denom: " << denom << std::endl;
+                PLfloat v = (d11 * d20 - d01 * d21) / denom;
+                PLfloat w = (d00 * d21 - d01 * d20) / denom;
+                PLfloat u = 1.0f - v - w;
+                for (PLuint i=0;i<depth;i++)
+                    std::cout << "\t";
+                std::cout << "params: " << u << " " << v << " " << w << std::endl;
+            }*/
+            if (faces[edge.faceIndices[i]].face.contains(vert.vert,_epsilon))
+            {
+                //for (PLuint i=0;i<depth;i++)
+                //    std::cout << "\t";
+                //std::cout << "Exited on face contains, " << vert.vert << " is in " << faces[edge.faceIndices[i]].face.point0() << " | " << faces[edge.faceIndices[i]].face.point1() << " | " << faces[edge.faceIndices[i]].face.point2() << " | " << std::endl;
+                return false;
+            }
 
             if (edge.edge.pt1 != faces[edge.faceIndices[i]].face.point0() && edge.edge.pt2 != faces[edge.faceIndices[i]].face.point0())
             {
                 if ((barycentricCoords.x > barycentricCoords.y || barycentricCoords.x > barycentricCoords.z) && fabs(barycentricCoords.x) > 0.f)
+                {
+                    //for (PLuint i=0;i<depth;i++)
+                    //    std::cout << "\t";
+                    //std::cout << "Exited on bary x conditions" << std::endl;
                     return false;
+                }
             }
             if (edge.edge.pt1 != faces[edge.faceIndices[i]].face.point1() && edge.edge.pt2 != faces[edge.faceIndices[i]].face.point1())
             {
                 if ((barycentricCoords.y > barycentricCoords.x || barycentricCoords.y > barycentricCoords.z) && fabs(barycentricCoords.x) > 0.f)
+                {
+                    //for (PLuint i=0;i<depth;i++)
+                    //    std::cout << "\t";
+                    //std::cout << "Exited on bary y conditions" << std::endl;
                     return false;
+                }
             }
             if (edge.edge.pt1 != faces[edge.faceIndices[i]].face.point2() && edge.edge.pt2 != faces[edge.faceIndices[i]].face.point2())
             {
                 if ((barycentricCoords.z > barycentricCoords.x || barycentricCoords.z > barycentricCoords.y) && fabs(barycentricCoords.x) > 0.f)
+                {
+                    //for (PLuint i=0;i<depth;i++)
+                    //    std::cout << "\t";
+                    //std::cout << "Exited on bary z conditions" << std::endl;
                     return false;
+                }
             }
         }
 
@@ -138,7 +168,7 @@ namespace plMeshIntersector
             barycentricCoords.z < 0.f || barycentricCoords.z > 1.f)
             return false;
 
-        for (PLuint i=0;i<depth;i++)
+        /*for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Barycentric weights: " << barycentricCoords << std::endl;
         plVector3 v0 = (face.face.point1() - face.face.point0()).normalize(),
@@ -159,7 +189,7 @@ namespace plMeshIntersector
         PLfloat u = 1.0f - v - w;
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
-        std::cout << "params: " << u << " " << v << " " << w << std::endl;
+        std::cout << "params: " << u << " " << v << " " << w << std::endl;*/
 
         // on the edge, don't consider as an intersection
         if ((plMath::closestPointOnSegment(vert.vert,face.face.point0(),face.face.point1()) - vert.vert).length() <= _epsilon ||
@@ -1271,8 +1301,8 @@ namespace plMeshIntersector
         {
             plMeshIntersectorConnectivityDataVert newVert;
             newVert.vert = intersectionPoints[i];
-            PLint searchIndex;// = (verts.findIndex(newVert));
-            if (!_findVert(newVert.vert,searchIndex,verbose,depth+1)) return false;
+            PLint searchIndex = (verts.findIndex(newVert));
+            //if (!_findVert(newVert.vert,searchIndex,verbose,depth+1)) return false;
             if (searchIndex == -1)
             {
                 if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
@@ -1329,8 +1359,8 @@ namespace plMeshIntersector
         {
             plMeshIntersectorConnectivityDataVert newVert;
             newVert.vert = intersectionPoints[i];
-            PLint searchIndex;// = (verts.findIndex(newVert));
-            if (!_findVert(newVert.vert,searchIndex,verbose,depth+1)) return false;
+            PLint searchIndex = (verts.findIndex(newVert));
+            //if (!_findVert(newVert.vert,searchIndex,verbose,depth+1)) return false;
             if (searchIndex == -1)
             {
                 if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
