@@ -34,7 +34,6 @@ class plArthroscope
         ~plArthroscope();
 
         const PLchar*      getImage()      const;
-        const CvMat*       getIntrinsics() const;
         const plMatrix44&  getIntrinsics() const;
         
         void updateImage( PLuint imageManipulation );
