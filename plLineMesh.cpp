@@ -7,9 +7,24 @@ plLineMesh::plLineMesh()
 
 
 plLineMesh::plLineMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
+    : plMesh()
 {            
 	// set VBO and VAO
     setBuffers(vertices, indices);
+}
+
+
+plLineMesh::plLineMesh( const plLineMesh &mesh )
+    : plMesh()
+{
+    _copyMesh( mesh );
+}
+
+
+plLineMesh& plLineMesh::operator = ( const plLineMesh &mesh ) 
+{ 
+    _copyMesh( mesh );
+    return *this;
 }
 
 

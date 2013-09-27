@@ -3,6 +3,7 @@
 plMesh::plMesh() 
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
+    //std::cout << "EMPTY CONSTRUCTOR\n";
 }
 
 
@@ -21,45 +22,73 @@ plMesh::plMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
     setBuffers(vertices, indices);
 }
 
-/*
+
 plMesh::~plMesh()
 {
-    glDeleteBuffers(1, &_vertexBufferObject);	    // delete buffer objects
-    glDeleteBuffers(1, &_vertexBufferIndices);      // delete indices
-	glDeleteVertexArrays(1, &_vertexArrayObject);	// delete VAO
+    std::cout << "DESTRUCTOR\n";
+    _destroy();
 }
-*/
-/*
+
+
 plMesh::plMesh( const plMesh &mesh )
+    : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
-    /*
-	glGenBuffers( 1, &_vertexBufferObject );
-	
-    mesh.bind();
-    void *data = glMapBuffer( GL_ARRAY_BUFFER, GL_READ_WRITE );
-
-    bind();
-    glBufferData(GL_ARRAY_BUFFER, _numBytes, data, GL_STREAM_DRAW);
-
-    mesh.bind();
-    glUnmapBuffer(GL_ARRAY_BUFFER);
-    */
-/*
+    std::cout << "COPY CONSTRUCTOR\n";
+    _copyMesh( mesh );
 }
 
 
 plMesh& plMesh::operator = ( const plMesh &mesh ) 
 { 
+    std::cout << "ASSIGNMENT\n";
+    _copyMesh( mesh );
     return *this;
 }
-*/
 
 
-void plMesh::destroy()
-{            
-    glDeleteBuffers(1, &_vertexBufferObject);	    // delete buffer objects
-    glDeleteBuffers(1, &_vertexBufferIndices);      // delete indices
-	glDeleteVertexArrays(1, &_vertexArrayObject);	// delete VAO		    
+void plMesh::_copyMesh( const plMesh &mesh )
+{
+    plSeq<plVector3> vertices( mesh._numBytes / sizeof( plVector3 ), plVector3() );
+    plSeq<PLuint>    indices ( mesh._numIndices, 0 );
+
+    // copy vertex data
+    glBindBuffer( GL_ARRAY_BUFFER, mesh._vertexBufferObject ); 
+    
+    PLfloat *vertexBuffer = (PLfloat*)glMapBuffer( GL_ARRAY_BUFFER, GL_READ_ONLY );      
+    memcpy( &vertices[0].x, vertexBuffer, mesh._numBytes );
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    
+    glBindBuffer( GL_ARRAY_BUFFER, 0 ); 
+    
+    // copy index data
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh._vertexBufferIndices );
+    
+    PLuint *indexBuffer = (PLuint*)glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_READ_ONLY );      
+    memcpy( &indices[0], indexBuffer, mesh._numIndices * sizeof( PLuint ) );
+    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+    
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 ); 
+
+    // destroy previous buffers
+    _destroy();
+
+    // set VBO and VAO
+    setBuffers( vertices, indices );  
+}
+
+
+void plMesh::_destroy()
+{     
+    if ( _vertexBufferObject )      
+        glDeleteBuffers     (1, &_vertexBufferObject);  // delete buffer objects
+    if ( _vertexBufferIndices )      
+        glDeleteBuffers     (1, &_vertexBufferIndices); // delete indices
+	if ( _vertexArrayObject )      
+	    glDeleteVertexArrays(1, &_vertexArrayObject);	// delete VAO		
+	
+	_vertexBufferObject  = 0;
+    _vertexBufferIndices = 0;
+    _vertexArrayObject   = 0;    
 }
 
 

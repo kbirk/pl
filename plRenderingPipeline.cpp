@@ -129,8 +129,8 @@ namespace plShaderStack
             _stack.top()->bind();
         }    
     }
-   
-       
+
+
     void use()
     {
         if ( dynamic_cast<const plPickingShader*>( _stack.top() ) )

@@ -377,8 +377,6 @@ void plBoundary::_updateMesh()
         }
     }
 
-    
-
     _mesh.setBuffers(vertices, indices);
 }
 

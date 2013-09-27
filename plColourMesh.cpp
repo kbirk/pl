@@ -7,13 +7,28 @@ plColourMesh::plColourMesh()
 
 
 plColourMesh::plColourMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices) 
+    : plMesh()
 {            	
 	// set VBO and VAO
     setBuffers(vertices, indices);
 }
 
 
-void plColourMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
+plColourMesh::plColourMesh( const plColourMesh &mesh )
+    : plMesh()
+{
+    _copyMesh( mesh );
+}
+
+
+plColourMesh& plColourMesh::operator = ( const plColourMesh &mesh ) 
+{ 
+    _copyMesh( mesh );
+    return *this;
+}
+
+
+void plColourMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices )
 {
     // size of each vertex 
 	const GLuint POS_SIZE = sizeof( plVector3 );
@@ -63,13 +78,4 @@ void plColourMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLu
 	glBindVertexArray(0); 			
 }
 
-/*
-void plColourMesh::draw() const
-{	
-    // for phong shader to use vertex attribute colour, the uniform colour must be (0, 0, 0, 0)
-    plColourStack::load( PL_COLOUR_MESH_IGNORE_UNIFORM_COLOUR );  
-    // call parent draw
-    plMesh::draw();    
-}
-*/
 

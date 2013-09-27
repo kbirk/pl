@@ -30,24 +30,22 @@ class plArthroscope
         int     TEXTURE_SIZE, WIDTH, HEIGHT;
         float   TEXTURE_SCALE_FACTOR;
 
-        PLchar *img;
-
         plArthroscope();
         ~plArthroscope();
 
-        PLchar *getImage();
-
-        void updateImage(ImageManipulation im);
-
-        CvMat*      getIntrinsics();
-        plMatrix44  plGetIntrinsics();
+        const PLchar*      getImage()      const;
+        const CvMat*       getIntrinsics() const;
+        const plMatrix44&  getIntrinsics() const;
         
+        void updateImage( PLuint imageManipulation );
+
     private:
     
         CvCapture *capture;
         IplImage  *image;
         IplImage  *frame;
-        //IplImage* rotated;    // un-used
+
+        PLchar    *img;
 
         // for image distortion
         IplImage* mapx;

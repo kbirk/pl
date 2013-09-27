@@ -10,7 +10,9 @@
 
 class plCheckerBoard : public plRenderable
 {
+
     public:
+    
         plCheckerBoard( PLfloat blocksize );
         
         void toggleVisibility  ();

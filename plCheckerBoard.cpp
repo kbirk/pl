@@ -220,7 +220,7 @@ void plCheckerBoard::toggleTransparency()
 PLbool plCheckerBoard::_readCheckerBoardCalib()
 {
     // This actually reads in three points, the origin and a step along each axis
-    const char * checkerBoardCalibFile = "data/registration/checkerBoard";
+    const char *checkerBoardCalibFile = "data/registration/checkerBoard";
     
     std::ifstream infile ( checkerBoardCalibFile );
     

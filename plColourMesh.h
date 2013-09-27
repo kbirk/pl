@@ -10,14 +10,13 @@ class plColourMesh : public plMesh
     public:
 		
 		plColourMesh();		      
-        plColourMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);
-     
-        void setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);
+        plColourMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);   
+        plColourMesh( const plColourMesh &mesh );
         
-        /*
-        void draw() const;	
-        void draw( PLfloat transparency ) const;
-        */
+        plColourMesh& operator = ( const plColourMesh &mesh ); 
+    
+        void setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);
+
 };
 
 #endif
