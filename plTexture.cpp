@@ -42,8 +42,8 @@ void plTexture::_copyTexture( const plTexture &texture )
     plSeq<PLchar> texData( texture._width * texture._height, '0' );
 
     // copy vertex data
-    glBindTexture( GL_TEXTURE_2D, _textureID );    
-    glGetTexImage( GL_TEXTURE_2D,  0,  GL_RGB,  GL_UNSIGNED_BYTE, &texData[0] );   
+    glBindTexture( GL_TEXTURE_2D, texture._textureID );    
+    glGetTexImage( GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, &texData[0] );   
     glBindTexture( GL_TEXTURE_2D, 0 );
     
     // set texture
@@ -74,16 +74,12 @@ void plTexture::setTexture( const PLchar *image, PLint width, PLint height )
     _width  = width;
     _height = height;
     
-    if ( _textureID == 0 )
-        glGenTextures( 1, &_textureID );
-           
-    glBindTexture( GL_TEXTURE_2D, _textureID );
+    _destroy();
     
-    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP  ); 
+    glGenTextures( 1, &_textureID );          
+    glBindTexture( GL_TEXTURE_2D, _textureID );
        
-    glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+    //glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
