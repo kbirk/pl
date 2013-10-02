@@ -34,3 +34,9 @@ plSeq<plScanPointData> plScanPointReader::readPoints(const plString& filename)
     }
     return output;
 }
+
+std::ostream& operator << ( std::ostream &stream, const plScanPointData &p )
+{
+    stream << p.point << " " << p.normal << " " << p.radius << std::endl;
+    return stream;
+}
