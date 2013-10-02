@@ -10,13 +10,16 @@
 class plScanPointData //: public plRenderable
 {
 public:
-
-    plScanPointData();
-    plScanPointData(const plVector3&, const plVector3&, PLfloat);
-
+  // attributes
     plVector3 point;
     plVector3 normal;
     PLfloat   radius;
+
+  // members
+    plScanPointData();
+    plScanPointData(const plVector3&, const plVector3&, PLfloat);
+
+    PLbool draw() const;
 };
 
 std::ostream& operator << ( std::ostream &stream, const plScanPointData &p );

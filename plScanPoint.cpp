@@ -9,6 +9,11 @@ plScanPointData::plScanPointData(const plVector3& p, const plVector3& n, PLfloat
     radius = r;
 }
 
+PLbool plScanPointData::draw() const
+{
+    return true;
+}
+
 plSeq<plScanPointData> plScanPointReader::readPoints(const plString& filename)
 {
     std::ifstream inFileStream( filename.c_str(), std::ios::in );
@@ -37,6 +42,6 @@ plSeq<plScanPointData> plScanPointReader::readPoints(const plString& filename)
 
 std::ostream& operator << ( std::ostream &stream, const plScanPointData &p )
 {
-    stream << p.point << " " << p.normal << " " << p.radius << std::endl;
+    stream << p.point << " " << p.normal << " " << p.radius;
     return stream;
 }

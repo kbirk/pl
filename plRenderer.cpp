@@ -26,6 +26,7 @@ namespace plRenderer
     const plTrackedObject*   _probeToDraw          = NULL;
     const plTrackedObject*   _scopeToDraw          = NULL;
     const plCheckerBoard*    _checkerBoardToDraw   = NULL;
+    const plScan*            _scanToDraw           = NULL;
 
     plMinimalShader*         _minimalShader        = NULL;
     plPhongShader*           _phongShader          = NULL; 
@@ -55,6 +56,7 @@ namespace plRenderer
         _probeToDraw          = NULL;
         _scopeToDraw          = NULL;
         _checkerBoardToDraw   = NULL;
+        _scanToDraw           = NULL;
     }
 
 
@@ -120,7 +122,16 @@ namespace plRenderer
             
         _checkerBoardToDraw = &checkerboard;
     }
-    
+
+
+    void queue( const plScan &scan )
+    {
+        if (_scanToDraw != NULL)
+            std::cerr << "plRenderer queue() error: plScan already queued to draw, overridding previous \n";
+
+        _scanToDraw = &scan;
+    }
+
 
     void reportError( const plString &str  ) 
     {
@@ -292,6 +303,11 @@ namespace plRenderer
             }
         }
         
+        // draw scanner information
+        if (_scanToDraw != NULL)
+        {
+            _scanToDraw->draw();
+        }
                
         /* DEBUG FOR OCTREES
         // set flat shader

@@ -155,6 +155,11 @@ PLfloat plScanVolume::distanceWusingI(PLuint index1, PLuint index2)
     return (coordinatesItoW(index1) - coordinatesItoW(index2)).length();
 }
 
+PLbool plScanVolume::draw() const
+{
+    return true;
+}
+
 // ============================================================= MASK ====================================================================
 
 plScanMask::plScanMask()
