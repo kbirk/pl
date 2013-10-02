@@ -69,7 +69,7 @@ namespace plRenderer
 
     void queue( const plGraftEditor &editor )
     {
-        if (_boundaryEditorToDraw != NULL)
+        if (_graftEditorToDraw != NULL)
             std::cerr << "plRenderer queue() error: plGraftEditor already queued to draw, overridding previous \n";
             
         _graftEditorToDraw = &editor;
