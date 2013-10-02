@@ -5,8 +5,9 @@
 #include "plSeq.h"
 #include "plString.h"
 #include <fstream>
+//#include "plRenderable.h"
 
-class plScanPointData
+class plScanPointData //: public plRenderable
 {
 public:
 
@@ -17,6 +18,8 @@ public:
     plVector3 normal;
     PLfloat   radius;
 };
+
+std::ostream& operator << ( std::ostream &stream, const plScanPointData &p );
 
 namespace plScanPointReader
 {
