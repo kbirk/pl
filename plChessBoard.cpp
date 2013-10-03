@@ -51,6 +51,7 @@ void plChessBoard::_generate( PLfloat blocksize )
             indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
             indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 );
             
+        /* Commented out other faces of the 3D chessboard.
             base = vertices.size()/3;
             
             // back side 
@@ -128,7 +129,7 @@ void plChessBoard::_generate( PLfloat blocksize )
                 indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
                 indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 ); 
             }
-            
+        */
         }
     }
     
@@ -169,12 +170,17 @@ void plChessBoard::draw() const
    
     plModelStack::push( _transform.matrix() );
     {
-        if ( _isTransparent )
-            plColourStack::load( PL_COLOUR_MESH_TRANSPARENT_COLOUR ); 
-        else
-            plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR ); 
-            
+        if ( _isTransparent ) {
+            plColourStack::load( PL_COLOUR_MESH_TRANSPARENT_COLOUR );
+        }
+        else {
+            plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR );
+        }
+
+
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
         _mesh.draw();
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }
     plModelStack::pop();
     
