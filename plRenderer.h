@@ -19,6 +19,8 @@
 #include "plAutomaticPlanner.h"
 #include "plCheckerBoard.h"
 
+#include "plPlannerStage1.h"
+#include "plPlannerStage2.h"
 /*
 class plUniform
 {

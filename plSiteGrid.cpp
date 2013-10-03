@@ -24,7 +24,7 @@ plSiteGrid::plSiteGrid( const plSeq<plTriangle> &triangles, const plBoundary &bo
 }
 
 
-plVector3 plSiteGrid::_calcSmoothNormal( const plVector3 &centroid, const plVector3 &up, PLfloat radius )
+plVector3 plSiteGrid::_calcSmoothNormal( const plVector3 &point, const plVector3 &up, PLfloat radius )
 {
 
     plVector3 normal(0,0,0);        
@@ -36,9 +36,9 @@ plVector3 plSiteGrid::_calcSmoothNormal( const plVector3 &centroid, const plVect
     {
         if ( _triangles[i].normal() * up > 0.001 )
         {        
-            PLfloat dist1 = ( _triangles[i].point0() - centroid ).squaredLength();
-            PLfloat dist2 = ( _triangles[i].point1() - centroid ).squaredLength();
-            PLfloat dist3 = ( _triangles[i].point2() - centroid ).squaredLength();
+            PLfloat dist1 = ( _triangles[i].point0() - point ).squaredLength();
+            PLfloat dist2 = ( _triangles[i].point1() - point ).squaredLength();
+            PLfloat dist3 = ( _triangles[i].point2() - point ).squaredLength();
            
             // if any point of triangle is withing radial sphere, accept
             float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
@@ -58,7 +58,7 @@ plVector3 plSiteGrid::_calcSmoothNormal( const plVector3 &centroid, const plVect
         return up;
     }    
 
-    return (1.0f/(PLfloat)(count) * normal).normalize();      
+    return ( (1.0f/(PLfloat)count) * normal ).normalize();      
 }
 
 
@@ -118,15 +118,16 @@ PLuint plSiteGrid::getMeshSSBO() const
 
 
 void plSiteGrid::_generateCoarseGridPoints()
-{
-    
+{   
     plSet<plPointAndNormal> p;
     for (PLuint i=0; i < _triangles.size(); i++)
     {   
-        plVector3 smoothNormal = _calcSmoothNormal( _triangles[i].centroid(), _triangles[i].normal(), 4.0f );   
-        p.insert( plPointAndNormal( _triangles[i].point0(), smoothNormal ) );
-        p.insert( plPointAndNormal( _triangles[i].point0(), smoothNormal ) );
-        p.insert( plPointAndNormal( _triangles[i].point0(), smoothNormal ) );
+        plVector3 smoothNormal0 = _calcSmoothNormal( _triangles[i].point0(), _triangles[i].normal(), PL_NORMAL_SMOOTHING_RADIUS );   
+        plVector3 smoothNormal1 = _calcSmoothNormal( _triangles[i].point1(), _triangles[i].normal(), PL_NORMAL_SMOOTHING_RADIUS );  
+        plVector3 smoothNormal2 = _calcSmoothNormal( _triangles[i].point2(), _triangles[i].normal(), PL_NORMAL_SMOOTHING_RADIUS );  
+        p.insert( plPointAndNormal( _triangles[i].point0(), smoothNormal0 ) );
+        p.insert( plPointAndNormal( _triangles[i].point1(), smoothNormal1 ) );
+        p.insert( plPointAndNormal( _triangles[i].point2(), smoothNormal2 ) );
     }
     
     plSet<plPointAndNormal>::iterator p_itr = p.begin();
@@ -202,14 +203,8 @@ void plSiteGrid::_generateFineGridPoints()
                 {
                     break;  // outside of triangle edge, go to next row
                 }
-                plVector3 smoothNormal = _calcSmoothNormal( _triangles[i].centroid(), _triangles[i].normal(), 4.0f );  
-                
-                
-                p.insert( plPointAndNormal( point, smoothNormal ) );
-                
-                //_points.add ( plVector4(point, 1) );
-                //_normals.add( plVector4( smoothNormal, 1) ); 
-                
+                plVector3 smoothNormal = _calcSmoothNormal( point, _triangles[i].normal(), 4.0f );  
+                p.insert( plPointAndNormal( point, smoothNormal ) );                
             }   
         }
         
@@ -285,6 +280,36 @@ PLuint getGroupFullSSBO( const plSeq<plSiteGrid> &sites )
                                                              data.add( plVector4( sites[i].triangles(j).point2(), 1.0 ) );
                                                              data.add( plVector4( sites[i].triangles(j).normal(), 1.0 ) ); }                                                                                      
         for ( PLuint j=0; j < sites[i].perimSize()*2; j++) { data.add( sites[i].perimeter(j) ); }    
+    }
+    
+    PLuint tempBuffer;
+    glGenBuffers(1, &tempBuffer);   
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, dataSize*sizeof(plVector4), &data[0], GL_STATIC_READ);
+    return tempBuffer;
+}
+
+
+PLuint getGroupGridAndMeshSSBO( const plSeq<plSiteGrid> &sites )
+{
+    // find total data size
+    PLuint dataSize  = 0;
+    for (PLuint i=0; i < sites.size(); i++ )
+    {
+        dataSize += sites[i].gridSize()*2;
+        dataSize += sites[i].meshSize()*4;
+    }
+
+    plSeq<plVector4> data( dataSize );  
+    
+    for (PLuint i=0; i < sites.size(); i++ )
+    {
+        for ( PLuint j=0; j < sites[i].gridSize(); j++ )   { data.add( sites[i].points(j) );  }    
+        for ( PLuint j=0; j < sites[i].gridSize(); j++ )   { data.add( sites[i].normals(j) ); }    
+        for ( PLuint j=0; j < sites[i].meshSize(); j++ )   { data.add( plVector4( sites[i].triangles(j).point0(), 1.0 ) ); 
+                                                             data.add( plVector4( sites[i].triangles(j).point1(), 1.0 ) );
+                                                             data.add( plVector4( sites[i].triangles(j).point2(), 1.0 ) );
+                                                             data.add( plVector4( sites[i].triangles(j).normal(), 1.0 ) ); }                                                                                         
     }
     
     PLuint tempBuffer;

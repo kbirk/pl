@@ -10,13 +10,18 @@
 #include "plPlannerStage0Shader.h"
 
 #define PL_MAX_GRAFTS_PER_SOLUTION           16
+#define PL_MAX_DONOR_SITES                   5
+#define PL_MAX_CAP_TRIANGLES                 2048
+
 
 #define PL_STAGE0_INITIAL_TEMPERATURE        1.0f
-#define PL_STAGE0_COOLING_RATE               0.005f //0.05f
+#define PL_STAGE0_COOLING_RATE               0.005f
 
+/*
 #define PL_CONVERGE_ITRS(a)                  (PLuint( (PL_STAGE0_INITIAL_TEMPERATURE - a) / PL_STAGE0_COOLING_RATE))
 #define PL_GLOBAL_CONVERGE_START             PL_CONVERGE_ITRS( 0.25f )
-//#define PL_GLOBAL_CONVERGE_INC               1000
+*/
+
 
 #define PL_STAGE0_GROUP_SIZE                 64
 #define PL_STAGE0_NUM_GROUPS                 16

@@ -22,13 +22,12 @@ class plCamera
         plVector3  getDirection() const  { return (lookat - position).normalize(); }
         plMatrix44 getMatrix   () const;
         
-        void importViewParams( std::string filename );             
-        void exportViewParams( std::string filename );
+        void importViewParams( const std::string &filename );             
+        void exportViewParams( const std::string &filename );
         
 		void translate( PLint x, PLint y );
         void rotate   ( PLint x0, PLint y0, PLint x1, PLint y1 );      
-        void zoom     ( PLfloat z );
-        
+        void zoom     ( PLfloat z );       
         void reset    ( const plVector3 &point );
         
     private:

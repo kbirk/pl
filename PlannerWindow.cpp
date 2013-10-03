@@ -29,21 +29,20 @@ void PlannerWindow::display()
 
 void PlannerWindow::setCursor( int mx, int my )
 {
-    switch (_button)
+    switch ( _button )
     {   
         case GLUT_MIDDLE_BUTTON:        glutSetCursor( GLUT_CURSOR_CROSSHAIR );     break;      // middle button:   zoom
         case GLUT_LEFT_BUTTON:          glutSetCursor( GLUT_CURSOR_INFO );          break;      // left button:     click / drag 
-        case GLUT_RIGHT_BUTTON: 
+        case GLUT_RIGHT_BUTTON:  
            
             // right button:    translate / rotate 
-            if (_cameraMode == CAMERA_TRANSLATION_MODE) 
+            switch( _cameraMode )
+            { 
+                case CAMERA_TRANSLATION_MODE:   glutSetCursor( GLUT_CURSOR_CROSSHAIR );     break;    // translation cursor  
+                case CAMERA_ROTATION_MODE:      glutSetCursor( GLUT_CURSOR_CYCLE );         break;    // rotation cursor
+            }
+            break;
             
-                glutSetCursor( GLUT_CURSOR_CROSSHAIR );     // translation cursor
-
-            else
-                glutSetCursor( GLUT_CURSOR_CYCLE );         // rotation cursor
-
-     
         case GLUT_NO_BUTTON:            glutSetCursor( GLUT_CURSOR_RIGHT_ARROW );   break;      // no button:     idle cursor   
     }
 }

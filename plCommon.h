@@ -29,8 +29,8 @@
 
 // BOUNDARY MACROS
  
-#define PL_BOUNDARY_MESH_HEIGHT                  3.0f
-#define PL_BOUNDARY_MESH_WIDTH_HALF              0.25f
+#define PL_BOUNDARY_MESH_HEIGHT                  1.0f
+#define PL_BOUNDARY_MESH_WIDTH_HALF              0.4f
 #define PL_BOUNDARY_MESH_CURVE_HEIGHT            0.2f 
  
 #define PL_BOUNDARY_SELECTED_COLOUR              0.20, 0.90, 0.70 
@@ -112,9 +112,9 @@
 #define PL_MAX_OF_2(a,b)                         (a>=b ? a : b)     
 #define PL_MIN_OF_3(a,b,c)                       (a<=b ? (a<=c ? a : c) : (b<=c ? b : c))
 #define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c)) 
-
 #define PL_ASPECT_RATIO                          ( 1280.0f / 720.0f ) 
 
+#define PL_NORMAL_SMOOTHING_RADIUS               4.0f
 
 #ifdef WIN32
     #include <windows.h>  

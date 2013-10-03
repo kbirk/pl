@@ -81,8 +81,7 @@ plSeq<T>::plSeq( const plSeq<T> &source )
 	for (PLuint i=0; i<_numElements; i++)
 	{
 		_data[i] = source._data[i];
-	}
-		
+	}		
 }
 
 
@@ -106,6 +105,7 @@ void plSeq<T>::add( const T &x )
 	_numElements++;
 }
 
+
 template<class T>
 void plSeq<T>::add( const plSeq<T> &s )
 {
@@ -122,6 +122,7 @@ void plSeq<T>::add( const plSeq<T> &s )
 	}
 	_numElements+=s.size();	
 }
+
 
 template<class T>
 void plSeq<T>::fill( PLuint n, const T &t )
@@ -236,6 +237,7 @@ void plSeq<T>::reserve(PLuint size)
 	_data = new_data;
 }
 
+
 template<class T>
 plSeq<T> plSeq<T>::extract( PLuint index, PLuint num ) const
 {
@@ -248,6 +250,7 @@ plSeq<T> plSeq<T>::extract( PLuint index, PLuint num ) const
     
     return ts;
 }
+
 
 template<class T>
 PLuint plSeq<T>::size() const 

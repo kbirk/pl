@@ -402,11 +402,11 @@ void plBoundary::draw() const
             
         if (_isSelected && _selectedValue == i)   // is the current point selected?
         {
-            plDraw::sphere( _points[i], 1.5 );
+            plDraw::sphere( _points[i], 1.0 );
         }
         else
         {
-            plDraw::sphere( _points[i], 1 );
+            plDraw::sphere( _points[i], 0.75 );
         }
     }
 }

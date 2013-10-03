@@ -69,7 +69,7 @@ namespace plRenderer
 
     void queue( const plGraftEditor &editor )
     {
-        if (_boundaryEditorToDraw != NULL)
+        if (_graftEditorToDraw != NULL)
             std::cerr << "plRenderer queue() error: plGraftEditor already queued to draw, overridding previous \n";
             
         _graftEditorToDraw = &editor;
@@ -292,6 +292,16 @@ namespace plRenderer
             }
         }
         
+        // PLANNER STAGE 1 DEBUG
+        plColourStack::load( 1, 0.1, 1 );
+        plPlannerStage1::DEBUG.draw();   
+        
+               
+        plColourStack::load( 0, 1, 1 );        
+        for (PLuint i =0; i <  plPlannerStage2::DEBUG.size(); i++)
+        {
+            plDraw::sphere( plPlannerStage2::DEBUG[i], 1.0f );
+        }
                
         /* DEBUG FOR OCTREES
         // set flat shader

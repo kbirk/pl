@@ -52,6 +52,8 @@ class plTriangle
         void  swapVertices0And1();
          
 		const plVector3 &operator[](int index) const { return _points[index]; }
+          
+        bool isInside( const plVector3 &point ) const;   
                  
         plIntersection rayIntersect( const plVector3 &rayStart, 
 		                             const plVector3 &rayDir, 

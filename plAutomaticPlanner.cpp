@@ -3,14 +3,16 @@
 
 namespace plAutomaticPlanner
 {
+    // private members
     plSeq<plSiteGrid>  _donorSiteGrids;
     plSeq<plSiteGrid>  _defectSiteGrids; 
     
+    // private function prototypes  
     PLbool _generateSite     ( plSeq<plSiteGrid> &grids, const plSeq<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain );                    
-    PLbool _generateSiteGrids( plPlan &plan );     
-               
-    void   _dispatch( plPlan &plan );      
+    PLbool _generateSiteGrids( plPlan &plan );            
+    void   _dispatch         ( plPlan &plan );      
 
+    // public functions
     void calculate( plPlan &plan )
     {   
         std::cout << "Calculating Plan ... \n";
@@ -37,6 +39,7 @@ namespace plAutomaticPlanner
         }
     } 
 
+    // private functions
     PLbool _generateSite( plSeq<plSiteGrid> &grids, const plSeq<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain )
     {       
         plSiteGrid site( triangles, boundary, fineGrain );                
@@ -55,6 +58,7 @@ namespace plAutomaticPlanner
         return true; 
 
     }    
+    
     
     PLbool _generateSiteGrids( plPlan &plan )
     {
@@ -92,6 +96,7 @@ namespace plAutomaticPlanner
         PLtime t0, t1;
         
         plDefectState defectState;
+        plCapIndices  capIndices;
         plRmsData     rmsData;
         
         // stage 0 timing //
@@ -105,28 +110,39 @@ namespace plAutomaticPlanner
         std::cout << "\n---------------------------- Stage 0 Complete --------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ----------------------" << std::endl;
         ////////////////////
-
         // stage 1 timing //
         std::cout << "\n--------------------------- Initiating Stage 1 --------------------------- \n" <<
                        "--------------------------------------------------------------------------" << std::endl;
         t0 = plTimer::now();
 
-        plPlannerStage1::run( rmsData, _defectSiteGrids[0], _donorSiteGrids, defectState );
+        plPlannerStage1::run( capIndices, _defectSiteGrids[0], _donorSiteGrids, defectState );
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 1 Complete ---------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
+        //////////////////// 
 
-        ////////////////////
         // stage 2 timing //
         std::cout << "\n--------------------------- Initiating Stage 2 --------------------------- \n" <<
+                       "--------------------------------------------------------------------------" << std::endl;
+        t0 = plTimer::now();
+
+        plPlannerStage2::run( rmsData, _defectSiteGrids[0], _donorSiteGrids, defectState, capIndices );
+        
+        t1 = plTimer::now();
+        std::cout << "\n---------------------------- Stage 2 Complete ---------------------------- \n" <<
+                       "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
+
+        ////////////////////
+        // stage 3 timing //
+        std::cout << "\n--------------------------- Initiating Stage 3 --------------------------- \n" <<
                        "-------------------------------------------------------------------------- \n";
         t0 = plTimer::now();
 
-        plDonorState donorState = plPlannerStage2::run( _donorSiteGrids, defectState, rmsData );    
+        plDonorState donorState = plPlannerStage3::run( _donorSiteGrids, defectState, rmsData );    
         
         t1 = plTimer::now();
-        std::cout << "\n---------------------------- Stage 2 Complete --------------------------- \n" <<
+        std::cout << "\n---------------------------- Stage 3 Complete --------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
         ////////////////////
                

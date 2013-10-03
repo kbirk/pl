@@ -70,8 +70,9 @@ class plSiteGrid
         
 };
 
-PLuint getGroupFullSSBO( const plSeq<plSiteGrid> &grids );
-PLuint getGroupGridSSBO( const plSeq<plSiteGrid> &grids );
+PLuint getGroupFullSSBO        ( const plSeq<plSiteGrid> &grids );
+PLuint getGroupGridAndMeshSSBO ( const plSeq<plSiteGrid> &grids );
+PLuint getGroupGridSSBO        ( const plSeq<plSiteGrid> &grids );
 
 
 

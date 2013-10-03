@@ -1,38 +1,88 @@
 #version 430
 
-#define PL_FLT_MAX                  99999
+#define PL_FLT_MAX                  99999;
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_DONOR_SITES          5
-#define PL_PLUG_LENGTH              15.0
+#define PL_MAX_CAP_TRIANGLES        2048
 
-layout (local_size_x = 256) in;
+#define PL_DONOR_Z                  0, 0, 1
+
+#define PL_NUM_COMPARISON_SLICES    16
+#define PL_NUM_COMPARISON_RADII     4
+#define PL_PI                       3.1415927
+
+layout (local_size_x = 1024) in;
 
 // input data
-layout (std430,  binding = 0) buffer donorSiteDataBlock   { vec4 donorSiteData[];  };
-layout (std430,  binding = 1) buffer rmsValuesBlock       { float rmsValues[];     };
-layout (std430,  binding = 2) buffer rmsDirectionsBlock   { vec4  rmsDirections[]; };
-// output data
-layout (std430,  binding = 3) buffer donorPositionsBlock   { vec4  donorPositionsOutput  []; };
-layout (std430,  binding = 4) buffer donorNormalsBlock     { vec4  donorNormalsOutput    []; };
-layout (std430,  binding = 5) buffer donorDirectionsBlock  { vec4  donorZDirectionOutput []; };
-layout (std430,  binding = 6) buffer totalRmsBlock         { float totalRmsOutput[];         };
+layout (std430,  binding = 0) buffer defectSiteDataBlock  { vec4 defectSiteData[]; };
+layout (std430,  binding = 1) buffer donorSiteDataBlock   { vec4 donorSiteData[];  };
+
+// temporary data
+layout (std430,  binding = 2) buffer tempBuffer0          { uint defectCapIndices[]; };
+layout (std430,  binding = 3) buffer tempBuffer1          { uint donorCapIndices[];  };
+
+// state output
+layout (std430,  binding = 4) buffer rmsOutputBlock       { float rmsOutput[]; };
 
 // input uniforms
 uniform uint  uGraftCount;
+uniform vec4  uGraftPositions [PL_MAX_GRAFTS_PER_SOLUTION];
+uniform vec4  uGraftNormals   [PL_MAX_GRAFTS_PER_SOLUTION];
 uniform float uGraftRadii     [PL_MAX_GRAFTS_PER_SOLUTION];
 
-uniform uint  uTotalGridPoints;
+uniform uint  uDefectSiteMeshSize;
+
 uniform uint  uDonorSiteCount;
+uniform uint  uDonorSiteMeshSize   [PL_MAX_DONOR_SITES];
 uniform uint  uDonorSiteGridSize   [PL_MAX_DONOR_SITES];
+uniform uint  uDonorSitePerimSize  [PL_MAX_DONOR_SITES];
 uniform uint  uDonorSiteDataOffset [PL_MAX_DONOR_SITES];
 
-uniform uint  uNumDirections;
+uniform vec4  uDefectZ;
 
-uniform uint  uSeed;
-
-void getDonorSiteAndIndex( inout uint site, inout uint localIndex, in uint globalIndex )
+struct triangle
 {
-    localIndex = globalIndex;
+    vec3 p0;
+    vec3 p1;
+    vec3 p2;
+    vec3 n;
+};
+
+
+struct edge
+{
+    vec3 p0;
+    vec3 p1;
+    vec3 n;
+};
+
+
+// defect
+triangle defectCapTriangles( in uint graftIndex, in vec3 graftPosition, in uint index )
+{
+    uint offset   = (graftIndex * PL_MAX_CAP_TRIANGLES) + 1; // + 1 triangle count is [0]    
+    uint triIndex = defectCapIndices[ offset+index ] * 4;    // get triangle index
+    
+    triangle t;
+    t.p0 = vec3( defectSiteData[triIndex+0] ) - graftPosition;  // subtract graft position to set cap centre to origin
+    t.p1 = vec3( defectSiteData[triIndex+1] ) - graftPosition;
+    t.p2 = vec3( defectSiteData[triIndex+2] ) - graftPosition;
+    t.n  = vec3( defectSiteData[triIndex+3] );
+    return t;
+}
+    
+
+uint defectCapCount( in uint graftIndex )
+{
+    uint offset = graftIndex * PL_MAX_CAP_TRIANGLES; 
+    return defectCapIndices[ offset ];
+} 
+
+
+// donor
+void getDonorSiteAndIndex( inout uint site, inout uint localIndex )
+{
+    localIndex = gl_GlobalInvocationID.x;
     for (uint i=0; i<uDonorSiteCount; i++)
     {
         if ( localIndex < uDonorSiteGridSize[ i ] )
@@ -57,153 +107,244 @@ vec4 donorSiteNormals( in uint site, in uint i )
 }
 
 
-uint randomize( inout uint seed )
-{   
-    seed = (seed ^ 61) ^ (seed >> 16);
-    seed *= 9;
-    seed = seed ^ (seed >> 4);
-    seed *= 0x27d4eb2d;
-    seed = seed ^ (seed >> 15);
-    return seed;
-}
-
-
-float rand( inout uint seed )
+edge donorSiteEdge( in uint site, in uint i )
 {
-    float a = randomize( seed );   
-    return float( a/1.000001) * (1.0 / 4294967296.0);  // return 0 <= r < 1 
+    uint offset = uDonorSiteDataOffset[ site ] + uDonorSiteGridSize[ site ]*2 + uDonorSiteMeshSize[ site ]*4; 
+
+    uint j = offset + i;
+    uint k = offset + ( (i+1) % uDonorSitePerimSize[ site ] );
+    
+    edge e;
+    e.p0 = vec3( donorSiteData[ j ] );
+    e.p1 = vec3( donorSiteData[ k ] );  
+    e.n  = vec3( donorSiteData[ j + uDonorSitePerimSize[ site ] ] );
+    return e;
+}
+
+      
+triangle donorCapTriangles( in uint site, in vec3 gridPosition, in uint index )
+{
+    uint offset   = (gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES) + 1; // + 1 triangle count is [0]    
+    uint triIndex =  uDonorSiteDataOffset[ site ] + uDonorSiteGridSize[ site ]*2 + donorCapIndices[ offset+index ]*4; // get triangle index
+
+    triangle t;
+    t.p0 = vec3( donorSiteData[triIndex+0] ) - gridPosition;  // subtract grid position to set cap centre to origin
+    t.p1 = vec3( donorSiteData[triIndex+1] ) - gridPosition;
+    t.p2 = vec3( donorSiteData[triIndex+2] ) - gridPosition;
+    t.n  = vec3( donorSiteData[triIndex+3] );
+    return t;
+}
+    
+
+uint donorCapCount()
+{
+    uint offset = gl_GlobalInvocationID.x * PL_MAX_CAP_TRIANGLES; 
+    return donorCapIndices[ offset ];
+} 
+
+
+vec3 closestPointOnSegment( in vec3 p, in vec3 a, in vec3 b)
+{
+    vec3 ab = b - a;
+    float t = dot( (p - a), ab) / dot(ab, ab);
+    // If outside segment, clamp t (and therefore d) to the closest endpoint
+    t = clamp( t, 0.0, 1.0 );
+    // Compute projected position from the clamped t
+    return a + (t * ab);
 }
 
 
-void shuffle( inout uint array[PL_MAX_GRAFTS_PER_SOLUTION], in uint size, inout uint seed )
-{   
-    for (uint i = 0; i < size; i++) 
+vec3 closestPointOnSegment( in vec3 p, in edge e)
+{
+    return closestPointOnSegment( p, e.p0, e.p1 );
+}
+
+
+bool isWithinSite( in uint site, in vec3 position, in vec3 normal, in float radius )
+{
+    // checks if closest point on all edges is within radius distance to the grafts central axis
+    bool inside = true;
+    for (int i=0; i<uDonorSitePerimSize[ site ]; i++)
     {
-        uint j = uint( rand( seed ) * float( size ) ); //i + uint( rand( seed ) * float(size - i) );
-        uint t = array[j];
-        array[j] = array[i];
-        array[i] = t;
-    }    
-}
-
-
-float rms( in uint graftIndex, in uint gridIndex, in uint directionIndex )
-{
-    return rmsValues[ (uTotalGridPoints*PL_MAX_GRAFTS_PER_SOLUTION*directionIndex) + (PL_MAX_GRAFTS_PER_SOLUTION*gridIndex) + graftIndex ];
-}
-
-
-bool isSelectionValid( in uint gridIndex, in uint graftIndices[PL_MAX_GRAFTS_PER_SOLUTION], in uint solutionIndices[PL_MAX_GRAFTS_PER_SOLUTION], in uint solutionCount )  
-{
-    bool result = true;
-    
-    // potential donor location
-    uint candidateSite, candidateIndex;
-    getDonorSiteAndIndex( candidateSite, candidateIndex, gridIndex);
-    
-    // check against all locations in current solution
-    for (uint i=0; i < solutionCount; i++)
-    {
-        uint site, localIndex;
-        getDonorSiteAndIndex( site, localIndex, solutionIndices[ i ] );
-    
-        float combinedRadius = uGraftRadii[ graftIndices[solutionCount] ] + uGraftRadii[ graftIndices[i] ];
-    
-        if ( distance( donorSitePositions( candidateSite, candidateIndex ),  donorSitePositions( site, localIndex ) ) < combinedRadius )
+        edge e = donorSiteEdge( site, i );              
+        vec3 closestPoint     = closestPointOnSegment( position, e ) - position;    // get closest point in graft coords        
+        vec3 projClosestPoint = dot( closestPoint, normal ) * normal;               // get closest point projected onto graft axis
+        // check if within radius distance
+        if ( distance( closestPoint, projClosestPoint ) < radius )                  
         {
-            // overlap, reject
-            result = false;
-            break;
+            inside = false;
+        }        
+    }    
+    return inside;
+}
+
+
+bool rayIntersect( inout vec3 point, inout float t, in vec3 rayStart, in vec3 rayDir, in triangle tri )
+{
+    bool result = false;
+
+    float dn = dot( rayDir, tri.n );
+
+    if ( dn != 0.0 )
+    {      
+        float dist = dot( tri.p0, tri.n );
+
+        t = ( dist - dot( rayStart, tri.n ) ) / dn;
+        
+        point = rayStart + t * rayDir;
+
+        // Compute barycentric coords
+        float totalAreaDiv = 1.0 / dot( cross( tri.p1-tri.p0, tri.p2-tri.p0 ), tri.n);
+        float u = dot( cross( tri.p2-tri.p1, point-tri.p1 ), tri.n) * totalAreaDiv;
+        float v = dot( cross( tri.p0-tri.p2, point-tri.p2 ), tri.n) * totalAreaDiv;
+
+        // Reject if outside triangle
+        if (u < -0.0001 || v < -0.0001 || u + v > 1.0001 )
+        {
+            result = false; 
         }
+        else
+        {
+            result = true;
+        }
+        
     }
-    
+    else
+    {
+        // ray is parallel to plane 
+        result = false;        
+    }
+
     return result;
 }
 
 
+bool rayIntersectDefect( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in vec3 graftPosition, in uint graftIndex )
+{
+    bool result = false;
+    float minT = PL_FLT_MAX;
+    
+    uint count = defectCapCount( graftIndex );
+    for (uint i=0; i< count; i++)
+    {
+        triangle tri = defectCapTriangles( graftIndex, graftPosition, i );
+        vec3  p;
+        float t;
+        if ( rayIntersect( p, t, rayStart, rayDir, tri ) )
+        { 
+            result = true;
+            if ( abs( t ) < minT )
+            {
+                minT = abs( t );
+                point = p;
+            }
+        }
+    }
+    return result;
+}
+
+
+bool rayIntersectDonor( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in vec3 gridPosition, in uint siteIndex )
+{
+    bool result = false;
+    float minT = PL_FLT_MAX;
+    
+    uint count = donorCapCount();
+    for (uint i=0; i<count; i++)
+    {
+        triangle tri = donorCapTriangles( siteIndex, gridPosition, i );
+        vec3  p;
+        float t;
+        if ( rayIntersect( p, t, rayStart, rayDir, tri ) )
+        {
+            result = true;
+            if ( abs( t ) < minT )
+            {
+                minT = abs( t );
+                point = p;                
+            }
+        }
+    }
+    return result;
+}
+
+
+float calcRMS( in vec3 defectPosition, in vec3 donorPosition, in vec3 defectNormal, in vec3 donorNormal, in float radius, in uint siteIndex, in uint graftIndex )
+{
+    // ray intersect at certain points, and calc distance
+    
+    // get coordinate systems for grafts
+    vec3 defectX = normalize( cross( defectNormal, vec3( uDefectZ ) ) );
+    vec3 defectZ = normalize( cross( defectX, defectNormal ) );
+    
+    vec3 donorX = normalize( cross( donorNormal, vec3( PL_DONOR_Z ) ) );
+    vec3 donorZ = normalize( cross( donorX, donorNormal ) );
+
+    uint  successfulChecks   = 0;
+    float squaredDistanceSum = 0.0;
+    
+    float dr = (radius / float(PL_NUM_COMPARISON_RADII)) - 0.01;
+    float da = (2.0f * PL_PI) / float(PL_NUM_COMPARISON_SLICES);
+    
+    for (uint i=1; i<=PL_NUM_COMPARISON_RADII; i++)
+    { 
+        for (uint j=0; j < PL_NUM_COMPARISON_SLICES; j++)
+        {       
+            float theta = j * da;
+                
+            float sa = sin( theta );
+            float ca = cos( theta );
+    
+            vec3 defectCast = normalize( defectX * sa + defectZ * ca ) * (dr * i);
+            vec3 donorCast  = normalize( donorX  * sa + donorZ  * ca ) * (dr * i);
+            
+            vec3 defectIntPoint, donorIntPoint;
+            bool i0 = rayIntersectDefect( defectIntPoint, defectCast, defectNormal, defectPosition, graftIndex );
+            bool i1 = rayIntersectDonor ( donorIntPoint,  donorCast,  donorNormal,  donorPosition, siteIndex  );   
+            
+            if ( i0 && i1 )
+            {    
+                // intersection failures may occur if defect grafts overlap boundaries ( thus missing triangles on cap )
+                float distance = dot( defectIntPoint, defectNormal ) - dot( donorIntPoint, donorNormal );               
+                squaredDistanceSum += distance * distance;
+                successfulChecks++;
+            }
+        }       
+    }
+
+    return sqrt( squaredDistanceSum / float( successfulChecks ) );
+}
+
 
 void main(void)
 { 
-    // get invocation unique seed value for RNG
-    uint seed = uint( uSeed*(gl_GlobalInvocationID.x+1) );
-
-    float totalRMS = 0;
+    // get specific defect site and local index of grid point
+    uint siteIndex, localIndex;
+    getDonorSiteAndIndex( siteIndex, localIndex );
     
-    uint solutionIndices   [PL_MAX_GRAFTS_PER_SOLUTION];   
-    uint solutionDirections[PL_MAX_GRAFTS_PER_SOLUTION]; 
-      
-    uint graftIndices      [PL_MAX_GRAFTS_PER_SOLUTION];   // shuffled graft indices        
-    for (uint i=0; i < uGraftCount; i++)
+    // get grid point
+    vec3 gridPosition = vec3( donorSitePositions( siteIndex, localIndex ) );
+    vec3 gridNormal   = vec3( donorSiteNormals  ( siteIndex, localIndex ) );
+    
+    // for each graft in solution
+    for (uint i=0; i<uGraftCount; i++)
     {
-        graftIndices[i] = i;
-    }
-    shuffle( graftIndices, uGraftCount, seed );
-    shuffle( graftIndices, uGraftCount, seed );
-    shuffle( graftIndices, uGraftCount, seed );
-    
-    // for each graft
-    for ( uint i=0; i < uGraftCount; i++ )
-    {    
-        uint graftIndex = graftIndices[i];
-    
-        float lowestRMS       = PL_FLT_MAX;
-        int   lowestGridpoint = -1;
-        int   lowestDirection = -1;
-        // for each grid point, find valid with lowest RMS
-        for ( uint j=0; j < uTotalGridPoints; j++ )
+        vec3 graftPosition = vec3( uGraftPositions[i] );
+        vec3 graftNormal   = vec3( uGraftNormals  [i] );
+        
+        float rms;
+        
+        if ( isWithinSite( siteIndex, gridPosition, gridNormal, uGraftRadii[i] ) )
         {
-        
-            // for each direction, find valid with lowest RMS
-            for ( uint k=uNumDirections/2; k < uNumDirections; k++ )
-            {            
-                float currentRMS = rms( graftIndex, j, k );
-
-                if ( currentRMS > 0 && currentRMS < lowestRMS )
-                {
-                    if ( isSelectionValid( j, graftIndices, solutionIndices, i ) )
-                    {     
-                        lowestRMS = currentRMS;                  
-                        lowestGridpoint = int(j);                            
-                        lowestDirection = int(k);
-                    }                
-                }
-        
-            }
-            
+            rms = calcRMS( graftPosition, gridPosition, graftNormal, gridNormal, uGraftRadii[i], siteIndex, i );  
         }
-        
-        if ( lowestGridpoint == -1 )
+        else
         {
-            // cannot find donor site for graft, abort this solution
-            return;
-        }    
-        
-        // increment rms total
-        totalRMS += lowestRMS;
-        
-        // set gridpoint and direction index for graft
-        solutionIndices   [i] = lowestGridpoint;
-        solutionDirections[i] = lowestDirection;
-    }
-
-
-    // export harvest locations and normals
-    for (uint i=0; i < uGraftCount; i++)
-    {
-        uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;        
-        uint graftIndex = graftIndices[i];
-                
-        uint site, localIndex;
-        getDonorSiteAndIndex( site, localIndex, solutionIndices[i] );
-    
-        donorPositionsOutput [ offset + graftIndex ] = donorSitePositions( site, localIndex );
-        donorNormalsOutput   [ offset + graftIndex ] = donorSiteNormals  ( site, localIndex );
-        donorZDirectionOutput[ offset + graftIndex ] = rmsDirections[ solutionDirections[i] ];               
-    }
-    
-    // export total rms
-    totalRmsOutput[ gl_GlobalInvocationID.x ] = totalRMS;
-
+            // doesnt fit in boundary
+            rms = -1;
+        }
+        rmsOutput[ gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION + i ] = rms;
+    } 
     
 }
 

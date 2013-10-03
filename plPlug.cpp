@@ -13,19 +13,13 @@ plPlug::plPlug( PLuint modelID, const plBoneAndCartilage &model, const plTransfo
 
 PLbool plPlug::_surfaceIntersection( plVector3 &point, plVector3 &normal, const plVector3 &translation ) const
 {
-    PLfloat PL_NORMAL_AVG_RADIUS = 6.0f;
-
     // intersect cartilage and bone
     plIntersection boneIntersection = _model->bone.rayIntersect     ( transform.origin() + translation, -transform.y() );  
-    //plIntersection cartIntersection = _model->cartilage.rayIntersect( transform.origin() + translation, -transform.y() );  
-
     if ( boneIntersection.exists )
     {    
-        // get new graft origin (bone intersection point) and y axis (averaged normals of all triangles in PL_NORMAL_AVG_RADIUS )
+        // get new graft origin (bone intersection point) and y axis (averaged normals of all triangles in PL_NORMAL_SMOOTHING_RADIUS )
         point  = boneIntersection.point;
-        normal = _model->bone.getAverageNormal( PL_NORMAL_AVG_RADIUS, transform.origin(), transform.y() );  
-        // calculate new cartilage thickness
-        //cartilageThickness = ( !cartIntersection.exists ) ? 0.0f : ( boneIntersection.point - cartIntersection.point ).length();        
+        normal = _model->bone.getAverageNormal( PL_NORMAL_SMOOTHING_RADIUS, transform.origin(), transform.y() );        
     } 
     return boneIntersection.exists; 
 }
