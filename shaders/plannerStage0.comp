@@ -5,7 +5,7 @@
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_RADIUS               4.0
 #define PL_MIN_RADIUS               3.0
-#define PL_OVERLAP_THRESHOLD        1.0 //0.8
+#define PL_OVERLAP_THRESHOLD        0.8
 
 #define PL_MIN_PERTURBATION         0.05
 

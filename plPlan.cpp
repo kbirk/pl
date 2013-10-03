@@ -361,7 +361,7 @@ void plPlan::exportFile( const plString &filename )
                 << "\trecipient_model_id,  " << _grafts[i]->recipient().modelID() << std::endl
                 << "\trecipient_transform, " << _grafts[i]->recipient().transform << std::endl
                 << "\tharvest_model_id,    " << _grafts[i]->harvest().modelID()   << std::endl
-                << "\tharvest_transform,   " << _grafts[i]->recipient().transform << std::endl
+                << "\tharvest_transform,   " << _grafts[i]->harvest().transform << std::endl
                 << "\tradius,              " << _grafts[i]->radius()              << std::endl
                 << "\tcartilage_thickness, " << _grafts[i]->cartilageThickness()  << std::endl
                 << "\tlength,              " << _grafts[i]->length()              << std::endl               
