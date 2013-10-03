@@ -13,7 +13,8 @@ SOURCES = main.cpp PlannerWindow.cpp pl.cpp plAutomaticPlanner.cpp plBoneAndCart
           plBoundaryEditor.cpp plCamera.cpp plChessBoard.cpp plColourMap.cpp plColourMesh.cpp \
           plCSV.cpp plDefectSite.cpp plDonorSite.cpp plDraw.cpp plDRBTransform.cpp plEditable.cpp \
           plGraft.cpp plGraftEditor.cpp plIGuide.cpp plIGuideSite.cpp plLineMesh.cpp plMath.cpp plMatrix44.cpp     \
-	      plMatrixStack.cpp plMesh.cpp plMeshCutter.cpp plMeshExtruder.cpp plMeshIntersector.cpp plMinimalShader.cpp plModel.cpp plModelSpecific.cpp \
+	      plMatrixStack.cpp plMesh.cpp plMeshAlgorithm.cpp plMeshConnectivityData.cpp plMeshCutter.cpp plMeshExtruder.cpp plMeshIntersector.cpp \
+          plMinimalShader.cpp plModel.cpp plModelSpecific.cpp \
 	      plOctree.cpp plPhongShader.cpp plPickingShader.cpp plPickingTexture.cpp plPlan.cpp plPlannerStage0.cpp plPlannerStage1.cpp plPlannerStage2.cpp \
 	      plPlannerStage0Shader.cpp plPlannerStage1Shader.cpp plPlannerStage2Shader.cpp plPlug.cpp plPolygon.cpp plProjection.cpp \
 	      plRenderable.cpp plRenderer.cpp plRenderingPipeline.cpp plScan.cpp plScanPoint.cpp plScanVolume.cpp \
@@ -260,6 +261,10 @@ objects/plMesh.o: plShader.h plRenderingPipeline.h plVector4.h
 objects/plMesh.o: plMatrixStack.h plMatrix44.h plProjection.h plCamera.h
 objects/plMesh.o: plPickingShader.h plMinimalShader.h plPhongShader.h
 objects/plMesh.o: plTextureShader.h plPickingTexture.h
+objects/plMeshAlgorithm.o: plVector3.h plCommon.h plString.h plPolygon.h
+objects/plMeshAlgorithm.o: plSeq.h plTriangle.h plMeshConnectivityData.h
+objects/plMeshConnectivityData.o: plSeq.h plCommon.h plTriangle.h plString.h
+objects/plMeshConnectivityData.o: plVector3.h plPolygon.h
 objects/plMeshCutter.o: plCommon.h plVector3.h plString.h plSeq.h
 objects/plMeshCutter.o: plTriangle.h plPolygon.h plBoundary.h plMath.h
 objects/plMeshCutter.o: plMatrix44.h plVector4.h plRenderable.h plEditable.h
@@ -272,8 +277,8 @@ objects/plMeshCutter.o: plTransform.h plDraw.h plShapeMesh.h
 objects/plMeshCutter.o: plTrackedObject.h plDRBTransform.h
 objects/plMeshExtruder.o: plTriangle.h plCommon.h plString.h plVector3.h
 objects/plMeshExtruder.o: plSeq.h plMatrix44.h plVector4.h
-objects/plMeshIntersector.o: plVector3.h plCommon.h plString.h plPolygon.h
-objects/plMeshIntersector.o: plSeq.h plTriangle.h plMath.h plMatrix44.h
+objects/plMeshIntersector.o: plMath.h plCommon.h plVector3.h plString.h
+objects/plMeshIntersector.o: plSeq.h plPolygon.h plTriangle.h plMatrix44.h
 objects/plMeshIntersector.o: plVector4.h
 objects/plMinimalShader.o: plCommon.h plShader.h plSeq.h plMatrix44.h
 objects/plMinimalShader.o: plVector3.h plString.h plVector4.h plTriangle.h
@@ -557,6 +562,7 @@ objects/main.o: plPlannerStage1Shader.h plPlannerStage2.h
 objects/main.o: plPlannerStage2Shader.h plBoundaryEditor.h plWindow.h
 objects/main.o: plChessBoard.h plGraftEditor.h plRenderer.h plTextureMesh.h
 objects/main.o: plTexture.h plScan.h plScanPoint.h plScanVolume.h
+objects/main.o: plMeshIntersector.h
 objects/pl.o: pl.h plCommon.h plAutomaticPlanner.h plSeq.h plPlan.h
 objects/pl.o: plString.h plVector3.h plCSV.h plRenderable.h plGraft.h
 objects/pl.o: plEditable.h plTriangle.h plDraw.h plShapeMesh.h plMesh.h
@@ -741,6 +747,10 @@ objects/plMesh.o: plSeq.h plShader.h plRenderingPipeline.h plVector4.h
 objects/plMesh.o: plMatrixStack.h plMatrix44.h plProjection.h plCamera.h
 objects/plMesh.o: plPickingShader.h plMinimalShader.h plPhongShader.h
 objects/plMesh.o: plTextureShader.h plPickingTexture.h
+objects/plMeshAlgorithm.o: plMeshAlgorithm.h plVector3.h plCommon.h
+objects/plMeshAlgorithm.o: plString.h plPolygon.h plSeq.h plTriangle.h
+objects/plMeshAlgorithm.o: plMeshConnectivityData.h
+objects/plMeshConnectivityData.o: plMeshConnectivityData.h
 objects/plMeshCutter.o: plMeshCutter.h plCommon.h plVector3.h plString.h
 objects/plMeshCutter.o: plSeq.h plTriangle.h plPolygon.h plBoundary.h
 objects/plMeshCutter.o: plMath.h plMatrix44.h plVector4.h plRenderable.h
@@ -753,9 +763,9 @@ objects/plMeshCutter.o: plTransform.h plDraw.h plShapeMesh.h
 objects/plMeshCutter.o: plTrackedObject.h plDRBTransform.h
 objects/plMeshExtruder.o: plMeshExtruder.h plTriangle.h plCommon.h plString.h
 objects/plMeshExtruder.o: plVector3.h plSeq.h plMatrix44.h plVector4.h
-objects/plMeshIntersector.o: plMeshIntersector.h plVector3.h plCommon.h
-objects/plMeshIntersector.o: plString.h plPolygon.h plSeq.h plTriangle.h
-objects/plMeshIntersector.o: plMath.h plMatrix44.h plVector4.h
+objects/plMeshIntersector.o: plMeshIntersector.h plMath.h plCommon.h
+objects/plMeshIntersector.o: plVector3.h plString.h plSeq.h plPolygon.h
+objects/plMeshIntersector.o: plTriangle.h plMatrix44.h plVector4.h
 objects/plMinimalShader.o: plMinimalShader.h plCommon.h plShader.h plSeq.h
 objects/plMinimalShader.o: plMatrix44.h plVector3.h plString.h plVector4.h
 objects/plMinimalShader.o: plTriangle.h
