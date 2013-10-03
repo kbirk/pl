@@ -1,5 +1,5 @@
-#ifndef __PL_CHECKERBOARD_H__
-#define __PL_CHECKERBOARD_H__
+#ifndef __PL_CHESSBOARD_H__
+#define __PL_CHESSBOARD_H__
 
 #include "plCommon.h"
 #include "plRenderable.h"
@@ -8,12 +8,12 @@
 #include "plColourMesh.h"
 #include "plDRBTransform.h"
 
-class plCheckerBoard : public plRenderable
+class plChessBoard : public plRenderable
 {
 
     public:
     
-        plCheckerBoard( PLfloat blocksize );
+        plChessBoard( PLfloat blocksize );
         
         void toggleVisibility  ();
         void toggleTransparency();
@@ -33,7 +33,7 @@ class plCheckerBoard : public plRenderable
                     _calibYAxisPoint;
         
         void _generate( PLfloat blocksize ); 
-        bool _readCheckerBoardCalib();
+        bool _readChessBoardCalib();
 
 };  
 

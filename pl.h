@@ -7,7 +7,7 @@
 #include "plBoneAndCartilage.h"
 #include "plBoundaryEditor.h"
 #include "plCamera.h"
-#include "plCheckerBoard.h"
+#include "plChessBoard.h"
 #include "plColourMap.h"
 #include "plColourMesh.h"
 #include "plCSV.h"

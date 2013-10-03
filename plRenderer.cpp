@@ -25,7 +25,7 @@ namespace plRenderer
     const plTextureMesh*     _arthroTextureToDraw  = NULL;
     const plTrackedObject*   _probeToDraw          = NULL;
     const plTrackedObject*   _scopeToDraw          = NULL;
-    const plCheckerBoard*    _checkerBoardToDraw   = NULL;
+    const plChessBoard*    _chessBoardToDraw   = NULL;
     const plScan*            _scanToDraw           = NULL;
 
     plMinimalShader*         _minimalShader        = NULL;
@@ -55,7 +55,7 @@ namespace plRenderer
         _arthroTextureToDraw  = NULL;
         _probeToDraw          = NULL;
         _scopeToDraw          = NULL;
-        _checkerBoardToDraw   = NULL;
+        _chessBoardToDraw     = NULL;
         _scanToDraw           = NULL;
     }
 
@@ -71,7 +71,7 @@ namespace plRenderer
 
     void queue( const plGraftEditor &editor )
     {
-        if (_boundaryEditorToDraw != NULL)
+        if (_graftEditorToDraw != NULL)
             std::cerr << "plRenderer queue() error: plGraftEditor already queued to draw, overridding previous \n";
             
         _graftEditorToDraw = &editor;
@@ -115,12 +115,12 @@ namespace plRenderer
     }
 
 
-    void queue( const plCheckerBoard &checkerboard )
+    void queue( const plChessBoard &chessboard )
     {
-        if (_checkerBoardToDraw != NULL)
-            std::cerr << "plRenderer queue() error: plCheckerBoard already queued to draw, overridding previous \n";
+        if (_chessBoardToDraw != NULL)
+            std::cerr << "plRenderer queue() error: plChessBoard already queued to draw, overridding previous \n";
             
-        _checkerBoardToDraw = &checkerboard;
+        _chessBoardToDraw = &chessboard;
     }
 
 
@@ -272,9 +272,9 @@ namespace plRenderer
             _scopeToDraw->draw();
         }
         
-        if (_checkerBoardToDraw != NULL)
+        if (_chessBoardToDraw != NULL)
         {
-            _checkerBoardToDraw->draw();
+            _chessBoardToDraw->draw();
         }
         // DEBUG FOR GRID POINTS
         for (PLuint i=0; i<plAutomaticPlanner::_donorSiteGrids.size(); i++)

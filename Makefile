@@ -10,7 +10,7 @@ CXX = g++
 OBJECTS = $(patsubst %.cpp,objects/%.o,$(SOURCES))
 
 SOURCES = main.cpp PlannerWindow.cpp pl.cpp plAutomaticPlanner.cpp plBoneAndCartilage.cpp plBoundary.cpp \
-          plBoundaryEditor.cpp plCamera.cpp plCheckerBoard.cpp plColourMap.cpp plColourMesh.cpp \
+          plBoundaryEditor.cpp plCamera.cpp plChessBoard.cpp plColourMap.cpp plColourMesh.cpp \
           plCSV.cpp plDefectSite.cpp plDonorSite.cpp plDraw.cpp plDRBTransform.cpp plEditable.cpp \
           plGraft.cpp plGraftEditor.cpp plIGuide.cpp plIGuideSite.cpp plLineMesh.cpp plMath.cpp plMatrix44.cpp     \
 	      plMatrixStack.cpp plMesh.cpp plMeshCutter.cpp plMeshExtruder.cpp plMeshIntersector.cpp plMinimalShader.cpp plModel.cpp plModelSpecific.cpp \
@@ -36,7 +36,6 @@ objects/%.o: %.cpp
 
 clean:
 	rm -f objects/*.o *~ core $(EXE) Makefile.bak
-	rm -f objects/pl/*.o *~ core $(EXE) Makefile.bak
 
 depend:	
 	makedepend -Y -pobjects/ *.h *.cpp
@@ -63,7 +62,7 @@ objects/PlannerWindow.o: plPlannerStage1.h plPlannerStage1Shader.h
 objects/PlannerWindow.o: plPlannerStage2.h plPlannerStage2Shader.h
 objects/PlannerWindow.o: plBoundaryEditor.h plWindow.h plCheckerBoard.h
 objects/PlannerWindow.o: plGraftEditor.h plRenderer.h plTextureMesh.h
-objects/PlannerWindow.o: plTexture.h plScan.h plScanPoint.h plScanVolume.h
+objects/PlannerWindow.o: plTexture.h
 objects/Window.o: pl.h plCommon.h plAutomaticPlanner.h plSeq.h plPlan.h
 objects/Window.o: plString.h plVector3.h plCSV.h plRenderable.h plGraft.h
 objects/Window.o: plEditable.h plTriangle.h plDraw.h plShapeMesh.h plMesh.h
@@ -81,8 +80,7 @@ objects/Window.o: plPlannerStage0Shader.h plPlannerStage1.h
 objects/Window.o: plPlannerStage1Shader.h plPlannerStage2.h
 objects/Window.o: plPlannerStage2Shader.h plBoundaryEditor.h plWindow.h
 objects/Window.o: plCheckerBoard.h plGraftEditor.h plRenderer.h
-objects/Window.o: plTextureMesh.h plTexture.h plScan.h plScanPoint.h
-objects/Window.o: plScanVolume.h
+objects/Window.o: plTextureMesh.h plTexture.h
 objects/pl.o: plCommon.h plAutomaticPlanner.h plSeq.h plPlan.h plString.h
 objects/pl.o: plVector3.h plCSV.h plRenderable.h plGraft.h plEditable.h
 objects/pl.o: plTriangle.h plDraw.h plShapeMesh.h plMesh.h plShader.h
@@ -99,7 +97,7 @@ objects/pl.o: plPlannerStage0Shader.h plPlannerStage1.h
 objects/pl.o: plPlannerStage1Shader.h plPlannerStage2.h
 objects/pl.o: plPlannerStage2Shader.h plBoundaryEditor.h plWindow.h
 objects/pl.o: plCheckerBoard.h plGraftEditor.h plRenderer.h plTextureMesh.h
-objects/pl.o: plTexture.h plScan.h plScanPoint.h plScanVolume.h
+objects/pl.o: plTexture.h
 objects/plArthroscope.o: plCommon.h
 objects/plAutomaticPlanner.o: plCommon.h plSeq.h plPlan.h plString.h
 objects/plAutomaticPlanner.o: plVector3.h plCSV.h plRenderable.h plGraft.h
@@ -433,17 +431,13 @@ objects/plRenderer.o: plTextureMesh.h plTexture.h plAutomaticPlanner.h
 objects/plRenderer.o: plSiteGrid.h plPlannerStage0.h plPlannerStage0Shader.h
 objects/plRenderer.o: plPlannerStage1.h plPlannerStage1Shader.h
 objects/plRenderer.o: plPlannerStage2.h plPlannerStage2Shader.h
-objects/plRenderer.o: plCheckerBoard.h plScan.h plScanPoint.h plScanVolume.h
+objects/plRenderer.o: plCheckerBoard.h
 objects/plRenderingPipeline.o: plCommon.h plVector4.h plString.h plVector3.h
 objects/plRenderingPipeline.o: plMatrixStack.h plMatrix44.h plTriangle.h
 objects/plRenderingPipeline.o: plSeq.h plProjection.h plCamera.h
 objects/plRenderingPipeline.o: plPickingShader.h plMinimalShader.h plShader.h
 objects/plRenderingPipeline.o: plPhongShader.h plTextureShader.h
 objects/plRenderingPipeline.o: plPickingTexture.h
-objects/plScan.o: plScanPoint.h plVector3.h plCommon.h plString.h plSeq.h
-objects/plScan.o: plScanVolume.h
-objects/plScanPoint.o: plVector3.h plCommon.h plString.h plSeq.h
-objects/plScanVolume.o: plVector3.h plCommon.h plString.h plSeq.h
 objects/plSeq.o: plCommon.h
 objects/plShader.o: plCommon.h plSeq.h
 objects/plShapeMesh.o: plCommon.h plMesh.h plVector3.h plString.h
@@ -521,8 +515,7 @@ objects/PlannerWindow.o: plPlannerStage0Shader.h plPlannerStage1.h
 objects/PlannerWindow.o: plPlannerStage1Shader.h plPlannerStage2.h
 objects/PlannerWindow.o: plPlannerStage2Shader.h plBoundaryEditor.h
 objects/PlannerWindow.o: plWindow.h plCheckerBoard.h plGraftEditor.h
-objects/PlannerWindow.o: plRenderer.h plTextureMesh.h plTexture.h plScan.h
-objects/PlannerWindow.o: plScanPoint.h plScanVolume.h
+objects/PlannerWindow.o: plRenderer.h plTextureMesh.h plTexture.h
 objects/Window.o: Window.h pl.h plCommon.h plAutomaticPlanner.h plSeq.h
 objects/Window.o: plPlan.h plString.h plVector3.h plCSV.h plRenderable.h
 objects/Window.o: plGraft.h plEditable.h plTriangle.h plDraw.h plShapeMesh.h
@@ -540,8 +533,7 @@ objects/Window.o: plPlannerStage0Shader.h plPlannerStage1.h
 objects/Window.o: plPlannerStage1Shader.h plPlannerStage2.h
 objects/Window.o: plPlannerStage2Shader.h plBoundaryEditor.h plWindow.h
 objects/Window.o: plCheckerBoard.h plGraftEditor.h plRenderer.h
-objects/Window.o: plTextureMesh.h plTexture.h plScan.h plScanPoint.h
-objects/Window.o: plScanVolume.h
+objects/Window.o: plTextureMesh.h plTexture.h
 objects/main.o: PlannerWindow.h Window.h pl.h plCommon.h plAutomaticPlanner.h
 objects/main.o: plSeq.h plPlan.h plString.h plVector3.h plCSV.h
 objects/main.o: plRenderable.h plGraft.h plEditable.h plTriangle.h plDraw.h
@@ -559,7 +551,7 @@ objects/main.o: plPlannerStage0Shader.h plPlannerStage1.h
 objects/main.o: plPlannerStage1Shader.h plPlannerStage2.h
 objects/main.o: plPlannerStage2Shader.h plBoundaryEditor.h plWindow.h
 objects/main.o: plCheckerBoard.h plGraftEditor.h plRenderer.h plTextureMesh.h
-objects/main.o: plTexture.h plScan.h plScanPoint.h plScanVolume.h
+objects/main.o: plTexture.h
 objects/pl.o: pl.h plCommon.h plAutomaticPlanner.h plSeq.h plPlan.h
 objects/pl.o: plString.h plVector3.h plCSV.h plRenderable.h plGraft.h
 objects/pl.o: plEditable.h plTriangle.h plDraw.h plShapeMesh.h plMesh.h
@@ -576,7 +568,7 @@ objects/pl.o: plPlannerStage0Shader.h plPlannerStage1.h
 objects/pl.o: plPlannerStage1Shader.h plPlannerStage2.h
 objects/pl.o: plPlannerStage2Shader.h plBoundaryEditor.h plWindow.h
 objects/pl.o: plCheckerBoard.h plGraftEditor.h plRenderer.h plTextureMesh.h
-objects/pl.o: plTexture.h plScan.h plScanPoint.h plScanVolume.h
+objects/pl.o: plTexture.h
 objects/plArthroscope.o: plArthroscope.h plCommon.h
 objects/plAutomaticPlanner.o: plAutomaticPlanner.h plCommon.h plSeq.h
 objects/plAutomaticPlanner.o: plPlan.h plString.h plVector3.h plCSV.h
@@ -918,19 +910,15 @@ objects/plRenderer.o: plTextureMesh.h plTexture.h plAutomaticPlanner.h
 objects/plRenderer.o: plSiteGrid.h plPlannerStage0.h plPlannerStage0Shader.h
 objects/plRenderer.o: plPlannerStage1.h plPlannerStage1Shader.h
 objects/plRenderer.o: plPlannerStage2.h plPlannerStage2Shader.h
-objects/plRenderer.o: plCheckerBoard.h plScan.h plScanPoint.h plScanVolume.h
+objects/plRenderer.o: plCheckerBoard.h
 objects/plRenderingPipeline.o: plRenderingPipeline.h plCommon.h plVector4.h
 objects/plRenderingPipeline.o: plString.h plVector3.h plMatrixStack.h
 objects/plRenderingPipeline.o: plMatrix44.h plTriangle.h plSeq.h
 objects/plRenderingPipeline.o: plProjection.h plCamera.h plPickingShader.h
 objects/plRenderingPipeline.o: plMinimalShader.h plShader.h plPhongShader.h
 objects/plRenderingPipeline.o: plTextureShader.h plPickingTexture.h
-objects/plScan.o: plScan.h plScanPoint.h plVector3.h plCommon.h plString.h
-objects/plScan.o: plSeq.h plScanVolume.h
-objects/plScanPoint.o: plScanPoint.h plVector3.h plCommon.h plString.h
-objects/plScanPoint.o: plSeq.h
-objects/plScanVolume.o: plScanVolume.h plVector3.h plCommon.h plString.h
-objects/plScanVolume.o: plSeq.h
+objects/plScanPoint.o: plScanPoint.h
+objects/plScanVolume.o: plScanVolume.h
 objects/plShader.o: plShader.h plCommon.h plSeq.h
 objects/plShapeMesh.o: plShapeMesh.h plCommon.h plMesh.h plVector3.h
 objects/plShapeMesh.o: plString.h plTriangle.h plSeq.h plShader.h
