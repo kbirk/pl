@@ -4,6 +4,14 @@
 #include "plCommon.h"
 #include "plVector3.h"
 
+enum visibilityState
+{
+    PL_NOT_VISIBLE = 0,
+    PL_VISIBLE,
+    PL_TRANSPARENT,
+};
+
+
 class plRenderable
 {
     
@@ -11,14 +19,16 @@ class plRenderable
     
         plRenderable();  
         
-        virtual void   toggleVisibility();
+        virtual void   toggleVisibility();		
 		virtual PLbool isVisible() const;
-		
+		virtual void   saveState();
+		virtual void   loadState();
 		//virtual void   draw() const;
 		
     protected:     
            
         PLbool _isVisible;
+        PLuint _storedVisibilityState;
     
 };
 

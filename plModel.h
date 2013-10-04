@@ -40,6 +40,8 @@ class plModel : public plRenderable
         
         void   toggleVisibility  ();
         void   toggleTransparency();
+        void   saveState();
+        void   loadState();
         PLbool isTransparent     () const { return _isTransparent; }
 
         void draw( const plVector3 &colour ) const;

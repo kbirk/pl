@@ -63,6 +63,9 @@ class plPlan : public plRenderable
         void drawElements() const;
         void drawModels()   const;
 
+        void saveVisibilityState();
+        void loadVisibilityState();
+        
         void clear();
 
     private: 

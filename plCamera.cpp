@@ -45,7 +45,7 @@ plMatrix44 plCamera::getMatrix() const
     return rot * trans;
 }
 
-void plCamera::reset(const plVector3 &point)
+void plCamera::reset( const plVector3 &point )
 {
     plVector3 focus_centre = point;     
     plVector3 separation = position - focus_centre;    
@@ -57,7 +57,7 @@ void plCamera::reset(const plVector3 &point)
 }
 
 
-void plCamera::exportViewParams( std::string filename )
+void plCamera::exportViewParams( const std::string &filename )
 {
     std::ofstream out( filename.c_str() );
 
@@ -74,7 +74,7 @@ void plCamera::exportViewParams( std::string filename )
 }
 
 
-void plCamera::importViewParams( std::string filename )
+void plCamera::importViewParams( const std::string &filename  )
 {
     std::ifstream in( filename.c_str() );
 

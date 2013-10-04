@@ -59,6 +59,8 @@ class plScanVolume //: public plRenderable
     plVector3 coordinatesWtoV(const plVector3& coordsW);
     PLfloat   distanceWusingI(PLuint index1, PLuint index2);
 
+    PLbool    draw() const;
+
     plScanVolume& operator=(const plScanVolume&);
 };
 

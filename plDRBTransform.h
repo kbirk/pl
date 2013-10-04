@@ -42,8 +42,7 @@ class plDRBTransform
         double calibangle,  calibaxisx,  calibaxisy, calibaxisz;
         double calibscalex, calibscaley, calibscalez; // generally these will all be the same value
 
-        plDRBTransform();
-        
+        plDRBTransform();       
         plDRBTransform( const plMatrix44 );
         plDRBTransform( const plVector3&, const plVector3&, double ); // DRB Transformation
         plDRBTransform( const std::string&, MarkerType = TRANSLATION ); // File Transformation - string is the file, MarkerType specifies how much to read

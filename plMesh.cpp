@@ -3,7 +3,6 @@
 plMesh::plMesh() 
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
-    //std::cout << "EMPTY CONSTRUCTOR\n";
 }
 
 
@@ -11,7 +10,7 @@ plMesh::plMesh(const plSeq<plTriangle> &triangles)
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
 	// convert triangles to interleaved
-	triangleToInterleaved(triangles);
+	_triangleToInterleaved(triangles);
 }
 
 
@@ -55,7 +54,7 @@ void plMesh::_copyMesh( const plMesh &mesh )
     memcpy( &vertices[0].x, vertexBuffer, mesh._numBytes );
     glUnmapBuffer(GL_ARRAY_BUFFER);
     
-    glBindBuffer( GL_ARRAY_BUFFER, 0 ); 
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
     
     // copy index data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh._vertexBufferIndices );
@@ -76,12 +75,9 @@ void plMesh::_copyMesh( const plMesh &mesh )
 
 void plMesh::_destroy()
 {     
-    if ( _vertexBufferObject )      
-        glDeleteBuffers     (1, &_vertexBufferObject);  // delete buffer objects
-    if ( _vertexBufferIndices )      
-        glDeleteBuffers     (1, &_vertexBufferIndices); // delete indices
-	if ( _vertexArrayObject )      
-	    glDeleteVertexArrays(1, &_vertexArrayObject);	// delete VAO		
+    glDeleteBuffers     (1, &_vertexBufferObject);  // delete buffer objects
+    glDeleteBuffers     (1, &_vertexBufferIndices); // delete indices  
+	glDeleteVertexArrays(1, &_vertexArrayObject);	// delete VAO		
 	
 	_vertexBufferObject  = 0;
     _vertexBufferIndices = 0;
@@ -89,7 +85,7 @@ void plMesh::_destroy()
 }
 
 
-void plMesh::triangleToInterleaved(const plSeq<plTriangle> &triangles)
+void plMesh::_triangleToInterleaved(const plSeq<plTriangle> &triangles)
 {			
 	// convert to interleaved format
 	plSeq<plVector3> vertices( triangles.size() * 3 * 2 );
@@ -158,7 +154,7 @@ void plMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STREAM_DRAW);
      
 	// unbind the vertex array object
-	glBindVertexArray(0); 			
+	glBindVertexArray(0);
 }
 
 

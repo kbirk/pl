@@ -1,15 +1,15 @@
-#include "plCheckerBoard.h"
+#include "plChessBoard.h"
 
-plCheckerBoard::plCheckerBoard( PLfloat blocksize ) 
+plChessBoard::plChessBoard( PLfloat blocksize )
 {           
     _generate( blocksize );
     _isTransparent = true;
     _isVisible     = true;
-    _readCheckerBoardCalib();
+    _readChessBoardCalib();
 }
 
 
-void plCheckerBoard::_generate( PLfloat blocksize )
+void plChessBoard::_generate( PLfloat blocksize )
 {  
     
     PLint  width_blocks   = 8;
@@ -51,6 +51,7 @@ void plCheckerBoard::_generate( PLfloat blocksize )
             indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
             indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 );
             
+        /* Commented out other faces of the 3D chessboard.
             base = vertices.size()/3;
             
             // back side 
@@ -128,7 +129,7 @@ void plCheckerBoard::_generate( PLfloat blocksize )
                 indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
                 indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 ); 
             }
-            
+        */
         }
     }
     
@@ -136,19 +137,19 @@ void plCheckerBoard::_generate( PLfloat blocksize )
 }
 
 
-void plCheckerBoard::updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL )
+void plChessBoard::updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL )
 {
-    plVector3 checkerOriginTrans = currentFemurDRBToWorld.applyInverseTransform( _calibOrigin );
-    checkerOriginTrans = femurDRBToFemurSTL.applyTransform( checkerOriginTrans );
+    plVector3 chessOriginTrans = currentFemurDRBToWorld.applyInverseTransform( _calibOrigin );
+    chessOriginTrans = femurDRBToFemurSTL.applyTransform( chessOriginTrans );
 
-    plVector3 checkerXTrans  = currentFemurDRBToWorld.applyInverseTransform( _calibXAxisPoint );
-    checkerXTrans  = femurDRBToFemurSTL.applyTransform(checkerXTrans);
+    plVector3 chessXTrans  = currentFemurDRBToWorld.applyInverseTransform( _calibXAxisPoint );
+    chessXTrans  = femurDRBToFemurSTL.applyTransform(chessXTrans);
 
-    plVector3 checkerYTrans  = currentFemurDRBToWorld.applyInverseTransform( _calibYAxisPoint );
-    checkerYTrans  = femurDRBToFemurSTL.applyTransform(checkerYTrans);
+    plVector3 chessYTrans  = currentFemurDRBToWorld.applyInverseTransform( _calibYAxisPoint );
+    chessYTrans  = femurDRBToFemurSTL.applyTransform(chessYTrans);
 
-    plVector3 checkerXAxis  = ( checkerXTrans - checkerOriginTrans ).normalize();
-    plVector3 checkerYAxis  = ( checkerYTrans - checkerOriginTrans ).normalize();
+    plVector3 chessXAxis  = ( chessXTrans - chessOriginTrans ).normalize();
+    plVector3 chessYAxis  = ( chessYTrans - chessOriginTrans ).normalize();
 
     /*
         the above axes aren't perfectly perpindicular (as they're generated from
@@ -156,25 +157,30 @@ void plCheckerBoard::updateTransform( const plDRBTransform &currentFemurDRBToWor
             zAxis = xAxis x yAxis. 
             yAxis(fixed) = zAxis x xAxis
     */
-    checkerYAxis = ( (checkerXAxis ^ checkerYAxis) ^ checkerXAxis );
+    chessYAxis = ( (chessXAxis ^ chessYAxis) ^ chessXAxis );
     
-    _transform.set( checkerXAxis, checkerYAxis, checkerOriginTrans );
+    _transform.set( chessXAxis, chessYAxis, chessOriginTrans );
 }
         
 
-void plCheckerBoard::draw() const
+void plChessBoard::draw() const
 {      
     if ( !_isVisible )
         return;
    
     plModelStack::push( _transform.matrix() );
     {
-        if ( _isTransparent )
-            plColourStack::load( PL_COLOUR_MESH_TRANSPARENT_COLOUR ); 
-        else
-            plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR ); 
-            
+        if ( _isTransparent ) {
+            plColourStack::load( PL_COLOUR_MESH_TRANSPARENT_COLOUR );
+        }
+        else {
+            plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR );
+        }
+
+
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
         _mesh.draw();
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     }
     plModelStack::pop();
     
@@ -182,7 +188,7 @@ void plCheckerBoard::draw() const
 }
 
 
-void plCheckerBoard::toggleVisibility()
+void plChessBoard::toggleVisibility()
 {
     if (_isTransparent) 
     {
@@ -202,7 +208,7 @@ void plCheckerBoard::toggleVisibility()
 }
 
 
-void plCheckerBoard::toggleTransparency()
+void plChessBoard::toggleTransparency()
 {
     if (_isTransparent)
     {
@@ -217,16 +223,16 @@ void plCheckerBoard::toggleTransparency()
 }
 
 
-PLbool plCheckerBoard::_readCheckerBoardCalib()
+PLbool plChessBoard::_readChessBoardCalib()
 {
     // This actually reads in three points, the origin and a step along each axis
-    const char *checkerBoardCalibFile = "data/registration/checkerBoard";
+    const char *chessBoardCalibFile = "data/registration/chessBoard";
     
-    std::ifstream infile ( checkerBoardCalibFile );
+    std::ifstream infile ( chessBoardCalibFile );
     
     if (!infile.good())
     {
-        std::cerr << "plCheckerBoard::readCheckerBoardCalib() error: cannot open file, " << strerror(errno) << std::endl;
+        std::cerr << "plChessBoard::readChessBoardCalib() error: cannot open file, " << strerror(errno) << std::endl;
         return false;
     }
     
@@ -234,23 +240,23 @@ PLbool plCheckerBoard::_readCheckerBoardCalib()
     std::getline(infile, line);
     if ( sscanf( line.c_str(), "%f %f %f", &_calibOrigin.x, &_calibOrigin.y, &_calibOrigin.z ) != 3 )
     {
-        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
+        std::cerr << "Invalid base calibration file: " << chessBoardCalibFile << std::endl;
         return false;
     }
     std::getline(infile, line);
     if ( sscanf( line.c_str(), "%f %f %f", &_calibXAxisPoint.x, &_calibXAxisPoint.y, &_calibXAxisPoint.z ) != 3 )
     {
-        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
+        std::cerr << "Invalid base calibration file: " << chessBoardCalibFile << std::endl;
         return false;
     }
     std::getline(infile, line);
     if ( sscanf( line.c_str(), "%f %f %f", &_calibYAxisPoint.x, &_calibYAxisPoint.y, &_calibYAxisPoint.z ) != 3 )
     {
-        std::cerr << "Invalid base calibration file: " << checkerBoardCalibFile << std::endl;
+        std::cerr << "Invalid base calibration file: " << chessBoardCalibFile << std::endl;
         return false;
     }
 
-    std::cout << "Successfully read from: " << checkerBoardCalibFile << std::endl;
+    std::cout << "Successfully read from: " << chessBoardCalibFile << std::endl;
     return true;
 
 }

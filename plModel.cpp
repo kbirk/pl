@@ -188,6 +188,49 @@ void plModel::toggleTransparency()
 }
 
 
+void plModel::saveState()
+{
+    if ( _isTransparent )
+    {
+        _storedVisibilityState = PL_TRANSPARENT;
+    }
+    else if ( _isVisible )
+    {
+        _storedVisibilityState = PL_VISIBLE;
+    }
+    else
+    {
+        _storedVisibilityState = PL_NOT_VISIBLE;
+    }
+}
+
+
+void plModel::loadState()
+{
+    switch ( _storedVisibilityState )
+    {
+    
+        case PL_TRANSPARENT:  
+        
+            _isVisible     = true;
+            _isTransparent = true;
+            break;
+           
+        case PL_VISIBLE:  
+        
+            _isVisible     = true;
+            _isTransparent = false;
+            break;
+            
+        case PL_NOT_VISIBLE:  
+        
+            _isVisible     = false;
+            _isTransparent = false;
+            break;       
+    }
+}
+
+
 plIntersection plModel::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
 {
     // intersect the octree

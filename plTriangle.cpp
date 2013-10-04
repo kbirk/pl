@@ -85,6 +85,21 @@ void plTriangle::_calcRadius()
 }
 
 
+bool plTriangle::isInside( const plVector3 &point ) const
+{
+    // Compute barycentric coords
+    PLfloat totalAreaDiv = 1 / ( ((_points[1]-_points[0]) ^ (_points[2]-_points[0])) * _normal);
+    PLfloat u = (((_points[2]-_points[1]) ^ (point - _points[1])) * _normal) * totalAreaDiv;
+    PLfloat v = (((_points[0]-_points[2]) ^ (point - _points[2])) * _normal) * totalAreaDiv;
+
+    // Reject if outside triangle
+    if (u < 0 || v < 0 || u + v > 1)
+        return false; 
+        
+    return true;     
+}
+
+
 plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVector3 &rayDir, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 {
     // Compute ray/plane intersection
@@ -102,6 +117,15 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
 
     plVector3 intPoint = rayStart + t * rayDir;
 
+    
+    if ( !isInside( intPoint ) )
+    {
+       return plIntersection(false);     
+    }
+    return plIntersection( intPoint, _normal, t );
+    
+    
+    /*
     // Compute barycentric coords
     PLfloat totalAreaDiv = 1 / ( ((_points[1]-_points[0]) ^ (_points[2]-_points[0])) * _normal);
     PLfloat u = (((_points[2]-_points[1]) ^ (intPoint - _points[1])) * _normal) * totalAreaDiv;
@@ -110,8 +134,9 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
     // Reject if outside triangle
     if (u < 0 || v < 0 || u + v > 1)
         return plIntersection(false); 
-
+    
     return plIntersection( intPoint, _normal, t );
+    */
 }
 
 
@@ -134,6 +159,7 @@ plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint ) const
     return plVector3(u,v,w);
 }
 
+
 PLbool plTriangle::contains( const plVector3& pt, const PLfloat& epsilon ) const 
 {
     if (epsilon)
@@ -147,10 +173,12 @@ PLbool plTriangle::contains( const plVector3& pt, const PLfloat& epsilon ) const
     return false;
 }
 
+
 PLfloat plTriangle::getArea() const
 {
     return 0.5f * ( (_points[1] - _points[0]) ^ (_points[2] - _points[0]) ).length(); 
 }
+
 
 PLbool plTriangle::operator== ( const plTriangle& other ) const
 {
@@ -159,6 +187,7 @@ PLbool plTriangle::operator== ( const plTriangle& other ) const
             _points[2] == other._points[2] &&
             _normal    == other._normal);
 }
+
 
 // I/O operators
 std::ostream& operator << ( std::ostream& stream, const plTriangle &p )

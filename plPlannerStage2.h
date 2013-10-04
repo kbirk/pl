@@ -6,53 +6,46 @@
 #include "plVector4.h"
 
 #include "plSiteGrid.h"
-#include "plPlannerStage0.h"
 #include "plPlannerStage1.h"
 #include "plPlannerStage2Shader.h"
 
-#define PL_STAGE2_GROUP_SIZE                 256
-#define PL_STAGE2_NUM_GROUPS                 1
-#define PL_STAGE2_INVOCATIONS                PL_STAGE2_NUM_GROUPS*PL_STAGE2_GROUP_SIZE
+#define PL_STAGE2_GROUP_SIZE                   1024
 
-#define PL_STAGE2_ITERATIONS                 16
+#define PL_STAGE2_NUM_DIRECTIONS               32
 
-class plDonorState
+class plRmsSet
 {
     public:
-     
-        plSeq<plVector4>  graftPositions;
-        plSeq<plVector4>  graftNormals;
-        plSeq<plVector4>  graftZDirections;
     
-        float             totalRms;
-    
-        plDonorState();
+        plVector4     direction;
+        plSeq<float>  rms;
         
-        ~plDonorState();
-
-        void update(); 
-        
-    private:
-    
-        PLuint _donorPositionsBufferID;
-        PLuint _donorNormalsBufferID;
-        PLuint _donorZDirectionsBufferID;       
-        PLuint _totalRMSBufferID; 
-        
-        void _createBuffers ();
-        void _destroyBuffers();
-        
-        void _bindBuffers  ();
-        void _unbindBuffers();
-          
-        PLint  _getLowestRmsIndex(); 
-            
+        plRmsSet() {};        
+        plRmsSet( PLuint size, const plVector4 &dir ) 
+            : rms( size, -1.0f ), direction( dir )
+        {}
 };
 
+class plRmsData
+{
+    public:
+    
+        plSeq<plRmsSet> sets;
+
+        plRmsData() {}  
+        
+        void update( PLuint bufferSize, PLuint rmsBuffer, const plVector4 &dir );
+
+        PLuint getValuesSSBO()     const;
+        PLuint getDirectionsSSBO() const;
+};
 
 namespace plPlannerStage2
 {
-    plDonorState run( const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plRmsData &rmsInput );      
+    extern plSeq<plVector3> DEBUG;
+    
+    void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plCapIndices &capIndices );
+      
 }
 
 

@@ -11,43 +11,31 @@
 
 #define PL_STAGE1_GROUP_SIZE                   1024
 
-#define PL_STAGE1_NUM_DIRECTIONS               32
-
 #define PL_STAGE1_MAX_DONOR_SITES              5
 #define PL_STAGE1_MAX_CAP_TRIANGLES            1024
 
 
-class plRmsSet
+class plCapIndices
 {
     public:
     
-        plVector4     direction;
-        plSeq<float>  rms;
+        plSeq<PLuint>  donorIndices;
+        plSeq<PLuint>  defectIndices;
         
-        plRmsSet() {};        
-        plRmsSet( PLuint size, const plVector4 &dir ) 
-            : rms( size, -1.0f ), direction( dir )
-        {}
+        plCapIndices() {};   
+        
+        void update( PLuint defectBuffer, PLuint defectSize, PLuint donorBuffer, PLuint donorSize );
+     
+        PLuint getDefectSSBO() const;
+        PLuint getDonorSSBO()  const;
+     
 };
 
-class plRmsData
-{
-    public:
-    
-        plSeq<plRmsSet> sets;
-
-        plRmsData() {}  
-        
-        void update( PLuint bufferSize, PLuint rmsBuffer, const plVector4 &dir );
-
-        PLuint getValuesSSBO()     const;
-        PLuint getDirectionsSSBO() const;
-};
 
 namespace plPlannerStage1
 {
-
-    void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState );
+    extern plMesh DEBUG;
+    void run( plCapIndices &capData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState );
       
 }
 

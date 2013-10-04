@@ -17,9 +17,11 @@
 #include "plOctree.h"
 #include "plTextureMesh.h"
 #include "plAutomaticPlanner.h"
-#include "plCheckerBoard.h"
+#include "plChessBoard.h"
 #include "plScan.h"
 
+#include "plPlannerStage1.h"
+#include "plPlannerStage2.h"
 /*
 class plUniform
 {
@@ -68,7 +70,7 @@ namespace plRenderer
     void queue ( const plBoundaryEditor &editor );
     void queue ( const plTrackedObject  &object );
     void queue ( const plTextureMesh    &arthroTexture );
-    void queue ( const plCheckerBoard   &checkerboard );
+    void queue ( const plChessBoard   &chessboard );
     void queue ( const plScan           &scan );
     
 }

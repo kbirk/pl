@@ -22,9 +22,6 @@ class plBoundary : public plRenderable,
  
         PLuint size() const;
 
-        const plSeq<plVector3> &points () const { return _points;  } 
-        const plSeq<plVector3> &normals() const { return _normals; }
-        
         const plVector3        &points ( PLuint index ) const { return _points[index];  }
         const plVector3        &normals( PLuint index ) const { return _normals[index]; }
 

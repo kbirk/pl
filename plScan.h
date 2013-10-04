@@ -6,16 +6,18 @@
 
 class plScan
 {
-  public:
+  private:
   // attributes
-    plSeq<plScanPointData> points;
-    plScanField*           field;
+    plSeq<plScanPointData> _points;
+    plScanField*           _field;
 
+  public:
   // methods
     // constructors
     plScan();
     plScan( const plScanPointData& point, const PLfloat& resolutionW );
     plScan( const plString& filename    , const PLfloat& resolutionW );
+    ~plScan();
 
     // controlling the volume and points
     PLbool addPoint( const plScanPointData& );
@@ -23,7 +25,9 @@ class plScan
     PLbool clearAll();
 
     // output/visualization
-    PLbool printField();
+    PLbool printPoints() const;
+    PLbool printField() const;
+    PLbool draw() const;
 };
 
 #endif // PLSCAN_H

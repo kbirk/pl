@@ -361,7 +361,7 @@ void plPlan::exportFile( const plString &filename )
                 << "\trecipient_model_id,  " << _grafts[i]->recipient().modelID() << std::endl
                 << "\trecipient_transform, " << _grafts[i]->recipient().transform << std::endl
                 << "\tharvest_model_id,    " << _grafts[i]->harvest().modelID()   << std::endl
-                << "\tharvest_transform,   " << _grafts[i]->recipient().transform << std::endl
+                << "\tharvest_transform,   " << _grafts[i]->harvest().transform << std::endl
                 << "\tradius,              " << _grafts[i]->radius()              << std::endl
                 << "\tcartilage_thickness, " << _grafts[i]->cartilageThickness()  << std::endl
                 << "\tlength,              " << _grafts[i]->length()              << std::endl               
@@ -405,13 +405,77 @@ void plPlan::exportFile( const plString &filename )
 }
 
 
+void plPlan::saveVisibilityState()
+{
+    for ( PLuint i = 0; i < _models.size();      i++ ) 
+    { 
+        _models[i]->bone.saveState();  
+        _models[i]->cartilage.saveState();
+    }
+    
+    for ( PLuint i = 0; i < _defectSites.size(); i++ ) 
+    { 
+        _defectSites[i]->boundary.saveState(); 
+        _defectSites[i]->spline.saveState();
+    }
+        
+    for ( PLuint i = 0; i < _donorSites.size();  i++ ) 
+    { 
+        _donorSites[i]->boundary.saveState(); 
+    }
+
+    for ( PLuint i = 0; i < _grafts.size();      i++ ) 
+    {
+        _grafts[i]->saveState();
+    }
+
+    for ( PLuint i = 0; i < _iGuideSites.size(); i++ )
+    {
+        _iGuideSites[i]->boundary.saveState(); 
+    } 
+  
+}
+
+
+void plPlan::loadVisibilityState()
+{
+    for ( PLuint i = 0; i < _models.size();      i++ ) 
+    { 
+        _models[i]->bone.loadState();  
+        _models[i]->cartilage.loadState();
+    }
+    
+    for ( PLuint i = 0; i < _defectSites.size(); i++ ) 
+    { 
+        _defectSites[i]->boundary.loadState(); 
+        _defectSites[i]->spline.loadState();
+    }
+        
+    for ( PLuint i = 0; i < _donorSites.size();  i++ ) 
+    { 
+        _donorSites[i]->boundary.loadState(); 
+    }
+
+    for ( PLuint i = 0; i < _grafts.size();      i++ ) 
+    {
+        _grafts[i]->loadState();
+    }
+
+    for ( PLuint i = 0; i < _iGuideSites.size(); i++ )
+    {
+        _iGuideSites[i]->boundary.loadState(); 
+    } 
+  
+}
+
+
 void plPlan::clear()
 {
-    for ( PLuint i = 0; i < _defectSites.size(); i++) delete _defectSites[i];
-    for ( PLuint i = 0; i < _donorSites.size();  i++) delete _donorSites[i];
-    for ( PLuint i = 0; i < _grafts.size();      i++) delete _grafts[i];
-    for ( PLuint i = 0; i < _iGuideSites.size(); i++) delete _iGuideSites[i];
-    for ( PLuint i = 0; i < _iGuides.size();     i++) delete _iGuides[i];
+    for ( PLuint i = 0; i < _defectSites.size(); i++ ) delete _defectSites[i];
+    for ( PLuint i = 0; i < _donorSites.size();  i++ ) delete _donorSites[i];
+    for ( PLuint i = 0; i < _grafts.size();      i++ ) delete _grafts[i];
+    for ( PLuint i = 0; i < _iGuideSites.size(); i++ ) delete _iGuideSites[i];
+    for ( PLuint i = 0; i < _iGuides.size();     i++ ) delete _iGuides[i];
     _defectSites.clear();
     _donorSites.clear();
     _iGuideSites.clear();
