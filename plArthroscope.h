@@ -59,9 +59,9 @@ class plArthroscope
 
         // Variables for circle tracking and undistortion function
         int myCount;
-        std::deque<cv::Point> mydeque;
-        std::vector<double> weights;
-        cv::Mat frameMatrix;
+//        std::deque<cv::Point> mydeque;
+//        std::vector<double> weights;
+//        cv::Mat frameMatrix;
         double xCenter, yCenter;
         int previousRadius;
         int previousRectangleLeftptX, previousRectangleLeftptY, previousRectangleRightptX, previousRectangleRightptY;
