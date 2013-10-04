@@ -40,8 +40,6 @@ class plArthroscope
         void updateImage( PLuint imageManipulation );
         void callCircle();
         
-        void SetTexture();
-        
     private:
     
         CvCapture *capture;

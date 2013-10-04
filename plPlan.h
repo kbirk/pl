@@ -63,6 +63,7 @@ class plPlan : public plRenderable
         void drawElements() const;
         void drawModels()   const;
 
+        void defaultCameraVisibilityState();
         void saveVisibilityState();
         void loadVisibilityState();
         
