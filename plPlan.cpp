@@ -416,21 +416,13 @@ void plPlan::defaultCameraVisibilityState()
 
     for ( PLuint i = 0; i < _defectSites.size(); i++ )
     {
-        if ( _defectSites[i]->boundary.isVisible())
-            _defectSites[i]->boundary.toggleVisibility();
-        if ( _defectSites[i]->spline.isVisible())
-            _defectSites[i]->spline.toggleVisibility();
+        _defectSites[i]->boundary.setInvisible();
+        _defectSites[i]->spline.setInvisible();
     }
 
     for ( PLuint i = 0; i < _donorSites.size();  i++ )
     {
-        if ( _donorSites[i]->boundary.isVisible())
-            _donorSites[i]->boundary.toggleVisibility();
-    }
-
-    for ( PLuint i = 0; i < _grafts.size();      i++ )
-    {
-        _grafts[i]->saveState();
+        _donorSites[i]->boundary.setInvisible();
     }
 
     for ( PLuint i = 0; i < _iGuideSites.size(); i++ )

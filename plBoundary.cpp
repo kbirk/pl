@@ -37,6 +37,53 @@ void plBoundary::toggleVisibility()
     }
 }
 
+void plBoundary::setInvisible()
+{
+    _showWalls = false;
+    _isVisible = false;
+}
+
+void plBoundary::saveState()
+{
+    if (_isVisible && _showWalls)
+    {
+        _storedVisibilityState = PL_VISIBLE;
+    }
+    else if ( _isVisible )
+    {
+        _storedVisibilityState = PL_TRANSPARENT;
+    }
+    else
+    {
+        _storedVisibilityState = PL_NOT_VISIBLE;
+    }
+}
+
+
+void plBoundary::loadState()
+{
+    switch ( _storedVisibilityState )
+    {
+
+        case PL_VISIBLE:
+
+            _isVisible     = true;
+            _showWalls = true;
+            break;
+
+        case PL_TRANSPARENT:
+
+            _isVisible     = true;
+            _showWalls = false;
+            break;
+
+        case PL_NOT_VISIBLE:
+
+            _isVisible     = false;
+            _showWalls = false;
+            break;
+    }
+}
 
 plVector3 plBoundary::getAverageNormal() const
 {
