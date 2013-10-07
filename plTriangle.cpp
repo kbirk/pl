@@ -80,8 +80,8 @@ void plTriangle::_recalculate()
 void plTriangle::_calcRadius()
 {
     _radius = PL_MAX_OF_3( (_points[0] - _centroid).length(),
-                          (_points[1] - _centroid).length(),
-                          (_points[2] - _centroid).length() );
+                           (_points[1] - _centroid).length(),
+                           (_points[2] - _centroid).length() );
 }
 
 
@@ -117,26 +117,12 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
 
     plVector3 intPoint = rayStart + t * rayDir;
 
-    
+    // check if point is inside the triangle  
     if ( !isInside( intPoint ) )
     {
        return plIntersection(false);     
     }
     return plIntersection( intPoint, _normal, t );
-    
-    
-    /*
-    // Compute barycentric coords
-    PLfloat totalAreaDiv = 1 / ( ((_points[1]-_points[0]) ^ (_points[2]-_points[0])) * _normal);
-    PLfloat u = (((_points[2]-_points[1]) ^ (intPoint - _points[1])) * _normal) * totalAreaDiv;
-    PLfloat v = (((_points[0]-_points[2]) ^ (intPoint - _points[2])) * _normal) * totalAreaDiv;
-
-    // Reject if outside triangle
-    if (u < 0 || v < 0 || u + v > 1)
-        return plIntersection(false); 
-    
-    return plIntersection( intPoint, _normal, t );
-    */
 }
 
 
@@ -275,7 +261,7 @@ namespace plSTL
             
             // get number of faces
             PLuint numTriangles;
-            infile.read( reinterpret_cast<PLchar*>( &numTriangles ), sizeof(PLuint));
+            infile.read( reinterpret_cast<PLchar*>( &numTriangles ), sizeof(PLuint) );
             triangles.reserve( numTriangles );
 
             // Read the triangles

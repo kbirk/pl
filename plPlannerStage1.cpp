@@ -53,18 +53,16 @@ namespace plPlannerStage1
         PLuint totalGridPoints = 0;
         plSeq<PLuint> donorGridSizes;
         plSeq<PLuint> donorMeshSizes;       
-        //plSeq<PLuint> donorPerimSizes;
         plSeq<PLuint> donorByteOffset;
         for (PLuint i=0; i < donorSites.size(); i++)
         {
             totalGridPoints +=  donorSites[i].gridSize();
             donorGridSizes.add  ( donorSites[i].gridSize()  );
             donorMeshSizes.add  ( donorSites[i].meshSize()  );           
-            //donorPerimSizes.add ( donorSites[i].perimSize() );
             if ( i == 0)
                 donorByteOffset.add ( 0 );
             else
-                donorByteOffset.add ( donorSites[i-1].gridSize()*2 + donorSites[i-1].meshSize()*4 ); //+ donorSites[i-1].perimSize()*2 );
+                donorByteOffset.add ( donorSites[i-1].gridSize()*2 + donorSites[i-1].meshSize()*4 );
         }
 
         const PLuint CAP_INDICES_BUFFER_SIZE = totalGridPoints*PL_MAX_CAP_TRIANGLES;

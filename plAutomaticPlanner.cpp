@@ -76,8 +76,7 @@ namespace plAutomaticPlanner
 
         for ( PLuint i = 0; i < plan.donorSites().size(); i++)
         {    
-            std::cout << "\tCalculating donor site grid " << i << " \n";
-            
+            std::cout << "\tCalculating donor site grid " << i << " \n";            
             if ( !_generateSite( _donorSiteGrids, 
                                  plan.donorSites(i).model().combined.triangles(), 
                                  plan.donorSites(i).boundary,

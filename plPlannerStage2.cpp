@@ -56,8 +56,7 @@ namespace plPlannerStage2
     plSeq<plVector3> DEBUG;
 
     void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plCapIndices &capIndices )
-    {
-        
+    {  
         // compile / link stage 1 shader
         plPlannerStage2Shader stage2Shader("./shaders/plannerStage2.comp");
         stage2Shader.bind(); 
@@ -120,8 +119,7 @@ namespace plPlannerStage2
                                       donorByteOffset );
                 
         float da = (2.0f * PL_PI) / (float)(PL_STAGE2_NUM_DIRECTIONS);  
-          
-          
+    
         plSeq<plVector3> lowestPosition ( defectState.graftCount, plVector3( -1, -1, -1 ) );
         plSeq<plVector4> lowestDirection( defectState.graftCount, plVector4( -1, -1, -1, -1 ) );        
         plSeq<PLuint>    lowestIndex    ( defectState.graftCount, -1 ); 

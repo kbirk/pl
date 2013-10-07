@@ -31,7 +31,7 @@ namespace plMath
         plVector3 edge1Direction = edge1Point2 - edge1Point1;
         plVector3 edge2Direction = edge2Point2 - edge2Point1;
         PLfloat t1, t2;
-        if (!intersectTwoLines(edge1Point1,edge2Point1,edge1Direction,edge2Direction,t1,t2))
+        if (!intersectTwoLines(edge1Point1, edge2Point1, edge1Direction, edge2Direction, t1,t2))
             return false;
 
         if (t1 < 0.f)
@@ -48,7 +48,6 @@ namespace plMath
         distanceBetweenLines = (closestPointEdge1 - closestPointEdge2).length();
 
         return true;
-
     }
     
 

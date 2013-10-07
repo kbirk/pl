@@ -27,8 +27,7 @@ void plAnnealingGroup::_createBuffers()
     _graftNormalsBufferID   = createSSBO( PL_MAX_GRAFTS_PER_SOLUTION*PL_STAGE0_INVOCATIONS, plVector4(-1,-1,-1,-1) );
     _graftRadiiBufferID     = createSSBO( PL_MAX_GRAFTS_PER_SOLUTION*PL_STAGE0_INVOCATIONS, -1.0f );
     _graftCountsBufferID    = createSSBO( PL_STAGE0_INVOCATIONS, -1 );
-    
-        
+           
     PLuint bufferSize =  PL_STAGE0_NUM_GROUPS * sizeof(PLfloat) +                                   // energies
                          PL_STAGE0_NUM_GROUPS * sizeof(PLuint) +                                    // counts
                          PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION * sizeof(plVector4)*2 +    // positions, normals
@@ -244,7 +243,8 @@ namespace plPlannerStage0
         stage0Shader.setSiteUniforms( site.meshSize(),  // set defect site uniforms 
                                       site.area(), 
                                       site.gridSize(), 
-                                      site.perimSize() ); 
+                                      site.perimSize(),
+                                      site.normal() ); 
          
         // generate and bind site and temporary buffers                              
         PLuint siteDataBufferID             = site.getFullSSBO();
@@ -263,7 +263,9 @@ namespace plPlannerStage0
             stage0Shader.setLocalLoadUniform  ( 0 );         
             stage0Shader.setTemperatureUniform( states.temperature ); 
 
-            for ( PLint i=PL_STAGE0_ITERATIONS; i>=0; i-- )
+            PLuint its = PLuint(PL_STAGE0_ITERATIONS * states.temperature ) + 1;
+
+            for ( PLint i=its; i>=0; i-- )
             {                   
                 // call compute shader with 1D workgrouping
                 glDispatchCompute( PL_STAGE0_NUM_GROUPS, 1, 1 );

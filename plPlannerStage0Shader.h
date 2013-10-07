@@ -20,7 +20,8 @@ class plPlannerStage0Shader : public plShader
         void setSiteUniforms     ( PLuint  meshSize, 
                                    PLfloat meshArea, 
                                    PLuint  gridSize,
-                                   PLuint  perimSize ) const;
+                                   PLuint  perimSize,  
+                                   const plVector4 &siteNormal ) const;
          
         void setTemperatureUniform( PLfloat temp ) const;        
         void setLocalLoadUniform   ( PLuint load ) const;
@@ -31,6 +32,7 @@ class plPlannerStage0Shader : public plShader
         PLuint _siteMeshAreaID;
         PLuint _siteGridSizeID;
         PLuint _sitePerimSizeID;
+        PLuint _siteNormalID;
                 
         PLuint _temperatureID;    
 

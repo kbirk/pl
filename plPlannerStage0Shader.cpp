@@ -12,6 +12,7 @@ void plPlannerStage0Shader::getUniformLocations()
     _siteMeshAreaID   = glGetUniformLocation(_shaderProgramID, "uSiteMeshArea");
     _siteGridSizeID   = glGetUniformLocation(_shaderProgramID, "uSiteGridSize");
     _sitePerimSizeID  = glGetUniformLocation(_shaderProgramID, "uSitePerimSize");
+    _siteNormalID     = glGetUniformLocation(_shaderProgramID, "uSiteNormal");
     
     _temperatureID    = glGetUniformLocation(_shaderProgramID, "uStateTemperature");   
     _loadLocalID      = glGetUniformLocation(_shaderProgramID, "uLoadLocal");
@@ -23,12 +24,14 @@ void plPlannerStage0Shader::getUniformLocations()
 void plPlannerStage0Shader::setSiteUniforms( PLuint  meshSize, 
                                              PLfloat meshArea, 
                                              PLuint  gridSize,
-                                             PLuint  perimSize ) const
+                                             PLuint  perimSize,  
+                                             const plVector4 &siteNormal ) const
 {
     glUniform1ui  ( _siteMeshSizeID,  meshSize );    
     glUniform1f   ( _siteMeshAreaID,  meshArea ); 
     glUniform1ui  ( _siteGridSizeID,  gridSize ); 
     glUniform1ui  ( _sitePerimSizeID, perimSize);
+    glUniform4fv  ( _siteNormalID,  1, &siteNormal.x);  
 }                                                  
 
 

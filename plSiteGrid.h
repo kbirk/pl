@@ -39,7 +39,7 @@ class plSiteGrid
         PLuint     perimSize()  const { return _perimeter.size()/2; }
         PLuint     dataSize()   const { return _points.size()*2 + _triangles.size()*4 + _perimeter.size(); }
         PLfloat    area()       const { return _area; } 
-        plVector3  normal()     const { return _normal; };
+        plVector4  normal()    const { return plVector4(_normal, 1.0); };
         
         PLuint getFullSSBO() const;
         PLuint getGridSSBO() const;
