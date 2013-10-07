@@ -5,7 +5,7 @@ plMeshAlgorithm::plMeshAlgorithm()
     _epsilon = PL_EPSILON;
 }
 
-PLbool plMeshAlgorithm::_findVert( const plVector3& vertex, PLint &index, PLuint verbose, PLuint depth )
+const plMeshConnectivityDataVert* plMeshAlgorithm::_findVert( const plVector3& vertex, PLuint verbose, PLuint depth )
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
@@ -13,42 +13,43 @@ PLbool plMeshAlgorithm::_findVert( const plVector3& vertex, PLint &index, PLuint
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findVert()" << std::endl;
     }
 
-    index = -1;
-    for (PLuint i = 0; i < _data.verts.size(); i++)
+    const plMeshConnectivityDataVert* found(NULL);
+    for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); vit++)
     {
-        if ((_data.verts[i].vert - vertex).length() <= _epsilon)
+        if (( (*vit).vert - vertex).length() <= _epsilon)
         {
-            if (index == -1)
-                index = i;
+            if (found == NULL)
+                found = &(*vit);
             else
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_findVert(): More than one candidate for vertex " << vertex << ". This could mean that epsilon is set too large. Aborting operation." << std::endl;
-                return false;
+                return NULL;
             }
         }
     }
-    return true;
+
+    return found;
 }
 
-PLbool plMeshAlgorithm::_splitEdgeOnVect( PLuint edgeABindex, const plVector3& vertex, PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edgeAB, const plVector3& vertex, PLuint verbose, PLuint depth )
 {
-    if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
+    /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_splitEdgeOnVect()" << std::endl;
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Splitting on vertex " << vertex << std::endl;
-    }
+    }*/
 
     // split the current edge into two pieces
 
     // find all existing cells, have them available in case they're needed later
-    plMeshConnectivityData::plMeshConnectivityDataEdge edgeAB = _data.edges[edgeABindex];
-    plSeq<PLuint> faceIndicesToSplit (_data.edges[edgeABindex].faceIndices);
-    if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
+
+    plSeq<const plMeshConnectivityDataFace*> faceIndicesToSplit (edgeAB->faceIndices);
+    /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Edge being split is " << _data.edges[edgeABindex].edge.pt1 << " - " << _data.edges[edgeABindex].edge.pt2 << std::endl;
@@ -58,20 +59,18 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( PLuint edgeABindex, const plVector3& v
                 std::cout << "\t";
             std::cout << "Debug: Attached face: " << _data.faces[_data.edges[edgeABindex].faceIndices[j]].face.point0() << " | " << _data.faces[_data.edges[edgeABindex].faceIndices[j]].face.point1() << " | " << _data.faces[_data.edges[edgeABindex].faceIndices[j]].face.point2() << std::endl;
         }
-    }
+    }*/
 
     PLuint vertAindex = _data.edges[edgeABindex].vertIndices[0];
     PLuint vertBindex = _data.edges[edgeABindex].vertIndices[1];
-    plMeshConnectivityData::plMeshConnectivityDataVert& vertA = _data.verts[vertAindex];
-    plMeshConnectivityData::plMeshConnectivityDataVert& vertB = _data.verts[vertBindex];
+    plMeshConnectivityDataVert& vertA = _data.verts[vertAindex];
+    plMeshConnectivityDataVert& vertB = _data.verts[vertBindex];
 
     // create the new cells, storing their eventual indices
-    plMeshConnectivityData::plMeshConnectivityDataEdge edgeAN;
-    plMeshConnectivityData::plMeshConnectivityDataEdge edgeNB;
-    PLuint edgeANindex = edgeABindex;
-    PLuint edgeNBindex = _data.edges.size();
+    plMeshConnectivityDataEdge edgeAN;
+    plMeshConnectivityDataEdge edgeNB;
 
-    plMeshConnectivityData::plMeshConnectivityDataVert vertNsearch; vertNsearch.vert = vertex;
+    plMeshConnectivityDataVert vertNsearch; vertNsearch.vert = vertex;
     PLint  vertNsearchIndex;
     vertNsearchIndex = _data.verts.findIndex(vertNsearch);
     PLuint vertNindex; // we need to determine this
@@ -96,7 +95,7 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( PLuint edgeABindex, const plVector3& v
     }
     else
         vertNindex = (PLuint)vertNsearchIndex;
-    plMeshConnectivityData::plMeshConnectivityDataVert& vertN = _data.verts[vertNindex];
+    plMeshConnectivityDataVert& vertN = _data.verts[vertNindex];
 
     // fill the cells with data, but faces will be treated separately.
     //if (vertNsearchIndex == -1)
@@ -131,7 +130,7 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( PLuint edgeABindex, const plVector3& v
     {
         // find all existing cells, have them available in case they're needed later
         PLuint faceABCindex = faceIndicesToSplit[i];
-        plMeshConnectivityData::plMeshConnectivityDataFace faceABC = _data.faces[faceABCindex];
+        plMeshConnectivityDataFace faceABC = _data.faces[faceABCindex];
 
         // TODO: Consider adding a check to make sure that the face doesn't contain one of the edges we're adding...
         PLint vertCsearchIndex(-1);
@@ -175,7 +174,7 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( PLuint edgeABindex, const plVector3& v
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is B vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
             continue;
         }
-        plMeshConnectivityData::plMeshConnectivityDataVert& vertC = _data.verts[vertCindex];
+        plMeshConnectivityDataVert& vertC = _data.verts[vertCindex];
 
         PLint edgeACsearchIndex(-1);
         PLint edgeBCsearchIndex(-1);
@@ -237,8 +236,8 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( PLuint edgeABindex, const plVector3& v
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
-        plMeshConnectivityData::plMeshConnectivityDataEdge& edgeAC = _data.edges[edgeACindex];
-        plMeshConnectivityData::plMeshConnectivityDataEdge& edgeBC = _data.edges[edgeBCindex];
+        plMeshConnectivityDataEdge& edgeAC = _data.edges[edgeACindex];
+        plMeshConnectivityDataEdge& edgeBC = _data.edges[edgeBCindex];
 
         PLbool faceOrientationABC(false); // either ABC or CBA
         if ((_data.faces[faceABCindex].face.point0() == _data.verts[vertAindex].vert && _data.faces[faceABCindex].face.point1() == _data.verts[vertBindex].vert) ||
@@ -247,11 +246,11 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( PLuint edgeABindex, const plVector3& v
             faceOrientationABC = true; // otherwise false, as already been set
 
         // create the new cells, storing their eventual indices
-        plMeshConnectivityData::plMeshConnectivityDataEdge edgeNC;
+        plMeshConnectivityDataEdge edgeNC;
         PLuint edgeNCindex = _data.edges.size();
 
-        plMeshConnectivityData::plMeshConnectivityDataFace faceANC;
-        plMeshConnectivityData::plMeshConnectivityDataFace faceBNC;
+        plMeshConnectivityDataFace faceANC;
+        plMeshConnectivityDataFace faceBNC;
         PLuint faceANCindex = faceABCindex;
         PLuint faceBNCindex = _data.faces.size();
 
@@ -339,7 +338,7 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( PLuint faceIndex, const plVector3& ver
     }
 
     // find all existing cells, have them available in case they're needed later
-    plMeshConnectivityData::plMeshConnectivityDataFace face = _data.faces[faceIndex]; // this will eventually be removed from the list of faces
+    plMeshConnectivityDataFace face = _data.faces[faceIndex]; // this will eventually be removed from the list of faces
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
@@ -360,9 +359,9 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( PLuint faceIndex, const plVector3& ver
         if (_data.verts[face.vertIndices[i]].vert == face.face.point2())
             vert2index = face.vertIndices[i];
     }
-    plMeshConnectivityData::plMeshConnectivityDataVert& vert0 = _data.verts[vert0index];
-    plMeshConnectivityData::plMeshConnectivityDataVert& vert1 = _data.verts[vert1index];
-    plMeshConnectivityData::plMeshConnectivityDataVert& vert2 = _data.verts[vert2index];
+    plMeshConnectivityDataVert& vert0 = _data.verts[vert0index];
+    plMeshConnectivityDataVert& vert1 = _data.verts[vert1index];
+    plMeshConnectivityDataVert& vert2 = _data.verts[vert2index];
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
@@ -408,12 +407,12 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( PLuint faceIndex, const plVector3& ver
             std::cout << "\t";
         std::cout << "Debug: Edge20 detected is " << _data.edges[edge20index].edge.pt1 << " - " << _data.edges[edge20index].edge.pt2 << std::endl;
     }
-    plMeshConnectivityData::plMeshConnectivityDataEdge& edge01 = _data.edges[edge01index];
-    plMeshConnectivityData::plMeshConnectivityDataEdge& edge12 = _data.edges[edge12index];
-    plMeshConnectivityData::plMeshConnectivityDataEdge& edge20 = _data.edges[edge20index];
+    plMeshConnectivityDataEdge& edge01 = _data.edges[edge01index];
+    plMeshConnectivityDataEdge& edge12 = _data.edges[edge12index];
+    plMeshConnectivityDataEdge& edge20 = _data.edges[edge20index];
 
     // create the new cells, storing their eventual indices
-    plMeshConnectivityData::plMeshConnectivityDataVert vertNsearch; vertNsearch.vert = vertex;
+    plMeshConnectivityDataVert vertNsearch; vertNsearch.vert = vertex;
     PLint  vertNsearchIndex;
     vertNsearchIndex = _data.verts.findIndex(vertNsearch);
     PLuint vertNindex; // we need to determine this
@@ -424,18 +423,18 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( PLuint faceIndex, const plVector3& ver
     }
     else
         vertNindex = (PLuint)vertNsearchIndex;
-    plMeshConnectivityData::plMeshConnectivityDataVert& vertN = _data.verts[vertNindex];
+    plMeshConnectivityDataVert& vertN = _data.verts[vertNindex];
 
-    plMeshConnectivityData::plMeshConnectivityDataEdge edgeN0;
-    plMeshConnectivityData::plMeshConnectivityDataEdge edgeN1;
-    plMeshConnectivityData::plMeshConnectivityDataEdge edgeN2;
+    plMeshConnectivityDataEdge edgeN0;
+    plMeshConnectivityDataEdge edgeN1;
+    plMeshConnectivityDataEdge edgeN2;
     PLuint edgeN0index(_data.edges.size()  );
     PLuint edgeN1index(_data.edges.size()+1);
     PLuint edgeN2index(_data.edges.size()+2);
 
-    plMeshConnectivityData::plMeshConnectivityDataFace face01N;
-    plMeshConnectivityData::plMeshConnectivityDataFace face12N;
-    plMeshConnectivityData::plMeshConnectivityDataFace face20N;
+    plMeshConnectivityDataFace face01N;
+    plMeshConnectivityDataFace face12N;
+    plMeshConnectivityDataFace face20N;
     PLuint face01Nindex(faceIndex);
     PLuint face12Nindex(_data.faces.size());
     PLuint face20Nindex(_data.faces.size()+1);
@@ -851,7 +850,7 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
         plTriangle& currentTriangle = tris[i];
 
         PLint vert0index,vert1index,vert2index;
-        plMeshConnectivityData::plMeshConnectivityDataVert vert0;
+        plMeshConnectivityDataVert vert0;
         vert0.vert = currentTriangle[0];
         if (!_findVert(vert0.vert,vert0index,verbose,depth+1)) return false;
         PLbool vert0existed(true);
@@ -861,7 +860,7 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
             _data.verts.add(vert0);
             vert0existed = false;
         }
-        plMeshConnectivityData::plMeshConnectivityDataVert vert1;
+        plMeshConnectivityDataVert vert1;
         vert1.vert = currentTriangle[1];
         if (!_findVert(vert1.vert,vert1index,verbose,depth+1)) return false;
         PLbool vert1existed(true);
@@ -871,7 +870,7 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
             _data.verts.add(vert1);
             vert1existed = false;
         }
-        plMeshConnectivityData::plMeshConnectivityDataVert vert2;
+        plMeshConnectivityDataVert vert2;
         vert2.vert = currentTriangle[2];
         if (!_findVert(vert2.vert,vert2index,verbose,depth+1)) return false;
         PLbool vert2existed(true);
@@ -883,7 +882,7 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
         }
 
         PLint edge01index, edge12index, edge20index;
-        plMeshConnectivityData::plMeshConnectivityDataEdge edge01;
+        plMeshConnectivityDataEdge edge01;
         edge01.edge = plEdge(_data.verts[vert0index].vert,_data.verts[vert1index].vert);
         edge01index = _data.edges.findIndex(edge01);
         if (edge01index == -1)
@@ -893,7 +892,7 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
             _data.edges[edge01index].vertIndices.add((PLuint)vert0index);
             _data.edges[edge01index].vertIndices.add((PLuint)vert1index);
         }
-        plMeshConnectivityData::plMeshConnectivityDataEdge edge12;
+        plMeshConnectivityDataEdge edge12;
         edge12.edge = plEdge(_data.verts[vert1index].vert,_data.verts[vert2index].vert);
         edge12index = _data.edges.findIndex(edge12);
         if (edge12index == -1)
@@ -903,7 +902,7 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
             _data.edges[edge12index].vertIndices.add((PLuint)vert1index);
             _data.edges[edge12index].vertIndices.add((PLuint)vert2index);
         }
-        plMeshConnectivityData::plMeshConnectivityDataEdge edge20;
+        plMeshConnectivityDataEdge edge20;
         edge20.edge = plEdge(_data.verts[vert2index].vert,_data.verts[vert0index].vert);
         edge20index = _data.edges.findIndex(edge20);
         if (edge20index == -1)
@@ -914,7 +913,7 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
             _data.edges[edge20index].vertIndices.add((PLuint)vert0index);
         }
 
-        plMeshConnectivityData::plMeshConnectivityDataFace face012;
+        plMeshConnectivityDataFace face012;
         face012.face = plTriangle(_data.verts[vert0index].vert,_data.verts[vert1index].vert,_data.verts[vert2index].vert);
         PLint face012index = _data.faces.size();
         _data.faces.add(face012);

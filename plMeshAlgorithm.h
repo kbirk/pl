@@ -20,7 +20,7 @@ class plMeshAlgorithm
     plMeshConnectivityData _data;
 
     // all the rest of these functions return false if an error is detected. At this point the intersector should abort with a message of some kind.
-    PLbool _findVert( const plVector3& vertex, PLint &index, PLuint verbose, PLuint depth=0 );
+    const plMeshConnectivityDataVert* _findVert( const plVector3& vertex, PLuint verbose, PLuint depth=0 );
 
     PLbool _splitEdgeOnVect(PLuint edgeIndex, const plVector3& vertex, PLuint verbose, PLuint depth=0);
     PLbool _splitFaceOnVect(PLuint faceIndex, const plVector3& vertex, PLuint verbose, PLuint depth=0);

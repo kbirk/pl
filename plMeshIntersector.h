@@ -14,10 +14,10 @@ class plMeshIntersector : public plMeshAlgorithm
   private:
 
     // return true if an intersection is detected, false otherwise. a plVector3& is declared to hold an intersection point if it is detected.
-    PLbool _intersectionVertEdge(const plMeshConnectivityData::plMeshConnectivityDataVert&, const plMeshConnectivityData::plMeshConnectivityDataEdge&            , PLuint verbose, PLuint depth=0);
-    PLbool _intersectionEdgeEdge(const plMeshConnectivityData::plMeshConnectivityDataEdge&, const plMeshConnectivityData::plMeshConnectivityDataEdge&, plVector3&, PLuint verbose, PLuint depth=0);
-    PLbool _intersectionVertFace(const plMeshConnectivityData::plMeshConnectivityDataVert&, const plMeshConnectivityData::plMeshConnectivityDataFace&            , PLuint verbose, PLuint depth=0);
-    PLbool _intersectionEdgeFace(const plMeshConnectivityData::plMeshConnectivityDataEdge&, const plMeshConnectivityData::plMeshConnectivityDataFace&, plVector3&, PLuint verbose, PLuint depth=0);
+    PLbool _intersectionVertEdge(const plMeshConnectivityDataVert&, const plMeshConnectivityDataEdge&            , PLuint verbose, PLuint depth=0);
+    PLbool _intersectionEdgeEdge(const plMeshConnectivityDataEdge&, const plMeshConnectivityDataEdge&, plVector3&, PLuint verbose, PLuint depth=0);
+    PLbool _intersectionVertFace(const plMeshConnectivityDataVert&, const plMeshConnectivityDataFace&            , PLuint verbose, PLuint depth=0);
+    PLbool _intersectionEdgeFace(const plMeshConnectivityDataEdge&, const plMeshConnectivityDataFace&, plVector3&, PLuint verbose, PLuint depth=0);
 
     PLbool _findAndFixVertEdgeIntersections(PLuint start, PLuint end, PLuint verbose, PLuint depth=0);
     PLbool _findAndFixVertFaceIntersections(PLuint start, PLuint end, PLuint verbose, PLuint depth=0);

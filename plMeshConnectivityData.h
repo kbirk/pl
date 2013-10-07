@@ -6,57 +6,82 @@
 #include "plPolygon.h"
 #include "plVector3.h"
 
+// cells
+
+class plMeshConnectivityData;
+class plMeshConnectivityDataVert;
+class plMeshConnectivityDataEdge;
+class plMeshConnectivityDataFace;
+
+class plMeshConnectivityDataVert
+{
+  public:
+
+    plVector3                                vert;
+    PLuint                                   originatingMesh;
+    plSeq<const plMeshConnectivityDataEdge*> edgeIndices; // size can be any positive number
+    plSeq<const plMeshConnectivityDataFace*> faceIndices; // size can be any positive number
+    plMeshConnectivityData*                  dataset;
+
+    plMeshConnectivityDataVert () {}
+
+    PLbool operator==(const plMeshConnectivityDataVert&);
+    PLbool operator< (const plMeshConnectivityDataVert&);
+    PLbool operator> (const plMeshConnectivityDataVert&);
+};
+
+class plMeshConnectivityDataEdge
+{
+  public:
+
+    plEdge                                   edge;
+    PLuint                                   originatingMesh;
+    plSeq<const plMeshConnectivityDataVert*> vertIndices; // size should always be 2
+    plSeq<const plMeshConnectivityDataFace*> faceIndices; // size should always be an even number
+    plMeshConnectivityData*                  dataset;
+
+    plMeshConnectivityDataEdge () {}
+
+    PLbool operator==(const plMeshConnectivityDataEdge&);
+    PLbool operator< (const plMeshConnectivityDataEdge&);
+};
+
+class plMeshConnectivityDataFace
+{
+  public:
+
+    plTriangle                               face;
+    PLuint                                   originatingMesh;
+    plSeq<const plMeshConnectivityDataVert*> vertIndices; // size should always be 3
+    plSeq<const plMeshConnectivityDataEdge*> edgeIndices; // size should always be 3
+    plMeshConnectivityData*                  dataset;
+
+    plMeshConnectivityDataFace () {}
+
+    PLbool operator==(const plMeshConnectivityDataFace&);
+    PLbool operator< (const plMeshConnectivityDataFace&);
+};
+
+typedef std::set<plMeshConnectivityDataVert>::iterator plMeshConnectivityDataVertIterator;
+typedef std::set<plMeshConnectivityDataEdge>::iterator plMeshConnectivityDataEdgeIterator;
+typedef std::set<plMeshConnectivityDataFace>::iterator plMeshConnectivityDataFaceIterator;
+
+// container class for all types of cell
+
 class plMeshConnectivityData
 {
   public:
 
-    class plMeshConnectivityDataVert
-    {
-      public:
+    plSet<plMeshConnectivityDataVert> verts;
+    plSet<plMeshConnectivityDataEdge> edges;
+    plSet<plMeshConnectivityDataFace> faces;
 
-        plVector3     vert;
-        plSeq<PLuint> edgeIndices; // size can be any positive number
-        plSeq<PLuint> faceIndices; // size can be any positive number
-
-        plMeshConnectivityDataVert () {}
-
-        PLbool operator==(const plMeshConnectivityDataVert&);
-    };
-
-    class plMeshConnectivityDataEdge
-    {
-      public:
-
-        plEdge        edge;
-        plSeq<PLuint> vertIndices; // size should always be 2
-        plSeq<PLuint> faceIndices; // size should always be an even number
-
-        plMeshConnectivityDataEdge () {}
-
-        PLbool operator==(const plMeshConnectivityDataEdge&);
-    };
-
-    class plMeshConnectivityDataFace
-    {
-      public:
-
-        plTriangle    face;
-        plSeq<PLuint> vertIndices; // size should always be 3
-        plSeq<PLuint> edgeIndices; // size should always be 3
-
-        plMeshConnectivityDataFace () {}
-
-        PLbool operator==(const plMeshConnectivityDataFace&);
-    };
-
-    plSeq<plMeshConnectivityDataVert> verts;
-    plSeq<plMeshConnectivityDataEdge> edges;
-    plSeq<plMeshConnectivityDataFace> faces;
+    PLfloat epsilon;
 
 };
 
-std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityData::plMeshConnectivityDataVert &p );
-std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityData::plMeshConnectivityDataEdge &p );
-std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityData::plMeshConnectivityDataFace &p );
+std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVert &p );
+std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataEdge &p );
+std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataFace &p );
 
 #endif // PLMESHCONNECTIVITY_H
