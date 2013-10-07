@@ -1,2 +1,7 @@
 objects/*
 planner
+*.o
+.gitignore
+*.txt
+*~
+vs2012

@@ -85,14 +85,22 @@ void plSpline::draw() const
         return;
    
     plPicking::value.type = PL_PICKING_TYPE_DEFECT_CORNERS;
-    plBoundary::draw();
-    
-    if (size() == 4)
+   
+    if (size() < 4 )
     {
+        // draw boundary walls
+        plBoundary::draw();
+    }
+    else
+    {
+        _setColour();
+        // draw points
+        _drawPoints();
+        // draw spline
         plPicking::value.type  = PL_PICKING_TYPE_DEFECT_CORNERS; //PL_PICKING_TYPE_DEFECT_SPLINE;  
         plPicking::value.index = -1;   
         plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR );   
-        _surfaceMesh.draw();
+        _surfaceMesh.draw();        
     }
     
     if ( _isSelected )

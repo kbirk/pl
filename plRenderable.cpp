@@ -3,7 +3,7 @@
 plRenderable::plRenderable()
 {  
     _isVisible = true; 
-    _storedVisibilityState = true;
+    _storedVisibilityState = PL_VISIBLE;
 }
 
 
@@ -16,6 +16,18 @@ PLbool plRenderable::isVisible() const
 void plRenderable::toggleVisibility()
 {
     _isVisible = !_isVisible;
+}
+
+
+void plRenderable::setVisible()
+{
+    _isVisible = true;
+}
+
+
+void plRenderable::setInvisible()
+{
+    _isVisible = false;
 }
 
 
@@ -36,8 +48,15 @@ void plRenderable::loadState()
 {
     switch ( _storedVisibilityState )
     {   
-        case PL_VISIBLE:      _isVisible = true;    break;            
-        case PL_NOT_VISIBLE:  _isVisible = false;   break;       
+        case PL_VISIBLE:  
+            
+            setVisible();   
+            break;    
+                    
+        case PL_NOT_VISIBLE: 
+         
+            setInvisible();  
+            break;       
     }
 }
 

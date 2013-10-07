@@ -1,13 +1,11 @@
 #include "plBoundary.h"
 
 plBoundary::plBoundary()
-    : _showWalls(true)
 {
 }
 
 
 plBoundary::plBoundary( const plSeq<plString> &row )
-    : _showWalls(true)
 {
     // assumes points are counter-clockwise
     for ( PLuint j = 1; j < row.size(); j+=2)
@@ -19,7 +17,7 @@ plBoundary::plBoundary( const plSeq<plString> &row )
     _updateMesh(); 
 }
 
-
+/*
 void plBoundary::toggleVisibility()
 {
     if (_isVisible && _showWalls)
@@ -37,11 +35,13 @@ void plBoundary::toggleVisibility()
     }
 }
 
+
 void plBoundary::setInvisible()
 {
     _showWalls = false;
     _isVisible = false;
 }
+
 
 void plBoundary::saveState()
 {
@@ -84,6 +84,7 @@ void plBoundary::loadState()
             break;
     }
 }
+*/
 
 plVector3 plBoundary::getAverageNormal() const
 {
@@ -428,20 +429,8 @@ void plBoundary::_updateMesh()
 }
 
 
-void plBoundary::draw() const
-{        
-    if ( !_isVisible )
-        return;
-
-    _setColour();
-        
-    // draw walls
-    if ( _showWalls && _points.size() > 1 )
-    {
-        plPicking::value.index = -1; // draw walls with index of -1
-        _mesh.draw();
-    }
-        
+void plBoundary::_drawPoints() const
+{
     // draw _points
     for (PLuint i=0; i<_points.size(); i++) 
     {
@@ -456,6 +445,25 @@ void plBoundary::draw() const
             plDraw::sphere( _points[i], 0.75 );
         }
     }
+}
+
+
+void plBoundary::draw() const
+{        
+    if ( !_isVisible )
+        return;
+
+    _setColour();
+        
+    // draw walls
+    if ( _points.size() > 1 )
+    {
+        plPicking::value.index = -1; // draw walls with index of -1
+        _mesh.draw();
+    }
+   
+    // draw points
+    _drawPoints();      
 }
 
 

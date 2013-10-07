@@ -6,7 +6,7 @@
 #include "plMesh.h"
 #include "plOctree.h"
 #include "plTriangle.h"
-#include "plRenderable.h"
+#include "plTransparentRenderable.h"
 #include "plPickingTexture.h"
 #include "plRenderingPipeline.h"
 
@@ -27,7 +27,7 @@ class plOrderPair
     
 };
 
-class plModel : public plRenderable
+class plModel : public plTransparentRenderable
 {
     public:
 
@@ -38,12 +38,6 @@ class plModel : public plRenderable
         const plOctree          &octree()    const { return _octree;    }
         const plString          &filename()  const { return _filename;  }
         
-        void   toggleVisibility  ();
-        void   toggleTransparency();
-        void   saveState();
-        void   loadState();
-        PLbool isTransparent     () const { return _isTransparent; }
-
         void draw( const plVector3 &colour ) const;
 
         void      getMinMax       ( plVector3 &min, plVector3 &max ) const;        
@@ -56,7 +50,6 @@ class plModel : public plRenderable
 		plMesh                _mesh;
         plSeq<plTriangle>     _triangles;
         plOctree              _octree;
-        PLbool                _isTransparent;
 		plString              _filename;
 
         // prevent empty constructor, copy constructor, and assignment, which will invalidate the octree's pointers if rhs is scoped

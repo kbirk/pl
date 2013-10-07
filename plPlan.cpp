@@ -406,12 +406,10 @@ void plPlan::exportFile( const plString &filename )
 
 void plPlan::defaultCameraVisibilityState()
 {
-    for ( PLuint i = 0; i < _models.size();      i++ )
+    for ( PLuint i = 0; i < _models.size(); i++ )
     {
-        if ( ! _models[i]->bone.isTransparent())
-            _models[i]->bone.toggleTransparency();
-        if ( ! _models[i]->cartilage.isTransparent())
-            _models[i]->cartilage.toggleTransparency();
+        _models[i]->bone.setTransparent();
+        _models[i]->cartilage.setTransparent();   
     }
 
     for ( PLuint i = 0; i < _defectSites.size(); i++ )
@@ -427,8 +425,7 @@ void plPlan::defaultCameraVisibilityState()
 
     for ( PLuint i = 0; i < _iGuideSites.size(); i++ )
     {
-        if ( _iGuideSites[i]->boundary.isVisible() )
-            _iGuideSites[i]->boundary.toggleVisibility();
+        _iGuideSites[i]->boundary.setInvisible();
     }
 }
 

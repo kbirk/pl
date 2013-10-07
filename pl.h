@@ -60,6 +60,7 @@
 #include "plTextureShader.h"
 #include "plTrackedObject.h"
 #include "plTransform.h"
+#include "plTransparentRenderable.h"
 #include "plTriangle.h"
 #include "plUtility.h"
 #include "plVector3.h"

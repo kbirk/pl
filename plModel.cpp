@@ -1,7 +1,7 @@
 #include "plModel.h"
 
 plModel::plModel( const plSeq<plTriangle> &triangles, const plString &filename, PLuint octreeDepth )
-    : _triangles(triangles), _filename(filename), _isTransparent(false)
+    : _triangles(triangles), _filename(filename)
 {
     if ( !filename.compare( ".stl", filename.length()-4, 4) )
     {
@@ -27,7 +27,7 @@ plModel::plModel( const plSeq<plTriangle> &triangles, const plString &filename, 
 
 
 plModel::plModel( const plString &filename, PLuint octreeDepth )
-    : _filename(filename), _isTransparent(false)
+    : _filename(filename)
 {
     if ( !filename.compare( ".stl", filename.length()-4, 4) )
     {
@@ -150,84 +150,6 @@ void plModel::draw( const plVector3 &colour ) const
         _mesh.draw();
         glDisable( GL_STENCIL_TEST ); 
     } 
-}
-
-
-void plModel::toggleVisibility()
-{
-    if (_isTransparent) 
-    {
-        _isVisible = false;
-        _isTransparent = false;
-    } 
-    else if (!_isVisible) 
-    {
-        _isVisible = true;
-        _isTransparent = false;
-    } 
-    else 
-    {
-        _isVisible = true;
-        _isTransparent = true;
-    }
-}
-
-
-void plModel::toggleTransparency()
-{
-    if (_isTransparent)
-    {
-        _isVisible = true;
-        _isTransparent = false;
-    }
-    else
-    {
-        _isVisible = true;
-        _isTransparent = true;
-    }
-}
-
-
-void plModel::saveState()
-{
-    if ( _isTransparent )
-    {
-        _storedVisibilityState = PL_TRANSPARENT;
-    }
-    else if ( _isVisible )
-    {
-        _storedVisibilityState = PL_VISIBLE;
-    }
-    else
-    {
-        _storedVisibilityState = PL_NOT_VISIBLE;
-    }
-}
-
-
-void plModel::loadState()
-{
-    switch ( _storedVisibilityState )
-    {
-    
-        case PL_TRANSPARENT:  
-        
-            _isVisible     = true;
-            _isTransparent = true;
-            break;
-           
-        case PL_VISIBLE:  
-        
-            _isVisible     = true;
-            _isTransparent = false;
-            break;
-            
-        case PL_NOT_VISIBLE:  
-        
-            _isVisible     = false;
-            _isTransparent = false;
-            break;       
-    }
 }
 
 

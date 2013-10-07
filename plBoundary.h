@@ -27,11 +27,6 @@ class plBoundary : public plRenderable,
 
         plVector3 getAverageNormal() const;
 
-        virtual void   toggleVisibility();
-        virtual void   setInvisible();
-        virtual void   saveState();
-        virtual void   loadState();
-
         virtual PLuint addPointAndNormal   ( const plVector3 &point, const plVector3 &normal);
         virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);
         virtual void   removePointAndNormal( PLuint index );
@@ -43,9 +38,9 @@ class plBoundary : public plRenderable,
         plSeq<plVector3> _points;       // always in counterclockwise direction
         plSeq<plVector3> _normals;   
         plMesh           _mesh;    
-        PLbool           _showWalls;    
-        
+
         void             _setColour() const;    
+        void             _drawPoints() const;
         void             _updateMesh(); 
         
 };

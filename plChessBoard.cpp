@@ -3,8 +3,7 @@
 plChessBoard::plChessBoard( PLfloat blocksize )
 {           
     _generate( blocksize );
-    _isTransparent = true;
-    _isVisible     = true;
+    setTransparent();
     _readChessBoardCalib();
 }
 
@@ -185,41 +184,6 @@ void plChessBoard::draw() const
     plModelStack::pop();
     
     
-}
-
-
-void plChessBoard::toggleVisibility()
-{
-    if (_isTransparent) 
-    {
-        _isVisible = false;
-        _isTransparent = false;
-    } 
-    else if (!_isVisible) 
-    {
-        _isVisible = true;
-        _isTransparent = false;
-    } 
-    else 
-    {
-        _isVisible = true;
-        _isTransparent = true;
-    }
-}
-
-
-void plChessBoard::toggleTransparency()
-{
-    if (_isTransparent)
-    {
-        _isVisible = true;
-        _isTransparent = false;
-    }
-    else
-    {
-        _isVisible = true;
-        _isTransparent = true;
-    }
 }
 
 
