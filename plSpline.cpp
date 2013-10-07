@@ -101,12 +101,7 @@ void plSpline::draw() const
         plPicking::value.index = -1;   
         plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR );   
         _surfaceMesh.draw();        
-    }
-    
-    if ( _isSelected )
-    {
-        //_drawSplineSelectionInterface();
-    }            
+    }           
 }
 
 
@@ -308,32 +303,6 @@ PLuint plSpline::_timeSinceLastUpdate()
 {
     return plTimer::now() - _lastUpdate;
 }
- 
-
-    
-/*
-void plSpline::_drawSplineSelectionInterface() const
-{
-    // draw spline
-    _plPickingShader->setPickingUniforms(_plPickingState);
-       
-    plSeq<plVector3> n; 
-    n.add( plModelCartilageGetAvgNormal(modelID, 4.0f, corners.points(0), corners.normals(0)) );
-    n.add( plModelCartilageGetAvgNormal(modelID, 4.0f, corners.points(1), corners.normals(1)) );
-    n.add( plModelCartilageGetAvgNormal(modelID, 4.0f, corners.points(2), corners.normals(2)) );
-    n.add( plModelCartilageGetAvgNormal(modelID, 4.0f, corners.points(3), corners.normals(3)) );   
-       
-    glPushMatrix();
-    for (PLuint i = 0; i < corners.size(); i++)
-    {      
-        _plPickingState->type = PL_PICKING_TYPE_DEFECT_HANDLE_0 + i; 
-        _plPickingShader->setPickingUniforms(_plPickingState);
-        plColourStack::load( 0.2, 1.0, 0.2 ); 
-        plDraw::arrow(corners.points(i), n[i]);
-    }
-    glPopMatrix();
-}
-*/
 
 
 

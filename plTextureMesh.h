@@ -13,8 +13,7 @@ class plTextureMesh : public plMesh
 		
 		plTextureMesh();		
 		plTextureMesh( PLuint width, PLuint height );
-        plTextureMesh( PLuint width, PLuint height, const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft);  
-             
+        plTextureMesh( PLuint width, PLuint height, const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft);              
         plTextureMesh( const plTextureMesh &mesh );
         
         plTextureMesh& operator = ( const plTextureMesh &mesh ); 

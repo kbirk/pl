@@ -39,7 +39,7 @@ class plBoundaryEditor
 
     private: 
     
-        PLbool      _draggingMenu;
+        PLbool      _isDraggingMenu;
     
         PLint       _selectedBoundaryType;  
         PLint       _selectedSiteIndex;    // use this and above to determine which pl*Site 

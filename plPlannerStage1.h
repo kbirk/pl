@@ -11,9 +11,6 @@
 
 #define PL_STAGE1_GROUP_SIZE                   1024
 
-#define PL_STAGE1_MAX_DONOR_SITES              5
-//#define PL_STAGE1_MAX_CAP_TRIANGLES            1024
-
 
 class plCapIndices
 {

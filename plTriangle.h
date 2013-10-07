@@ -83,9 +83,9 @@ std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
 
 namespace plSTL
 {
-    void importFile      ( plSeq<plTriangle> &triangles, const plString &filename );
-    void exportFileBinary( const plSeq<plTriangle> &triangles , const plString &filename );
-    void exportFileASCII ( const plSeq<plTriangle> &triangles , const plString &filename );
+    PLbool importFile      ( plSeq<plTriangle> &triangles, const plString &filename );
+    PLbool exportFileBinary( const plSeq<plTriangle> &triangles , const plString &filename );
+    PLbool exportFileASCII ( const plSeq<plTriangle> &triangles , const plString &filename );
 }
 
 #endif

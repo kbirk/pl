@@ -118,14 +118,14 @@ namespace plPlannerStage2
                                       donorPerimSizes,
                                       donorByteOffset );
                 
-        float da = (2.0f * PL_PI) / (float)(PL_STAGE2_NUM_DIRECTIONS);  
+        float da = (2.0f * PL_PI) / (float)(PL_NUM_DIRECTIONS);  
     
         plSeq<plVector3> lowestPosition ( defectState.graftCount, plVector3( -1, -1, -1 ) );
         plSeq<plVector4> lowestDirection( defectState.graftCount, plVector4( -1, -1, -1, -1 ) );        
         plSeq<PLuint>    lowestIndex    ( defectState.graftCount, -1 ); 
         plSeq<PLfloat>   lowestRMS      ( defectState.graftCount, FLT_MAX ); 
            
-        for (PLuint i=0; i<PL_STAGE2_NUM_DIRECTIONS; i++)
+        for (PLuint i=0; i<PL_NUM_DIRECTIONS; i++)
         {       
             float theta = i * da;
              
@@ -187,7 +187,7 @@ namespace plPlannerStage2
 
         // DEBUG
         /*
-        for (PLuint i=0; i < PL_STAGE2_NUM_DIRECTIONS; i++)
+        for (PLuint i=0; i < PL_NUM_DIRECTIONS; i++)
         {
             std::cout << " dir: " << i << "\n";
             for (PLuint j=0; j < 10; j++)

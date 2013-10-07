@@ -5,7 +5,7 @@ static Window *windows[ MAX_NUM_WINDOWS ];
 Window::Window( int x, int y, int width, int height, std::string title ) 
 {
     glutInitWindowPosition( x, y );
-    glutInitWindowSize( width, height );
+    glutInitWindowSize    ( width, height );
     _windowID = glutCreateWindow( title.c_str() );
     
     // init glew AFTER glut (needs rendering context)
@@ -16,12 +16,12 @@ Window::Window( int x, int y, int width, int height, std::string title )
       fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
     }
              
-    registerWindow( _windowID );
-    glutSetWindow( _windowID );
-    glutDisplayFunc( GLUTdisplay );
-    glutReshapeFunc( GLUTreshape );
-    glutMouseFunc( GLUTmouseAction );
-    glutMotionFunc( GLUTactiveMouseMotion );
+    registerWindow  ( _windowID );
+    glutSetWindow   ( _windowID );
+    glutDisplayFunc ( GLUTdisplay );
+    glutReshapeFunc ( GLUTreshape );
+    glutMouseFunc   ( GLUTmouseAction );
+    glutMotionFunc  ( GLUTactiveMouseMotion );
     glutPassiveMotionFunc( GLUTpassiveMouseMotion );
     glutKeyboardFunc( GLUTkeyAction );
 

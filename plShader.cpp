@@ -181,9 +181,7 @@ PLuint createSSBO( PLuint numBytes, const GLvoid *buffer )
     PLuint bufferID;
     glGenBuffers(1, &bufferID);     
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferID);
-    std::cout << "before!\n";
     glBufferData(GL_SHADER_STORAGE_BUFFER, numBytes, buffer, GL_STREAM_COPY);
-    std::cout << "after!\n";
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     return bufferID;
 } 

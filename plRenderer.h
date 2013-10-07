@@ -22,42 +22,7 @@
 
 #include "plPlannerStage1.h"
 #include "plPlannerStage2.h"
-/*
-class plUniform
-{
 
-    public:
-    
-        PLuint numBytes;
-
-};
-
-
-class plRenderComponent
-{
-
-    public:
-    
-        //plShader *shader;
-        PLuint      shaderType;
-        plMesh     *mesh;
-    
-        //light position
-        //light colour
-        
-        //picking values
-        
-        //view       transform
-        //model      transform
-        //projection transform
-
-    
-    private:
-
-};
-*/
-
-//::queue( plRenderComponent( PL_PHONG_SHADER, &_sphere,  
 
 namespace plRenderer
 {  

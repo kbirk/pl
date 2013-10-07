@@ -47,10 +47,10 @@ class plModel : public plTransparentRenderable
      
 	private:
 	
-		plMesh                _mesh;
-        plSeq<plTriangle>     _triangles;
-        plOctree              _octree;
-		plString              _filename;
+		plMesh             _mesh;
+        plSeq<plTriangle>  _triangles;
+        plOctree           _octree;
+		plString           _filename;
 
         // prevent empty constructor, copy constructor, and assignment, which will invalidate the octree's pointers if rhs is scoped
         plModel();

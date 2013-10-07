@@ -7,12 +7,14 @@ plTextureShader::plTextureShader(const char *vertexFile, const char *fragmentFil
     getUniformLocations();
 }
 
+
 void plTextureShader::getUniformLocations()
 {			
     plMinimalShader::getUniformLocations();
     // texture uniform
     _textureSamplerID = glGetUniformLocation( _shaderProgramID, "textureSampler");
-}        
+}
+    
 
 void plTextureShader::setTextureUniform() const
 {	

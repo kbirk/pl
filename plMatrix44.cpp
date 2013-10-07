@@ -21,14 +21,14 @@ PLbool plMatrix44::importFile( const plString &file )
 
         if (startPos != std::string::npos)
         {
-          startPos+=6; // start after "<data>".
+            startPos+=6; // start after "<data>".
           
-          // find end position;
-          plString::size_type endPos = xml.find("</data>");
-          if (endPos != std::string::npos)
-          {
-             values = xml.substr(startPos, endPos - startPos);
-          }
+            // find end position;
+            plString::size_type endPos = xml.find("</data>");
+            if ( endPos != std::string::npos )
+            {
+                values = xml.substr(startPos, endPos - startPos);
+            } 
         }
                 
         sscanf(values.c_str(), "%f %f %f %f " 
@@ -42,7 +42,7 @@ PLbool plMatrix44::importFile( const plString &file )
     }
     else
     {
-        std::cerr << "plMatrix44::plMatrix44( const plString &file ) error: xml file could not be opened\n";
+        std::cerr << "plMatrix44::plMatrix44() error: xml file could not be opened\n";
     }
     return true;
 }
@@ -104,15 +104,6 @@ plMatrix44::plMatrix44(PLfloat c1r1, PLfloat c2r1, PLfloat c3r1, PLfloat c4r1,
 	_data[3] = c1r4;	_data[7] = c2r4;	_data[11] = c3r4;	_data[15] = c4r4;
 }
 
-/*
-plMatrix44( double data[16] )
-{		    
-    _data[0] = data[0];	_data[4] = data[4];	_data[8]  = data[8];	_data[12] = data[12];
-	_data[1] = data[1];	_data[5] = data[5];	_data[9]  = data[9];	_data[13] = data[13];
-	_data[2] = data[2];	_data[6] = data[6];	_data[10] = data[10];	_data[14] = data[14];
-	_data[3] = data[3];	_data[7] = data[7];	_data[11] = data[11];	_data[15] = data[15];
-}   
-*/
 
 // copy constructor
 plMatrix44::plMatrix44(const plMatrix44 &m) 
@@ -120,9 +111,6 @@ plMatrix44::plMatrix44(const plMatrix44 &m)
 	memcpy(_data, m._data, sizeof(PLfloat)*16);
 }
 
-/*
-const PLfloat plMatrix44::(&data() const)[16] { return _data; }      
-*/
 
 void plMatrix44::setRow(int row, PLfloat x, PLfloat y, PLfloat z, PLfloat w)  
 {
@@ -309,10 +297,12 @@ plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const
     return result;
 }
 
+
 void plMatrix44::setRotationD(PLfloat angle_degree, const plVector3 &axis) 
 {
     setRotation(angle_degree*0.017453292, axis);
 }
+
 
 void plMatrix44::setRotation(PLfloat angle, const plVector3 &axis) 
 {
@@ -371,6 +361,7 @@ void plMatrix44::setRotation(PLfloat angle, const plVector3 &axis)
     _data[15] = 1.0f;
 
 }
+
 
 void plMatrix44::setRotation( const plVector4 &quat )
 {

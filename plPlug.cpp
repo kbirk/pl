@@ -45,8 +45,7 @@ void plPlug::translateX( PLfloat distance, const plVector3 &planeNormal )
     if ( _surfaceIntersection( origin, y, transform.x()*distance ) )
     {
         // translate 
-        plVector3 x = (y ^ planeNormal);  
-        //plVector3 z = (x ^ y);    
+        plVector3 x = (y ^ planeNormal);    
         transform.set( x, y, origin);
     }
 }

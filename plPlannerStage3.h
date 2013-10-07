@@ -10,11 +10,10 @@
 #include "plPlannerStage2.h"
 #include "plPlannerStage3Shader.h"
 
+#define PL_STAGE3_ITERATIONS                 8
 #define PL_STAGE3_GROUP_SIZE                 256
 #define PL_STAGE3_NUM_GROUPS                 1
 #define PL_STAGE3_INVOCATIONS                PL_STAGE3_NUM_GROUPS*PL_STAGE3_GROUP_SIZE
-
-#define PL_STAGE3_ITERATIONS                 8
 
 class plDonorState
 {

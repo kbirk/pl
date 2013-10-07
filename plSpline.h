@@ -47,8 +47,7 @@ class plSpline : public plBoundary
         void    _computeHermite();
                 
         PLuint  _timeSinceLastUpdate();  
-        
-        //void    _drawSelectionInterface() const;  
+
 };
 
 

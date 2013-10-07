@@ -114,6 +114,11 @@ void plMesh::_triangleToInterleaved(const plSeq<plTriangle> &triangles)
 
 void plMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
 {
+    if ( vertices.size() < 3 || indices.size() < 3 )
+    {
+        std::cerr << "plMesh::setBuffers() error: not enough vertices or indices " << std::endl;
+    }
+    
     // size of each vertex 
 	const GLuint POS_SIZE = sizeof( plVector3 );
 	const GLuint NOR_SIZE = sizeof( plVector3 );

@@ -11,8 +11,6 @@
 
 #define PL_STAGE2_GROUP_SIZE                   1024
 
-#define PL_STAGE2_NUM_DIRECTIONS               32
-
 class plRmsSet
 {
     public:

@@ -7,7 +7,7 @@ plGraftEditor::plGraftEditor()
     _selectedGraft  = NULL; 
     _selectedType   = -1;
     _handlesEnabled = true;
-    _draggingMenu   = false;
+    _isDraggingMenu = false;
 }
 
 
@@ -93,7 +93,7 @@ void plGraftEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
         }
         
         // dragged menu item
-        if ( _draggingMenu )
+        if ( _isDraggingMenu )
         {   
             if ( _selectedType == PL_PICKING_INDEX_GRAFT_DONOR )
             {
@@ -235,7 +235,7 @@ PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
          
         case PL_PICKING_TYPE_GRAFT: 
   
-            _draggingMenu = true;  
+            _isDraggingMenu = true;  
             return true;  
                     
     }
@@ -245,7 +245,7 @@ PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
 
 PLbool plGraftEditor::processMouseRelease( plPlan &plan, PLint x, PLint y )
 {
-    _draggingMenu = false;
+    _isDraggingMenu = false;
     return true;   
 }
 

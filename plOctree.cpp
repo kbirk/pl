@@ -16,10 +16,10 @@ plOctree::plOctree( const plVector3 &min,
 
 plOctree::~plOctree()
 {
-    clear();
+    _clear();
 }
 
-void plOctree::clear()
+void plOctree::_clear()
 {
     if ( _root )
         _root->clear();
@@ -34,6 +34,9 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<p
         std::cerr << "plOctree::build() error: depth must be greater than 0\n";
         exit(1);
     }
+    
+    std::cout << "Building octree for " << triangles.size() << " triangles (depth = " << depth << ")...";
+    
     // centre point of octree
     plVector3 centre = 0.5f * (min+max);
     
@@ -45,11 +48,13 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const plSeq<p
     PLfloat halfWidth = PL_MAX_OF_2( minMax, maxMax );
     
     // Construct and fill in _root 
-    clear();
+    _clear();
     _root = new plOctreeNode( centre, halfWidth );
  
     // traverse and fill sub cubes with triangles until desired depth is reached  
     _fill( triangles, depth ); 
+    
+    std::cout << "\tComplete.\n";
 }
 
 void plOctree::draw() const
@@ -157,7 +162,7 @@ void plOctreeNode::draw() const
 }
 
 
-void plOctreeNode::insert( const plTriangle &tri, PLuint depth)
+void plOctreeNode::insert( const plTriangle &tri, PLuint depth )
 {    
     // add to current node
     //      assumes the given triangle is already bound by the current node,
@@ -179,7 +184,7 @@ void plOctreeNode::insert( const plTriangle &tri, PLuint depth)
         // non exclusive, add to intersected children as well
         for (PLuint i=0; i<8; i++)
         {
-            if ( sphereCheck( tri.centroid(), tri.radius(), i) )
+            if ( _sphereCheck( tri.centroid(), tri.radius(), i) )
             {
                 // part of bounding sphere intersects child, insert
                 _insertChild( i, tri, depth ); 
@@ -221,7 +226,7 @@ void plOctreeNode::_insertChild( PLuint index, const plTriangle &tri, PLuint dep
     }
 }
 
-PLfloat plOctreeNode::squaredDistanceFromPoint( const plVector3 &point, PLint child ) const
+PLfloat plOctreeNode::_squaredDistanceFromPoint( const plVector3 &point, PLint child ) const
 {
     plVector3 minAABB, maxAABB;    
     if (child != -1)
@@ -258,10 +263,10 @@ PLfloat plOctreeNode::squaredDistanceFromPoint( const plVector3 &point, PLint ch
 }
 
 
-PLbool plOctreeNode::sphereCheck( const plVector3 &centre, PLfloat radius, PLint child ) const
+PLbool plOctreeNode::_sphereCheck( const plVector3 &centre, PLfloat radius, PLint child ) const
 {
     // compute squared distance between sphere center and AABB
-    PLfloat sqDist = squaredDistanceFromPoint(centre, child);
+    PLfloat sqDist = _squaredDistanceFromPoint(centre, child);
     // sphere and AABB intersect if the distance is less than the sphere radius
     return sqDist <= radius * radius;
 }

@@ -15,8 +15,6 @@ class plModelSpecific
         PLint                     modelID() const { return _modelID; }
         const plBoneAndCartilage& model()   const { return *_model;  }
 
-        //virtual void importCSV( const plSeq<plString> &row, const plSeq<plBoneAndCartilage*> &models ) = 0;
-
     protected:
     
         PLint                     _modelID;

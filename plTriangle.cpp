@@ -188,10 +188,17 @@ std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 
 namespace plSTL
 {
-    void _plCheckTypeSizes();
+    PLbool _plCheckTypeSizes();
     
-    void importFile( plSeq<plTriangle> &triangles, const plString &filename)
+    PLbool importFile( plSeq<plTriangle> &triangles, const plString &filename)
     {
+        if ( !filename.compare( ".stl", filename.length()-4, 4) )
+        {
+            std::cout << "plSTL::importFile() error: Unrecognized suffix on filename '" << filename
+                      << "'. STL filenames should have suffix .stl" << std::endl;
+            return false;
+        }  
+    
         std::cout << "Importing " << filename << "...";
 
         // just in case, clear seq
@@ -200,8 +207,8 @@ namespace plSTL
         std::ifstream infile (filename.c_str());
         if (!infile.good())
         {
-            std::cerr << "STL file could not be opened \n";
-            exit(1);
+            std::cerr << "plSTL::importFile() error: STL file could not be opened" << std::endl;
+            return false;
         }
         
         plVector3 n, p0, p1, p2;
@@ -250,8 +257,9 @@ namespace plSTL
         } 
         else 
         {
-            _plCheckTypeSizes();
-
+            if ( !_plCheckTypeSizes() )
+                return false;
+                
             // reset file position to beginning
             infile.seekg(0);
 
@@ -281,16 +289,17 @@ namespace plSTL
         
         infile.close();
         std::cout << "\t\t\tComplete.\n";
+        return true;
     }
 
 
-    void exportFileASCII( const plSeq<plTriangle> &triangles , const plString &filename )
+    PLbool exportFileASCII( const plSeq<plTriangle> &triangles , const plString &filename )
     {
         std::ofstream outfile ( filename.c_str() );
         if ( !outfile.good() )
         {
-            std::cerr << "STL file could not be written \n";
-            exit(1);
+            std::cerr << "plSTL::exportFileASCII() error: STL file could not be written \n";
+            return false;
         }
 
         outfile << "solid\n";
@@ -309,18 +318,20 @@ namespace plSTL
         outfile <<"endsolid\n";
 
         outfile.close();
+        return true;
     }
 
 
-    void exportFileBinary( const plSeq<plTriangle> &triangles , const plString &filename )
+    PLbool exportFileBinary( const plSeq<plTriangle> &triangles , const plString &filename )
     {
-        _plCheckTypeSizes();
+        if ( !_plCheckTypeSizes() )
+            return false;
 
         std::ofstream outfile ( filename.c_str(), std::ios::trunc | std::ios::out | std::ios::binary );
         if ( !outfile.good() )
         {
-            std::cerr << "STL file could not be written \n";
-            exit(1);
+            std::cerr << "plSTL::exportFileBinary() error: STL file could not be written \n";
+            return false;
         }
 
         // 80 byte header
@@ -336,41 +347,43 @@ namespace plSTL
         outfile.write( reinterpret_cast<PLchar*>(&size) , sizeof(PLuint) );
 
         // for each facet, 50 bytes
-        PLushort zeroPLushort(0); // at the end of every facet
+        PLushort zeroShort(0); // at the end of every facet
         for (PLuint i=0; i<triangles.size(); i++) 
         {
             outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].normal().x) , sizeof(PLfloat)*3 );
             outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].point0().x) , sizeof(PLfloat)*3 );
             outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].point1().x) , sizeof(PLfloat)*3 );
             outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].point2().x) , sizeof(PLfloat)*3 );
-            outfile.write( reinterpret_cast<const PLchar*>( &zeroPLushort)            , sizeof(PLushort)  );
+            outfile.write( reinterpret_cast<const PLchar*>( &zeroShort)               , sizeof(PLushort)  );
         }
 
         outfile.close();
+        return true;
     }
 
 
-    void _plCheckTypeSizes()
+    PLbool _plCheckTypeSizes()
     {
         // check to ensure compiler designates compatible bytes to each type
         if (sizeof(PLuint) != 4)
         {
-          std::cerr << "Expected PLuint to be 4 bytes, but it is "
-                    << sizeof( PLuint ) << ".  Fix this." << std::endl;
-          exit(1);
+            std::cerr << "plSTL::_plCheckTypeSizes() error: Expected PLuint to be 4 bytes, but it is "
+                      << sizeof( PLuint ) << ".  Fix this." << std::endl;
+            return false;
         }
         if (sizeof(PLushort) != 2)
         {
-          std::cerr << "Expected PLushort to be 2 bytes, but it is "
-                    << sizeof( PLushort ) << ".  Fix this." << std::endl;
-          exit(1);
+            std::cerr << "plSTL::_plCheckTypeSizes() error: Expected PLushort to be 2 bytes, but it is "
+                      << sizeof( PLushort ) << ".  Fix this." << std::endl;
+            return false;
         }
         if (sizeof(PLfloat) != 4)
         {
-          std::cerr << "Expected PLfloat to be 4 bytes, but it is "
-                    << sizeof( PLfloat ) << ".  Fix this." << std::endl;
-          exit(1);
+            std::cerr << "plSTL::_plCheckTypeSizes() error: Expected PLfloat to be 4 bytes, but it is "
+                      << sizeof( PLfloat ) << ".  Fix this." << std::endl;
+            return false;
         }
+        return true;
     }
 
 }

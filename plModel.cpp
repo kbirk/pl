@@ -1,51 +1,31 @@
 #include "plModel.h"
 
 plModel::plModel( const plSeq<plTriangle> &triangles, const plString &filename, PLuint octreeDepth )
-    : _triangles(triangles), _filename(filename)
+    : _triangles( triangles ), _mesh( triangles ), _filename( filename )
 {
-    if ( !filename.compare( ".stl", filename.length()-4, 4) )
-    {
-        std::cout << "plModel error: Unrecognized suffix on filename '" << filename
-                  << "'. plModel filenames should have suffix .stl" << std::endl;
-        return;
-    }
-    if ( triangles.size() == 0 )
-    {
-        std::cout << "plModel error: No triangles provided as input. Aborting creation." << std::endl;
-        return;
-    }
-    // build mesh
-    _mesh = plMesh(_triangles);
     // get min and max extents of model
     plVector3 min, max;
     getMinMax(min,max);
+    
     // build octree
-    std::cout << "Building octree for " << _triangles.size() << " triangles (depth = " << octreeDepth << ")...";
     _octree.build( min, max, _triangles, octreeDepth );
-    std::cout << "\tComplete.\n";
 }
 
 
 plModel::plModel( const plString &filename, PLuint octreeDepth )
     : _filename(filename)
 {
-    if ( !filename.compare( ".stl", filename.length()-4, 4) )
-    {
-        std::cout << "plModel error: Unrecognized suffix on filename '" << filename
-                  << "'. plModel filenames should have suffix .stl" << std::endl;  		
+    // import triangles from STL file
+    if ( !plSTL::importFile( _triangles, filename ) )
         return;
-    }
-    // import STL file
-    plSTL::importFile( _triangles, filename );
+     
     // build mesh
-    _mesh = plMesh(_triangles);  
+    _mesh = plMesh(_triangles);
     // get min and max extents of model
     plVector3 min, max;
     getMinMax(min,max);
-    // build octree    
-    std::cout << "Building octree for " << _triangles.size() << " triangles (depth = " << octreeDepth << ")...";
-    _octree.build( min, max, _triangles, octreeDepth );      
-    std::cout << "\tComplete.\n";  
+    // build octree
+    _octree.build( min, max, _triangles, octreeDepth );
 }
 
 

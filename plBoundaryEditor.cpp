@@ -6,7 +6,7 @@ plBoundaryEditor::plBoundaryEditor()
     _selectedSiteIndex      = -1;
     _selectedBoundary       = NULL;
     _selectedPointIndex     = -1;
-    _draggingMenu           = false;
+    _isDraggingMenu         = false;
 }
 
 
@@ -55,7 +55,7 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY:   
         case PL_PICKING_TYPE_DEFECT_CORNERS:
         
-            _draggingMenu = ( _selectedPointIndex < 0 ); // drag menu if a point isn't selected
+            _isDraggingMenu = ( _selectedPointIndex < 0 ); // drag menu if a point isn't selected
             // no break here, it should continue to process moveSelectedPoint()
                 
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
@@ -84,7 +84,7 @@ PLbool plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
 
 PLbool plBoundaryEditor::processMouseRelease( plPlan &plan, PLint x, PLint y )
 {
-    _draggingMenu = false;
+    _isDraggingMenu = false;
     return true;   
 }
 
@@ -312,13 +312,13 @@ void plBoundaryEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
     plModelStack::push( plMatrix44() ); // load identity
     {
         // defect sites       
-        for (PLuint i=0; i<plan.defectSites().size(); i++)
+        for ( PLuint i=0; i<plan.defectSites().size(); i++ )
         {
             // spline menu
             plPicking::value.type = PL_PICKING_TYPE_DEFECT_CORNERS;           
             plPicking::value.id = i;  
                
-            if (plan.defectSites(i).spline._isSelected)
+            if ( plan.defectSites(i).spline._isSelected )
             {
                 plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
             }
@@ -330,7 +330,7 @@ void plBoundaryEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
             
             // boundary menu
             plPicking::value.type = PL_PICKING_TYPE_DEFECT_BOUNDARY;                 
-            if (plan.defectSites(i).boundary._isSelected)
+            if ( plan.defectSites(i).boundary._isSelected )
             {
                 plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL ); 
             }
@@ -382,7 +382,7 @@ void plBoundaryEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
         }
 
         // dragged menu item
-        if ( _draggingMenu )
+        if ( _isDraggingMenu )
         {   
             if ( _selectedBoundaryType == PL_PICKING_TYPE_IGUIDE_BOUNDARY )
             {

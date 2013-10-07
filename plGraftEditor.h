@@ -48,7 +48,7 @@ class plGraftEditor
 
     private: 
     
-        PLbool      _draggingMenu;
+        PLbool      _isDraggingMenu;
     
         PLint       _editMode;
         plVector3   _editAxis;

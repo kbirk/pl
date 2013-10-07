@@ -24,8 +24,8 @@ class plTexture
 
     private:
     
-        GLuint   _textureID;
-        PLint    _width, _height;	
+        GLuint _textureID;
+        PLint  _width, _height;	
 
         void _destroy();
         void _copyTexture( const plTexture &texture );

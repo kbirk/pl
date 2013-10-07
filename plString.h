@@ -24,36 +24,8 @@ class plString : public std::string
         
         void stripCharacter             ( char c);
         void stripPreceedingWhitespace  ();
-        void toLower();
-        
-        //plString operator + (const plString &s) const;  
-
-        /*
-        template <class T>
-        static plString toString( const T &t );
-
-        template <class T>
-        static T fromString( const plString &str );
-        */       
+        void toLower();      
 };
 
-/*
-template <class T>
-plString plString::toString( const T &t )
-{
-    std::ostringstream ss;
-    ss << t;
-    return ss.str();
-}
-
-template <class T>
-T plString::fromString( const plString &str )
-{
-    T val;
-    std::istringstream ss(str);
-    ss >> val;
-    return val;
-}
-*/
 
 #endif

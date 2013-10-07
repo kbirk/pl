@@ -39,23 +39,22 @@ class plOctreeNode
 
         ~plOctreeNode();
 
-        void    clear();
+        void insert( const plTriangle &tri, PLuint depth);
+        void clear ();
+        
+        void draw() const;        
 
-        void    draw  () const;        
-        void    insert( const plTriangle &tri, PLuint depth);
-        
-        PLfloat squaredDistanceFromPoint( const plVector3 &point, PLint child = -1 ) const;
-        PLbool  sphereCheck             ( const plVector3 &centre, PLfloat radius, PLint child = -1 ) const;
-        
-        PLbool rayIntersect   ( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat boxInflation = 0, PLbool ignoreBehindRay = false ) const;
+        PLbool rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat boxInflation = 0, PLbool ignoreBehindRay = false ) const;
         
         
     private:
                            
         plLineMesh  _mesh;
 
-        void _insertChild( PLuint index, const plTriangle &tri, PLuint depth);
-        void _updateMesh();
+        void    _insertChild( PLuint index, const plTriangle &tri, PLuint depth);
+        PLfloat _squaredDistanceFromPoint( const plVector3 &point, PLint child = -1 ) const;
+        PLbool  _sphereCheck             ( const plVector3 &centre, PLfloat radius, PLint child = -1 ) const;        
+        void    _updateMesh();
         
 };
 
@@ -68,11 +67,9 @@ class plOctree : public plRenderable
         plOctree( const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth );
 
         ~plOctree();
-        
-        void clear();
-
-        void build( const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth); 
-
+         
+        void build( const plVector3 &min, const plVector3 &max, const plSeq<plTriangle> &triangles, PLuint depth);  
+              
         plIntersection rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false,  PLbool backFaceCull = false ) const;
         
         void graftIntersect ( plSet<const plTriangle*> &triangles, const plTransform &transform, PLfloat radius) const;
@@ -82,13 +79,15 @@ class plOctree : public plRenderable
     private:
            
         plOctreeNode *_root;   
+          
+        void _clear();       
+        void _fill (const plSeq<plTriangle> &triangles, PLuint depth);
            
         // prevent copy construction and assignment   
         plOctree( const plOctree &o );
         plOctree operator= ( const plOctree &o ) const;    
     
-        void _fill(const plSeq<plTriangle> &triangles, PLuint depth);
-
+        
 };
 
 #endif
