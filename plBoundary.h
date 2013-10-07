@@ -27,7 +27,11 @@ class plBoundary : public plRenderable,
 
         plVector3 getAverageNormal() const;
 
-        virtual void   toggleVisibility();        
+        virtual void   toggleVisibility();
+        virtual void   setInvisible();
+        virtual void   saveState();
+        virtual void   loadState();
+
         virtual PLuint addPointAndNormal   ( const plVector3 &point, const plVector3 &normal);
         virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);
         virtual void   removePointAndNormal( PLuint index );

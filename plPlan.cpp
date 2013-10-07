@@ -404,6 +404,34 @@ void plPlan::exportFile( const plString &filename )
     }
 }
 
+void plPlan::defaultCameraVisibilityState()
+{
+    for ( PLuint i = 0; i < _models.size();      i++ )
+    {
+        if ( ! _models[i]->bone.isTransparent())
+            _models[i]->bone.toggleTransparency();
+        if ( ! _models[i]->cartilage.isTransparent())
+            _models[i]->cartilage.toggleTransparency();
+    }
+
+    for ( PLuint i = 0; i < _defectSites.size(); i++ )
+    {
+        _defectSites[i]->boundary.setInvisible();
+        _defectSites[i]->spline.setInvisible();
+    }
+
+    for ( PLuint i = 0; i < _donorSites.size();  i++ )
+    {
+        _donorSites[i]->boundary.setInvisible();
+    }
+
+    for ( PLuint i = 0; i < _iGuideSites.size(); i++ )
+    {
+        if ( _iGuideSites[i]->boundary.isVisible() )
+            _iGuideSites[i]->boundary.toggleVisibility();
+    }
+}
+
 
 void plPlan::saveVisibilityState()
 {
