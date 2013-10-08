@@ -15,12 +15,14 @@ class plVector3
 		plVector3( PLchar *string );  
 		plVector3( const plString &str );
 
-		PLbool 	  operator == (const plVector3 &p) const;
-		PLbool 	  operator != (const plVector3 &p) const;
-		plVector3 operator +  (const plVector3 &p) const;
-		plVector3 operator -  (const plVector3 &p) const;
-		PLfloat   operator *  (const plVector3 &p) const;
-		plVector3 operator ^  (const plVector3 &p) const;
+        PLbool 	   operator == (const plVector3 &p) const;
+        PLbool 	   operator != (const plVector3 &p) const;
+        plVector3  operator +  (const plVector3 &p) const;
+        plVector3  operator -  (const plVector3 &p) const;
+        PLfloat    operator *  (const plVector3 &p) const;
+        plVector3  operator ^  (const plVector3 &p) const;
+
+        plVector3& operator =  (const plVector3 &p);
         
 		plVector3 operator-() const;		
 

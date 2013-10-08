@@ -24,7 +24,9 @@ class plMeshConnectivityDataVert
     plMeshConnectivityData*                          dataset;
 
     plMeshConnectivityDataVert () {}
+    plMeshConnectivityDataVert ( const plMeshConnectivityDataVert& );
 
+    plMeshConnectivityDataVert& operator=(const plMeshConnectivityDataVert&);
     PLbool operator==(const plMeshConnectivityDataVert&) const;
     PLbool operator< (const plMeshConnectivityDataVert&) const;
     PLbool operator> (const plMeshConnectivityDataVert&) const;
@@ -41,7 +43,9 @@ class plMeshConnectivityDataEdge
     plMeshConnectivityData*                          dataset;
 
     plMeshConnectivityDataEdge () {}
+    plMeshConnectivityDataEdge ( const plMeshConnectivityDataEdge& );
 
+    plMeshConnectivityDataEdge& operator=(const plMeshConnectivityDataEdge&);
     PLbool operator==(const plMeshConnectivityDataEdge&) const;
     PLbool operator< (const plMeshConnectivityDataEdge&) const;
 };
@@ -57,7 +61,9 @@ class plMeshConnectivityDataFace
     plMeshConnectivityData*                          dataset;
 
     plMeshConnectivityDataFace () {}
+    plMeshConnectivityDataFace ( const plMeshConnectivityDataFace& );
 
+    plMeshConnectivityDataFace& operator=(const plMeshConnectivityDataFace&);
     PLbool operator==(const plMeshConnectivityDataFace&) const;
     PLbool operator< (const plMeshConnectivityDataFace&) const;
 };

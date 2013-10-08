@@ -360,3 +360,14 @@ namespace plSTL
 
 }
 
+plTriangle& plTriangle::operator=( const plTriangle& other )
+{
+    _points[0] = other._points[0];
+    _points[1] = other._points[1];
+    _points[2] = other._points[2];
+    _normal    = other._normal;
+    _centroid  = other._centroid;
+    _radius    = other._radius;
+    return *this;
+}
+

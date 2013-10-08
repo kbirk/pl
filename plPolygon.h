@@ -21,6 +21,7 @@ class plEdge
     plVector3 otherPt   (const plVector3 &point, const PLfloat &epsilon = PL_EPSILON) const;
     PLbool    equals    (const plEdge& e2,       const PLfloat &epsilon = PL_EPSILON) const; // flexible epsilon
     PLbool    operator==(const plEdge& e2) const; // epsilon is absolute zero
+    plEdge&   operator= (const plEdge& other);
 
 };
 

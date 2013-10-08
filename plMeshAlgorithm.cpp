@@ -861,15 +861,18 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
         const plMeshConnectivityDataEdge* edge01;
         std::cout << _data.edges.size() << std::endl;
         std::cout << "F" << std::endl;
+        (_data.edges.find(edge01Insert));
+        std::cout << "G" << std::endl;
         if (_data.edges.find(edge01Insert) == _data.edges.end())
         {
             std::cout << "NOT FOUND" << std::endl;
             return false;
         }
-        std::cout << (*(_data.edges.find(edge01Insert))) << std::endl;
-        std::cout << "G" << std::endl;
-        edge01 = &(*(_data.edges.find(edge01Insert)));
         std::cout << "H" << std::endl;
+        std::cout << (*(_data.edges.find(edge01Insert))) << std::endl;
+        std::cout << "I" << std::endl;
+        edge01 = &(*(_data.edges.find(edge01Insert)));
+        std::cout << "J" << std::endl;
 
         if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
             for (PLuint i=0;i<depth;i++)

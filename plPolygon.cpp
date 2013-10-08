@@ -46,6 +46,13 @@ PLbool plEdge::operator==(const plEdge &e2) const
     return false;
 }
 
+plEdge& plEdge::operator =(const plEdge& other)
+{
+    pt1 = other.pt1;
+    pt2 = other.pt2;
+    return *this;
+}
+
 std::ostream& operator << ( std::ostream &stream, const plEdge &e )
 {
     stream << e.pt1 << " " << e.pt2 << "\n";

@@ -1,22 +1,37 @@
 #include "plMeshConnectivityData.h"
 
+plMeshConnectivityDataVert::plMeshConnectivityDataVert( const plMeshConnectivityDataVert &other )
+{
+    *this = other;
+}
+
+plMeshConnectivityDataEdge::plMeshConnectivityDataEdge( const plMeshConnectivityDataEdge &other )
+{
+    *this = other;
+}
+
+plMeshConnectivityDataFace::plMeshConnectivityDataFace( const plMeshConnectivityDataFace &other )
+{
+    *this = other;
+}
+
 PLbool plMeshConnectivityDataVert::operator==(const plMeshConnectivityDataVert &other) const
 {
-    if (vert == other.vert)
+    if (originatingMesh == other.originatingMesh && vert == other.vert)
         return true;
     return false;
 }
 
 PLbool plMeshConnectivityDataEdge::operator==(const plMeshConnectivityDataEdge& other) const
 {
-    if (edge == other.edge)
+    if (originatingMesh == other.originatingMesh && edge == other.edge)
         return true;
     return false;
 }
 
 PLbool plMeshConnectivityDataFace::operator==(const plMeshConnectivityDataFace& other) const
 {
-    if (face == other.face)
+    if (originatingMesh == other.originatingMesh && face == other.face)
         return true;
     return false;
 }
@@ -264,6 +279,48 @@ PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& o
     //    return false;
 
     return false;
+}
+
+plMeshConnectivityDataVert& plMeshConnectivityDataVert::operator=(const plMeshConnectivityDataVert& other)
+{
+    vert = other.vert;
+    originatingMesh = other.originatingMesh;
+    edges.clear();
+    for (PLuint i = 0; i < other.edges.size(); i++)
+        edges.add(other.edges[i]);
+    faces.clear();
+    for (PLuint i = 0; i < other.faces.size(); i++)
+        faces.add(other.faces[i]);
+    dataset = other.dataset;
+    return *this;
+}
+
+plMeshConnectivityDataEdge& plMeshConnectivityDataEdge::operator=(const plMeshConnectivityDataEdge& other)
+{
+    edge = other.edge;
+    originatingMesh = other.originatingMesh;
+    verts.clear();
+    for (PLuint i = 0; i < other.verts.size(); i++)
+        verts.add(other.verts[i]);
+    faces.clear();
+    for (PLuint i = 0; i < other.faces.size(); i++)
+        faces.add(other.faces[i]);
+    dataset = other.dataset;
+    return *this;
+}
+
+plMeshConnectivityDataFace& plMeshConnectivityDataFace::operator=(const plMeshConnectivityDataFace& other)
+{
+    face = other.face;
+    originatingMesh = other.originatingMesh;
+    verts.clear();
+    for (PLuint i = 0; i < other.verts.size(); i++)
+        verts.add(other.verts[i]);
+    edges.clear();
+    for (PLuint i = 0; i < other.edges.size(); i++)
+        edges.add(other.edges[i]);
+    dataset = other.dataset;
+    return *this;
 }
 
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVert &vert )
