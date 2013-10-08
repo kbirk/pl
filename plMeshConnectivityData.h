@@ -25,9 +25,9 @@ class plMeshConnectivityDataVert
 
     plMeshConnectivityDataVert () {}
 
-    PLbool operator==(const plMeshConnectivityDataVert&);
-    PLbool operator< (const plMeshConnectivityDataVert&);
-    PLbool operator> (const plMeshConnectivityDataVert&);
+    PLbool operator==(const plMeshConnectivityDataVert&) const;
+    PLbool operator< (const plMeshConnectivityDataVert&) const;
+    PLbool operator> (const plMeshConnectivityDataVert&) const;
 };
 
 class plMeshConnectivityDataEdge
@@ -42,8 +42,8 @@ class plMeshConnectivityDataEdge
 
     plMeshConnectivityDataEdge () {}
 
-    PLbool operator==(const plMeshConnectivityDataEdge&);
-    PLbool operator< (const plMeshConnectivityDataEdge&);
+    PLbool operator==(const plMeshConnectivityDataEdge&) const;
+    PLbool operator< (const plMeshConnectivityDataEdge&) const;
 };
 
 class plMeshConnectivityDataFace
@@ -58,8 +58,8 @@ class plMeshConnectivityDataFace
 
     plMeshConnectivityDataFace () {}
 
-    PLbool operator==(const plMeshConnectivityDataFace&);
-    PLbool operator< (const plMeshConnectivityDataFace&);
+    PLbool operator==(const plMeshConnectivityDataFace&) const;
+    PLbool operator< (const plMeshConnectivityDataFace&) const;
 };
 
 typedef std::set<plMeshConnectivityDataVert>::iterator plMeshConnectivityDataVertIterator;

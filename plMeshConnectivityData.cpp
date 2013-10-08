@@ -1,27 +1,27 @@
 #include "plMeshConnectivityData.h"
 
-PLbool plMeshConnectivityDataVert::operator==(const plMeshConnectivityDataVert &other)
+PLbool plMeshConnectivityDataVert::operator==(const plMeshConnectivityDataVert &other) const
 {
     if (vert == other.vert)
         return true;
     return false;
 }
 
-PLbool plMeshConnectivityDataEdge::operator==(const plMeshConnectivityDataEdge& other)
+PLbool plMeshConnectivityDataEdge::operator==(const plMeshConnectivityDataEdge& other) const
 {
     if (edge == other.edge)
         return true;
     return false;
 }
 
-PLbool plMeshConnectivityDataFace::operator==(const plMeshConnectivityDataFace& other)
+PLbool plMeshConnectivityDataFace::operator==(const plMeshConnectivityDataFace& other) const
 {
     if (face == other.face)
         return true;
     return false;
 }
 
-PLbool plMeshConnectivityDataVert::operator<(const plMeshConnectivityDataVert &other)
+PLbool plMeshConnectivityDataVert::operator<(const plMeshConnectivityDataVert &other) const
 {
     if (originatingMesh < other.originatingMesh)
         return true;
@@ -46,7 +46,7 @@ PLbool plMeshConnectivityDataVert::operator<(const plMeshConnectivityDataVert &o
     return false;
 }
 
-PLbool plMeshConnectivityDataVert::operator>(const plMeshConnectivityDataVert &other)
+PLbool plMeshConnectivityDataVert::operator>(const plMeshConnectivityDataVert &other) const
 {
     if (originatingMesh > other.originatingMesh)
         return true;
@@ -71,7 +71,7 @@ PLbool plMeshConnectivityDataVert::operator>(const plMeshConnectivityDataVert &o
     return false;
 }
 
-PLbool plMeshConnectivityDataEdge::operator<(const plMeshConnectivityDataEdge& other)
+PLbool plMeshConnectivityDataEdge::operator<(const plMeshConnectivityDataEdge& other) const
 {
     if (originatingMesh < other.originatingMesh)
         return true;
@@ -122,7 +122,7 @@ PLbool plMeshConnectivityDataEdge::operator<(const plMeshConnectivityDataEdge& o
     return false;
 }
 
-PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& other)
+PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& other) const
 {
     if (originatingMesh < other.originatingMesh)
         return true;

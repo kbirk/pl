@@ -5,7 +5,7 @@ plMeshAlgorithm::plMeshAlgorithm()
     _epsilon = PL_EPSILON;
 }
 
-const plMeshConnectivityDataVert* plMeshAlgorithm::_findVert( const plVector3& vertex, PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_findVert( const plVector3& vertex, const plMeshConnectivityDataVert* vertPointer, PLuint verbose, PLuint depth )
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
@@ -13,24 +13,24 @@ const plMeshConnectivityDataVert* plMeshAlgorithm::_findVert( const plVector3& v
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findVert()" << std::endl;
     }
 
-    const plMeshConnectivityDataVert* found(NULL);
+    vertPointer = (NULL);
     for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); vit++)
     {
         if (( (*vit).vert - vertex).length() <= _epsilon)
         {
-            if (found == NULL)
-                found = &(*vit);
+            if (vertPointer == NULL)
+                vertPointer = &(*vit);
             else
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_findVert(): More than one candidate for vertex " << vertex << ". This could mean that epsilon is set too large. Aborting operation." << std::endl;
-                return NULL;
+                return false;
             }
         }
     }
 
-    return found;
+    return true;
 }
 
 PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edgeAB, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth )
@@ -294,83 +294,69 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
     // update anything else that might be affected:
     vertA->edgeIndices.remove(vertA->edgeIndices.findIndex(edgeAB));
     vertB->edgeIndices.remove(vertB->edgeIndices.findIndex(edgeAB));
-    _data.edges.erase(edgeAB);
+    _data.edges.erase(*edgeAB);
 
     return true;
 }
 
 // add a vertex somewhere in the middle of the triangle, then divide the triangle into three smaller triangles.
-PLbool plMeshAlgorithm::_splitFaceOnVect( PLuint faceIndex, const plVector3& vertex, PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_splitFaceOnVect( const plMeshConnectivityDataFace* face012, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth )
 {
-    if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
+    /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_splitFaceOnVect()" << std::endl;
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Splitting on vertex " << vertex << std::endl;
-    }
+    }*/
 
     // find all existing cells, have them available in case they're needed later
-    plMeshConnectivityDataFace face = _data.faces[faceIndex]; // this will eventually be removed from the list of faces
-    if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
+    /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Face being split is " << _data.faces[faceIndex].face.point0() << " | "
                                                    << _data.faces[faceIndex].face.point1() << " | "
                                                    << _data.faces[faceIndex].face.point2() << std::endl;
-    }
+    }*/
 
-    PLuint vert0index;
-    PLuint vert1index;
-    PLuint vert2index;
-    for (PLuint i = 0; i < face.vertIndices.size(); i++) // TODO: Ask myself if this is really needed...
-    {
-        if (_data.verts[face.vertIndices[i]].vert == face.face.point0())
-            vert0index = face.vertIndices[i];
-        if (_data.verts[face.vertIndices[i]].vert == face.face.point1())
-            vert1index = face.vertIndices[i];
-        if (_data.verts[face.vertIndices[i]].vert == face.face.point2())
-            vert2index = face.vertIndices[i];
-    }
-    plMeshConnectivityDataVert& vert0 = _data.verts[vert0index];
-    plMeshConnectivityDataVert& vert1 = _data.verts[vert1index];
-    plMeshConnectivityDataVert& vert2 = _data.verts[vert2index];
-    if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
+    const plMeshConnectivityDataVert* vert0 = face012->vertIndices[0];
+    const plMeshConnectivityDataVert* vert1 = face012->vertIndices[1];
+    const plMeshConnectivityDataVert* vert2 = face012->vertIndices[2];
+
+    /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Vertices detected are " << _data.verts[vert0index].vert << " | "
                                                      << _data.verts[vert1index].vert << " | "
                                                      << _data.verts[vert2index].vert << std::endl;
-    }
+    }*/
 
-    PLint edge01searchIndex(-1);
-    PLint edge12searchIndex(-1);
-    PLint edge20searchIndex(-1);
-    for (PLuint i = 0; i < face.edgeIndices.size(); i++)
+    const plMeshConnectivityDataEdge* edge01(NULL);
+    const plMeshConnectivityDataEdge* edge12(NULL);
+    const plMeshConnectivityDataEdge* edge20(NULL);
+
+    for (PLuint i = 0; i < face012->edgeIndices.size(); i++)
     {
-        if (_data.edges[face.edgeIndices[i]].edge.contains(face.face.point0(), _epsilon) &&
-            _data.edges[face.edgeIndices[i]].edge.contains(face.face.point1(), _epsilon) )
-            edge01searchIndex = face.edgeIndices[i];
-        if (_data.edges[face.edgeIndices[i]].edge.contains(face.face.point1(), _epsilon) &&
-            _data.edges[face.edgeIndices[i]].edge.contains(face.face.point2(), _epsilon) )
-            edge12searchIndex = face.edgeIndices[i];
-        if (_data.edges[face.edgeIndices[i]].edge.contains(face.face.point2(), _epsilon) &&
-            _data.edges[face.edgeIndices[i]].edge.contains(face.face.point0(), _epsilon) )
-            edge20searchIndex = face.edgeIndices[i];
+        if (face012->edgeIndices[i]->edge.contains(vert0->vert, _epsilon) &&
+            face012->edgeIndices[i]->edge.contains(vert1->vert, _epsilon) )
+            edge01 = face012->edgeIndices[i];
+        if (face012->edgeIndices[i]->edge.contains(vert1->vert, _epsilon) &&
+            face012->edgeIndices[i]->edge.contains(vert2->vert, _epsilon) )
+            edge12 = face012->edgeIndices[i];
+        if (face012->edgeIndices[i]->edge.contains(vert2->vert, _epsilon) &&
+            face012->edgeIndices[i]->edge.contains(vert0->vert, _epsilon) )
+            edge20 = face012->edgeIndices[i];
     }
-    if (edge01searchIndex == -1 || edge12searchIndex == -1 || edge20searchIndex == -1)
+    if (edge01 == NULL || edge12 == NULL || edge20 == NULL)
     {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Error in plMeshIntersectorConnectivityData::_splitFaceOnVect(): Could not find one of the edges in the face. Aborting operation." << std::endl;
-        std::cout << _data.faces[faceIndex] << std::endl;
+        //std::cout << _data.faces[faceIndex] << std::endl;
         return false;
     }
-    PLuint edge01index((PLuint)edge01searchIndex);
-    PLuint edge12index((PLuint)edge12searchIndex);
-    PLuint edge20index((PLuint)edge20searchIndex);
-    if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
+    /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Edge01 detected is " << _data.edges[edge01index].edge.pt1 << " - " << _data.edges[edge01index].edge.pt2 << std::endl;
@@ -380,113 +366,107 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( PLuint faceIndex, const plVector3& ver
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Edge20 detected is " << _data.edges[edge20index].edge.pt1 << " - " << _data.edges[edge20index].edge.pt2 << std::endl;
-    }
-    plMeshConnectivityDataEdge& edge01 = _data.edges[edge01index];
-    plMeshConnectivityDataEdge& edge12 = _data.edges[edge12index];
-    plMeshConnectivityDataEdge& edge20 = _data.edges[edge20index];
+    }*/
 
     // create the new cells, storing their eventual indices
-    plMeshConnectivityDataVert vertNsearch; vertNsearch.vert = vertex;
-    PLint  vertNsearchIndex;
-    vertNsearchIndex = _data.verts.findIndex(vertNsearch);
-    PLuint vertNindex; // we need to determine this
-    if (vertNsearchIndex == -1)
-    {
-        vertNindex = _data.verts.size();
-        _data.verts.add(vertNsearch);
-    }
-    else
-        vertNindex = (PLuint)vertNsearchIndex;
-    plMeshConnectivityDataVert& vertN = _data.verts[vertNindex];
+    plMeshConnectivityDataEdge edgeN0Insert;
+    edgeN0Insert.edge = plEdge(vertN->vert,vert0->vert);
+    _data.edges.insert(edgeN0Insert);
 
-    plMeshConnectivityDataEdge edgeN0;
-    plMeshConnectivityDataEdge edgeN1;
-    plMeshConnectivityDataEdge edgeN2;
-    PLuint edgeN0index(_data.edges.size()  );
-    PLuint edgeN1index(_data.edges.size()+1);
-    PLuint edgeN2index(_data.edges.size()+2);
+    plMeshConnectivityDataEdge edgeN1Insert;
+    edgeN1Insert.edge = plEdge(vertN->vert,vert1->vert);
+    _data.edges.insert(edgeN1Insert);
 
-    plMeshConnectivityDataFace face01N;
-    plMeshConnectivityDataFace face12N;
-    plMeshConnectivityDataFace face20N;
-    PLuint face01Nindex(faceIndex);
-    PLuint face12Nindex(_data.faces.size());
-    PLuint face20Nindex(_data.faces.size()+1);
+    plMeshConnectivityDataEdge edgeN2Insert;
+    edgeN2Insert.edge = plEdge(vertN->vert,vert2->vert);
+    _data.edges.insert(edgeN2Insert);
+
+    plMeshConnectivityDataFace face01NInsert;
+    face01NInsert.face = plTriangle(vert0->vert,vert1->vert,vertN->vert);
+    _data.faces.insert(face01NInsert);
+
+    plMeshConnectivityDataFace face12NInsert;
+    face12NInsert.face = plTriangle(vert1->vert,vert2->vert,vertN->vert);
+    _data.faces.insert(face12NInsert);
+
+    plMeshConnectivityDataFace face20NInsert;
+    face20NInsert.face = plTriangle(vert2->vert,vert0->vert,vertN->vert);
+    _data.faces.insert(face20NInsert);
+
+    const plMeshConnectivityDataEdge* edgeN0  = &(*(_data.edges.find(edgeN0Insert )));;
+    const plMeshConnectivityDataEdge* edgeN1  = &(*(_data.edges.find(edgeN1Insert )));;
+    const plMeshConnectivityDataEdge* edgeN2  = &(*(_data.edges.find(edgeN2Insert )));;
+    const plMeshConnectivityDataFace* face01N = &(*(_data.faces.find(face01NInsert )));;
+    const plMeshConnectivityDataFace* face12N = &(*(_data.faces.find(face12NInsert )));;
+    const plMeshConnectivityDataFace* face20N = &(*(_data.faces.find(face20NInsert )));;
 
     // fill the cells with data
-    vertN.faceIndices.add(face01Nindex);
-    vertN.faceIndices.add(face12Nindex);
-    vertN.faceIndices.add(face20Nindex);
-    vertN.edgeIndices.add(edgeN0index);
-    vertN.edgeIndices.add(edgeN1index);
-    vertN.edgeIndices.add(edgeN2index);
+    vertN->faceIndices.add(face01N);
+    vertN->faceIndices.add(face12N);
+    vertN->faceIndices.add(face20N);
+    vertN->edgeIndices.add(edgeN0);
+    vertN->edgeIndices.add(edgeN1);
+    vertN->edgeIndices.add(edgeN2);
 
-    face01N.face = plTriangle(face.face.point0(),face.face.point1(),vertex); // this one will replace faces[faceIndex]
-    face01N.edgeIndices.add(edge01index);
-    face01N.edgeIndices.add(edgeN1index);
-    face01N.edgeIndices.add(edgeN0index);
-    face01N.vertIndices.add(vert0index);
-    face01N.vertIndices.add(vert1index);
-    face01N.vertIndices.add(vertNindex);
+    face01N->edgeIndices.add(edge01);
+    face01N->edgeIndices.add(edgeN1);
+    face01N->edgeIndices.add(edgeN0);
+    face01N->vertIndices.add(vert0);
+    face01N->vertIndices.add(vert1);
+    face01N->vertIndices.add(vertN);
 
-    face12N.face = plTriangle(face.face.point1(),face.face.point2(),vertex); // this one will become  faces[size]
-    face12N.edgeIndices.add(edge12index);
-    face12N.edgeIndices.add(edgeN2index);
-    face12N.edgeIndices.add(edgeN1index);
-    face12N.vertIndices.add(vert1index);
-    face12N.vertIndices.add(vert2index);
-    face12N.vertIndices.add(vertNindex);
+    face12N->edgeIndices.add(edge12);
+    face12N->edgeIndices.add(edgeN2);
+    face12N->edgeIndices.add(edgeN1);
+    face12N->vertIndices.add(vert1);
+    face12N->vertIndices.add(vert2);
+    face12N->vertIndices.add(vertN);
 
-    face20N.face = plTriangle(face.face.point2(),face.face.point0(),vertex); // this one will become  faces[size+1]
-    face20N.edgeIndices.add(edge20index);
-    face20N.edgeIndices.add(edgeN0index);
-    face20N.edgeIndices.add(edgeN2index);
-    face20N.vertIndices.add(vert2index);
-    face20N.vertIndices.add(vert0index);
-    face20N.vertIndices.add(vertNindex);
+    face20N->edgeIndices.add(edge20);
+    face20N->edgeIndices.add(edgeN0);
+    face20N->edgeIndices.add(edgeN2);
+    face20N->vertIndices.add(vert2);
+    face20N->vertIndices.add(vert0);
+    face20N->vertIndices.add(vertN);
 
-    edgeN0.edge = plEdge(face.face.point0(),vertex);
-    edgeN0.vertIndices.add(vertNindex);
-    edgeN0.vertIndices.add(vert0index);
-    edgeN0.faceIndices.add(face20Nindex);
-    edgeN0.faceIndices.add(face01Nindex);
+    edgeN0->vertIndices.add(vertN);
+    edgeN0->vertIndices.add(vert0);
+    edgeN0->faceIndices.add(face20N);
+    edgeN0->faceIndices.add(face01N);
 
-    edgeN1.edge = plEdge(face.face.point1(),vertex);
-    edgeN1.vertIndices.add(vertNindex);
-    edgeN1.vertIndices.add(vert1index);
-    edgeN1.faceIndices.add(face01Nindex);
-    edgeN1.faceIndices.add(face12Nindex);
+    edgeN1->vertIndices.add(vertN);
+    edgeN1->vertIndices.add(vert1);
+    edgeN1->faceIndices.add(face01N);
+    edgeN1->faceIndices.add(face12N);
 
-    edgeN2.edge = plEdge(face.face.point2(),vertex);
-    edgeN2.vertIndices.add(vertNindex);
-    edgeN2.vertIndices.add(vert2index);
-    edgeN2.faceIndices.add(face12Nindex);
-    edgeN2.faceIndices.add(face20Nindex);
-
-    // add the cells to our arrays (vertN is added before because we need a reference)
-    _data.faces[faceIndex] = face01N;
-    _data.faces.add(face12N);
-    _data.faces.add(face20N);
-
-    _data.edges.add(edgeN0);
-    _data.edges.add(edgeN1);
-    _data.edges.add(edgeN2);
+    edgeN2->vertIndices.add(vertN);
+    edgeN2->vertIndices.add(vert2);
+    edgeN2->faceIndices.add(face12N);
+    edgeN2->faceIndices.add(face20N);
 
     // update anything else that has been affected by what we just did
-    _data.verts[vert0index].faceIndices.add(face20Nindex); // keeping in mind faceIndex is already there, and is now face01Nindex
-    _data.verts[vert1index].faceIndices.add(face12Nindex); // see above comment
-    _data.verts[vert2index].faceIndices.remove(_data.verts[vert2index].faceIndices.findIndex(faceIndex)); // face01N is no longer connected, so remove it.
-    _data.verts[vert2index].faceIndices.add(face20Nindex);
-    _data.verts[vert2index].faceIndices.add(face12Nindex);
+    vert0->faceIndices.remove(vert0->faceIndices.findIndex(face012));
+    vert0->faceIndices.add(face20N);
+    vert0->faceIndices.add(face01N);
+    vert1->faceIndices.remove(vert1->faceIndices.findIndex(face012));
+    vert1->faceIndices.add(face01N);
+    vert0->faceIndices.add(face12N);
+    vert2->faceIndices.remove(vert2->faceIndices.findIndex(face012));
+    vert2->faceIndices.add(face12N);
+    vert0->faceIndices.add(face20N);
 
-    _data.verts[vert0index].edgeIndices.add(edgeN0index);
-    _data.verts[vert1index].edgeIndices.add(edgeN1index);
-    _data.verts[vert2index].edgeIndices.add(edgeN2index);
+    vert0->edgeIndices.add(edgeN0);
+    vert1->edgeIndices.add(edgeN1);
+    vert2->edgeIndices.add(edgeN2);
 
-    _data.edges[edge12index].faceIndices.remove(_data.edges[edge12index].faceIndices.findIndex(faceIndex));
-    _data.edges[edge12index].faceIndices.add(face12Nindex);
-    _data.edges[edge20index].faceIndices.remove(_data.edges[edge20index].faceIndices.findIndex(faceIndex));
-    _data.edges[edge20index].faceIndices.add(face20Nindex); // edge01 doesn't need this because faceIndex == face01Nindex
+    edge01->faceIndices.remove(edge01->faceIndices.findIndex(face012));
+    edge01->faceIndices.add(face01N);
+    edge12->faceIndices.remove(edge12->faceIndices.findIndex(face012));
+    edge12->faceIndices.add(face12N);
+    edge20->faceIndices.remove(edge20->faceIndices.findIndex(face012));
+    edge20->faceIndices.add(face20N);
+
+    _data.faces.erase(_data.faces.find(*face012));
 
     //std::cout << "vertNindex: " << vertNindex << std::endl;
     //std::cout << "vert0index: " << vert0index << std::endl;
@@ -504,42 +484,42 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( PLuint faceIndex, const plVector3& ver
 PLbool plMeshAlgorithm::_checkArraySizes( PLuint verbose, PLuint depth )
 {
     bool good(true);
-    for (PLuint i = 0; i < _data.edges.size(); i++)
+    for (plMeshConnectivityDataEdgeIterator eit = _data.edges.begin(); eit != _data.edges.end(); eit++)
     {
-        if (_data.edges[i].faceIndices.size() % 2 != 0 || _data.edges[i].faceIndices.size() == 0)
+        if ((*eit).faceIndices.size() % 2 != 0 || (*eit).faceIndices.size() == 0)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
-            std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): faceIndices for edge " << i << " is of non positive even size " <<_data.edges[i].faceIndices.size()  << ". Should be even." << std::endl;
-            std::cout << _data.edges[i] << std::endl;
+            std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): faceIndices for edge " << &(*eit) << " is of non positive even size " << (*eit).faceIndices.size()  << ". Should be even." << std::endl;
+            std::cout << (*eit) << std::endl;
             good = false;
         }
-        if (_data.edges[i].vertIndices.size() != 2)
+        if ((*eit).vertIndices.size() != 2)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
-            std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): vertIndices for edge " << i << " is of size " << _data.edges[i].vertIndices.size() << ". Should be 2." << std::endl;
+            std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): vertIndices for edge " << &(*eit) << " is of size " << (*eit).vertIndices.size() << ". Should be 2." << std::endl;
             good = false;
-            std::cout << _data.edges[i] << std::endl;
+            std::cout << (*eit) << std::endl;
         }
     }
-    for (PLuint i = 0; i < _data.faces.size(); i++)
+    for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
     {
-        if (_data.faces[i].vertIndices.size() != 3)
+        if ((*fit).vertIndices.size() != 3)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
-            std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): vertIndices for face " << i << " is of size " << _data.faces[i].vertIndices.size() << ". Should be 3." << std::endl;
+            std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): vertIndices for face " << &(*fit) << " is of size " << (*fit).vertIndices.size() << ". Should be 3." << std::endl;
             good = false;
-            std::cout << _data.faces[i] << std::endl;
+            std::cout << (*fit) << std::endl;
         }
-        if (_data.faces[i].edgeIndices.size() != 3)
+        if ((*fit).edgeIndices.size() != 3)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
-            std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): edgeIndices for face " << i << " is of size " << _data.faces[i].edgeIndices.size() << ". Should be 3." << std::endl;
+            std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): edgeIndices for face " << &(*fit) << " is of size " << (*fit).edgeIndices.size() << ". Should be 3." << std::endl;
             good = false;
-            std::cout << _data.faces[i] << std::endl;
+            std::cout << (*fit) << std::endl;
         }
     }
     return good;
@@ -548,115 +528,115 @@ PLbool plMeshAlgorithm::_checkArraySizes( PLuint verbose, PLuint depth )
 PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
 {
     bool good(true);
-    plSeq<PLuint> indices;
-    for (PLuint i=0; i < _data.verts.size(); i++)
+    plSeq<const void*> indices; // untyped, since we're only checking for duplicate memory addresses.
+    for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); vit++)
     {
         // check edges
         indices.clear();
-        for (PLuint j = 0; j < _data.verts[i].edgeIndices.size(); j++)
+        for (PLuint j = 0; j < (*vit).edgeIndices.size(); j++)
         {
-            if (indices.findIndex(_data.verts[i].edgeIndices[j]) > -1)
+            if (indices.findIndex((*vit).edgeIndices[j]) > -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): vertex " << i << " contains a duplicate edge: " << _data.verts[i].edgeIndices[j] << "." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): vertex " << &(*vit) << " contains a duplicate edge: " << (*vit).edgeIndices[j] << "." << std::endl;
                 good = false;
-                std::cout << _data.verts[i] << std::endl;
+                std::cout << (*vit) << std::endl;
             }
             else
             {
-                indices.add(_data.verts[i].edgeIndices[j]);
+                indices.add((*vit).edgeIndices[j]);
             }
         }
         // check faces
         indices.clear();
-        for (PLuint j = 0; j < _data.verts[i].faceIndices.size(); j++)
+        for (PLuint j = 0; j < (*vit).faceIndices.size(); j++)
         {
-            if (indices.findIndex(_data.verts[i].faceIndices[j]) > -1)
+            if (indices.findIndex((*vit).faceIndices[j]) > -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): vertex " << i << " contains a duplicate face: " << _data.verts[i].faceIndices[j] << "." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): vertex " << &(*vit) << " contains a duplicate face: " << (*vit).faceIndices[j] << "." << std::endl;
                 good = false;
-                std::cout << _data.verts[i] << std::endl;
+                std::cout << (*vit) << std::endl;
             }
             else
             {
-                indices.add(_data.verts[i].faceIndices[j]);
+                indices.add((*vit).faceIndices[j]);
             }
         }
     }
-    for (PLuint i=0; i < _data.edges.size(); i++)
+    for (plMeshConnectivityDataEdgeIterator eit = _data.edges.begin(); eit != _data.edges.end(); eit++)
     {
         // check vertices
         indices.clear();
-        for (PLuint j = 0; j < _data.edges[i].vertIndices.size(); j++)
+        for (PLuint j = 0; j < (*eit).vertIndices.size(); j++)
         {
-            if (indices.findIndex(_data.edges[i].vertIndices[j]) > -1)
+            if (indices.findIndex((*eit).vertIndices[j]) > -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): edge " << i << " contains a duplicate vertex: " << _data.edges[i].vertIndices[j] << "." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): edge " << &(*eit) << " contains a duplicate vertex: " << (*eit).vertIndices[j] << "." << std::endl;
                 good = false;
-                std::cout << _data.edges[i] << std::endl;
+                std::cout << (*eit) << std::endl;
             }
             else
             {
-                indices.add(_data.edges[i].vertIndices[j]);
+                indices.add((*eit).vertIndices[j]);
             }
         }
         // check faces
         indices.clear();
-        for (PLuint j = 0; j < _data.edges[i].faceIndices.size(); j++)
+        for (PLuint j = 0; j < (*eit).faceIndices.size(); j++)
         {
-            if (indices.findIndex(_data.edges[i].faceIndices[j]) > -1)
+            if (indices.findIndex((*eit).faceIndices[j]) > -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): edge " << i << " contains a duplicate face: " << _data.edges[i].faceIndices[j] << "." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): edge " << &(*eit) << " contains a duplicate face: " << (*eit).faceIndices[j] << "." << std::endl;
                 good = false;
-                std::cout << _data.edges[i] << std::endl;
+                std::cout << (*eit) << std::endl;
             }
             else
             {
-                indices.add(_data.edges[i].faceIndices[j]);
+                indices.add((*eit).faceIndices[j]);
             }
         }
     }
-    for (PLuint i=0; i < _data.faces.size(); i++)
+    for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
     {
         // check vertices
         indices.clear();
-        for (PLuint j = 0; j < _data.faces[i].vertIndices.size(); j++)
+        for (PLuint j = 0; j < (*fit).vertIndices.size(); j++)
         {
-            if (indices.findIndex(_data.faces[i].vertIndices[j]) > -1)
+            if (indices.findIndex((*fit).vertIndices[j]) > -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): face " << i << " contains a duplicate vertex: " << _data.faces[i].vertIndices[j] << "." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): face " << &(*fit) << " contains a duplicate vertex: " << (*fit).vertIndices[j] << "." << std::endl;
                 good = false;
-                std::cout << _data.faces[i] << std::endl;
+                std::cout << (*fit) << std::endl;
             }
             else
             {
-                indices.add(_data.faces[i].vertIndices[j]);
+                indices.add((*fit).vertIndices[j]);
             }
         }
         // check edges
         indices.clear();
-        for (PLuint j = 0; j < _data.faces[i].edgeIndices.size(); j++)
+        for (PLuint j = 0; j < (*fit).edgeIndices.size(); j++)
         {
-            if (indices.findIndex(_data.faces[i].edgeIndices[j]) > -1)
+            if (indices.findIndex((*fit).edgeIndices[j]) > -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): face " << i << " contains a duplicate edge: " << _data.faces[i].edgeIndices[j] << "." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): face " << &(*fit) << " contains a duplicate edge: " << (*fit).edgeIndices[j] << "." << std::endl;
                 good = false;
-                std::cout << _data.faces[i] << std::endl;
+                std::cout << (*fit) << std::endl;
             }
             else
             {
-                indices.add(_data.faces[i].edgeIndices[j]);
+                indices.add((*fit).edgeIndices[j]);
             }
         }
     }
@@ -667,96 +647,96 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
 {
     bool good(true);
     plSeq<PLuint> indices;
-    for (PLuint i=0; i < _data.verts.size(); i++)
+    for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); vit++)
     {
         // check edges
         indices.clear();
-        for (PLuint j = 0; j < _data.verts[i].edgeIndices.size(); j++)
+        for (PLuint j = 0; j < (*vit).edgeIndices.size(); j++)
         {
-            if (_data.edges[_data.verts[i].edgeIndices[j]].vertIndices.findIndex(i) == -1)
+            if ((*vit).edgeIndices[j]->vertIndices.findIndex(&(*vit)) == -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): vert " << i << " references edge " << _data.verts[i].edgeIndices[j] << ", but not vice versa." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): vert " << &(*vit) << " references edge " << (*vit).edgeIndices[j] << ", but not vice versa." << std::endl;
                 good = false;
-                std::cout << _data.verts[i] << std::endl;
-                std::cout << _data.edges[_data.verts[i].edgeIndices[j]] << std::endl;
+                std::cout << (*vit) << std::endl;
+                std::cout << (*((*vit).edgeIndices[j])) << std::endl;
             }
         }
         // check faces
         indices.clear();
-        for (PLuint j = 0; j < _data.verts[i].faceIndices.size(); j++)
+        for (PLuint j = 0; j < (*vit).faceIndices.size(); j++)
         {
-            if (_data.faces[_data.verts[i].faceIndices[j]].vertIndices.findIndex(i) == -1)
+            if ((*vit).faceIndices[j]->vertIndices.findIndex(&(*vit)) == -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): vert " << i << " references face " << _data.verts[i].faceIndices[j] << ", but not vice versa." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): vert " << &(*vit) << " references face " << (*vit).faceIndices[j] << ", but not vice versa." << std::endl;
                 good = false;
-                std::cout << _data.verts[i] << std::endl;
-                std::cout << _data.faces[_data.verts[i].faceIndices[j]] << std::endl;
+                std::cout << (*vit) << std::endl;
+                std::cout << (*((*vit).faceIndices[j])) << std::endl;
             }
         }
     }
-    for (PLuint i=0; i < _data.edges.size(); i++)
+    for (plMeshConnectivityDataEdgeIterator eit = _data.edges.begin(); eit != _data.edges.end(); eit++)
     {
         // check vertices
         indices.clear();
-        for (PLuint j = 0; j < _data.edges[i].vertIndices.size(); j++)
+        for (PLuint j = 0; j < (*eit).vertIndices.size(); j++)
         {
-            if (_data.verts[_data.edges[i].vertIndices[j]].edgeIndices.findIndex(i) == -1)
+            if ((*eit).vertIndices[j]->edgeIndices.findIndex(&(*eit)) == -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): edge " << i << " references vert " << _data.edges[i].vertIndices[j] << ", but not vice versa." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): edge " << &(*eit) << " references vert " << (*eit).vertIndices[j] << ", but not vice versa." << std::endl;
                 good = false;
-                std::cout << _data.edges[i] << std::endl;
-                std::cout << _data.verts[_data.edges[i].vertIndices[j]] << std::endl;
+                std::cout << (*eit) << std::endl;
+                std::cout << (*((*eit).vertIndices[j])) << std::endl;
             }
         }
         // check faces
         indices.clear();
-        for (PLuint j = 0; j < _data.edges[i].faceIndices.size(); j++)
+        for (PLuint j = 0; j < (*eit).faceIndices.size(); j++)
         {
-            if (_data.faces[_data.edges[i].faceIndices[j]].edgeIndices.findIndex(i) == -1)
+            if ((*eit).faceIndices[j]->edgeIndices.findIndex(&(*eit)) == -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): edge " << i << " references face " << _data.edges[i].faceIndices[j] << ", but not vice versa." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): edge " << &(*eit) << " references face " << (*eit).faceIndices[j] << ", but not vice versa." << std::endl;
                 good = false;
-                std::cout << _data.edges[i] << std::endl;
-                std::cout << _data.faces[_data.edges[i].faceIndices[j]] << std::endl;
+                std::cout << (*eit) << std::endl;
+                std::cout << (*((*eit).faceIndices[j])) << std::endl;
             }
         }
     }
-    for (PLuint i=0; i < _data.faces.size(); i++)
+    for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
     {
         // check vertices
         indices.clear();
-        for (PLuint j = 0; j < _data.faces[i].vertIndices.size(); j++)
+        for (PLuint j = 0; j < (*fit).vertIndices.size(); j++)
         {
-            if (_data.verts[_data.faces[i].vertIndices[j]].faceIndices.findIndex(i) == -1)
+            if ((*fit).vertIndices[j]->faceIndices.findIndex(&(*fit)) == -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): face " << i << " references vert " << _data.faces[i].vertIndices[j] << ", but not vice versa." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): face " << &(*fit) << " references vert " << (*fit).vertIndices[j] << ", but not vice versa." << std::endl;
                 good = false;
-                std::cout << _data.faces[i] << std::endl;
-                std::cout << _data.verts[_data.faces[i].vertIndices[j]] << std::endl;
+                std::cout << (*fit) << std::endl;
+                std::cout << (*((*fit).vertIndices[j])) << std::endl;
             }
         }
         // check edges
         indices.clear();
-        for (PLuint j = 0; j < _data.faces[i].edgeIndices.size(); j++)
+        for (PLuint j = 0; j < (*fit).edgeIndices.size(); j++)
         {
-            if (_data.edges[_data.faces[i].edgeIndices[j]].faceIndices.findIndex(i) == -1)
+            if ((*fit).edgeIndices[j]->faceIndices.findIndex(&(*fit)) == -1)
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "\t";
-                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): face " << i << " references edge " << _data.faces[i].edgeIndices[j] << ", but not vice versa." << std::endl;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): face " << &(*fit) << " references edge " << (*fit).edgeIndices[j] << ", but not vice versa." << std::endl;
                 good = false;
-                std::cout << _data.faces[i] << std::endl;
-                std::cout << _data.edges[_data.faces[i].edgeIndices[j]] << std::endl;
+                std::cout << (*fit) << std::endl;
+                std::cout << (*((*fit).edgeIndices[j])) << std::endl;
             }
         }
     }
@@ -766,16 +746,16 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
 PLbool plMeshAlgorithm::_checkNoSliverTriangles( PLuint verbose, PLuint depth )
 {
     PLbool good(true);
-    for (PLuint i = 0; i < _data.faces.size(); i++)
+    for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
     {
-        if (( ((_data.faces[i].face.point1())-(_data.faces[i].face.point0())).normalize() ^
-              ((_data.faces[i].face.point2())-(_data.faces[i].face.point0())).normalize()).length() == 0.f )
+        if (( (((*fit).face.point1())-((*fit).face.point0())).normalize() ^
+              (((*fit).face.point2())-((*fit).face.point0())).normalize()).length() == 0.f )
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
-            std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoSliverTriangles(): face " << i << " appears to be ultra thin. This is bad." << std::endl;
+            std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoSliverTriangles(): face " << &(*fit) << " appears to be ultra thin. This is bad." << std::endl;
             good = false;
-            std::cout << _data.faces[i] << std::endl;
+            std::cout << (*fit) << std::endl;
         }
     }
     return good;
@@ -823,9 +803,9 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
         // add cells as necessary
         plTriangle& currentTriangle = tris[i];
 
-        PLint vert0index,vert1index,vert2index;
-        plMeshConnectivityDataVert vert0;
-        vert0.vert = currentTriangle[0];
+        plMeshConnectivityDataVert vert0Insert;
+        vert0Insert.vert = currentTriangle[0];
+
         if (!_findVert(vert0.vert,vert0index,verbose,depth+1)) return false;
         PLbool vert0existed(true);
         if (vert0index == -1)
