@@ -269,38 +269,6 @@ float overlapEnergy( in state s )
 }
 
 
-/*
-bool isWithinOverlapThreshold( in vec3 pos, in float threshold )
-{
-    bool inside = true;
-    for (int i=0; i<uSitePerimSize; i++)
-    {
-        edge e = siteEdge( i );
-        if ( distance( pos, closestPointOnSegment( pos, e) ) < threshold )
-        {
-            inside = false;
-        }        
-    }    
-    return inside;
-}
-
-
-bool isValidPerturbation( in vec3 pos, in float threshold )
-{
-    bool inside = true;
-    for (int i=0; i<uSitePerimSize; i++)
-    {
-        edge e = siteEdge( i );
-        if ( dot( pos-e.p0, e.n ) > 0.0 ||
-             distance( pos, closestPointOnSegment( pos, e) ) < threshold)
-        {
-            inside = false;
-        }        
-    }    
-    return inside;
-}
-*/
-
 uint randomize( inout uint seed )
 {   
     seed = (seed ^ 61) ^ (seed >> 16);
@@ -438,7 +406,7 @@ float energy ( in state s )
 
     // calculate energy
     float WEIGHT = 0.4;
-    return area_uncovered( s ) + WEIGHT * total_area_covered + overlapEnergy( s );
+    return area_uncovered( s ) + /*WEIGHT * total_area_covered;//*/ + overlapEnergy( s );
 }
 
 
@@ -513,7 +481,7 @@ void perturbState( inout state s, inout uint seed )
             s.positions[i] = vec4( graftPosition, 1.0 );
             
         }
-                     
+
         graftNormal = normalize( vec3( rot * vec4( graftNormal, 0.0 ) ) );   
             
         if ( isWithinRotationThreshold( graftNormal, 35.0 ) )
@@ -569,15 +537,15 @@ void main(void)
     state nS;   
     if ( uLoadLocal > 0 )  
     {       
-        copyLocalState( nS );        
+        copyLocalState( nS );
     }
     else   
-    {       
+    {
         copyGlobalState( nS );         
     }
    
     // determine which case
-    uint changeCase = uint( rand( seed ) * 3 );
+    uint changeCase = uint( rand( seed ) * 6 );
         
     if (nS.graftCount == 0 || changeCase == 0)
     {

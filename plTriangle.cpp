@@ -204,7 +204,7 @@ namespace plSTL
         // just in case, clear seq
         triangles.clear();
 
-        std::ifstream infile (filename.c_str());
+        std::ifstream infile (filename.c_str(), std::ifstream::binary);
         if (!infile.good())
         {
             std::cerr << "plSTL::importFile() error: STL file could not be opened" << std::endl;
@@ -223,7 +223,7 @@ namespace plSTL
             PLchar filler[1024];	// for reading filler text
 
             // Read ASCII STL
-            while (!infile.eof()) 
+            while ( !infile.eof() ) 
             {
                 
                 std::getline(infile, line);    
@@ -253,23 +253,26 @@ namespace plSTL
                     triangles.add( plTriangle(n,p0,p1,p2) );                
                 }
             }
-
+            infile.close();
         } 
         else 
         {
             if ( !_plCheckTypeSizes() )
                 return false;
-                
-            // reset file position to beginning
-            infile.seekg(0);
+              
+            // close previous binary file
+            infile.close();
+
+            // open new stream, binary format
+            std::ifstream binfile( filename.c_str(), std::ifstream::binary );
 
             // Skip 80-byte header       
             PLchar first80[80]; // create a buffer
-            infile.read( &first80[0], sizeof(PLchar)*80 ); // read to buffer
+            binfile.read( &first80[0], sizeof(PLchar)*80 ); // read to buffer
             
             // get number of faces
             PLuint numTriangles;
-            infile.read( reinterpret_cast<PLchar*>( &numTriangles ), sizeof(PLuint) );
+            binfile.read( reinterpret_cast<PLchar*>( &numTriangles ), sizeof(PLuint) );
             triangles.reserve( numTriangles );
 
             // Read the triangles
@@ -277,17 +280,19 @@ namespace plSTL
             {
                 PLushort nAttr;
                 
-                infile.read(reinterpret_cast<PLchar*>( &n.x ),   sizeof(PLfloat)*3 );
-                infile.read(reinterpret_cast<PLchar*>( &p0.x ),  sizeof(PLfloat)*3 );
-                infile.read(reinterpret_cast<PLchar*>( &p1.x ),  sizeof(PLfloat)*3 );
-                infile.read(reinterpret_cast<PLchar*>( &p2.x ),  sizeof(PLfloat)*3 );
-                infile.read(reinterpret_cast<PLchar*>( &nAttr ), sizeof(PLushort)  );
+                binfile.read( reinterpret_cast<PLchar*>( &n.x ),   sizeof(PLfloat)*3 );
+                binfile.read( reinterpret_cast<PLchar*>( &p0.x ),  sizeof(PLfloat)*3 );
+                binfile.read( reinterpret_cast<PLchar*>( &p1.x ),  sizeof(PLfloat)*3 );
+                binfile.read( reinterpret_cast<PLchar*>( &p2.x ),  sizeof(PLfloat)*3 );
+                binfile.read( reinterpret_cast<PLchar*>( &nAttr ), sizeof(PLushort)  );
 
                 triangles.add( plTriangle( n, p0, p1, p2 ) );
             }
+            
+            binfile.close();
         }
         
-        infile.close();
+        
         std::cout << "\t\t\tComplete.\n";
         return true;
     }
