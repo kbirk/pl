@@ -33,7 +33,7 @@ const plMeshConnectivityDataVert* plMeshAlgorithm::_findVert( const plVector3& v
     return found;
 }
 
-PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edgeAB, const plVector3& vertex, PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edgeAB, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth )
 {
     /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
@@ -48,7 +48,6 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
 
     // find all existing cells, have them available in case they're needed later
 
-    plSeq<const plMeshConnectivityDataFace*> faceIndicesToSplit (edgeAB->faceIndices);
     /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
@@ -61,256 +60,224 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
         }
     }*/
 
-    PLuint vertAindex = _data.edges[edgeABindex].vertIndices[0];
-    PLuint vertBindex = _data.edges[edgeABindex].vertIndices[1];
-    plMeshConnectivityDataVert& vertA = _data.verts[vertAindex];
-    plMeshConnectivityDataVert& vertB = _data.verts[vertBindex];
+    const plMeshConnectivityDataVert* vertA = edgeAB->vertIndices[0];
+    const plMeshConnectivityDataVert* vertB = edgeAB->vertIndices[1];
 
     // create the new cells, storing their eventual indices
-    plMeshConnectivityDataEdge edgeAN;
-    plMeshConnectivityDataEdge edgeNB;
 
-    plMeshConnectivityDataVert vertNsearch; vertNsearch.vert = vertex;
-    PLint  vertNsearchIndex;
-    vertNsearchIndex = _data.verts.findIndex(vertNsearch);
-    PLuint vertNindex; // we need to determine this
-    if ((PLuint)vertNsearchIndex == vertAindex)
-    {
-        for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
-        std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): N vertex is A vertex. This is possibly due to epsilon being too large. Aborting this particular edge split, but beware of future errors." << std::endl;
-        return false;
-    }
-    if ((PLuint)vertNsearchIndex == vertBindex)
-    {
-        for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
-        std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): N vertex is B vertex. This is possibly due to epsilon being too large. Aborting this particular edge split, but beware of future errors." << std::endl;
-        return false;
-    }
-    if (vertNsearchIndex == -1)
-    {
-        vertNindex = _data.verts.size();
-        _data.verts.add(vertNsearch);
-    }
-    else
-        vertNindex = (PLuint)vertNsearchIndex;
-    plMeshConnectivityDataVert& vertN = _data.verts[vertNindex];
+    plMeshConnectivityDataEdge edgeANInsert;
+    edgeANInsert.edge = plEdge(vertA->vert, vertN->vert);
+    _data.edges.insert(edgeANInsert);
+
+    plMeshConnectivityDataEdge edgeNBInsert;
+    edgeNBInsert.edge = plEdge(vertN->vert, vertB->vert);
+    _data.edges.insert(edgeNBInsert);
+
+    const plMeshConnectivityDataEdge* edgeAN = &(*(_data.edges.find(edgeANInsert)));
+    const plMeshConnectivityDataEdge* edgeNB = &(*(_data.edges.find(edgeNBInsert)));
 
     // fill the cells with data, but faces will be treated separately.
-    //if (vertNsearchIndex == -1)
-    _data.verts[vertNindex].edgeIndices.add(edgeANindex);
-    _data.verts[vertNindex].edgeIndices.add(edgeNBindex);
+    vertN->edgeIndices.add(edgeAN);
+    vertN->edgeIndices.add(edgeNB);
 
-    edgeAN.edge = plEdge(_data.verts[vertAindex].vert, _data.verts[vertNindex].vert);
-    edgeAN.vertIndices.add(vertAindex);
-    edgeAN.vertIndices.add(vertNindex);
+    edgeAN->vertIndices.add(vertA);
+    edgeAN->vertIndices.add(vertN);
 
-    edgeNB.edge = plEdge(_data.verts[vertNindex].vert, _data.verts[vertBindex].vert);
-    edgeNB.vertIndices.add(vertNindex);
-    edgeNB.vertIndices.add(vertBindex);
-
-    // add to cell arrays (vertN is added before because we need a reference)
-    _data.edges[edgeABindex] = edgeAN;
-    _data.edges.add(edgeNB);
-
-    //std::cout << "vertAindex: " <<vertAindex << std::endl;
-    //std::cout << "vertBindex: " <<vertBindex << std::endl;
-    //std::cout << "vertNindex: " <<vertNindex << std::endl;
-    //std::cout << "edgeANindex: "<<edgeANindex << std::endl;
-    //std::cout << "edgeNBindex: "<<edgeNBindex << std::endl;
-    //std::cout << "-----------" << std::endl;
-
-    // update anything else that might be affected:
-    _data.verts[vertBindex].edgeIndices.remove(_data.verts[vertBindex].edgeIndices.findIndex(edgeANindex));
-    _data.verts[vertBindex].edgeIndices.add(edgeNBindex);
+    edgeNB->vertIndices.add(vertN);
+    edgeNB->vertIndices.add(vertB);
 
     // split any attached faces each into two pieces...
+    plSeq<const plMeshConnectivityDataFace*> faceIndicesToSplit (edgeAB->faceIndices);
     for (PLuint i = 0; i < faceIndicesToSplit.size(); i++)
     {
         // find all existing cells, have them available in case they're needed later
-        PLuint faceABCindex = faceIndicesToSplit[i];
-        plMeshConnectivityDataFace faceABC = _data.faces[faceABCindex];
+        const plMeshConnectivityDataFace* faceABC = faceIndicesToSplit[i];
 
         // TODO: Consider adding a check to make sure that the face doesn't contain one of the edges we're adding...
-        PLint vertCsearchIndex(-1);
+        const plMeshConnectivityDataVert* vertC(NULL);
         for (PLuint j = 0; j < 3; j++)
         {
-            if (_data.faces[faceABCindex].vertIndices[j] != vertAindex && _data.faces[faceABCindex].vertIndices[j] != vertBindex)
+            if (faceABC->vertIndices[j] != vertA && faceABC->vertIndices[j] != vertB)
             {
-                vertCsearchIndex = _data.faces[faceABCindex].vertIndices[j];
+                vertC = faceABC->vertIndices[j];
                 break;
             }
         }
-        if (vertCsearchIndex == -1)
+        if (vertC == NULL)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the C vertex. Aborting operation." << std::endl;
-            std::cout << _data.edges[edgeANindex] << std::endl;
-            std::cout << _data.edges[edgeNBindex] << std::endl;
-            std::cout << _data.faces[faceABCindex] << std::endl;
+            //std::cout << _data.edges[edgeANindex] << std::endl;
+            //std::cout << _data.edges[edgeNBindex] << std::endl;
+            //std::cout << _data.faces[faceABCindex] << std::endl;
             return false;
         }
-        PLuint vertCindex((PLuint)vertCsearchIndex);
-        if (vertCindex == vertNindex)
+        if (vertC == vertN)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is N vertex. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
-        if (vertCindex == vertAindex)
+        if (vertC == vertA)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is A vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
             continue;
         }
-        if (vertCindex == vertBindex)
+        if (vertC == vertB)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is B vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
             continue;
         }
-        plMeshConnectivityDataVert& vertC = _data.verts[vertCindex];
 
-        PLint edgeACsearchIndex(-1);
-        PLint edgeBCsearchIndex(-1);
+        const plMeshConnectivityDataEdge* edgeAC = NULL;
+        const plMeshConnectivityDataEdge* edgeBC = NULL;
+
         for (PLuint j = 0; j < 3; j++)
         {
-            PLuint currentEdgeIndex = _data.faces[faceABCindex].edgeIndices[j];
-            if (_data.edges[currentEdgeIndex].edge == plEdge(_data.verts[vertAindex].vert,_data.verts[vertCindex].vert))
-                edgeACsearchIndex = currentEdgeIndex;
-            else if (_data.edges[currentEdgeIndex].edge == plEdge(_data.verts[vertBindex].vert,_data.verts[vertCindex].vert))
-                edgeBCsearchIndex = currentEdgeIndex;
+            const plMeshConnectivityDataEdge* currentEdge = faceABC->edgeIndices[j];
+            if (currentEdge->edge == plEdge(vertA->vert,vertC->vert))
+                edgeAC = &(*currentEdge);
+            else if (currentEdge->edge == plEdge(vertB->vert,vertC->vert))
+                edgeBC = &(*currentEdge);
         }
-        if (edgeACsearchIndex == -1)
+        if (edgeAC == NULL)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the AC edge. Aborting operation." << std::endl;
-            std::cout << _data.verts[vertAindex] << std::endl;
-            std::cout << _data.verts[vertCindex] << std::endl;
-            std::cout << _data.faces[faceABCindex] << std::endl;
+            //std::cout << _data.verts[vertAindex] << std::endl;
+            //std::cout << _data.verts[vertCindex] << std::endl;
+            //std::cout << _data.faces[faceABCindex] << std::endl;
             return false;
         }
-        if (edgeBCsearchIndex == -1)
+        if (edgeBC == NULL)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the BC edge. Aborting operation." << std::endl;
-            std::cout << _data.verts[vertBindex] << std::endl;
-            std::cout << _data.verts[vertCindex] << std::endl;
-            std::cout << _data.faces[faceABCindex] << std::endl;
+            //std::cout << _data.verts[vertBindex] << std::endl;
+            //std::cout << _data.verts[vertCindex] << std::endl;
+            //std::cout << _data.faces[faceABCindex] << std::endl;
             return false;
         }
-        PLuint edgeACindex((PLuint)edgeACsearchIndex);
-        PLuint edgeBCindex((PLuint)edgeBCsearchIndex);
-        if (edgeBCindex == edgeANindex)
+        if (edgeBC == edgeAN)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): BC edge is AN edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
-        if (edgeACindex == edgeANindex)
+        if (edgeAC == edgeAN)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is AN edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
-        if (edgeBCindex == edgeNBindex)
+        if (edgeBC == edgeNB)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): BC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
-        if (edgeACindex == edgeNBindex)
+        if (edgeAC == edgeNB)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
-        plMeshConnectivityDataEdge& edgeAC = _data.edges[edgeACindex];
-        plMeshConnectivityDataEdge& edgeBC = _data.edges[edgeBCindex];
 
         PLbool faceOrientationABC(false); // either ABC or CBA
-        if ((_data.faces[faceABCindex].face.point0() == _data.verts[vertAindex].vert && _data.faces[faceABCindex].face.point1() == _data.verts[vertBindex].vert) ||
-            (_data.faces[faceABCindex].face.point1() == _data.verts[vertAindex].vert && _data.faces[faceABCindex].face.point2() == _data.verts[vertBindex].vert) ||
-            (_data.faces[faceABCindex].face.point2() == _data.verts[vertAindex].vert && _data.faces[faceABCindex].face.point0() == _data.verts[vertBindex].vert))
+        if ((faceABC->face.point0() == vertA->vert && faceABC->face.point1() == vertB->vert) ||
+            (faceABC->face.point1() == vertA->vert && faceABC->face.point2() == vertB->vert) ||
+            (faceABC->face.point2() == vertA->vert && faceABC->face.point0() == vertB->vert) )
             faceOrientationABC = true; // otherwise false, as already been set
 
-        // create the new cells, storing their eventual indices
-        plMeshConnectivityDataEdge edgeNC;
-        PLuint edgeNCindex = _data.edges.size();
+        // create the new cells
+        plMeshConnectivityDataEdge edgeNCInsert;
+        edgeNCInsert.edge = plEdge(vertN->vert,vertC->vert);
 
-        plMeshConnectivityDataFace faceANC;
-        plMeshConnectivityDataFace faceBNC;
-        PLuint faceANCindex = faceABCindex;
-        PLuint faceBNCindex = _data.faces.size();
-
-        // now fill the cells with stuff!
-        edgeNC.edge = plEdge(_data.verts[vertNindex].vert,_data.verts[vertCindex].vert);
-        edgeNC.vertIndices.add(vertNindex);
-        edgeNC.vertIndices.add(vertCindex);
-        edgeNC.faceIndices.add(faceANCindex);
-        edgeNC.faceIndices.add(faceBNCindex);
-
+        plMeshConnectivityDataFace faceANCInsert;
+        plMeshConnectivityDataFace faceBNCInsert;
         if (faceOrientationABC)
         {
-            faceANC.face = plTriangle(_data.verts[vertAindex].vert,_data.verts[vertNindex].vert,_data.verts[vertCindex].vert);
-            faceANC.vertIndices.add(vertAindex);
-            faceANC.vertIndices.add(vertNindex);
-            faceANC.vertIndices.add(vertCindex);
-            faceBNC.face = plTriangle(_data.verts[vertBindex].vert,_data.verts[vertCindex].vert,_data.verts[vertNindex].vert);
-            faceBNC.vertIndices.add(vertBindex);
-            faceBNC.vertIndices.add(vertCindex);
-            faceBNC.vertIndices.add(vertNindex);
+            faceANCInsert.face = plTriangle(vertA->vert,vertN->vert,vertC->vert);
+            faceBNCInsert.face = plTriangle(vertB->vert,vertC->vert,vertN->vert);
         }
         else
         {
-            faceANC.face = plTriangle(_data.verts[vertCindex].vert,_data.verts[vertNindex].vert,_data.verts[vertAindex].vert);
-            faceANC.vertIndices.add(vertCindex);
-            faceANC.vertIndices.add(vertNindex);
-            faceANC.vertIndices.add(vertAindex);
-            faceBNC.face = plTriangle(_data.verts[vertNindex].vert,_data.verts[vertCindex].vert,_data.verts[vertBindex].vert);
-            faceBNC.vertIndices.add(vertNindex);
-            faceBNC.vertIndices.add(vertCindex);
-            faceBNC.vertIndices.add(vertBindex);
+            faceANCInsert.face = plTriangle(vertC->vert,vertN->vert,vertA->vert);
+            faceBNCInsert.face = plTriangle(vertN->vert,vertC->vert,vertB->vert);
         }
-        faceANC.edgeIndices.add(edgeANindex);
-        faceANC.edgeIndices.add(edgeNCindex);
-        faceANC.edgeIndices.add(edgeACindex);
-        faceBNC.edgeIndices.add(edgeNBindex);
-        faceBNC.edgeIndices.add(edgeNCindex);
-        faceBNC.edgeIndices.add(edgeBCindex);
 
-        // add to arrays
-        _data.faces[faceABCindex] = faceANC;
-        _data.faces.add(faceBNC);
-        _data.edges.add(edgeNC);
+        _data.edges.insert(edgeNCInsert);
+        _data.faces.insert(faceANCInsert);
+        _data.faces.insert(faceBNCInsert);
+
+        const plMeshConnectivityDataEdge* edgeNC  = &(*(_data.edges.find(edgeNCInsert )));
+        const plMeshConnectivityDataFace* faceANC = &(*(_data.faces.find(faceANCInsert)));
+        const plMeshConnectivityDataFace* faceBNC = &(*(_data.faces.find(faceBNCInsert)));
+
+        // now fill the cells with stuff!
+        edgeNC->vertIndices.add(vertN);
+        edgeNC->vertIndices.add(vertC);
+        edgeNC->faceIndices.add(faceANC);
+        edgeNC->faceIndices.add(faceBNC);
+
+        if (faceOrientationABC)
+        {
+            faceANC->vertIndices.add(vertA);
+            faceANC->vertIndices.add(vertN);
+            faceANC->vertIndices.add(vertC);
+            faceBNC->vertIndices.add(vertB);
+            faceBNC->vertIndices.add(vertC);
+            faceBNC->vertIndices.add(vertN);
+        }
+        else
+        {
+            faceANC->vertIndices.add(vertC);
+            faceANC->vertIndices.add(vertN);
+            faceANC->vertIndices.add(vertA);
+            faceBNC->vertIndices.add(vertN);
+            faceBNC->vertIndices.add(vertC);
+            faceBNC->vertIndices.add(vertB);
+        }
+        faceANC->edgeIndices.add(edgeAN);
+        faceANC->edgeIndices.add(edgeNC);
+        faceANC->edgeIndices.add(edgeAC);
+        faceBNC->edgeIndices.add(edgeNB);
+        faceBNC->edgeIndices.add(edgeNC);
+        faceBNC->edgeIndices.add(edgeBC);
 
         // update anything else that has been affected by what we just did
-        _data.edges[edgeANindex].faceIndices.add(faceANCindex);
-        _data.edges[edgeNBindex].faceIndices.add(faceBNCindex);
+        edgeAN->faceIndices.add(faceANC);
+        edgeNB->faceIndices.add(faceBNC);
 
-        _data.edges[edgeBCindex].faceIndices.remove(_data.edges[edgeBCindex].faceIndices.findIndex(faceABCindex));
-        _data.edges[edgeBCindex].faceIndices.add(faceBNCindex); // don't need to do this for edgeAC, since ABC == ANC
-        _data.verts[vertBindex].faceIndices.remove(_data.verts[vertBindex].faceIndices.findIndex(faceABCindex));
-        _data.verts[vertBindex].faceIndices.add(faceBNCindex);
+        edgeAC->faceIndices.remove(edgeAC->faceIndices.findIndex(faceABC));
+        edgeAC->faceIndices.add(faceANC);
+        edgeBC->faceIndices.remove(edgeBC->faceIndices.findIndex(faceABC));
+        edgeBC->faceIndices.add(faceBNC);
+        vertA->faceIndices.remove(vertA->faceIndices.findIndex(faceABC));
+        vertA->faceIndices.add(faceANC);
+        vertB->faceIndices.remove(vertB->faceIndices.findIndex(faceABC));
+        vertB->faceIndices.add(faceBNC);
 
         //if (vertNsearchIndex == -1) // only if the vertex is new should this next thing be added
-        _data.verts[vertNindex].faceIndices.add(faceANCindex);
-        _data.verts[vertNindex].faceIndices.add(faceBNCindex);
-        _data.verts[vertCindex].faceIndices.add(faceBNCindex); // already should have faceANCindex, since it was previously faceABCindex
+        vertN->faceIndices.add(faceANC);
+        vertN->faceIndices.add(faceBNC);
+        vertC->faceIndices.add(faceANC);
+        vertC->faceIndices.add(faceBNC);
 
-        _data.verts[vertNindex].edgeIndices.add(edgeNCindex);
-        _data.verts[vertCindex].edgeIndices.add(edgeNCindex);
+        vertN->edgeIndices.add(edgeNC);
+        vertC->edgeIndices.add(edgeNC);
 
         //std::cout << "vertAindex: " <<vertAindex << std::endl;
         //std::cout << "vertBindex: " <<vertBindex << std::endl;
@@ -320,7 +287,14 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
         //std::cout << "edgeNBindex: "<<edgeNBindex << std::endl;
         //std::cout << "edgeNCindex: "<<edgeNCindex << std::endl;
         //std::cout << "-----------" << std::endl;
+
+        _data.faces.erase(_data.faces.find(*faceABC));
     }
+
+    // update anything else that might be affected:
+    vertA->edgeIndices.remove(vertA->edgeIndices.findIndex(edgeAB));
+    vertB->edgeIndices.remove(vertB->edgeIndices.findIndex(edgeAB));
+    _data.edges.erase(edgeAB);
 
     return true;
 }
