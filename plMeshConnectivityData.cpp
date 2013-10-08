@@ -78,8 +78,8 @@ PLbool plMeshConnectivityDataEdge::operator<(const plMeshConnectivityDataEdge& o
     if (originatingMesh > other.originatingMesh)
         return false;
 
-    plMeshConnectivityDataVert** orderedVertsThis [2] = { NULL, NULL };
-    plMeshConnectivityDataVert** orderedVertsOther[2] = { NULL, NULL };
+    const plMeshConnectivityDataVert* orderedVertsThis [2] = { NULL, NULL };
+    const plMeshConnectivityDataVert* orderedVertsOther[2] = { NULL, NULL };
 
     // now detect which vertex is least
     if ( *(vertIndices[0]) < *(vertIndices[1]) )
@@ -129,8 +129,8 @@ PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& o
     if (originatingMesh > other.originatingMesh)
         return false;
 
-    plMeshConnectivityDataVert** orderedVertsThis [3] = { NULL, NULL, NULL };
-    plMeshConnectivityDataVert** orderedVertsOther[3] = { NULL, NULL, NULL };
+    const plMeshConnectivityDataVert* orderedVertsThis [3] = { NULL, NULL, NULL };
+    const plMeshConnectivityDataVert* orderedVertsOther[3] = { NULL, NULL, NULL };
 
     // now detect which vertex is least
     if ( *(vertIndices[0]) < *(vertIndices[1]) )
@@ -275,6 +275,7 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVe
     stream << "\nFace Indices:";
     for (PLuint i = 0; i < vert.faceIndices.size(); i++)
         stream << "\n" << vert.faceIndices[i];
+    return stream;
 }
 
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataEdge &edge )
@@ -286,6 +287,7 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataEd
     stream << "\nFace Indices:";
     for (PLuint i = 0; i < edge.faceIndices.size(); i++)
         stream << "\n" << edge.faceIndices[i];
+    return stream;
 }
 
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataFace &face )
@@ -297,5 +299,6 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataFa
     stream << "\nEdge Indices:";
     for (PLuint i = 0; i < face.edgeIndices.size(); i++)
         stream << "\n" << face.edgeIndices[i];
+    return stream;
 }
 

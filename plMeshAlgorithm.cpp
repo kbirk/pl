@@ -801,98 +801,92 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
     for (PLuint i = 0; i < tris.size(); i++)
     {
         // add cells as necessary
-        plTriangle& currentTriangle = tris[i];
+        const plTriangle& currentTriangle = tris[i];
 
         plMeshConnectivityDataVert vert0Insert;
         vert0Insert.vert = currentTriangle[0];
-
-        if (!_findVert(vert0.vert,vert0index,verbose,depth+1)) return false;
-        PLbool vert0existed(true);
-        if (vert0index == -1)
+        const plMeshConnectivityDataVert* vert0;
+        if (!_findVert(currentTriangle[0],vert0,verbose,depth+1)) return false;
+        if (vert0 == NULL)
         {
-            vert0index = _data.verts.size();
-            _data.verts.add(vert0);
-            vert0existed = false;
-        }
-        plMeshConnectivityDataVert vert1;
-        vert1.vert = currentTriangle[1];
-        if (!_findVert(vert1.vert,vert1index,verbose,depth+1)) return false;
-        PLbool vert1existed(true);
-        if (vert1index == -1)
-        {
-            vert1index = _data.verts.size();
-            _data.verts.add(vert1);
-            vert1existed = false;
-        }
-        plMeshConnectivityDataVert vert2;
-        vert2.vert = currentTriangle[2];
-        if (!_findVert(vert2.vert,vert2index,verbose,depth+1)) return false;
-        PLbool vert2existed(true);
-        if (vert2index == -1)
-        {
-            vert2index = _data.verts.size();
-            _data.verts.add(vert2);
-            vert2existed = false;
+            _data.verts.insert(vert0Insert);
+            vert0 = &(*(_data.verts.find(*vert0)));
         }
 
-        PLint edge01index, edge12index, edge20index;
-        plMeshConnectivityDataEdge edge01;
-        edge01.edge = plEdge(_data.verts[vert0index].vert,_data.verts[vert1index].vert);
-        edge01index = _data.edges.findIndex(edge01);
-        if (edge01index == -1)
+        plMeshConnectivityDataVert vert1Insert;
+        vert1Insert.vert = currentTriangle[1];
+        const plMeshConnectivityDataVert* vert1;
+        if (!_findVert(currentTriangle[1],vert1,verbose,depth+1)) return false;
+        if (vert1 == NULL)
         {
-            edge01index = _data.edges.size();
-            _data.edges.add(edge01);
-            _data.edges[edge01index].vertIndices.add((PLuint)vert0index);
-            _data.edges[edge01index].vertIndices.add((PLuint)vert1index);
-        }
-        plMeshConnectivityDataEdge edge12;
-        edge12.edge = plEdge(_data.verts[vert1index].vert,_data.verts[vert2index].vert);
-        edge12index = _data.edges.findIndex(edge12);
-        if (edge12index == -1)
-        {
-            edge12index = _data.edges.size();
-            _data.edges.add(edge12);
-            _data.edges[edge12index].vertIndices.add((PLuint)vert1index);
-            _data.edges[edge12index].vertIndices.add((PLuint)vert2index);
-        }
-        plMeshConnectivityDataEdge edge20;
-        edge20.edge = plEdge(_data.verts[vert2index].vert,_data.verts[vert0index].vert);
-        edge20index = _data.edges.findIndex(edge20);
-        if (edge20index == -1)
-        {
-            edge20index = _data.edges.size();
-            _data.edges.add(edge20);
-            _data.edges[edge20index].vertIndices.add((PLuint)vert2index);
-            _data.edges[edge20index].vertIndices.add((PLuint)vert0index);
+            _data.verts.insert(vert1Insert);
+            vert1 = &(*(_data.verts.find(*vert1)));
         }
 
-        plMeshConnectivityDataFace face012;
-        face012.face = plTriangle(_data.verts[vert0index].vert,_data.verts[vert1index].vert,_data.verts[vert2index].vert);
-        PLint face012index = _data.faces.size();
-        _data.faces.add(face012);
+        plMeshConnectivityDataVert vert2Insert;
+        vert2Insert.vert = currentTriangle[2];
+        const plMeshConnectivityDataVert* vert2;
+        if (!_findVert(currentTriangle[2],vert2,verbose,depth+1)) return false;
+        if (vert2 == NULL)
+        {
+            _data.verts.insert(vert2Insert);
+            vert2 = &(*(_data.verts.find(*vert2)));
+        }
+
+        // edges
+
+        plMeshConnectivityDataEdge edge01Insert;
+        edge01Insert.edge = plEdge(vert0->vert,vert1->vert);
+        edge01Insert.vertIndices.add(vert0);
+        edge01Insert.vertIndices.add(vert1);
+        _data.edges.insert(edge01Insert);
+        const plMeshConnectivityDataEdge* edge01;
+        edge01 = &(*(_data.edges.find(edge01Insert)));
+
+        plMeshConnectivityDataEdge edge12Insert;
+        edge12Insert.edge = plEdge(vert1->vert,vert2->vert);
+        edge12Insert.vertIndices.add(vert1);
+        edge12Insert.vertIndices.add(vert2);
+        _data.edges.insert(edge12Insert);
+        const plMeshConnectivityDataEdge* edge12;
+        edge12 = &(*(_data.edges.find(edge12Insert)));
+
+        plMeshConnectivityDataEdge edge20Insert;
+        edge20Insert.edge = plEdge(vert2->vert,vert0->vert);
+        edge20Insert.vertIndices.add(vert2);
+        edge20Insert.vertIndices.add(vert0);
+        _data.edges.insert(edge20Insert);
+        const plMeshConnectivityDataEdge* edge20;
+        edge20 = &(*(_data.edges.find(edge20Insert)));
 
         // this should only be done if the vertex did not exist. Didn't do earlier since we didn't know the edge indices yet
-        if (_data.verts[vert0index].edgeIndices.findIndex(edge01index) == -1)  _data.verts[vert0index].edgeIndices.add((PLuint)edge01index);
-        if (_data.verts[vert0index].edgeIndices.findIndex(edge20index) == -1)  _data.verts[vert0index].edgeIndices.add((PLuint)edge20index);
-        if (_data.verts[vert1index].edgeIndices.findIndex(edge01index) == -1)  _data.verts[vert1index].edgeIndices.add((PLuint)edge01index);
-        if (_data.verts[vert1index].edgeIndices.findIndex(edge12index) == -1)  _data.verts[vert1index].edgeIndices.add((PLuint)edge12index);
-        if (_data.verts[vert2index].edgeIndices.findIndex(edge12index) == -1)  _data.verts[vert2index].edgeIndices.add((PLuint)edge12index);
-        if (_data.verts[vert2index].edgeIndices.findIndex(edge20index) == -1)  _data.verts[vert2index].edgeIndices.add((PLuint)edge20index);
+        if (vert0->edgeIndices.findIndex(edge01) == -1)  vert0->edgeIndices.add(edge01);
+        if (vert0->edgeIndices.findIndex(edge20) == -1)  vert0->edgeIndices.add(edge20);
+        if (vert1->edgeIndices.findIndex(edge01) == -1)  vert1->edgeIndices.add(edge01);
+        if (vert1->edgeIndices.findIndex(edge12) == -1)  vert1->edgeIndices.add(edge12);
+        if (vert2->edgeIndices.findIndex(edge12) == -1)  vert2->edgeIndices.add(edge12);
+        if (vert2->edgeIndices.findIndex(edge20) == -1)  vert2->edgeIndices.add(edge20);
 
-        // now update connectivity information
-        _data.verts[vert0index].faceIndices.add((PLuint)face012index);
-        _data.verts[vert1index].faceIndices.add((PLuint)face012index);
-        _data.verts[vert2index].faceIndices.add((PLuint)face012index);
-        _data.edges[edge01index].faceIndices.add((PLuint)face012index);
-        _data.edges[edge12index].faceIndices.add((PLuint)face012index);
-        _data.edges[edge20index].faceIndices.add((PLuint)face012index);
-        _data.faces[face012index].vertIndices.add((PLuint)vert0index);
-        _data.faces[face012index].vertIndices.add((PLuint)vert1index);
-        _data.faces[face012index].vertIndices.add((PLuint)vert2index);
-        _data.faces[face012index].edgeIndices.add((PLuint)edge01index);
-        _data.faces[face012index].edgeIndices.add((PLuint)edge12index);
-        _data.faces[face012index].edgeIndices.add((PLuint)edge20index);
+        // now add the face
+        plMeshConnectivityDataFace face012Insert;
+        face012Insert.face = plTriangle(vert0->vert,vert1->vert,vert2->vert);
+        _data.faces.insert(face012Insert);
+        const plMeshConnectivityDataFace* face012;
+        face012 = &(*(_data.faces.find(face012Insert)));
+
+        // now update connectivity information for faces
+        vert0->faceIndices.add(face012);
+        vert1->faceIndices.add(face012);
+        vert2->faceIndices.add(face012);
+        edge01->faceIndices.add(face012);
+        edge12->faceIndices.add(face012);
+        edge20->faceIndices.add(face012);
+        face012->vertIndices.add(vert0);
+        face012->vertIndices.add(vert1);
+        face012->vertIndices.add(vert2);
+        face012->edgeIndices.add(edge01);
+        face012->edgeIndices.add(edge12);
+        face012->edgeIndices.add(edge20);
     }
     if (!_checkForAllErrors( verbose,depth+1 )) return false;
     return true;
@@ -911,9 +905,9 @@ PLbool plMeshAlgorithm::_exportTriSeq(plSeq<plTriangle> &tris, PLuint verbose, P
         std::cout << "Warning in plMeshIntersectorConnectivityData::exportTriSeq(): tris array provided already contains data. Clearing contents." << std::endl;
     }
     tris.clear();
-    for (PLuint i = 0; i < _data.faces.size(); i++)
+    for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
     {
-        tris.add(_data.faces[i].face);
+        tris.add((*fit).face);
     }
     return true;
 }

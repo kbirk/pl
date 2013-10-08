@@ -19,7 +19,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
     for (PLuint i = 0; i < edge.faceIndices.size();i++)
     {
 
-        barycentricCoords = _data.faces[edge.faceIndices[i]].face.barycentricCoords(vert.vert);
+        barycentricCoords = edge.faceIndices[i]->face.barycentricCoords(vert.vert);
         if ((vert.vert - plVector3(1.965,1.965,2.0)).length() <= 0.01 && ((edge.edge.pt1-plVector3(2,2,2)).length() <= 0.01 || (edge.edge.pt2-plVector3(2,2,2)).length() <= 0.01) )
         { // this whole thing needs checking
             for (PLuint i=0;i<depth;i++)
@@ -27,14 +27,14 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
             std::cout << "Edge being considered is " << edge.edge.pt1 << " - " << edge.edge.pt2 << " being split on " << vert.vert << std::endl;
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
-            std::cout << "For face " << _data.faces[edge.faceIndices[i]].face.point0() << " | " << _data.faces[edge.faceIndices[i]].face.point1() << " | " << _data.faces[edge.faceIndices[i]].face.point2() << std::endl;
+            std::cout << "For face " << edge.faceIndices[i]->face.point0() << " | " << edge.faceIndices[i]->face.point1() << " | " << edge.faceIndices[i]->face.point2() << std::endl;
 
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Barycentric weights: " << barycentricCoords << std::endl;
-            plVector3 v0 = (_data.faces[edge.faceIndices[i]].face.point1() - _data.faces[edge.faceIndices[i]].face.point0()).normalize(),
-                      v1 = (_data.faces[edge.faceIndices[i]].face.point2() - _data.faces[edge.faceIndices[i]].face.point0()).normalize(),
-                      v2 = (vert.vert          - _data.faces[edge.faceIndices[i]].face.point0()).normalize();
+            plVector3 v0 = (edge.faceIndices[i]->face.point1() - edge.faceIndices[i]->face.point0()).normalize(),
+                      v1 = (edge.faceIndices[i]->face.point2() - edge.faceIndices[i]->face.point0()).normalize(),
+                      v2 = (vert.vert                          - edge.faceIndices[i]->face.point0()).normalize();
 
             PLfloat d00 = (v0*v0);
             PLfloat d01 = (v0*v1);
@@ -52,7 +52,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
                 std::cout << "\t";
             std::cout << "params: " << u << " " << v << " " << w << std::endl;
         }
-        if (_data.faces[edge.faceIndices[i]].face.contains(vert.vert,_epsilon))
+        if (edge.faceIndices[i]->face.contains(vert.vert,_epsilon))
         {
             //for (PLuint i=0;i<depth;i++)
             //    std::cout << "\t";
@@ -60,7 +60,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
             return false;
         }
 
-        if (edge.edge.pt1 != _data.faces[edge.faceIndices[i]].face.point0() && edge.edge.pt2 != _data.faces[edge.faceIndices[i]].face.point0())
+        if (edge.edge.pt1 != edge.faceIndices[i]->face.point0() && edge.edge.pt2 != edge.faceIndices[i]->face.point0())
         {
             if ((barycentricCoords.x > barycentricCoords.y || barycentricCoords.x > barycentricCoords.z) && fabs(barycentricCoords.x) > 0.f)
             {
@@ -70,7 +70,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
                 return false;
             }
         }
-        if (edge.edge.pt1 != _data.faces[edge.faceIndices[i]].face.point1() && edge.edge.pt2 != _data.faces[edge.faceIndices[i]].face.point1())
+        if (edge.edge.pt1 != edge.faceIndices[i]->face.point1() && edge.edge.pt2 != edge.faceIndices[i]->face.point1())
         {
             if ((barycentricCoords.y > barycentricCoords.x || barycentricCoords.y > barycentricCoords.z) && fabs(barycentricCoords.x) > 0.f)
             {
@@ -80,7 +80,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
                 return false;
             }
         }
-        if (edge.edge.pt1 != _data.faces[edge.faceIndices[i]].face.point2() && edge.edge.pt2 != _data.faces[edge.faceIndices[i]].face.point2())
+        if (edge.edge.pt1 != edge.faceIndices[i]->face.point2() && edge.edge.pt2 != edge.faceIndices[i]->face.point2())
         {
             if ((barycentricCoords.z > barycentricCoords.x || barycentricCoords.z > barycentricCoords.y) && fabs(barycentricCoords.x) > 0.f)
             {
@@ -222,38 +222,14 @@ PLbool plMeshIntersector::_findAndFixVertEdgeIntersections(PLuint startIndex, PL
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findAndFixVertEdgeIntersections()" << std::endl;
     }
 
-    if (endIndex == 0) endIndex = _data.verts.size()-1;
-    for (PLuint i = startIndex; i <= endIndex; i++)
+    for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); vit++)
     {
-        for (PLuint j = 0; j < _data.edges.size(); j++)
+        for (plMeshConnectivityDataEdgeIterator eit = _data.edges.begin(); eit != _data.edges.end(); eit++)
         {
-            if (_intersectionVertEdge(_data.verts[i],_data.edges[j],verbose,depth+1))
+            if (_intersectionVertEdge((*vit),(*eit),verbose,depth+1))
             {
-                // first make sure that no other edges in the same face will be split!
-                /*plSeq<PLuint> edgesToCheck;
-                PLuint k; // reused index
-                for (k = 0; k < edges[j].faceIndices.size(); k++)
-                {
-                    for (PLuint l = 0; l < 3; l++)
-                    {
-                        if (faces[edges[j].faceIndices[k]].edgeIndices[l] != j)
-                        {
-                            edgesToCheck.add(faces[edges[j].faceIndices[k]].edgeIndices[l]);
-                        }
-                    }
-                }
-                std::cout << edgesToCheck.size() << std::endl;
-                for (k = 0; k < edgesToCheck.size(); k++)
-                {
-                    if ((plMath::closestPointOnSegment(verts[i].vert,              edges[j].edge.pt1,              edges[j].edge.pt2) - verts[i].vert).length() >
-                        (plMath::closestPointOnSegment(verts[i].vert,edges[edgesToCheck[k]].edge.pt1,edges[edgesToCheck[k]].edge.pt2) - verts[i].vert).length() )
-                        break;
-                }
-                if (k != edgesToCheck.size()) continue;*/
-                _splitEdgeOnVect(j,_data.verts[i].vert,verbose,depth+1);
+                _splitEdgeOnVect(&(*eit),&(*vit),verbose,depth+1);
                 if (!_checkForAllErrors(verbose,depth+1)) { return false;}
-                i--;
-                break; // restart edge iteration, since it may need to be split again! you never know!
             }
         }
     }
@@ -269,16 +245,14 @@ PLbool plMeshIntersector::_findAndFixVertFaceIntersections(PLuint startIndex, PL
     }
 
     if (endIndex == 0) endIndex = _data.verts.size()-1;
-    for (PLuint i = startIndex; i <= endIndex; i++)
+    for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); vit++)
     {
-        for (PLuint j = 0; j < _data.faces.size(); j++)
+        for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
         {
-            if (_intersectionVertFace(_data.verts[i],_data.faces[j],verbose,depth+1))
+            if (_intersectionVertFace((*vit),(*fit),verbose,depth+1))
             {
-                _splitFaceOnVect(j,_data.verts[i].vert,verbose,depth+1);
+                _splitFaceOnVect(&(*fit),&(*vit),verbose,depth+1);
                 if (!_checkForAllErrors(verbose,depth+1)) { return false;}
-                i--;
-                break;
             }
         }
     }
@@ -293,51 +267,25 @@ PLbool plMeshIntersector::_findAndFixEdgeEdgeIntersections(PLuint startIndex, PL
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findAndFixEdgeEdgeIntersections()" << std::endl;
     }
 
-    PLuint vertsSizeBeforeOps(_data.verts.size());
     plVector3 intersectionPoint;
-    plSeq<plVector3> intersectionPoints;
-    if (endIndex == 0) endIndex = _data.edges.size()-1;
-    for (PLuint i = startIndex; i <= endIndex; i++)
+    //plSeq<const plMeshConnectivityDataVert*> newVertsToCheck;
+
+    for (plMeshConnectivityDataEdgeIterator eit1 = _data.edges.begin(); eit1 != _data.edges.end(); eit1++)
     {
-        for (PLuint j = 0; j < _data.edges.size(); j++)
+        for (plMeshConnectivityDataEdgeIterator eit2 = _data.edges.begin(); eit2 != _data.edges.end(); eit2++)
         {
-            if (_intersectionEdgeEdge(_data.edges[j],_data.edges[i],intersectionPoint,verbose,depth+1))
+            if (_intersectionEdgeEdge((*eit1),(*eit2),intersectionPoint,verbose,depth+1))
             {
-                intersectionPoints.add(intersectionPoint);
+                plMeshConnectivityDataVert newVert;
+                newVert.vert = intersectionPoint;
+                _data.verts.insert(newVert);
+                //newVertsToCheck.add(&(*(_data.verts.find(newVert))));
             }
         }
     }
 
-    plSeq<PLuint> extraIndicesToCheck;
-    for (PLuint i = 0; i < intersectionPoints.size(); i++)
-    {
-        plMeshConnectivityDataVert newVert;
-        newVert.vert = intersectionPoints[i];
-        PLint searchIndex = (_data.verts.findIndex(newVert));
-        //if (!_findVert(newVert.vert,searchIndex,verbose,depth+1)) return false;
-        if (searchIndex == -1)
-        {
-            if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-                for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
-                std::cout << "Debug: Creating new vertex: " << intersectionPoints[i] << std::endl;
-            }
-            _data.verts.add(newVert);
-        }
-        else
-            extraIndicesToCheck.add( (PLuint)searchIndex );
-    }
-
-    for (PLuint i = 0; i < extraIndicesToCheck.size(); i++)
-    {
-        if (!_findAndFixVertEdgeIntersections(extraIndicesToCheck[i],extraIndicesToCheck[i],verbose,depth+1)) return false;
-    }
-    if (!_findAndFixVertEdgeIntersections(vertsSizeBeforeOps,_data.verts.size()-1,verbose,depth+1)) return false;
-    for (PLuint i = 0; i < extraIndicesToCheck.size(); i++)
-    {
-        if (!_findAndFixVertFaceIntersections(extraIndicesToCheck[i],extraIndicesToCheck[i],verbose,depth+1)) return false;
-    }
-    if (!_findAndFixVertFaceIntersections(vertsSizeBeforeOps,_data.verts.size()-1,verbose,depth+1)) return false;
+    if (!_findAndFixVertEdgeIntersections(0,0,verbose,depth+1)) return false;
+    if (!_findAndFixVertFaceIntersections(0,0,verbose,depth+1)) return false;
 
     return true;
 }
@@ -350,55 +298,24 @@ PLbool plMeshIntersector::_findAndFixEdgeFaceIntersections(PLuint startIndex, PL
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findAndFixEdgeFaceIntersections()" << std::endl;
     }
 
-    PLuint vertsSizeBeforeOps(_data.verts.size());
-    PLuint edgesSizeBeforeOps(_data.edges.size());
     plVector3 intersectionPoint;
-    plSeq<plVector3> intersectionPoints;
-    if (endIndex == 0) endIndex = _data.edges.size()-1;
-    for (PLuint i = startIndex; i <= endIndex; i++)
+
+    for (plMeshConnectivityDataEdgeIterator eit = _data.edges.begin(); eit != _data.edges.end(); eit++)
     {
-        for (PLuint j = 0; j < _data.faces.size(); j++)
+        for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
         {
-            if (_intersectionEdgeFace(_data.edges[i],_data.faces[j],intersectionPoint,verbose,depth+1))
+            if (_intersectionEdgeFace((*eit),(*fit),intersectionPoint,verbose,depth+1))
             {
-                intersectionPoints.add(intersectionPoint);
+                plMeshConnectivityDataVert newVert;
+                newVert.vert = intersectionPoint;
+                _data.verts.insert(newVert);
             }
         }
     }
 
-    plSeq<PLuint> extraIndicesToCheck;
-    for (PLuint i = 0; i < intersectionPoints.size(); i++)
-    {
-        plMeshConnectivityDataVert newVert;
-        newVert.vert = intersectionPoints[i];
-        PLint searchIndex = (_data.verts.findIndex(newVert));
-        //if (!_findVert(newVert.vert,searchIndex,verbose,depth+1)) return false;
-        if (searchIndex == -1)
-        {
-            if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-                for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
-                std::cout << "Debug: Creating new vertex: " << intersectionPoints[i] << std::endl;
-            }
-            _data.verts.add(newVert);
-        }
-        else
-            extraIndicesToCheck.add( (PLuint)searchIndex );
-    }
-
-    for (PLuint i = 0; i < extraIndicesToCheck.size(); i++)
-    {
-        if (!_findAndFixVertEdgeIntersections(extraIndicesToCheck[i],extraIndicesToCheck[i],verbose,depth+1)) return false;
-    }
-    if(!_findAndFixVertEdgeIntersections(vertsSizeBeforeOps,_data.verts.size()-1,verbose,depth+1)) return false;
-    for (PLuint i = 0; i < extraIndicesToCheck.size(); i++)
-    {
-        if (!_findAndFixVertFaceIntersections(extraIndicesToCheck[i],extraIndicesToCheck[i],verbose,depth+1)) return false;
-    }
-    if (!_findAndFixVertFaceIntersections(vertsSizeBeforeOps,_data.verts.size()-1,verbose,depth+1)) return false;
-    return true;
-
-    if (!_findAndFixEdgeEdgeIntersections(edgesSizeBeforeOps,(_data.edges.size()-1),verbose,depth+1)) return false;
+    if (!_findAndFixVertEdgeIntersections(0,0,verbose,depth+1)) return false;
+    if (!_findAndFixVertFaceIntersections(0,0,verbose,depth+1)) return false;
+    if (!_findAndFixEdgeEdgeIntersections(0,0,verbose,depth+1)) return false;
 
     return true;
 }
