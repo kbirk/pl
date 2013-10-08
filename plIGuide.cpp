@@ -142,7 +142,7 @@ PLbool plIGuide::generateIGuideModels()
         iGuideModelsToAdd.add     ( new plModel( baseTriangles   , baseFilename   , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( holderTriangles , holderFilename , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.add     ( new plModel( keyTriangles    , keyFilename    , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
-        iGuideModelsToSubtract.add( new plModel( correctTriangles, correctFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+        //iGuideModelsToSubtract.add( new plModel( correctTriangles, correctFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         //if (plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR)
     }
     
