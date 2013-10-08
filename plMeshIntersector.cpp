@@ -16,10 +16,10 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
     // We can use barycentric coordinates of the adjacent faces. We should only ever consider an intersection if
     // the weight for the opposite vertex is smaller than the other two in the same face
     plVector3 barycentricCoords;
-    for (PLuint i = 0; i < edge.faceIndices.size();i++)
+    for (PLuint i = 0; i < edge.faces.size();i++)
     {
 
-        barycentricCoords = edge.faceIndices[i]->face.barycentricCoords(vert.vert);
+        barycentricCoords = edge.faces[i]->face.barycentricCoords(vert.vert);
         if ((vert.vert - plVector3(1.965,1.965,2.0)).length() <= 0.01 && ((edge.edge.pt1-plVector3(2,2,2)).length() <= 0.01 || (edge.edge.pt2-plVector3(2,2,2)).length() <= 0.01) )
         { // this whole thing needs checking
             for (PLuint i=0;i<depth;i++)
@@ -27,14 +27,14 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
             std::cout << "Edge being considered is " << edge.edge.pt1 << " - " << edge.edge.pt2 << " being split on " << vert.vert << std::endl;
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
-            std::cout << "For face " << edge.faceIndices[i]->face.point0() << " | " << edge.faceIndices[i]->face.point1() << " | " << edge.faceIndices[i]->face.point2() << std::endl;
+            std::cout << "For face " << edge.faces[i]->face.point0() << " | " << edge.faces[i]->face.point1() << " | " << edge.faces[i]->face.point2() << std::endl;
 
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Barycentric weights: " << barycentricCoords << std::endl;
-            plVector3 v0 = (edge.faceIndices[i]->face.point1() - edge.faceIndices[i]->face.point0()).normalize(),
-                      v1 = (edge.faceIndices[i]->face.point2() - edge.faceIndices[i]->face.point0()).normalize(),
-                      v2 = (vert.vert                          - edge.faceIndices[i]->face.point0()).normalize();
+            plVector3 v0 = (edge.faces[i]->face.point1() - edge.faces[i]->face.point0()).normalize(),
+                      v1 = (edge.faces[i]->face.point2() - edge.faces[i]->face.point0()).normalize(),
+                      v2 = (vert.vert                          - edge.faces[i]->face.point0()).normalize();
 
             PLfloat d00 = (v0*v0);
             PLfloat d01 = (v0*v1);
@@ -52,7 +52,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
                 std::cout << "\t";
             std::cout << "params: " << u << " " << v << " " << w << std::endl;
         }
-        if (edge.faceIndices[i]->face.contains(vert.vert,_epsilon))
+        if (edge.faces[i]->face.contains(vert.vert,_epsilon))
         {
             //for (PLuint i=0;i<depth;i++)
             //    std::cout << "\t";
@@ -60,7 +60,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
             return false;
         }
 
-        if (edge.edge.pt1 != edge.faceIndices[i]->face.point0() && edge.edge.pt2 != edge.faceIndices[i]->face.point0())
+        if (edge.edge.pt1 != edge.faces[i]->face.point0() && edge.edge.pt2 != edge.faces[i]->face.point0())
         {
             if ((barycentricCoords.x > barycentricCoords.y || barycentricCoords.x > barycentricCoords.z) && fabs(barycentricCoords.x) > 0.f)
             {
@@ -70,7 +70,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
                 return false;
             }
         }
-        if (edge.edge.pt1 != edge.faceIndices[i]->face.point1() && edge.edge.pt2 != edge.faceIndices[i]->face.point1())
+        if (edge.edge.pt1 != edge.faces[i]->face.point1() && edge.edge.pt2 != edge.faces[i]->face.point1())
         {
             if ((barycentricCoords.y > barycentricCoords.x || barycentricCoords.y > barycentricCoords.z) && fabs(barycentricCoords.x) > 0.f)
             {
@@ -80,7 +80,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
                 return false;
             }
         }
-        if (edge.edge.pt1 != edge.faceIndices[i]->face.point2() && edge.edge.pt2 != edge.faceIndices[i]->face.point2())
+        if (edge.edge.pt1 != edge.faces[i]->face.point2() && edge.edge.pt2 != edge.faces[i]->face.point2())
         {
             if ((barycentricCoords.z > barycentricCoords.x || barycentricCoords.z > barycentricCoords.y) && fabs(barycentricCoords.x) > 0.f)
             {

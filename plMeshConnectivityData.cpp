@@ -82,28 +82,28 @@ PLbool plMeshConnectivityDataEdge::operator<(const plMeshConnectivityDataEdge& o
     const plMeshConnectivityDataVert* orderedVertsOther[2] = { NULL, NULL };
 
     // now detect which vertex is least
-    if ( *(vertIndices[0]) < *(vertIndices[1]) )
+    if ( *(verts[0]) < *(verts[1]) )
     {
-        orderedVertsThis[0] = vertIndices[0];
-        orderedVertsThis[1] = vertIndices[1];
+        orderedVertsThis[0] = verts[0];
+        orderedVertsThis[1] = verts[1];
     }
-    else if ( *(vertIndices[1]) < *(vertIndices[0]) )
+    else if ( *(verts[1]) < *(verts[0]) )
     {
-        orderedVertsThis[0] = vertIndices[1];
-        orderedVertsThis[1] = vertIndices[0];
+        orderedVertsThis[0] = verts[1];
+        orderedVertsThis[1] = verts[0];
     }
     else // shouldn't happen
         return false;
 
-    if ( *(other.vertIndices[0]) < *(other.vertIndices[1]) )
+    if ( *(other.verts[0]) < *(other.verts[1]) )
     {
-        orderedVertsThis[0] = other.vertIndices[0];
-        orderedVertsThis[1] = other.vertIndices[1];
+        orderedVertsThis[0] = other.verts[0];
+        orderedVertsThis[1] = other.verts[1];
     }
-    else if ( *(other.vertIndices[1]) < *(other.vertIndices[0]) )
+    else if ( *(other.verts[1]) < *(other.verts[0]) )
     {
-        orderedVertsThis[0] = other.vertIndices[1];
-        orderedVertsThis[1] = other.vertIndices[0];
+        orderedVertsThis[0] = other.verts[1];
+        orderedVertsThis[1] = other.verts[0];
     }
     else // shouldn't happen
         return false;
@@ -133,101 +133,101 @@ PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& o
     const plMeshConnectivityDataVert* orderedVertsOther[3] = { NULL, NULL, NULL };
 
     // now detect which vertex is least
-    if ( *(vertIndices[0]) < *(vertIndices[1]) )
+    if ( *(verts[0]) < *(verts[1]) )
     {
-        if ( *(vertIndices[0]) < *(vertIndices[2]) )
+        if ( *(verts[0]) < *(verts[2]) )
         {
-            if ( *(vertIndices[1]) < *(vertIndices[2]) )
+            if ( *(verts[1]) < *(verts[2]) )
             {
-                orderedVertsThis[0] = vertIndices[0];
-                orderedVertsThis[1] = vertIndices[1];
-                orderedVertsThis[2] = vertIndices[2];
+                orderedVertsThis[0] = verts[0];
+                orderedVertsThis[1] = verts[1];
+                orderedVertsThis[2] = verts[2];
             }
-            else if ( *(vertIndices[2]) < *(vertIndices[1]) )
+            else if ( *(verts[2]) < *(verts[1]) )
             {
-                orderedVertsThis[0] = vertIndices[0];
-                orderedVertsThis[1] = vertIndices[2];
-                orderedVertsThis[2] = vertIndices[1];
+                orderedVertsThis[0] = verts[0];
+                orderedVertsThis[1] = verts[2];
+                orderedVertsThis[2] = verts[1];
             }
         }
-        else if ( *(vertIndices[2]) < *(vertIndices[0]) )
+        else if ( *(verts[2]) < *(verts[0]) )
         {
-            orderedVertsThis[0] = vertIndices[2];
-            orderedVertsThis[1] = vertIndices[0];
-            orderedVertsThis[2] = vertIndices[1];
+            orderedVertsThis[0] = verts[2];
+            orderedVertsThis[1] = verts[0];
+            orderedVertsThis[2] = verts[1];
         }
     }
-    else if ( *(vertIndices[1]) < *(vertIndices[0]) )
+    else if ( *(verts[1]) < *(verts[0]) )
     {
-        if ( *(vertIndices[2]) < *(vertIndices[0]) )
+        if ( *(verts[2]) < *(verts[0]) )
         {
-            if ( *(vertIndices[1]) < *(vertIndices[2]) )
+            if ( *(verts[1]) < *(verts[2]) )
             {
-                orderedVertsThis[0] = vertIndices[1];
-                orderedVertsThis[1] = vertIndices[2];
-                orderedVertsThis[2] = vertIndices[0];
+                orderedVertsThis[0] = verts[1];
+                orderedVertsThis[1] = verts[2];
+                orderedVertsThis[2] = verts[0];
             }
-            else if ( *(vertIndices[2]) < *(vertIndices[1]) )
+            else if ( *(verts[2]) < *(verts[1]) )
             {
-                orderedVertsThis[0] = vertIndices[2];
-                orderedVertsThis[1] = vertIndices[1];
-                orderedVertsThis[2] = vertIndices[0];
+                orderedVertsThis[0] = verts[2];
+                orderedVertsThis[1] = verts[1];
+                orderedVertsThis[2] = verts[0];
             }
         }
-        else if ( *(vertIndices[0]) < *(vertIndices[2]) )
+        else if ( *(verts[0]) < *(verts[2]) )
         {
-            orderedVertsThis[0] = vertIndices[1];
-            orderedVertsThis[1] = vertIndices[0];
-            orderedVertsThis[2] = vertIndices[2];
+            orderedVertsThis[0] = verts[1];
+            orderedVertsThis[1] = verts[0];
+            orderedVertsThis[2] = verts[2];
         }
     }
 
-    if ( *(vertIndices[0]) < *(vertIndices[1]) )
+    if ( *(verts[0]) < *(verts[1]) )
     {
-        if ( *(vertIndices[0]) < *(vertIndices[2]) )
+        if ( *(verts[0]) < *(verts[2]) )
         {
-            if ( *(vertIndices[1]) < *(vertIndices[2]) )
+            if ( *(verts[1]) < *(verts[2]) )
             {
-                orderedVertsOther[0] = vertIndices[0];
-                orderedVertsOther[1] = vertIndices[1];
-                orderedVertsOther[2] = vertIndices[2];
+                orderedVertsOther[0] = verts[0];
+                orderedVertsOther[1] = verts[1];
+                orderedVertsOther[2] = verts[2];
             }
-            else if ( *(vertIndices[2]) < *(vertIndices[1]) )
+            else if ( *(verts[2]) < *(verts[1]) )
             {
-                orderedVertsOther[0] = vertIndices[0];
-                orderedVertsOther[1] = vertIndices[2];
-                orderedVertsOther[2] = vertIndices[1];
+                orderedVertsOther[0] = verts[0];
+                orderedVertsOther[1] = verts[2];
+                orderedVertsOther[2] = verts[1];
             }
         }
-        else if ( *(vertIndices[2]) < *(vertIndices[0]) )
+        else if ( *(verts[2]) < *(verts[0]) )
         {
-            orderedVertsOther[0] = vertIndices[2];
-            orderedVertsOther[1] = vertIndices[0];
-            orderedVertsOther[2] = vertIndices[1];
+            orderedVertsOther[0] = verts[2];
+            orderedVertsOther[1] = verts[0];
+            orderedVertsOther[2] = verts[1];
         }
     }
-    else if ( *(vertIndices[1]) < *(vertIndices[0]) )
+    else if ( *(verts[1]) < *(verts[0]) )
     {
-        if ( *(vertIndices[2]) < *(vertIndices[0]) )
+        if ( *(verts[2]) < *(verts[0]) )
         {
-            if ( *(vertIndices[1]) < *(vertIndices[2]) )
+            if ( *(verts[1]) < *(verts[2]) )
             {
-                orderedVertsOther[0] = vertIndices[1];
-                orderedVertsOther[1] = vertIndices[2];
-                orderedVertsOther[2] = vertIndices[0];
+                orderedVertsOther[0] = verts[1];
+                orderedVertsOther[1] = verts[2];
+                orderedVertsOther[2] = verts[0];
             }
-            else if ( *(vertIndices[2]) < *(vertIndices[1]) )
+            else if ( *(verts[2]) < *(verts[1]) )
             {
-                orderedVertsOther[0] = vertIndices[2];
-                orderedVertsOther[1] = vertIndices[1];
-                orderedVertsOther[2] = vertIndices[0];
+                orderedVertsOther[0] = verts[2];
+                orderedVertsOther[1] = verts[1];
+                orderedVertsOther[2] = verts[0];
             }
         }
-        else if ( *(vertIndices[0]) < *(vertIndices[2]) )
+        else if ( *(verts[0]) < *(verts[2]) )
         {
-            orderedVertsOther[0] = vertIndices[1];
-            orderedVertsOther[1] = vertIndices[0];
-            orderedVertsOther[2] = vertIndices[2];
+            orderedVertsOther[0] = verts[1];
+            orderedVertsOther[1] = verts[0];
+            orderedVertsOther[2] = verts[2];
         }
     }
 
@@ -270,11 +270,11 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVe
 {
     stream << vert.vert << "\n";
     stream << "Edge Indices:";
-    for (PLuint i = 0; i < vert.edgeIndices.size(); i++)
-        stream << "\n" << vert.edgeIndices[i];
+    for (PLuint i = 0; i < vert.edges.size(); i++)
+        stream << "\n" << vert.edges[i];
     stream << "\nFace Indices:";
-    for (PLuint i = 0; i < vert.faceIndices.size(); i++)
-        stream << "\n" << vert.faceIndices[i];
+    for (PLuint i = 0; i < vert.faces.size(); i++)
+        stream << "\n" << vert.faces[i];
     return stream;
 }
 
@@ -282,11 +282,11 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataEd
 {
     stream << edge.edge.pt1 << " - " << edge.edge.pt2 << "\n";
     stream << "Vert Indices:";
-    for (PLuint i = 0; i < edge.vertIndices.size(); i++)
-        stream << "\n" << edge.vertIndices[i];
+    for (PLuint i = 0; i < edge.verts.size(); i++)
+        stream << "\n" << edge.verts[i];
     stream << "\nFace Indices:";
-    for (PLuint i = 0; i < edge.faceIndices.size(); i++)
-        stream << "\n" << edge.faceIndices[i];
+    for (PLuint i = 0; i < edge.faces.size(); i++)
+        stream << "\n" << edge.faces[i];
     return stream;
 }
 
@@ -294,11 +294,11 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataFa
 {
     stream << face.face;
     stream << "Vert Indices:";
-    for (PLuint i = 0; i < face.vertIndices.size(); i++)
-        stream << "\n" << face.vertIndices[i];
+    for (PLuint i = 0; i < face.verts.size(); i++)
+        stream << "\n" << face.verts[i];
     stream << "\nEdge Indices:";
-    for (PLuint i = 0; i < face.edgeIndices.size(); i++)
-        stream << "\n" << face.edgeIndices[i];
+    for (PLuint i = 0; i < face.edges.size(); i++)
+        stream << "\n" << face.edges[i];
     return stream;
 }
 

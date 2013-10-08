@@ -19,8 +19,8 @@ class plMeshConnectivityDataVert
 
     plVector3                                        vert;
     PLuint                                           originatingMesh;
-    mutable plSeq<const plMeshConnectivityDataEdge*> edgeIndices; // size can be any positive number
-    mutable plSeq<const plMeshConnectivityDataFace*> faceIndices; // size can be any positive number
+    mutable plSeq<const plMeshConnectivityDataEdge*> edges; // size can be any positive number
+    mutable plSeq<const plMeshConnectivityDataFace*> faces; // size can be any positive number
     plMeshConnectivityData*                          dataset;
 
     plMeshConnectivityDataVert () {}
@@ -36,8 +36,8 @@ class plMeshConnectivityDataEdge
 
     plEdge                                           edge;
     PLuint                                           originatingMesh;
-    mutable plSeq<const plMeshConnectivityDataVert*> vertIndices; // size should always be 2
-    mutable plSeq<const plMeshConnectivityDataFace*> faceIndices; // size should always be an even number
+    mutable plSeq<const plMeshConnectivityDataVert*> verts; // size should always be 2
+    mutable plSeq<const plMeshConnectivityDataFace*> faces; // size should always be an even number
     plMeshConnectivityData*                          dataset;
 
     plMeshConnectivityDataEdge () {}
@@ -52,8 +52,8 @@ class plMeshConnectivityDataFace
 
     plTriangle                                       face;
     PLuint                                           originatingMesh;
-    mutable plSeq<const plMeshConnectivityDataVert*> vertIndices; // size should always be 3
-    mutable plSeq<const plMeshConnectivityDataEdge*> edgeIndices; // size should always be 3
+    mutable plSeq<const plMeshConnectivityDataVert*> verts; // size should always be 3
+    mutable plSeq<const plMeshConnectivityDataEdge*> edges; // size should always be 3
     plMeshConnectivityData*                          dataset;
 
     plMeshConnectivityDataFace () {}
