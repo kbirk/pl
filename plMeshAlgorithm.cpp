@@ -66,10 +66,14 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
     // create the new cells, storing their eventual indices
 
     plMeshConnectivityDataEdge edgeANInsert;
+    edgeANInsert.verts.add(vertA);
+    edgeANInsert.verts.add(vertN);
     edgeANInsert.edge = plEdge(vertA->vert, vertN->vert);
     _data.edges.insert(edgeANInsert);
 
     plMeshConnectivityDataEdge edgeNBInsert;
+    edgeNBInsert.verts.add(vertN);
+    edgeNBInsert.verts.add(vertB);
     edgeNBInsert.edge = plEdge(vertN->vert, vertB->vert);
     _data.edges.insert(edgeNBInsert);
 
@@ -79,12 +83,6 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
     // fill the cells with data, but faces will be treated separately.
     vertN->edges.add(edgeAN);
     vertN->edges.add(edgeNB);
-
-    edgeAN->verts.add(vertA);
-    edgeAN->verts.add(vertN);
-
-    edgeNB->verts.add(vertN);
-    edgeNB->verts.add(vertB);
 
     // split any attached faces each into two pieces...
     plSeq<const plMeshConnectivityDataFace*> facesToSplit (edgeAB->faces);
@@ -203,7 +201,11 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
 
         // create the new cells
         plMeshConnectivityDataEdge edgeNCInsert;
+        edgeNCInsert.verts.add(vertN);
+        edgeNCInsert.verts.add(vertC);
         edgeNCInsert.edge = plEdge(vertN->vert,vertC->vert);
+        _data.edges.insert(edgeNCInsert);
+        const plMeshConnectivityDataEdge* edgeNC  = &(*(_data.edges.find(edgeNCInsert )));
 
         plMeshConnectivityDataFace faceANCInsert;
         plMeshConnectivityDataFace faceBNCInsert;
@@ -211,51 +213,40 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
         {
             faceANCInsert.face = plTriangle(vertA->vert,vertN->vert,vertC->vert);
             faceBNCInsert.face = plTriangle(vertB->vert,vertC->vert,vertN->vert);
+            faceANCInsert.verts.add(vertA);
+            faceANCInsert.verts.add(vertN);
+            faceANCInsert.verts.add(vertC);
+            faceBNCInsert.verts.add(vertB);
+            faceBNCInsert.verts.add(vertC);
+            faceBNCInsert.verts.add(vertN);
         }
         else
         {
             faceANCInsert.face = plTriangle(vertC->vert,vertN->vert,vertA->vert);
             faceBNCInsert.face = plTriangle(vertN->vert,vertC->vert,vertB->vert);
+            faceANCInsert.verts.add(vertC);
+            faceANCInsert.verts.add(vertN);
+            faceANCInsert.verts.add(vertA);
+            faceBNCInsert.verts.add(vertN);
+            faceBNCInsert.verts.add(vertC);
+            faceBNCInsert.verts.add(vertB);
         }
-
-        _data.edges.insert(edgeNCInsert);
+        faceANCInsert.edges.add(edgeAN);
+        faceANCInsert.edges.add(edgeNC);
+        faceANCInsert.edges.add(edgeAC);
+        faceBNCInsert.edges.add(edgeNB);
+        faceBNCInsert.edges.add(edgeNC);
+        faceBNCInsert.edges.add(edgeBC);
         _data.faces.insert(faceANCInsert);
         _data.faces.insert(faceBNCInsert);
-
-        const plMeshConnectivityDataEdge* edgeNC  = &(*(_data.edges.find(edgeNCInsert )));
-        const plMeshConnectivityDataFace* faceANC = &(*(_data.faces.find(faceANCInsert)));
-        const plMeshConnectivityDataFace* faceBNC = &(*(_data.faces.find(faceBNCInsert)));
+        const plMeshConnectivityDataFace* faceANC(NULL);
+        faceANC = &(*(_data.faces.find(faceANCInsert)));
+        const plMeshConnectivityDataFace* faceBNC(NULL);
+        faceBNC = &(*(_data.faces.find(faceBNCInsert)));
 
         // now fill the cells with stuff!
-        edgeNC->verts.add(vertN);
-        edgeNC->verts.add(vertC);
         edgeNC->faces.add(faceANC);
         edgeNC->faces.add(faceBNC);
-
-        if (faceOrientationABC)
-        {
-            faceANC->verts.add(vertA);
-            faceANC->verts.add(vertN);
-            faceANC->verts.add(vertC);
-            faceBNC->verts.add(vertB);
-            faceBNC->verts.add(vertC);
-            faceBNC->verts.add(vertN);
-        }
-        else
-        {
-            faceANC->verts.add(vertC);
-            faceANC->verts.add(vertN);
-            faceANC->verts.add(vertA);
-            faceBNC->verts.add(vertN);
-            faceBNC->verts.add(vertC);
-            faceBNC->verts.add(vertB);
-        }
-        faceANC->edges.add(edgeAN);
-        faceANC->edges.add(edgeNC);
-        faceANC->edges.add(edgeAC);
-        faceBNC->edges.add(edgeNB);
-        faceBNC->edges.add(edgeNC);
-        faceBNC->edges.add(edgeBC);
 
         // update anything else that has been affected by what we just did
         edgeAN->faces.add(faceANC);
@@ -369,36 +360,66 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( const plMeshConnectivityDataFace* face
     }*/
 
     // create the new cells, storing their eventual indices
+
     plMeshConnectivityDataEdge edgeN0Insert;
     edgeN0Insert.edge = plEdge(vertN->vert,vert0->vert);
+    edgeN0Insert.verts.add(vertN);
+    edgeN0Insert.verts.add(vert0);
     _data.edges.insert(edgeN0Insert);
+    const plMeshConnectivityDataEdge* edgeN0(NULL);
+    edgeN0 = &(*(_data.edges.find(edgeN0Insert )));
 
     plMeshConnectivityDataEdge edgeN1Insert;
     edgeN1Insert.edge = plEdge(vertN->vert,vert1->vert);
+    edgeN1Insert.verts.add(vertN);
+    edgeN1Insert.verts.add(vert1);
     _data.edges.insert(edgeN1Insert);
+    const plMeshConnectivityDataEdge* edgeN1(NULL);
+    edgeN1 = &(*(_data.edges.find(edgeN1Insert )));
 
     plMeshConnectivityDataEdge edgeN2Insert;
     edgeN2Insert.edge = plEdge(vertN->vert,vert2->vert);
+    edgeN2Insert.verts.add(vertN);
+    edgeN2Insert.verts.add(vert2);
     _data.edges.insert(edgeN2Insert);
+    const plMeshConnectivityDataEdge* edgeN2(NULL);
+    edgeN2 = &(*(_data.edges.find(edgeN2Insert )));
 
     plMeshConnectivityDataFace face01NInsert;
     face01NInsert.face = plTriangle(vert0->vert,vert1->vert,vertN->vert);
+    face01NInsert.edges.add(edge01);
+    face01NInsert.edges.add(edgeN1);
+    face01NInsert.edges.add(edgeN0);
+    face01NInsert.verts.add(vert0);
+    face01NInsert.verts.add(vert1);
+    face01NInsert.verts.add(vertN);
     _data.faces.insert(face01NInsert);
+    const plMeshConnectivityDataFace* face01N(NULL);
+    face01N = &(*(_data.faces.find(face01NInsert )));
 
     plMeshConnectivityDataFace face12NInsert;
     face12NInsert.face = plTriangle(vert1->vert,vert2->vert,vertN->vert);
+    face12NInsert.edges.add(edge12);
+    face12NInsert.edges.add(edgeN2);
+    face12NInsert.edges.add(edgeN1);
+    face12NInsert.verts.add(vert1);
+    face12NInsert.verts.add(vert2);
+    face12NInsert.verts.add(vertN);
     _data.faces.insert(face12NInsert);
+    const plMeshConnectivityDataFace* face12N(NULL);
+    face12N = &(*(_data.faces.find(face12NInsert )));
 
     plMeshConnectivityDataFace face20NInsert;
     face20NInsert.face = plTriangle(vert2->vert,vert0->vert,vertN->vert);
+    face20NInsert.edges.add(edge20);
+    face20NInsert.edges.add(edgeN0);
+    face20NInsert.edges.add(edgeN2);
+    face20NInsert.verts.add(vert2);
+    face20NInsert.verts.add(vert0);
+    face20NInsert.verts.add(vertN);
     _data.faces.insert(face20NInsert);
-
-    const plMeshConnectivityDataEdge* edgeN0  = &(*(_data.edges.find(edgeN0Insert )));;
-    const plMeshConnectivityDataEdge* edgeN1  = &(*(_data.edges.find(edgeN1Insert )));;
-    const plMeshConnectivityDataEdge* edgeN2  = &(*(_data.edges.find(edgeN2Insert )));;
-    const plMeshConnectivityDataFace* face01N = &(*(_data.faces.find(face01NInsert )));;
-    const plMeshConnectivityDataFace* face12N = &(*(_data.faces.find(face12NInsert )));;
-    const plMeshConnectivityDataFace* face20N = &(*(_data.faces.find(face20NInsert )));;
+    const plMeshConnectivityDataFace* face20N(NULL);
+    face20N = &(*(_data.faces.find(face20NInsert )));
 
     // fill the cells with data
     vertN->faces.add(face01N);
@@ -408,39 +429,10 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( const plMeshConnectivityDataFace* face
     vertN->edges.add(edgeN1);
     vertN->edges.add(edgeN2);
 
-    face01N->edges.add(edge01);
-    face01N->edges.add(edgeN1);
-    face01N->edges.add(edgeN0);
-    face01N->verts.add(vert0);
-    face01N->verts.add(vert1);
-    face01N->verts.add(vertN);
-
-    face12N->edges.add(edge12);
-    face12N->edges.add(edgeN2);
-    face12N->edges.add(edgeN1);
-    face12N->verts.add(vert1);
-    face12N->verts.add(vert2);
-    face12N->verts.add(vertN);
-
-    face20N->edges.add(edge20);
-    face20N->edges.add(edgeN0);
-    face20N->edges.add(edgeN2);
-    face20N->verts.add(vert2);
-    face20N->verts.add(vert0);
-    face20N->verts.add(vertN);
-
-    edgeN0->verts.add(vertN);
-    edgeN0->verts.add(vert0);
     edgeN0->faces.add(face20N);
     edgeN0->faces.add(face01N);
-
-    edgeN1->verts.add(vertN);
-    edgeN1->verts.add(vert1);
     edgeN1->faces.add(face01N);
     edgeN1->faces.add(face12N);
-
-    edgeN2->verts.add(vertN);
-    edgeN2->verts.add(vert2);
     edgeN2->faces.add(face12N);
     edgeN2->faces.add(face20N);
 
@@ -809,11 +801,8 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
         if (!_findVert(currentTriangle[0],vert0,verbose,depth+1)) return false;
         if (vert0 == NULL)
         {
-            std::cout << "A" << std::endl;
             _data.verts.insert(vert0Insert);
-            std::cout << "B" << std::endl;
             vert0 = &(*(_data.verts.find(vert0Insert)));
-            std::cout << "C" << std::endl;
         }
 
         plMeshConnectivityDataVert vert1Insert;
@@ -836,56 +825,20 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
             vert2 = &(*(_data.verts.find(vert2Insert)));
         }
 
-        std::cout << "vert0: " << vert0 << std::endl;
-        std::cout << "vert1: " << vert1 << std::endl;
-        std::cout << "vert2: " << vert2 << std::endl;
-
-        // edges
-        if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-            for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
-            std::cout << "Debug: HERE" << std::endl;
-        }
-
         plMeshConnectivityDataEdge edge01Insert;
-        std::cout << "A" << std::endl;
         edge01Insert.edge = plEdge(vert0->vert,vert1->vert);
-        std::cout << "B" << std::endl;
         edge01Insert.verts.add(vert0);
-        std::cout << "C" << std::endl;
         edge01Insert.verts.add(vert1);
-        std::cout << edge01Insert << std::endl;
-        std::cout << "D" << std::endl;
         _data.edges.insert(edge01Insert);
-        std::cout << "E" << std::endl;
-        const plMeshConnectivityDataEdge* edge01;
-        std::cout << _data.edges.size() << std::endl;
-        std::cout << "F" << std::endl;
-        (_data.edges.find(edge01Insert));
-        std::cout << "G" << std::endl;
-        if (_data.edges.find(edge01Insert) == _data.edges.end())
-        {
-            std::cout << "NOT FOUND" << std::endl;
-            return false;
-        }
-        std::cout << "H" << std::endl;
-        std::cout << (*(_data.edges.find(edge01Insert))) << std::endl;
-        std::cout << "I" << std::endl;
+        const plMeshConnectivityDataEdge* edge01 (NULL);
         edge01 = &(*(_data.edges.find(edge01Insert)));
-        std::cout << "J" << std::endl;
-
-        if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-            for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
-            std::cout << "Debug: HERE" << std::endl;
-        }
 
         plMeshConnectivityDataEdge edge12Insert;
         edge12Insert.edge = plEdge(vert1->vert,vert2->vert);
         edge12Insert.verts.add(vert1);
         edge12Insert.verts.add(vert2);
         _data.edges.insert(edge12Insert);
-        const plMeshConnectivityDataEdge* edge12;
+        const plMeshConnectivityDataEdge* edge12 (NULL);
         edge12 = &(*(_data.edges.find(edge12Insert)));
 
         plMeshConnectivityDataEdge edge20Insert;
@@ -893,13 +846,8 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
         edge20Insert.verts.add(vert2);
         edge20Insert.verts.add(vert0);
         _data.edges.insert(edge20Insert);
-        const plMeshConnectivityDataEdge* edge20;
+        const plMeshConnectivityDataEdge* edge20 (NULL);
         edge20 = &(*(_data.edges.find(edge20Insert)));
-        if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-            for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
-            std::cout << "Debug: HERE" << std::endl;
-        }
 
         // this should only be done if the vertex did not exist. Didn't do earlier since we didn't know the edge indices yet
         if (vert0->edges.findIndex(edge01) == -1)  vert0->edges.add(edge01);
@@ -912,14 +860,15 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
         // now add the face
         plMeshConnectivityDataFace face012Insert;
         face012Insert.face = plTriangle(vert0->vert,vert1->vert,vert2->vert);
+        face012Insert.verts.add(vert0);
+        face012Insert.verts.add(vert1);
+        face012Insert.verts.add(vert2);
+        face012Insert.edges.add(edge01);
+        face012Insert.edges.add(edge12);
+        face012Insert.edges.add(edge20);
         _data.faces.insert(face012Insert);
-        const plMeshConnectivityDataFace* face012;
+        const plMeshConnectivityDataFace* face012 (NULL);
         face012 = &(*(_data.faces.find(face012Insert)));
-        if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-            for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
-            std::cout << "Debug: HERE" << std::endl;
-        }
 
         // now update connectivity information for faces
         vert0->faces.add(face012);
@@ -928,19 +877,11 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
         edge01->faces.add(face012);
         edge12->faces.add(face012);
         edge20->faces.add(face012);
-        face012->verts.add(vert0);
-        face012->verts.add(vert1);
-        face012->verts.add(vert2);
-        face012->edges.add(edge01);
-        face012->edges.add(edge12);
-        face012->edges.add(edge20);
-        if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-            for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
-            std::cout << "Debug: HERE" << std::endl;
-        }
+        std::cout << "Verts size: " << _data.verts.size() << std::endl;
+        std::cout << "Edges size: " << _data.edges.size() << std::endl;
+        std::cout << "Faces size: " << _data.faces.size() << std::endl;
     }
-    if (!_checkForAllErrors( verbose,depth+1 )) return false;
+    if (!_checkForAllErrors( verbose,depth+1 )) { std::cout << "ABORTING" << std::endl; return false; }
     return true;
 }
 

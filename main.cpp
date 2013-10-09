@@ -12,13 +12,13 @@ int main( int argc, char **argv )
 
     plSeq<plTriangle> combinedInput;
     combinedInput.add(inputMesh1);
-    combinedInput.add(inputMesh2);
+    //combinedInput.add(inputMesh2);
 
     plSeq<plTriangle> output;
 
     plMeshIntersector intersector;
     intersector.intersect(combinedInput,output,PL_LOGGER_LEVEL_DEBUG,0);
-    plSTL::exportFileBinary(output,"output/output.stl");
+    plSTL::exportFileBinary(combinedInput,"output/output.stl");
     /*
     // check command line argument count
     if (argc < 2)

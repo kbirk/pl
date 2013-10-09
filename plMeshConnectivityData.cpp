@@ -112,22 +112,21 @@ PLbool plMeshConnectivityDataEdge::operator<(const plMeshConnectivityDataEdge& o
 
     if ( *(other.verts[0]) < *(other.verts[1]) )
     {
-        orderedVertsThis[0] = other.verts[0];
-        orderedVertsThis[1] = other.verts[1];
+        orderedVertsOther[0] = other.verts[0];
+        orderedVertsOther[1] = other.verts[1];
     }
     else if ( *(other.verts[1]) < *(other.verts[0]) )
     {
-        orderedVertsThis[0] = other.verts[1];
-        orderedVertsThis[1] = other.verts[0];
+        orderedVertsOther[0] = other.verts[1];
+        orderedVertsOther[1] = other.verts[0];
     }
     else // shouldn't happen
         return false;
 
-
     // compare least to least, if undecided, then try greater to greater
     if ( *(orderedVertsThis[0]) < *(orderedVertsOther[0]) )
         return true;
-    else if ( *(orderedVertsThis[0]) > *(orderedVertsOther[0]) )
+    else if ( *(orderedVertsOther[0]) < *(orderedVertsThis[0]) )
         return false;
 
     if ( *(orderedVertsThis[1]) < *(orderedVertsOther[1]) )
@@ -197,52 +196,52 @@ PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& o
         }
     }
 
-    if ( *(verts[0]) < *(verts[1]) )
+    if ( *(other.verts[0]) < *(other.verts[1]) )
     {
-        if ( *(verts[0]) < *(verts[2]) )
+        if ( *(other.verts[0]) < *(other.verts[2]) )
         {
-            if ( *(verts[1]) < *(verts[2]) )
+            if ( *(other.verts[1]) < *(other.verts[2]) )
             {
-                orderedVertsOther[0] = verts[0];
-                orderedVertsOther[1] = verts[1];
-                orderedVertsOther[2] = verts[2];
+                orderedVertsOther[0] = other.verts[0];
+                orderedVertsOther[1] = other.verts[1];
+                orderedVertsOther[2] = other.verts[2];
             }
-            else if ( *(verts[2]) < *(verts[1]) )
+            else if ( *(other.verts[2]) < *(other.verts[1]) )
             {
-                orderedVertsOther[0] = verts[0];
-                orderedVertsOther[1] = verts[2];
-                orderedVertsOther[2] = verts[1];
+                orderedVertsOther[0] = other.verts[0];
+                orderedVertsOther[1] = other.verts[2];
+                orderedVertsOther[2] = other.verts[1];
             }
         }
-        else if ( *(verts[2]) < *(verts[0]) )
+        else if ( *(other.verts[2]) < *(other.verts[0]) )
         {
-            orderedVertsOther[0] = verts[2];
-            orderedVertsOther[1] = verts[0];
-            orderedVertsOther[2] = verts[1];
+            orderedVertsOther[0] = other.verts[2];
+            orderedVertsOther[1] = other.verts[0];
+            orderedVertsOther[2] = other.verts[1];
         }
     }
-    else if ( *(verts[1]) < *(verts[0]) )
+    else if ( *(other.verts[1]) < *(other.verts[0]) )
     {
-        if ( *(verts[2]) < *(verts[0]) )
+        if ( *(other.verts[2]) < *(other.verts[0]) )
         {
-            if ( *(verts[1]) < *(verts[2]) )
+            if ( *(other.verts[1]) < *(other.verts[2]) )
             {
-                orderedVertsOther[0] = verts[1];
-                orderedVertsOther[1] = verts[2];
-                orderedVertsOther[2] = verts[0];
+                orderedVertsOther[0] = other.verts[1];
+                orderedVertsOther[1] = other.verts[2];
+                orderedVertsOther[2] = other.verts[0];
             }
-            else if ( *(verts[2]) < *(verts[1]) )
+            else if ( *(other.verts[2]) < *(other.verts[1]) )
             {
-                orderedVertsOther[0] = verts[2];
-                orderedVertsOther[1] = verts[1];
-                orderedVertsOther[2] = verts[0];
+                orderedVertsOther[0] = other.verts[2];
+                orderedVertsOther[1] = other.verts[1];
+                orderedVertsOther[2] = other.verts[0];
             }
         }
-        else if ( *(verts[0]) < *(verts[2]) )
+        else if ( *(other.verts[0]) < *(other.verts[2]) )
         {
-            orderedVertsOther[0] = verts[1];
-            orderedVertsOther[1] = verts[0];
-            orderedVertsOther[2] = verts[2];
+            orderedVertsOther[0] = other.verts[1];
+            orderedVertsOther[1] = other.verts[0];
+            orderedVertsOther[2] = other.verts[2];
         }
     }
 
@@ -270,7 +269,7 @@ PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& o
 
     if (face.normal().y < other.face.normal().y)
         return true;
-    else if (face.normal().z > other.face.normal().z)
+    else if (face.normal().y > other.face.normal().y)
         return false;
 
     if (face.normal().z < other.face.normal().z)
