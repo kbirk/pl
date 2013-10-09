@@ -23,7 +23,7 @@ class plMeshConnectivityDataVert
     mutable plSeq<const plMeshConnectivityDataFace*> faces; // size can be any positive number
     plMeshConnectivityData*                          dataset;
 
-    plMeshConnectivityDataVert () {}
+    plMeshConnectivityDataVert () { originatingMesh = 0; }
     plMeshConnectivityDataVert ( const plMeshConnectivityDataVert& );
 
     plMeshConnectivityDataVert& operator=(const plMeshConnectivityDataVert&);
@@ -42,7 +42,7 @@ class plMeshConnectivityDataEdge
     mutable plSeq<const plMeshConnectivityDataFace*> faces; // size should always be an even number
     plMeshConnectivityData*                          dataset;
 
-    plMeshConnectivityDataEdge () {}
+    plMeshConnectivityDataEdge () { originatingMesh = 0; }
     plMeshConnectivityDataEdge ( const plMeshConnectivityDataEdge& );
 
     plMeshConnectivityDataEdge& operator=(const plMeshConnectivityDataEdge&);
@@ -60,7 +60,7 @@ class plMeshConnectivityDataFace
     mutable plSeq<const plMeshConnectivityDataEdge*> edges; // size should always be 3
     plMeshConnectivityData*                          dataset;
 
-    plMeshConnectivityDataFace () {}
+    plMeshConnectivityDataFace () { originatingMesh = 0; }
     plMeshConnectivityDataFace ( const plMeshConnectivityDataFace& );
 
     plMeshConnectivityDataFace& operator=(const plMeshConnectivityDataFace&);

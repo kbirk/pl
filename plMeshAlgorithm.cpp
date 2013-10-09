@@ -877,9 +877,6 @@ PLbool plMeshAlgorithm::_importTriSeq(const plSeq<plTriangle> &tris, PLuint verb
         edge01->faces.add(face012);
         edge12->faces.add(face012);
         edge20->faces.add(face012);
-        std::cout << "Verts size: " << _data.verts.size() << std::endl;
-        std::cout << "Edges size: " << _data.edges.size() << std::endl;
-        std::cout << "Faces size: " << _data.faces.size() << std::endl;
     }
     if (!_checkForAllErrors( verbose,depth+1 )) { std::cout << "ABORTING" << std::endl; return false; }
     return true;
