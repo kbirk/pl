@@ -13,6 +13,9 @@ class plMeshAlgorithm
 
     plMeshAlgorithm();
 
+    PLbool _importTriSeq( const plSeq<plTriangle>& tris, PLuint originatingMesh, PLuint verbose, PLuint depth=0 );
+    PLbool _exportTriSeq(       plSeq<plTriangle>& tris, PLuint verbose, PLuint depth=0 );
+
   protected:
     PLfloat _epsilon;
 
@@ -24,9 +27,6 @@ class plMeshAlgorithm
 
     PLbool _splitEdgeOnVect( const plMeshConnectivityDataEdge* edgeAB , const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth=0 );
     PLbool _splitFaceOnVect( const plMeshConnectivityDataFace* face012, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth=0 );
-
-    PLbool _importTriSeq( const plSeq<plTriangle>& tris, PLuint verbose, PLuint depth=0 );
-    PLbool _exportTriSeq(       plSeq<plTriangle>& tris, PLuint verbose, PLuint depth=0 );
 
     PLbool _checkArraySizes       ( PLuint verbose, PLuint depth=0 );
     PLbool _checkNoDuplicates     ( PLuint verbose, PLuint depth=0 );

@@ -142,6 +142,7 @@ PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert
     /*for (PLuint i=0;i<depth;i++)
         std::cout << "\t";
     std::cout << "Barycentric weights: " << barycentricCoords << std::endl;
+
     plVector3 v0 = (face.face.point1() - face.face.point0()).normalize(),
               v1 = (face.face.point2() - face.face.point0()).normalize(),
               v2 = (vert.vert          - face.face.point0()).normalize();
@@ -151,16 +152,34 @@ PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert
     PLfloat d11 = (v1*v1);
     PLfloat d20 = (v2*v0);
     PLfloat d21 = (v2*v1);
-    PLdouble denom = d00 * d11 - d01 * d01;
+
+    std::cout << "d00: " << d00 << std::endl;
+    std::cout << "d01: " << d01 << std::endl;
+    std::cout << "d11: " << d11 << std::endl;
+    std::cout << "d20: " << d20 << std::endl;
+    std::cout << "d21: " << d21 << std::endl;
+
+    PLfloat denomF = d00 * d11 - d01 * d01;
     for (PLuint i=0;i<depth;i++)
         std::cout << "\t";
-    std::cout << "denom: " << denom << std::endl;
-    PLfloat v = (d11 * d20 - d01 * d21) / denom;
-    PLfloat w = (d00 * d21 - d01 * d20) / denom;
-    PLfloat u = 1.0f - v - w;
+    std::cout << "float denom: " << denomF << std::endl;
+    PLfloat vF = (d11 * d20 - d01 * d21) / denomF;
+    PLfloat wF = (d00 * d21 - d01 * d20) / denomF;
+    PLfloat uF = 1.0f - vF - wF;
     for (PLuint i=0;i<depth;i++)
         std::cout << "\t";
-    std::cout << "params: " << u << " " << v << " " << w << std::endl;*/
+    std::cout << "float params: " << uF << " " << vF << " " << wF << std::endl;
+
+    PLdouble denomD = d00 * d11 - d01 * d01;
+    for (PLuint i=0;i<depth;i++)
+        std::cout << "\t";
+    std::cout << "double denom: " << denomD << std::endl;
+    PLfloat vD = (d11 * d20 - d01 * d21) / denomD;
+    PLfloat wD = (d00 * d21 - d01 * d20) / denomD;
+    PLfloat uD = 1.0f - vD - wD;
+    for (PLuint i=0;i<depth;i++)
+        std::cout << "\t";
+    std::cout << "double params: " << uD << " " << vD << " " << wD << std::endl;*/
 
     // on the edge, don't consider as an intersection
     if ((plMath::closestPointOnSegment(vert.vert,face.face.point0(),face.face.point1()) - vert.vert).length() <= _epsilon ||
@@ -222,17 +241,23 @@ PLbool plMeshIntersector::_findAndFixVertEdgeIntersections(PLuint startIndex, PL
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findAndFixVertEdgeIntersections()" << std::endl;
     }
 
-    for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); vit++)
+    for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); )
     {
-        for (plMeshConnectivityDataEdgeIterator eit = _data.edges.begin(); eit != _data.edges.end(); eit++)
+        const plMeshConnectivityDataVert* currentV = &(*vit);
+        vit++;
+        for (plMeshConnectivityDataEdgeIterator eit = _data.edges.begin(); eit != _data.edges.end(); )
         {
-            if (_intersectionVertEdge((*vit),(*eit),verbose,depth+1))
+            const plMeshConnectivityDataEdge* currentE = &(*eit);
+            eit++;
+            if (_intersectionVertEdge(*currentV,*currentE,verbose,depth+1))
             {
-                _splitEdgeOnVect(&(*eit),&(*vit),verbose,depth+1);
+                _splitEdgeOnVect(currentE,currentV,verbose,depth+1);
                 if (!_checkForAllErrors(verbose,depth+1)) { return false;}
             }
         }
+        std::cout << "end of for 2" << std::endl;
     }
+    std::cout << "RETURN FAFVE" << std::endl;
     return true;
 }
 
@@ -244,14 +269,17 @@ PLbool plMeshIntersector::_findAndFixVertFaceIntersections(PLuint startIndex, PL
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findAndFixVertFaceIntersections()" << std::endl;
     }
 
-    if (endIndex == 0) endIndex = _data.verts.size()-1;
-    for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); vit++)
+    for (plMeshConnectivityDataVertIterator vit = _data.verts.begin(); vit != _data.verts.end(); )
     {
-        for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
+        const plMeshConnectivityDataVert* currentV = &(*vit);
+        vit++;
+        for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); )
         {
-            if (_intersectionVertFace((*vit),(*fit),verbose,depth+1))
+            const plMeshConnectivityDataFace* currentF = &(*fit);
+            fit++;
+            if (_intersectionVertFace(*currentV,*currentF,verbose,depth+1))
             {
-                _splitFaceOnVect(&(*fit),&(*vit),verbose,depth+1);
+                _splitFaceOnVect(currentF,currentV,verbose,depth+1);
                 if (!_checkForAllErrors(verbose,depth+1)) { return false;}
             }
         }
@@ -320,17 +348,13 @@ PLbool plMeshIntersector::_findAndFixEdgeFaceIntersections(PLuint startIndex, PL
     return true;
 }
 
-PLbool plMeshIntersector::intersect(const plSeq<plTriangle> &inputTris, plSeq<plTriangle> &outputTris, PLuint verbose, PLuint depth )
+PLbool plMeshIntersector::intersect( plSeq<plTriangle> &outputTris, PLuint verbose, PLuint depth )
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::intersect()" << std::endl;
     }
-
-    if (!_importTriSeq(inputTris,verbose,depth+1)) return false;
-
-    //exit(1);
 
     if (!_checkForAllErrors(verbose,depth+1)) return false;
 

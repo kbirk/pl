@@ -4,21 +4,20 @@
 
 int main( int argc, char **argv )
 {   
-    plSeq<plTriangle> inputMesh1, inputMesh2;
+    plSeq<plTriangle> inputMesh1, inputMesh2, inputMesh3;
     plSTL::importFile(inputMesh1,"testMeshes/hiressphere.stl");
     plSTL::importFile(inputMesh2,"testMeshes/sphere1.stl");
     //plSTL::importFile(inputMesh1,"output/badInput3/badInput1.stl");
     //plSTL::importFile(inputMesh2,"output/badInput3/badInput2.stl");
 
-    plSeq<plTriangle> combinedInput;
-    combinedInput.add(inputMesh1);
-    //combinedInput.add(inputMesh2);
-
     plSeq<plTriangle> output;
 
     plMeshIntersector intersector;
-    intersector.intersect(combinedInput,output,PL_LOGGER_LEVEL_DEBUG,0);
-    plSTL::exportFileBinary(combinedInput,"output/output.stl");
+    intersector._importTriSeq(inputMesh1,0,PL_LOGGER_LEVEL_DEBUG,0);
+    intersector._importTriSeq(inputMesh2,1,PL_LOGGER_LEVEL_DEBUG,0);
+    //intersector._importTriSeq(inputMesh3,3,PL_LOGGER_LEVEL_DEBUG,0);
+    intersector.intersect(output,PL_LOGGER_LEVEL_DEBUG,0);
+    plSTL::exportFileBinary(output,"output/output.stl");
     /*
     // check command line argument count
     if (argc < 2)
