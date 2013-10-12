@@ -76,14 +76,19 @@ typedef std::set<plMeshConnectivityDataFace>::iterator plMeshConnectivityDataFac
 
 class plMeshConnectivityData
 {
-  public:
+  protected:
 
+  public:
     plSet<plMeshConnectivityDataVert> verts;
     plSet<plMeshConnectivityDataEdge> edges;
     plSet<plMeshConnectivityDataFace> faces;
 
-    PLfloat epsilon;
-
+    const plMeshConnectivityDataVert* addVert( const plVector3& vert , PLuint originatingMesh );
+    const plMeshConnectivityDataEdge* addEdge( const plMeshConnectivityDataVert* , const plMeshConnectivityDataVert* , PLuint originatingMesh );
+    const plMeshConnectivityDataFace* addFace( const plMeshConnectivityDataVert* , const plMeshConnectivityDataVert* , const plMeshConnectivityDataVert* , const plMeshConnectivityDataEdge* , const plMeshConnectivityDataEdge*  , const plMeshConnectivityDataEdge* , PLuint originatingMesh );
+    void removeVert( const plMeshConnectivityDataVert* );
+    void removeEdge( const plMeshConnectivityDataEdge* );
+    void removeFace( const plMeshConnectivityDataFace* );
 };
 
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVert &p );

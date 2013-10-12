@@ -322,6 +322,214 @@ plMeshConnectivityDataFace& plMeshConnectivityDataFace::operator=(const plMeshCo
     return *this;
 }
 
+const plMeshConnectivityDataVert* plMeshConnectivityData::addVert( const plVector3 &vert , PLuint originatingMesh )
+{
+    plMeshConnectivityDataVert vertToAdd;
+    vertToAdd.vert = vert;
+    vertToAdd.originatingMesh = originatingMesh;
+    vertToAdd.dataset = this;
+    const plMeshConnectivityDataVert* vertPtr;
+    if (verts.find(vertToAdd) == verts.end())
+    {
+        verts.insert(vertToAdd);
+    }
+    else
+    {
+        std::cout << "Warning in plMeshConnectivityData::addVert(): Vertex " << vert << " already exists. Returning it." << std::endl;
+    }
+    vertPtr = &(*(verts.find(vertToAdd)));
+    return vertPtr;
+}
+
+const plMeshConnectivityDataEdge* plMeshConnectivityData::addEdge(const plMeshConnectivityDataVert* vert0, const plMeshConnectivityDataVert* vert1, PLuint originatingMesh)
+{
+    // sort the vertices. They should be in sorted order such that pt1 < pt2
+    const plMeshConnectivityDataVert* orderedVerts[2] = { NULL, NULL };
+    if ( *vert0 < *vert1 )
+    {
+        orderedVerts[0] = vert0;
+        orderedVerts[1] = vert1;
+    }
+    else if ( *vert1 < *vert0 )
+    {
+        orderedVerts[0] = vert1;
+        orderedVerts[1] = vert0;
+    }
+    else // shouldn't happen
+    {
+        std::cout << "Error in plMeshConnectivityData::addEdge(): vert0 and vert1 appear to be the same. Returning NULL." << std::endl;
+        return NULL;
+    }
+
+    // now set up the new element
+    plMeshConnectivityDataEdge edgeToAdd;
+    edgeToAdd.edge = plEdge(orderedVerts[0]->vert,orderedVerts[1]->vert);
+    edgeToAdd.verts.add(orderedVerts[0]);
+    edgeToAdd.verts.add(orderedVerts[1]);
+    edgeToAdd.originatingMesh = originatingMesh;
+    edgeToAdd.dataset = this;
+    const plMeshConnectivityDataEdge* edgePtr;
+    if (edges.find(edgeToAdd) == edges.end())
+    {
+        edges.insert(edgeToAdd);
+        edgePtr = &(*(edges.find(edgeToAdd)));
+        // update the verts that were provided as input.
+        vert0->edges.add(edgePtr);
+        vert1->edges.add(edgePtr);
+    }
+    else
+    {
+        std::cout << "Warning in plMeshConnectivityData::addEdge(): Edge between verts " << vert0 << " and " << vert1 << " already exists. Returning it without updating other cells." << std::endl;
+        edgePtr = &(*(edges.find(edgeToAdd)));
+    }
+
+    return edgePtr;
+}
+
+const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshConnectivityDataVert* vert0, const plMeshConnectivityDataVert* vert1, const plMeshConnectivityDataVert* vert2, const plMeshConnectivityDataEdge* edge01, const plMeshConnectivityDataEdge* edge12, const plMeshConnectivityDataEdge* edge20, PLuint originatingMesh)
+{
+    // sort the vertices, they should be sorted in order such that point0 < point1 and point0 < point2
+    // points should maintain the same counter-clockwise orientation
+    const plMeshConnectivityDataVert* orderedVerts[3] = { NULL, NULL, NULL };
+    const plMeshConnectivityDataEdge* orderedEdges[3] = { NULL, NULL, NULL };
+    if ( *vert0 < *vert1 && *vert0 < *vert2 )
+    {
+        orderedVerts[0] = vert0;
+        orderedVerts[1] = vert1;
+        orderedVerts[2] = vert2;
+        orderedEdges[0] = edge01;
+        orderedEdges[1] = edge12;
+        orderedEdges[2] = edge20;
+    }
+    else if ( *vert1 < *vert0 && *vert1 < *vert2 )
+    {
+        orderedVerts[0] = vert1;
+        orderedVerts[1] = vert2;
+        orderedVerts[2] = vert0;
+        orderedEdges[0] = edge12;
+        orderedEdges[1] = edge20;
+        orderedEdges[2] = edge01;
+    }
+    else if ( *vert2 < *vert0 && *vert2 < *vert1 )
+    {
+        orderedVerts[0] = vert2;
+        orderedVerts[1] = vert0;
+        orderedVerts[2] = vert1;
+        orderedEdges[0] = edge20;
+        orderedEdges[1] = edge01;
+        orderedEdges[2] = edge12;
+    }
+    else // shouldn't happen
+    {
+        std::cout << "Error in plMeshConnectivityData::addFace(): the two 'smallest' verts appear to be the same. Returning NULL." << std::endl;
+        return NULL;
+    }
+
+    // now set up the new element
+    plMeshConnectivityDataFace faceToAdd;
+    faceToAdd.face = plTriangle(orderedVerts[0]->vert,orderedVerts[1]->vert,orderedVerts[2]->vert);
+    faceToAdd.verts.add(orderedVerts[0]);
+    faceToAdd.verts.add(orderedVerts[1]);
+    faceToAdd.verts.add(orderedVerts[2]);
+    faceToAdd.edges.add(orderedEdges[0]);
+    faceToAdd.edges.add(orderedEdges[1]);
+    faceToAdd.edges.add(orderedEdges[2]);
+    faceToAdd.originatingMesh = originatingMesh;
+    faceToAdd.dataset = this;
+    const plMeshConnectivityDataFace* facePtr;
+    if (faces.find(faceToAdd) == faces.end())
+    {
+        faces.insert(faceToAdd);
+        facePtr = &(*(faces.find(faceToAdd)));
+        // update the verts that were provided as input.
+        vert0->faces.add(facePtr);
+        vert1->faces.add(facePtr);
+        vert2->faces.add(facePtr);
+        edge01->faces.add(facePtr);
+        edge12->faces.add(facePtr);
+        edge20->faces.add(facePtr);
+    }
+    else
+    {
+        std::cout << "Warning in plMeshConnectivityData::addFace(): Face of verts " << vert0 << ", " << vert1 << ", and " << vert2 << "already exists. Returning it without updating other cells." << std::endl;
+        facePtr = &(*(faces.find(faceToAdd)));
+    }
+
+    return facePtr;
+}
+
+void plMeshConnectivityData::removeVert(const plMeshConnectivityDataVert* vert)
+{
+    // iterate through edges, remove references to this vert
+    for (PLuint i = 0; i < vert->edges.size(); i++)
+    {
+        PLint indexOfVert = vert->edges[i]->verts.findIndex(vert);
+        if (indexOfVert != -1)
+            vert->edges.remove(indexOfVert);
+        else
+            std::cout << "Warning in plMeshConnectivityData::removeVert(): Could not find the vert provided as input " << vert << " in edge " << vert->edges[i] << ". Ignoring " << std::endl;
+    }
+    // iterate through faces, remove references to this vert
+    for (PLuint i = 0; i < vert->faces.size(); i++)
+    {
+        PLint indexOfVert = vert->faces[i]->verts.findIndex(vert);
+        if (indexOfVert != -1)
+            vert->faces.remove(indexOfVert);
+        else
+            std::cout << "Warning in plMeshConnectivityData::removeVert(): Could not find the vert provided as input " << vert << " in face " << vert->faces[i] << ". Ignoring " << std::endl;
+    }
+    // remove this vert
+    verts.erase(*vert);
+}
+
+void plMeshConnectivityData::removeEdge(const plMeshConnectivityDataEdge* edge)
+{
+    // iterate through verts, remove references to this edge
+    for (PLuint i = 0; i < edge->verts.size(); i++)
+    {
+        PLint indexOfEdge = edge->verts[i]->edges.findIndex(edge);
+        if (indexOfEdge != -1)
+            edge->verts.remove(indexOfEdge);
+        else
+            std::cout << "Warning in plMeshConnectivityData::removeEdge(): Could not find the edge provided as input " << edge << " in vert " << edge->verts[i] << ". Ignoring " << std::endl;
+    }
+    // iterate through faces, remove references to this edge
+    for (PLuint i = 0; i < edge->faces.size(); i++)
+    {
+        PLint indexOfEdge = edge->faces[i]->edges.findIndex(edge);
+        if (indexOfEdge != -1)
+            edge->faces.remove(indexOfEdge);
+        else
+            std::cout << "Warning in plMeshConnectivityData::removeEdge(): Could not find the edge provided as input " << edge << " in face " << edge->faces[i] << ". Ignoring " << std::endl;
+    }
+    // remove this edge
+    edges.erase(*edge);
+}
+
+void plMeshConnectivityData::removeFace(const plMeshConnectivityDataFace* face)
+{
+    // iterate through verts, remove references to this face
+    for (PLuint i = 0; i < face->verts.size(); i++)
+    {
+        PLint indexOfFace = face->verts[i]->faces.findIndex(face);
+        if (indexOfFace != -1)
+            face->verts.remove(indexOfFace);
+        else
+            std::cout << "Warning in plMeshConnectivityData::removeFace(): Could not find the face provided as input " << face << " in vert " << face->verts[i] << ". Ignoring " << std::endl;
+    }
+    // iterate through edge, remove references to this face
+    for (PLuint i = 0; i < face->edges.size(); i++)
+    {
+        PLint indexOfFace = face->edges[i]->faces.findIndex(face);
+        if (indexOfFace != -1)
+            face->edges.remove(indexOfFace);
+        else
+            std::cout << "Warning in plMeshConnectivityData::removeFace(): Could not find the face provided as input " << face << " in vert " << face->edges[i] << ". Ignoring " << std::endl;
+    }
+    // remove this face
+    faces.erase(*face);
+}
+
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVert &vert )
 {
     stream << vert.vert << "\n";
