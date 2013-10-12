@@ -322,27 +322,34 @@ plMeshConnectivityDataFace& plMeshConnectivityDataFace::operator=(const plMeshCo
     return *this;
 }
 
-const plMeshConnectivityDataVert* plMeshConnectivityData::addVert( const plVector3 &vert , PLuint originatingMesh )
+const plMeshConnectivityDataVert* plMeshConnectivityData::addVert( const plVector3 &vert , PLuint originatingMesh , PLuint verbose )
 {
+    if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshConnectivityData::addVert()" << std::endl;
     plMeshConnectivityDataVert vertToAdd;
     vertToAdd.vert = vert;
     vertToAdd.originatingMesh = originatingMesh;
     vertToAdd.dataset = this;
-    const plMeshConnectivityDataVert* vertPtr;
-    if (verts.find(vertToAdd) == verts.end())
+    const plMeshConnectivityDataVert* vertPtr (NULL);
+    if (verts.find(vertToAdd) == verts.end()) // first check for the same vertex
     {
-        verts.insert(vertToAdd);
+        findVertWithinEpsilon(vert,vertPtr); // now search for something close within epsilon
+        if (vertPtr == NULL)
+        {
+            verts.insert(vertToAdd);
+            vertPtr = &(*(verts.find(vertToAdd)));
+        }
     }
     else
     {
-        std::cout << "Warning in plMeshConnectivityData::addVert(): Vertex " << vert << " already exists. Returning it." << std::endl;
+        vertPtr = &(*(verts.find(vertToAdd)));
+        if (verbose >= PL_LOGGER_LEVEL_WARNING) std::cout << "Warning in plMeshConnectivityData::addVert(): Vertex " << vert << " already exists. Returning it." << std::endl;
     }
-    vertPtr = &(*(verts.find(vertToAdd)));
     return vertPtr;
 }
 
-const plMeshConnectivityDataEdge* plMeshConnectivityData::addEdge(const plMeshConnectivityDataVert* vert0, const plMeshConnectivityDataVert* vert1, PLuint originatingMesh)
+const plMeshConnectivityDataEdge* plMeshConnectivityData::addEdge(const plMeshConnectivityDataVert* vert0, const plMeshConnectivityDataVert* vert1, PLuint originatingMesh, PLuint verbose)
 {
+    if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshConnectivityData::addEdge()" << std::endl;
     // sort the vertices. They should be in sorted order such that pt1 < pt2
     const plMeshConnectivityDataVert* orderedVerts[2] = { NULL, NULL };
     if ( *vert0 < *vert1 )
@@ -357,7 +364,7 @@ const plMeshConnectivityDataEdge* plMeshConnectivityData::addEdge(const plMeshCo
     }
     else // shouldn't happen
     {
-        std::cout << "Error in plMeshConnectivityData::addEdge(): vert0 and vert1 appear to be the same. Returning NULL." << std::endl;
+        if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::addEdge(): vert0 and vert1 appear to be the same. Returning NULL." << std::endl;
         return NULL;
     }
 
@@ -379,15 +386,16 @@ const plMeshConnectivityDataEdge* plMeshConnectivityData::addEdge(const plMeshCo
     }
     else
     {
-        std::cout << "Warning in plMeshConnectivityData::addEdge(): Edge between verts " << vert0 << " and " << vert1 << " already exists. Returning it without updating other cells." << std::endl;
+        if (verbose >= PL_LOGGER_LEVEL_WARNING) std::cout << "Warning in plMeshConnectivityData::addEdge(): Edge between verts " << vert0 << " and " << vert1 << " already exists. Returning it without updating other cells." << std::endl;
         edgePtr = &(*(edges.find(edgeToAdd)));
     }
 
     return edgePtr;
 }
 
-const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshConnectivityDataVert* vert0, const plMeshConnectivityDataVert* vert1, const plMeshConnectivityDataVert* vert2, const plMeshConnectivityDataEdge* edge01, const plMeshConnectivityDataEdge* edge12, const plMeshConnectivityDataEdge* edge20, PLuint originatingMesh)
+const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshConnectivityDataVert* vert0, const plMeshConnectivityDataVert* vert1, const plMeshConnectivityDataVert* vert2, const plMeshConnectivityDataEdge* edge01, const plMeshConnectivityDataEdge* edge12, const plMeshConnectivityDataEdge* edge20, PLuint originatingMesh, PLuint verbose)
 {
+    if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshConnectivityData::addFace()" << std::endl;
     // sort the vertices, they should be sorted in order such that point0 < point1 and point0 < point2
     // points should maintain the same counter-clockwise orientation
     const plMeshConnectivityDataVert* orderedVerts[3] = { NULL, NULL, NULL };
@@ -421,7 +429,7 @@ const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshCo
     }
     else // shouldn't happen
     {
-        std::cout << "Error in plMeshConnectivityData::addFace(): the two 'smallest' verts appear to be the same. Returning NULL." << std::endl;
+        if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::addFace(): the two 'smallest' verts appear to be the same. Returning NULL." << std::endl;
         return NULL;
     }
 
@@ -451,7 +459,7 @@ const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshCo
     }
     else
     {
-        std::cout << "Warning in plMeshConnectivityData::addFace(): Face of verts " << vert0 << ", " << vert1 << ", and " << vert2 << "already exists. Returning it without updating other cells." << std::endl;
+        if (verbose >= PL_LOGGER_LEVEL_WARNING) std::cout << "Warning in plMeshConnectivityData::addFace(): Face of verts " << vert0 << ", " << vert1 << ", and " << vert2 << "already exists. Returning it without updating other cells." << std::endl;
         facePtr = &(*(faces.find(faceToAdd)));
     }
 
@@ -465,7 +473,7 @@ void plMeshConnectivityData::removeVert(const plMeshConnectivityDataVert* vert)
     {
         PLint indexOfVert = vert->edges[i]->verts.findIndex(vert);
         if (indexOfVert != -1)
-            vert->edges.remove(indexOfVert);
+            vert->edges[i]->verts.remove(indexOfVert);
         else
             std::cout << "Warning in plMeshConnectivityData::removeVert(): Could not find the vert provided as input " << vert << " in edge " << vert->edges[i] << ". Ignoring " << std::endl;
     }
@@ -474,7 +482,7 @@ void plMeshConnectivityData::removeVert(const plMeshConnectivityDataVert* vert)
     {
         PLint indexOfVert = vert->faces[i]->verts.findIndex(vert);
         if (indexOfVert != -1)
-            vert->faces.remove(indexOfVert);
+            vert->faces[i]->verts.remove(indexOfVert);
         else
             std::cout << "Warning in plMeshConnectivityData::removeVert(): Could not find the vert provided as input " << vert << " in face " << vert->faces[i] << ". Ignoring " << std::endl;
     }
@@ -489,7 +497,7 @@ void plMeshConnectivityData::removeEdge(const plMeshConnectivityDataEdge* edge)
     {
         PLint indexOfEdge = edge->verts[i]->edges.findIndex(edge);
         if (indexOfEdge != -1)
-            edge->verts.remove(indexOfEdge);
+            edge->verts[i]->edges.remove(indexOfEdge);
         else
             std::cout << "Warning in plMeshConnectivityData::removeEdge(): Could not find the edge provided as input " << edge << " in vert " << edge->verts[i] << ". Ignoring " << std::endl;
     }
@@ -498,7 +506,7 @@ void plMeshConnectivityData::removeEdge(const plMeshConnectivityDataEdge* edge)
     {
         PLint indexOfEdge = edge->faces[i]->edges.findIndex(edge);
         if (indexOfEdge != -1)
-            edge->faces.remove(indexOfEdge);
+            edge->faces[i]->edges.remove(indexOfEdge);
         else
             std::cout << "Warning in plMeshConnectivityData::removeEdge(): Could not find the edge provided as input " << edge << " in face " << edge->faces[i] << ". Ignoring " << std::endl;
     }
@@ -513,7 +521,7 @@ void plMeshConnectivityData::removeFace(const plMeshConnectivityDataFace* face)
     {
         PLint indexOfFace = face->verts[i]->faces.findIndex(face);
         if (indexOfFace != -1)
-            face->verts.remove(indexOfFace);
+            face->verts[i]->faces.remove(indexOfFace);
         else
             std::cout << "Warning in plMeshConnectivityData::removeFace(): Could not find the face provided as input " << face << " in vert " << face->verts[i] << ". Ignoring " << std::endl;
     }
@@ -522,12 +530,91 @@ void plMeshConnectivityData::removeFace(const plMeshConnectivityDataFace* face)
     {
         PLint indexOfFace = face->edges[i]->faces.findIndex(face);
         if (indexOfFace != -1)
-            face->edges.remove(indexOfFace);
+            face->edges[i]->faces.remove(indexOfFace);
         else
             std::cout << "Warning in plMeshConnectivityData::removeFace(): Could not find the face provided as input " << face << " in vert " << face->edges[i] << ". Ignoring " << std::endl;
     }
     // remove this face
     faces.erase(*face);
+}
+
+PLbool plMeshConnectivityData::findVertWithinEpsilon( const plVector3& vertex, const plMeshConnectivityDataVert*& vertPointer )
+{
+    vertPointer = (NULL);
+    for (plMeshConnectivityDataVertIterator vit = verts.begin(); vit != verts.end(); vit++)
+    {
+        if (( (*vit).vert - vertex).length() <= _epsilon)
+        {
+            if (vertPointer == NULL)
+                vertPointer = &(*vit);
+            else
+            {
+                std::cout << "Error in plMeshIntersectorConnectivityData::_findVert(): More than one candidate for vertex " << vertex << ". This could mean that epsilon is set too large. Setting pointer to NULL and aborting operation." << std::endl;
+                vertPointer = NULL;
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+PLbool plMeshConnectivityData::importTriSeq(const plSeq<plTriangle> &tris, PLuint originatingMesh, PLuint verbose )
+{
+    if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_importTriSeq()" << std::endl;
+    for (PLuint i = 0; i < tris.size(); i++)
+    {
+        // add cells as necessary
+        const plTriangle& currentTriangle = tris[i];
+        const plMeshConnectivityDataVert* vert0 = addVert(currentTriangle.point0(),0,PL_LOGGER_LEVEL_ERROR); // we ignore non-error output, since during the import stage we expect for there to be (for example) duplicate vertices, which are actually already handled appropriately by the function.
+        const plMeshConnectivityDataVert* vert1 = addVert(currentTriangle.point1(),0,PL_LOGGER_LEVEL_ERROR);
+        const plMeshConnectivityDataVert* vert2 = addVert(currentTriangle.point2(),0,PL_LOGGER_LEVEL_ERROR);
+        if (vert0 == NULL || vert1 == NULL || vert2 == NULL)
+        {
+            if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::importTriSeq(): A vert is a null pointer. This indicates a major problem with the mesh. There should be more details in a previous error message. Aborting input." << std::endl;
+            return false;
+        }
+        const plMeshConnectivityDataEdge* edge01 = addEdge(vert0,vert1,originatingMesh,PL_LOGGER_LEVEL_ERROR);
+        const plMeshConnectivityDataEdge* edge12 = addEdge(vert1,vert2,originatingMesh,PL_LOGGER_LEVEL_ERROR);
+        const plMeshConnectivityDataEdge* edge20 = addEdge(vert2,vert0,originatingMesh,PL_LOGGER_LEVEL_ERROR);
+        if (edge01 == NULL || edge12 == NULL || edge20 == NULL)
+        {
+            if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::importTriSeq(): An edge is a null pointer. This indicates a major problem with the mesh. There should be more details in a previous error message. Aborting input." << std::endl;
+            return false;
+        }
+        const plMeshConnectivityDataFace* face012 = addFace(vert0,vert1,vert2,edge01,edge12,edge20,originatingMesh,PL_LOGGER_LEVEL_ERROR);
+        if (face012 == NULL)
+        {
+            if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::importTriSeq(): A face is a null pointer. This indicates a major problem with the mesh. There should be more details in a previous error message. Aborting input." << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+PLbool plMeshConnectivityData::exportTriSeq(plSeq<plTriangle> &tris, PLuint verbose )
+{
+    if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_exportTriSeq()" << std::endl;
+
+    if (tris.size() != 0)
+    {
+        if (verbose >= PL_LOGGER_LEVEL_WARNING) std::cout << "Warning in plMeshIntersectorConnectivityData::exportTriSeq(): tris array provided already contains data. Clearing contents." << std::endl;
+        tris.clear();
+    }
+
+    for (plMeshConnectivityDataFaceIterator fit = faces.begin(); fit != faces.end(); fit++)
+    {
+        tris.add((*fit).face);
+    }
+
+    return true;
+}
+
+void plMeshConnectivityData::reportSizes()
+{
+    std::cout << "Size of verts: " << verts.size() << "\n";
+    std::cout << "Size of edges: " << edges.size() << "\n";
+    std::cout << "Size of faces: " << faces.size() << "\n";
 }
 
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVert &vert )

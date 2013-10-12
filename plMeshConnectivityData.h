@@ -77,18 +77,29 @@ typedef std::set<plMeshConnectivityDataFace>::iterator plMeshConnectivityDataFac
 class plMeshConnectivityData
 {
   protected:
+    PLfloat _epsilon;
 
   public:
     plSet<plMeshConnectivityDataVert> verts;
     plSet<plMeshConnectivityDataEdge> edges;
     plSet<plMeshConnectivityDataFace> faces;
+    plMeshConnectivityData() { _epsilon = PL_EPSILON; }
 
-    const plMeshConnectivityDataVert* addVert( const plVector3& vert , PLuint originatingMesh );
-    const plMeshConnectivityDataEdge* addEdge( const plMeshConnectivityDataVert* , const plMeshConnectivityDataVert* , PLuint originatingMesh );
-    const plMeshConnectivityDataFace* addFace( const plMeshConnectivityDataVert* , const plMeshConnectivityDataVert* , const plMeshConnectivityDataVert* , const plMeshConnectivityDataEdge* , const plMeshConnectivityDataEdge*  , const plMeshConnectivityDataEdge* , PLuint originatingMesh );
+    PLfloat epsilon() const               { return _epsilon; }
+    void    epsilon( PLfloat newEpsilon ) { _epsilon = newEpsilon; }
+
+    const plMeshConnectivityDataVert* addVert( const plVector3& vert , PLuint originatingMesh, PLuint verbose=PL_LOGGER_LEVEL_INFO );
+    const plMeshConnectivityDataEdge* addEdge( const plMeshConnectivityDataVert* v0, const plMeshConnectivityDataVert* v1, PLuint originatingMesh, PLuint verbose=PL_LOGGER_LEVEL_INFO );
+    const plMeshConnectivityDataFace* addFace( const plMeshConnectivityDataVert* v0, const plMeshConnectivityDataVert* v1, const plMeshConnectivityDataVert* v2, const plMeshConnectivityDataEdge* e01, const plMeshConnectivityDataEdge* e12, const plMeshConnectivityDataEdge* e20, PLuint originatingMesh, PLuint verbose=PL_LOGGER_LEVEL_INFO );
+
     void removeVert( const plMeshConnectivityDataVert* );
     void removeEdge( const plMeshConnectivityDataEdge* );
     void removeFace( const plMeshConnectivityDataFace* );
+
+    PLbool findVertWithinEpsilon( const plVector3& vertex, const plMeshConnectivityDataVert*& vertPointer );
+    PLbool importTriSeq(const plSeq<plTriangle> &tris, PLuint originatingMesh, PLuint verbose );
+    PLbool exportTriSeq(      plSeq<plTriangle> &tris, PLuint verbose );
+    void   reportSizes();
 };
 
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVert &p );
