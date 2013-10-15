@@ -1,5 +1,19 @@
 #include "plArthroscope.h"
 
+/*
+        plMatrix44 aIntrin = arthroscope.getIntrinsics();
+        float aWidth    = arthroscope.width;
+        float aHeight   = arthroscope.height;
+        float x0        = 0.0f;
+        float y0        = 0.0f;
+        float zNear     = 10.0f;
+        float zFar      = 15000.0f;
+
+        plMatrix44 arthroProj(2 * aIntrin(0,0) / aWidth,-2 * aIntrin(0,1) / aWidth , ( aWidth  - 2 * aIntrin(0,2) + 2 * x0) / aWidth , 0        ,
+                              0                        , 2 * aIntrin(1,1) / aHeight, (-aHeight + 2 * aIntrin(1,2) + 2 * y0) / aHeight, 0        ,
+                              0                        , 0                         , (-zFar - zNear)/(zFar - zNear)                  ,-2*zFar*zNear/(zFar - zNear),
+                              0                        , 0                         ,-1                                               , 0        );
+*/
 
 plArthroscope::plArthroscope() 
 //:    interpolationDeque( INTERPOLATION_LIMIT )
