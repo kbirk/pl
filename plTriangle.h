@@ -17,12 +17,12 @@ class plIntersection
         plVector3 normal;
         PLfloat   t;
         
-        plIntersection( PLbool e)
+        plIntersection( PLbool e )
             : exists(e)
         {            
         }
         
-        plIntersection( const plVector3 &p, const plVector3 &n, PLfloat tt)
+        plIntersection( const plVector3 &p, const plVector3 &n, PLfloat tt )
             : exists(true), point(p), normal(n), t(tt)
         {            
         }

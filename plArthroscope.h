@@ -57,7 +57,7 @@ class plArthroscope
         
         // Variables for circle tracking and undistortion function
         std::deque<cv::Point> _interpolationDeque;
-        std::vector<float> _weights;
+        std::vector<PLfloat>  _weights;
 //        cv::Mat _frameMatrix;
         PLfloat _xCenter, _yCenter;
         PLuint _radius;
