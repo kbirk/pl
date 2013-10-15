@@ -27,48 +27,42 @@ enum ImageManipulation
 class plArthroscope 
 {
 
-
     public:
-
-        double  cameraRadius;
-        int     cameraDiameter;
-        int     textureSize, width, height;
-        float   textureScaleFactor;
 
         plArthroscope();
         ~plArthroscope();
 
-        const PLchar*      getImage()      const;
-        const plMatrix44&  getIntrinsics() const;
+        const PLchar*      image()      const;
+        const plMatrix44&  intrinsics() const;
+        PLuint             width()      const;
+        PLuint             height()     const;
+        plMatrix           getCameraMatrix() const;       
+        
         void  updateImage( PLuint imageManipulation );
-        
-        
+                
     private:
     
-        CvCapture *capture;
-        IplImage  *image;
-        IplImage  *frame;
-        PLchar    *img;
+        CvCapture *_capture;
+        IplImage  *_image;
+        IplImage  *_frame;
 
         // for image distortion
-        IplImage* mapx;
-        IplImage* mapy;
+        IplImage* _mapx;
+        IplImage* _mapy;
 
         //Input camera intrinsics
-        CvMat* intrinsics;
-        CvMat* distortion;
-
-        plMatrix44 plIntrinsics;
-
-        // Variables for circle tracking and undistortion function
-
-//        std::deque<cv::Point> interpolationDeque;
-//        std::vector<float> weights;
-//        cv::Mat frameMatrix;
-        float xCenter, yCenter;
-        int radius;
+        CvMat*     _intrinsicsCV;
+        plMatrix44 _intrinsicsPL;
+        CvMat*     _distortion;
         
-        void callCircle();
+        // Variables for circle tracking and undistortion function
+//        std::deque<cv::Point> _interpolationDeque;
+//        std::vector<float> _weights;
+//        cv::Mat _frameMatrix;
+        PLfloat _xCenter, _yCenter;
+        PLuint _radius;
+        
+        void _callCircle();
 
 };
 
