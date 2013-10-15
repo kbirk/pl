@@ -25,7 +25,7 @@ namespace plRenderer
     const plTextureMesh*     _arthroTextureToDraw  = NULL;
     const plTrackedObject*   _probeToDraw          = NULL;
     const plTrackedObject*   _scopeToDraw          = NULL;
-    const plChessBoard*    _chessBoardToDraw   = NULL;
+    const plChessBoard*      _chessBoardToDraw     = NULL;
     const plScan*            _scanToDraw           = NULL;
 
     plMinimalShader*         _minimalShader        = NULL;
@@ -40,10 +40,10 @@ namespace plRenderer
         delete _pickingShader;
         delete _textureShader;
         
-        _minimalShader = new plMinimalShader("./shaders/minimal.vert", "./shaders/minimal.frag");       
-        _phongShader   = new plPhongShader  ("./shaders/phong.vert", "./shaders/phong.frag");        
-        _pickingShader = new plPickingShader("./shaders/picking.vert", "./shaders/picking.frag");         
-        _textureShader = new plTextureShader("./shaders/texture.vert", "./shaders/texture.frag");  
+        _minimalShader = new plMinimalShader( PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag");       
+        _phongShader   = new plPhongShader  ( PL_FILE_PREPATH"shaders/phong.vert",   PL_FILE_PREPATH"shaders/phong.frag"  );        
+        _pickingShader = new plPickingShader( PL_FILE_PREPATH"shaders/picking.vert", PL_FILE_PREPATH"shaders/picking.frag");         
+        _textureShader = new plTextureShader( PL_FILE_PREPATH"shaders/texture.vert", PL_FILE_PREPATH"shaders/texture.frag");  
     } 
 
 
@@ -130,18 +130,6 @@ namespace plRenderer
             std::cerr << "plRenderer queue() error: plScan already queued to draw, overridding previous \n";
 
         _scanToDraw = &scan;
-    }
-
-
-    void reportError( const plString &str  ) 
-    {
-        GLuint errnum;
-        const char *errstr;
-        while (errnum = glGetError()) 
-        {
-            errstr = reinterpret_cast<const char*> (gluErrorString(errnum));
-            std::cout << str << " " << errstr << "\n";
-        }
     }
 
 

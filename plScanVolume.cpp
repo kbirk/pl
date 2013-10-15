@@ -240,7 +240,7 @@ PLbool plScanField::carveSphere(const plVector3& centreW, PLfloat radiusW)
 {
     // first find or create the applicable mask
     PLuint maskIndex;
-    for (PLuint maskIndex = 0; maskIndex < masks.size(); maskIndex++ )
+    for (maskIndex = 0; maskIndex < masks.size(); maskIndex++ )
     {
         if (masks[maskIndex]->radiusW == radiusW)
             break;

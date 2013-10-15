@@ -40,10 +40,7 @@ class plRmsData
 
 namespace plPlannerStage2
 {
-    extern plSeq<plVector3> DEBUG;
-    
-    void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plCapIndices &capIndices );
-      
+    void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plCapIndices &capIndices );      
 }
 
 

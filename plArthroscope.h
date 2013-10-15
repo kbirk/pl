@@ -8,12 +8,14 @@
 #include "plCommon.h"
 
 // set the camera dimensions here
-#define CAPTUREWIDTH    1280
-#define CAPTUREHEIGHT   720
-#define COLORDEPTH      8         // 8 bit color
-#define NUMCHANNELS     3         // 3 color channels (RGB)
-#define ARTHRO_DIAM	    720
-#define INTERPOLATION_LIMIT  4
+#define CAPTURE_WIDTH           1280
+#define CAPTURE_HEIGHT          720
+#define COLOUR_DEPTH            8         // 8 bit color
+#define NUM_CHANNELS            3         // 3 color channels (RGB)
+#define ARTHRO_DIAM	            720
+#define INTERPOLATION_LIMIT     4
+#define INTERPOLATION_WEIGHTS   0.2, 0.2, 0.2, 0.2, 0.2
+
 
 enum ImageManipulation
 { 
@@ -21,16 +23,17 @@ enum ImageManipulation
     CAMERA_IMAGE_UNDISTORT 
 };
 
+
 class plArthroscope 
 {
 
 
     public:
 
-        double  CAMERA_RADIUS;
-        int     CAMERA_DIAMETER;
-        int     TEXTURE_SIZE, WIDTH, HEIGHT;
-        float   TEXTURE_SCALE_FACTOR;
+        double  cameraRadius;
+        int     cameraDiameter;
+        int     textureSize, width, height;
+        float   textureScaleFactor;
 
         plArthroscope();
         ~plArthroscope();

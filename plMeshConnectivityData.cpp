@@ -30,6 +30,7 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityData::
     stream << "\nFace Indices:";
     for (PLuint i = 0; i < vert.faceIndices.size(); i++)
         stream << "\n" << vert.faceIndices[i];
+    return stream;
 }
 
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityData::plMeshConnectivityDataEdge &edge )
@@ -41,6 +42,7 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityData::
     stream << "\nFace Indices:";
     for (PLuint i = 0; i < edge.faceIndices.size(); i++)
         stream << "\n" << edge.faceIndices[i];
+    return stream;
 }
 
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityData::plMeshConnectivityDataFace &face )
@@ -52,5 +54,6 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityData::
     stream << "\nEdge Indices:";
     for (PLuint i = 0; i < face.edgeIndices.size(); i++)
         stream << "\n" << face.edgeIndices[i];
+    return stream;
 }
 

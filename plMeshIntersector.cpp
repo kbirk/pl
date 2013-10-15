@@ -22,14 +22,14 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityData::pl
         barycentricCoords = _data.faces[edge.faceIndices[i]].face.barycentricCoords(vert.vert);
         if ((vert.vert - plVector3(1.965,1.965,2.0)).length() <= 0.01 && ((edge.edge.pt1-plVector3(2,2,2)).length() <= 0.01 || (edge.edge.pt2-plVector3(2,2,2)).length() <= 0.01) )
         { // this whole thing needs checking
-            for (PLuint i=0;i<depth;i++)
+           for (PLuint k=0;k<depth;k++)
                 std::cout << "\t";
             std::cout << "Edge being considered is " << edge.edge.pt1 << " - " << edge.edge.pt2 << " being split on " << vert.vert << std::endl;
-            for (PLuint i=0;i<depth;i++)
+            for (PLuint k=0;k<depth;k++)
                 std::cout << "\t";
             std::cout << "For face " << _data.faces[edge.faceIndices[i]].face.point0() << " | " << _data.faces[edge.faceIndices[i]].face.point1() << " | " << _data.faces[edge.faceIndices[i]].face.point2() << std::endl;
 
-            for (PLuint i=0;i<depth;i++)
+            for (PLuint k=0;k<depth;k++)
                 std::cout << "\t";
             std::cout << "Barycentric weights: " << barycentricCoords << std::endl;
             plVector3 v0 = (_data.faces[edge.faceIndices[i]].face.point1() - _data.faces[edge.faceIndices[i]].face.point0()).normalize(),
@@ -42,13 +42,13 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityData::pl
             PLfloat d20 = (v2*v0);
             PLfloat d21 = (v2*v1);
             PLfloat denom = d00 * d11 - d01 * d01;
-            for (PLuint i=0;i<depth;i++)
+            for (PLuint k=0;k<depth;k++)
                 std::cout << "\t";
             std::cout << "denom: " << denom << std::endl;
             PLfloat v = (d11 * d20 - d01 * d21) / denom;
             PLfloat w = (d00 * d21 - d01 * d20) / denom;
             PLfloat u = 1.0f - v - w;
-            for (PLuint i=0;i<depth;i++)
+            for (PLuint k=0;k<depth;k++)
                 std::cout << "\t";
             std::cout << "params: " << u << " " << v << " " << w << std::endl;
         }
@@ -318,7 +318,7 @@ PLbool plMeshIntersector::_findAndFixEdgeEdgeIntersections(PLuint startIndex, PL
         if (searchIndex == -1)
         {
             if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-                for (PLuint i=0;i<depth;i++)
+                for (PLuint k=0;k<depth;k++)
                     std::cout << "\t";
                 std::cout << "Debug: Creating new vertex: " << intersectionPoints[i] << std::endl;
             }
@@ -376,7 +376,7 @@ PLbool plMeshIntersector::_findAndFixEdgeFaceIntersections(PLuint startIndex, PL
         if (searchIndex == -1)
         {
             if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-                for (PLuint i=0;i<depth;i++)
+                for (PLuint k=0;k<depth;k++)
                     std::cout << "\t";
                 std::cout << "Debug: Creating new vertex: " << intersectionPoints[i] << std::endl;
             }

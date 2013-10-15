@@ -31,9 +31,7 @@ class plCapIndices
 
 namespace plPlannerStage1
 {
-    extern plMesh DEBUG;
-    void run( plCapIndices &capData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState );
-      
+    void run( plCapIndices &capData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState );     
 }
 
 

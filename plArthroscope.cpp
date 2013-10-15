@@ -4,11 +4,11 @@
 plArthroscope::plArthroscope() 
 //:    interpolationDeque( INTERPOLATION_LIMIT )
 { 
-//    weights = {0.2, 0.2, 0.2, 0.2, 0.2};
-    CAMERA_DIAMETER = ARTHRO_DIAM;
-    TEXTURE_SCALE_FACTOR = 0.1;
-    TEXTURE_SIZE = ARTHRO_DIAM;
-    CAMERA_RADIUS = ARTHRO_DIAM/2.;
+//    weights = { INTERPOLATION_WEIGHTS };
+    cameraDiameter = ARTHRO_DIAM;
+    textureScaleFactor = 0.1;
+    textureSize = ARTHRO_DIAM;
+    cameraRadius = ARTHRO_DIAM/2.;
 
     capture = cvCreateCameraCapture(0);
     if (!capture) 
@@ -18,16 +18,16 @@ plArthroscope::plArthroscope()
     }
 
     // image distortion stuff
-    mapx = cvCreateImage(cvSize(CAPTUREWIDTH, CAPTUREHEIGHT), IPL_DEPTH_32F, 1);
-    mapy = cvCreateImage(cvSize(CAPTUREWIDTH, CAPTUREHEIGHT), IPL_DEPTH_32F, 1);
+    mapx = cvCreateImage(cvSize(CAPTURE_WIDTH, CAPTURE_HEIGHT), IPL_DEPTH_32F, 1);
+    mapy = cvCreateImage(cvSize(CAPTURE_WIDTH, CAPTURE_HEIGHT), IPL_DEPTH_32F, 1);
     intrinsics = (CvMat*) cvLoad("./data/matrices/Intrinsics.xml");
     distortion = (CvMat*) cvLoad("./data/matrices/Distortion.xml");
     std::cout << "Intrinsics and Distortion matrices loaded successfully." << std::endl;
 
-    image = cvCreateImage(cvSize(CAPTUREWIDTH, CAPTUREHEIGHT), COLORDEPTH, NUMCHANNELS); // added September 12 2011
+    image = cvCreateImage(cvSize(CAPTURE_WIDTH, CAPTURE_HEIGHT), COLOUR_DEPTH, NUM_CHANNELS); // added September 12 2011
 
-    WIDTH   = CAPTUREWIDTH;
-    HEIGHT  = CAPTUREHEIGHT;
+    width   = CAPTURE_WIDTH;
+    height  = CAPTURE_HEIGHT;
     for (int row = 0; row < 3; row++)
     {
         for (int col = 0; col < 3; col++)
@@ -96,8 +96,8 @@ void plArthroscope::updateImage( PLuint imageManipulation )
     }
 
     img    = image->imageData;
-    WIDTH  = image->width;
-    HEIGHT = image->height;
+    width  = image->width;
+    height = image->height;
 
 }
 

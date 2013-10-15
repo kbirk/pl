@@ -10,6 +10,12 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       Window( x, y, width, height, title )
 {  
     plInit();
+    
+    _plan.defectSites(0).spline.setInvisible();
+    _plan.defectSites(0).boundary.setInvisible();
+    _plan.donorSites(0).boundary.setInvisible();
+    _plan.donorSites(1).boundary.setInvisible();
+    _plan.iGuideSites(0).boundary.setInvisible();
 }
 
 

@@ -102,9 +102,7 @@ PLuint plSiteGrid::getMeshSSBO() const
 {
     PLuint meshSize  = _triangles.size();     
     PLuint dataSize  = meshSize*4;
-      
-    std::cout << "Size: " << dataSize*sizeof(plVector4) << std::endl;   
-      
+       
     plSeq<plVector4> data( dataSize );     
     for ( PLuint i=0; i < meshSize; i++ ) { data.add( plVector4( _triangles[i].point0(), 1.0 ) ); 
                                             data.add( plVector4( _triangles[i].point1(), 1.0 ) );
@@ -270,9 +268,6 @@ PLuint getGroupFullSSBO( const plSeq<plSiteGrid> &sites )
     {
         dataSize += sites[i].dataSize();
     }
-
-    std::cout << "Size: " << dataSize*sizeof(plVector4) << std::endl;   
-     
 
     plSeq<plVector4> data( dataSize );  
     

@@ -182,6 +182,19 @@ namespace plAutomaticPlanner
 
             } 
         }
+        
+        
+        for ( PLuint i = 0; i < plan.defectSites().size(); i++ )
+        {
+            plan.defectSites(i).spline.setInvisible();
+            plan.defectSites(i).boundary.setInvisible();
+        }
+        
+        for ( PLuint i = 0; i < plan.donorSites().size(); i++ )
+        {
+            plan.donorSites(i).boundary.setInvisible();
+        }
+        
     }
  
 

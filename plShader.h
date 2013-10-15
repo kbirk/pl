@@ -38,6 +38,9 @@ class plShader
 
 };
 
+void reportOpenGLError        ( const std::string &str );
+void checkOpenGLImplementation();   
+
 
 PLuint createSSBO( PLuint numBytes, const GLvoid *buffer );
 
@@ -52,6 +55,7 @@ PLuint createSSBO( PLuint count )
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     return bufferID;
 } 
+
 
 template< class T >
 PLuint createSSBO( PLuint count, const T &fill )
