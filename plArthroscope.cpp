@@ -2,9 +2,9 @@
 
 
 plArthroscope::plArthroscope() 
-    :    interpolationDeque( INTERPOLATION_LIMIT )
+    :    _interpolationDeque( INTERPOLATION_LIMIT )
 { 
-   weights = { INTERPOLATION_WEIGHTS };
+//   _weights = { INTERPOLATION_WEIGHTS };
 
     _capture = cvCreateCameraCapture(0);
     if ( !_capture ) 
@@ -17,7 +17,7 @@ plArthroscope::plArthroscope()
     _mapx = cvCreateImage( cvSize( CAPTURE_WIDTH, CAPTURE_HEIGHT ), IPL_DEPTH_32F, 1 );
     _mapy = cvCreateImage( cvSize( CAPTURE_WIDTH, CAPTURE_HEIGHT ), IPL_DEPTH_32F, 1 );
     _intrinsicsCV = (CvMat*) cvLoad("./data/matrices/Intrinsics.xml");
-    _distortion = (CvMat*) cvLoad("./data/matrices/Distortion.xml");
+    _distortion   = (CvMat*) cvLoad("./data/matrices/Distortion.xml");
     std::cout << "Intrinsics and Distortion matrices loaded successfully." << std::endl;
 
     _image = cvCreateImage( cvSize( CAPTURE_WIDTH, CAPTURE_HEIGHT ), COLOUR_DEPTH, NUM_CHANNELS ); // added September 12 2011
@@ -40,47 +40,43 @@ plArthroscope::~plArthroscope()
 }
 
 
-const PLchar* plArthroscope::getImage() const
+const PLchar* plArthroscope::image() const
 {
     return _image->imageData;
 }
 
 
-PLuint width const
+PLuint plArthroscope::width() const
 {
-    return image->width;
+    return _image->width;
 }
 
 
-PLuint height const
+PLuint plArthroscope::height() const
 {
-    return image->height;
+    return _image->height;
 }
 
 
-const plMatrix44& plArthroscope::getIntrinsics() const
+const plMatrix44& plArthroscope::intrinsics() const
 {
     return _intrinsicsPL;
 }
 
 
-plMatrix plArthroscope::getCameraMatrix() const
+plMatrix44 plArthroscope::getProjectionMatrix() const
 {
     const PLfloat x0        = 0.0f;
     const PLfloat y0        = 0.0f;
     const PLfloat zNear     = 10.0f;
     const PLfloat zFar      = 15000.0f;
+    const PLfloat w         = (PLfloat) width();
+    const PLfloat h         = (PLfloat) height();
 
-    plMatrix44 arthroProj( 2 * _intrinsicsPL(0,0) / width,
-                          -2 * _intrinsicsPL(0,1) / width, 
-                          ( width  - 2 * _intrinsicsPL(0,2) + 2 * x0) / width , 
-                          0, 0, 
-                          2 * _intrinsicsPL(1,1) / height, 
-                          (-height + 2 * _intrinsicsPL(1,2) + 2 * y0) / height, 
-                          0, 0, 0,
-                          (-zFar - zNear)/(zFar - zNear),
-                          -2*zFar*zNear/(zFar - zNear),
-                          0, 0, -1, 0 );
+    return plMatrix44 (2 * _intrinsicsPL(0,0) / w,-2 * _intrinsicsPL(0,1) / w , ( w  - 2 * _intrinsicsPL(0,2) + 2 * x0) / w , 0        ,
+                       0                         , 2 * _intrinsicsPL(1,1) / h , (-h + 2 * _intrinsicsPL(1,2) + 2 * y0) / h  , 0        ,
+                       0                         , 0                          , (-zFar - zNear)/(zFar - zNear)              ,-2*zFar*zNear/(zFar - zNear),
+                       0                         , 0                          ,-1                                           , 0        );
 }
 
 

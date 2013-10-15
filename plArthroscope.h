@@ -36,7 +36,7 @@ class plArthroscope
         const plMatrix44&  intrinsics() const;
         PLuint             width()      const;
         PLuint             height()     const;
-        plMatrix           getCameraMatrix() const;       
+        plMatrix44         getProjectionMatrix() const;
         
         void  updateImage( PLuint imageManipulation );
                 
@@ -56,8 +56,8 @@ class plArthroscope
         CvMat*     _distortion;
         
         // Variables for circle tracking and undistortion function
-//        std::deque<cv::Point> _interpolationDeque;
-//        std::vector<float> _weights;
+        std::deque<cv::Point> _interpolationDeque;
+        std::vector<float> _weights;
 //        cv::Mat _frameMatrix;
         PLfloat _xCenter, _yCenter;
         PLuint _radius;
