@@ -53,9 +53,6 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the C vertex. Aborting operation." << std::endl;
-            std::cout << _data.edges[edgeANindex] << std::endl;
-            std::cout << _data.edges[edgeNBindex] << std::endl;
-            std::cout << _data.faces[faceABCindex] << std::endl;
             return false;
         }
         if (vertC == vertN)
@@ -79,7 +76,6 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is B vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
             continue;
         }
-        plMeshConnectivityData::plMeshConnectivityDataVert& vertC = _data.verts[vertCindex];
 
         const plMeshConnectivityDataEdge* edgeAC = NULL;
         const plMeshConnectivityDataEdge* edgeBC = NULL;
@@ -97,9 +93,6 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the AC edge. Aborting operation." << std::endl;
-            std::cout << _data.verts[vertAindex] << std::endl;
-            std::cout << _data.verts[vertCindex] << std::endl;
-            std::cout << _data.faces[faceABCindex] << std::endl;
             return false;
         }
         if (edgeBC == NULL)
@@ -107,9 +100,6 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the BC edge. Aborting operation." << std::endl;
-            std::cout << _data.verts[vertBindex] << std::endl;
-            std::cout << _data.verts[vertCindex] << std::endl;
-            std::cout << _data.faces[faceABCindex] << std::endl;
             return false;
         }
         if (edgeBC == edgeAN)
@@ -140,8 +130,6 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
-        plMeshConnectivityData::plMeshConnectivityDataEdge& edgeAC = _data.edges[edgeACindex];
-        plMeshConnectivityData::plMeshConnectivityDataEdge& edgeBC = _data.edges[edgeBCindex];
 
         PLbool faceOrientationABC(false); // either ABC or CBA
         if ((faceABC->verts[0] == vertA && faceABC->verts[0] == vertB) ||
@@ -164,29 +152,6 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             faceANC = _data.addFace(vertC,vertN,vertA,edgeNC,edgeAN,edgeAC,faceABC->originatingMesh);
             faceBNC = _data.addFace(vertN,vertC,vertB,edgeNC,edgeBC,edgeNB,faceABC->originatingMesh);
         }
-        faceANC.edgeIndices.add(edgeANindex);
-        faceANC.edgeIndices.add(edgeNCindex);
-        faceANC.edgeIndices.add(edgeACindex);
-        faceBNC.edgeIndices.add(edgeNBindex);
-        faceBNC.edgeIndices.add(edgeNCindex);
-        faceBNC.edgeIndices.add(edgeBCindex);
-
-        //std::cout << "verts: " <<
-        //             "\nVertA: " << vertA->originatingMesh << " - " << vertA << " - " << vertA->vert <<
-        //             "\nVertB: " << vertB->originatingMesh << " - " << vertB << " - " << vertB->vert <<
-        //             "\nVertC: " << vertC->originatingMesh << " - " << vertC << " - " << vertC->vert <<
-        //             "\nVertN: " << vertN->originatingMesh << " - " << vertN << " - " << vertN->vert << std::endl;
-        //std::cout << "edges: " <<
-        //             "\nEdgeAB: " << edgeAB->originatingMesh << " - " << edgeAB << " - " << edgeAB->verts[0]->vert << " - " << edgeAB->verts[1]->vert <<
-        //             "\nEdgeAN: " << edgeAN->originatingMesh << " - " << edgeAN << " - " << edgeAN->verts[0]->vert << " - " << edgeAN->verts[1]->vert <<
-        //             "\nEdgeNB: " << edgeNB->originatingMesh << " - " << edgeNB << " - " << edgeNB->verts[0]->vert << " - " << edgeNB->verts[1]->vert <<
-        //             "\nEdgeAC: " << edgeAC->originatingMesh << " - " << edgeAC << " - " << edgeAC->verts[0]->vert << " - " << edgeAC->verts[1]->vert <<
-        //             "\nEdgeBC: " << edgeBC->originatingMesh << " - " << edgeBC << " - " << edgeBC->verts[0]->vert << " - " << edgeBC->verts[1]->vert <<
-        //             "\nEdgeNC: " << edgeNC->originatingMesh << " - " << edgeNC << " - " << edgeNC->verts[0]->vert << " - " << edgeNC->verts[1]->vert << std::endl;
-        //std::cout << "faces: " <<
-        //             "\nFaceABC: " << faceABC->originatingMesh << " - " << faceABC << " - " << faceABC->verts[0]->vert << " - " << faceABC->verts[1]->vert << " - " << faceABC->verts[2]->vert <<
-        //             "\nFaceACN: " << faceANC->originatingMesh << " - " << faceANC << " - " << faceANC->verts[0]->vert << " - " << faceANC->verts[1]->vert << " - " << faceANC->verts[2]->vert <<
-        //             "\nFaceBNC: " << faceBNC->originatingMesh << " - " << faceBNC << " - " << faceBNC->verts[0]->vert << " - " << faceBNC->verts[1]->vert << " - " << faceBNC->verts[2]->vert << std::endl;
 
         _data.removeFace(faceABC);
     }
@@ -200,35 +165,9 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
 // add a vertex somewhere in the middle of the triangle, then divide the triangle into three smaller triangles.
 PLbool plMeshAlgorithm::_splitFaceOnVect( const plMeshConnectivityDataFace* face012, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth )
 {
-    /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-        for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
-        std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_splitFaceOnVect()" << std::endl;
-        for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
-        std::cout << "Debug: Splitting on vertex " << vertex << std::endl;
-    }*/
-
-    // find all existing cells, have them available in case they're needed later
-    /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-        for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
-        std::cout << "Debug: Face being split is " << _data.faces[faceIndex].face.point0() << " | "
-                                                   << _data.faces[faceIndex].face.point1() << " | "
-                                                   << _data.faces[faceIndex].face.point2() << std::endl;
-    }*/
-
     const plMeshConnectivityDataVert* vert0 = face012->verts[0];
     const plMeshConnectivityDataVert* vert1 = face012->verts[1];
     const plMeshConnectivityDataVert* vert2 = face012->verts[2];
-
-    /*if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
-        for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
-        std::cout << "Debug: Vertices detected are " << _data.verts[vert0index].vert << " | "
-                                                     << _data.verts[vert1index].vert << " | "
-                                                     << _data.verts[vert2index].vert << std::endl;
-    }*/
 
     const plMeshConnectivityDataEdge* edge01(NULL);
     const plMeshConnectivityDataEdge* edge12(NULL);
@@ -251,7 +190,6 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( const plMeshConnectivityDataFace* face
         for (PLuint i=0;i<depth;i++)
             std::cout << "\t";
         std::cout << "Error in plMeshIntersectorConnectivityData::_splitFaceOnVect(): Could not find one of the edges in the face. Aborting operation." << std::endl;
-        //std::cout << _data.faces[faceIndex] << std::endl;
         return false;
     }
 
@@ -260,27 +198,9 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( const plMeshConnectivityDataFace* face
     const plMeshConnectivityDataEdge* edgeN0 = _data.addEdge(vertN,vert0,face012->originatingMesh);
     const plMeshConnectivityDataEdge* edgeN1 = _data.addEdge(vertN,vert1,face012->originatingMesh);
     const plMeshConnectivityDataEdge* edgeN2 = _data.addEdge(vertN,vert2,face012->originatingMesh);
-    const plMeshConnectivityDataFace* face01N = _data.addFace(vert0,vert1,vertN,edge01,edgeN1,edgeN0,face012->originatingMesh);
-    const plMeshConnectivityDataFace* face12N = _data.addFace(vert1,vert2,vertN,edge12,edgeN2,edgeN1,face012->originatingMesh);
-    const plMeshConnectivityDataFace* face20N = _data.addFace(vert2,vert0,vertN,edge20,edgeN0,edgeN2,face012->originatingMesh);
-
-    //std::cout << "verts: " <<
-    //             "\nVert0: " << vert0->originatingMesh << " - " << vert0 << " - " << vert0->vert <<
-    //             "\nVert1: " << vert1->originatingMesh << " - " << vert1 << " - " << vert1->vert <<
-    //             "\nVert2: " << vert2->originatingMesh << " - " << vert2 << " - " << vert2->vert <<
-    //             "\nVertN: " << vertN->originatingMesh << " - " << vertN << " - " << vertN->vert << std::endl;
-    //std::cout << "edges: " <<
-    //             "\nEdge01: " << edge01->originatingMesh << " - " << edge01 << " - " << edge01->verts[0]->vert << " - " << edge01->verts[1]->vert <<
-    //             "\nEdge12: " << edge12->originatingMesh << " - " << edge12 << " - " << edge12->verts[0]->vert << " - " << edge12->verts[1]->vert <<
-    //             "\nEdge20: " << edge20->originatingMesh << " - " << edge20 << " - " << edge20->verts[0]->vert << " - " << edge20->verts[1]->vert <<
-    //             "\nEdgeN0: " << edgeN0->originatingMesh << " - " << edgeN0 << " - " << edgeN0->verts[0]->vert << " - " << edgeN0->verts[1]->vert <<
-    //             "\nEdgeN1: " << edgeN1->originatingMesh << " - " << edgeN1 << " - " << edgeN1->verts[0]->vert << " - " << edgeN1->verts[1]->vert <<
-    //             "\nEdgeN2: " << edgeN2->originatingMesh << " - " << edgeN2 << " - " << edgeN2->verts[0]->vert << " - " << edgeN2->verts[1]->vert << std::endl;
-    //std::cout << "faces: " <<
-    //             "\nFace012: " << face012->originatingMesh << " - " << face012 << " - " << face012->verts[0]->vert << " - " << face012->verts[1]->vert << " - " << face012->verts[2]->vert <<
-    //             "\nFace01N: " << face01N->originatingMesh << " - " << face01N << " - " << face01N->verts[0]->vert << " - " << face01N->verts[1]->vert << " - " << face01N->verts[2]->vert <<
-    //             "\nFace12N: " << face12N->originatingMesh << " - " << face12N << " - " << face12N->verts[0]->vert << " - " << face12N->verts[1]->vert << " - " << face12N->verts[2]->vert <<
-    //             "\nFace20N: " << face20N->originatingMesh << " - " << face20N << " - " << face20N->verts[0]->vert << " - " << face20N->verts[1]->vert << " - " << face20N->verts[2]->vert << std::endl;
+    _data.addFace(vert0,vert1,vertN,edge01,edgeN1,edgeN0,face012->originatingMesh);
+    _data.addFace(vert1,vert2,vertN,edge12,edgeN2,edgeN1,face012->originatingMesh);
+    _data.addFace(vert2,vert0,vertN,edge20,edgeN0,edgeN2,face012->originatingMesh);
 
     _data.removeFace(face012);
 
