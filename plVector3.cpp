@@ -58,6 +58,14 @@ plVector3 plVector3::operator-() const
     return plVector3(-x, -y, -z);
 }
 
+plVector3& plVector3::operator=( const plVector3& other )
+{
+    x = other.x;
+    y = other.y;
+    z = other.z;
+    return *this;
+}
+
 plVector3 plVector3::normalize() const 
 {
     PLfloat len;

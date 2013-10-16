@@ -66,6 +66,8 @@ class plTriangle
         
         PLfloat getArea() const;
 
+        plTriangle& operator=( const plTriangle& );
+
         PLbool operator== ( const plTriangle& ) const;
 
     private:

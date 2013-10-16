@@ -129,20 +129,21 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
 plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint ) const
 {
     // we're assuming that testPoint is in-plane with the triangle.
-    plVector3 v0 = _points[1] - _points[0],
-              v1 = _points[2] - _points[0],
-              v2 =  testPoint - _points[0];
-              
-    PLfloat d00 = (v0*v0);
-    PLfloat d01 = (v0*v1);
-    PLfloat d11 = (v1*v1);
-    PLfloat d20 = (v2*v0);
-    PLfloat d21 = (v2*v1);
-    PLfloat denom = d00 * d11 - d01 * d01;
-    PLfloat v = (d11 * d20 - d01 * d21) / denom;
-    PLfloat w = (d00 * d21 - d01 * d20) / denom;
-    PLfloat u = 1.0f - v - w;
-    return plVector3(u,v,w);
+
+    // Obtained from: http://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
+    //   The more efficient solution proposed below seems to sometimes produce inaccurate
+    // results (particularly as the determinant approaches 0), so beware that solution.
+    plVector3 bary;
+
+    PLfloat area012 = _normal * ((_points[1]-_points[0])^(_points[2]-_points[0]));
+    PLfloat areaT12 = _normal * ((_points[1]-testPoint) ^(_points[2]-testPoint ));
+    PLfloat areaT20 = _normal * ((_points[2]-testPoint) ^(_points[0]-testPoint ));
+
+    bary.x = areaT12 / area012;
+    bary.y = areaT20 / area012;
+    bary.z = 1.0f - bary.x - bary.y;
+
+    return bary;
 }
 
 
@@ -391,5 +392,16 @@ namespace plSTL
         return true;
     }
 
+}
+
+plTriangle& plTriangle::operator=( const plTriangle& other )
+{
+    _points[0] = other._points[0];
+    _points[1] = other._points[1];
+    _points[2] = other._points[2];
+    _normal    = other._normal;
+    _centroid  = other._centroid;
+    _radius    = other._radius;
+    return *this;
 }
 
