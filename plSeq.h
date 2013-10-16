@@ -1,5 +1,5 @@
-#ifndef __PL_SEQ_H__
-#define __PL_SEQ_H__
+#ifndef PL_SEQ_H
+#define PL_SEQ_H
 
 #include "plCommon.h"
 
@@ -320,7 +320,7 @@ PLbool plSeq<T>::exists( const T &x )
 template<class T>
 PLint plSeq<T>::findIndex( const T &x )
 {
-	for (PLint i=0; i<_numElements; i++)
+	for (PLuint i=0; i<_numElements; i++)
 		if (_data[i] == x)
 			return i;
 

@@ -41,12 +41,11 @@ PLuint plCapIndices::getDonorSSBO() const
 namespace plPlannerStage1
 {
 
-    plMesh DEBUG;
-
     void run( plCapIndices &capData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState )
-    {     
+    {    
+        reportOpenGLError( "BEFORE SHADER STAGE 1\n" ); 
         // compile / link stage 1 shader
-        plPlannerStage1Shader stage1Shader("./shaders/plannerStage1.comp");
+        plPlannerStage1Shader stage1Shader( PL_FILE_PREPATH"shaders/plannerStage1.comp" );
         stage1Shader.bind(); 
         
         // calc total grid points (invocations)
@@ -98,32 +97,8 @@ namespace plPlannerStage1
         // memory barrier      
         glMemoryBarrier( GL_ALL_BARRIER_BITS ); //GL_SHADER_STORAGE_BARRIER_BIT);
 
-        
+        // get cap data from SSBOs
         capData.update( defectCapIndicesBufferID, defectState.graftCount*PL_MAX_CAP_TRIANGLES, donorCapIndicesBufferID, totalGridPoints*PL_MAX_CAP_TRIANGLES );
-
-        
-        plSeq<plTriangle> tris;
-        
-        //for ( PLuint i=0; i < 5; i++ )
-        //{
-            PLuint i = 0; //donorSites[0].gridSize() + 10;
-            PLuint offset = i*PL_MAX_CAP_TRIANGLES;
-        
-            std::cout << "Count: " << capData.defectIndices[offset] << std::endl;
-            
-            for ( PLuint j=1; j < capData.defectIndices[offset]+1; j++ )
-            {
-                std::cout << capData.defectIndices[ i*PL_MAX_CAP_TRIANGLES + j] << " ";
-                               
-                tris.add( defectSite.triangles( capData.defectIndices[ i*PL_MAX_CAP_TRIANGLES + j] ) );
-            }
-                        
-            std::cout << std::endl << std::endl;
-        //}
-        
-        
-        // DEBUG      
-        DEBUG = plMesh( tris );
         
         
         // unbind buffers
@@ -138,17 +113,7 @@ namespace plPlannerStage1
         glDeleteBuffers( 1, &defectCapIndicesBufferID );
         glDeleteBuffers( 1, &donorCapIndicesBufferID  );
 
-        // DEBUG
-        /*
-        for (PLuint i=0; i < PL_STAGE1_NUM_DIRECTIONS; i++)
-        {
-            std::cout << " dir: " << i << "\n";
-            for (PLuint j=0; j < 10; j++)
-            {
-                std::cout << "rms:\t" << rmsData.sets[i].rms[j] << "\n";
-            }
-        }
-        */
+        reportOpenGLError( "END OF SHADER STAGE 1\n" );
 
     }
 

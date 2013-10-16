@@ -1,5 +1,5 @@
-#ifndef __PL_OCTREE_H__
-#define __PL_OCTREE_H__
+#ifndef PL_OCTREE_H
+#define PL_OCTREE_H
 
 #include "plCommon.h"
 #include "plSeq.h"

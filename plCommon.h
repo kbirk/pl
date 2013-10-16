@@ -1,5 +1,5 @@
-#ifndef _PL_COMMON_H__
-#define _PL_COMMON_H__
+#ifndef PL_COMMON_H
+#define PL_COMMON_H
 
 // MODEL MACROS  
 
@@ -116,22 +116,6 @@
 
 #define PL_NORMAL_SMOOTHING_RADIUS               4.0f
 
-#ifdef WIN32
-    #include <windows.h>  
-#endif
-
-#ifdef __APPLE_CC__
-    #include <glew.h>    // include before gl.h
-    #include <OpenGL/gl.h>
-    #include <OpenGL/glu.h>
-    #include <GLUT/glut.h>
-#else
-    #include <GL/glew.h> // include before gl.h
-    #include <GL/glut.h>
-    #include <GL/glu.h>
-    #include <GL/gl.h>
-#endif
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -146,6 +130,30 @@
 #include <limits>
 #include <set>
 #include <chrono>
+
+#ifdef WIN32
+    #include <windows.h>  
+    #define PL_FILE_PREPATH     "../"
+    inline float round( float val )
+    {    
+        return floor(val + 0.5f);
+    }
+#else
+    #define PL_FILE_PREPATH     "./"        
+#endif
+
+#ifdef __APPLE_CC__
+    #include <glew.h>    // include before gl.h
+    #include <OpenGL/gl.h>
+    #include <OpenGL/glu.h>
+    #include <GLUT/glut.h>
+#else
+    #include <GL/glew.h> // include before gl.h
+    #include <GL/glut.h>
+    #include <GL/glu.h>
+    #include <GL/gl.h>
+#endif
+
 
 // PRIMITIVE TYPEDEFS
 

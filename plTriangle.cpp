@@ -108,10 +108,10 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
     if (dn == 0 || (backFaceCull && dn > 0) )
         return plIntersection(false);   // ray is parallel to plane, or coming from behind    
 
-    PLfloat dist = _points[0] * _normal;
+    //PLfloat dist = _points[0] * _normal;
 
-    PLfloat t = (dist - rayStart*_normal) / dn;
-    
+    PLfloat t = ( (_points[0]-rayStart) * _normal ) / dn;
+
     if (ignoreBehindRay && t < 0) 
         return plIntersection(false);   // plane is behind ray
 

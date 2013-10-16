@@ -1,5 +1,5 @@
-#ifndef __PL_STAGE_2_STATE_H__
-#define __PL_STAGE_2_STATE_H__
+#ifndef PL_STAGE_2_STATE_H
+#define PL_STAGE_2_STATE_H
 
 #include "plCommon.h"
 #include "plSeq.h"
@@ -40,10 +40,7 @@ class plRmsData
 
 namespace plPlannerStage2
 {
-    extern plSeq<plVector3> DEBUG;
-    
-    void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plCapIndices &capIndices );
-      
+    void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plCapIndices &capIndices );      
 }
 
 

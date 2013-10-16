@@ -1,5 +1,5 @@
-#ifndef SPLINE_H
-#define SPLINE_H
+#ifndef PL_SPLINE_H
+#define PL_SPLINE_H
 
 #include "plCommon.h"
 #include "plVector3.h"

@@ -1,5 +1,5 @@
-#ifndef __PL_STAGE_0_STATE_H__
-#define __PL_STAGE_0_STATE_H__
+#ifndef PL_STAGE_0_STATE_H
+#define PL_STAGE_0_STATE_H
 
 #include "plCommon.h"
 #include "plUtility.h"
@@ -19,7 +19,7 @@
 #define PL_STAGE0_NUM_GROUPS                 16
 #define PL_STAGE0_INVOCATIONS                PL_STAGE0_NUM_GROUPS*PL_STAGE0_GROUP_SIZE
 #define PL_STAGE0_INITIAL_TEMPERATURE        1.0f
-#define PL_STAGE0_COOLING_RATE               0.002f
+#define PL_STAGE0_COOLING_RATE               0.05f //0.00175f
 
 
 class plDefectState
@@ -43,15 +43,14 @@ class plAnnealingGroup
         plSeq<PLuint>     graftCounts;  
         plSeq<plVector4>  graftPositions;
         plSeq<plVector4>  graftNormals;
-        plSeq<PLfloat>    graftRadii;
-    
+        plSeq<PLfloat>    graftRadii;  
         PLfloat           temperature;
     
         plAnnealingGroup( PLfloat initialEnergy );        
         ~plAnnealingGroup();
         
         void convergeWorkGroups();
-        void convergeGlobal();
+        //void convergeGlobal();
         
         void updateGroupBuffer() const;
         
@@ -88,6 +87,8 @@ namespace plPlannerStage0
     void run( plDefectState &state, const plSiteGrid &site );
 
 }
+
+
 
 
 #endif

@@ -9,7 +9,7 @@ plAnnealingGroup::plAnnealingGroup( PLfloat initialEnergy )
       graftRadii    ( PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION, -1.0 )
 { 
     _createBuffers();      // create input/output buffers
-    _bindBuffers();        // bind input/output buffers   
+    _bindBuffers  ();      // bind input/output buffers   
     updateGroupBuffer();   // upload group states to GPU    
 }
 
@@ -112,6 +112,7 @@ void plAnnealingGroup::convergeWorkGroups()
 }
 
 
+/*
 void plAnnealingGroup::convergeGlobal()
 {
     std::cout << "CONVERGE!" << std::endl;
@@ -133,18 +134,19 @@ void plAnnealingGroup::convergeGlobal()
     }
     updateGroupBuffer();
 }
+*/
 
 
 PLint plAnnealingGroup::getCurrentBest() const
 {
-    PLint index = -1;
+    PLint   index  = -1;
     PLfloat energy = FLT_MAX;
     for (PLuint i=0; i < PL_STAGE0_NUM_GROUPS; i++ )
     {                  
         if ( energies[i] < energy )
         {    
             energy = energies[i];
-            index = i;
+            index  = i;
         }
     }
     return index;
@@ -178,7 +180,7 @@ PLint plAnnealingGroup::_updateEnergy( PLuint groupIndex )
 {
     glBindBuffer( GL_SHADER_STORAGE_BUFFER, _energiesBufferID );    
     
-    PLfloat *newEnergies = readSSBO<PLfloat>( groupIndex*PL_STAGE0_GROUP_SIZE, PL_STAGE0_GROUP_SIZE ); //groupIndex*PL_STAGE0_GROUP_SIZE, PL_STAGE0_GROUP_SIZE );
+    PLfloat *newEnergies = readSSBO<PLfloat>( groupIndex*PL_STAGE0_GROUP_SIZE, PL_STAGE0_GROUP_SIZE );
 
     // randomize order each iteration to prevent bias    
     plSeq<PLuint> indexOrder( PL_STAGE0_GROUP_SIZE ); for (PLuint i=0; i<PL_STAGE0_GROUP_SIZE; i++) indexOrder.add(i);
@@ -186,11 +188,11 @@ PLint plAnnealingGroup::_updateEnergy( PLuint groupIndex )
     
     // iterate through all state energies and find best one
     PLint bestIndex = -1;        
-    for (PLuint i=0; i < PL_STAGE0_GROUP_SIZE; i++ )
+    for ( PLuint i=0; i < PL_STAGE0_GROUP_SIZE; i++ )
     {    
         // global index in energies array
-        PLuint j = indexOrder[i];                   // local index
-        PLfloat r = ((float) rand() / (RAND_MAX));
+        PLuint  j = indexOrder[i];                   // local index
+        PLfloat r = ((float) rand() / (RAND_MAX));   // random between 0 and 1
         if ( _acceptanceProbability( energies[groupIndex], newEnergies[j] ) > r )
         {    
             energies[groupIndex] = newEnergies[j];
@@ -227,7 +229,7 @@ void plAnnealingGroup::_updateWorkGroups( PLuint groupIndex, PLint localIndex )
         // get graft normals
         copyFromSSBO( &graftNormalsStart,   _graftNormalsBufferID,   indexOffset * sizeof( plVector4 ), graftCounts[ groupIndex ]*sizeof( plVector4 ) );       
         // get graft radii
-        copyFromSSBO( &graftRadiiStart,     _graftRadiiBufferID,      indexOffset * sizeof( PLfloat ), graftCounts[ groupIndex ]*sizeof( PLfloat ) );
+        copyFromSSBO( &graftRadiiStart,     _graftRadiiBufferID,     indexOffset * sizeof( PLfloat ), graftCounts[ groupIndex ]*sizeof( PLfloat ) );
     }     
 } 
 
@@ -236,9 +238,11 @@ namespace plPlannerStage0
 {
 
     void run( plDefectState &defectState, const plSiteGrid &site )
-    {
+    {       
+        reportOpenGLError( "BEFORE SHADER STAGE 0\n" );
+    
         // compile / link stage 0 shader
-        plPlannerStage0Shader stage0Shader("./shaders/plannerStage0.comp");
+        plPlannerStage0Shader stage0Shader( PL_FILE_PREPATH"shaders/plannerStage0.comp" );
         stage0Shader.bind();                            // bind shader  
         stage0Shader.setSiteUniforms( site.meshSize(),  // set defect site uniforms 
                                       site.area(), 
@@ -254,8 +258,6 @@ namespace plPlannerStage0
                       
         // generate and bind annealing state output buffers    
         plAnnealingGroup states( site.area() ); // empty state (no plugs) energy set to total site area
-        
-        PLuint count = 0;
         
         // simulated annealing                
         while ( states.temperature > 0.01f )
@@ -276,31 +278,18 @@ namespace plPlannerStage0
                 stage0Shader.setLocalLoadUniform( i );
             }
 
-            // cool temperature
-            states.temperature -= PL_STAGE0_COOLING_RATE;
-            
             // update the annealing state 
             states.convergeWorkGroups();               
-            //states.updateGroupBuffer();  
                
+            //find current best group id   
             PLint bestGroup = states.getCurrentBest();   
                
             std::cout << "\t Best Work Group: " << bestGroup <<", Energy: " << states.energies[ bestGroup ] << ",\t" 
                           << states.graftCounts[ bestGroup ] << " grafts,\t Temperature: " 
                           << states.temperature << std::endl;   
-            
-            /*    
-            if (count > PL_GLOBAL_CONVERGE_START)
-            {
-                if ( count % PL_GLOBAL_CONVERGE_INC == 0 )
-                {
-                    states.convergeGlobal();
-                }
-                
-            }
-            */
-            count++;
-            
+                          
+            // cool temperature
+            states.temperature -= PL_STAGE0_COOLING_RATE;
         }
 
         // load global solution from annealing state to defect state
@@ -322,10 +311,11 @@ namespace plPlannerStage0
             defectState.graftPositions[i] = plVector4( intersection.point, 1.0 );
         }
 
+
+        reportOpenGLError( "END OF SHADER STAGE 0\n" );
     }
 
 }
-
 
 
 

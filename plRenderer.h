@@ -1,5 +1,5 @@
-#ifndef __PL_RENDERER_H__
-#define __PL_RENDERER_H__
+#ifndef PL_RENDERER_H
+#define PL_RENDERER_H
 
 #include "plCommon.h"
 #include "plSeq.h"

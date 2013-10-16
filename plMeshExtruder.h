@@ -1,5 +1,5 @@
-#ifndef __PL_MESH_EXTRUDER_H__
-#define __PL_MESH_EXTRUDER_H__
+#ifndef PL_MESH_EXTRUDER_H
+#define PL_MESH_EXTRUDER_H
 
 #include "plTriangle.h"
 #include "plSeq.h"

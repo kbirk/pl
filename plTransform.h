@@ -1,5 +1,5 @@
-#ifndef __PL_TRANSFORM_H__
-#define __PL_TRANSFORM_H__
+#ifndef PL_TRANSFORM_H
+#define PL_TRANSFORM_H
 
 #include "plCommon.h"
 #include "plSeq.h"

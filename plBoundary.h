@@ -1,5 +1,5 @@
-#ifndef BOUNDARY_H
-#define BOUNDARY_H
+#ifndef PL_BOUNDARY_H
+#define PL_BOUNDARY_H
 
 #include "plCommon.h"
 #include "plMath.h"

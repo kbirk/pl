@@ -1,5 +1,5 @@
-#ifndef __PL_I_GUIDE_SITE_H__ 
-#define __PL_I_GUIDE_SITE_H__
+#ifndef PL_I_GUIDE_SITE_H
+#define PL_I_GUIDE_SITE_H
 
 #include "plCommon.h"
 #include "plVector3.h"

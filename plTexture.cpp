@@ -78,8 +78,6 @@ void plTexture::setTexture( const PLchar *image, PLint width, PLint height )
     
     glGenTextures( 1, &_textureID );          
     glBindTexture( GL_TEXTURE_2D, _textureID );
-       
-    //glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );

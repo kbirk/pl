@@ -53,12 +53,11 @@ PLuint plRmsData::getDirectionsSSBO() const
 namespace plPlannerStage2
 {
 
-    plSeq<plVector3> DEBUG;
-
     void run( plRmsData &rmsData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plCapIndices &capIndices )
     {  
+        reportOpenGLError( "BEFORE OF SHADER STAGE 2\n" ); 
         // compile / link stage 1 shader
-        plPlannerStage2Shader stage2Shader("./shaders/plannerStage2.comp");
+        plPlannerStage2Shader stage2Shader( PL_FILE_PREPATH"shaders/plannerStage2.comp" );
         stage2Shader.bind(); 
         
         // calc total grid points (invocations)
@@ -68,7 +67,7 @@ namespace plPlannerStage2
         plSeq<PLuint> donorPerimSizes;
         plSeq<PLuint> donorByteOffset;
 
-        plSeq<plVector3> donorPosTEMP; //
+        plSeq<plVector3> donorPosTEMP; 
         for (PLuint i=0; i < donorSites.size(); i++)
         {
             totalGridPoints +=  donorSites[i].gridSize();
@@ -78,15 +77,19 @@ namespace plPlannerStage2
             if ( i == 0)
                 donorByteOffset.add ( 0 );
             else            
-                donorByteOffset.add ( donorSites[i-1].gridSize()*2 + donorSites[i-1].meshSize()*4 + donorSites[i-1].perimSize()*2 );
-            //
+                donorByteOffset.add ( donorSites[i-1].dataSize() ); //donorSites[i-1].gridSize()*2 + donorSites[i-1].meshSize()*4 + donorSites[i-1].perimSize()*2 );
+                
+            //PLuint     dataSize()   const { return _points.size()*2 + _triangles.size()*4 + _perimeter.size(); }    
+                
+                
+            
             for (PLuint j=0; j < donorSites[i].gridSize(); j++)
             {
                 donorPosTEMP.add ( plVector3( donorSites[i].points( j ).x, donorSites[i].points( j ).y, donorSites[i].points( j ).z ) );
             }
+            
         }
 
-        const PLuint TRIANGLE_BUFFER_SIZE = totalGridPoints*PL_MAX_CAP_TRIANGLES*4;
         const PLuint RMS_BUFFER_SIZE      = totalGridPoints*PL_MAX_GRAFTS_PER_SOLUTION;      
 
         // generate and fill buffers 
@@ -134,6 +137,8 @@ namespace plPlannerStage2
             
             // set direction uniform
             stage2Shader.setDirectionUniform( direction );  
+                 
+                
                                                 
             // call compute shader with 1D workgrouping
             glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
@@ -164,11 +169,11 @@ namespace plPlannerStage2
 
         }
         
-        DEBUG = lowestPosition;
+        //DEBUG = lowestPosition;
         
         for (PLuint i=0; i < defectState.graftCount; i++)
         {
-            std::cout << "Graft " << i << ", pos: " << DEBUG[i] << ", dir: " << lowestDirection[i] << ", index " << lowestIndex[i]  << ", rms: " << lowestRMS[i] << std::endl;
+            std::cout << "Graft " << i << ", pos: " << lowestPosition[i] << ", dir: " << lowestDirection[i] << ", index " << lowestIndex[i]  << ", rms: " << lowestRMS[i] << std::endl;
         }
         
         // unbind buffers
@@ -196,6 +201,7 @@ namespace plPlannerStage2
             }
         }
         */
+        reportOpenGLError( "END OF SHADER STAGE 2\n" ); 
 
     }
 

@@ -1,5 +1,5 @@
-#ifndef __PL_PLAN_H__
-#define __PL_PLAN_H__
+#ifndef PL_PLAN_H
+#define PL_PLAN_H
 
 #include "plCommon.h"
 #include "plString.h"

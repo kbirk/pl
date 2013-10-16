@@ -53,6 +53,9 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the C vertex. Aborting operation." << std::endl;
+            std::cout << _data.edges[edgeANindex] << std::endl;
+            std::cout << _data.edges[edgeNBindex] << std::endl;
+            std::cout << _data.faces[faceABCindex] << std::endl;
             return false;
         }
         if (vertC == vertN)
@@ -76,6 +79,7 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is B vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
             continue;
         }
+        plMeshConnectivityData::plMeshConnectivityDataVert& vertC = _data.verts[vertCindex];
 
         const plMeshConnectivityDataEdge* edgeAC = NULL;
         const plMeshConnectivityDataEdge* edgeBC = NULL;
@@ -93,6 +97,9 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the AC edge. Aborting operation." << std::endl;
+            std::cout << _data.verts[vertAindex] << std::endl;
+            std::cout << _data.verts[vertCindex] << std::endl;
+            std::cout << _data.faces[faceABCindex] << std::endl;
             return false;
         }
         if (edgeBC == NULL)
@@ -100,6 +107,9 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             for (PLuint i=0;i<depth;i++)
                 std::cout << "\t";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the BC edge. Aborting operation." << std::endl;
+            std::cout << _data.verts[vertBindex] << std::endl;
+            std::cout << _data.verts[vertCindex] << std::endl;
+            std::cout << _data.faces[faceABCindex] << std::endl;
             return false;
         }
         if (edgeBC == edgeAN)
@@ -130,6 +140,8 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
+        plMeshConnectivityData::plMeshConnectivityDataEdge& edgeAC = _data.edges[edgeACindex];
+        plMeshConnectivityData::plMeshConnectivityDataEdge& edgeBC = _data.edges[edgeBCindex];
 
         PLbool faceOrientationABC(false); // either ABC or CBA
         if ((faceABC->verts[0] == vertA && faceABC->verts[0] == vertB) ||
@@ -152,6 +164,12 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             faceANC = _data.addFace(vertC,vertN,vertA,edgeNC,edgeAN,edgeAC,faceABC->originatingMesh);
             faceBNC = _data.addFace(vertN,vertC,vertB,edgeNC,edgeBC,edgeNB,faceABC->originatingMesh);
         }
+        faceANC.edgeIndices.add(edgeANindex);
+        faceANC.edgeIndices.add(edgeNCindex);
+        faceANC.edgeIndices.add(edgeACindex);
+        faceBNC.edgeIndices.add(edgeNBindex);
+        faceBNC.edgeIndices.add(edgeNCindex);
+        faceBNC.edgeIndices.add(edgeBCindex);
 
         //std::cout << "verts: " <<
         //             "\nVertA: " << vertA->originatingMesh << " - " << vertA << " - " << vertA->vert <<

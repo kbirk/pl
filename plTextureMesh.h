@@ -1,5 +1,5 @@
-#ifndef _PL_TEXTURE_MESH_H_
-#define _PL_TEXTURE_MESH_H_ 
+#ifndef PL_TEXTURE_MESH_H
+#define PL_TEXTURE_MESH_H
 
 #include "plCommon.h"
 #include "plMesh.h"

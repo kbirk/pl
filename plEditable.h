@@ -1,5 +1,5 @@
-#ifndef __PL_EDITABLE_H_
-#define __PL_EDITABLE_H_
+#ifndef PL_EDITABLE_H
+#define PL_EDITABLE_H
 
 #include "plCommon.h"
 

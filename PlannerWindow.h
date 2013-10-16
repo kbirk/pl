@@ -32,12 +32,12 @@ class PlannerWindow : public Window
         plBoundaryEditor _boundaryEditor;
 
         // camera  
-		PLuint	   _cameraMode;     // rotation or translation mode
-		plCamera   _camera;		
+		PLuint	         _cameraMode;     // rotation or translation mode
+		plCamera         _camera;		
 		
 		// glut
-        plVector3  _previousMouse;	// last mouse position
-        PLint      _button;		    // which button is currently down, must be stored for glutMouseMotion 
+        plVector3        _previousMouse;	// last mouse position
+        PLint            _button;		    // which button is currently down, must be stored for glutMouseMotion 
 
 };
 

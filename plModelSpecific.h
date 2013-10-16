@@ -1,5 +1,5 @@
-#ifndef __PL_MODEL_SPECIFIC_H__
-#define __PL_MODEL_SPECIFIC_H__
+#ifndef PL_MODEL_SPECIFIC_H
+#define PL_MODEL_SPECIFIC_H
 
 #include "plCommon.h"
 #include "plVector3.h"

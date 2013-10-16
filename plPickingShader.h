@@ -1,5 +1,5 @@
-#ifndef __PL_PICKING_SHADER_H__
-#define __PL_PICKING_SHADER_H__
+#ifndef PL_PICKING_SHADER_H
+#define PL_PICKING_SHADER_H
 
 #include "plCommon.h"
 #include "plMinimalShader.h"

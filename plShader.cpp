@@ -176,6 +176,65 @@ void plShader::_printLinkError()
 }
 
 
+void reportOpenGLError( const std::string &str ) 
+{
+    GLuint errnum;
+    const char *errstr;
+    while ( errnum = glGetError() ) 
+    {
+        errstr = reinterpret_cast<const char*> ( gluErrorString(errnum) );
+        std::cout << str << " " << errstr << "\n";
+    }
+}
+
+
+void checkOpenGLImplementation()
+{
+    GLint data[256];
+    
+    std::cout << "OpenGL Compute Shader Uniform and Shader Storage blocks: " << data[0] << std::endl << std::endl;
+
+        glGetIntegerv( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, data );    
+        std::cout << "\tGL_MAX_SHADER_STORAGE_BUFFER_BINDINGS: " << data[0] << std::endl;
+        
+        glGetIntegerv( GL_MAX_SHADER_STORAGE_BLOCK_SIZE, data );    
+        std::cout << "\tGL_MAX_SHADER_STORAGE_BLOCK_SIZE: " << data[0] << std::endl;
+    
+        glGetIntegerv( GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS, data );    
+        std::cout << "\tGL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS: " << data[0] << std::endl;
+
+        glGetIntegerv( GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS, data );    
+        std::cout << "\tGL_MAX_COMBINED_SHADER_STORAGE_BLOCKS: " << data[0] << std::endl;
+
+        glGetIntegerv( GL_MAX_COMPUTE_UNIFORM_BLOCKS, data );    
+        std::cout << "\tGL_MAX_COMPUTE_UNIFORM_BLOCKS: " << data[0] << std::endl;
+
+        glGetIntegerv( GL_MAX_COMPUTE_UNIFORM_COMPONENTS, data );    
+        std::cout << "\tGL_MAX_COMPUTE_UNIFORM_COMPONENTS: " << data[0] << std::endl;
+    
+        glGetIntegerv( GL_MAX_COMBINED_UNIFORM_BLOCKS, data );    
+        std::cout << "\tGL_MAX_COMBINED_UNIFORM_BLOCKS: " << data[0] << std::endl;
+        
+        glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, data );    
+        std::cout << "\tGL_MAX_UNIFORM_BLOCK_SIZE: " << data[0] << std::endl;
+        
+        glGetIntegerv( GL_MAX_UNIFORM_LOCATIONS, data );    
+        std::cout << "\tGL_MAX_UNIFORM_LOCATIONS: " << data[0] << std::endl;
+
+    std::cout << std::endl << "OpenGL Compute Shader Invocations and work Groups: " << data[0] << std::endl << std::endl;;
+    
+        glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, data );    
+        std::cout << "\tGL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS: " << data[0] << std::endl;
+        
+        glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_COUNT, data );    
+        std::cout << "\tGL_MAX_COMPUTE_WORK_GROUP_COUNT: " << data[0] << std::endl;
+        
+        glGetIntegerv( GL_MAX_COMPUTE_WORK_GROUP_SIZE, data );    
+        std::cout << "\tGL_MAX_COMPUTE_WORK_GROUP_SIZE: " << data[0] << std::endl;
+
+}
+
+
 PLuint createSSBO( PLuint numBytes, const GLvoid *buffer )
 {
     PLuint bufferID;

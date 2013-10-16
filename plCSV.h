@@ -1,5 +1,5 @@
-#ifndef __PL_CSV_H__
-#define __PL_CSV_H__
+#ifndef PL_CSV_H
+#define PL_CSV_H
 
 #include "plCommon.h"
 #include "plSeq.h"

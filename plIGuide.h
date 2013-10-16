@@ -1,5 +1,5 @@
-#ifndef __PL_I_GUIDE_H__ 
-#define __PL_I_GUIDE_H__
+#ifndef PL_I_GUIDE_H
+#define PL_I_GUIDE_H
 
 #include "plCommon.h"
 #include "plModelSpecific.h"

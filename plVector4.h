@@ -1,5 +1,5 @@
-#ifndef __PL_VECTOR4_H__
-#define __PL_VECTOR4_H__
+#ifndef PL_VECTOR4_H
+#define PL_VECTOR4_H
 
 #include "plCommon.h"
 #include "plString.h"

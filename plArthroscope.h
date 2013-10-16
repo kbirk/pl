@@ -1,5 +1,5 @@
-#ifndef _PL_ARTHROSCOPE_H__
-#define _PL_ARTHROSCOPE_H__
+#ifndef PL_ARTHROSCOPE_H
+#define PL_ARTHROSCOPE_H
 
 #include "headers.h"
 #include "matOps.h"
@@ -8,12 +8,14 @@
 #include "plCommon.h"
 
 // set the camera dimensions here
-#define CAPTUREWIDTH    1280
-#define CAPTUREHEIGHT   720
-#define COLORDEPTH      8         // 8 bit color
-#define NUMCHANNELS     3         // 3 color channels (RGB)
-#define ARTHRO_DIAM	    720
-#define INTERPOLATION_LIMIT  4
+#define CAPTURE_WIDTH           1280
+#define CAPTURE_HEIGHT          720
+#define COLOUR_DEPTH            8         // 8 bit color
+#define NUM_CHANNELS            3         // 3 color channels (RGB)
+#define ARTHRO_DIAM	            720
+#define INTERPOLATION_LIMIT     4
+#define INTERPOLATION_WEIGHTS   0.2, 0.2, 0.2, 0.2, 0.2
+
 
 enum ImageManipulation
 { 
@@ -21,51 +23,46 @@ enum ImageManipulation
     CAMERA_IMAGE_UNDISTORT 
 };
 
+
 class plArthroscope 
 {
 
-
     public:
-
-        double  CAMERA_RADIUS;
-        int     CAMERA_DIAMETER;
-        int     TEXTURE_SIZE, WIDTH, HEIGHT;
-        float   TEXTURE_SCALE_FACTOR;
 
         plArthroscope();
         ~plArthroscope();
 
-        const PLchar*      getImage()      const;
-        const plMatrix44&  getIntrinsics() const;
+        const PLchar*      image()      const;
+        const plMatrix44&  intrinsics() const;
+        PLuint             width()      const;
+        PLuint             height()     const;
+        plMatrix44         getProjectionMatrix() const;
+        
         void  updateImage( PLuint imageManipulation );
-        
-        
+                
     private:
     
-        CvCapture *capture;
-        IplImage  *image;
-        IplImage  *frame;
-        PLchar    *img;
+        CvCapture *_capture;
+        IplImage  *_image;
+        IplImage  *_frame;
 
         // for image distortion
-        IplImage* mapx;
-        IplImage* mapy;
+        IplImage* _mapx;
+        IplImage* _mapy;
 
         //Input camera intrinsics
-        CvMat* intrinsics;
-        CvMat* distortion;
-
-        plMatrix44 plIntrinsics;
-
-        // Variables for circle tracking and undistortion function
-
-//        std::deque<cv::Point> interpolationDeque;
-//        std::vector<float> weights;
-//        cv::Mat frameMatrix;
-        float xCenter, yCenter;
-        int radius;
+        CvMat*     _intrinsicsCV;
+        plMatrix44 _intrinsicsPL;
+        CvMat*     _distortion;
         
-        void callCircle();
+        // Variables for circle tracking and undistortion function
+        std::deque<cv::Point> _interpolationDeque;
+        std::vector<PLfloat>  _weights;
+//        cv::Mat _frameMatrix;
+        PLfloat _xCenter, _yCenter;
+        PLuint _radius;
+        
+        void _callCircle();
 
 };
 

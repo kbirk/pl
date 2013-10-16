@@ -1,5 +1,5 @@
-#ifndef __PL_MINIMAL_SHADER_H__
-#define __PL_MINIMAL_SHADER_H__
+#ifndef PL_MINIMAL_SHADER_H
+#define PL_MINIMAL_SHADER_H
 
 #include "plCommon.h"
 #include "plShader.h"

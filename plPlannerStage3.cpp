@@ -103,9 +103,9 @@ PLint plDonorState::_getLowestRmsIndex()
     for (PLuint i=0; i < PL_STAGE3_INVOCATIONS; i++)
     {
         if ( totalRmsData[i] > 0 && totalRmsData[i] < minRMS )
-        {
+        {           
             minRMS   = totalRmsData[i];
-            minIndex = i;
+            minIndex = i;            
         }
     }
 
@@ -122,8 +122,9 @@ namespace plPlannerStage3
 
     plDonorState run( const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plRmsData &rmsInput )
     {
+        reportOpenGLError( "BEFORE OF SHADER STAGE 3\n" ); 
         // compile / link stage 1 shader
-        plPlannerStage3Shader stage3Shader("./shaders/plannerStage3.comp");
+        plPlannerStage3Shader stage3Shader( PL_FILE_PREPATH"shaders/plannerStage3.comp" );
         stage3Shader.bind(); 
               
         // calc total grid points (invocations)
@@ -166,7 +167,7 @@ namespace plPlannerStage3
         {
             // update seed uniform
             stage3Shader.setSeedUniform();
-        
+            reportOpenGLError( "BEFORE OF SHADER STAGE 3\n" ); 
             // call compute shader with 1D workgrouping
             glDispatchCompute( PL_STAGE3_NUM_GROUPS, 1, 1 );
             

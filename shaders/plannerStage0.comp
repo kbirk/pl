@@ -175,6 +175,7 @@ bool isWithinOverlapThreshold( in vec3 position, in vec3 normal, in float thresh
         if ( distance( closestPoint, projClosestPoint ) < threshold ) 
         {
             inside = false;
+            break;
         }        
     }    
     return inside;
@@ -405,7 +406,7 @@ float energy ( in state s )
     }
 
     // calculate energy
-    float WEIGHT = 0.4;
+    float WEIGHT = 0.6;
     return area_uncovered( s ) + /*WEIGHT * total_area_covered;//*/ + overlapEnergy( s );
 }
 
@@ -484,7 +485,7 @@ void perturbState( inout state s, inout uint seed )
 
         graftNormal = normalize( vec3( rot * vec4( graftNormal, 0.0 ) ) );   
             
-        if ( isWithinRotationThreshold( graftNormal, 35.0 ) )
+        if ( isWithinRotationThreshold( graftNormal, 25.0 ) )
         {
             s.normals[i]   = vec4( graftNormal, 1.0 );
         }    
@@ -545,7 +546,7 @@ void main(void)
     }
    
     // determine which case
-    uint changeCase = uint( rand( seed ) * 6 );
+    uint changeCase = uint( rand( seed ) * 20 );
         
     if (nS.graftCount == 0 || changeCase == 0)
     {

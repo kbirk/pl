@@ -1,6 +1,6 @@
 #version 430
 
-#define PL_FLT_MAX                  99999;
+#define PL_FLT_MAX                  9999.0;
 #define PL_MAX_GRAFTS_PER_SOLUTION  16
 #define PL_MAX_DONOR_SITES          5
 #define PL_MAX_CAP_TRIANGLES        2048
@@ -173,6 +173,7 @@ bool isWithinSite( in uint site, in vec3 position, in vec3 normal, in float radi
         if ( distance( closestPoint, projClosestPoint ) < radius )                  
         {
             inside = false;
+            break;
         }        
     }    
     return inside;
@@ -187,27 +188,21 @@ bool rayIntersect( inout vec3 point, inout float t, in vec3 rayStart, in vec3 ra
 
     if ( dn != 0.0 )
     {      
-        float dist = dot( tri.p0, tri.n );
-
-        t = ( dist - dot( rayStart, tri.n ) ) / dn;
+        //float dist = dot( tri.p0, tri.n );
+        //t = ( dist - dot( rayStart, tri.n ) ) / dn;
         
+        t = dot( tri.p0 - rayStart, tri.n ) / dn;
+         
         point = rayStart + t * rayDir;
 
         // Compute barycentric coords
         float totalAreaDiv = 1.0 / dot( cross( tri.p1-tri.p0, tri.p2-tri.p0 ), tri.n);
         float u = dot( cross( tri.p2-tri.p1, point-tri.p1 ), tri.n) * totalAreaDiv;
         float v = dot( cross( tri.p0-tri.p2, point-tri.p2 ), tri.n) * totalAreaDiv;
-
-        // Reject if outside triangle
-        if (u < -0.0001 || v < -0.0001 || u + v > 1.0001 )
-        {
-            result = false; 
-        }
-        else
-        {
-            result = true;
-        }
         
+        // Reject if outside triangle        
+        result = !(u < -0.0001 || v < -0.0001 || u + v > 1.0001 );
+
     }
     else
     {
@@ -231,13 +226,14 @@ bool rayIntersectDefect( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in 
         vec3  p;
         float t;
         if ( rayIntersect( p, t, rayStart, rayDir, tri ) )
-        { 
+        {             
             result = true;
             if ( abs( t ) < minT )
             {
                 minT = abs( t );
                 point = p;
             }
+            
         }
     }
     return result;
@@ -256,13 +252,14 @@ bool rayIntersectDonor( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in v
         vec3  p;
         float t;
         if ( rayIntersect( p, t, rayStart, rayDir, tri ) )
-        {
+        {           
             result = true;
             if ( abs( t ) < minT )
             {
                 minT = abs( t );
                 point = p;                
             }
+            
         }
     }
     return result;
@@ -297,11 +294,10 @@ float calcRMS( in vec3 defectPosition, in vec3 donorPosition, in vec3 defectNorm
     
             vec3 defectCast = normalize( defectX * sa + defectZ * ca ) * (dr * i);
             vec3 donorCast  = normalize( donorX  * sa + donorZ  * ca ) * (dr * i);
-            
+
             vec3 defectIntPoint, donorIntPoint;
             bool i0 = rayIntersectDefect( defectIntPoint, defectCast, defectNormal, defectPosition, graftIndex );
-            bool i1 = rayIntersectDonor ( donorIntPoint,  donorCast,  donorNormal,  donorPosition, siteIndex  );   
-            
+            bool i1 = rayIntersectDonor ( donorIntPoint,  donorCast,  donorNormal,  donorPosition, siteIndex  );               
             if ( i0 && i1 )
             {    
                 // intersection failures may occur if defect grafts overlap boundaries ( thus missing triangles on cap )
@@ -309,6 +305,7 @@ float calcRMS( in vec3 defectPosition, in vec3 donorPosition, in vec3 defectNorm
                 squaredDistanceSum += distance * distance;
                 successfulChecks++;
             }
+            
         }       
     }
 
@@ -326,14 +323,14 @@ void main(void)
     vec3 gridPosition = vec3( donorSitePositions( siteIndex, localIndex ) );
     vec3 gridNormal   = vec3( donorSiteNormals  ( siteIndex, localIndex ) );
     
+    
     // for each graft in solution
     for (uint i=0; i<uGraftCount; i++)
-    {
+    {        
         vec3 graftPosition = vec3( uGraftPositions[i] );
         vec3 graftNormal   = vec3( uGraftNormals  [i] );
-        
-        float rms;
-        
+
+        float rms;       
         if ( isWithinSite( siteIndex, gridPosition, gridNormal, uGraftRadii[i] ) )
         {
             rms = calcRMS( graftPosition, gridPosition, graftNormal, gridNormal, uGraftRadii[i], siteIndex, i );  

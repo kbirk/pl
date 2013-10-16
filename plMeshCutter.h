@@ -1,5 +1,5 @@
-#ifndef _PL_MESH_CUTTER_H
-#define _PL_MESH_CUTTER_H
+#ifndef PL_MESH_CUTTER_H
+#define PL_MESH_CUTTER_H
 
 #include "plCommon.h"
 #include "plVector3.h"

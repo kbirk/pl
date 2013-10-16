@@ -1,5 +1,5 @@
-#ifndef __PL_RENDERING_PIPELINE__
-#define __PL_RENDERING_PIPELINE__
+#ifndef PL_RENDERING_PIPELINE
+#define PL_RENDERING_PIPELINE
 
 #include "plCommon.h"
 #include "plVector4.h"

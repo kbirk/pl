@@ -1,5 +1,5 @@
-#ifndef PLSCANPOINTREADER_H
-#define PLSCANPOINTREADER_H
+#ifndef PL_SCAN_POINT_READER_H
+#define PL_SCAN_POINT_READER_H
 
 #include "plVector3.h"
 #include "plSeq.h"

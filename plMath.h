@@ -1,5 +1,5 @@
-#ifndef __PL_MATH_H__
-#define __PL_MATH_H__
+#ifndef PL_MATH_H
+#define PL_MATH_H
 
 #include "plCommon.h"
 #include "plVector3.h"

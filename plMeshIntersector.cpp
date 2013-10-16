@@ -105,7 +105,6 @@ PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert
     /*for (PLuint i=0;i<depth;i++)
         std::cout << "\t";
     std::cout << "Barycentric weights: " << barycentricCoords << std::endl;
-
     plVector3 v0 = (face.face.point1() - face.face.point0()).normalize(),
               v1 = (face.face.point2() - face.face.point0()).normalize(),
               v2 = (vert.vert          - face.face.point0()).normalize();
