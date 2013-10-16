@@ -1,13 +1,13 @@
 #include "plMeshIntersector.h"
 
-PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert& vert, const plMeshConnectivityDataEdge& edge, PLuint verbose, PLuint depth)
+PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert* vert, const plMeshConnectivityDataEdge* edge, PLuint verbose, PLuint depth)
 {
     //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "\t"; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge::_intersectsVert()" << std::endl; }
 
-    if (edge.edge.contains(vert.vert,_data.epsilon())) // if it is on the edge, this is not an intersection
+    if (edge->verts.findIndex(vert) != -1) // if it is on the edge, this is not an intersection
         return false;
 
-    if ((plMath::closestPointOnSegment(vert.vert,edge.edge.pt1,edge.edge.pt2) - vert.vert).length() > _data.epsilon() ) // if it's NOT on the line
+    if ((plMath::closestPointOnSegment(vert->vert,edge->edge.pt1,edge->edge.pt2) - vert->vert).length() > _data.epsilon() ) // if it's NOT on the line
         return false;
 
     // now need to make sure that this vertex doesn't intersect any other edges in the same triangle.
@@ -16,33 +16,39 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
     // We can use barycentric coordinates of the adjacent faces. We should only ever consider an intersection if
     // the weight for the opposite vertex is smaller than the other two in the same face
     plVector3 barycentricCoords;
-    for (PLuint i = 0; i < edge.faces.size();i++)
+    for (PLuint i = 0; i < edge->faces.size();i++)
     {
 
-        barycentricCoords = edge.faces[i]->face.barycentricCoords(vert.vert);
+        barycentricCoords = edge->faces[i]->face.barycentricCoords(vert->vert);
         // vertex of triangle
-        if (edge.faces[i]->face.contains(vert.vert,_data.epsilon()))
+        if (edge->faces[i]->verts.findIndex(vert) != -1)
         {
             return false;
         }
         // edge of triangle
-        if (edge.edge.pt1 != edge.faces[i]->face.point0() && edge.edge.pt2 != edge.faces[i]->face.point0())
+        if (edge->verts[0] != edge->faces[i]->verts[0] && edge->verts[1] != edge->faces[i]->verts[0])
         {
-            if ((barycentricCoords.x > barycentricCoords.y || barycentricCoords.x > barycentricCoords.z) && fabs(barycentricCoords.x) > 0.f)
+            if ( ( (barycentricCoords.y < barycentricCoords.x && barycentricCoords.y < barycentricCoords.z) ||
+                   (barycentricCoords.z < barycentricCoords.x && barycentricCoords.z < barycentricCoords.y) ) &&
+                 ( barycentricCoords.x > 0.f ) )
             {
                 return false;
             }
         }
-        if (edge.edge.pt1 != edge.faces[i]->face.point1() && edge.edge.pt2 != edge.faces[i]->face.point1())
+        if (edge->verts[0] != edge->faces[i]->verts[1] && edge->verts[1] != edge->faces[i]->verts[1])
         {
-            if ((barycentricCoords.y > barycentricCoords.x || barycentricCoords.y > barycentricCoords.z) && fabs(barycentricCoords.x) > 0.f)
+            if ( ( (barycentricCoords.z < barycentricCoords.x && barycentricCoords.z < barycentricCoords.y) ||
+                   (barycentricCoords.x < barycentricCoords.y && barycentricCoords.x < barycentricCoords.z) ) &&
+                 ( barycentricCoords.y > 0.f ) )
             {
                 return false;
             }
         }
-        if (edge.edge.pt1 != edge.faces[i]->face.point2() && edge.edge.pt2 != edge.faces[i]->face.point2())
+        if (edge->verts[0] != edge->faces[i]->verts[2] && edge->verts[1] != edge->faces[i]->verts[2])
         {
-            if ((barycentricCoords.z > barycentricCoords.x || barycentricCoords.z > barycentricCoords.y) && fabs(barycentricCoords.x) > 0.f)
+            if ( ( (barycentricCoords.y < barycentricCoords.x && barycentricCoords.y < barycentricCoords.z) ||
+                   (barycentricCoords.x < barycentricCoords.y && barycentricCoords.x < barycentricCoords.z) ) &&
+                 ( barycentricCoords.z > 0.f ) )
             {
                 return false;
             }
@@ -52,18 +58,18 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
     return true;
 }
 
-PLbool plMeshIntersector::_intersectionEdgeEdge(const plMeshConnectivityDataEdge& e1, const plMeshConnectivityDataEdge& e2, plVector3& intersection, PLuint verbose, PLuint depth)
+PLbool plMeshIntersector::_intersectionEdgeEdge(const plMeshConnectivityDataEdge* e1, const plMeshConnectivityDataEdge* e2, plVector3& intersection, PLuint verbose, PLuint depth)
 {
     //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "\t"; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge::_intersectsEdge()" << std::endl; }
 
-    if (e2.edge.contains(e1.edge.pt1, 0.f) || e2.edge.contains(e1.edge.pt2, 0.f))
+    if ( (e2->verts.findIndex(e1->verts[1]) != -1) || (e2->verts.findIndex(e1->verts[1]) != -1) )
         return false;
 
     plVector3 pointOnThis;
     plVector3 pointOnOther;
     PLfloat   distance;
 
-    if (!plMath::closestPointsBetweenSegments(e2.edge.pt1,e2.edge.pt2,e1.edge.pt1,e1.edge.pt2,pointOnThis,pointOnOther,distance))
+    if (!plMath::closestPointsBetweenSegments(e2->edge.pt1,e2->edge.pt2,e1->edge.pt1,e1->edge.pt2,pointOnThis,pointOnOther,distance))
         return false;
 
     if (distance >  _data.epsilon())
@@ -71,26 +77,26 @@ PLbool plMeshIntersector::_intersectionEdgeEdge(const plMeshConnectivityDataEdge
     intersection = pointOnThis;
 
     // check just to make sure the intersection isn't in fact already a vertex...
-    if (e2.edge.contains(intersection, _data.epsilon()) || e1.edge.contains(intersection, _data.epsilon()))
+    if (e2->edge.contains(intersection, _data.epsilon()) || e1->edge.contains(intersection, _data.epsilon()))
         return false;
 
     return true;
 }
 
-PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert& vert, const plMeshConnectivityDataFace& face, PLuint verbose, PLuint depth)
+PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert* vert, const plMeshConnectivityDataFace* face, PLuint verbose, PLuint depth)
 {
     //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "\t"; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataFace::_intersectsVert()" << std::endl; }
 
     // don't consider vertices that are a part of this triangle
-    if (face.face.contains(vert.vert, _data.epsilon()))
+    if (face->verts.findIndex(vert) != -1)
         return false;
 
     // see if it's even in the plane
-    if ((plMath::closestPointOnPlane(face.face.normal(),vert.vert,face.face.normal(),face.face.point0()) - vert.vert).length() >  _data.epsilon() )
+    if ((plMath::closestPointOnPlane(face->face.normal(),vert->vert,face->face.normal(),face->face.point0()) - vert->vert).length() >  _data.epsilon() )
         return false;
 
     // now see if the barycentric coordinates are in the right ranges
-    plVector3 barycentricCoords = face.face.barycentricCoords(vert.vert);
+    plVector3 barycentricCoords = face->face.barycentricCoords(vert->vert);
     if (barycentricCoords.x < 0.f || barycentricCoords.x > 1.f ||
         barycentricCoords.y < 0.f || barycentricCoords.y > 1.f ||
         barycentricCoords.z < 0.f || barycentricCoords.z > 1.f)
@@ -139,26 +145,26 @@ PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert
     std::cout << "double params: " << uD << " " << vD << " " << wD << std::endl;*/
 
     // on the edge, don't consider as an intersection
-    if ((plMath::closestPointOnSegment(vert.vert,face.face.point0(),face.face.point1()) - vert.vert).length() <= _data.epsilon() ||
-        (plMath::closestPointOnSegment(vert.vert,face.face.point1(),face.face.point2()) - vert.vert).length() <= _data.epsilon() ||
-        (plMath::closestPointOnSegment(vert.vert,face.face.point2(),face.face.point0()) - vert.vert).length() <= _data.epsilon() )
+    if ((plMath::closestPointOnSegment(vert->vert,face->face.point0(),face->face.point1()) - vert->vert).length() <= _data.epsilon() ||
+        (plMath::closestPointOnSegment(vert->vert,face->face.point1(),face->face.point2()) - vert->vert).length() <= _data.epsilon() ||
+        (plMath::closestPointOnSegment(vert->vert,face->face.point2(),face->face.point0()) - vert->vert).length() <= _data.epsilon() )
         return false;
 
     return true;
 }
 
-PLbool plMeshIntersector::_intersectionEdgeFace(const plMeshConnectivityDataEdge& edge, const plMeshConnectivityDataFace& face, plVector3& intersection, PLuint verbose, PLuint depth)
+PLbool plMeshIntersector::_intersectionEdgeFace(const plMeshConnectivityDataEdge* edge, const plMeshConnectivityDataFace* face, plVector3& intersection, PLuint verbose, PLuint depth)
 {
     //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "\t"; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataFace::_intersectsEdge()" << std::endl; }
 
     // don't consider edges that are a part of this triangle
-    if (face.face.contains(edge.edge.pt1, _data.epsilon()) || face.face.contains(edge.edge.pt2, _data.epsilon()))
+    if ( face->verts.findIndex(edge->verts[0]) != -1 || face->verts.findIndex(edge->verts[1]) != -1 )
         return false;
 
     // first find the line intersection with the plane
     plSeq<plTriangle> triSeq;
-    triSeq.add(face.face);
-    plIntersection intersectionData = plMath::rayIntersect(triSeq, edge.edge.pt1, (edge.edge.pt2-edge.edge.pt1), false, false);
+    triSeq.add(face->face);
+    plIntersection intersectionData = plMath::rayIntersect(triSeq, edge->edge.pt1, (edge->edge.pt2-edge->edge.pt1), false, false);
     if (!intersectionData.exists)
         return false;
     if (intersectionData.t < 0.f || intersectionData.t > 1.f)
@@ -166,24 +172,24 @@ PLbool plMeshIntersector::_intersectionEdgeFace(const plMeshConnectivityDataEdge
 
     // now see if the barycentric coordinates are in the right ranges
     intersection = intersectionData.point;
-    plVector3 barycentricCoords = face.face.barycentricCoords(intersection);
+    plVector3 barycentricCoords = face->face.barycentricCoords(intersection);
     if (barycentricCoords.x < 0.f || barycentricCoords.x > 1.f ||
         barycentricCoords.y < 0.f || barycentricCoords.y > 1.f ||
         barycentricCoords.z < 0.f || barycentricCoords.z > 1.f)
         return false;
 
-    // on a face edge, don't consider as an intersection
-    if ((plMath::closestPointOnSegment(intersection,face.face.point0(),face.face.point1()) - intersection).length() <= _data.epsilon() ||
-        (plMath::closestPointOnSegment(intersection,face.face.point1(),face.face.point2()) - intersection).length() <= _data.epsilon() ||
-        (plMath::closestPointOnSegment(intersection,face.face.point2(),face.face.point0()) - intersection).length() <= _data.epsilon() )
-        return false;
-
     // if on one of the edge vertices, don't consider as an intersection
-    if (edge.edge.contains(intersection,_data.epsilon()))
+    if (edge->edge.contains(intersection,_data.epsilon()))
         return false;
 
     // if on one of the face vertices, don't consider as an intersection
-    if (face.face.contains(intersection,_data.epsilon()))
+    if (face->face.contains(intersection,_data.epsilon()))
+        return false;
+
+    // on a face edge, don't consider as an intersection
+    if ((plMath::closestPointOnSegment(intersection,face->face.point0(),face->face.point1()) - intersection).length() <= _data.epsilon() ||
+        (plMath::closestPointOnSegment(intersection,face->face.point1(),face->face.point2()) - intersection).length() <= _data.epsilon() ||
+        (plMath::closestPointOnSegment(intersection,face->face.point2(),face->face.point0()) - intersection).length() <= _data.epsilon() )
         return false;
 
     return true;
@@ -206,7 +212,7 @@ PLbool plMeshIntersector::_findAndFixVertEdgeIntersections(PLuint startIndex, PL
         {
             const plMeshConnectivityDataEdge* currentE = &(*eit);
             eit++;
-            if (_intersectionVertEdge(*currentV,*currentE,verbose,depth+1))
+            if (_intersectionVertEdge(currentV,currentE,verbose,depth+1))
             {
                 _splitEdgeOnVect(currentE,currentV,verbose,depth+1);
                 if (!_checkForAllErrors(verbose,depth+1)) { return false;}
@@ -232,7 +238,7 @@ PLbool plMeshIntersector::_findAndFixVertFaceIntersections(PLuint startIndex, PL
         {
             const plMeshConnectivityDataFace* currentF = &(*fit);
             fit++;
-            if (_intersectionVertFace(*currentV,*currentF,verbose,depth+1))
+            if (_intersectionVertFace(currentV,currentF,verbose,depth+1))
             {
                 _splitFaceOnVect(currentF,currentV,verbose,depth+1);
                 if (!_checkForAllErrors(verbose,depth+1)) { return false;}
@@ -257,12 +263,11 @@ PLbool plMeshIntersector::_findAndFixEdgeEdgeIntersections(PLuint startIndex, PL
     {
         for (plMeshConnectivityDataEdgeIterator eit2 = _data.edges.begin(); eit2 != _data.edges.end(); eit2++)
         {
-            if (_intersectionEdgeEdge((*eit1),(*eit2),intersectionPoint,verbose,depth+1))
+            const plMeshConnectivityDataEdge* edgePtr1 = &(*eit1);
+            const plMeshConnectivityDataEdge* edgePtr2 = &(*eit2);
+            if (_intersectionEdgeEdge(edgePtr1,edgePtr2,intersectionPoint,verbose,depth+1))
             {
-                plMeshConnectivityDataVert newVert;
-                newVert.vert = intersectionPoint;
-                _data.verts.insert(newVert);
-                //newVertsToCheck.add(&(*(_data.verts.find(newVert))));
+                _data.addVert(intersectionPoint,0,verbose);
             }
         }
     }
@@ -287,11 +292,11 @@ PLbool plMeshIntersector::_findAndFixEdgeFaceIntersections(PLuint startIndex, PL
     {
         for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
         {
-            if (_intersectionEdgeFace((*eit),(*fit),intersectionPoint,verbose,depth+1))
+            const plMeshConnectivityDataEdge* edgePtr = &(*eit);
+            const plMeshConnectivityDataFace* facePtr = &(*fit);
+            if (_intersectionEdgeFace(edgePtr,facePtr,intersectionPoint,verbose,depth+1))
             {
-                plMeshConnectivityDataVert newVert;
-                newVert.vert = intersectionPoint;
-                _data.verts.insert(newVert);
+                _data.addVert(intersectionPoint,0,verbose);
             }
         }
     }
