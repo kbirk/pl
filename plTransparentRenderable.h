@@ -1,5 +1,5 @@
-#ifndef __PL_TRANSPARENT_RENDERABLE_H_
-#define __PL_TRANSPARENT_RENDERABLE_H_
+#ifndef PL_TRANSPARENT_RENDERABLE_H
+#define PL_TRANSPARENT_RENDERABLE_H
 
 #include "plCommon.h"
 #include "plRenderable.h"

@@ -1,5 +1,5 @@
-#ifndef TRACKEDOBJECT_H
-#define TRACKEDOBJECT_H
+#ifndef TRACKED_OBJECT_H
+#define TRACKED_OBJECT_H
 
 #include "plCommon.h"
 #include "plRenderable.h"

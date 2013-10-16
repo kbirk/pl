@@ -1,5 +1,5 @@
-#ifndef PLMESHCONNECTIVITY_H
-#define PLMESHCONNECTIVITY_H
+#ifndef PL_MESH_CONNECTIVITY_H
+#define PL_MESH_CONNECTIVITY_H
 
 #include "plSeq.h"
 #include "plTriangle.h"

@@ -1,5 +1,5 @@
-#ifndef __PL_PICKING_H__
-#define	__PL_PICKING_H__
+#ifndef PL_PICKING_H
+#define	PL_PICKING_H
 
 #include "plCommon.h"
 

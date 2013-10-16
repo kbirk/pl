@@ -1,5 +1,5 @@
-#ifndef __PL_WINDOW_H__
-#define __PL_WINDOW_H__
+#ifndef PL_WINDOW_H
+#define PL_WINDOW_H
 
 #include "plCommon.h"
 #include "plMatrix44.h"

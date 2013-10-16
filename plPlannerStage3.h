@@ -1,5 +1,5 @@
-#ifndef __PL_STAGE_3_STATE_H__
-#define __PL_STAGE_3_STATE_H__
+#ifndef PL_STAGE_3_STATE_H
+#define PL_STAGE_3_STATE_H
 
 #include "plCommon.h"
 #include "plSeq.h"

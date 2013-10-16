@@ -1,5 +1,5 @@
-#ifndef _PL_SITE_GRID_H_
-#define _PL_SITE_GRID_H_
+#ifndef PL_SITE_GRID_H
+#define PL_SITE_GRID_H
 
 #include "plCommon.h"
 #include "plSeq.h"

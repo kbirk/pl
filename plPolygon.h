@@ -1,5 +1,5 @@
-#ifndef __PL_POLYGON_H__
-#define __PL_POLYGON_H__
+#ifndef PL_POLYGON_H
+#define PL_POLYGON_H
 
 #include "plCommon.h"
 #include "plSeq.h"

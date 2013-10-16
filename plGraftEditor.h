@@ -1,5 +1,5 @@
-#ifndef __PL_GRAFT_EDITOR_H__
-#define __PL_GRAFT_EDITOR_H__
+#ifndef PL_GRAFT_EDITOR_H
+#define PL_GRAFT_EDITOR_H
 
 #include "plCommon.h"
 #include "plSeq.h"

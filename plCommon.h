@@ -1,5 +1,5 @@
-#ifndef _PL_COMMON_H__
-#define _PL_COMMON_H__
+#ifndef PL_COMMON_H
+#define PL_COMMON_H
 
 // MODEL MACROS  
 

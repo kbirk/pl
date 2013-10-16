@@ -1,5 +1,5 @@
-#ifndef _PL_DEFECT_SITE_H_
-#define _PL_DEFECT_SITE_H_
+#ifndef PL_DEFECT_SITE_H
+#define PL_DEFECT_SITE_H
 
 #include "plCommon.h"
 #include "plVector3.h"

@@ -1,5 +1,5 @@
-#ifndef PLMESHINTERSECTOR_H
-#define PLMESHINTERSECTOR_H
+#ifndef PL_MESH_INTERSECTOR_H
+#define PL_MESH_INTERSECTOR_H
 
 #include "plMeshAlgorithm.h"
 #include "plMath.h"

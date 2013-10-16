@@ -1,5 +1,5 @@
-#ifndef __PL_MODEL_H__
-#define __PL_MODEL_H__
+#ifndef PL_MODEL_H
+#define PL_MODEL_H
 
 #include "plCommon.h"
 #include "plSeq.h"

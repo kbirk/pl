@@ -1,5 +1,5 @@
-#ifndef __PL_PLUG_H__
-#define __PL_PLUG_H__
+#ifndef PL_PLUG_H
+#define PL_PLUG_H
 
 #include "plCommon.h"
 #include "plModelSpecific.h"

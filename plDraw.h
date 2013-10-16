@@ -1,5 +1,5 @@
-#ifndef __PL_DRAW_H__
-#define __PL_DRAW_H__
+#ifndef PL_DRAW_H
+#define PL_DRAW_H
 
 #include "plCommon.h"
 #include "plShapeMesh.h"

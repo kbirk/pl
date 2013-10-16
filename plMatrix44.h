@@ -1,5 +1,5 @@
-#ifndef __PL_MATRIX44_H__
-#define __PL_MATRIX44_H__
+#ifndef PL_MATRIX44_H
+#define PL_MATRIX44_H
 
 #include "plCommon.h"
 #include "plVector3.h"

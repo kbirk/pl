@@ -1,5 +1,5 @@
-#ifndef __PL_TEXTURE_SHADER_H__
-#define __PL_TEXTURE_SHADER_H__
+#ifndef PL_TEXTURE_SHADER_H
+#define PL_TEXTURE_SHADER_H
 
 #include "plCommon.h"
 #include "plMinimalShader.h"

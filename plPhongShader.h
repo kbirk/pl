@@ -1,5 +1,5 @@
-#ifndef __PL_PHONG_SHADER_H__
-#define __PL_PHONG_SHADER_H__
+#ifndef PL_PHONG_SHADER_H
+#define PL_PHONG_SHADER_H
 
 #include "plCommon.h"
 #include "plMinimalShader.h"

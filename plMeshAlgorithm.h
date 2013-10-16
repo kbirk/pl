@@ -1,5 +1,5 @@
-#ifndef PLMESHALGORITHM_H
-#define PLMESHALGORITHM_H
+#ifndef PL_MESH_ALGORITHM_H
+#define PL_MESH_ALGORITHM_H
 
 #include "plVector3.h"
 #include "plPolygon.h"

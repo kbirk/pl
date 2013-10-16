@@ -1,5 +1,5 @@
-#ifndef __PL_UTILITY_H__
-#define __PL_UTILITY_H__
+#ifndef PL_UTILITY_H
+#define PL_UTILITY_H
 
 #include "plCommon.h"
 #include "plSeq.h"

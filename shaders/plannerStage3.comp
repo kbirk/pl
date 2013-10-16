@@ -11,6 +11,7 @@ layout (local_size_x = 256) in;
 layout (std430,  binding = 0) buffer donorSiteDataBlock   { vec4 donorSiteData[];  };
 layout (std430,  binding = 1) buffer rmsValuesBlock       { float rmsValues[];     };
 layout (std430,  binding = 2) buffer rmsDirectionsBlock   { vec4  rmsDirections[]; };
+
 // output data
 layout (std430,  binding = 3) buffer donorPositionsBlock   { vec4  donorPositionsOutput  []; };
 layout (std430,  binding = 4) buffer donorNormalsBlock     { vec4  donorNormalsOutput    []; };

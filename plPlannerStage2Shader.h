@@ -1,5 +1,5 @@
-#ifndef __PL_STAGE_2_SHADER_H__
-#define __PL_STAGE_2_SHADER_H__
+#ifndef PL_STAGE_2_SHADER_H
+#define PL_STAGE_2_SHADER_H
 
 #include "plCommon.h"
 #include "plShader.h"

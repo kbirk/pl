@@ -1,5 +1,5 @@
-#ifndef __PL_COLOUR_MAP_H__
-#define __PL_COLOUR_MAP_H__
+#ifndef PL_COLOUR_MAP_H
+#define PL_COLOUR_MAP_H
 
 #include "plCommon.h"
 #include "plVector3.h"

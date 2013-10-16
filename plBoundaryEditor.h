@@ -1,5 +1,5 @@
-#ifndef __PL_BOUNDARY_EDITOR_H__
-#define __PL_BOUNDARY_EDITOR_H__
+#ifndef PL_BOUNDARY_EDITOR_H
+#define PL_BOUNDARY_EDITOR_H
 
 #include "plCommon.h"
 #include "plSeq.h"

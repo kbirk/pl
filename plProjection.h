@@ -1,5 +1,5 @@
-#ifndef __PL_PROJECTION_H__
-#define __PL_PROJECTION_H__
+#ifndef PL_PROJECTION_H
+#define PL_PROJECTION_H
 
 #include "plCommon.h"
 #include "plMatrix44.h"

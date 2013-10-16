@@ -1,5 +1,5 @@
-#ifndef __PL_BONE_AND_CARTILAGE_MODEL_H__
-#define __PL_BONE_AND_CARTILAGE_MODEL_H__
+#ifndef PL_BONE_AND_CARTILAGE_MODEL_H
+#define PL_BONE_AND_CARTILAGE_MODEL_H
 
 #include "plCommon.h"
 #include "plModel.h"

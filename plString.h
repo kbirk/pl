@@ -1,9 +1,9 @@
-#ifndef __PL_STRING_H__
-#define __PL_STRING_H__
+#ifndef PL_STRING_H
+#define PL_STRING_H
 
 #include "plCommon.h"
 
-class plString : public std::string
+class plString : public std::string // technically unsafe as std::string does not have a virtual destructor, but that is okay in this implementation
 {
     public:
     

@@ -1,5 +1,5 @@
-#ifndef __PL_TRIANGLE_H__
-#define	__PL_TRIANGLE_H__
+#ifndef PL_TRIANGLE_H
+#define	PL_TRIANGLE_H
 
 #include "plCommon.h"
 #include "plString.h"

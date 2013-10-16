@@ -1,5 +1,5 @@
-#ifndef _PL_TEXTURE_H_
-#define _PL_TEXTURE_H_
+#ifndef PL_TEXTURE_H
+#define PL_TEXTURE_H
 
 #include "plCommon.h"
 #include "plVector3.h"

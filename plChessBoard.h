@@ -1,5 +1,5 @@
-#ifndef __PL_CHESSBOARD_H__
-#define __PL_CHESSBOARD_H__
+#ifndef PL_CHESSBOARD_H
+#define PL_CHESSBOARD_H
 
 #include "plCommon.h"
 #include "plTransparentRenderable.h"

@@ -1,5 +1,5 @@
-#ifndef __PL_MATRIX_STACK__
-#define __PL_MATRIX_STACK__
+#ifndef PL_MATRIX_STACK
+#define PL_MATRIX_STACK
 
 #include "plCommon.h"
 #include "plMatrix44.h"

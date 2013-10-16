@@ -1,5 +1,5 @@
-#ifndef PLSCAN_H
-#define PLSCAN_H
+#ifndef PL_SCAN_H
+#define PL_SCAN_H
 
 #include "plScanPoint.h"
 #include "plScanVolume.h"

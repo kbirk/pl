@@ -1,5 +1,5 @@
-#ifndef _PL_ARTHROSCOPE_H__
-#define _PL_ARTHROSCOPE_H__
+#ifndef PL_ARTHROSCOPE_H
+#define PL_ARTHROSCOPE_H
 
 #include "headers.h"
 #include "matOps.h"

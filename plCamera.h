@@ -1,5 +1,5 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef PL_CAMERA_H
+#define PL_CAMERA_H
 
 #include "plCommon.h"
 #include "plSeq.h"

@@ -1,5 +1,5 @@
-#ifndef __PL_RENDERABLE_H_
-#define __PL_RENDERABLE_H_
+#ifndef PL_RENDERABLE_H
+#define PL_RENDERABLE_H
 
 #include "plCommon.h"
 #include "plVector3.h"

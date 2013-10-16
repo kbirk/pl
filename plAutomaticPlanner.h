@@ -1,5 +1,5 @@
-#ifndef __PL_AUTOMATIC_PLANNER_H__
-#define __PL_AUTOMATIC_PLANNER_H__
+#ifndef PL_AUTOMATIC_PLANNER_H
+#define PL_AUTOMATIC_PLANNER_H
 
 #include "plCommon.h"
 #include "plSeq.h"

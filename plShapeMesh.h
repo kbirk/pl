@@ -1,5 +1,5 @@
-#ifndef _PL_SHAPE_MESH_H_
-#define _PL_SHAPE_MESH_H_ 
+#ifndef PL_SHAPE_MESH_H
+#define PL_SHAPE_MESH_H
 
 #include "plCommon.h"
 #include "plMesh.h"

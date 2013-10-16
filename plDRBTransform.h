@@ -16,8 +16,8 @@
  *======================================================================================================
  */
 
-#ifndef _PL_DRB_TRANSFORM_H_
-#define _PL_DRB_TRANSFORM_H_
+#ifndef PL_DRB_TRANSFORM_H
+#define PL_DRB_TRANSFORM_H
 
 #include "plCommon.h"
 #include "plMatrix44.h"
