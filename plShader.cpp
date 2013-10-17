@@ -176,14 +176,32 @@ void plShader::_printLinkError()
 }
 
 
+
+std::string mapGLErrorToString( GLenum errorCode )
+{
+
+    switch ( errorCode )
+    {
+        case GL_NO_ERROR:                       return "No error has been recorded.";            
+        case GL_INVALID_ENUM:                   return "GL Error: An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.";                  
+        case GL_INVALID_VALUE:                  return "GL Error: A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.";
+        case GL_INVALID_OPERATION:              return "GL Error: The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.";
+        case GL_INVALID_FRAMEBUFFER_OPERATION:  return "GL Error: The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.";
+        case GL_OUT_OF_MEMORY:                  return "GL Error: There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.";
+        case GL_STACK_UNDERFLOW:                return "GL Error: An attempt has been made to perform an operation that would cause an internal stack to underflow.";
+        case GL_STACK_OVERFLOW:                 return "GL Error: An attempt has been made to perform an operation that would cause an internal stack to overflow.";
+    }
+    return "";
+}
+
+
 void reportOpenGLError( const std::string &str ) 
 {
     GLuint errnum;
     const char *errstr;
     while ( errnum = glGetError() ) 
     {
-        errstr = reinterpret_cast<const char*> ( gluErrorString(errnum) );
-        std::cout << str << " " << errstr << "\n";
+        std::cout << str << " " << mapGLErrorToString( errnum ) << "\n";
     }
 }
 

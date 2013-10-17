@@ -17,6 +17,7 @@ class plMeshAlgorithm
     PLbool exportTriSeq(       plSeq<plTriangle>& tris, PLuint verbose, PLuint depth=0 );
 
   protected:
+  
     PLfloat _epsilon;
 
     // the connectivity data
@@ -28,6 +29,7 @@ class plMeshAlgorithm
     PLbool _splitEdgeOnVect( const plMeshConnectivityDataEdge* edgeAB , const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth=0 );
     PLbool _splitFaceOnVect( const plMeshConnectivityDataFace* face012, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth=0 );
 
+    // these return true when the mesh is good, false when it is bad
     PLbool _checkArraySizes       ( PLuint verbose, PLuint depth=0 );
     PLbool _checkNoDuplicates     ( PLuint verbose, PLuint depth=0 );
     PLbool _checkBidirectional    ( PLuint verbose, PLuint depth=0 );

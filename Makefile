@@ -1,5 +1,7 @@
-LIBS = -L/usr/lib64 -Llib -lGLEW -lglut -lGLU -lGL -lm
-#LIBS = -framework OpenGL -framework GLUT -framework Cocoa
+
+OPENGL_DRIVER_DIR = /usr/lib/nvidia-331
+
+LIBS = -L$(OPENGL_DRIVER_DIR) -lglut -lGL 
 
 INCS = 
 
@@ -26,8 +28,6 @@ EXE  = planner
 
 Window:	$(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJECTS) $(LIBS) 
-
-$(OBJECTS): | objects
 
 objects:
 	@mkdir -p $@

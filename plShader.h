@@ -38,6 +38,7 @@ class plShader
 
 };
 
+std::string mapGLErrorToString( GLenum errorCode );
 void reportOpenGLError        ( const std::string &str );
 void checkOpenGLImplementation();   
 

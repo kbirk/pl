@@ -43,6 +43,8 @@ namespace plMeshExtruder
     // else returns an extruded version of the input mesh, in the direction and magnitude provided as inputs
     plSeq<plTriangle> extrudeMesh(const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction);
     plSeq<plTriangle> extrudeMesh(const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const PLfloat preTranslation, const plVector3& direction);
+
+
 }
 
 #endif

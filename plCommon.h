@@ -142,16 +142,21 @@
     #define PL_FILE_PREPATH     "./"        
 #endif
 
+#define GL_GLEXT_PROTOTYPES
+
 #ifdef __APPLE_CC__
-    #include <glew.h>    // include before gl.h
+    //#include <glew.h>    // include before gl.h
     #include <OpenGL/gl.h>
     #include <OpenGL/glu.h>
     #include <GLUT/glut.h>
 #else
-    #include <GL/glew.h> // include before gl.h
+    //#include <GL/glew.h> // include before gl.h
+    
     #include <GL/glut.h>
-    #include <GL/glu.h>
-    #include <GL/gl.h>
+    //#include <GL/glu.h>
+    //#include <GL/gl.h>
+    #include <GL/glcorearb.h>
+    #include <GL/glext.h>
 #endif
 
 
@@ -184,8 +189,8 @@ class plTimer
     
         static PLtime now()
         {
-            typedef std::chrono::high_resolution_clock      plClock;
-            typedef std::chrono::milliseconds               plMilliseconds;                
+            typedef std::chrono::high_resolution_clock         plClock;
+            typedef std::chrono::milliseconds                  plMilliseconds;                
             return std::chrono::duration_cast<plMilliseconds>( plClock::now().time_since_epoch() ).count();
         }
         
