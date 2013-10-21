@@ -309,7 +309,7 @@ PLbool plScanField::carveSphere(const plVector3& centreW, PLfloat radiusW)
                                                               z-PLint(masks[maskIndex]->radiusV)) + coordinatesV;
                 PLuint indexOfVoxelField = coordinatesVtoI(coordinateOfVoxelVField);
                 PLuint indexOfVoxelMask  = masks[maskIndex]->coordinatesVtoI(plVector3(x,y,z));
-                if (!maskVoxel( indexOfVoxelField, masks[maskIndex]->voxels[indexOfVoxelMask].type, centreW))
+                if (!maskVoxel( indexOfVoxelField, indexOfVoxelMask, masks[maskIndex], centreW))
                     return false; // error detected
             }
         }
@@ -322,12 +322,12 @@ PLbool plScanField::carveSphere(const plVector3& centreW, PLfloat radiusW)
 //
 // For surfaces, store the surface point that is farthest through the
 // voxel (i.e.  that contains most of the voxel to its interior).
-PLbool plScanField::maskVoxel( PLuint voxelIndex, plScanVoxelType mask, const plVector3& point )
+PLbool plScanField::maskVoxel( PLuint fieldVoxelIndex, PLuint maskVoxelIndex, const plScanMask* mask, const plVector3& pointW )
 {
-    voxels[voxelIndex].type = plScanVoxelType(voxels[voxelIndex].type & mask);
+    voxels[fieldVoxelIndex].type = plScanVoxelType(voxels[fieldVoxelIndex].type & mask->voxels[maskVoxelIndex].type);
 
-    if (mask == SURFACE) {
-        voxels[voxelIndex].point.add(point);
+    if (mask->voxels[maskVoxelIndex].type == SURFACE) {
+        voxels[fieldVoxelIndex].point.add(pointW);
     }
 
     return true;

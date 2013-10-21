@@ -52,7 +52,7 @@ class plScanVolume //: public plRenderable
         virtual ~plScanVolume();
 
         void      initializeVolume(const plVector3& originW, const plVector3& dimensionsW, PLfloat resolutionW);
-        PLbool    enlargeVolume(const plVector3& originTranslationW, const plVector3& dimensionExpansionW);
+        PLbool    enlargeVolume   (const plVector3& originTranslationW, const plVector3& dimensionExpansionW);
         //PLuint    coordinatesWtoI(const plVector3& coordsW);
         PLuint    coordinatesVtoI(const plVector3& coordsV);
         plVector3 coordinatesItoW(PLuint index);
@@ -77,6 +77,7 @@ class plScanMask : public plScanVolume
         PLfloat       radiusW;
         PLuint        radiusV;
         plSeq<PLuint> surfaceIndices;
+        PLfloat       maxAngleForSurface;
 
         // methods
         plScanMask();
@@ -96,8 +97,8 @@ class plScanField : public plScanVolume
         plScanField(const plVector3& originW, const plVector3& dimensionsW, PLfloat resolutionW);
         ~plScanField();
 
-        PLbool carveSphere(const plVector3& centreW, PLfloat radiusW);
-        PLbool maskVoxel( PLuint voxelIndex, plScanVoxelType type, const plVector3& point );
+        PLbool carveSphere( const plVector3& centreW, PLfloat radiusW );
+        PLbool maskVoxel( PLuint fieldVoxelIndex, PLuint maskVoxelIndex, const plScanMask* mask, const plVector3& pointW );
 };
 
 std::ostream& operator << ( std::ostream &stream, const plScanVolume &v );
