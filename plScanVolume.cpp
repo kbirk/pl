@@ -157,6 +157,22 @@ PLfloat plScanVolume::distanceWusingI(PLuint index1, PLuint index2)
 
 PLbool plScanVolume::draw() const
 {
+    plDraw::cube(plVector3(0,0,0),0.1f);
+    std::cout << this->arraySizeI << std::endl;
+    std::cout << this->dimsV << std::endl;
+    for (PLuint x(0); x <= dimsV.x; x++)
+        for (PLuint y(0); y <= dimsV.y; y++)
+            for (PLuint z(0); z <= dimsV.z; z++)
+                    voxels->draw(plVector3(0,0,0));
+    return true;
+}
+
+// ============================================================= VOXEL ===================================================================
+
+PLbool plScanVolume::plScanVoxel::draw( const plVector3& coordV ) const
+{
+    if (type == SURFACE)
+        plDraw::cube(coordV,0.5f);
     return true;
 }
 

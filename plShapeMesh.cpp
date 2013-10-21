@@ -1,51 +1,98 @@
 #include "plShapeMesh.h"
 
 // cube
-/*
 plShapeMesh::plShapeMesh( float halfWidth )
 {
     plSeq<plVector3> vertices( 8  );
     plSeq<PLuint>    indices ( 8*3 ); //12 );
     
-    // front face
-    vertices.add( plVector3( -halfWidth, -halfWidth, halfWidth) );
-    vertices.add( plVector3(  halfWidth, -halfWidth, halfWidth) );
-    vertices.add( plVector3(  halfWidth,  halfWidth, halfWidth) );
-    vertices.add( plVector3( -halfWidth, halfWidth,  halfWidth) );
+    // +ve x face
+    vertices.add( plVector3(  halfWidth, -halfWidth, -halfWidth ) ); // point00
+    vertices.add( plVector3(        1.f,        0.f,        0.f ) ); // normal
+    vertices.add( plVector3(  halfWidth, -halfWidth,  halfWidth ) ); // point01
+    vertices.add( plVector3(        1.f,        0.f,        0.f ) ); // normal
+    vertices.add( plVector3(  halfWidth,  halfWidth,  halfWidth ) ); // point02
+    vertices.add( plVector3(        1.f,        0.f,        0.f ) ); // normal
+    vertices.add( plVector3(  halfWidth,  halfWidth, -halfWidth ) ); // point03
+    vertices.add( plVector3(        1.f,        0.f,        0.f ) ); // normal
     
-    // back face
-    vertices.add( plVector3( -halfWidth, -halfWidth, -halfWidth) );
-    vertices.add( plVector3(  halfWidth, -halfWidth, -halfWidth) );
-    vertices.add( plVector3(  halfWidth,  halfWidth, -halfWidth) );
-    vertices.add( plVector3( -halfWidth,  halfWidth, -halfWidth) );
+    // -ve x face
+    vertices.add( plVector3( -halfWidth, -halfWidth, -halfWidth ) ); // point04
+    vertices.add( plVector3(       -1.f,        0.f,        0.f ) ); // normal
+    vertices.add( plVector3( -halfWidth, -halfWidth,  halfWidth ) ); // point05
+    vertices.add( plVector3(       -1.f,        0.f,        0.f ) ); // normal
+    vertices.add( plVector3( -halfWidth,  halfWidth,  halfWidth ) ); // point06
+    vertices.add( plVector3(       -1.f,        0.f,        0.f ) ); // normal
+    vertices.add( plVector3( -halfWidth,  halfWidth, -halfWidth ) ); // point07
+    vertices.add( plVector3(       -1.f,        0.f,        0.f ) ); // normal
+
+    // +ve y face
+    vertices.add( plVector3( -halfWidth,  halfWidth, -halfWidth ) ); // point08
+    vertices.add( plVector3(        0.f,        1.f,        0.f ) ); // normal
+    vertices.add( plVector3( -halfWidth,  halfWidth,  halfWidth ) ); // point09
+    vertices.add( plVector3(        0.f,        1.f,        0.f ) ); // normal
+    vertices.add( plVector3(  halfWidth,  halfWidth,  halfWidth ) ); // point10
+    vertices.add( plVector3(        0.f,        1.f,        0.f ) ); // normal
+    vertices.add( plVector3(  halfWidth,  halfWidth, -halfWidth ) ); // point11
+    vertices.add( plVector3(        0.f,        1.f,        0.f ) ); // normal
+
+    // -ve y face
+    vertices.add( plVector3( -halfWidth, -halfWidth, -halfWidth ) ); // point12
+    vertices.add( plVector3(        0.f,       -1.f,        0.f ) ); // normal
+    vertices.add( plVector3( -halfWidth, -halfWidth,  halfWidth ) ); // point13
+    vertices.add( plVector3(        0.f,       -1.f,        0.f ) ); // normal
+    vertices.add( plVector3(  halfWidth, -halfWidth,  halfWidth ) ); // point14
+    vertices.add( plVector3(        0.f,       -1.f,        0.f ) ); // normal
+    vertices.add( plVector3(  halfWidth, -halfWidth, -halfWidth ) ); // point15
+    vertices.add( plVector3(        0.f,       -1.f,        0.f ) ); // normal
+
+    // +ve z face
+    vertices.add( plVector3( -halfWidth, -halfWidth,  halfWidth ) ); // point16
+    vertices.add( plVector3(        0.f,        0.f,        1.f ) ); // normal
+    vertices.add( plVector3( -halfWidth,  halfWidth,  halfWidth ) ); // point17
+    vertices.add( plVector3(        0.f,        0.f,        1.f ) ); // normal
+    vertices.add( plVector3(  halfWidth,  halfWidth,  halfWidth ) ); // point18
+    vertices.add( plVector3(        0.f,        0.f,        1.f ) ); // normal
+    vertices.add( plVector3(  halfWidth, -halfWidth,  halfWidth ) ); // point19
+    vertices.add( plVector3(        0.f,        0.f,        1.f ) ); // normal
+
+    // -ve z face
+    vertices.add( plVector3( -halfWidth, -halfWidth, -halfWidth ) ); // point20
+    vertices.add( plVector3(        0.f,        0.f,       -1.f ) ); // normal
+    vertices.add( plVector3( -halfWidth,  halfWidth, -halfWidth ) ); // point21
+    vertices.add( plVector3(        0.f,        0.f,       -1.f ) ); // normal
+    vertices.add( plVector3(  halfWidth,  halfWidth, -halfWidth ) ); // point22
+    vertices.add( plVector3(        0.f,        0.f,       -1.f ) ); // normal
+    vertices.add( plVector3(  halfWidth, -halfWidth, -halfWidth ) ); // point23
+    vertices.add( plVector3(        0.f,        0.f,       -1.f ) ); // normal
+
+    // +ve x
+    indices.add( 0  );   indices.add( 2  );   indices.add( 1  );
+    indices.add( 0  );   indices.add( 3  );   indices.add( 2  );
     
-    // front
-    indices.add( 0 );   indices.add( 1 );   indices.add( 2 );
-    indices.add( 0 );   indices.add( 2 );   indices.add( 3 );
-    
-    // right
-    indices.add( 1 );   indices.add( 5 );   indices.add( 6 );
-    indices.add( 1 );   indices.add( 6 );   indices.add( 2 );
-    
-    // back
-    indices.add( 5 );   indices.add( 4 );   indices.add( 7 );
-    indices.add( 5 );   indices.add( 7 );   indices.add( 6 );
-    
-    // left
-    indices.add( 4 );   indices.add( 0 );   indices.add( 3 );
-    indices.add( 4 );   indices.add( 3 );   indices.add( 7 );
-    
-    // top
-    indices.add( 3 );   indices.add( 2 );   indices.add( 6 );
-    indices.add( 3 );   indices.add( 6 );   indices.add( 7 );
-    
-    // bottem
-    indices.add( 4 );   indices.add( 5 );   indices.add( 1 );
-    indices.add( 4 );   indices.add( 1 );   indices.add( 0 );
+    // -ve x
+    indices.add( 4  );   indices.add( 5  );   indices.add( 6  );
+    indices.add( 4  );   indices.add( 6  );   indices.add( 7  );
+
+    // +ve y
+    indices.add( 8  );   indices.add( 9  );   indices.add( 10 );
+    indices.add( 8  );   indices.add( 10 );   indices.add( 11 );
+
+    // -ve y
+    indices.add( 12 );   indices.add( 14 );   indices.add( 13 );
+    indices.add( 12 );   indices.add( 15 );   indices.add( 14 );
+
+    // +ve z
+    indices.add( 16 );   indices.add( 18 );   indices.add( 17 );
+    indices.add( 16 );   indices.add( 19 );   indices.add( 18 );
+
+    // -ve z
+    indices.add( 20 );   indices.add( 21 );   indices.add( 22 );
+    indices.add( 20 );   indices.add( 22 );   indices.add( 23 );
 
     setBuffers( vertices, indices );
 }
-*/
+
 
 // sphere
 plShapeMesh::plShapeMesh(float radius, int slices, int stacks) 

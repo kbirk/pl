@@ -6,6 +6,8 @@
 #include "plVector3.h"
 #include "plCommon.h"
 #include "plSeq.h"
+#include "plDraw.h"
+#include "plLineMesh.h"
 //#include "plRenderable.h"
 
 const float probeRadius   = 1.5;             // 1.5 mm radius
@@ -31,6 +33,8 @@ class plScanVolume //: public plRenderable
                     type = UNKNOWN;
                 }
 
+                PLbool draw( const plVector3& coordV ) const;
+
         };
 
         // attributes
@@ -43,6 +47,7 @@ class plScanVolume //: public plRenderable
         PLuint            arraySizeI;     // size of the voxel array
 
         plScanVoxel*      voxels;         // voxels[x][y][z] is indexed as voxels[ x + dimx * (y + dimy * z) ]
+
         //plRenderMethod renderMethod;    // how voxels are rendered
 
         // methods

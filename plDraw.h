@@ -19,6 +19,8 @@ namespace plDraw
     void disk     ( const plVector3 &origin, float scale, PLbool flip = false  );
     void disk     ( const plVector3 &origin, const plVector3 &direction, float scale, PLbool flip = false  );
     void disk     ( float scale, PLbool flip = false );
+    void cube     ( float halfwidth );
+    void cube     ( const plVector3 &origin, float halfwidth );
 
 }
 

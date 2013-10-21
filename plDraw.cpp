@@ -153,5 +153,27 @@ namespace plDraw
         plModelStack::pop();
     }
 
+    void cube(float halfwidth)
+    {
+        static plShapeMesh cube(1.f);
+
+        plModelStack::push();
+        {
+            plModelStack::scale(halfwidth, halfwidth, halfwidth);
+            cube.draw();
+        }
+        plModelStack::pop();
+    }
+
+    void cube(const plVector3 &origin, float halfwidth)
+    {
+        plModelStack::push();
+        {
+            plModelStack::translate( origin.x, origin.y, origin.z );
+            cube( halfwidth );
+        }
+        plModelStack::pop();
+    }
+
 }
 
