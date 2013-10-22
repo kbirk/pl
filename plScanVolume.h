@@ -15,6 +15,8 @@ const float coneHalfAngle = 60.0/180.0*PL_PI; // 60 degree half-angle
 
 class plScanVolume //: public plRenderable
 {
+    plMinimalShader* _minimalShader;
+
     public:
 
         enum plScanVoxelType { EMPTY = 0x0, SURFACE = 0x1, UNKNOWN = 0x3 }; // Note that AND of two types yields the correct type
@@ -48,6 +50,8 @@ class plScanVolume //: public plRenderable
 
         plScanVoxel*      voxels;         // voxels[x][y][z] is indexed as voxels[ x + dimx * (y + dimy * z) ]
 
+        plLineMesh        boundingBox;
+
         //plRenderMethod renderMethod;    // how voxels are rendered
 
         // methods
@@ -57,14 +61,15 @@ class plScanVolume //: public plRenderable
         virtual ~plScanVolume();
 
         void      initializeVolume(const plVector3& originW, const plVector3& dimensionsW, PLfloat resolutionW);
+        void      updateBoundingBox();
         PLbool    enlargeVolume   (const plVector3& originTranslationW, const plVector3& dimensionExpansionW);
         //PLuint    coordinatesWtoI(const plVector3& coordsW);
-        PLuint    coordinatesVtoI(const plVector3& coordsV);
-        plVector3 coordinatesItoW(PLuint index);
-        plVector3 coordinatesVtoW(const plVector3& coordinatesV);
-        plVector3 coordinatesItoV(PLuint index);
-        plVector3 coordinatesWtoV(const plVector3& coordsW);
-        PLfloat   distanceWusingI(PLuint index1, PLuint index2);
+        PLuint    coordinatesVtoI(const plVector3& coordsV)      const;
+        plVector3 coordinatesItoW(PLuint index)                  const;
+        plVector3 coordinatesVtoW(const plVector3& coordinatesV) const;
+        plVector3 coordinatesItoV(PLuint index)                  const;
+        plVector3 coordinatesWtoV(const plVector3& coordsW)      const;
+        PLfloat   distanceWusingI(PLuint index1, PLuint index2)  const;
 
         PLbool    draw() const;
 

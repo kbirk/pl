@@ -34,10 +34,12 @@ plScanVolume::~plScanVolume()
 {
     if (voxels != NULL)
         delete[] voxels;
+    delete _minimalShader;
 }
 
 void plScanVolume::initializeVolume(const plVector3& originW, const plVector3& dimensionsW, PLfloat resolutionW)
 {
+    // voxel information
     this->resolutionW = resolutionW;
     this->originW     = originW;
     if (dimensionsW.x <= 0.f || dimensionsW.y <= 0.f || dimensionsW.z <= 0.f)
@@ -53,9 +55,44 @@ void plScanVolume::initializeVolume(const plVector3& originW, const plVector3& d
                                    PLfloat( ceil(dimsW.y/resolutionW)+1 ),
                                    PLfloat( ceil(dimsW.z/resolutionW)+1 ) );
     this->arraySizeI  = dimsV.x*dimsV.y*dimsV.z;
-    this->voxels = new plScanVoxel[arraySizeI];
+    this->voxels      = new plScanVoxel[arraySizeI];
+
+    // rendering stuff
+    this->_minimalShader = new plMinimalShader( PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag");
+
+    this->updateBoundingBox();
 
     //renderMethod = CUBE;
+}
+
+void plScanVolume::updateBoundingBox()
+{
+    plSeq<plVector3> vertices( 8  );
+    plSeq<PLuint>    indices ( 8*3 );
+
+    vertices.add( plVector3( 0.f     , 0.f     , dimsV.z ) );
+    vertices.add( plVector3( dimsV.x , 0.f     , dimsV.z ) );
+    vertices.add( plVector3( dimsV.x , dimsV.y , dimsV.z ) );
+    vertices.add( plVector3( 0.f     , dimsV.y , dimsV.z ) );
+    vertices.add( plVector3( 0.f     , 0.f     , 0.f     ) );
+    vertices.add( plVector3( dimsV.x , 0.f     , 0.f     ) );
+    vertices.add( plVector3( dimsV.x , dimsV.y , 0.f     ) );
+    vertices.add( plVector3( 0.f     , dimsV.y , 0.f     ) );
+
+    indices.add( 0 );   indices.add( 1 );
+    indices.add( 1 );   indices.add( 2 );
+    indices.add( 2 );   indices.add( 3 );
+    indices.add( 3 );   indices.add( 0 );
+    indices.add( 0 );   indices.add( 4 );
+    indices.add( 1 );   indices.add( 5 );
+    indices.add( 2 );   indices.add( 6 );
+    indices.add( 3 );   indices.add( 7 );
+    indices.add( 4 );   indices.add( 5 );
+    indices.add( 5 );   indices.add( 6 );
+    indices.add( 6 );   indices.add( 7 );
+    indices.add( 7 );   indices.add( 4 );
+
+    boundingBox.setBuffers( vertices, indices );
 }
 
 PLbool plScanVolume::enlargeVolume(const plVector3 &originTranslationW, const plVector3 &dimensionExpansionW)
@@ -110,6 +147,8 @@ PLbool plScanVolume::enlargeVolume(const plVector3 &originTranslationW, const pl
     delete[] voxels;
     voxels = newVoxels;
 
+    updateBoundingBox();
+
     return true;
 }
 
@@ -119,12 +158,12 @@ PLbool plScanVolume::enlargeVolume(const plVector3 &originTranslationW, const pl
     return coordinatesVtoI(coordinatesWtoV(coordsW));
 }*/
 
-PLuint plScanVolume::coordinatesVtoI(const plVector3& coordsV) // ASSUMES INTEGER COORDINATES!
+PLuint plScanVolume::coordinatesVtoI(const plVector3& coordsV) const // ASSUMES INTEGER COORDINATES!
 {
     return (coordsV.x + dimsV.x * ( coordsV.y + dimsV.y * coordsV.z) );
 }
 
-plVector3 plScanVolume::coordinatesWtoV(const plVector3& coordsW)
+plVector3 plScanVolume::coordinatesWtoV(const plVector3& coordsW) const
 {
     PLint xV = round( (coordsW.x - originW.x)/resolutionW );
     PLint yV = round( (coordsW.y - originW.y)/resolutionW );
@@ -132,17 +171,17 @@ plVector3 plScanVolume::coordinatesWtoV(const plVector3& coordsW)
     return plVector3(xV,yV,zV);
 }
 
-plVector3 plScanVolume::coordinatesVtoW(const plVector3& coordinatesV)
+plVector3 plScanVolume::coordinatesVtoW(const plVector3& coordinatesV) const
 {
     return (originW + plVector3(coordinatesV.x * resolutionW, coordinatesV.y * resolutionW, coordinatesV.z * resolutionW));
 }
 
-plVector3 plScanVolume::coordinatesItoW(PLuint index)
+plVector3 plScanVolume::coordinatesItoW(PLuint index) const
 {
     return coordinatesVtoW(coordinatesItoV(index));
 }
 
-plVector3 plScanVolume::coordinatesItoV(PLuint index)
+plVector3 plScanVolume::coordinatesItoV(PLuint index) const
 {
     PLuint xV = index%PLuint(dimsV.x);
     PLuint yV = ((index-xV)/PLuint(dimsV.x))%PLuint(dimsV.y);
@@ -150,20 +189,27 @@ plVector3 plScanVolume::coordinatesItoV(PLuint index)
     return plVector3(xV,yV,zV);
 }
 
-PLfloat plScanVolume::distanceWusingI(PLuint index1, PLuint index2)
+PLfloat plScanVolume::distanceWusingI(PLuint index1, PLuint index2) const
 {
     return (coordinatesItoW(index1) - coordinatesItoW(index2)).length();
 }
 
 PLbool plScanVolume::draw() const
 {
+    plShaderStack::push( _minimalShader );
+    plColourStack::load( 1.0, 1.0, 1.0, 1.0);
+    boundingBox.draw();
+    plShaderStack::pop();
+
     plDraw::cube(plVector3(0,0,0),0.1f);
-    std::cout << this->arraySizeI << std::endl;
-    std::cout << this->dimsV << std::endl;
     for (PLuint x(0); x <= dimsV.x; x++)
         for (PLuint y(0); y <= dimsV.y; y++)
             for (PLuint z(0); z <= dimsV.z; z++)
-                    voxels->draw(plVector3(0,0,0));
+            {
+                plVector3 coordsV = plVector3(x,y,z);
+                PLuint indexOfVoxel = coordinatesVtoI(coordsV);
+                voxels[indexOfVoxel].draw(coordsV);
+            }
     return true;
 }
 
@@ -172,7 +218,10 @@ PLbool plScanVolume::draw() const
 PLbool plScanVolume::plScanVoxel::draw( const plVector3& coordV ) const
 {
     if (type == SURFACE)
-        plDraw::cube(coordV,0.5f);
+    {
+        //plColourStack::load( 1.0, 0.0, 0.0, 1.0);
+        //plDraw::cube(coordV,0.5f);
+    }
     return true;
 }
 
