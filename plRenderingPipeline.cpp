@@ -152,10 +152,10 @@ namespace plShaderStack
             const plMinimalShader *shader = static_cast<const plMinimalShader*>( _stack.top() );
             shader->setColourUniform( plColourStack::top()  );
         }  
-        else if ( dynamic_cast<const plTextureShader*>( _stack.top() ) )
+        else if ( dynamic_cast<const plTexture2DShader*>( _stack.top() ) )
         {
             // texture shader
-            const plTextureShader *shader = static_cast<const plTextureShader*>(_stack.top());
+            const plTexture2DShader *shader = static_cast<const plTexture2DShader*>(_stack.top());
             shader->setTextureUniform();
         }  
 

@@ -22,7 +22,7 @@ namespace plRenderer
     const plPlan*            _planToDraw           = NULL;
     const plGraftEditor*     _graftEditorToDraw    = NULL;
     const plBoundaryEditor*  _boundaryEditorToDraw = NULL;
-    const plTextureMesh*     _arthroTextureToDraw  = NULL;
+    const plTexture2DMesh*   _arthroTextureToDraw  = NULL;
     const plTrackedObject*   _probeToDraw          = NULL;
     const plTrackedObject*   _scopeToDraw          = NULL;
     const plChessBoard*      _chessBoardToDraw     = NULL;
@@ -31,7 +31,7 @@ namespace plRenderer
     plMinimalShader*         _minimalShader        = NULL;
     plPhongShader*           _phongShader          = NULL; 
     plPickingShader*         _pickingShader        = NULL;
-    plTextureShader*         _textureShader        = NULL;
+    plTexture2DShader*       _textureShader        = NULL;
 
     void init()
     {   
@@ -43,7 +43,7 @@ namespace plRenderer
         _minimalShader = new plMinimalShader( PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag");       
         _phongShader   = new plPhongShader  ( PL_FILE_PREPATH"shaders/phong.vert",   PL_FILE_PREPATH"shaders/phong.frag"  );        
         _pickingShader = new plPickingShader( PL_FILE_PREPATH"shaders/picking.vert", PL_FILE_PREPATH"shaders/picking.frag");         
-        _textureShader = new plTextureShader( PL_FILE_PREPATH"shaders/texture.vert", PL_FILE_PREPATH"shaders/texture.frag");  
+        _textureShader = new plTexture2DShader( PL_FILE_PREPATH"shaders/texture.vert", PL_FILE_PREPATH"shaders/texture.frag");  
     } 
 
 
@@ -87,7 +87,7 @@ namespace plRenderer
     }
 
 
-    void queue( const plTextureMesh &arthroTexture )
+    void queue( const plTexture2DMesh &arthroTexture )
     {
         if (_arthroTextureToDraw != NULL)
             std::cerr << "plRenderer queue() error: plTextureMesh already queued to draw, overridding previous \n";

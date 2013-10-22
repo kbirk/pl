@@ -9,7 +9,7 @@
 #include "plPickingShader.h"
 #include "plMinimalShader.h"
 #include "plPhongShader.h"
-#include "plTextureShader.h"
+#include "plTexture2DShader.h"
 #include "plPickingTexture.h"
 
 namespace plColourStack

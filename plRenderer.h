@@ -9,13 +9,13 @@
 #include "plPhongShader.h"
 #include "plMinimalShader.h"
 #include "plPickingShader.h"
-#include "plTextureShader.h"
+#include "plTexture2DShader.h"
 
 #include "plPlan.h"
 #include "plGraftEditor.h"
 #include "plBoundaryEditor.h"
 #include "plOctree.h"
-#include "plTextureMesh.h"
+#include "plTexture2DMesh.h"
 #include "plAutomaticPlanner.h"
 #include "plChessBoard.h"
 #include "plScan.h"
@@ -34,8 +34,8 @@ namespace plRenderer
     void queue ( const plGraftEditor    &editor );
     void queue ( const plBoundaryEditor &editor );
     void queue ( const plTrackedObject  &object );
-    void queue ( const plTextureMesh    &arthroTexture );
-    void queue ( const plChessBoard   &chessboard );
+    void queue ( const plTexture2DMesh  &arthroTexture );
+    void queue ( const plChessBoard     &chessboard );
     void queue ( const plScan           &scan );
     
 }
