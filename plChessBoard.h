@@ -13,7 +13,7 @@ class plChessBoard : public plTransparentRenderable
 
     public:
     
-        plChessBoard( PLfloat blocksize );
+        plChessBoard();
         
         void updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL );
         
@@ -27,9 +27,10 @@ class plChessBoard : public plTransparentRenderable
         plVector3   _calibOrigin, 
                     _calibXAxisPoint, 
                     _calibYAxisPoint;
+        PLfloat     _blockSize;
         
-        void _generate( PLfloat blocksize ); 
         bool _readChessBoardCalib();
+        void _generate();
 
 };  
 
