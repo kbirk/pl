@@ -169,7 +169,7 @@ namespace plPlannerStage3
             stage3Shader.setSeedUniform();
             reportOpenGLError( "BEFORE OF SHADER STAGE 3\n" ); 
             // call compute shader with 1D workgrouping
-            glDispatchCompute( PL_STAGE3_NUM_GROUPS, 1, 1 );
+//            glDispatchCompute( PL_STAGE3_NUM_GROUPS, 1, 1 );
             
             // memory barrier      
             glMemoryBarrier( GL_ALL_BARRIER_BITS ); //GL_SHADER_STORAGE_BARRIER_BIT);

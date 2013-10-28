@@ -270,7 +270,7 @@ namespace plPlannerStage0
             for ( PLint i=its; i>=0; i-- )
             {                   
                 // call compute shader with 1D workgrouping
-                glDispatchCompute( PL_STAGE0_NUM_GROUPS, 1, 1 );
+//                glDispatchCompute( PL_STAGE0_NUM_GROUPS, 1, 1 );
                 
                 // memory barrier      
                 glMemoryBarrier( GL_ALL_BARRIER_BITS );

@@ -92,7 +92,7 @@ namespace plPlannerStage1
                                       donorByteOffset );
                                   
         // call compute shader with 1D workgrouping
-        glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
+//        glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
         
         // memory barrier      
         glMemoryBarrier( GL_ALL_BARRIER_BITS ); //GL_SHADER_STORAGE_BARRIER_BIT);
