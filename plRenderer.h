@@ -19,6 +19,7 @@
 #include "plAutomaticPlanner.h"
 #include "plChessBoard.h"
 #include "plScan.h"
+#include "plDebugSphere.h"
 
 #include "plPlannerStage1.h"
 #include "plPlannerStage2.h"
@@ -37,6 +38,8 @@ namespace plRenderer
     void queue ( const plTexture2DMesh  &arthroTexture );
     void queue ( const plChessBoard     &chessboard );
     void queue ( const plScan           &scan );
+    void queue ( plDebugSphere debugSphere );
+    void queue ( const std::vector <plDebugSphere> &debugSpheres );
     
 }
 

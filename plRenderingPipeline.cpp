@@ -6,7 +6,7 @@ namespace plColourStack
     plStack<plVector4>  _stack;
            
     void push( PLfloat r, PLfloat g, PLfloat b, PLfloat a) {  _stack.push( plVector4(r,g,b,a) );  }
-    
+    void push( const plVector4 &colour ) { _stack.push( colour ); }
     void pop () { _stack.pop(); } 
        
 	const plVector4& top()	{ return _stack.top(); } 

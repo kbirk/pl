@@ -14,7 +14,8 @@
 
 namespace plColourStack
 {
-    void push( PLfloat r, PLfloat g, PLfloat b, PLfloat a = 1.0f );	
+    void push( PLfloat r, PLfloat g, PLfloat b, PLfloat a = 1.0f );
+    void push( const plVector4 &colour );
 	void load( PLfloat r, PLfloat g, PLfloat b, PLfloat a = 1.0f );
 	void pop ();
 	
