@@ -27,7 +27,8 @@ namespace plRenderer
     const plTrackedObject*        _scopeToDraw          = NULL;
     const plChessBoard*           _chessBoardToDraw     = NULL;
     const plScan*                 _scanToDraw           = NULL;
-    std::vector < plDebugSphere > _debugSpheresToDraw;
+    std::vector <plDebugSphere>   _debugSpheresToDraw;
+    std::vector <plLaserLine>     _laserLinesToDraw;
 
     plMinimalShader*              _minimalShader        = NULL;
     plPhongShader*                _phongShader          = NULL;
@@ -58,7 +59,8 @@ namespace plRenderer
         _scopeToDraw          = NULL;
         _chessBoardToDraw     = NULL;
         _scanToDraw           = NULL;
-        _debugSpheresToDraw.clear();
+        _debugSpheresToDraw.clear();;
+        _laserLinesToDraw.clear();
     }
 
 
@@ -145,6 +147,15 @@ namespace plRenderer
                                     debugSpheres.begin(), debugSpheres.end());
     }
 
+    void queue( plLaserLine laserLine )
+    {
+        _laserLinesToDraw.push_back( laserLine );
+    }
+
+    void queue( const std::vector <plLaserLine> &laserLine )
+    {
+        _laserLinesToDraw.insert( _laserLinesToDraw.end(), laserLine.begin(), laserLine.end());
+    }
 
     void _setOpenGLState()
     {
@@ -312,6 +323,7 @@ namespace plRenderer
             _scanToDraw->draw();
         }
 
+        // draw debug spheres
         for (int i = 0; i < _debugSpheresToDraw.size(); i++)
         {
             plColourStack::push( _debugSpheresToDraw[i].colour );
@@ -319,6 +331,16 @@ namespace plRenderer
             plColourStack::pop();
         }
 
+        // draw lines (currently just thin cylinders)
+
+        for (int i = 0; i < _laserLinesToDraw.size(); i++)
+        {
+            plColourStack::push( _laserLinesToDraw[i].colour );
+            plDraw::laserLine( _laserLinesToDraw[i].origin,
+                              _laserLinesToDraw[i].direction,
+                              _laserLinesToDraw[i].length );
+            plColourStack::pop();
+        }
                
         /* DEBUG FOR OCTREES
         // set flat shader

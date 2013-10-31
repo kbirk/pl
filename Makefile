@@ -15,7 +15,7 @@ SOURCES = main.cpp PlannerWindow.cpp pl.cpp plAutomaticPlanner.cpp plBoneAndCart
           plBoundary.cpp plBoundaryEditor.cpp plCamera.cpp plChessBoard.cpp plColourMap.cpp \
           plColourMesh.cpp plCSV.cpp plDebugSphere.cpp plDefectSite.cpp plDonorSite.cpp \
           plDraw.cpp plDRBTransform.cpp plEditable.cpp plGraft.cpp plGraftEditor.cpp \
-          plIGuide.cpp plIGuideSite.cpp plLineMesh.cpp plMath.cpp plMatrix44.cpp \
+          plIGuide.cpp plIGuideSite.cpp plLaserLine.cpp plLineMesh.cpp plMath.cpp plMatrix44.cpp \
           plMatrixStack.cpp plMesh.cpp plMeshAlgorithm.cpp plMeshConnectivityData.cpp \
           plMeshCutter.cpp plMeshExtruder.cpp plMeshIntersector.cpp plMinimalShader.cpp \
           plModel.cpp plModelSpecific.cpp plOctree.cpp plPhongShader.cpp plPickingShader.cpp \

@@ -175,5 +175,15 @@ namespace plDraw
         plModelStack::pop();
     }
 
+    void laserLine(const plVector3 &origin, const plVector3 &direction, float length)
+    {
+
+        plModelStack::push();
+        {
+            cylinder( origin, direction, 0.1f, length);
+        }
+        plModelStack::pop();
+    }
+
 }
 
