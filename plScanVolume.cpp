@@ -219,8 +219,8 @@ PLbool plScanVolume::plScanVoxel::draw( const plVector3& coordV ) const
 {
     if (type == SURFACE)
     {
-        //plColourStack::load( 1.0, 0.0, 0.0, 1.0);
-        //plDraw::cube(coordV,0.5f);
+        plColourStack::load( 1.0, 0.0, 0.0, 1.0);
+        plDraw::cube(coordV,0.5f);
     }
     return true;
 }
