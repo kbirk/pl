@@ -7,7 +7,7 @@
 #include "plMatrix44.h"
 #include "plVector4.h"
 #include "plPlanningSite.h"
-#include "plPlannerStage0.h"
+#include "plPlannerStructs.h"
 
 class plPlannerStage2Shader : public plShader
 {
@@ -21,7 +21,7 @@ class plPlannerStage2Shader : public plShader
         void setDefectSiteUniforms( const plPlanningSite &defectSite ) const;
         void setDonorSiteUniforms( const std::vector<plPlanningSite> &donorSites ) const;
         void setDefectSolutionUniforms ( const plDefectSolution &solution ) const;
-        void setRotationAngleUniforms() const;
+        void setRotationAngleUniforms( PLuint numDirections ) const;
         void setRotationIndexUniform( PLuint rotationIndex ) const;
         
     private:

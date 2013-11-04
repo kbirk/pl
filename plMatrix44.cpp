@@ -300,7 +300,7 @@ plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const
 
 void plMatrix44::setRotationD(PLfloat angle_degree, const plVector3 &axis) 
 {
-    setRotation(angle_degree*PL_PI/180.f, axis);
+    setRotation(angle_degree*(PL_PI/180.f), axis);
 }
 
 
@@ -414,6 +414,7 @@ void plMatrix44::setRotation( const plVector4 &quat )
     _data[11] = 0.0f;
     _data[15] = 1.0f;
 }
+ 
      
 void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_vector) 
 {
@@ -532,6 +533,7 @@ void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_v
     _data[11] = 0.0f;
 
 }
+  
         
 void plMatrix44::setOrthographic(PLfloat xMin, PLfloat xMax, PLfloat yMin, PLfloat yMax, PLfloat zMin, PLfloat zMax)
 {
@@ -545,6 +547,7 @@ void plMatrix44::setOrthographic(PLfloat xMin, PLfloat xMax, PLfloat yMin, PLflo
     _data[15] = 1.0f;
 
 }
+
 
 void plMatrix44::setPerspective(PLfloat fov, PLfloat aspect, PLfloat nearPlane, PLfloat farPlane)
 {	

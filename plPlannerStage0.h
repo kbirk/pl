@@ -1,14 +1,17 @@
 #ifndef PL_STAGE_0_STATE_H
 #define PL_STAGE_0_STATE_H
 
-#include <thread>
 #include "plCommon.h"
 #include "plUtility.h"
 
 #include "plVector4.h"
-
+#include "plPlannerStructs.h"
 #include "plPlannerStage0Shader.h"
 #include "plPlanningBufferData.h"
+
+#include "plRenderer.h"
+
+#include "plPlan.h"
 
 #define PL_MAX_GRAFTS_PER_SOLUTION           16
 #define PL_MAX_DONOR_SITES                   5
@@ -24,21 +27,6 @@
 #define PL_STAGE_0_COOLING_RATE               0.05f //0.00175f
 
 
-class plDefectSolution
-{
-    public:
-  
-        PLuint                  graftCount;  
-        std::vector<plVector4>  graftPositions;
-        std::vector<plVector4>  graftNormals;         // normal / direction of graft
-        std::vector<plVector4>  graftSurfaceNormals;  // actual normal of the surface
-        std::vector<PLfloat>    graftRadii;
-    
-        plDefectSolution() {};
-}; 
-
-
-
 class plAnnealingGroup
 {
     public:
@@ -48,7 +36,7 @@ class plAnnealingGroup
         void bind();
         void unbind();
 
-        void getSolution( plDefectSolution &state, const plPlanningBufferData &planningData );
+        void getSolution( plDefectSolution &solution, const plPlanningBufferData &planningData );
         void getBestGroupInfo( PLuint *index, PLfloat *energy, PLuint *graftCount );
 
     private:
@@ -71,7 +59,7 @@ class plAnnealingGroup
 namespace plPlannerStage0
 {
 
-    void run( plDefectSolution &state, const plPlanningBufferData &planningData );
+    void run( plDefectSolution &state, const plPlanningBufferData &planningData, plPlan& plan );
 
 }
 

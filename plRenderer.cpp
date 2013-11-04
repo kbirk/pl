@@ -27,8 +27,10 @@ namespace plRenderer
     const plTrackedObject*        _scopeToDraw          = NULL;
     const plChessBoard*           _chessBoardToDraw     = NULL;
     const plScan*                 _scanToDraw           = NULL;
-    std::vector <plDebugSphere>   _debugSpheresToDraw;
-    std::vector <plLaserLine>     _laserLinesToDraw;
+    std::vector<plDebugSphere>    _debugSpheresToDraw;
+    std::vector<plDebugTransform> _debugTransformsToDraw;
+    std::vector<plLaserLine>      _laserLinesToDraw;
+
 
     plMinimalShader*              _minimalShader        = NULL;
     plPhongShader*                _phongShader          = NULL;
@@ -136,10 +138,12 @@ namespace plRenderer
         _scanToDraw = &scan;
     }
 
-    void queue( plDebugSphere debugSphere )
+
+    void queue( const plDebugSphere &debugSphere )
     {
         _debugSpheresToDraw.push_back( debugSphere );
     }
+    
 
     void queue( const std::vector <plDebugSphere> &debugSpheres )
     {
@@ -147,15 +151,24 @@ namespace plRenderer
                                     debugSpheres.begin(), debugSpheres.end());
     }
 
-    void queue( plLaserLine laserLine )
+
+    void queue ( const plDebugTransform &debugTransform )
+    {
+        _debugTransformsToDraw.push_back( debugTransform );
+    }
+
+
+    void queue( const plLaserLine &laserLine )
     {
         _laserLinesToDraw.push_back( laserLine );
     }
+
 
     void queue( const std::vector <plLaserLine> &laserLine )
     {
         _laserLinesToDraw.insert( _laserLinesToDraw.end(), laserLine.begin(), laserLine.end());
     }
+
 
     void _setOpenGLState()
     {
@@ -326,9 +339,15 @@ namespace plRenderer
         // draw debug spheres
         for (int i = 0; i < _debugSpheresToDraw.size(); i++)
         {
-            plColourStack::push( _debugSpheresToDraw[i].colour );
-            plDraw::sphere( _debugSpheresToDraw[i].origin, _debugSpheresToDraw[i].radius );
-            plColourStack::pop();
+            _debugSpheresToDraw[i].draw();
+
+        }
+
+        // draw debug transforms
+        for (int i = 0; i < _debugTransformsToDraw.size(); i++)
+        {
+            _debugTransformsToDraw[i].draw();
+
         }
 
         // draw lines (currently just thin cylinders)

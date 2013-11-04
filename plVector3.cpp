@@ -1,6 +1,5 @@
 #include "plVector3.h"
-
-
+#include "plVector4.h"
 
 plVector3::plVector3() 
 {
@@ -10,6 +9,13 @@ plVector3::plVector3()
 plVector3::plVector3( PLfloat xx, PLfloat yy, PLfloat zz )
 {
     x = xx; y = yy; z = zz;
+}
+
+plVector3::plVector3( const plVector4& v )
+{
+    x = v.x;
+    y = v.y;
+    z = v.z;
 }
 
 plVector3::plVector3( PLchar *string ) 

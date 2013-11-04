@@ -4,6 +4,8 @@
 #include "plCommon.h"
 #include "plString.h"
 
+class plVector4;    // forward delcaration to allow plVector4 -> plVector3 casting
+
 class plVector3 
 {
 	public:
@@ -12,6 +14,7 @@ class plVector3
 
 		plVector3();
 		plVector3( PLfloat xx, PLfloat yy, PLfloat zz );
+		plVector3( const plVector4& v );
 		plVector3( PLchar *string );  
 		plVector3( const plString &str );
 

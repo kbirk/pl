@@ -37,7 +37,7 @@ namespace plPlannerStage2
         stage2Shader.setDefectSiteUniforms( planningData.defectSite ); 
         stage2Shader.setDonorSiteUniforms( planningData.donorSites );
         stage2Shader.setDefectSolutionUniforms( defectSolution );
-        stage2Shader.setRotationAngleUniforms();
+        stage2Shader.setRotationAngleUniforms( PL_NUM_COMPARISION_DIRECTIONS );
 
         reportOpenGLError( "compiled/n" );
 

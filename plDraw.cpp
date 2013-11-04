@@ -102,6 +102,7 @@ namespace plDraw
         plModelStack::pop();
     }
 
+
     void cylinder(const plVector3 &origin, const plVector3 &direction, float radius, float height)
     {
         plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
@@ -116,6 +117,7 @@ namespace plDraw
         plModelStack::pop();
     }
 
+
     void disk(const plVector3 &origin, const plVector3 &direction, float radius, PLbool flip)
     {
         plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize());
@@ -128,6 +130,7 @@ namespace plDraw
         }
         plModelStack::pop();
     }
+
 
     void disk(const plVector3 &origin, float radius, PLbool flip)
     {
@@ -153,6 +156,7 @@ namespace plDraw
         plModelStack::pop();
     }
 
+
     void cube(float halfwidth)
     {
         static plShapeMesh cube(1.f);
@@ -165,6 +169,7 @@ namespace plDraw
         plModelStack::pop();
     }
 
+
     void cube(const plVector3 &origin, float halfwidth)
     {
         plModelStack::push();
@@ -174,6 +179,7 @@ namespace plDraw
         }
         plModelStack::pop();
     }
+
 
     void laserLine(const plVector3 &origin, const plVector3 &direction, float length)
     {

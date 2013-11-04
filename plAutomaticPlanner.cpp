@@ -60,12 +60,11 @@ namespace plAutomaticPlanner
                        "-------------------------------------------------------------------------- \n";
         t0 = plTimer::now();
 
-        plPlannerStage0::run( defectSolution, planningData );    
+        plPlannerStage0::run( defectSolution, planningData, plan );    
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 0 Complete --------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ----------------------" << std::endl;
-        
         ////////////////////
         // stage 1 timing //
         std::cout << "\n--------------------------- Initiating Stage 1 --------------------------- \n" <<
@@ -136,14 +135,14 @@ namespace plAutomaticPlanner
                 plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   correctHarvestOrigin   ) );
                 */ 
 
-                plVector3 originalHarvestOrigin( donorSolution.graftPositions[i].x, donorSolution.graftPositions[i].y, donorSolution.graftPositions[i].z );
-                plVector3 originalHarvestY     ( donorSolution.graftNormals[i].x,   donorSolution.graftNormals[i].y,   donorSolution.graftNormals[i].z );    
+                plVector3 originalHarvestOrigin( donorSolution.graftPositions[i] );
+                plVector3 originalHarvestY     ( donorSolution.graftNormals[i]   );    
                    
-                plVector3 originalRecipientOrigin( defectSolution.graftPositions[i].x,  defectSolution.graftPositions[i].y,   defectSolution.graftPositions[i].z );
-                plVector3 originalRecipientY     ( defectSolution.graftNormals[i].x,    defectSolution.graftNormals[i].y,     defectSolution.graftNormals[i].z   );        
+                plVector3 originalRecipientOrigin( defectSolution.graftPositions[i] );
+                plVector3 originalRecipientY     ( defectSolution.graftNormals[i]   );        
                 
-                plPlug recipient( 0, plan.models(0), plTransform( /*originalRecipientX,*/ originalRecipientY, originalRecipientOrigin ) );
-                plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   originalHarvestOrigin   ) );
+                plPlug recipient( 0, plan.models(0), plTransform( originalRecipientY ^ plVector3( 0, 0, 1 ), originalRecipientY, originalRecipientOrigin ) );
+                plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY ^ plVector3( 0, 0, 1 ), originalHarvestY,   originalHarvestOrigin   ) );
                 
                 plan.addGraft( harvest, recipient, defectSolution.graftRadii[i], 0, 0 );
 

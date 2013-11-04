@@ -81,12 +81,12 @@ void plPlannerStage3Shader::setDefectSolutionUniforms ( const plDefectSolution &
 }
 
 
-void plPlannerStage3Shader::setRotationAngleUniforms() const
+void plPlannerStage3Shader::setRotationAngleUniforms( PLuint numDirections ) const
 {
     // get rotation angles
     std::vector<PLfloat> rotationAngles;  
-    float da = 360.0f / (float)(PL_NUM_COMPARISION_DIRECTIONS);         
-    for ( PLuint i=0; i < PL_NUM_COMPARISION_DIRECTIONS; i++ )
+    float da = 360.0f / (float)(numDirections);         
+    for ( PLuint i=0; i < numDirections; i++ )
     {
             rotationAngles.push_back( da * i );
     }

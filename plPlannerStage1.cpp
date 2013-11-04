@@ -1,47 +1,9 @@
 #include "plPlannerStage1.h"
 
-/*
-void plCapIndices::update( PLuint defectBuffer, PLuint defectSize, PLuint donorBuffer, PLuint donorSize )
-{
-    //defectIndices.fill( defectSize, 0 );
-    //donorIndices.fill ( donorSize, 0  );
-    defectIndices.assign( defectSize, 0 );
-    donorIndices.assign ( donorSize, 0  );  
-
-    glBindBuffer( GL_SHADER_STORAGE_BUFFER, defectBuffer );            
-    PLuint *defectData = readSSBO<PLuint>( 0, defectSize );
-    memcpy( &defectIndices[0], &defectData[0], defectSize*sizeof( PLuint ) );    
-    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
-    glBindBuffer( GL_SHADER_STORAGE_BUFFER, donorBuffer );            
-    PLuint *donorData = readSSBO<PLuint>( 0, donorSize );
-    memcpy( &donorIndices[0], &donorData[0], donorSize*sizeof( PLuint ) );    
-    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-} 
-
-
-PLuint plCapIndices::getDefectSSBO() const
-{
-    PLuint tempBuffer;
-    glGenBuffers(1, &tempBuffer);   
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, defectIndices.size()*sizeof(PLuint), &defectIndices[0], GL_STATIC_READ);
-    return tempBuffer;
-} 
-
-
-PLuint plCapIndices::getDonorSSBO() const
-{
-    PLuint tempBuffer;
-    glGenBuffers(1, &tempBuffer);   
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, tempBuffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, donorIndices.size()*sizeof(PLuint), &donorIndices[0], GL_STATIC_READ);
-    return tempBuffer;
-} 
-*/
 
 namespace plPlannerStage1
 {
+
     void run( plCapIndices &capData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution )
     {    
         

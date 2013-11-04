@@ -6,12 +6,6 @@ plTransform::plTransform()
     _compute();
 }
 
-plTransform::plTransform( const plVector3 &y, const plVector3 &origin )
-    : _x( ( y ^ plVector3(1,0,0) ).normalize() ), _y( y ), _origin( origin )
-{
-    _compute();
-}
-
 
 plTransform::plTransform( const plVector3 &x, const plVector3 &y, const plVector3 &origin )
     : _x( x ), _y( y ), _origin( origin )

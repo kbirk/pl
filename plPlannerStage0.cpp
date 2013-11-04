@@ -111,7 +111,7 @@ void plAnnealingGroup::getBestGroupInfo( PLuint *index, PLfloat *energy, PLuint 
 namespace plPlannerStage0
 {
 
-    void run( plDefectSolution &defectSolution, const plPlanningBufferData &planningData )
+    void run( plDefectSolution &defectSolution, const plPlanningBufferData &planningData, plPlan& plan )
     {       
         checkOpenGLImplementation();
         std::vector< plString > shaderfiles;
@@ -146,7 +146,7 @@ namespace plPlannerStage0
 
         planningData.defectSiteSSBO.bind( 0 );
         triangleAreaSSBO.bind( 1 ); 
-        annealingBuffers.bind();
+        annealingBuffers.bind(); // 2, 3, 4, 5, 6, 7, 8 , 9, 10, 11
 
         PLfloat temperature = PL_STAGE_0_INITIAL_TEMPERATURE;
 
@@ -169,8 +169,6 @@ namespace plPlannerStage0
                 stage0Shader.setLocalLoadUniform( i );                
             }
 
-            
-
             PLuint bestGroup = 0;
             PLuint graftCount = 0;
             PLfloat energy = 0;
@@ -181,7 +179,7 @@ namespace plPlannerStage0
                           << graftCount << " grafts,\t Temperature: " << temperature << std::endl;   
 
             // cool temperature
-            temperature *= 1 - PL_STAGE_0_COOLING_RATE; //-= PL_STAGE_0_COOLING_RATE;
+            temperature *= 1 - PL_STAGE_0_COOLING_RATE;
         }
 
         // load global solution from annealing state to defect state
@@ -192,8 +190,25 @@ namespace plPlannerStage0
         for ( PLuint i=0; i<defectSolution.graftCount; i++)
         {
             std::cout << "Graft " << i << ",\tPosition: " << defectSolution.graftPositions[i] 
-                                  << ",\tNormal: " << defectSolution.graftNormals[i] 
-                                  << ",\tRadius: " << defectSolution.graftRadii[i] << std::endl;
+                                       << ",\tNormal: "   << defectSolution.graftNormals[i] 
+                                       << ",\tRadius: "   << defectSolution.graftRadii[i] << std::endl;
+            /*                      
+            plVector3 origin( defectSolution.graftPositions[i] );
+            plVector3 y     ( defectSolution.graftNormals[i]   );                    
+            plVector3 x =   ( y ^ plVector3( 0, 0, 1 ) ).normalize();      
+                                      
+            //plRenderer::queue( plDebugTransform( x, y, origin ) );  
+            
+            plMatrix44 rot;  rot.setRotation( defectSolution.graftSurfaceNormals[i], planningData.donorSites[0].gridNormals[100+i*25] );           
+            plMatrix44 dir; dir.setRotationD( 90.0f, defectSolution.graftSurfaceNormals[i] );           
+            plMatrix44 final = rot * dir;
+            
+            //plRenderer::queue( plDebugTransform( rot * x, rot * y, planningData.donorSites[0].gridPoints[100+i*25] ) );
+
+            plPlug recipient( 0, plan.models(0), plTransform( x, y, origin ) );
+            plPlug harvest  ( 0, plan.models(0), plTransform( final * x, final * y, planningData.donorSites[0].gridPoints[100+i*25]   ) );          
+            plan.addGraft( harvest, recipient, defectSolution.graftRadii[i], 0, 0 );     
+            */            
         }
         std::cout << std::endl;
         //

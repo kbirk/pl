@@ -2,9 +2,8 @@
 #define PL_STAGE_3_STATE_H
 
 #include "plCommon.h"
-
 #include "plVector4.h"
-
+#include "plPlannerStructs.h"
 #include "plPlannerStage0.h"
 #include "plPlannerStage2.h"
 #include "plPlannerStage3Shader.h"
@@ -14,20 +13,30 @@
 #define PL_STAGE_3_NUM_GROUPS                 1
 #define PL_STAGE_3_INVOCATIONS                PL_STAGE_3_NUM_GROUPS*PL_STAGE_3_GROUP_SIZE
 
-class plDonorSolution
+
+class plGreedyGroup
 {
     public:
-     
-        std::vector<plVector4>  graftPositions;
-        std::vector<plVector4>  graftNormals;
-        float                   lowestRMS;
-
-        plDonorSolution() 
-            : lowestRMS( FLT_MAX ) 
-        {}
-
-        void extractBestSolution( PLuint graftCount, const plSSBO &totalRmsSSBO, const plSSBO &donorSolutionPositionsSSBO, const plSSBO &donorSolutionNormalsSSBO );
+            
+        plGreedyGroup();        
        
+        void bind();
+        void unbind();
+
+        float lowestRMS() const { return _lowestRMS; }
+        void update();
+        void getSolution( plDonorSolution &solution );
+        
+
+    private:
+            
+        PLfloat                _lowestRMS;
+        std::vector<plVector4> _lowestPositions;
+        std::vector<plVector4> _lowestNormals;
+        
+        plSSBO _donorSolutionPositionsSSBO; 
+        plSSBO _donorSolutionNormalsSSBO;
+        plSSBO _totalRmsSSBO;
 };
 
 

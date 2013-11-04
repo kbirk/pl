@@ -13,7 +13,6 @@ class plTransform
 
         plTransform();
         plTransform( const std::vector<plString> &row );
-        plTransform( const plVector3 &y, const plVector3 &origin );
         plTransform( const plVector3 &x, const plVector3 &y, const plVector3 &origin );
 
         const plVector3&          x() const { return _x; }

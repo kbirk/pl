@@ -7,7 +7,7 @@
 #include "plMatrix44.h"
 #include "plVector4.h"
 #include "plPlanningSite.h"
-#include "plPlannerStage0.h"
+#include "plPlannerStructs.h"
 
 class plPlannerStage1Shader : public plShader
 {

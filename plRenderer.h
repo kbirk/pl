@@ -20,10 +20,9 @@
 #include "plChessBoard.h"
 #include "plScan.h"
 #include "plDebugSphere.h"
+#include "plDebugTransform.h"
 #include "plLaserLine.h"
 
-#include "plPlannerStage1.h"
-#include "plPlannerStage2.h"
 
 
 namespace plRenderer
@@ -40,10 +39,14 @@ namespace plRenderer
     void queue ( const plChessBoard     &chessboard );
     void queue ( const plScan           &scan );
 
-    void queue ( plDebugSphere      debugSphere );
+    void queue ( const plDebugSphere &debugSphere );
     void queue ( const std::vector <plDebugSphere> &debugSpheres );
-    void queue ( plLaserLine laserLine );
+    
+    void queue ( const plDebugTransform &debugTransform );
+    
+    void queue ( const plLaserLine &laserLine );
     void queue ( const std::vector <plLaserLine> &laserLine );
+    
     
 }
 
