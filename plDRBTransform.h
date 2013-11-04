@@ -38,9 +38,9 @@ class plDRBTransform
         // Values to store the original information, provided by the file or the DRB.
         // Storing these isn't strictly necessary, though could be useful if ever
         // we wanted to get the original axis-angle representation values
-        double calibpointx, calibpointy, calibpointz;
-        double calibangle,  calibaxisx,  calibaxisy, calibaxisz;
-        double calibscalex, calibscaley, calibscalez; // generally these will all be the same value
+        PLfloat calibpointx, calibpointy, calibpointz;
+        PLfloat calibangle,  calibaxisx,  calibaxisy, calibaxisz;
+        PLfloat calibscalex, calibscaley, calibscalez; // generally these will all be the same value
 
         plDRBTransform();       
         plDRBTransform( const plMatrix44 );

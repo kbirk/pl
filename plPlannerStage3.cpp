@@ -1,5 +1,6 @@
 #include "plPlannerStage3.h"
 
+/*
 plDonorState::plDonorState()
     : graftPositions  ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
       graftNormals    ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
@@ -63,9 +64,9 @@ void plDonorState::update()
     if ( index != -1 )
     {              
         // new lowest rms  
-        graftPositions.fill  ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1, -1, -1, -1) ); 
-        graftNormals.fill    ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1, -1, -1, -1) ); 
-        graftZDirections.fill( PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1, -1, -1, -1) ); 
+        graftPositions.assign  ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1, -1, -1, -1) ); 
+        graftNormals.assign    ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1, -1, -1, -1) ); 
+        graftZDirections.assign( PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1, -1, -1, -1) ); 
 
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, _donorPositionsBufferID);            
         plVector4 *positions = readSSBO<plVector4>( index*PL_MAX_GRAFTS_PER_SOLUTION, PL_MAX_GRAFTS_PER_SOLUTION );
@@ -89,7 +90,7 @@ void plDonorState::update()
 PLint plDonorState::_getLowestRmsIndex()
 {
     // copy total rms into client side array
-    plSeq<PLfloat> totalRmsData( PL_STAGE3_INVOCATIONS, -1.0f ); 
+    std::vector<PLfloat> totalRmsData( PL_STAGE3_INVOCATIONS, -1.0f ); 
                   
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _totalRMSBufferID);            
     PLfloat *tempRms = readSSBO<PLfloat>( 0, PL_STAGE3_INVOCATIONS );
@@ -115,13 +116,150 @@ PLint plDonorState::_getLowestRmsIndex()
     totalRms = minRMS;    
     return minIndex;
 }
+*/
+
+void plDonorSolution::extractBestSolution( PLuint graftCount, const plSSBO &totalRmsSSBO, const plSSBO &donorSolutionPositionsSSBO, const plSSBO &donorSolutionNormalsSSBO )
+{
+    std::vector<PLfloat> totalRMS( PL_STAGE_3_INVOCATIONS, 1.0f );
+
+    totalRmsSSBO.read( totalRMS, totalRMS.size() );
+
+    // find invocation with lowest RMS
+    float minRMS   = FLT_MAX;
+    PLint minIndex = -1;    
+
+    for (PLuint i=0; i < PL_STAGE_3_INVOCATIONS; i++)
+    {
+        if ( totalRMS[i] > 0 && totalRMS[i] < minRMS )
+        {           
+            minRMS   = totalRMS[i];
+            minIndex = i;            
+        }
+    }
+
+    if ( minIndex > 0 && minRMS < lowestRMS )
+    {
+        graftPositions.resize( graftCount, plVector4( -1.0f, -1.0f, -1.0f, -1.0f ) );
+        graftNormals.resize( graftCount, plVector4( -1.0f, -1.0f, -1.0f, -1.0f ) );
+        lowestRMS = minRMS;
+
+        donorSolutionPositionsSSBO.read( graftPositions, graftPositions.size(), 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
+        donorSolutionNormalsSSBO.read( graftNormals, graftNormals.size(), 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
+    }
+
+}
 
 
 namespace plPlannerStage3
 {
-
-    plDonorState run( const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plRmsData &rmsInput )
+   
+    void run( plDonorSolution &donorSolution, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plRmsData &rmsData )
     {
+        std::vector< plString > shaderfiles;
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
+
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.hcmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSite.hcmp" );  
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/donorSites.hcmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSolution.hcmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/donorSolution.hcmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/rms.hcmp" );   
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/rand.hcmp" );  
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/stage3.hcmp" );
+
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.cmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSite.cmp" );  
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/donorSites.cmp" ); 
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSolution.cmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/donorSolution.cmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/rms.cmp" );      
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/rand.cmp" ); 
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/stage3.cmp" );
+        
+        // compile / link stage 2 shader
+        plPlannerStage3Shader stage3Shader( shaderfiles );
+        
+        if ( !stage3Shader.good() )
+            return;
+        
+        stage3Shader.bind(); 
+ 
+        // set uniforms
+        stage3Shader.setDefectSiteUniforms( planningData.defectSite ); 
+        stage3Shader.setDonorSiteUniforms( planningData.donorSites );
+        stage3Shader.setDefectSolutionUniforms( defectSolution );
+        stage3Shader.setRotationAngleUniforms();
+
+        reportOpenGLError( "compiled/n" );
+
+        // create and initialize cap indices SSBOs to 0
+        std::vector<plVector4> donorSolutionFiller( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION, plVector4( -1.0f, -1.0f, -1.0f, -1.0f ) );  
+        plSSBO donorSolutionPositionsSSBO, donorSolutionNormalsSSBO;
+        donorSolutionPositionsSSBO.set( donorSolutionFiller, donorSolutionFiller.size() );
+        donorSolutionNormalsSSBO.set( donorSolutionFiller, donorSolutionFiller.size() );
+
+        plSSBO totalRmsSSBO;
+        std::vector<PLfloat> totalRMS( PL_STAGE_3_INVOCATIONS, 1.0f );
+        totalRmsSSBO.set( totalRMS, totalRMS.size() );
+
+        // bind SSBOs
+        planningData.defectSiteSSBO.bind( 0 );
+        planningData.donorSitesSSBO.bind( 1 );
+        rmsData.rmsSSBO.bind( 2 );
+        donorSolutionPositionsSSBO.bind( 3 );
+        donorSolutionNormalsSSBO.bind( 4 );
+        totalRmsSSBO.bind( 5 );
+
+
+        for (PLuint i=0; i<PL_STAGE_3_ITERATIONS; i++ )
+        {
+            // update seed uniform
+            stage3Shader.setSeedUniform();
+            reportOpenGLError( "BEFORE OF SHADER STAGE 3\n" ); 
+            // call compute shader with 1D workgrouping
+            glDispatchCompute( PL_STAGE_3_NUM_GROUPS, 1, 1 );
+            
+            // memory barrier      
+            glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT ); 
+            
+            donorSolution.extractBestSolution( defectSolution.graftCount, totalRmsSSBO, donorSolutionPositionsSSBO, donorSolutionNormalsSSBO );
+ 
+            std:: cout << "\tIteration " << i <<", Current lowest total RMS: " << donorSolution.lowestRMS << "\n";
+        }    
+
+        // no state found                              
+        if ( donorSolution.lowestRMS == FLT_MAX )
+        {
+            donorSolution.graftPositions.clear();
+            donorSolution.graftNormals.clear();
+            std::cerr << "plPlannerStage3::run() error: Unable to find suitable harvest locations \n";
+        }    
+        
+        // unbind and delete site and rms buffers
+        planningData.defectSiteSSBO.unbind( 0 );
+        planningData.donorSitesSSBO.unbind( 1 );
+        rmsData.rmsSSBO.unbind( 2 );
+        donorSolutionPositionsSSBO.unbind( 3 );
+        donorSolutionNormalsSSBO.unbind( 4 );
+        totalRmsSSBO.unbind( 5 );
+        
+        /*
+        if (donorSolution.graftPositions.size() > 0 )
+        {
+            std::cout << "\tDonor locations and normals:\n";    
+            for (PLuint i=0; i < donorSolution.graftCount; i++)
+            {
+                std::cout << "\t\tPosition "    << i << ": \t" << donorSolution.graftPositions[i]   << "\n";
+                std::cout << "\t\tNormal "      << i << ": \t" << donorSolution.graftNormals[i]     << "\n";
+            }
+        }
+        */
+
+
+
+
+
+        /*
         reportOpenGLError( "BEFORE OF SHADER STAGE 3\n" ); 
         // compile / link stage 1 shader
         plPlannerStage3Shader stage3Shader( PL_FILE_PREPATH"shaders/plannerStage3.comp" );
@@ -129,8 +267,8 @@ namespace plPlannerStage3
               
         // calc total grid points (invocations)
         PLuint totalGridPoints = 0;
-        plSeq<PLuint> donorGridSizes;
-        plSeq<PLuint> donorByteOffset;
+        std::vector<PLuint> donorGridSizes;
+        std::vector<PLuint> donorByteOffset;
         for (PLuint i=0; i < donorSites.size(); i++)
         {
             totalGridPoints += donorSites[i].gridSize();
@@ -208,7 +346,7 @@ namespace plPlannerStage3
             }
         }
         return donorState;
-        
+        */   
     }
     
 

@@ -3,130 +3,87 @@
 
 namespace plAutomaticPlanner
 {
-    // private members
-    plSeq<plSiteGrid>  _donorSiteGrids;
-    plSeq<plSiteGrid>  _defectSiteGrids; 
-    
-    // private function prototypes  
-    PLbool _generateSite     ( plSeq<plSiteGrid> &grids, const plSeq<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain );                    
-    PLbool _generateSiteGrids( plPlan &plan );            
-    void   _dispatch         ( plPlan &plan );      
+    // private function prototypes             
+    void _dispatch          (  plPlan &plan, const plPlanningBufferData &planningData );      
+    void _clearPreviousPlan ( plPlan &plan );
 
     // public functions
     void calculate( plPlan &plan )
     {   
-        std::cout << "Calculating Plan ... \n";
+        // error checking
         if ( plan.defectSites().size() == 0 )          { std::cerr << "plAutomaticPlanner::calculate() error: No defect sites specified\n";   return; }
         if ( plan.donorSites().size()  == 0 )          { std::cerr << "plAutomaticPlanner::calculate() error: No donor sites specified\n";    return; }
         if ( plan.defectSites(0).spline.size() < 4 )   { std::cerr << "plAutomaticPlanner::calculate() error: No defect spline specified\n";  return; } 
         if ( plan.defectSites(0).boundary.size() < 3 ) { std::cerr << "plAutomaticPlanner::calculate() error: No recipient area specified\n"; return; }
 
-        // clear previous sites
-        _donorSiteGrids.clear();
-        _defectSiteGrids.clear();
+        std::cout << "Assembling planning data structures ... \n";
+        plPlanningBufferData planningData( plan.defectSites( 0 ), plan.donorSites() );
+        
+        // clear previous plan
+        _clearPreviousPlan( plan );
 
+        // if data is good, dispatch planner 
+        if ( !planningData.good() )
+        {    
+            std::cerr << "plAutomaticPlanner::calculate() error: could not produce coherent planning data buffers" << std::endl;
+        }
+
+        // proceed with plan
+        std::cout << "Calculating plan ... \n";
+        _dispatch( plan, planningData );
+    } 
+
+
+    void _clearPreviousPlan( plPlan &plan )
+    {
         // clear previous grafts
         PLuint previousCount = plan.grafts().size();
         for ( PLuint i=0; i < previousCount; i++ )
         {
             plan.removeGraft( 0 );
         }
-
-        // generate site grids
-        if ( _generateSiteGrids( plan ) )
-        {            
-            _dispatch( plan );
-        }
-    } 
-
-    // private functions
-    PLbool _generateSite( plSeq<plSiteGrid> &grids, const plSeq<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain )
-    {       
-        plSiteGrid site( triangles, boundary, fineGrain );                
-      
-        if ( site.gridSize() == 0 )
-        {
-            _donorSiteGrids.clear();
-            _defectSiteGrids.clear();
-            std::cerr << "plAutomaticPlanner::_generateSite() error: could not produce site mesh\n";
-            return false;
-        }
-        
-        std::cout << "\t\t" <<  site.meshSize() << " triangles calculated \n";
-        std::cout << "\t\t" <<  site.gridSize() << " grid points calculated \n";
-        grids.add( site );
-        return true; 
-
-    }    
-    
-    
-    PLbool _generateSiteGrids( plPlan &plan )
-    {
-        for ( PLuint i = 0; i < plan.defectSites().size(); i++)
-        {   
-            std::cout << "\tCalculating defect site grid " << i << " \n";
-            if ( !_generateSite( _defectSiteGrids, 
-                                 plan.defectSites(i).spline.triangles(), 
-                                 plan.defectSites(i).boundary,
-                                 false ) )
-            {
-                return false;
-            }
-        }
-
-        for ( PLuint i = 0; i < plan.donorSites().size(); i++)
-        {    
-            std::cout << "\tCalculating donor site grid " << i << " \n";            
-            if ( !_generateSite( _donorSiteGrids, 
-                                 plan.donorSites(i).model().combined.triangles(), 
-                                 plan.donorSites(i).boundary,
-                                 true ) )
-            {
-                return false;
-            }
-        }  
-
-        return true;
     }
 
 
-    void _dispatch( plPlan &plan )
+    // private functions
+    void _dispatch(  plPlan &plan, const plPlanningBufferData &planningData )
     {    
         PLtime t0, t1;
         
-        plDefectState defectState;
-        plCapIndices  capIndices;
-        plRmsData     rmsData;
-        
+        plDefectSolution defectSolution;
+        plCapIndices     capIndices;
+        plRmsData        rmsData;
+        plDonorSolution  donorSolution;
+
         // stage 0 timing //
         std::cout << "\n--------------------------- Initiating Stage 0 --------------------------- \n" <<
                        "-------------------------------------------------------------------------- \n";
         t0 = plTimer::now();
 
-        plPlannerStage0::run( defectState, _defectSiteGrids[0] );    
+        plPlannerStage0::run( defectSolution, planningData );    
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 0 Complete --------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ----------------------" << std::endl;
+        
         ////////////////////
         // stage 1 timing //
         std::cout << "\n--------------------------- Initiating Stage 1 --------------------------- \n" <<
                        "--------------------------------------------------------------------------" << std::endl;
         t0 = plTimer::now();
 
-        plPlannerStage1::run( capIndices, _defectSiteGrids[0], _donorSiteGrids, defectState );
+        plPlannerStage1::run( capIndices, planningData, defectSolution );
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 1 Complete ---------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
         //////////////////// 
-
         // stage 2 timing //
         std::cout << "\n--------------------------- Initiating Stage 2 --------------------------- \n" <<
                        "--------------------------------------------------------------------------" << std::endl;
         t0 = plTimer::now();
 
-        plPlannerStage2::run( rmsData, _defectSiteGrids[0], _donorSiteGrids, defectState, capIndices );
+        plPlannerStage2::run( rmsData, planningData, defectSolution, capIndices );
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 2 Complete ---------------------------- \n" <<
@@ -138,24 +95,23 @@ namespace plAutomaticPlanner
                        "-------------------------------------------------------------------------- \n";
         t0 = plTimer::now();
 
-        plDonorState donorState = plPlannerStage3::run( _donorSiteGrids, defectState, rmsData );    
+        plPlannerStage3::run( donorSolution, planningData, defectSolution, rmsData );    
         
         t1 = plTimer::now();
         std::cout << "\n---------------------------- Stage 3 Complete --------------------------- \n" <<
                        "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
         ////////////////////
-               
-        if ( donorState.graftPositions.size() > 0 )
+           
+        if ( donorSolution.graftPositions.size() > 0 )
         {
-            for ( PLuint i=0; i < defectState.graftCount; i++ )
+            for ( PLuint i=0; i < defectSolution.graftCount; i++ )
             {    
+                /*
                 // all graft origins generated from the planner shaders have their origins flush with the cartilage surface, these
                 // must be changed to be flush with the bone surface for mouse drag editing to behave nicely
                        
                 // ray cast from cartilage positions in negative direction of normal to get harvest bone position
-                plVector3 originalHarvestOrigin( donorState.graftPositions[i].x, donorState.graftPositions[i].y, donorState.graftPositions[i].z );
-                plVector3 originalHarvestY     ( donorState.graftNormals[i].x,   donorState.graftNormals[i].y,   donorState.graftNormals[i].z );    
-                     
+                  
                 plIntersection intersection = plan.models(0).bone.rayIntersect( originalHarvestOrigin, -originalHarvestY );   
                 // set correct harvest origin to bone intersection point             
                 plVector3 correctHarvestOrigin = intersection.point;            
@@ -164,9 +120,9 @@ namespace plAutomaticPlanner
                 PLfloat cartilageThickness = ( correctHarvestOrigin - originalHarvestOrigin ).length();
             
                 // ray cast from cartilage positions in negative direction of normal to get recipient bone position
-                plVector3 originalRecipientOrigin( defectState.graftPositions[i].x,  defectState.graftPositions[i].y,   defectState.graftPositions[i].z );
-                plVector3 originalRecipientY     ( defectState.graftNormals[i].x,    defectState.graftNormals[i].y,     defectState.graftNormals[i].z   );        
-                plVector3 originalRecipientZ     ( donorState.graftZDirections[i].x, donorState.graftZDirections[i].y,  donorState.graftZDirections[i].z ); // use from donor state!
+                plVector3 originalRecipientOrigin( defectSolution.graftPositions[i].x,  defectSolution.graftPositions[i].y,   defectSolution.graftPositions[i].z );
+                plVector3 originalRecipientY     ( defectSolution.graftNormals[i].x,    defectSolution.graftNormals[i].y,     defectSolution.graftNormals[i].z   );        
+                plVector3 originalRecipientZ     ( donorSolution.graftZDirections[i].x, donorSolution.graftZDirections[i].y,  donorSolution.graftZDirections[i].z ); // use from donor state!
                 plVector3 originalRecipientX = (originalRecipientY ^ originalRecipientZ).normalize();
                                                
                 intersection = plan.models(0).bone.rayIntersect( originalRecipientOrigin, -originalRecipientY );      
@@ -175,10 +131,21 @@ namespace plAutomaticPlanner
 
                 // get height offset so that cap is flush with cartilage surface, remember to subtract cartilage thickness 
                 PLfloat recipientHeightOffset = ( correctRecipientOrigin - originalRecipientOrigin ).length() - cartilageThickness;
-                          
+    
                 plPlug recipient( 0, plan.models(0), plTransform( originalRecipientX, originalRecipientY, correctRecipientOrigin ) );
                 plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   correctHarvestOrigin   ) );
-                plan.addGraft( harvest, recipient, defectState.graftRadii[i], cartilageThickness, recipientHeightOffset );
+                */ 
+
+                plVector3 originalHarvestOrigin( donorSolution.graftPositions[i].x, donorSolution.graftPositions[i].y, donorSolution.graftPositions[i].z );
+                plVector3 originalHarvestY     ( donorSolution.graftNormals[i].x,   donorSolution.graftNormals[i].y,   donorSolution.graftNormals[i].z );    
+                   
+                plVector3 originalRecipientOrigin( defectSolution.graftPositions[i].x,  defectSolution.graftPositions[i].y,   defectSolution.graftPositions[i].z );
+                plVector3 originalRecipientY     ( defectSolution.graftNormals[i].x,    defectSolution.graftNormals[i].y,     defectSolution.graftNormals[i].z   );        
+                
+                plPlug recipient( 0, plan.models(0), plTransform( /*originalRecipientX,*/ originalRecipientY, originalRecipientOrigin ) );
+                plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   originalHarvestOrigin   ) );
+                
+                plan.addGraft( harvest, recipient, defectSolution.graftRadii[i], 0, 0 );
 
             } 
         }

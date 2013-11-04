@@ -2,7 +2,7 @@
 #define PL_MODEL_H
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plMesh.h"
 #include "plOctree.h"
 #include "plTriangle.h"
@@ -27,14 +27,15 @@ class plOrderPair
     
 };
 
+
 class plModel : public plTransparentRenderable
 {
     public:
 
         plModel( const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
-        plModel( const plSeq<plTriangle> &triangles, const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
+        plModel( const std::vector<plTriangle> &triangles, const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
         
-        const plSeq<plTriangle> &triangles() const { return _triangles; }
+        const std::vector<plTriangle> &triangles() const { return _triangles; }
         const plOctree          &octree()    const { return _octree;    }
         const plString          &filename()  const { return _filename;  }
         
@@ -48,7 +49,7 @@ class plModel : public plTransparentRenderable
 	private:
 	
 		plMesh             _mesh;
-        plSeq<plTriangle>  _triangles;
+        std::vector<plTriangle>  _triangles;
         plOctree           _octree;
 		plString           _filename;
 
@@ -58,6 +59,7 @@ class plModel : public plTransparentRenderable
         plModel operator=( const plModel &m ) const;
 
 };
+
 
 std::ostream& operator << ( std::ostream& out, const plModel &m );
 

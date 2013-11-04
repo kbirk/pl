@@ -1,6 +1,6 @@
 #include "plModel.h"
 
-plModel::plModel( const plSeq<plTriangle> &triangles, const plString &filename, PLuint octreeDepth )
+plModel::plModel( const std::vector<plTriangle> &triangles, const plString &filename, PLuint octreeDepth )
     : _triangles( triangles ), _mesh( triangles ), _filename( filename )
 {
     // get min and max extents of model
@@ -20,7 +20,7 @@ plModel::plModel( const plString &filename, PLuint octreeDepth )
         return;
      
     // build mesh
-    _mesh = plMesh(_triangles);
+    _mesh = plMesh( _triangles );
     // get min and max extents of model
     plVector3 min, max;
     getMinMax(min,max);
@@ -78,7 +78,7 @@ plVector3 plModel::getAverageNormal( PLfloat radius, const plVector3 &origin, co
     if (count == 0)
     {
         // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
-        std::cout << "No normal found\n";
+        std::cout << "plModel::getAverageNormal() warning: No normal found\n";
         return up;
     }    
 
@@ -118,12 +118,12 @@ void plModel::draw( const plVector3 &colour ) const
         }
         std::sort(order.begin(), order.end(), _compareOrderPairs);
 
-        plSeq<PLuint> indices( _triangles.size()*3 );
+        std::vector<PLuint> indices;    indices.reserve( _triangles.size()*3 );
         for (PLuint i = 0; i < order.size(); i++)
         {
-            indices.add( order[i].index*3 );
-            indices.add( order[i].index*3+1 );
-            indices.add( order[i].index*3+2 );
+            indices.push_back( order[i].index*3 );
+            indices.push_back( order[i].index*3+1 );
+            indices.push_back( order[i].index*3+2 );
         }        
         _mesh.draw(indices);
 

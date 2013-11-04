@@ -2,7 +2,7 @@
 #define PL_CAMERA_H
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plMatrix44.h"

@@ -2,7 +2,7 @@
 #define PL_MESH_EXTRUDER_H
 
 #include "plTriangle.h"
-#include "plSeq.h"
+
 #include "plMatrix44.h"
 
 /*
@@ -39,10 +39,10 @@ class plEdgePointers
 
 namespace plMeshExtruder
 {
-    // returns an empty plSeq if there is an error or failure.
+    // returns an empty std::vector if there is an error or failure.
     // else returns an extruded version of the input mesh, in the direction and magnitude provided as inputs
-    plSeq<plTriangle> extrudeMesh(const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction);
-    plSeq<plTriangle> extrudeMesh(const plSeq<plTriangle>& inputTriangles, const PLfloat magnitude, const PLfloat preTranslation, const plVector3& direction);
+    std::vector<plTriangle> extrudeMesh(const std::vector<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction);
+    std::vector<plTriangle> extrudeMesh(const std::vector<plTriangle>& inputTriangles, const PLfloat magnitude, const PLfloat preTranslation, const plVector3& direction);
 
 
 }

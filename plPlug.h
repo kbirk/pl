@@ -7,6 +7,8 @@
 #include "plBoneAndCartilage.h"
 #include "plTransform.h"
 
+// TODO: FIXED DRAGGON TO INCLUDE A ROTATION OFFSET, ROTATION OFFSET CAPS AT n DEGREES AND IS MAINTAINED
+
 class plPlug : public plModelSpecific
 {
     public:

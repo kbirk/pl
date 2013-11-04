@@ -392,7 +392,7 @@ void plBoundaryEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
             {
                 plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
             } 
-            plDraw::disk( plVector3( plWindow::windowToViewportX( x ), plWindow::windowToViewportY( y ), 0), CIRCLE_RADIUS );            
+            plDraw::disk( plVector3( plWindow::windowToViewportX( x ), plWindow::windowToViewportY( y ), 0.0f), CIRCLE_RADIUS );            
         }
     }
     plModelStack::pop();

@@ -67,30 +67,30 @@ void plScanVolume::initializeVolume(const plVector3& originW, const plVector3& d
 
 void plScanVolume::updateBoundingBox()
 {
-    plSeq<plVector3> vertices( 8  );
-    plSeq<PLuint>    indices ( 8*3 );
+    std::vector<plVector3> vertices;    vertices.reserve( 8  );
+    std::vector<PLuint>    indices;     indices.reserve ( 8*3 );
 
-    vertices.add( plVector3( 0.f     , 0.f     , dimsV.z ) );
-    vertices.add( plVector3( dimsV.x , 0.f     , dimsV.z ) );
-    vertices.add( plVector3( dimsV.x , dimsV.y , dimsV.z ) );
-    vertices.add( plVector3( 0.f     , dimsV.y , dimsV.z ) );
-    vertices.add( plVector3( 0.f     , 0.f     , 0.f     ) );
-    vertices.add( plVector3( dimsV.x , 0.f     , 0.f     ) );
-    vertices.add( plVector3( dimsV.x , dimsV.y , 0.f     ) );
-    vertices.add( plVector3( 0.f     , dimsV.y , 0.f     ) );
+    vertices.push_back( plVector3( 0.f     , 0.f     , dimsV.z ) );
+    vertices.push_back( plVector3( dimsV.x , 0.f     , dimsV.z ) );
+    vertices.push_back( plVector3( dimsV.x , dimsV.y , dimsV.z ) );
+    vertices.push_back( plVector3( 0.f     , dimsV.y , dimsV.z ) );
+    vertices.push_back( plVector3( 0.f     , 0.f     , 0.f     ) );
+    vertices.push_back( plVector3( dimsV.x , 0.f     , 0.f     ) );
+    vertices.push_back( plVector3( dimsV.x , dimsV.y , 0.f     ) );
+    vertices.push_back( plVector3( 0.f     , dimsV.y , 0.f     ) );
 
-    indices.add( 0 );   indices.add( 1 );
-    indices.add( 1 );   indices.add( 2 );
-    indices.add( 2 );   indices.add( 3 );
-    indices.add( 3 );   indices.add( 0 );
-    indices.add( 0 );   indices.add( 4 );
-    indices.add( 1 );   indices.add( 5 );
-    indices.add( 2 );   indices.add( 6 );
-    indices.add( 3 );   indices.add( 7 );
-    indices.add( 4 );   indices.add( 5 );
-    indices.add( 5 );   indices.add( 6 );
-    indices.add( 6 );   indices.add( 7 );
-    indices.add( 7 );   indices.add( 4 );
+    indices.push_back( 0 );   indices.push_back( 1 );
+    indices.push_back( 1 );   indices.push_back( 2 );
+    indices.push_back( 2 );   indices.push_back( 3 );
+    indices.push_back( 3 );   indices.push_back( 0 );
+    indices.push_back( 0 );   indices.push_back( 4 );
+    indices.push_back( 1 );   indices.push_back( 5 );
+    indices.push_back( 2 );   indices.push_back( 6 );
+    indices.push_back( 3 );   indices.push_back( 7 );
+    indices.push_back( 4 );   indices.push_back( 5 );
+    indices.push_back( 5 );   indices.push_back( 6 );
+    indices.push_back( 6 );   indices.push_back( 7 );
+    indices.push_back( 7 );   indices.push_back( 4 );
 
     boundingBox.setBuffers( vertices, indices );
 }
@@ -278,7 +278,7 @@ void plScanMask::_assignMask()
             voxels[i].type = UNKNOWN;
         } else { // this voxel intersects the probe surface
             voxels[i].type = SURFACE;
-            surfaceIndices.add(i); // record this as a surface point (for quick lookup later)
+            surfaceIndices.push_back(i); // record this as a surface point (for quick lookup later)
         }
     }
 }
@@ -312,7 +312,7 @@ PLbool plScanField::carveSphere(const plVector3& centreW, PLfloat radiusW)
     }
     if (maskIndex == masks.size())
     {
-        masks.add(new plScanMask(radiusW,resolutionW));
+        masks.push_back(new plScanMask(radiusW,resolutionW));
     }
 
     // second find the nearest voxel coordinate to the supposed physical location of the centre.
@@ -363,11 +363,11 @@ PLbool plScanField::carveSphere(const plVector3& centreW, PLfloat radiusW)
     }
 
     // fourth iterate through the mask and apply it to all voxels
-    for (PLint z = 0; z < masks[maskIndex]->radiusV*2+1; z++)
+    for (PLuint z = 0; z < masks[maskIndex]->radiusV*2+1; z++)
     {
-        for (PLint y = 0; y < masks[maskIndex]->radiusV*2+1; y++)
+        for (PLuint y = 0; y < masks[maskIndex]->radiusV*2+1; y++)
         {
-            for (PLint x = 0; x < masks[maskIndex]->radiusV*2+1; x++)
+            for (PLuint x = 0; x < masks[maskIndex]->radiusV*2+1; x++)
             {
                 plVector3 coordinateOfVoxelVField = plVector3(x-PLint(masks[maskIndex]->radiusV),
                                                               y-PLint(masks[maskIndex]->radiusV),
@@ -392,7 +392,7 @@ PLbool plScanField::maskVoxel( PLuint fieldVoxelIndex, PLuint maskVoxelIndex, co
     voxels[fieldVoxelIndex].type = plScanVoxelType(voxels[fieldVoxelIndex].type & mask->voxels[maskVoxelIndex].type);
 
     if (mask->voxels[maskVoxelIndex].type == SURFACE) {
-        voxels[fieldVoxelIndex].point.add(pointW);
+        voxels[fieldVoxelIndex].point.push_back(pointW);
     }
 
     return true;
@@ -515,7 +515,7 @@ void Volume::carveSphere( vector centre, vector dir )
 	    nUnknown++;
 	  } else { // this voxel intersects the probe surface 
 	    mask[i].type = SURFACE;
-	    surfacePoints.add( MaskSurfacePoint( mask[i].dir, i ) ); // record this as a surface point (for quick lookup later)
+	    surfacePoints.push_back( MaskSurfacePoint( mask[i].dir, i ) ); // record this as a surface point (for quick lookup later)
 	  }
 	  
 	  i++;

@@ -1,61 +1,104 @@
 #include "plPlannerStage2Shader.h"
 
-plPlannerStage2Shader::plPlannerStage2Shader(const char *computeFile ) 
-    : plShader(computeFile, GL_COMPUTE_SHADER)              
+
+plPlannerStage2Shader::plPlannerStage2Shader ( const std::vector< plString > &computeFiles )
+    : plShader( computeFiles, GL_COMPUTE_SHADER )              
 {   
     getUniformLocations();         
 }
 
 
 void plPlannerStage2Shader::getUniformLocations()
-{
-    _graftCountID          = glGetUniformLocation(_shaderProgramID, "uGraftCount");
-    _graftPositionsID      = glGetUniformLocation(_shaderProgramID, "uGraftPositions");
-    _graftNormalsID        = glGetUniformLocation(_shaderProgramID, "uGraftNormals");
-    _graftRadiiID          = glGetUniformLocation(_shaderProgramID, "uGraftRadii");
-
-    _defectSiteMeshSizeID  = glGetUniformLocation(_shaderProgramID, "uDefectSiteMeshSize");
-                     
-    _donorSiteCountID      = glGetUniformLocation(_shaderProgramID, "uDonorSiteCount");
-    _donorSiteMeshSizeID   = glGetUniformLocation(_shaderProgramID, "uDonorSiteMeshSize");
-    _donorSiteGridSizeID   = glGetUniformLocation(_shaderProgramID, "uDonorSiteGridSize");
-    _donorSitePerimSizeID  = glGetUniformLocation(_shaderProgramID, "uDonorSitePerimSize");  
-    _donorSiteDataOffsetID = glGetUniformLocation(_shaderProgramID, "uDonorSiteDataOffset"); 
-    
-    _directionID           = glGetUniformLocation(_shaderProgramID, "uDefectZ");    
-}
-
-
-void plPlannerStage2Shader::setGraftUniforms ( PLuint count, 
-                                               const plSeq<plVector4> &positions,
-                                               const plSeq<plVector4> &normals,
-                                               const plSeq<PLfloat>   &radii ) const
 {   
-    glUniform1ui  ( _graftCountID,     count );     
-    glUniform4fv  ( _graftPositionsID, positions.size(), &positions[0].x );   
-    glUniform4fv  ( _graftNormalsID,   normals.size(),   &normals[0].x   );
-    glUniform1fv  ( _graftRadiiID,     radii.size(),     &radii[0]       );
+    _defectSiteGridPointCountID     = glGetUniformLocation(_shaderProgramID, "uDefectSiteGridPointCount");
+    _defectSiteBoundaryPointCountID = glGetUniformLocation(_shaderProgramID, "uDefectSiteBoundaryPointCount");
+    _defectSiteTriangleCountID      = glGetUniformLocation(_shaderProgramID, "uDefectSiteTriangleCount"); 
+    _defectSiteAreaID               = glGetUniformLocation(_shaderProgramID, "uDefectSiteArea"); 
+    _defectSiteAvgNormalID          = glGetUniformLocation(_shaderProgramID, "uDefectSiteAvgNormal");
+     
+    _donorSiteCountID               = glGetUniformLocation(_shaderProgramID, "uDonorSiteCount");    
+    _donorSiteTotalGridPointsID     = glGetUniformLocation(_shaderProgramID, "uDonorTotalGridPointCount");      
+    _donorSiteTriangleCountsID      = glGetUniformLocation(_shaderProgramID, "uDonorSiteTriangleCounts");   
+    _donorSiteGridPointCountsID     = glGetUniformLocation(_shaderProgramID, "uDonorSiteGridPointCounts");
+    _donorSiteBoundaryPointCountsID = glGetUniformLocation(_shaderProgramID, "uDonorSiteBoundaryPointCounts");
+    _donorSiteDataOffsetsID         = glGetUniformLocation(_shaderProgramID, "uDonorSiteDataOffsets"); 
+      
+    _defectSolutionGraftCountID      = glGetUniformLocation(_shaderProgramID, "uDefectSolutionGraftCount");
+    _defectSolutionGraftPositionsID  = glGetUniformLocation(_shaderProgramID, "uDefectSolutionGraftPositions");
+    _defectSolutionGraftNormalsID    = glGetUniformLocation(_shaderProgramID, "uDefectSolutionGraftNormals");
+    _defectSolutionGraftRadiiID      = glGetUniformLocation(_shaderProgramID, "uDefectSolutionGraftRadii");
+    _defectSolutionSurfaceNormalsID  = glGetUniformLocation(_shaderProgramID, "uDefectSolutionSurfaceNormals"); 
+    
+    _rotationIndexID                = glGetUniformLocation(_shaderProgramID, "uRotationIndex");
+    _rotationAnglesID               = glGetUniformLocation(_shaderProgramID, "uRotationAngles");
 }
- 
-                               
-void plPlannerStage2Shader::setSiteUniforms  ( PLuint defectMeshSize, 
-                                               PLuint donorCount,
-                                               const plSeq<PLuint> &donorMeshSize,
-                                               const plSeq<PLuint> &donorGridSize,
-                                               const plSeq<PLuint> &donorPerimSize,
-                                               const plSeq<PLuint> &donorDataOffset) const
-{
 
-    glUniform1ui   ( _defectSiteMeshSizeID,  defectMeshSize );   
-    glUniform1ui   ( _donorSiteCountID,      donorCount );   
-    glUniform1uiv  ( _donorSiteMeshSizeID,   donorMeshSize.size(),   &donorMeshSize[0]   );   
-    glUniform1uiv  ( _donorSiteGridSizeID,   donorGridSize.size(),   &donorGridSize[0]   );   
-    glUniform1uiv  ( _donorSitePerimSizeID,  donorPerimSize.size(),  &donorPerimSize[0]  );   
-    glUniform1uiv  ( _donorSiteDataOffsetID, donorDataOffset.size(), &donorDataOffset[0] );
-          
+
+void plPlannerStage2Shader::setDefectSiteUniforms( const plPlanningSite &defectSite ) const
+{
+    glUniform1ui  ( _defectSiteTriangleCountID,      defectSite.triangles.size() );    
+    glUniform1f   ( _defectSiteAreaID,               defectSite.area ); 
+    glUniform1ui  ( _defectSiteGridPointCountID,     defectSite.gridPoints.size() ); 
+    glUniform1ui  ( _defectSiteBoundaryPointCountID, defectSite.boundaryPoints.size() );
+    glUniform4fv  ( _defectSiteAvgNormalID, 1,      &defectSite.avgNormal.x );  
+}                                                  
+
+
+void plPlannerStage2Shader::setDonorSiteUniforms( const std::vector<plPlanningSite> &donorSites ) const
+{
+    PLuint totalGridPoints = 0;
+    PLuint previousTotalSize = 0;
+    std::vector<PLuint> gridPointCounts;
+    std::vector<PLuint> triangleCounts;   
+    std::vector<PLuint> boundaryPointCounts;       
+    std::vector<PLuint> dataOffsets;
+
+    for ( const plPlanningSite& donorSite : donorSites )
+    {    
+        totalGridPoints +=  donorSite.gridPoints.size();
+        gridPointCounts.push_back     ( donorSite.gridPoints.size()     );
+        triangleCounts.push_back      ( donorSite.triangles.size()      );            
+        boundaryPointCounts.push_back ( donorSite.boundaryPoints.size() );          
+        dataOffsets.push_back( previousTotalSize );        
+        previousTotalSize = donorSite.totalSize();
+    }
+
+    glUniform1ui  ( _donorSiteCountID,               donorSites.size() );  
+    glUniform1ui  ( _donorSiteTotalGridPointsID,     totalGridPoints   ); 
+    glUniform1uiv ( _donorSiteGridPointCountsID,     gridPointCounts.size(),     &gridPointCounts[0]     ); 
+    glUniform1uiv ( _donorSiteTriangleCountsID,      triangleCounts.size(),      &triangleCounts[0]      );
+    glUniform1uiv ( _donorSiteBoundaryPointCountsID, boundaryPointCounts.size(), &boundaryPointCounts[0] );   
+    glUniform1uiv ( _donorSiteDataOffsetsID,         dataOffsets.size(),         &dataOffsets[0]         );
+}                                                  
+
+
+void plPlannerStage2Shader::setDefectSolutionUniforms ( const plDefectSolution &solution ) const
+{   
+    glUniform1ui  ( _defectSolutionGraftCountID,     solution.graftCount );     
+    glUniform4fv  ( _defectSolutionGraftPositionsID, solution.graftPositions.size(),      &solution.graftPositions[0].x      );   
+    glUniform4fv  ( _defectSolutionGraftNormalsID,   solution.graftNormals.size(),        &solution.graftNormals[0].x        );
+    glUniform1fv  ( _defectSolutionGraftRadiiID,     solution.graftRadii.size(),          &solution.graftRadii[0]            );
+    glUniform4fv  ( _defectSolutionSurfaceNormalsID, solution.graftSurfaceNormals.size(), &solution.graftSurfaceNormals[0].x );
 }
 
-void plPlannerStage2Shader::setDirectionUniform ( const plVector4 &direction ) const
+
+void plPlannerStage2Shader::setRotationAngleUniforms() const
 {
-    glUniform4fv  ( _directionID, 1, &direction.x );
+    // get rotation angles
+    std::vector<PLfloat> rotationAngles;  
+    float da = 360.0f / (float)(PL_NUM_COMPARISION_DIRECTIONS);         
+    for ( PLuint i=0; i < PL_NUM_COMPARISION_DIRECTIONS; i++ )
+    {
+            rotationAngles.push_back( da * i );
+    }
+    glUniform1fv ( _rotationAnglesID, rotationAngles.size(), &rotationAngles[0] ); 
 }
+
+
+void plPlannerStage2Shader::setRotationIndexUniform( PLuint rotationIndex ) const
+{
+    glUniform1ui ( _rotationIndexID, rotationIndex );
+  
+}
+
+

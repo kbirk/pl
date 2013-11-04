@@ -1,11 +1,11 @@
 #ifndef PL_MESH_CONNECTIVITY_H
 #define PL_MESH_CONNECTIVITY_H
 
-#include "plSeq.h"
+
 #include "plTriangle.h"
 #include "plPolygon.h"
 #include "plVector3.h"
-
+#include "plUtility.h"
 // cells
 
 class plMeshConnectivityData;
@@ -19,8 +19,8 @@ class plMeshConnectivityDataVert
 
         plVector3                                        vert;
         PLuint                                           originatingMesh;
-        mutable plSeq<const plMeshConnectivityDataEdge*> edges; // size can be any positive number
-        mutable plSeq<const plMeshConnectivityDataFace*> faces; // size can be any positive number
+        mutable std::vector<const plMeshConnectivityDataEdge*> edges; // size can be any positive number
+        mutable std::vector<const plMeshConnectivityDataFace*> faces; // size can be any positive number
         plMeshConnectivityData*                          dataset;
 
         plMeshConnectivityDataVert () { originatingMesh = 0; }
@@ -38,8 +38,8 @@ class plMeshConnectivityDataEdge
 
         plEdge                                           edge;
         PLuint                                           originatingMesh;
-        mutable plSeq<const plMeshConnectivityDataVert*> verts; // size should always be 2
-        mutable plSeq<const plMeshConnectivityDataFace*> faces; // size should always be an even number
+        mutable std::vector<const plMeshConnectivityDataVert*> verts; // size should always be 2
+        mutable std::vector<const plMeshConnectivityDataFace*> faces; // size should always be an even number
         plMeshConnectivityData*                          dataset;
 
         plMeshConnectivityDataEdge () { originatingMesh = 0; }
@@ -57,8 +57,8 @@ class plMeshConnectivityDataFace
 
         plTriangle                                       face;
         PLuint                                           originatingMesh;
-        mutable plSeq<const plMeshConnectivityDataVert*> verts; // size should always be 3
-        mutable plSeq<const plMeshConnectivityDataEdge*> edges; // size should always be 3
+        mutable std::vector<const plMeshConnectivityDataVert*> verts; // size should always be 3
+        mutable std::vector<const plMeshConnectivityDataEdge*> edges; // size should always be 3
         plMeshConnectivityData*                          dataset;
 
         plMeshConnectivityDataFace () { originatingMesh = 0; }
@@ -77,10 +77,7 @@ typedef std::set<plMeshConnectivityDataFace>::iterator plMeshConnectivityDataFac
 
 class plMeshConnectivityData
 {
-    protected:
-    
-        PLfloat _epsilon;
-
+ 
     public:
     
         plSet<plMeshConnectivityDataVert> verts;
@@ -100,10 +97,21 @@ class plMeshConnectivityData
         void removeFace( const plMeshConnectivityDataFace* );
 
         PLbool findVertWithinEpsilon( const plVector3& vertex, const plMeshConnectivityDataVert*& vertPointer );
-        PLbool importTriSeq(const plSeq<plTriangle> &tris, PLuint originatingMesh, PLuint verbose );
-        PLbool exportTriSeq(      plSeq<plTriangle> &tris, PLuint verbose );
+        PLbool importTriSeq(const std::vector<plTriangle> &tris, PLuint originatingMesh, PLuint verbose );
+        PLbool exportTriSeq(      std::vector<plTriangle> &tris, PLuint verbose );
         void   reportSizes();
+
+
+    protected:
+    
+        PLfloat _epsilon;
+
+
+
 };
+
+
+
 
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVert &p );
 std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataEdge &p );

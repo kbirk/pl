@@ -21,7 +21,7 @@ plScan::plScan( const plString& filename, const PLfloat& resolutionW )
 {
     std::cout << "entering constructor" << std::endl;
     _field = NULL;
-    plSeq<plScanPointData> pointsRead(plScanPointReader::readPoints(filename));
+    std::vector<plScanPointData> pointsRead(plScanPointReader::readPoints(filename));
     if ( pointsRead.size() == 0 )
         std::cerr << "Error in plScan::plScan(): No points were found in the file " << filename << ". Cannot initialize volume." << std::endl;
     else if (!initializeVolume( pointsRead[0].point, pointsRead[0].radius, resolutionW ))
@@ -47,7 +47,7 @@ PLbool plScan::addPoint(const plScanPointData& point)
 {
     if ( !_field->carveSphere( point.point, point.radius ) )
         return false;
-    _points.add( point );
+    _points.push_back( point );
     return true;
 }
 

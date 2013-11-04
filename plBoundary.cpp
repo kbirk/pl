@@ -5,13 +5,13 @@ plBoundary::plBoundary()
 }
 
 
-plBoundary::plBoundary( const plSeq<plString> &row )
+plBoundary::plBoundary( const std::vector<plString> &row )
 {
     // assumes points are counter-clockwise
     for ( PLuint j = 1; j < row.size(); j+=2)
     {               
-        _points.add ( plVector3( row[j] ) );                  
-        _normals.add( plVector3( row[j+1] ) );
+        _points.push_back( plVector3( row[j] ) );                  
+        _normals.push_back( plVector3( row[j+1] ) );
     } 
     // construct mesh
     _updateMesh(); 
@@ -40,8 +40,8 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
     if (_points.size() < 2) 
     {
         // 0 or 1 _points, doesnt matter, just add
-        _points.add( point );
-        _normals.add( normal );
+        _points.push_back( point );
+        _normals.push_back( normal );
         _updateMesh();
         return _points.size()-1;
     }
@@ -53,8 +53,8 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         if ( ((_points[1] - _points[0]) ^ (point - _points[0])) * n > 0)
         {
             // already counter clockwise
-            _points.add( point );
-            _normals.add( normal );
+            _points.push_back( point );
+            _normals.push_back( normal );
             
             _updateMesh(); 
             return 2;
@@ -62,11 +62,15 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         else
         {
             // clock-wise, add new point between existing two
+            /*
             _points.shift(1);
             _normals.shift(1);
             _points[1] = point;
             _normals[1] = normal;
-            
+            */
+            _points.insert( _points.begin()+1, point );
+            _normals.insert( _normals.begin()+1, normal );
+
             _updateMesh(); 
             return 1;
         }
@@ -127,12 +131,16 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
                 shift_i = j;
             }
         }
+        /*
         _normals.shift(shift_i);
         _normals[shift_i] = normal;
 
         _points.shift(shift_i);
         _points[shift_i] = point; 
-         
+        */
+        _points.insert( _points.begin()+shift_i, point );
+        _normals.insert( _normals.begin()+shift_i, normal );
+
         _updateMesh(); 
         return shift_i;  
     }
@@ -149,8 +157,12 @@ void plBoundary::movePointAndNormal( PLuint index, const plVector3 &point, const
 
 void plBoundary::removePointAndNormal( PLuint index )
 {
+    /*
     _points.remove(index);
     _normals.remove(index);
+    */
+    _points.erase( _points.begin()+index );
+    _normals.erase( _normals.begin()+index );
     _updateMesh(); 
 }
 
@@ -227,8 +239,8 @@ void plBoundary::_updateMesh()
 
     plVector3 n = getAverageNormal();
 
-    plSeq<plVector3> vertices( _points.size() * 10 );
-    plSeq<PLuint>    indices ( _points.size() * 6 * 4 );
+    std::vector<plVector3> vertices;    vertices.reserve( _points.size() * 10 );
+    std::vector<PLuint>    indices;     indices.reserve ( _points.size() * 6 * 4 );
 
     for (PLuint i = 0; i < _points.size(); i++)
     {        
@@ -268,50 +280,50 @@ void plBoundary::_updateMesh()
         PLuint base = vertices.size()/2;
 
         // "right" quad
-        vertices.add(a);    // position
-        vertices.add(t1);   // normal
+        vertices.push_back(a);    // position
+        vertices.push_back(t1);   // normal
         
-        vertices.add(b);    // position
-        vertices.add(t1);   // normal
+        vertices.push_back(b);    // position
+        vertices.push_back(t1);   // normal
         
-        vertices.add(c);    // position
-        vertices.add(t1);   // normal
+        vertices.push_back(c);    // position
+        vertices.push_back(t1);   // normal
         
-        vertices.add(d);    // position
-        vertices.add(t1);   // normal
+        vertices.push_back(d);    // position
+        vertices.push_back(t1);   // normal
         
         // top ridge 
-        vertices.add(0.5 * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
-        vertices.add(n);    // normal
+        vertices.push_back(0.5 * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
+        vertices.push_back(n);    // normal
         
-        vertices.add(0.5 * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
-        vertices.add(n);    // normal       
+        vertices.push_back(0.5 * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * n);    // position
+        vertices.push_back(n);    // normal       
          
         // "left" quad
-        vertices.add(e);    // position
-        vertices.add(-t1);  // normal
+        vertices.push_back(e);    // position
+        vertices.push_back(-t1);  // normal
         
-        vertices.add(f);    // position
-        vertices.add(-t1);  // normal
+        vertices.push_back(f);    // position
+        vertices.push_back(-t1);  // normal
         
-        vertices.add(g);    // position
-        vertices.add(-t1);  // normal
+        vertices.push_back(g);    // position
+        vertices.push_back(-t1);  // normal
         
-        vertices.add(h);    // position
-        vertices.add(-t1);  // normal
+        vertices.push_back(h);    // position
+        vertices.push_back(-t1);  // normal
 
         // triangle indices
-        indices.add(base+0);    indices.add(base+1);    indices.add(base+2);
-        indices.add(base+0);    indices.add(base+2);    indices.add(base+3);
+        indices.push_back(base+0);    indices.push_back(base+1);    indices.push_back(base+2);
+        indices.push_back(base+0);    indices.push_back(base+2);    indices.push_back(base+3);
         
-        indices.add(base+3);    indices.add(base+2);    indices.add(base+5);
-        indices.add(base+3);    indices.add(base+5);    indices.add(base+4);
+        indices.push_back(base+3);    indices.push_back(base+2);    indices.push_back(base+5);
+        indices.push_back(base+3);    indices.push_back(base+5);    indices.push_back(base+4);
         
-        indices.add(base+4);    indices.add(base+5);    indices.add(base+8);
-        indices.add(base+4);    indices.add(base+8);    indices.add(base+9);
+        indices.push_back(base+4);    indices.push_back(base+5);    indices.push_back(base+8);
+        indices.push_back(base+4);    indices.push_back(base+8);    indices.push_back(base+9);
         
-        indices.add(base+7);    indices.add(base+6);    indices.add(base+9);
-        indices.add(base+7);    indices.add(base+9);    indices.add(base+8);  
+        indices.push_back(base+7);    indices.push_back(base+6);    indices.push_back(base+9);
+        indices.push_back(base+7);    indices.push_back(base+9);    indices.push_back(base+8);  
 
         if (_points.size() == 2 && i == 0 )
         {
@@ -320,38 +332,38 @@ void plBoundary::_updateMesh()
             plVector3 frontNormal = -backNormal;
 
             // "back" wall ridge
-            vertices.add(0.5f * (a+e) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
-            vertices.add(backNormal);   // normal
+            vertices.push_back(0.5f * (a+e) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
+            vertices.push_back(backNormal);   // normal
         
-            vertices.add(0.5f * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
-            vertices.add(backNormal);   // normal
+            vertices.push_back(0.5f * (d+h) + PL_BOUNDARY_MESH_CURVE_HEIGHT * backNormal);    // position
+            vertices.push_back(backNormal);   // normal
 
             // "front" wall ridge
-            vertices.add(0.5f * (b+f) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
-            vertices.add(frontNormal);   // normal
+            vertices.push_back(0.5f * (b+f) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
+            vertices.push_back(frontNormal);   // normal
         
-            vertices.add(0.5f * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
-            vertices.add(frontNormal);   // normal
+            vertices.push_back(0.5f * (c+g) + PL_BOUNDARY_MESH_CURVE_HEIGHT * frontNormal);    // position
+            vertices.push_back(frontNormal);   // normal
 
             // "back" indices
-            indices.add(base+6);    indices.add(base+10);    indices.add(base+11);
-            indices.add(base+6);    indices.add(base+11);    indices.add(base+9);
+            indices.push_back(base+6);    indices.push_back(base+10);    indices.push_back(base+11);
+            indices.push_back(base+6);    indices.push_back(base+11);    indices.push_back(base+9);
 
-            indices.add(base+10);    indices.add(base+0);    indices.add(base+3);
-            indices.add(base+10);    indices.add(base+3);    indices.add(base+11);
+            indices.push_back(base+10);    indices.push_back(base+0);    indices.push_back(base+3);
+            indices.push_back(base+10);    indices.push_back(base+3);    indices.push_back(base+11);
 
-            indices.add(base+9);    indices.add(base+11);    indices.add(base+4);
-            indices.add(base+11);    indices.add(base+3);    indices.add(base+4);
+            indices.push_back(base+9);    indices.push_back(base+11);    indices.push_back(base+4);
+            indices.push_back(base+11);    indices.push_back(base+3);    indices.push_back(base+4);
 
             // "front" indices
-            indices.add(base+1);    indices.add(base+12);   indices.add(base+13);
-            indices.add(base+1);    indices.add(base+13);   indices.add(base+2);
+            indices.push_back(base+1);    indices.push_back(base+12);   indices.push_back(base+13);
+            indices.push_back(base+1);    indices.push_back(base+13);   indices.push_back(base+2);
 
-            indices.add(base+12);   indices.add(base+7);    indices.add(base+8);
-            indices.add(base+12);   indices.add(base+8);    indices.add(base+13);
+            indices.push_back(base+12);   indices.push_back(base+7);    indices.push_back(base+8);
+            indices.push_back(base+12);   indices.push_back(base+8);    indices.push_back(base+13);
 
-            indices.add(base+2);    indices.add(base+13);   indices.add(base+5);
-            indices.add(base+13);   indices.add(base+8);    indices.add(base+5);
+            indices.push_back(base+2);    indices.push_back(base+13);   indices.push_back(base+5);
+            indices.push_back(base+13);   indices.push_back(base+8);    indices.push_back(base+5);
 
             break; // break out of loop, a 2 point wall mesh is complete from the first iteration
         }

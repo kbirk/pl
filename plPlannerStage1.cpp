@@ -1,11 +1,13 @@
 #include "plPlannerStage1.h"
 
-
+/*
 void plCapIndices::update( PLuint defectBuffer, PLuint defectSize, PLuint donorBuffer, PLuint donorSize )
 {
-    defectIndices.fill( defectSize, 0 );
-    donorIndices.fill ( donorSize, 0  );
-       
+    //defectIndices.fill( defectSize, 0 );
+    //donorIndices.fill ( donorSize, 0  );
+    defectIndices.assign( defectSize, 0 );
+    donorIndices.assign ( donorSize, 0  );  
+
     glBindBuffer( GL_SHADER_STORAGE_BUFFER, defectBuffer );            
     PLuint *defectData = readSSBO<PLuint>( 0, defectSize );
     memcpy( &defectIndices[0], &defectData[0], defectSize*sizeof( PLuint ) );    
@@ -36,87 +38,98 @@ PLuint plCapIndices::getDonorSSBO() const
     glBufferData(GL_SHADER_STORAGE_BUFFER, donorIndices.size()*sizeof(PLuint), &donorIndices[0], GL_STATIC_READ);
     return tempBuffer;
 } 
-
+*/
 
 namespace plPlannerStage1
 {
-
-    void run( plCapIndices &capData, const plSiteGrid &defectSite, const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState )
+    void run( plCapIndices &capData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution )
     {    
-        reportOpenGLError( "BEFORE SHADER STAGE 1\n" ); 
-        // compile / link stage 1 shader
-        plPlannerStage1Shader stage1Shader( PL_FILE_PREPATH"shaders/plannerStage1.comp" );
-        stage1Shader.bind(); 
         
-        // calc total grid points (invocations)
-        PLuint totalGridPoints = 0;
-        plSeq<PLuint> donorGridSizes;
-        plSeq<PLuint> donorMeshSizes;       
-        plSeq<PLuint> donorByteOffset;
-        for (PLuint i=0; i < donorSites.size(); i++)
-        {
-            totalGridPoints +=  donorSites[i].gridSize();
-            donorGridSizes.add  ( donorSites[i].gridSize()  );
-            donorMeshSizes.add  ( donorSites[i].meshSize()  );           
-            if ( i == 0)
-                donorByteOffset.add ( 0 );
-            else
-                donorByteOffset.add ( donorSites[i-1].gridSize()*2 + donorSites[i-1].meshSize()*4 );
-        }
+        std::vector< plString > shaderfiles;
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
 
-        const PLuint CAP_INDICES_BUFFER_SIZE = totalGridPoints*PL_MAX_CAP_TRIANGLES;
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.hcmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSite.hcmp" );  
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/donorSites.hcmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSolution.hcmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/capIndices.hcmp" );       
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/stage1.hcmp" );
 
-        // generate and fill buffers 
-        PLuint defectSiteDataBufferID   = defectSite.getMeshSSBO();
-        PLuint donorSiteDataBufferID    = getGroupGridAndMeshSSBO( donorSites );   
-        PLuint defectCapIndicesBufferID = createSSBO<PLuint>( CAP_INDICES_BUFFER_SIZE, 0 );
-        PLuint donorCapIndicesBufferID  = createSSBO<PLuint>( CAP_INDICES_BUFFER_SIZE, 0 );        
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.cmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSite.cmp" );  
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/donorSites.cmp" ); 
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSolution.cmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/capIndices.cmp" );        
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/stage1.cmp" );
 
-        // bind buffers
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, defectSiteDataBufferID   );    
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, donorSiteDataBufferID    );  
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, defectCapIndicesBufferID );  
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, donorCapIndicesBufferID  );  
+        // compile / link stage 1 shader
+        plPlannerStage1Shader stage1Shader( shaderfiles );
+        
+        if ( !stage1Shader.good() )
+            return;
+        
+        stage1Shader.bind(); 
+
+        // set uniforms
+        stage1Shader.setDefectSiteUniforms( planningData.defectSite ); 
+        stage1Shader.setDonorSiteUniforms( planningData.donorSites );
+        stage1Shader.setDefectSolutionUniforms( defectSolution );
     
-        const PLuint NUM_WORKGROUPS = ceil( totalGridPoints + defectState.graftCount / (PLfloat) PL_STAGE1_GROUP_SIZE ); // ensure enough workgroups are used
+        reportOpenGLError( "compiled/n" );
 
-        // set state uniforms
-        stage1Shader.setGraftUniforms( defectState.graftCount,
-                                       defectState.graftPositions,
-                                       defectState.graftNormals );
-        // set site uniforms
-        stage1Shader.setSiteUniforms( defectSite.meshSize(),
-                                      donorSites.size(),
-                                      donorMeshSizes,
-                                      donorGridSizes,
-                                      donorByteOffset );
-                                  
+        // create and initialize cap indices SSBOs to 0
+        std::vector<PLuint> defectIndices( defectSolution.graftCount*PL_MAX_CAP_TRIANGLES, 0 );
+        std::vector<PLuint> donorIndices( planningData.totalDonorGridPoints()*PL_MAX_CAP_TRIANGLES, 0 );
+
+        capData.defectCapIndexSSBO.set( defectIndices, defectIndices.size() );
+        capData.donorCapIndexSSBO.set ( donorIndices,  donorIndices.size()  );
+
+        // bind SSBOs
+        planningData.defectSiteSSBO.bind( 0 );
+        planningData.donorSitesSSBO.bind( 1 );
+        capData.defectCapIndexSSBO.bind( 2 );
+        capData.donorCapIndexSSBO.bind( 3 );
+        
+        reportOpenGLError( "bind/n" );
+            
+        const PLuint NUM_WORKGROUPS = ceil( planningData.totalDonorGridPoints() + defectSolution.graftCount / (PLfloat) PL_STAGE_1_GROUP_SIZE ); // ensure enough workgroups are used    
+            
         // call compute shader with 1D workgrouping
         glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
         
         // memory barrier      
-        glMemoryBarrier( GL_ALL_BARRIER_BITS ); //GL_SHADER_STORAGE_BARRIER_BIT);
+        glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-        // get cap data from SSBOs
-        capData.update( defectCapIndicesBufferID, defectState.graftCount*PL_MAX_CAP_TRIANGLES, donorCapIndicesBufferID, totalGridPoints*PL_MAX_CAP_TRIANGLES );
-        
-        
-        // unbind buffers
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 );    
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, 0 );
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, 0 );
-        
-        // delete buffers
-        glDeleteBuffers( 1, &defectSiteDataBufferID   );
-        glDeleteBuffers( 1, &donorSiteDataBufferID    );
-        glDeleteBuffers( 1, &defectCapIndicesBufferID );
-        glDeleteBuffers( 1, &donorCapIndicesBufferID  );
+        reportOpenGLError( "go/n" );
 
-        reportOpenGLError( "END OF SHADER STAGE 1\n" );
+        // DEBUG
+        capData.defectCapIndexSSBO.read( defectIndices, defectIndices.size() );
+        capData.donorCapIndexSSBO.read ( donorIndices,  donorIndices.size()  );
+        
+        std::cout << std::endl << "DEBUG: " << std::endl;       
+        for ( PLuint i=0; i<defectIndices.size(); i+=PL_MAX_CAP_TRIANGLES )
+        {
+            std::cout << "Graft " << i/PL_MAX_CAP_TRIANGLES << ",\t cap index count: " << defectIndices[i] << std::endl;
+        }
+        std::cout << std::endl;
+        /*
+        std::cout << "Donor index counts: " << std::endl;
+        for ( PLuint i=0; i<PL_MAX_CAP_TRIANGLES*100; i+=PL_MAX_CAP_TRIANGLES )
+        {
+            std::cout << i/PL_MAX_CAP_TRIANGLES << ": " << donorIndices[i] << "  ";
+        }
+        */
+        //
 
+        planningData.defectSiteSSBO.unbind( 0 );
+        planningData.donorSitesSSBO.unbind( 1 );
+        capData.defectCapIndexSSBO.unbind( 2 );
+        capData.donorCapIndexSSBO.unbind( 3 );
+        
+        reportOpenGLError( "done/n" );
+    
     }
-
+    
 }
 
 

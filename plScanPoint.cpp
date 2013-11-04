@@ -14,10 +14,10 @@ PLbool plScanPointData::draw() const
     return true;
 }
 
-plSeq<plScanPointData> plScanPointReader::readPoints(const plString& filename)
+std::vector<plScanPointData> plScanPointReader::readPoints(const plString& filename)
 {
     std::ifstream inFileStream( filename.c_str(), std::ios::in );
-    plSeq<plScanPointData> output;
+    std::vector<plScanPointData> output;
 
     if (!inFileStream) {
         std::cerr << "Error in plScanPointReader::readPoints(): Could not open '" << filename << "'." << std::endl;
@@ -35,7 +35,7 @@ plSeq<plScanPointData> plScanPointReader::readPoints(const plString& filename)
         plVector3 point (px,py,pz);
         plVector3 normal = plVector3(-nx,-ny,-nz).normalize();
 
-        output.add( plScanPointData( point, normal, r ) ); // ignore radius in g
+        output.push_back( plScanPointData( point, normal, r ) ); // ignore radius in g
     }
     return output;
 }

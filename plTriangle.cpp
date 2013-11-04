@@ -8,12 +8,11 @@ plTriangle::plTriangle()
 
 
 plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) 
-    :   _points(3), 
-        _centroid(0.333333f * (p0 + p1 + p2))
+    :   _centroid( 0.333333f * (p0 + p1 + p2) )
 {        
-    _points.add( p0 );
-    _points.add( p1 );
-    _points.add( p2 );
+    _points.push_back( p0 );
+    _points.push_back( p1 );
+    _points.push_back( p2 );
     
     if (n.x == 0.0f && n.y == 0.0f && n.z == 0.0f) 
     {
@@ -28,13 +27,12 @@ plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 
 
 
 plTriangle::plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) 
-    :   _normal(((p1 - p0) ^ (p2 - p0)).normalize()), 
-        _points(3),  
+    :   _normal(((p1 - p0) ^ (p2 - p0)).normalize()),  
         _centroid(0.333333f * (p0 + p1 + p2))
 {
-    _points.add( p0 );
-    _points.add( p1 );
-    _points.add( p2 );
+    _points.push_back( p0 );
+    _points.push_back( p1 );
+    _points.push_back( p2 );
     _calcRadius();
 }
 
@@ -191,7 +189,7 @@ namespace plSTL
 {
     PLbool _plCheckTypeSizes();
     
-    PLbool importFile( plSeq<plTriangle> &triangles, const plString &filename)
+    PLbool importFile( std::vector<plTriangle> &triangles, const plString &filename)
     {
         if ( !filename.compare( ".stl", filename.length()-4, 4) )
         {
@@ -251,7 +249,7 @@ namespace plSTL
                 else if (line.compare("endfacet", 8))
                 {
                     // end of face, build triangle
-                    triangles.add( plTriangle(n,p0,p1,p2) );                
+                    triangles.push_back( plTriangle(n,p0,p1,p2) );                
                 }
             }
             infile.close();
@@ -287,7 +285,7 @@ namespace plSTL
                 binfile.read( reinterpret_cast<PLchar*>( &p2.x ),  sizeof(PLfloat)*3 );
                 binfile.read( reinterpret_cast<PLchar*>( &nAttr ), sizeof(PLushort)  );
 
-                triangles.add( plTriangle( n, p0, p1, p2 ) );
+                triangles.push_back( plTriangle( n, p0, p1, p2 ) );
             }
             
             binfile.close();
@@ -299,7 +297,7 @@ namespace plSTL
     }
 
 
-    PLbool exportFileASCII( const plSeq<plTriangle> &triangles , const plString &filename )
+    PLbool exportFileASCII( const std::vector<plTriangle> &triangles , const plString &filename )
     {
         std::ofstream outfile ( filename.c_str() );
         if ( !outfile.good() )
@@ -328,7 +326,7 @@ namespace plSTL
     }
 
 
-    PLbool exportFileBinary( const plSeq<plTriangle> &triangles , const plString &filename )
+    PLbool exportFileBinary( const std::vector<plTriangle> &triangles , const plString &filename )
     {
         if ( !_plCheckTypeSizes() )
             return false;

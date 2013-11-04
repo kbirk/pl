@@ -13,7 +13,7 @@ plSpline::plSpline( const plModel &cartilage )
 }
 
 
-plSpline::plSpline( const plSeq<plString> &row, const plModel &cartilage )
+plSpline::plSpline( const std::vector<plString> &row, const plModel &cartilage )
     : plBoundary( row ), _cartilage( &cartilage )
 {
     // construct spline 
@@ -68,7 +68,7 @@ void plSpline::removePointAndNormal( PLuint index )
 plVector3 plSpline::getAverageNormalOverCorners()
 {
     plVector3        averageNormalOverCorners(0.f,0.f,0.f);
-    plSeq<plVector3> cornerNormals(_averageCornerNormals());
+    std::vector<plVector3> cornerNormals = _averageCornerNormals();
 
     for (PLuint i = 0; i < 4; i++)
     {
@@ -105,7 +105,7 @@ void plSpline::draw() const
 }
 
 
-PLfloat Q( PLfloat s, PLfloat t, const plSeq<PLfloat> &st, const plSeq<PLfloat> &tt)
+PLfloat Q( PLfloat s, PLfloat t, const std::vector<PLfloat> &st, const std::vector<PLfloat> &tt)
 {
     // hermite blending matrix
     static plMatrix44 h( 2, -3,  0,  1,
@@ -125,23 +125,23 @@ PLfloat Q( PLfloat s, PLfloat t, const plSeq<PLfloat> &st, const plSeq<PLfloat> 
 }
 
 
-plSeq<plVector3> plSpline::_averageCornerNormals() const 
+std::vector<plVector3> plSpline::_averageCornerNormals() const 
 {
     const PLfloat AVERAGE_RADIUS = 2.0f;
 
-    plSeq<plVector3> n(4);
+    std::vector<plVector3> n;
 
     // compute averages normals
-    n.add( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
-    n.add( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
-    n.add( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
-    n.add( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
+    n.push_back( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
+    n.push_back( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
+    n.push_back( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
+    n.push_back( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
     
     return n;
 }
 
 
-void plSpline::_computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const plSeq<plVector3> &p, const plSeq<plVector3> &n ) const
+void plSpline::_computeTangents( std::vector<PLfloat> &st, std::vector<PLfloat> &tt, const std::vector<plVector3> &p, const std::vector<plVector3> &n ) const
 {
     // get unit directional vectors, (ex. p01 = from p0 to p1)
     plVector3 p01 = ( p[1]-p[0] ).normalize();
@@ -156,7 +156,7 @@ void plSpline::_computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const p
     plVector3 n32 = ( 0.5f*(n[3] + n[2]) ).normalize();
 
     // s and t vectors at each point
-    plSeq<plVector3> s(4), t(4); 
+    std::vector<plVector3> s, t; 
 
     // normals of planes between each point   
     plVector3 sn, tn;
@@ -165,43 +165,43 @@ void plSpline::_computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const p
     sn = ( p01 ^ -n01 ).normalize();
     tn = ( p03 ^ n03 ).normalize();
     
-    s.add( plMath::projectVectorOnPlane( p03 ^ n[0], sn).normalize() );
-    t.add( plMath::projectVectorOnPlane( p01 ^ -n[0], tn).normalize() ) ; 
+    s.push_back( plMath::projectVectorOnPlane( p03 ^ n[0], sn).normalize() );
+    t.push_back( plMath::projectVectorOnPlane( p01 ^ -n[0], tn).normalize() ) ; 
 
     // p1 plane normals
     //sn = ( p01 ^ -n01 ).normalize(); // redundant
     tn = ( p12 ^ n12 ).normalize();
     
-    s.add( plMath::projectVectorOnPlane( p03 ^ n[1], sn).normalize() );
-    t.add( plMath::projectVectorOnPlane( p01 ^ -n[1], tn).normalize() ) ;
+    s.push_back( plMath::projectVectorOnPlane( p03 ^ n[1], sn).normalize() );
+    t.push_back( plMath::projectVectorOnPlane( p01 ^ -n[1], tn).normalize() ) ;
     
     // p2 plane normals
     sn = ( p32 ^ -n32 ).normalize();
     //tn = ( p12 ^ n12 ).normalize();  // redundant
     
-    s.add( plMath::projectVectorOnPlane( p12 ^ n[2], sn).normalize() );
-    t.add( plMath::projectVectorOnPlane( p32 ^ -n[2], tn).normalize() ) ;
+    s.push_back( plMath::projectVectorOnPlane( p12 ^ n[2], sn).normalize() );
+    t.push_back( plMath::projectVectorOnPlane( p32 ^ -n[2], tn).normalize() ) ;
     
     // p3 plane normals
     //sn = ( p32 ^ -n32 ).normalize(); // redundant
     tn = ( p03 ^ n03 ).normalize();
     
-    s.add( plMath::projectVectorOnPlane( p03 ^ n[3], sn).normalize() );
-    t.add( plMath::projectVectorOnPlane( p32 ^ -n[3], tn).normalize() ) ;
+    s.push_back( plMath::projectVectorOnPlane( p03 ^ n[3], sn).normalize() );
+    t.push_back( plMath::projectVectorOnPlane( p32 ^ -n[3], tn).normalize() ) ;
    
     // find the slope of the line along the plane of the spline boundary wall
     // scale by the length between two points to ensure proper scaling
-    st.add( (s[0]*n01) / (s[0]*p01) * (p[0]-p[1]).length() ); 
-    tt.add( (t[0]*n03) / (t[0]*p03) * (p[0]-p[3]).length() );     
+    st.push_back( (s[0]*n01) / (s[0]*p01) * (p[0]-p[1]).length() ); 
+    tt.push_back( (t[0]*n03) / (t[0]*p03) * (p[0]-p[3]).length() );     
 
-    st.add( (s[1]*n01) / (s[1]*p01) * (p[0]-p[1]).length() ); 
-    tt.add( (t[1]*n12) / (t[1]*p12) * (p[2]-p[1]).length() ); 
+    st.push_back( (s[1]*n01) / (s[1]*p01) * (p[0]-p[1]).length() ); 
+    tt.push_back( (t[1]*n12) / (t[1]*p12) * (p[2]-p[1]).length() ); 
 
-    st.add( (s[2]*n32) / (s[2]*p32) * (p[3]-p[2]).length() ); 
-    tt.add( (t[2]*n12) / (t[2]*p12) * (p[2]-p[1]).length() ); 
+    st.push_back( (s[2]*n32) / (s[2]*p32) * (p[3]-p[2]).length() ); 
+    tt.push_back( (t[2]*n12) / (t[2]*p12) * (p[2]-p[1]).length() ); 
 
-    st.add( (s[3]*n32) / (s[3]*p32) * (p[3]-p[2]).length() ); 
-    tt.add( (t[3]*n03) / (t[3]*p03) * (p[0]-p[3]).length() ); 
+    st.push_back( (s[3]*n32) / (s[3]*p32) * (p[3]-p[2]).length() ); 
+    tt.push_back( (t[3]*n03) / (t[3]*p03) * (p[0]-p[3]).length() ); 
 
 }
 
@@ -209,15 +209,15 @@ void plSpline::_computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const p
 void plSpline::_computeHermite()
 {    
     // spline colour map computations are very intensive, to prevent unnecessary updates due to frequency of mouse events, add a limit
-    if (_timeSinceLastUpdate() < 5 )  
+    if ( _timeSinceLastUpdate() < 5 )  
         return;
 
     // p and n for cleaner code
-    const plSeq<plVector3> &p = _points;    
-    const plSeq<plVector3> n  = _averageCornerNormals();
+    const std::vector<plVector3> &p = _points;    
+    const std::vector<plVector3> n  = _averageCornerNormals();
 
     // find tangents in the s and t planes
-    plSeq<PLfloat> st(4), tt(4); _computeTangents( st, tt, p, n );
+    std::vector<PLfloat> st, tt; _computeTangents( st, tt, p, n );
     
     const PLfloat   INC      = 0.015f;  // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
     const PLuint    NUM_INC  = 1.0f/INC;
@@ -225,13 +225,14 @@ void plSpline::_computeHermite()
     const PLfloat   MAX_DISTANCE = 1.0f;            // colour map max distance, anything beyond this is dark red   
     const plVector3 NO_DATA_COLOUR(0.2, 0.2, 0.2);  // default colour if no data available  
 
-    _triangles = plSeq<plTriangle>( NUM_INC*NUM_INC*2 );
+    _triangles.clear();
+    _triangles.reserve( NUM_INC*NUM_INC*2 );
+ 
+    std::vector<plVector3> points;      points.reserve( (NUM_INC+1)*(NUM_INC+1) );
+    std::vector<plVector3> colours;     colours.reserve( (NUM_INC+1)*(NUM_INC+1) );
     
-    plSeq<plVector3> points ( (NUM_INC+1)*(NUM_INC+1) );
-    plSeq<plVector3> colours( (NUM_INC+1)*(NUM_INC+1) );
-    
-    plSeq<plVector3> vertices( NUM_INC * NUM_INC * 6 * 3 );
-    plSeq<PLuint>    indices ( NUM_INC * NUM_INC * 6 );
+    std::vector<plVector3> vertices;    vertices.reserve( NUM_INC * NUM_INC * 6 * 3 );
+    std::vector<PLuint>    indices;     indices.reserve ( NUM_INC * NUM_INC * 6 );
 
     for (PLuint j=0; j <= NUM_INC; j++)
     {
@@ -261,8 +262,8 @@ void plSpline::_computeHermite()
             // get colour value
             plVector3 colour = (intersection.exists) ? plColourMap::map( (intersection.point - pos).squaredLength()/MAX_DISTANCE ) : NO_DATA_COLOUR;
              
-            points.add( pos );
-            colours.add( colour );
+            points.push_back( pos );
+            colours.push_back( colour );
             
             if (j > 0 && i > 0 )
             {
@@ -274,19 +275,19 @@ void plSpline::_computeHermite()
                 
                 plVector3 normal = ( ( points[i2] - points[i1]) ^ (points[i0] - points[i1]) ).normalize();
 
-                _triangles.add( plTriangle( normal, points[i0], points[i1], points[i2]) );
-                _triangles.add( plTriangle( normal, points[i0], points[i2], points[i3]) );
+                _triangles.emplace_back( plTriangle( normal, points[i0], points[i1], points[i2] ) );
+                _triangles.emplace_back( plTriangle( normal, points[i0], points[i2], points[i3] ) );
 
                 PLuint base = vertices.size() / 3;
 
-                vertices.add( points[i0] );  vertices.add( normal );  vertices.add( colours[i0] );  // point 0
-                vertices.add( points[i1] );  vertices.add( normal );  vertices.add( colours[i1] );  // point 1
-                vertices.add( points[i2] );  vertices.add( normal );  vertices.add( colours[i2] );  // point 2
-                vertices.add( points[i3] );  vertices.add( normal );  vertices.add( colours[i3] );  // point 3
+                vertices.push_back( points[i0] );  vertices.push_back( normal );  vertices.push_back( colours[i0] );  // point 0
+                vertices.push_back( points[i1] );  vertices.push_back( normal );  vertices.push_back( colours[i1] );  // point 1
+                vertices.push_back( points[i2] );  vertices.push_back( normal );  vertices.push_back( colours[i2] );  // point 2
+                vertices.push_back( points[i3] );  vertices.push_back( normal );  vertices.push_back( colours[i3] );  // point 3
 
                 // triangle indices
-                indices.add( base );   indices.add( base+1 );   indices.add( base+2 );
-                indices.add( base );   indices.add( base+2 );   indices.add( base+3 );
+                indices.push_back( base );   indices.push_back( base+1 );   indices.push_back( base+2 );
+                indices.push_back( base );   indices.push_back( base+2 );   indices.push_back( base+3 );
             }
         }
             

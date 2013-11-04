@@ -27,7 +27,7 @@ class plScan
 
     private:
         // attributes
-        plSeq<plScanPointData> _points;
+        std::vector<plScanPointData> _points;
         plScanField*           _field;
 
     

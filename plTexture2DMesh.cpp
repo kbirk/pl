@@ -42,17 +42,17 @@ plTexture2DMesh& plTexture2DMesh::operator = ( const plTexture2DMesh &mesh )
 
 void plTexture2DMesh::setBuffers( const plVector3 &bottemLeft, const plVector3 &bottemRight, const plVector3 &topRight, const plVector3 &topLeft)
 {
-    plSeq<plVector3> vertices(8);
-    plSeq<PLuint>    indices(6);
+    std::vector<plVector3> vertices;    vertices.reserve(8);
+    std::vector<PLuint>    indices;     indices.reserve(6);
     
     // position                  // texture coord
-    vertices.add( bottemLeft  ); vertices.add( plVector3( 0,0,0) );   
-    vertices.add( bottemRight ); vertices.add( plVector3( 1,0,0) );   
-    vertices.add( topRight    ); vertices.add( plVector3( 1,1,0) );    
-    vertices.add( topLeft     ); vertices.add( plVector3( 0,1,0) );
+    vertices.push_back( bottemLeft  ); vertices.push_back( plVector3( 0,0,0) );   
+    vertices.push_back( bottemRight ); vertices.push_back( plVector3( 1,0,0) );   
+    vertices.push_back( topRight    ); vertices.push_back( plVector3( 1,1,0) );    
+    vertices.push_back( topLeft     ); vertices.push_back( plVector3( 0,1,0) );
     
-    indices.add( 0 );   indices.add( 1 );   indices.add( 2 );
-    indices.add( 0 );   indices.add( 2 );   indices.add( 3 );
+    indices.push_back( 0 );   indices.push_back( 1 );   indices.push_back( 2 );
+    indices.push_back( 0 );   indices.push_back( 2 );   indices.push_back( 3 );
 
     // size of each vertex 
 	const GLuint POS_SIZE = sizeof(GLfloat)*3;

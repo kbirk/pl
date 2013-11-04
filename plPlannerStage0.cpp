@@ -1,318 +1,207 @@
 #include "plPlannerStage0.h"
 
+
 plAnnealingGroup::plAnnealingGroup( PLfloat initialEnergy )
-    : temperature   ( PL_STAGE0_INITIAL_TEMPERATURE ),
-      energies      ( PL_STAGE0_NUM_GROUPS, initialEnergy ),    
-      graftCounts   ( PL_STAGE0_NUM_GROUPS, 0 ),    
-      graftPositions( PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
-      graftNormals  ( PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1,-1,-1,-1) ),
-      graftRadii    ( PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION, -1.0 )
+    : _invoEnergiesSSBO      ( PL_STAGE_0_INVOCATIONS*sizeof( PLfloat ) ),      
+      _invoGraftPositionsSSBO( PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
+      _invoGraftNormalsSSBO  ( PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
+      _invoGraftRadiiSSBO    ( PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( PLfloat ) ),
+      _invoGraftCountsSSBO   ( PL_STAGE_0_INVOCATIONS*sizeof( PLuint  ) ),
+      
+      _groupEnergiesSSBO       ( PL_STAGE_0_NUM_GROUPS*sizeof( PLfloat ) ), // &std::vector<PLfloat>( PL_STAGE_0_NUM_GROUPS, initialEnergy )[0] ),      
+      _groupGraftPositionsSSBO ( PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
+      _groupGraftNormalsSSBO   ( PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
+      _groupGraftRadiiSSBO     ( PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( PLfloat ) ),
+      _groupGraftCountsSSBO    ( PL_STAGE_0_NUM_GROUPS*sizeof( PLuint  ) )
 { 
-    _createBuffers();      // create input/output buffers
-    _bindBuffers  ();      // bind input/output buffers   
-    updateGroupBuffer();   // upload group states to GPU    
-}
-
-plAnnealingGroup::~plAnnealingGroup()
-{
-    _unbindBuffers();
-    _destroyBuffers();
-}
-
-void plAnnealingGroup::_createBuffers()
-{
-    // SSBOs 
-    _energiesBufferID       = createSSBO( PL_STAGE0_INVOCATIONS, -1.0f );
-    _graftPositionsBufferID = createSSBO( PL_MAX_GRAFTS_PER_SOLUTION*PL_STAGE0_INVOCATIONS, plVector4(-1,-1,-1,-1) );
-    _graftNormalsBufferID   = createSSBO( PL_MAX_GRAFTS_PER_SOLUTION*PL_STAGE0_INVOCATIONS, plVector4(-1,-1,-1,-1) );
-    _graftRadiiBufferID     = createSSBO( PL_MAX_GRAFTS_PER_SOLUTION*PL_STAGE0_INVOCATIONS, -1.0f );
-    _graftCountsBufferID    = createSSBO( PL_STAGE0_INVOCATIONS, -1 );
-           
-    PLuint bufferSize =  PL_STAGE0_NUM_GROUPS * sizeof(PLfloat) +                                   // energies
-                         PL_STAGE0_NUM_GROUPS * sizeof(PLuint) +                                    // counts
-                         PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION * sizeof(plVector4)*2 +    // positions, normals
-                         PL_STAGE0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION * sizeof(PLfloat);         // radii
-    
-    _groupStateBufferID = createSSBO( bufferSize, (GLvoid*)(NULL) );
-
+    std::vector<PLfloat> energies( PL_STAGE_0_NUM_GROUPS, initialEnergy );
+    _groupEnergiesSSBO.set< PLfloat >( energies, PL_STAGE_0_NUM_GROUPS );
 }
 
 
-void plAnnealingGroup::_destroyBuffers()
-{
-    // delete buffer objects
-    glDeleteBuffers( 1, &_energiesBufferID       );
-    glDeleteBuffers( 1, &_graftPositionsBufferID );
-    glDeleteBuffers( 1, &_graftNormalsBufferID   );
-    glDeleteBuffers( 1, &_graftRadiiBufferID     );
-    glDeleteBuffers( 1, &_graftCountsBufferID    );
-    glDeleteBuffers( 1, &_groupStateBufferID     );
-}
-
-
-void plAnnealingGroup::_bindBuffers()
+void plAnnealingGroup::bind()
 {       
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, _energiesBufferID       );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, _graftPositionsBufferID );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, _graftNormalsBufferID   );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 5, _graftRadiiBufferID     );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 6, _graftCountsBufferID    );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 7, _groupStateBufferID     );
+    _invoEnergiesSSBO.bind      ( 2 );
+    _invoGraftPositionsSSBO.bind( 3 );
+    _invoGraftNormalsSSBO.bind  ( 4 );
+    _invoGraftRadiiSSBO.bind    ( 5 );
+    _invoGraftCountsSSBO.bind   ( 6 );
+
+    _groupEnergiesSSBO.bind      ( 7 );
+    _groupGraftPositionsSSBO.bind( 8 );
+    _groupGraftNormalsSSBO.bind  ( 9 );
+    _groupGraftRadiiSSBO.bind    ( 10 );
+    _groupGraftCountsSSBO.bind   ( 11 );
 }
 
-void plAnnealingGroup::_unbindBuffers()
+
+void plAnnealingGroup::unbind()
 {   
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 2, 0 );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 3, 0 );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 4, 0 );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 5, 0 );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 6, 0 );
-    glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 7, 0 );
+    _invoEnergiesSSBO.unbind      ( 2 );
+    _invoGraftPositionsSSBO.unbind( 3 );
+    _invoGraftNormalsSSBO.unbind  ( 4 );
+    _invoGraftRadiiSSBO.unbind    ( 5 );
+    _invoGraftCountsSSBO.unbind   ( 6 );
+
+    _groupEnergiesSSBO.unbind      ( 7 );
+    _groupGraftPositionsSSBO.unbind( 8 );
+    _groupGraftNormalsSSBO.unbind  ( 9 );
+    _groupGraftRadiiSSBO.unbind    ( 10 );
+    _groupGraftCountsSSBO.unbind   ( 11 ); 
 }
 
 
-void plAnnealingGroup::updateGroupBuffer() const
+void plAnnealingGroup::getSolution( plDefectSolution &solution, const plPlanningBufferData &planningData )
 {
-    PLuint byteOffset = 0;  
-       
-    // energies        
-    copyToSSBO( _groupStateBufferID, energies, byteOffset );
-    byteOffset += energies.size()*sizeof(PLfloat);
-    
-    // graft counts              
-    copyToSSBO( _groupStateBufferID, graftCounts, byteOffset );
-    byteOffset += graftCounts.size()*sizeof(PLuint);
-     
-    // graft positions 
-    copyToSSBO( _groupStateBufferID, graftPositions, byteOffset );
-    byteOffset += graftPositions.size()*sizeof(plVector4);
-         
-    // graft normals 
-    copyToSSBO( _groupStateBufferID, graftNormals, byteOffset );
-    byteOffset += graftNormals.size()*sizeof(plVector4);
-    
-    // graft radii 
-    copyToSSBO( _groupStateBufferID, graftRadii, byteOffset );
-    
-}
+    PLuint index;
+    getBestGroupInfo( &index, NULL, &solution.graftCount );
 
-
-void plAnnealingGroup::convergeWorkGroups()
-{
-    // for each workgroup, converge to local best
-    for (PLuint i=0; i < PL_STAGE0_NUM_GROUPS; i++)
+    _groupGraftPositionsSSBO.read<plVector4>( solution.graftPositions, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION );
+    _groupGraftNormalsSSBO.read<plVector4>( solution.graftNormals, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION );
+    _groupGraftRadiiSSBO.read<PLfloat>( solution.graftRadii, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION ); 
+    
+    // re-compute positions as perturbations will shift them off the mesh surface!
+    for ( PLuint i=0; i < solution.graftCount; i++ )
     {
-        // find best energy
-        PLint bestLocalIndex = _updateEnergy( i );
-
-        // update the graft data for workgroup
-        _updateWorkGroups( i, bestLocalIndex );   
-    }
-    updateGroupBuffer();   // upload group states to GPU  
-}
-
-
-/*
-void plAnnealingGroup::convergeGlobal()
-{
-    std::cout << "CONVERGE!" << std::endl;
-
-    PLint bestGroup = getCurrentBest();
-
-    // for each workgroup, converge to local best
-    for (PLuint i=0; i < PL_STAGE0_NUM_GROUPS; i++)
-    {
-        energies   [ i ] = energies   [ bestGroup ];
-        graftCounts[ i ] = graftCounts[ bestGroup ];
-        
-        for (PLuint j=0; j < PL_MAX_GRAFTS_PER_SOLUTION; j++)
-        {
-            graftPositions[ i * PL_MAX_GRAFTS_PER_SOLUTION + j ] = graftPositions[ bestGroup * PL_MAX_GRAFTS_PER_SOLUTION + j ];
-            graftNormals  [ i * PL_MAX_GRAFTS_PER_SOLUTION + j ] = graftNormals  [ bestGroup * PL_MAX_GRAFTS_PER_SOLUTION + j ];
-            graftRadii    [ i * PL_MAX_GRAFTS_PER_SOLUTION + j ] = graftRadii    [ bestGroup * PL_MAX_GRAFTS_PER_SOLUTION + j ];
-        }
-    }
-    updateGroupBuffer();
-}
-*/
-
-
-PLint plAnnealingGroup::getCurrentBest() const
-{
-    PLint   index  = -1;
-    PLfloat energy = FLT_MAX;
-    for (PLuint i=0; i < PL_STAGE0_NUM_GROUPS; i++ )
-    {                  
-        if ( energies[i] < energy )
-        {    
-            energy = energies[i];
-            index  = i;
-        }
-    }
-    return index;
-}
-
-
-void plAnnealingGroup::getGlobalSolution( plDefectState &state )
-{
-    PLint bestGroup = getCurrentBest();
-
-    state.graftCount     = graftCounts[ bestGroup ];  
-    state.graftPositions = graftPositions.extract ( bestGroup*PL_MAX_GRAFTS_PER_SOLUTION, graftCounts[ bestGroup ] );
-    state.graftNormals   = graftNormals.extract   ( bestGroup*PL_MAX_GRAFTS_PER_SOLUTION, graftCounts[ bestGroup ] );
-    state.graftRadii     = graftRadii.extract     ( bestGroup*PL_MAX_GRAFTS_PER_SOLUTION, graftCounts[ bestGroup ] );   
-}
-
-
-float plAnnealingGroup::_acceptanceProbability( PLfloat energy, PLfloat newEnergy ) 
-{
-    // If the new solution is better, accept it
-    if (newEnergy < energy) 
-    {
-        return 1.0f;
-    }
-    // If the new solution is worse, calculate an acceptance probability
-    return exp( -(newEnergy - energy) / temperature );
-}
-
-
-PLint plAnnealingGroup::_updateEnergy( PLuint groupIndex )
-{
-    glBindBuffer( GL_SHADER_STORAGE_BUFFER, _energiesBufferID );    
+        plVector3 rayOrigin   ( solution.graftPositions[i].x, solution.graftPositions[i].y, solution.graftPositions[i].z );
+        plVector3 rayDirection( solution.graftNormals[i].x,   solution.graftNormals[i].y,   solution.graftNormals[i].z   );
     
-    PLfloat *newEnergies = readSSBO<PLfloat>( groupIndex*PL_STAGE0_GROUP_SIZE, PL_STAGE0_GROUP_SIZE );
-
-    // randomize order each iteration to prevent bias    
-    plSeq<PLuint> indexOrder( PL_STAGE0_GROUP_SIZE ); for (PLuint i=0; i<PL_STAGE0_GROUP_SIZE; i++) indexOrder.add(i);
-    plUtility::shuffle( indexOrder );
+        plIntersection intersection = plMath::rayIntersect( planningData.defectSite.triangles, rayOrigin, rayDirection );
+        solution.graftPositions[i]  = plVector4( intersection.point,  1.0f );
+        solution.graftSurfaceNormals.push_back( plVector4( planningData.defectSite.getSmoothNormal( intersection.point, intersection.normal, PL_NORMAL_SMOOTHING_RADIUS ), 1.0f ) );
+    }
     
-    // iterate through all state energies and find best one
-    PLint bestIndex = -1;        
-    for ( PLuint i=0; i < PL_STAGE0_GROUP_SIZE; i++ )
+}
+
+
+void plAnnealingGroup::getBestGroupInfo( PLuint *index, PLfloat *energy, PLuint *graftCount )
+{
+    // read energies
+    std::vector< PLfloat > energies;
+    _groupEnergiesSSBO.read<PLfloat>( energies, PL_STAGE_0_NUM_GROUPS );
+
+    // find best group
+    PLfloat lowestEnergy = FLT_MAX;
+    PLuint  lowestGroup  = 0;
+    //std::cout << "gid: ";
+    for ( PLuint i=0; i < PL_STAGE_0_NUM_GROUPS; i++ )
     {    
-        // global index in energies array
-        PLuint  j = indexOrder[i];                   // local index
-        PLfloat r = ((float) rand() / (RAND_MAX));   // random between 0 and 1
-        if ( _acceptanceProbability( energies[groupIndex], newEnergies[j] ) > r )
-        {    
-            energies[groupIndex] = newEnergies[j];
-            bestIndex = j;
-        }
+        //std::cout << energies[i] << ", ";
         
+        if ( energies[i] < lowestEnergy )
+        {    
+            lowestEnergy = energies[i];
+            lowestGroup = i;
+        }
     }
-    
-    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-    
-    return bestIndex;
+    //std::cout << std::endl;
+    if (energy) *energy = lowestEnergy;
+    if (index)  *index  = lowestGroup;
+
+    // read graft count
+    std::vector< PLuint > gCounts;
+    _groupGraftCountsSSBO.read<PLuint>( gCounts, 1, 0, lowestGroup );
+
+    if (graftCount) *graftCount = gCounts[0];
+    reportOpenGLError( "plAnnealingGroup::getBestGroupInfo() error\n" );
 }
 
-
-void plAnnealingGroup::_updateWorkGroups( PLuint groupIndex, PLint localIndex )
-{
-    if ( localIndex != -1 )
-    {    
-        // get reference to starting index of specific work group
-        PLuint    &graftCountStart     = graftCounts   [ groupIndex ];
-        plVector4 &graftPositionsStart = graftPositions[ groupIndex*PL_MAX_GRAFTS_PER_SOLUTION ];
-        plVector4 &graftNormalsStart   = graftNormals  [ groupIndex*PL_MAX_GRAFTS_PER_SOLUTION ];
-        PLfloat   &graftRadiiStart     = graftRadii    [ groupIndex*PL_MAX_GRAFTS_PER_SOLUTION ];
-
-        PLuint indexOffset = ( (groupIndex * PL_STAGE0_GROUP_SIZE) + localIndex) ; 
-          
-        // get graft count        
-        copyFromSSBO( &graftCountStart, _graftCountsBufferID, indexOffset * sizeof( PLuint ), sizeof(PLuint) );
-
-        indexOffset =  (groupIndex * PL_STAGE0_GROUP_SIZE * PL_MAX_GRAFTS_PER_SOLUTION) + (localIndex * PL_MAX_GRAFTS_PER_SOLUTION);
-        
-        // get graft positions
-        copyFromSSBO( &graftPositionsStart, _graftPositionsBufferID, indexOffset * sizeof( plVector4 ), graftCounts[ groupIndex ]*sizeof( plVector4 ) );        
-        // get graft normals
-        copyFromSSBO( &graftNormalsStart,   _graftNormalsBufferID,   indexOffset * sizeof( plVector4 ), graftCounts[ groupIndex ]*sizeof( plVector4 ) );       
-        // get graft radii
-        copyFromSSBO( &graftRadiiStart,     _graftRadiiBufferID,     indexOffset * sizeof( PLfloat ), graftCounts[ groupIndex ]*sizeof( PLfloat ) );
-    }     
-} 
 
 
 namespace plPlannerStage0
 {
 
-    void run( plDefectState &defectState, const plSiteGrid &site )
+    void run( plDefectSolution &defectSolution, const plPlanningBufferData &planningData )
     {       
-        reportOpenGLError( "BEFORE SHADER STAGE 0\n" );
-    
-        // compile / link stage 0 shader
-        plPlannerStage0Shader stage0Shader( PL_FILE_PREPATH"shaders/plannerStage0.comp" );
-        stage0Shader.bind();                            // bind shader  
-        stage0Shader.setSiteUniforms( site.meshSize(),  // set defect site uniforms 
-                                      site.area(), 
-                                      site.gridSize(), 
-                                      site.perimSize(),
-                                      site.normal() ); 
-         
-        // generate and bind site and temporary buffers                              
-        PLuint siteDataBufferID             = site.getFullSSBO();
-        PLuint overlappedTrianglesBufferID  = createSSBO( site.meshSize()*PL_STAGE0_INVOCATIONS, 0.0f ); // must initialize with 0s
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, siteDataBufferID            );           
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, overlappedTrianglesBufferID );  
-                      
-        // generate and bind annealing state output buffers    
-        plAnnealingGroup states( site.area() ); // empty state (no plugs) energy set to total site area
+        checkOpenGLImplementation();
+        std::vector< plString > shaderfiles;
         
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
+
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.hcmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSite.hcmp" );  
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/state.hcmp" );        
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/annealing.hcmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/rand.hcmp" );        
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/stage0.hcmp" );
+
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.cmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSite.cmp" );  
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/state.cmp" );        
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/annealing.cmp" );
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/rand.cmp" );        
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/stage0.cmp" );
+
+        // compile / link stage 0 shader
+        plPlannerStage0Shader stage0Shader( shaderfiles );
+        
+        if ( !stage0Shader.good() )
+            return;
+        
+        stage0Shader.bind();                            // bind shader  
+        stage0Shader.setDefectSiteUniforms( planningData.defectSite ); 
+
+        plSSBO triangleAreaSSBO ( planningData.defectSite.triangles.size()*PL_STAGE_0_INVOCATIONS*sizeof( PLfloat ) ); 
+        plAnnealingGroup annealingBuffers( planningData.defectSite.area );
+
+        planningData.defectSiteSSBO.bind( 0 );
+        triangleAreaSSBO.bind( 1 ); 
+        annealingBuffers.bind();
+
+        PLfloat temperature = PL_STAGE_0_INITIAL_TEMPERATURE;
+
         // simulated annealing                
-        while ( states.temperature > 0.01f )
+        while ( temperature > 0.01f )
         {
             stage0Shader.setLocalLoadUniform  ( 0 );         
-            stage0Shader.setTemperatureUniform( states.temperature ); 
+            stage0Shader.setTemperatureUniform( temperature ); 
 
-            PLuint its = PLuint(PL_STAGE0_ITERATIONS * states.temperature ) + 1;
+            PLuint its = PLuint( PL_STAGE_0_ITERATIONS * temperature ) + 1;
 
             for ( PLint i=its; i>=0; i-- )
-            {                   
+            {       
                 // call compute shader with 1D workgrouping
-                glDispatchCompute( PL_STAGE0_NUM_GROUPS, 1, 1 );
+                glDispatchCompute( PL_STAGE_0_NUM_GROUPS, 1, 1 );
                 
                 // memory barrier      
-                glMemoryBarrier( GL_ALL_BARRIER_BITS );
-
-                stage0Shader.setLocalLoadUniform( i );
+                glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+                
+                stage0Shader.setLocalLoadUniform( i );                
             }
 
-            // update the annealing state 
-            states.convergeWorkGroups();               
-               
-            //find current best group id   
-            PLint bestGroup = states.getCurrentBest();   
-               
-            std::cout << "\t Best Work Group: " << bestGroup <<", Energy: " << states.energies[ bestGroup ] << ",\t" 
-                          << states.graftCounts[ bestGroup ] << " grafts,\t Temperature: " 
-                          << states.temperature << std::endl;   
-                          
+            
+
+            PLuint bestGroup = 0;
+            PLuint graftCount = 0;
+            PLfloat energy = 0;
+            // get best group info 
+            annealingBuffers.getBestGroupInfo( &bestGroup, &energy, &graftCount );   
+
+            std::cout << "\t Best Work Group: " << bestGroup <<", Energy: " << energy<< ",\t" 
+                          << graftCount << " grafts,\t Temperature: " << temperature << std::endl;   
+
             // cool temperature
-            states.temperature -= PL_STAGE0_COOLING_RATE;
+            temperature *= 1 - PL_STAGE_0_COOLING_RATE; //-= PL_STAGE_0_COOLING_RATE;
         }
 
         // load global solution from annealing state to defect state
-        states.getGlobalSolution( defectState );
+        annealingBuffers.getSolution( defectSolution, planningData );
         
-        // unbind and delete site and temporary buffers
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 0, 0 );           
-        glBindBufferBase( GL_SHADER_STORAGE_BUFFER, 1, 0 ); 
-        glDeleteBuffers(1, &siteDataBufferID);
-        glDeleteBuffers(1, &overlappedTrianglesBufferID);
-                        
-        // re-compute positions as perturbations will shift them off the mesh surface!
-        for (PLuint i=0; i < defectState.graftCount; i++)
+        // DEBUG
+        std::cout << std::endl << "DEBUG: " << std::endl;
+        for ( PLuint i=0; i<defectSolution.graftCount; i++)
         {
-            plVector3 rayOrigin   ( defectState.graftPositions[i].x, defectState.graftPositions[i].y, defectState.graftPositions[i].z );
-            plVector3 rayDirection( defectState.graftNormals[i].x,   defectState.graftNormals[i].y,   defectState.graftNormals[i].z   );
-        
-            plIntersection intersection = plMath::rayIntersect( site.triangles(), rayOrigin, rayDirection );
-            defectState.graftPositions[i] = plVector4( intersection.point, 1.0 );
+            std::cout << "Graft " << i << ",\tPosition: " << defectSolution.graftPositions[i] 
+                                  << ",\tNormal: " << defectSolution.graftNormals[i] 
+                                  << ",\tRadius: " << defectSolution.graftRadii[i] << std::endl;
         }
+        std::cout << std::endl;
+        //
 
-
-        reportOpenGLError( "END OF SHADER STAGE 0\n" );
+        // unbind and delete site and temporary buffers
+        planningData.defectSiteSSBO.unbind( 0 );
+        triangleAreaSSBO.unbind( 1 ); 
+        annealingBuffers.unbind();
     }
 
 }

@@ -2,7 +2,7 @@
 #define PL_UTILITY_H
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 
 namespace plUtility
 {
@@ -16,7 +16,7 @@ namespace plUtility
     }
 
     template <class T>
-    void shuffle( plSeq<T> &array )
+    void shuffle( std::vector<T> &array )
     {   
         PLuint size = array.size();
         for (PLuint i = 0; i < size-1; i++) 
@@ -28,7 +28,29 @@ namespace plUtility
         }    
     }
 
+    template< class Type1, class Type2 >
+    PLbool removeIfExists( std::vector< Type1 > &vector, const Type2 &t )
+    {
+        auto itr = std::find( vector.begin(), vector.end(), t );
+        if ( itr != vector.end() )
+        {
+            vector.erase( itr );
+            return true;
+        }
+        return false;
+    }
+
+
+    template< class Type1, class Type2 >
+    PLbool exists( const std::vector<Type1> &vector, const Type2 &t )
+    {
+        return std::find( vector.begin(), vector.end(), t ) != vector.end();      
+    }
+
 };
+
+
+
 
 #endif
 

@@ -46,7 +46,7 @@ plPlan::plPlan( int argc, char **argv )
         for (PLint i = 1; i < argc; i+=3)
         {
             // model input order: bone, cartilage, bone, cartilage, etc...
-            _models.add( new plBoneAndCartilage( argv[i], argv[i+1], argv[i+2] ) );
+            _models.push_back( new plBoneAndCartilage( argv[i], argv[i+1], argv[i+2] ) );
         }
     }
 
@@ -126,7 +126,7 @@ void plPlan::addDefectSite( PLuint modelIndex )
         std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
         return;
     }
-    _defectSites.add( new plDefectSite( modelIndex, *_models[modelIndex] ) );
+    _defectSites.push_back( new plDefectSite( modelIndex, *_models[modelIndex] ) );
 }
 
 
@@ -137,7 +137,7 @@ void plPlan::addDonorSite( PLuint modelIndex )
         std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
         return;
     }
-    _donorSites.add( new plDonorSite( modelIndex, *_models[modelIndex] ) );
+    _donorSites.push_back( new plDonorSite( modelIndex, *_models[modelIndex] ) );
 }
 
 
@@ -148,41 +148,45 @@ void plPlan::addIGuideSite( PLuint modelIndex )
         std::cerr << " plPlan addIGuide() error: model ID does not exist\n";
         return;
     }
-    _iGuideSites.add( new plIGuideSite( modelIndex, *_models[modelIndex] ) );
+    _iGuideSites.push_back( new plIGuideSite( modelIndex, *_models[modelIndex] ) );
 }
 
 
 void plPlan::addGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat cartilageThickness, PLfloat heightOffset, PLfloat length )
 {
-    _grafts.add( new plGraft( h, r, radius, cartilageThickness, heightOffset, length ) );
+    _grafts.push_back( new plGraft( h, r, radius, cartilageThickness, heightOffset, length ) );
 }
 
 
 void plPlan::removeDefectSite( PLuint index)
 {
     delete _defectSites[index];
-    _defectSites.remove( index );
+    //_defectSites.remove( index );
+    _defectSites.erase( _defectSites.begin()+index );
 }
 
 
 void plPlan::removeDonorSite( PLuint index)
 {
     delete _donorSites[index];
-    _donorSites.remove( index );
+    //_donorSites.remove( index );
+    _donorSites.erase( _donorSites.begin()+index );
 }
 
 
 void plPlan::removeIGuideSite( PLuint index)
 {
     delete _iGuideSites[index];
-    _iGuideSites.remove( index );
+    //_iGuideSites.remove( index );
+    _iGuideSites.erase( _iGuideSites.begin()+index );
 }
 
 
 void plPlan::removeGraft( PLuint index )
 {
     delete _grafts[index];
-    _grafts.remove( index );
+    //_grafts.remove( index );
+    _grafts.erase( _grafts.begin()+index );
 }
 
 
@@ -202,7 +206,7 @@ void plPlan::importFile( const plString &filename )
             plString modelCartFile ( csv.data[++i][1] );
             plString modelCombFile ( csv.data[++i][1] );
             
-            _models.add( new plBoneAndCartilage( modelBoneFile, modelCartFile, modelCombFile ) );
+            _models.push_back( new plBoneAndCartilage( modelBoneFile, modelCartFile, modelCombFile ) );
         }        
         else if (field.compareCaseInsensitive( "defect_site") )
         {
@@ -212,7 +216,7 @@ void plPlan::importFile( const plString &filename )
             plSpline   spline   ( csv.data[++i], _models[ modelID ]->cartilage );
             plBoundary boundary ( csv.data[++i] );
             
-            _defectSites.add ( new plDefectSite( modelID, *_models[ modelID ], spline, boundary ) );
+            _defectSites.push_back( new plDefectSite( modelID, *_models[ modelID ], spline, boundary ) );
 
         }
         else if (field.compareCaseInsensitive( "donor_site") )
@@ -222,7 +226,7 @@ void plPlan::importFile( const plString &filename )
             PLuint     modelID  ( std::stoi( csv.data[++i][1] ) );        
             plBoundary boundary ( csv.data[++i] );
             
-            _donorSites.add ( new plDonorSite( modelID, *_models[ modelID ], boundary ) );
+            _donorSites.push_back( new plDonorSite( modelID, *_models[ modelID ], boundary ) );
     
         }  
         else if (field.compareCaseInsensitive( "iGuide_site") )
@@ -232,7 +236,7 @@ void plPlan::importFile( const plString &filename )
             PLuint     modelID  ( std::stoi( csv.data[++i][1] ) );    
             plBoundary boundary ( csv.data[++i] );
             
-            _iGuideSites.add ( new plIGuideSite( modelID, *_models[ modelID ], boundary ) );
+            _iGuideSites.push_back( new plIGuideSite( modelID, *_models[ modelID ], boundary ) );
     
         }      
         else if (field.compareCaseInsensitive( "graft" ) ) 
@@ -252,7 +256,7 @@ void plPlan::importFile( const plString &filename )
             plPlug      recipientPlug ( recipientModelID, *_models[ recipientModelID ], recipientTransform );
             plPlug      harvestPlug   ( harvestModelID,   *_models[ harvestModelID   ], harvestTransform   );
 
-            _grafts.add( new plGraft( harvestPlug, recipientPlug, radius, cartilageThickness, heightOffset, length, markDirection ) );
+            _grafts.push_back( new plGraft( harvestPlug, recipientPlug, radius, cartilageThickness, heightOffset, length, markDirection ) );
         }        
         else if (field.compareCaseInsensitive( "iguide" ) ) 
         {
@@ -261,7 +265,7 @@ void plPlan::importFile( const plString &filename )
 			PLuint  siteID    ( std::stoi( csv.data[++i][1] ) );  			                 
             PLuint  plugCount ( std::stoi( csv.data[++i][1] ) );    
                                  
-            plSeq<plPlugInfo> plugs;            
+            std::vector<plPlugInfo> plugs;            
             for (PLuint j=0; j<plugCount; j++)   
             {   
                 PLuint  graftID ( std::stoi( csv.data[i][2+(j*2)] ) ); 
@@ -271,13 +275,13 @@ void plPlan::importFile( const plString &filename )
                 const PLfloat     *thickness    ( &( _grafts[ graftID ]->cartilageThickness() ) );
                 const PLfloat     *length       ( &( _grafts[ graftID ]->length() ) );
                 const PLfloat     *heightOffset ( &( _grafts[ graftID ]->heightOffset() ) );
-                plugs.add( plPlugInfo( transform, radius, thickness, length, heightOffset, type, graftID ) );
+                plugs.push_back( plPlugInfo( transform, radius, thickness, length, heightOffset, type, graftID ) );
             }
             
             PLuint  kWireCount ( std::stoi( csv.data[++i][1] ) );  
             
-            plSeq<plKWire*> kWires;    
-            plSeq<PLuint>   kWireIDs;         
+            std::vector<plKWire*> kWires;    
+            std::vector<PLuint>   kWireIDs;         
             for (PLuint j=0; j<kWireCount; j++)   
             {  
                 PLuint  kWireID ( std::stoi( csv.data[i][2+j] ) ); 
@@ -287,16 +291,16 @@ void plPlan::importFile( const plString &filename )
 
             PLuint  defectSiteCount( std::stoi( csv.data[++i][1] ) );
 
-            plSeq<const plSpline*> splines;
-            plSeq<PLuint>          defectIDs;
+            std::vector<const plSpline*> splines;
+            std::vector<PLuint>          defectIDs;
             for (PLuint j=0; j<defectSiteCount; j++)
             {
                 PLuint  defectID ( std::stoi( csv.data[i][2+(j)] ) );
-                defectIDs.add    ( defectID );
-                splines.add      ( &(_defectSites[defectID]->spline ) );
+                defectIDs.push_back( defectID );
+                splines.push_back( &(_defectSites[defectID]->spline ) );
             }
 
-            _iGuides.add( new plIGuide( _iGuideSites[ siteID ], siteID, plugs, kWires, kWireIDs, splines, defectIDs ) );
+            _iGuides.push_back( new plIGuide( _iGuideSites[ siteID ], siteID, plugs, kWires, kWireIDs, splines, defectIDs ) );
         } 
         else
         {

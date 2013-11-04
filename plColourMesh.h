@@ -10,12 +10,12 @@ class plColourMesh : public plMesh
     public:
 		
 		plColourMesh();		      
-        plColourMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);   
+        plColourMesh(const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices);   
         plColourMesh( const plColourMesh &mesh );
         
         plColourMesh& operator = ( const plColourMesh &mesh ); 
     
-        void setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);
+        void setBuffers( const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices);
 
 };
 

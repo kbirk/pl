@@ -14,28 +14,28 @@ plCut::plCut( plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint di
 namespace plMeshCutter
 {
 
-    void    _updateInteriorPoints  ( const plTriangle &triangle , plSeq<plVector3> &interiorPoints );
+    void    _updateInteriorPoints  ( const plTriangle &triangle , std::vector<plVector3> &interiorPoints );
     PLbool  _edgeCutsBoundary      ( const plVector3 &edgeVert0, const plVector3 &edgeVert1, const plBoundary &wall, PLuint index, plVector3 &intPoint, PLfloat &edgeParam, PLfloat &wallParam, PLint &intDir );
-    PLbool  _triangleCutsBoundary  ( const plTriangle &tri, PLbool &triProcessed, const plBoundary &walls, plSeq<plPolygon> &polys, plSeq<plVector3> &interiorPoints );
+    PLbool  _triangleCutsBoundary  ( const plTriangle &tri, int &triProcessed, const plBoundary &walls, std::vector<plPolygon> &polys, std::vector<plVector3> &interiorPoints );
     PLint   _compareEdgeCuts       ( const void* a, const void* b );
     PLint   _compareBoundaryCuts   ( const void* a, const void* b );
 
-    PLbool findInteriorMesh( plSeq<plTriangle> &interiorTriangles, const plSeq<plTriangle> &triangles, const plBoundary &boundary )
+    PLbool findInteriorMesh( std::vector<plTriangle> &interiorTriangles, const std::vector<plTriangle> &triangles, const plBoundary &boundary )
     {
         // set all the processed flags to false
-        plSeq<PLbool> trianglesProcessedFlag( triangles.size(), false );
+        std::vector<int> trianglesProcessedFlag( triangles.size(), false );
 
         // just in case polygons has stuff in it, it should be emptied
         interiorTriangles.clear();
 
         // allocate a worst-case number of interior points
-        plSeq<plVector3> interiorPoints( 3 * triangles.size() );
+        std::vector<plVector3> interiorPoints;  interiorPoints.reserve( 3 * triangles.size() );
 
         // Collect polygons that intersect the boundary
-        plSeq<plPolygon> interiorPolygons;
+        std::vector<plPolygon> interiorPolygons;
         for (PLuint i=0; i<triangles.size(); i++) 
         {
-            if (!_triangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints ))
+            if ( !_triangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints ) )
             {
                 return false;
             }
@@ -46,19 +46,19 @@ namespace plMeshCutter
         {
             for (PLuint trianglesIndex=0; trianglesIndex<triangles.size(); trianglesIndex++)
             {
-                if (!trianglesProcessedFlag[trianglesIndex])
+                if ( !trianglesProcessedFlag[trianglesIndex] )
                 {
                     for (PLuint triangleVerticesIndex=0; triangleVerticesIndex<3; triangleVerticesIndex++)
                     {
                         if (interiorPoints[interiorPointsIndex] == (triangles[trianglesIndex])[triangleVerticesIndex]) 
                         {
                             plPolygon poly;
-                            poly.points.add( triangles[trianglesIndex].point0() );
-                            poly.points.add( triangles[trianglesIndex].point1() );
-                            poly.points.add( triangles[trianglesIndex].point2() );
+                            poly.points.push_back( triangles[trianglesIndex].point0() );
+                            poly.points.push_back( triangles[trianglesIndex].point1() );
+                            poly.points.push_back( triangles[trianglesIndex].point2() );
                             poly.normal    = triangles[trianglesIndex].normal();
-                            interiorPolygons.add( poly );
-                            trianglesProcessedFlag[trianglesIndex] = true;
+                            interiorPolygons.push_back( poly );
+                            trianglesProcessedFlag[trianglesIndex] = 1;
                             _updateInteriorPoints( triangles[trianglesIndex], interiorPoints);
                             break;
                         } 
@@ -74,7 +74,7 @@ namespace plMeshCutter
     } 
 
 
-    void _updateInteriorPoints( const plTriangle &triangle , plSeq<plVector3> &interiorPoints )
+    void _updateInteriorPoints( const plTriangle &triangle , std::vector<plVector3> &interiorPoints )
     {
         for (PLint vertexIndex=0; vertexIndex<3; vertexIndex++)
         {
@@ -86,15 +86,15 @@ namespace plMeshCutter
             }
             if (interiorPointsIndex == interiorPoints.size())
             {
-                interiorPoints.add( triangle[vertexIndex] );
+                interiorPoints.push_back( triangle[vertexIndex] );
             }
         }
     }
 
 
-    PLbool _triangleCutsBoundary( const plTriangle &triangle, PLbool &triangleProcessed, const plBoundary &boundary, plSeq<plPolygon> &interiorPolygons, plSeq<plVector3> &interiorPoints )
+    PLbool _triangleCutsBoundary( const plTriangle &triangle, int &triangleProcessed, const plBoundary &boundary, std::vector<plPolygon> &interiorPolygons, std::vector<plVector3> &interiorPoints )
     {
-        plSeq<plCut> edgeCuts;
+        std::vector<plCut> edgeCuts;
 
         for (PLuint boundaryPointIndex=0; boundaryPointIndex<boundary.size(); boundaryPointIndex++) 
         {
@@ -118,7 +118,7 @@ namespace plMeshCutter
                                            boundaryParameter, 
                                            intersectionDirection ))
                     {                      
-                        edgeCuts.add( plCut( intersectionPoint, edgeIndex, edgeParameter, boundaryPointIndex, boundaryParameter, intersectionDirection ) );
+                        edgeCuts.push_back( plCut( intersectionPoint, edgeIndex, edgeParameter, boundaryPointIndex, boundaryParameter, intersectionDirection ) );
                     }
                 }
             } 
@@ -130,7 +130,7 @@ namespace plMeshCutter
         if (numCutsLeft == 0)
             return true;
 
-        plSeq<plCut> boundaryCuts = edgeCuts;
+        std::vector<plCut> boundaryCuts = edgeCuts;
 
         // Sort the cuts
         qsort( &edgeCuts[0],     edgeCuts.size(),     sizeof(plCut), _compareEdgeCuts     ); // sort by increasing edge index, then by increasing parameter on each edge
@@ -168,7 +168,7 @@ namespace plMeshCutter
             {
                 // Add this int point
 
-                poly.points.add( edgeCuts[ edgeCutIndex ].point );
+                poly.points.push_back( edgeCuts[ edgeCutIndex ].point );
                 edgeCuts[ edgeCutIndex ].processed = true;
                 numCutsLeft--;
 
@@ -196,7 +196,7 @@ namespace plMeshCutter
                     // include some of the boundary vertices.
                     thisBoundaryIndex = (thisBoundaryIndex+1) % boundary.size();
 
-                    poly.points.add( boundary.points(thisBoundaryIndex) );
+                    poly.points.push_back( boundary.points(thisBoundaryIndex) );
                 } // end while
 
                 // Advance to the boundary cut at which the triangle edge re-enters the boundary.
@@ -225,7 +225,7 @@ namespace plMeshCutter
 
                 // Add this int point
 
-                poly.points.add( edgeCuts[ edgeCutIndex ].point );
+                poly.points.push_back( edgeCuts[ edgeCutIndex ].point );
                 edgeCuts[ edgeCutIndex ].processed = true;
                 numCutsLeft--;
         
@@ -241,8 +241,8 @@ namespace plMeshCutter
                     // edge, so walk around the triangle edges.
 
                     thisEdgeIndex = (thisEdgeIndex+1) % 3; // (3 edges per triangle)
-                    poly.points.add   ( triangle[ thisEdgeIndex ] );
-                    interiorPoints.add( triangle[ thisEdgeIndex ] );
+                    poly.points.push_back   ( triangle[ thisEdgeIndex ] );
+                    interiorPoints.push_back( triangle[ thisEdgeIndex ] );
                 }
 
                 // Advance to the edge cut at which the triangle edge exits the boundary wall.
@@ -251,10 +251,10 @@ namespace plMeshCutter
             } // end do
             while (edgeCuts[ edgeCutIndex ].point != poly.points[0]); // Stop if we've reached the starting point.
 
-            interiorPolygons.add( poly );
+            interiorPolygons.push_back( poly );
         }
 
-        triangleProcessed = true;
+        triangleProcessed = 1;
         return true;
     }
 

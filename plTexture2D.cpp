@@ -39,7 +39,7 @@ void plTexture2D::_copyTexture( const plTexture2D &texture )
     // destroy previous buffers
     _destroy();
 
-    plSeq<PLchar> texData( texture._width * texture._height * 3, '0' );
+    std::vector<PLchar> texData( texture._width * texture._height * 3, '0' );
 
     // copy vertex data
     glBindTexture( GL_TEXTURE_2D, texture._textureID );    

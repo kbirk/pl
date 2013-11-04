@@ -2,7 +2,7 @@
 #define PL_SCAN_POINT_READER_H
 
 #include "plVector3.h"
-#include "plSeq.h"
+
 #include "plString.h"
 #include <fstream>
 //#include "plRenderable.h"
@@ -26,7 +26,7 @@ std::ostream& operator << ( std::ostream &stream, const plScanPointData &p );
 
 namespace plScanPointReader
 {
-    plSeq<plScanPointData> readPoints(const plString&);
+    std::vector<plScanPointData> readPoints(const plString&);
 }
 
 #endif // PLSCANPOINTREADER_H

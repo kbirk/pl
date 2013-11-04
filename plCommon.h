@@ -3,22 +3,22 @@
 
 // MODEL MACROS  
 
-#define PL_MODEL_BONE_COLOUR                     0.80, 0.80, 0.80
-#define PL_MODEL_CARTILAGE_COLOUR                0.50, 0.20, 0.20       
+#define PL_MODEL_BONE_COLOUR                     0.80f, 0.80f, 0.80f
+#define PL_MODEL_CARTILAGE_COLOUR                0.50f, 0.20f, 0.20f      
 
 // GRAFT MACROS
 
-#define PL_GRAFT_DONOR_BONE_COLOUR               0.60, 0.90, 0.52 
-#define PL_GRAFT_DONOR_CARTILAGE_COLOUR          0.30, 0.66, 0.22           
-#define PL_GRAFT_DEFECT_BONE_COLOUR              0.90, 0.68, 0.27  
-#define PL_GRAFT_DEFECT_CARTILAGE_COLOUR         0.80, 0.48, 0.07   
+#define PL_GRAFT_DONOR_BONE_COLOUR               0.60f, 0.90f, 0.52f 
+#define PL_GRAFT_DONOR_CARTILAGE_COLOUR          0.30f, 0.66f, 0.22f           
+#define PL_GRAFT_DEFECT_BONE_COLOUR              0.90f, 0.68f, 0.27f  
+#define PL_GRAFT_DEFECT_CARTILAGE_COLOUR         0.80f, 0.48f, 0.07f   
 
-#define PL_GRAFT_DONOR_BONE_COLOUR_DULL          0.90, 1.00, 0.90 
-#define PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL     0.70, 0.90, 0.60           
-#define PL_GRAFT_DEFECT_BONE_COLOUR_DULL         1.00, 1.00, 0.70  
-#define PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL    1.00, 0.88, 0.47 
+#define PL_GRAFT_DONOR_BONE_COLOUR_DULL          0.90f, 1.00f, 0.90f 
+#define PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL     0.70f, 0.90f, 0.60f           
+#define PL_GRAFT_DEFECT_BONE_COLOUR_DULL         1.00f, 1.00f, 0.70f  
+#define PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL    1.00f, 0.88f, 0.47f 
 
-#define PL_GRAFT_MARKER_COLOUR                   0.80, 0.20, 0.80   
+#define PL_GRAFT_MARKER_COLOUR                   0.80f, 0.20f, 0.80f   
 
 #define PL_GRAFT_HANDLE_OFFSET                   6.0f
 
@@ -27,24 +27,30 @@
 #define PL_GRAFT_EDIT_MODE_LENGTH                3
 #define PL_GRAFT_EDIT_MODE_MARKER                4
 
+#define PL_AXIS_GREY                             0.2f, 0.2f, 0.2f 
+#define PL_X_AXIS_COLOUR                         1.0f, 0.2f, 0.2f
+#define PL_Y_AXIS_COLOUR                         0.2f, 1.0f, 0.2f 
+#define PL_Z_AXIS_COLOUR                         0.2f, 0.2f, 1.0f 
+
+
 // BOUNDARY MACROS
  
 #define PL_BOUNDARY_MESH_HEIGHT                  1.0f
 #define PL_BOUNDARY_MESH_WIDTH_HALF              0.4f
 #define PL_BOUNDARY_MESH_CURVE_HEIGHT            0.2f 
  
-#define PL_BOUNDARY_SELECTED_COLOUR              0.20, 0.90, 0.70 
-#define PL_BOUNDARY_POINT_SELECTED_COLOUR        0.20, 0.90, 0.70  
+#define PL_BOUNDARY_SELECTED_COLOUR              0.20f, 0.90f, 0.70f
+#define PL_BOUNDARY_POINT_SELECTED_COLOUR        0.20f, 0.90f, 0.70f 
  
-#define PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL    1.00, 0.50, 0.50
-#define PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL  0.85, 0.51, 0.85
-#define PL_BOUNDARY_DONOR_COLOUR_DULL            0.70, 0.70, 1.00
-#define PL_BOUNDARY_IGUIDE_COLOUR_DULL           0.50, 0.83, 0.70 
+#define PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL    1.00f, 0.50f, 0.50f
+#define PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL  0.85f, 0.51f, 0.85f
+#define PL_BOUNDARY_DONOR_COLOUR_DULL            0.70f, 0.70f, 1.00f
+#define PL_BOUNDARY_IGUIDE_COLOUR_DULL           0.50f, 0.83f, 0.70f 
  
-#define PL_BOUNDARY_DEFECT_CORNER_COLOUR         0.90, 0.20, 0.20
-#define PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR       0.55, 0.21, 0.55
-#define PL_BOUNDARY_DONOR_COLOUR                 0.40, 0.40, 0.80
-#define PL_BOUNDARY_IGUIDE_COLOUR                0.20, 0.53, 0.45
+#define PL_BOUNDARY_DEFECT_CORNER_COLOUR         0.90f, 0.20f, 0.20f
+#define PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR       0.55f, 0.21f, 0.55f
+#define PL_BOUNDARY_DONOR_COLOUR                 0.40f, 0.40f, 0.80f
+#define PL_BOUNDARY_IGUIDE_COLOUR                0.20f, 0.53f, 0.45f
 
 // COLOUR PICKING   
 
@@ -132,31 +138,36 @@
 #include <chrono>
 
 #ifdef WIN32
+
     #include <windows.h>  
     #define PL_FILE_PREPATH     "../"
     inline float round( float val )
     {    
         return floor(val + 0.5f);
     }
-#else
-    #define PL_FILE_PREPATH     "./"        
-#endif
-
-#define GL_GLEXT_PROTOTYPES
-
-#ifdef __APPLE_CC__
-    //#include <glew.h>    // include before gl.h
-    #include <OpenGL/gl.h>
-    #include <OpenGL/glu.h>
-    #include <GLUT/glut.h>
-#else
-    //#include <GL/glew.h> // include before gl.h
-    
+    #include <GL/glew.h> // include before gl.h
+    #include <GL/gl.h>
     #include <GL/glut.h>
-    //#include <GL/glu.h>
-    //#include <GL/gl.h>
-    #include <GL/glcorearb.h>
-    #include <GL/glext.h>
+
+#else
+
+    #define PL_FILE_PREPATH     "./"    
+    #define GL_GLEXT_PROTOTYPES
+    
+    #ifdef __APPLE_CC__
+        // APPLE
+
+        #include <OpenGL/gl.h>
+        #include <GLUT/glut.h>
+        
+    #else
+    
+        #include <GL/glut.h>
+        #include <GL/glcorearb.h>
+        #include <GL/glext.h>
+        
+    #endif
+
 #endif
 
 

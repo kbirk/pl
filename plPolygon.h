@@ -2,7 +2,7 @@
 #define __PL_POLYGON_H__
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plVector3.h"
 
 
@@ -31,7 +31,7 @@ class plPolygon
 
     public:
     
-        plSeq<plVector3> points;
+        std::vector<plVector3> points;
         plVector3        normal;
 
 };

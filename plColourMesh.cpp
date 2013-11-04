@@ -6,7 +6,7 @@ plColourMesh::plColourMesh()
 }
 
 
-plColourMesh::plColourMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices) 
+plColourMesh::plColourMesh(const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices) 
     : plMesh()
 {            	
 	// set VBO and VAO
@@ -28,7 +28,7 @@ plColourMesh& plColourMesh::operator = ( const plColourMesh &mesh )
 }
 
 
-void plColourMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices )
+void plColourMesh::setBuffers( const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices )
 {
     // size of each vertex 
 	const GLuint POS_SIZE = sizeof( plVector3 );
@@ -61,11 +61,11 @@ void plColourMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLu
 
     // set normal pointer, offset and stride
 	glEnableVertexAttribArray(PL_NORMAL_ATTRIBUTE);
-	glVertexAttribPointer(PL_NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, (GLvoid*)(POS_SIZE));                                
+	glVertexAttribPointer(PL_NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, (GLvoid*)(POS_SIZE) );                                
      
     // set colour pointer, offset and stride
 	glEnableVertexAttribArray(PL_COLOUR_ATTRIBUTE);
-	glVertexAttribPointer(PL_COLOUR_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, (GLvoid*)(POS_SIZE+NOR_SIZE));                                
+	glVertexAttribPointer(PL_COLOUR_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, (GLvoid*)(POS_SIZE+NOR_SIZE) );                                
            
     // create and bind index VBO
     if (_vertexBufferIndices == 0)

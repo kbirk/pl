@@ -2,7 +2,7 @@
 #define PL_GRAFT_EDITOR_H
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plVector3.h"
 #include "plTransform.h"
 #include "plPlan.h"

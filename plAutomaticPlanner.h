@@ -2,10 +2,10 @@
 #define PL_AUTOMATIC_PLANNER_H
 
 #include "plCommon.h"
-#include "plSeq.h"
-#include "plPlan.h"
-#include "plSiteGrid.h"
 
+#include "plPlan.h"
+
+#include "plPlanningBufferData.h"
 #include "plPlannerStage0.h"
 #include "plPlannerStage1.h"
 #include "plPlannerStage2.h"
@@ -13,11 +13,7 @@
 
 namespace plAutomaticPlanner
 {
-    void calculate( plPlan &plan );
-      
-    // TEMPORARY FOR DEBUG, after will be private  
-    extern plSeq<plSiteGrid>  _donorSiteGrids;
-    extern plSeq<plSiteGrid>  _defectSiteGrids;                  
+    void calculate( plPlan &plan );                    
 }
 
 

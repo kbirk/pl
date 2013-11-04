@@ -21,7 +21,7 @@ void plCSV::_readFile( plString filename, PLbool verbose )
     // parse each line
     while (!infile.eof()) 
     {        
-        plSeq<plString> lineData;
+        std::vector<plString> lineData;
         plString line, entry;
         
         std::getline(infile, line);    
@@ -35,13 +35,13 @@ void plCSV::_readFile( plString filename, PLbool verbose )
             if (!entry.isOnlyWhitespace())     // ignore any lines consisting of only whitespace
             {
                 entry.stripPreceedingWhitespace();
-                lineData.add( entry );                
+                lineData.push_back( entry );                
             }
         }
           
         if (lineData.size() > 0)                    // ignore any empty rows
         {
-            data.add(lineData);
+            data.push_back(lineData);
         }
     }
      

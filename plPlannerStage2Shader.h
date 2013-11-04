@@ -3,50 +3,50 @@
 
 #include "plCommon.h"
 #include "plShader.h"
-#include "plSiteGrid.h"
 #include "plSpline.h"
 #include "plMatrix44.h"
 #include "plVector4.h"
+#include "plPlanningSite.h"
+#include "plPlannerStage0.h"
 
 class plPlannerStage2Shader : public plShader
 {
 
     public:                    
-          
-        plPlannerStage2Shader ( const char *computeFile );
 
+        plPlannerStage2Shader ( const std::vector< plString > &computeFiles );
+        
         void getUniformLocations();
         
-        void setGraftUniforms ( PLuint count, 
-                                const plSeq<plVector4> &positions,
-                                const plSeq<plVector4> &normals,
-                                const plSeq<PLfloat>   &radii ) const;
-                               
-        void setSiteUniforms  ( PLuint defectMeshSize, 
-                                PLuint donorCount,
-                                const plSeq<PLuint> &donorMeshSize,
-                                const plSeq<PLuint> &donorGridSize,
-                                const plSeq<PLuint> &donorPerimSize,
-                                const plSeq<PLuint> &donorDataOffset) const;
-        
-        void setDirectionUniform ( const plVector4 &direction ) const;
+        void setDefectSiteUniforms( const plPlanningSite &defectSite ) const;
+        void setDonorSiteUniforms( const std::vector<plPlanningSite> &donorSites ) const;
+        void setDefectSolutionUniforms ( const plDefectSolution &solution ) const;
+        void setRotationAngleUniforms() const;
+        void setRotationIndexUniform( PLuint rotationIndex ) const;
         
     private:
     
-        PLuint _graftCountID;
-        PLuint _graftPositionsID;
-        PLuint _graftNormalsID;
-        PLuint _graftRadiiID;
-    
-        PLuint _defectSiteMeshSizeID; 
-                         
-        PLuint _donorSiteCountID;
-        PLuint _donorSiteMeshSizeID;
-        PLuint _donorSiteGridSizeID;
-        PLuint _donorSitePerimSizeID;
-        PLuint _donorSiteDataOffsetID;
+        PLuint _defectSiteGridPointCountID;
+        PLuint _defectSiteBoundaryPointCountID;
+        PLuint _defectSiteTriangleCountID;
+        PLuint _defectSiteAreaID;
+        PLuint _defectSiteAvgNormalID;
+         
+        PLuint _donorSiteCountID;         
+        PLuint _donorSiteTotalGridPointsID;
+        PLuint _donorSiteTriangleCountsID;
+        PLuint _donorSiteGridPointCountsID;
+        PLuint _donorSiteBoundaryPointCountsID;
+        PLuint _donorSiteDataOffsetsID;
+          
+        PLuint _defectSolutionGraftCountID;
+        PLuint _defectSolutionGraftPositionsID;
+        PLuint _defectSolutionGraftNormalsID;
+        PLuint _defectSolutionGraftRadiiID;
+        PLuint _defectSolutionSurfaceNormalsID;         
         
-        PLuint _directionID;       
+        PLuint _rotationIndexID;
+        PLuint _rotationAnglesID;       
 };
 
 

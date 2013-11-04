@@ -3,7 +3,7 @@
 
 #include "plCommon.h"
 #include "plVector3.h"
-#include "plSeq.h"
+
 #include "plTriangle.h"
 #include "plPolygon.h"
 #include "plBoundary.h"
@@ -27,7 +27,7 @@ class plCut
 
 namespace plMeshCutter
 {
-    PLbool  findInteriorMesh ( plSeq<plTriangle> &interiorTriangles, const plSeq<plTriangle> &triangles, const plBoundary &walls );
+    PLbool  findInteriorMesh ( std::vector<plTriangle> &interiorTriangles, const std::vector<plTriangle> &triangles, const plBoundary &walls );
 }
 
 

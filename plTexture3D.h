@@ -3,7 +3,7 @@
 
 #include "plCommon.h"
 #include "plVector3.h"
-#include "plSeq.h"
+
 
 class plTexture3D 
 {

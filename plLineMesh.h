@@ -9,12 +9,12 @@ class plLineMesh : public plMesh
     public:
 		
 		plLineMesh();		     
-        plLineMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices); 
+        plLineMesh(const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices); 
         plLineMesh( const plLineMesh &mesh );
         
         plLineMesh& operator = ( const plLineMesh &mesh ); 
         
-        void setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);
+        void setBuffers( const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices);
 
         void draw() const;
 };

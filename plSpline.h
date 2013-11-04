@@ -19,9 +19,9 @@ class plSpline : public plBoundary
 
         plSpline();
         plSpline( const plModel &cartilage );
-        plSpline( const plSeq<plString> &row, const plModel &cartilage );
+        plSpline( const std::vector<plString> &row, const plModel &cartilage );
 
-        const plSeq<plTriangle> &triangles() const { return _triangles; }
+        const std::vector<plTriangle> &triangles() const { return _triangles; }
 
         void   draw() const;           
 
@@ -39,11 +39,11 @@ class plSpline : public plBoundary
     
         PLtime            _lastUpdate;
         plColourMesh      _surfaceMesh;
-        plSeq<plTriangle> _triangles;
+        std::vector<plTriangle> _triangles;
 
-        plSeq<plVector3>  _averageCornerNormals() const;
+        std::vector<plVector3>  _averageCornerNormals() const;
               
-        void    _computeTangents( plSeq<PLfloat> &st, plSeq<PLfloat> &tt, const plSeq<plVector3> &p, const plSeq<plVector3> &n ) const;
+        void    _computeTangents( std::vector<PLfloat> &st, std::vector<PLfloat> &tt, const std::vector<plVector3> &p, const std::vector<plVector3> &n ) const;
         void    _computeHermite();
                 
         PLuint  _timeSinceLastUpdate();  

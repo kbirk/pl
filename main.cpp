@@ -21,5 +21,4 @@ int main( int argc, char **argv )
 
     // Run OpenGL
     glutMainLoop();
-    
 }

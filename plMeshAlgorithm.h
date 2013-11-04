@@ -1,6 +1,7 @@
 #ifndef PL_MESH_ALGORITHM_H
 #define PL_MESH_ALGORITHM_H
 
+#include "plCommon.h"
 #include "plVector3.h"
 #include "plPolygon.h"
 #include "plTriangle.h"
@@ -13,8 +14,8 @@ class plMeshAlgorithm
 
     plMeshAlgorithm();
 
-    PLbool importTriSeq( const plSeq<plTriangle>& tris, PLuint originatingMesh, PLuint verbose, PLuint depth=0 );
-    PLbool exportTriSeq(       plSeq<plTriangle>& tris, PLuint verbose, PLuint depth=0 );
+    PLbool importTriSeq( const std::vector<plTriangle>& tris, PLuint originatingMesh, PLuint verbose, PLuint depth=0 );
+    PLbool exportTriSeq(       std::vector<plTriangle>& tris, PLuint verbose, PLuint depth=0 );
 
   protected:
   
@@ -35,6 +36,17 @@ class plMeshAlgorithm
     PLbool _checkBidirectional    ( PLuint verbose, PLuint depth=0 );
     PLbool _checkNoSliverTriangles( PLuint verbose, PLuint depth=0 );
     PLbool _checkForAllErrors     ( PLuint verbose, PLuint depth=0 );
+
+    template< class Type1, class Type2 >
+    PLbool _addressExists( const std::vector<Type1> &vector, const Type2 *t );
+
 };
+
+
+template< class Type1, class Type2 >
+PLbool plMeshAlgorithm::_addressExists( const std::vector<Type1> &vector, const Type2 *t )
+{
+    return std::find( vector.begin(), vector.end(), t ) != vector.end();      
+}
 
 #endif // PLMESHCONNECTIVITY_H

@@ -6,7 +6,7 @@ plLineMesh::plLineMesh()
 }
 
 
-plLineMesh::plLineMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
+plLineMesh::plLineMesh(const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices)
     : plMesh()
 {            
 	// set VBO and VAO
@@ -28,7 +28,7 @@ plLineMesh& plLineMesh::operator = ( const plLineMesh &mesh )
 }
 
 
-void plLineMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
+void plLineMesh::setBuffers( const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices)
 {
     // size of each vertex 
 	const GLuint POS_SIZE = sizeof( plVector3 );

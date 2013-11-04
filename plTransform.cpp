@@ -7,7 +7,7 @@ plTransform::plTransform()
 }
 
 plTransform::plTransform( const plVector3 &y, const plVector3 &origin )
-    : _x( (y ^ plVector3(1,0,0)).normalize() ), _y( y ), _origin( origin )
+    : _x( ( y ^ plVector3(1,0,0) ).normalize() ), _y( y ), _origin( origin )
 {
     _compute();
 }
@@ -20,7 +20,7 @@ plTransform::plTransform( const plVector3 &x, const plVector3 &y, const plVector
 }
 
 
-plTransform::plTransform( const plSeq<plString> &row )
+plTransform::plTransform( const std::vector<plString> &row )
 {
     _origin = plVector3( row[1] );
     _x      = plVector3( row[2] );

@@ -3,44 +3,46 @@
 
 #include "plCommon.h"
 #include "plShader.h"
-#include "plSiteGrid.h"
 #include "plSpline.h"
 #include "plMatrix44.h"
 #include "plVector4.h"
+#include "plPlanningSite.h"
+#include "plPlannerStage0.h"
 
 class plPlannerStage1Shader : public plShader
 {
 
     public:                    
           
-        plPlannerStage1Shader ( const char *computeFile );
-
+        plPlannerStage1Shader ( const std::vector< plString > &computeFiles );
+        
         void getUniformLocations();
         
-        void setGraftUniforms ( PLuint count, 
-                                const plSeq<plVector4> &positions,
-                                const plSeq<plVector4> &normals ) const;
-                               
-        void setSiteUniforms  ( PLuint defectMeshSize, 
-                                PLuint donorCount,
-                                const plSeq<PLuint> &donorMeshSize,
-                                const plSeq<PLuint> &donorGridSize,
-                                const plSeq<PLuint> &donorDataOffset) const;
+        void setDefectSiteUniforms( const plPlanningSite &defectSite ) const;
+        void setDonorSiteUniforms( const std::vector<plPlanningSite> &donorSites ) const;
+        void setDefectSolutionUniforms ( const plDefectSolution &solution ) const;
 
     private:
     
-        PLuint _graftCountID;
-        PLuint _graftPositionsID;
-        PLuint _graftNormalsID;
-    
-        PLuint _defectSiteMeshSizeID; 
-                         
-        PLuint _donorSiteCountID;
-        PLuint _donorSiteMeshSizeID;
-        PLuint _donorSiteGridSizeID;
-        PLuint _donorSiteDataOffsetID;
-        
-        PLuint _directionID;       
+        PLuint _defectSiteGridPointCountID;
+        PLuint _defectSiteBoundaryPointCountID;
+        PLuint _defectSiteTriangleCountID;
+        PLuint _defectSiteAreaID;
+        PLuint _defectSiteAvgNormalID;
+         
+        PLuint _donorSiteCountID;         
+        PLuint _donorSiteTotalGridPointsID;
+        PLuint _donorSiteTriangleCountsID;
+        PLuint _donorSiteGridPointCountsID;
+        PLuint _donorSiteBoundaryPointCountsID;
+        PLuint _donorSiteDataOffsetsID;
+          
+        PLuint _defectSolutionGraftCountID;
+        PLuint _defectSolutionGraftPositionsID;
+        PLuint _defectSolutionGraftNormalsID;
+        PLuint _defectSolutionGraftRadiiID;
+        PLuint _defectSolutionSurfaceNormalsID;   
+               
 };
 
 

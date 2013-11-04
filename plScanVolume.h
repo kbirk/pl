@@ -5,7 +5,7 @@
 #include <cmath>
 #include "plVector3.h"
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plDraw.h"
 #include "plLineMesh.h"
 //#include "plRenderable.h"
@@ -26,8 +26,8 @@ class plScanVolume //: public plRenderable
         {
             public:
 
-                plSeq<plVector3> normal; // all normals at this voxel
-                plSeq<plVector3> point;  // all surface points at this voxel
+                std::vector<plVector3> normal; // all normals at this voxel
+                std::vector<plVector3> point;  // all surface points at this voxel
                 plScanVoxelType  type;   // EMPTY, SURFACE, or UNKNOWN
 
                 plScanVoxel() 
@@ -86,7 +86,7 @@ class plScanMask : public plScanVolume
         // attributes
         PLfloat       radiusW;
         PLuint        radiusV;
-        plSeq<PLuint> surfaceIndices;
+        std::vector<PLuint> surfaceIndices;
         PLfloat       maxAngleForSurface;
 
         // methods
@@ -100,7 +100,7 @@ class plScanField : public plScanVolume
     public:
     
         // attributes
-        plSeq<plScanMask*> masks;          // masks to AND with volume when carving out a sphere
+        std::vector<plScanMask*> masks;          // masks to AND with volume when carving out a sphere
 
         // methods
         plScanField();

@@ -5,20 +5,22 @@
 
 #define PL_SEQ_INITIAL_SIZE 8
 
+/*
 template<class T> 
-class plSeq 
+class std::vector 
 {
 	public:
 
-		plSeq();
-		plSeq( PLuint n );
-		plSeq( PLuint n, const T &t );
-		plSeq( const plSeq<T> &source );
+		std::vector();
+		std::vector( PLuint n );
+		std::vector( PLuint n, const T &t );
+		std::vector( const std::vector<T> &source );
 		
-		~plSeq();
+		~std::vector();
 	
-		void add( const T &x );
-		void add( const plSeq<T> &s );	
+		void push_back( const T& x );
+		void push_back( T&& x );
+		void push_back( const std::vector<T> &s );	
 		void fill( PLuint n, const T &t );	
 		void remove();
         void remove( PLuint i );
@@ -26,12 +28,13 @@ class plSeq
 		void compress();
 		void clear(); 
 		void reserve(PLuint size);
-		plSeq<T> extract( PLuint index, PLuint num ) const;
+        void resize(PLuint size);
+		std::vector<T> extract( PLuint index, PLuint num ) const;
 		PLuint size() const; 
 
         T & back();
 		T & operator [] ( PLuint i ) const; 
-		plSeq<T> &operator = (const plSeq<T> &source); 
+		std::vector<T> &operator = (const std::vector<T> &source); 
 
 		PLint findIndex( const T &x );
         bool exists( const T &x );
@@ -46,7 +49,7 @@ class plSeq
 
 
 template<class T>
-plSeq<T>::plSeq() 
+std::vector<T>::std::vector() 
 {			
 	_storageSize = PL_SEQ_INITIAL_SIZE;
 	_numElements = 0;
@@ -55,7 +58,7 @@ plSeq<T>::plSeq()
 
 
 template<class T>
-plSeq<T>::plSeq( PLuint n ) 
+std::vector<T>::std::vector( PLuint n ) 
 {		
 	_storageSize = n;
 	_numElements = 0;
@@ -64,7 +67,7 @@ plSeq<T>::plSeq( PLuint n )
 
 
 template<class T>
-plSeq<T>::plSeq( PLuint n, const T &t )
+std::vector<T>::std::vector( PLuint n, const T &t )
 {
 	_data = NULL; // fill() calls delete, will seq fault if this isn't set to NULL
 	fill( n, t );	
@@ -72,7 +75,7 @@ plSeq<T>::plSeq( PLuint n, const T &t )
 
 
 template<class T>
-plSeq<T>::plSeq( const plSeq<T> &source ) 
+std::vector<T>::std::vector( const std::vector<T> &source ) 
 { 
 	_storageSize = source._storageSize;
 	_numElements = source._numElements;
@@ -86,14 +89,14 @@ plSeq<T>::plSeq( const plSeq<T> &source )
 
 
 template<class T>
-plSeq<T>::~plSeq() 
+std::vector<T>::~std::vector() 
 {		
 	delete [] _data;
 }
 
 
 template<class T>
-void plSeq<T>::add( const T &x )
+void std::vector<T>::push_back( const T &x )
 {
     // No storage left?  If so, double the storage
 	if (_numElements == _storageSize) 
@@ -107,7 +110,22 @@ void plSeq<T>::add( const T &x )
 
 
 template<class T>
-void plSeq<T>::add( const plSeq<T> &s )
+void std::vector<T>::push_back( T&& x )
+{
+    // No storage left?  If so, double the storage
+	if ( _numElements == _storageSize ) 
+	{
+	    reserve( _storageSize*2 );
+	}
+	// Store the element in the next available position
+	_data[ _numElements ] = std::forward<T>( x );
+	_numElements++;
+
+}
+
+
+template<class T>
+void std::vector<T>::push_back( const std::vector<T> &s )
 {
     // No storage left?  If so, double the storage
 	if (_numElements + s.size() >= _storageSize) 
@@ -125,7 +143,7 @@ void plSeq<T>::add( const plSeq<T> &s )
 
 
 template<class T>
-void plSeq<T>::fill( PLuint n, const T &t )
+void std::vector<T>::fill( PLuint n, const T &t )
 {
     delete [] _data;
     _storageSize = n;
@@ -138,24 +156,24 @@ void plSeq<T>::fill( PLuint n, const T &t )
 }
 
 template<class T>	
-void plSeq<T>::remove() 
+void std::vector<T>::remove() 
 {
 	if (_numElements == 0) 
 	{
-		std::cerr << "plSeq remove: Tried to remove element from empty plSequence\n";
+		std::cerr << "std::vector remove: Tried to remove element from empty std::vectoruence\n";
 	}
 	_numElements -= 1;
 }
 
 
-// Shift a suffix of the plSequence to the left by one
+// Shift a suffix of the std::vectoruence to the left by one
 template<class T>
-void plSeq<T>::remove( PLuint i )
+void std::vector<T>::remove( PLuint i )
 {
 	if (i < 0 || i >= _numElements) 
 	{
-		std::cerr << "plSeq remove: Tried to remove element " << i
-				  << " from a plSequence of " << _numElements << " elements \n";
+		std::cerr << "std::vector remove: Tried to remove element " << i
+				  << " from a std::vectoruence of " << _numElements << " elements \n";
 	}
 
 	for (PLuint j=i; j<_numElements-1; j++)
@@ -165,14 +183,14 @@ void plSeq<T>::remove( PLuint i )
 }
 
 
-// Shift a suffix of the plSequence to the right by one
+// Shift a suffix of the std::vectoruence to the right by one
 template<class T>
-void plSeq<T>::shift( PLuint i )
+void std::vector<T>::shift( PLuint i )
 {
 	if (i < 0 || i >= _numElements) 
 	{
-		std::cerr << "plSeq shift: Tried to shift element " << i
-				  << " from a plSequence of " << _numElements << " elements \n";
+		std::cerr << "std::vector shift: Tried to shift element " << i
+				  << " from a std::vectoruence of " << _numElements << " elements \n";
 	}
 
 	if (_numElements == _storageSize) 
@@ -191,7 +209,7 @@ void plSeq<T>::shift( PLuint i )
 
 // Compress the array
 template<class T>
-void plSeq<T>::compress()
+void std::vector<T>::compress()
 {
 	T *new_data;
 
@@ -210,7 +228,7 @@ void plSeq<T>::compress()
 
 
 template<class T>
-void plSeq<T>::clear() 
+void std::vector<T>::clear() 
 {
 	delete [] _data;
 	_storageSize = PL_SEQ_INITIAL_SIZE;
@@ -220,7 +238,7 @@ void plSeq<T>::clear()
 
 
 template<class T>
-void plSeq<T>::reserve(PLuint size)
+void std::vector<T>::reserve(PLuint size)
 {
     if (size < _storageSize)
         return;
@@ -229,7 +247,7 @@ void plSeq<T>::reserve(PLuint size)
     
 	for (PLuint i=0; i<_numElements; i++)
 	{
-		new_data[i] = _data[i];
+		new_data[i] = std::move( _data[i] );
     }
     
 	_storageSize = size;
@@ -239,13 +257,22 @@ void plSeq<T>::reserve(PLuint size)
 
 
 template<class T>
-plSeq<T> plSeq<T>::extract( PLuint index, PLuint num ) const
+void std::vector<T>::resize( PLuint size )
 {
-    plSeq<T> ts( num );
+    if (size < _numElements)
+        return;
+
+    fill( size, T() );
+}
+
+template<class T>
+std::vector<T> std::vector<T>::extract( PLuint index, PLuint num ) const
+{
+    std::vector<T> ts( num );
     
     for (PLuint i=index; i < index+num; i++)
     {
-        ts.add( _data[i] );
+        ts.push_back( _data[i] );
     }
     
     return ts;
@@ -253,29 +280,29 @@ plSeq<T> plSeq<T>::extract( PLuint index, PLuint num ) const
 
 
 template<class T>
-PLuint plSeq<T>::size() const 
+PLuint std::vector<T>::size() const 
 {
 	return _numElements;
 }
 
 
 template<class T>
-T & plSeq<T>::back()
+T & std::vector<T>::back()
 {
     if (!(_numElements > 0)) 
 	{
-		std::cerr << "plSeq .back() error: zero elements in sequence\n";
+		std::cerr << "std::vector .back() error: zero elements in sequence\n";
 	}
 	return _data[ _numElements-1 ];
 }
 
 
 template<class T>
-T & plSeq<T>::operator [] ( PLuint i ) const 
+T & std::vector<T>::operator [] ( PLuint i ) const 
 {
 	if (i >= _numElements || i < 0) 
 	{
-		std::cerr << "plSeq [] error: Tried to access an element beyond the range of the plSequence: "
+		std::cerr << "std::vector [] error: Tried to access an element beyond the range of the std::vectoruence: "
 				  << i << "(_numElements = " << _numElements << ")\n";
 	}
 	return _data[ i ];
@@ -283,7 +310,7 @@ T & plSeq<T>::operator [] ( PLuint i ) const
 
 
 template<class T>
-plSeq<T> &plSeq<T>::operator = (const plSeq<T> &source) 
+std::vector<T> &std::vector<T>::operator = (const std::vector<T> &source) 
 { 
 	_storageSize = source._storageSize;
 	_numElements = source._numElements;
@@ -301,7 +328,7 @@ plSeq<T> &plSeq<T>::operator = (const plSeq<T> &source)
 
 // Find and return an element
 template<class T>
-PLbool plSeq<T>::exists( const T &x )
+PLbool std::vector<T>::exists( const T &x )
 {
 	for (PLint i=0; i<_numElements; i++)
 	{
@@ -318,7 +345,7 @@ PLbool plSeq<T>::exists( const T &x )
 // Find and return index of the first instance of an element
 // if it doesn't exist, return -1
 template<class T>
-PLint plSeq<T>::findIndex( const T &x )
+PLint std::vector<T>::findIndex( const T &x )
 {
 	for (PLuint i=0; i<_numElements; i++)
 		if (_data[i] == x)
@@ -326,6 +353,6 @@ PLint plSeq<T>::findIndex( const T &x )
 
 	return -1;
 }
-
+*/
 
 #endif

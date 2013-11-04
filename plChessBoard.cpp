@@ -19,8 +19,8 @@ void plChessBoard::_generate( PLfloat blocksize )
     
     PLbool black = true;
 
-    plSeq<plVector3> vertices;
-    plSeq<PLuint>    indices;
+    std::vector<plVector3> vertices;
+    std::vector<PLuint>    indices;
 
     for (PLint i = -1; i < width_blocks-1; i++)
     {
@@ -42,25 +42,25 @@ void plChessBoard::_generate( PLfloat blocksize )
             PLuint base = vertices.size()/3;
             
             // front side
-            vertices.add( v0 ); vertices.add( n ); vertices.add( c );
-            vertices.add( v1 ); vertices.add( n ); vertices.add( c );
-            vertices.add( v2 ); vertices.add( n ); vertices.add( c );
-            vertices.add( v3 ); vertices.add( n ); vertices.add( c );
+            vertices.push_back( v0 ); vertices.push_back( n ); vertices.push_back( c );
+            vertices.push_back( v1 ); vertices.push_back( n ); vertices.push_back( c );
+            vertices.push_back( v2 ); vertices.push_back( n ); vertices.push_back( c );
+            vertices.push_back( v3 ); vertices.push_back( n ); vertices.push_back( c );
             
-            indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
-            indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 );
+            indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
+            indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );
             
         /* Commented out other faces of the 3D chessboard.
             base = vertices.size()/3;
             
             // back side 
-            vertices.add( v1 + blocksize*-n); vertices.add( -n ); vertices.add( c );
-            vertices.add( v0 + blocksize*-n); vertices.add( -n ); vertices.add( c );
-            vertices.add( v3 + blocksize*-n); vertices.add( -n ); vertices.add( c );
-            vertices.add( v2 + blocksize*-n); vertices.add( -n ); vertices.add( c );
+            vertices.push_back( v1 + blocksize*-n); vertices.push_back( -n ); vertices.push_back( c );
+            vertices.push_back( v0 + blocksize*-n); vertices.push_back( -n ); vertices.push_back( c );
+            vertices.push_back( v3 + blocksize*-n); vertices.push_back( -n ); vertices.push_back( c );
+            vertices.push_back( v2 + blocksize*-n); vertices.push_back( -n ); vertices.push_back( c );
             
-            indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
-            indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 ); 
+            indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
+            indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 ); 
                    
             black = !black;
             
@@ -71,13 +71,13 @@ void plChessBoard::_generate( PLfloat blocksize )
              
                 plVector3 leftNormal = ( n^(v3 - v0) ).normalize();
              
-                vertices.add( v3 + blocksize*-n); vertices.add( leftNormal ); vertices.add( c );
-                vertices.add( v0 + blocksize*-n); vertices.add( leftNormal ); vertices.add( c );
-                vertices.add( v0 );               vertices.add( leftNormal ); vertices.add( c );
-                vertices.add( v3 );               vertices.add( leftNormal ); vertices.add( c );
+                vertices.push_back( v3 + blocksize*-n); vertices.push_back( leftNormal ); vertices.push_back( c );
+                vertices.push_back( v0 + blocksize*-n); vertices.push_back( leftNormal ); vertices.push_back( c );
+                vertices.push_back( v0 );               vertices.push_back( leftNormal ); vertices.push_back( c );
+                vertices.push_back( v3 );               vertices.push_back( leftNormal ); vertices.push_back( c );
                 
-                indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
-                indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 );  
+                indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
+                indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );  
             
             }
 
@@ -88,13 +88,13 @@ void plChessBoard::_generate( PLfloat blocksize )
              
                 plVector3 rightNormal = ( n^(v1 - v2) ).normalize();
              
-                vertices.add( v1 + blocksize*-n); vertices.add( rightNormal ); vertices.add( c );
-                vertices.add( v2 + blocksize*-n); vertices.add( rightNormal ); vertices.add( c );
-                vertices.add( v2 );               vertices.add( rightNormal ); vertices.add( c );
-                vertices.add( v1 );               vertices.add( rightNormal ); vertices.add( c );
+                vertices.push_back( v1 + blocksize*-n); vertices.push_back( rightNormal ); vertices.push_back( c );
+                vertices.push_back( v2 + blocksize*-n); vertices.push_back( rightNormal ); vertices.push_back( c );
+                vertices.push_back( v2 );               vertices.push_back( rightNormal ); vertices.push_back( c );
+                vertices.push_back( v1 );               vertices.push_back( rightNormal ); vertices.push_back( c );
                 
-                indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
-                indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 );  
+                indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
+                indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );  
             }
             
             // bottom side
@@ -104,13 +104,13 @@ void plChessBoard::_generate( PLfloat blocksize )
              
                 plVector3 bottomNormal = ( n^(v0 - v1) ).normalize();
              
-                vertices.add( v0 + blocksize*-n); vertices.add( bottomNormal ); vertices.add( c );
-                vertices.add( v1 + blocksize*-n); vertices.add( bottomNormal ); vertices.add( c );
-                vertices.add( v1 );               vertices.add( bottomNormal ); vertices.add( c );
-                vertices.add( v0 );               vertices.add( bottomNormal ); vertices.add( c );
+                vertices.push_back( v0 + blocksize*-n); vertices.push_back( bottomNormal ); vertices.push_back( c );
+                vertices.push_back( v1 + blocksize*-n); vertices.push_back( bottomNormal ); vertices.push_back( c );
+                vertices.push_back( v1 );               vertices.push_back( bottomNormal ); vertices.push_back( c );
+                vertices.push_back( v0 );               vertices.push_back( bottomNormal ); vertices.push_back( c );
                 
-                indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
-                indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 ); 
+                indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
+                indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 ); 
             }
             
             // top side
@@ -120,13 +120,13 @@ void plChessBoard::_generate( PLfloat blocksize )
              
                 plVector3 topNormal = ( n^(v2 - v3) ).normalize();
              
-                vertices.add( v2 + blocksize*-n); vertices.add( topNormal ); vertices.add( c );
-                vertices.add( v3 + blocksize*-n); vertices.add( topNormal ); vertices.add( c );
-                vertices.add( v3 );               vertices.add( topNormal ); vertices.add( c );
-                vertices.add( v2 );               vertices.add( topNormal ); vertices.add( c );
+                vertices.push_back( v2 + blocksize*-n); vertices.push_back( topNormal ); vertices.push_back( c );
+                vertices.push_back( v3 + blocksize*-n); vertices.push_back( topNormal ); vertices.push_back( c );
+                vertices.push_back( v3 );               vertices.push_back( topNormal ); vertices.push_back( c );
+                vertices.push_back( v2 );               vertices.push_back( topNormal ); vertices.push_back( c );
                 
-                indices.add( base + 0 ); indices.add( base + 1 ); indices.add( base + 2 );
-                indices.add( base + 0 ); indices.add( base + 2 ); indices.add( base + 3 ); 
+                indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
+                indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 ); 
             }
         */
         }

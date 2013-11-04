@@ -25,7 +25,7 @@ class plTrackedObject : public plRenderable
         const plVector3 &getTipWorldCoords()  const  { return _tipWorldCoords;  }
         const plVector3 &getEndWorldCoords()  const  { return _endWorldCoords;  }
         const plVector3 &getRotationAxis()    const  { return _rotationAxis;    }
-        double           getRotationAngle()   const  { return _rotationAngle;   }
+        PLfloat          getRotationAngle()   const  { return _rotationAngle;   }
         const plVector3 &getAxisX()           const  { return _xAxis;           }
         const plVector3 &getAxisY()           const  { return _yAxis;           }
         const plVector3 &getAxisZ()           const  { return _zAxis;           }
@@ -44,7 +44,7 @@ class plTrackedObject : public plRenderable
         plVector3       _trackedEnd, _endWorldCoords;
         plVector3       _xAxis, _yAxis, _zAxis;
 
-        double          _rotationAngle;
+        PLfloat         _rotationAngle;
         PLbool          _isArthroscope;
         
         void _drawScope() const;

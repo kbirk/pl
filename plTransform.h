@@ -2,7 +2,7 @@
 #define PL_TRANSFORM_H
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plString.h"
 #include "plVector3.h"
 #include "plMatrix44.h"
@@ -12,7 +12,7 @@ class plTransform
     public:
 
         plTransform();
-        plTransform( const plSeq<plString> &row );
+        plTransform( const std::vector<plString> &row );
         plTransform( const plVector3 &y, const plVector3 &origin );
         plTransform( const plVector3 &x, const plVector3 &y, const plVector3 &origin );
 

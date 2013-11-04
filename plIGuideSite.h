@@ -23,7 +23,7 @@ class plIGuideSite : public plModelSpecific,
         plIGuideSite( PLuint _modelID, const plBoneAndCartilage &_model );
         plIGuideSite( PLuint _modelID, const plBoneAndCartilage &_model, const plBoundary &b );
 
-        const plSeq<plTriangle> &templateBase() const { return _templateBase; }
+        const std::vector<plTriangle> &templateBase() const { return _templateBase; }
 
         PLbool generateTemplateBase();
 
@@ -31,7 +31,7 @@ class plIGuideSite : public plModelSpecific,
 
     private:
  
-        plSeq<plTriangle>    _templateBase;                                         // for use in generating iGuides
+        std::vector<plTriangle>    _templateBase;                                         // for use in generating iGuides
 
 };
 

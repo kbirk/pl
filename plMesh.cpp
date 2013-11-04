@@ -6,7 +6,7 @@ plMesh::plMesh()
 }
 
 
-plMesh::plMesh(const plSeq<plTriangle> &triangles)
+plMesh::plMesh(const std::vector<plTriangle> &triangles)
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
 	// convert triangles to interleaved
@@ -14,7 +14,7 @@ plMesh::plMesh(const plSeq<plTriangle> &triangles)
 }
 
 
-plMesh::plMesh(const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
+plMesh::plMesh(const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices)
     : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {            
 	// set VBO and VAO
@@ -44,8 +44,8 @@ plMesh& plMesh::operator = ( const plMesh &mesh )
 
 void plMesh::_copyMesh( const plMesh &mesh )
 {
-    plSeq<plVector3> vertices( mesh._numBytes / sizeof( plVector3 ), plVector3() );
-    plSeq<PLuint>    indices ( mesh._numIndices, 0 );
+    std::vector<plVector3> vertices( mesh._numBytes / sizeof( plVector3 ), plVector3() );
+    std::vector<PLuint>    indices ( mesh._numIndices, 0 );
 
     // copy vertex data
     glBindBuffer( GL_ARRAY_BUFFER, mesh._vertexBufferObject ); 
@@ -85,34 +85,34 @@ void plMesh::_destroy()
 }
 
 
-void plMesh::_triangleToInterleaved(const plSeq<plTriangle> &triangles)
+void plMesh::_triangleToInterleaved(const std::vector<plTriangle> &triangles)
 {			
 	// convert to interleaved format
-	plSeq<plVector3> vertices( triangles.size() * 3 * 2 );
-	plSeq<PLuint>    indices             ( triangles.size() * 3);
+	std::vector<plVector3> vertices;    vertices.reserve( triangles.size() * 3 * 2 );
+	std::vector<PLuint>    indices;     indices.reserve( triangles.size() * 3);
 	
     int indexCount = 0;
     for (PLuint i = 0; i < triangles.size(); i++) 
     {  
         // p1
-	    vertices.add(triangles[i].point0());    // position
-	    vertices.add(triangles[i].normal());    // normal
-	    indices.add(indexCount++);
+	    vertices.push_back(triangles[i].point0());    // position
+	    vertices.push_back(triangles[i].normal());    // normal
+	    indices.push_back(indexCount++);
 	    // p2
-	    vertices.add(triangles[i].point1());
-	    vertices.add(triangles[i].normal());
-	    indices.add(indexCount++);
+	    vertices.push_back(triangles[i].point1());
+	    vertices.push_back(triangles[i].normal());
+	    indices.push_back(indexCount++);
 	    // p3
-	    vertices.add(triangles[i].point2());
-	    vertices.add(triangles[i].normal());
-	    indices.add(indexCount++);	    
+	    vertices.push_back(triangles[i].point2());
+	    vertices.push_back(triangles[i].normal());
+	    indices.push_back(indexCount++);	    
 	}
 
     setBuffers(vertices, indices);
 }
 
 
-void plMesh::setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices)
+void plMesh::setBuffers( const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices)
 {
     if ( vertices.size() < 3 || indices.size() < 3 )
     {
@@ -176,7 +176,7 @@ void plMesh::draw() const
 }
 
 
-void plMesh::draw(const plSeq<PLuint> &indices) const
+void plMesh::draw(const std::vector<PLuint> &indices) const
 {
     // use current shader and properly set uniforms
     plShaderStack::use();

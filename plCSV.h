@@ -2,14 +2,14 @@
 #define PL_CSV_H
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plString.h"
 
 class plCSV 
 {
     public:
 
-        plSeq< plSeq<plString> > data;       
+        std::vector< std::vector<plString> > data;       
         plString                 filename;
 
         plCSV( plString fn );

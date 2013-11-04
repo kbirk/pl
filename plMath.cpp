@@ -3,7 +3,7 @@
 namespace plMath
 {
 
-    void _concavePolysToTrisHelper( plSeq<plTriangle> &triangles, PLfloat &minSurfaceArea, const plPolygon &polygon );
+    void _concavePolysToTrisHelper( std::vector<plTriangle> &triangles, PLfloat &minSurfaceArea, const plPolygon &polygon );
    
 
     plVector3 projectVectorOnPlane( const plVector3 &vector, const plVector3 &plane_normal)
@@ -67,7 +67,7 @@ namespace plMath
     }
 
 
-    void shuffle( plSeq<PLuint> &array )
+    void shuffle( std::vector<PLuint> &array )
     {   
         PLuint size = array.size();
         for (PLuint i = 0; i < size-1; i++) 
@@ -228,7 +228,7 @@ namespace plMath
     }*/
 
 
-    plIntersection rayIntersect( const plSeq<plTriangle> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull )
+    plIntersection rayIntersect( const std::vector<plTriangle> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull )
     {
         PLfloat min = FLT_MAX;
         plIntersection closestIntersection( false );
@@ -254,7 +254,7 @@ namespace plMath
 
 
 
-    void convexPolysToTris( plSeq<plTriangle> &tris, const plSeq<plPolygon> &polys )
+    void convexPolysToTris( std::vector<plTriangle> &tris, const std::vector<plPolygon> &polys )
     {
         tris.clear();
         for ( PLuint i = 0; i < polys.size(); i++ )
@@ -269,7 +269,7 @@ namespace plMath
                     plVector3 point1( polys[i].points[currentVertex] );
                     plVector3 point2( polys[i].points[currentVertex+1] );
                     plTriangle tri(normal,point0,point1,point2);
-                    tris.add(tri);
+                    tris.push_back(tri);
                 }
             }
             else // must be an invalid polygon
@@ -280,17 +280,17 @@ namespace plMath
     }
 
 
-    void concavePolysToTris( plSeq<plTriangle> &tris, const plSeq<plPolygon> &polys )
+    void concavePolysToTris( std::vector<plTriangle> &tris, const std::vector<plPolygon> &polys )
     {
         tris.clear();
         for (PLuint i = 0; i < polys.size(); i++)
         {
-            plSeq<plTriangle> polyConverted;
+            std::vector<plTriangle> polyConverted;
             PLfloat area = FLT_MAX;
             _concavePolysToTrisHelper( polyConverted, area, polys[i] );
             for (PLuint j = 0; j < polyConverted.size(); j++)
             {
-                tris.add(polyConverted[j]);
+                tris.push_back( polyConverted[j] );
             }
         }
     }
@@ -303,9 +303,9 @@ namespace plMath
     // recursively call this function for each of these smaller polygons
     // store only the sequence of triangles that results in the smallest surface area
     // also store the surface area of the triangulation
-    // INITIAL VALUE FOR triangles SHOULD BE AN EMPTY PLSEQ!
+    // INITIAL VALUE FOR triangles SHOULD BE AN EMPTY std::vector!
     // INITIAL VALUE FOR minSurfaceArea SHOULD BE THE MAXIMUM VALUE FOR A FLOATING POINT
-    void _concavePolysToTrisHelper( plSeq<plTriangle> &triangles, PLfloat &minSurfaceArea, const plPolygon &polygon )
+    void _concavePolysToTrisHelper( std::vector<plTriangle> &triangles, PLfloat &minSurfaceArea, const plPolygon &polygon )
     {
         const float epsilon(0.0001f);
 
@@ -333,20 +333,20 @@ namespace plMath
             plPolygon poly0;
             for (PLuint j = 1; j <= i; j++)
             {
-                poly0.points.add( polygon.points[j] );
+                poly0.points.push_back( polygon.points[j] );
             }
-            plSeq<plTriangle> poly0Tris;
+            std::vector<plTriangle> poly0Tris;
             PLfloat           poly0Area = FLT_MAX;
             _concavePolysToTrisHelper( poly0Tris, poly0Area, poly0 );
 
             // second polygon
             plPolygon poly1;
-            poly1.points.add( polygon.points[0] );
+            poly1.points.push_back( polygon.points[0] );
             for (PLuint j = i; j < polygon.points.size(); j++)
             {
-                poly1.points.add( polygon.points[j] );
+                poly1.points.push_back( polygon.points[j] );
             }
-            plSeq<plTriangle> poly1Tris;
+            std::vector<plTriangle> poly1Tris;
             PLfloat           poly1Area = FLT_MAX;
             _concavePolysToTrisHelper( poly1Tris, poly1Area, poly1 );
 
@@ -357,14 +357,14 @@ namespace plMath
             if ( currentSurfaceArea < minSurfaceArea )
             {
                 triangles.clear();
-                triangles.add( bisectingTriangle );
+                triangles.push_back( bisectingTriangle );
                 for (PLuint j = 0; j < poly0Tris.size(); j++)
                 {
-                    triangles.add( poly0Tris[j] );
+                    triangles.push_back( poly0Tris[j] );
                 }
                 for (PLuint j = 0; j < poly1Tris.size(); j++)
                 {
-                    triangles.add( poly1Tris[j] );
+                    triangles.push_back( poly1Tris[j] );
                 }
                 minSurfaceArea = currentSurfaceArea;
             }

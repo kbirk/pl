@@ -523,7 +523,7 @@ namespace plColourMap
     {
         if (k > 1) k = 1;
         if (k < 0) k = 0;
-        PLint i = k * (PL_COLOURMAP_SIZE-1);
+        PLint i = PLint( k * (PL_COLOURMAP_SIZE-1) );
         return plVector3( _colourMap[i][0]/255.0f,
                           _colourMap[i][1]/255.0f,
                           _colourMap[i][2]/255.0f );

@@ -286,10 +286,10 @@ plMeshConnectivityDataVert& plMeshConnectivityDataVert::operator=(const plMeshCo
     originatingMesh = other.originatingMesh;
     edges.clear();
     for (PLuint i = 0; i < other.edges.size(); i++)
-        edges.add(other.edges[i]);
+        edges.push_back(other.edges[i]);
     faces.clear();
     for (PLuint i = 0; i < other.faces.size(); i++)
-        faces.add(other.faces[i]);
+        faces.push_back(other.faces[i]);
     dataset = other.dataset;
     return *this;
 }
@@ -300,10 +300,10 @@ plMeshConnectivityDataEdge& plMeshConnectivityDataEdge::operator=(const plMeshCo
     originatingMesh = other.originatingMesh;
     verts.clear();
     for (PLuint i = 0; i < other.verts.size(); i++)
-        verts.add(other.verts[i]);
+        verts.push_back(other.verts[i]);
     faces.clear();
     for (PLuint i = 0; i < other.faces.size(); i++)
-        faces.add(other.faces[i]);
+        faces.push_back(other.faces[i]);
     dataset = other.dataset;
     return *this;
 }
@@ -314,10 +314,10 @@ plMeshConnectivityDataFace& plMeshConnectivityDataFace::operator=(const plMeshCo
     originatingMesh = other.originatingMesh;
     verts.clear();
     for (PLuint i = 0; i < other.verts.size(); i++)
-        verts.add(other.verts[i]);
+        verts.push_back(other.verts[i]);
     edges.clear();
     for (PLuint i = 0; i < other.edges.size(); i++)
-        edges.add(other.edges[i]);
+        edges.push_back(other.edges[i]);
     dataset = other.dataset;
     return *this;
 }
@@ -371,8 +371,8 @@ const plMeshConnectivityDataEdge* plMeshConnectivityData::addEdge(const plMeshCo
     // now set up the new element
     plMeshConnectivityDataEdge edgeToAdd;
     edgeToAdd.edge = plEdge(orderedVerts[0]->vert,orderedVerts[1]->vert);
-    edgeToAdd.verts.add(orderedVerts[0]);
-    edgeToAdd.verts.add(orderedVerts[1]);
+    edgeToAdd.verts.push_back(orderedVerts[0]);
+    edgeToAdd.verts.push_back(orderedVerts[1]);
     edgeToAdd.originatingMesh = originatingMesh;
     edgeToAdd.dataset = this;
     const plMeshConnectivityDataEdge* edgePtr;
@@ -381,8 +381,8 @@ const plMeshConnectivityDataEdge* plMeshConnectivityData::addEdge(const plMeshCo
         edges.insert(edgeToAdd);
         edgePtr = &(*(edges.find(edgeToAdd)));
         // update the verts that were provided as input.
-        vert0->edges.add(edgePtr);
-        vert1->edges.add(edgePtr);
+        vert0->edges.push_back(edgePtr);
+        vert1->edges.push_back(edgePtr);
     }
     else
     {
@@ -436,12 +436,12 @@ const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshCo
     // now set up the new element
     plMeshConnectivityDataFace faceToAdd;
     faceToAdd.face = plTriangle(orderedVerts[0]->vert,orderedVerts[1]->vert,orderedVerts[2]->vert);
-    faceToAdd.verts.add(orderedVerts[0]);
-    faceToAdd.verts.add(orderedVerts[1]);
-    faceToAdd.verts.add(orderedVerts[2]);
-    faceToAdd.edges.add(orderedEdges[0]);
-    faceToAdd.edges.add(orderedEdges[1]);
-    faceToAdd.edges.add(orderedEdges[2]);
+    faceToAdd.verts.push_back(orderedVerts[0]);
+    faceToAdd.verts.push_back(orderedVerts[1]);
+    faceToAdd.verts.push_back(orderedVerts[2]);
+    faceToAdd.edges.push_back(orderedEdges[0]);
+    faceToAdd.edges.push_back(orderedEdges[1]);
+    faceToAdd.edges.push_back(orderedEdges[2]);
     faceToAdd.originatingMesh = originatingMesh;
     faceToAdd.dataset = this;
     const plMeshConnectivityDataFace* facePtr;
@@ -450,12 +450,12 @@ const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshCo
         faces.insert(faceToAdd);
         facePtr = &(*(faces.find(faceToAdd)));
         // update the verts that were provided as input.
-        vert0->faces.add(facePtr);
-        vert1->faces.add(facePtr);
-        vert2->faces.add(facePtr);
-        edge01->faces.add(facePtr);
-        edge12->faces.add(facePtr);
-        edge20->faces.add(facePtr);
+        vert0->faces.push_back(facePtr);
+        vert1->faces.push_back(facePtr);
+        vert2->faces.push_back(facePtr);
+        edge01->faces.push_back(facePtr);
+        edge12->faces.push_back(facePtr);
+        edge20->faces.push_back(facePtr);
     }
     else
     {
@@ -471,19 +471,13 @@ void plMeshConnectivityData::removeVert(const plMeshConnectivityDataVert* vert)
     // iterate through edges, remove references to this vert
     for (PLuint i = 0; i < vert->edges.size(); i++)
     {
-        PLint indexOfVert = vert->edges[i]->verts.findIndex(vert);
-        if (indexOfVert != -1)
-            vert->edges[i]->verts.remove(indexOfVert);
-        else
+        if ( !plUtility::removeIfExists( vert->edges[i]->verts, vert ) )
             std::cout << "Warning in plMeshConnectivityData::removeVert(): Could not find the vert provided as input " << vert << " in edge " << vert->edges[i] << ". Ignoring " << std::endl;
     }
     // iterate through faces, remove references to this vert
     for (PLuint i = 0; i < vert->faces.size(); i++)
     {
-        PLint indexOfVert = vert->faces[i]->verts.findIndex(vert);
-        if (indexOfVert != -1)
-            vert->faces[i]->verts.remove(indexOfVert);
-        else
+        if ( !plUtility::removeIfExists( vert->faces[i]->verts, vert ) )
             std::cout << "Warning in plMeshConnectivityData::removeVert(): Could not find the vert provided as input " << vert << " in face " << vert->faces[i] << ". Ignoring " << std::endl;
     }
     // remove this vert
@@ -495,19 +489,13 @@ void plMeshConnectivityData::removeEdge(const plMeshConnectivityDataEdge* edge)
     // iterate through verts, remove references to this edge
     for (PLuint i = 0; i < edge->verts.size(); i++)
     {
-        PLint indexOfEdge = edge->verts[i]->edges.findIndex(edge);
-        if (indexOfEdge != -1)
-            edge->verts[i]->edges.remove(indexOfEdge);
-        else
+        if ( !plUtility::removeIfExists( edge->verts[i]->edges, edge ) )
             std::cout << "Warning in plMeshConnectivityData::removeEdge(): Could not find the edge provided as input " << edge << " in vert " << edge->verts[i] << ". Ignoring " << std::endl;
     }
     // iterate through faces, remove references to this edge
     for (PLuint i = 0; i < edge->faces.size(); i++)
     {
-        PLint indexOfEdge = edge->faces[i]->edges.findIndex(edge);
-        if (indexOfEdge != -1)
-            edge->faces[i]->edges.remove(indexOfEdge);
-        else
+        if ( !plUtility::removeIfExists( edge->faces[i]->edges, edge ) )
             std::cout << "Warning in plMeshConnectivityData::removeEdge(): Could not find the edge provided as input " << edge << " in face " << edge->faces[i] << ". Ignoring " << std::endl;
     }
     // remove this edge
@@ -519,19 +507,13 @@ void plMeshConnectivityData::removeFace(const plMeshConnectivityDataFace* face)
     // iterate through verts, remove references to this face
     for (PLuint i = 0; i < face->verts.size(); i++)
     {
-        PLint indexOfFace = face->verts[i]->faces.findIndex(face);
-        if (indexOfFace != -1)
-            face->verts[i]->faces.remove(indexOfFace);
-        else
+        if ( !plUtility::removeIfExists( face->verts[i]->faces, face ) )
             std::cout << "Warning in plMeshConnectivityData::removeFace(): Could not find the face provided as input " << face << " in vert " << face->verts[i] << ". Ignoring " << std::endl;
     }
     // iterate through edge, remove references to this face
     for (PLuint i = 0; i < face->edges.size(); i++)
     {
-        PLint indexOfFace = face->edges[i]->faces.findIndex(face);
-        if (indexOfFace != -1)
-            face->edges[i]->faces.remove(indexOfFace);
-        else
+        if ( !plUtility::removeIfExists( face->edges[i]->faces, face ) )
             std::cout << "Warning in plMeshConnectivityData::removeFace(): Could not find the face provided as input " << face << " in vert " << face->edges[i] << ". Ignoring " << std::endl;
     }
     // remove this face
@@ -559,7 +541,7 @@ PLbool plMeshConnectivityData::findVertWithinEpsilon( const plVector3& vertex, c
     return true;
 }
 
-PLbool plMeshConnectivityData::importTriSeq(const plSeq<plTriangle> &tris, PLuint originatingMesh, PLuint verbose )
+PLbool plMeshConnectivityData::importTriSeq(const std::vector<plTriangle> &tris, PLuint originatingMesh, PLuint verbose )
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_importTriSeq()" << std::endl;
     for (PLuint i = 0; i < tris.size(); i++)
@@ -592,7 +574,7 @@ PLbool plMeshConnectivityData::importTriSeq(const plSeq<plTriangle> &tris, PLuin
     return true;
 }
 
-PLbool plMeshConnectivityData::exportTriSeq(plSeq<plTriangle> &tris, PLuint verbose )
+PLbool plMeshConnectivityData::exportTriSeq(std::vector<plTriangle> &tris, PLuint verbose )
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_exportTriSeq()" << std::endl;
 
@@ -604,7 +586,7 @@ PLbool plMeshConnectivityData::exportTriSeq(plSeq<plTriangle> &tris, PLuint verb
 
     for (plMeshConnectivityDataFaceIterator fit = faces.begin(); fit != faces.end(); fit++)
     {
-        tris.add((*fit).face);
+        tris.push_back((*fit).face);
     }
 
     return true;

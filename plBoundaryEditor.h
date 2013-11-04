@@ -2,7 +2,7 @@
 #define PL_BOUNDARY_EDITOR_H
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plVector3.h"
 #include "plPlan.h"
 #include "plBoundary.h"

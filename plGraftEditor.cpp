@@ -103,7 +103,7 @@ void plGraftEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
             {     
                 plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
             }   
-            plDraw::disk( plVector3( plWindow::windowToViewportX( x ), plWindow::windowToViewportY( y ), 0), CIRCLE_RADIUS );            
+            plDraw::disk( plVector3( plWindow::windowToViewportX( x ), plWindow::windowToViewportY( y ), 0.0f), CIRCLE_RADIUS );            
         }
         
 
@@ -127,11 +127,11 @@ void plGraftEditor::drawHandles() const
         case PL_GRAFT_EDIT_MODE_TRANSLATE:   
         case PL_GRAFT_EDIT_MODE_ROTATE:
         {
-            plColourStack::load( 0.2, 0.2, 0.2 ); 
+            plColourStack::load( PL_AXIS_GREY ); 
             plDraw::sphere( 1.5 );
 
             // x axis
-            plColourStack::load( 1.0, 0.2, 0.2 ); 
+            plColourStack::load( PL_X_AXIS_COLOUR ); 
             
             plPicking::value.type = PL_PICKING_TYPE_GRAFT_HANDLE_X;
         
@@ -140,14 +140,14 @@ void plGraftEditor::drawHandles() const
             if (PL_GRAFT_EDIT_SHOW_Y_HANDLE)    
             {
                 // y axis
-                plColourStack::load( 0.2, 1.0, 0.2 );  
+                plColourStack::load( PL_Y_AXIS_COLOUR );  
                 plPicking::value.type = PL_PICKING_TYPE_GRAFT_HANDLE_Y;              
 
                 (_editMode == PL_GRAFT_EDIT_MODE_TRANSLATE) ? plDraw::arrow( plVector3(0,1,0) ) : plDraw::knob( plVector3(0,1,0) );
             }
 
             // z axis
-            plColourStack::load( 0.2, 0.2, 1.0 ); 
+            plColourStack::load( PL_Z_AXIS_COLOUR ); 
             plPicking::value.type = PL_PICKING_TYPE_GRAFT_HANDLE_Z;
 
             (_editMode == PL_GRAFT_EDIT_MODE_TRANSLATE) ? plDraw::arrow( plVector3(0,0,1) ) : plDraw::knob( plVector3(0,0,1) );
@@ -156,14 +156,14 @@ void plGraftEditor::drawHandles() const
         }
         case PL_GRAFT_EDIT_MODE_LENGTH:
         {     
-            plColourStack::load( 0.2, 0.2, 0.2 ); 
+            plColourStack::load( PL_AXIS_GREY ); 
             plDraw::sphere( plVector3(0, PL_HANDLE_LENGTH/2.0, 0), 1.5 );
                     
             plPicking::value.type = PL_PICKING_TYPE_GRAFT_HANDLE_Y;
 
-            plColourStack::load( 0.2, 1.0, 0.2 ); 
+            plColourStack::load( PL_Y_AXIS_COLOUR ); 
             plDraw::arrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH-1, 0), plVector3(0,1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);    
-            plColourStack::load( 1.0, 0.2, 0.2 );         
+            plColourStack::load( PL_X_AXIS_COLOUR );         
             plDraw::arrow( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH, 0), plVector3(0,-1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);
 
             break;     
@@ -171,12 +171,12 @@ void plGraftEditor::drawHandles() const
         
         case PL_GRAFT_EDIT_MODE_MARKER:
         {
-            plColourStack::load( 0.2, 0.2, 0.2 ); 
+            plColourStack::load( PL_AXIS_GREY ); 
             plDraw::sphere( plVector3(0, PL_HANDLE_LENGTH/2.0, 0), 1.5 );
 
             plPicking::value.type = PL_PICKING_TYPE_GRAFT_HANDLE_Y;
 
-            plColourStack::load( 0.2, 1.0, 0.2 ); 
+            plColourStack::load( PL_Y_AXIS_COLOUR ); 
             plDraw::knob( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH-1, 0), plVector3(0,1,0),  PL_HANDLE_LENGTH-PL_ARROW_LENGTH);            
             plDraw::knob( plVector3(0, PL_HANDLE_LENGTH-PL_ARROW_LENGTH, 0),   plVector3(0,-1,0), PL_HANDLE_LENGTH-PL_ARROW_LENGTH);
            
@@ -255,7 +255,7 @@ PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLint x, PLint y )
     if (_selectedGraft == NULL)    
         return false;                 // no graft selected
 
-    plVector3 translation( -y, 0, x);
+    plVector3 translation( -y, 0.0f, x);
     
     if (translation.squaredLength() > 1)
     {
@@ -300,7 +300,7 @@ void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
     if (_selectedGraft == NULL)    
         return;                 // no graft selected
 
-    _previousMousePos = plVector3(x,y,0);
+    _previousMousePos = plVector3(x,y,0.0f);
                                                                  
     switch (type) 
     {
@@ -333,7 +333,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
     if (_selectedGraft == NULL)    
         return;                 // no graft selected
 
-    plVector3 screenDragVector = plVector3(x,y,0) - _previousMousePos;
+    plVector3 screenDragVector = plVector3(x,y,0.0f) - _previousMousePos;
     
     switch (_editMode)
     {
@@ -401,7 +401,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
     } 
     
     // update initial drag position
-    _previousMousePos = plVector3(x,y,0);          
+    _previousMousePos = plVector3(x,y,0.0f);          
 }
 
 

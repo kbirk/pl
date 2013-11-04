@@ -2,7 +2,7 @@
 #define PL_RENDERER_H
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plVector3.h"
 #include "plRenderingPipeline.h"
 

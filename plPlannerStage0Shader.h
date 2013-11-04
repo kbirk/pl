@@ -3,38 +3,35 @@
 
 #include "plCommon.h"
 #include "plShader.h"
-#include "plSiteGrid.h"
 #include "plSpline.h"
 #include "plMatrix44.h"
 #include "plVector4.h"
+#include "plPlanningSite.h"
+
 
 class plPlannerStage0Shader : public plShader
 {
 
     public:                    
           
-        plPlannerStage0Shader ( const char *computeFile );
+        plPlannerStage0Shader ( const std::vector< plString > &computeFiles );
 
         void getUniformLocations();
         
-        void setSiteUniforms     ( PLuint  meshSize, 
-                                   PLfloat meshArea, 
-                                   PLuint  gridSize,
-                                   PLuint  perimSize,  
-                                   const plVector4 &siteNormal ) const;
+        void setDefectSiteUniforms( const plPlanningSite &defectSite ) const;
          
-        void setTemperatureUniform( PLfloat temp ) const;        
-        void setLocalLoadUniform   ( PLuint load ) const;
+        void setTemperatureUniform ( PLfloat temperature ) const;        
+        void setLocalLoadUniform   ( PLuint loadLocal ) const;
                
     private:
     
-        PLuint _siteMeshSizeID;                  
-        PLuint _siteMeshAreaID;
-        PLuint _siteGridSizeID;
-        PLuint _sitePerimSizeID;
-        PLuint _siteNormalID;
+        PLuint _defectSiteGridPointCountID;
+        PLuint _defectSiteTriangleCountID; 
+        PLuint _defectSiteBoundaryPointCountID;
+        PLuint _defectSiteAreaID;
+        PLuint _defectSiteAvgNormalID;
                 
-        PLuint _temperatureID;    
+        PLuint _temperatureID;
 
         PLuint _loadLocalID;
 

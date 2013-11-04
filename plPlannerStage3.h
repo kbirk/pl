@@ -2,56 +2,38 @@
 #define PL_STAGE_3_STATE_H
 
 #include "plCommon.h"
-#include "plSeq.h"
+
 #include "plVector4.h"
 
-#include "plSiteGrid.h"
 #include "plPlannerStage0.h"
 #include "plPlannerStage2.h"
 #include "plPlannerStage3Shader.h"
 
-#define PL_STAGE3_ITERATIONS                 8
-#define PL_STAGE3_GROUP_SIZE                 256
-#define PL_STAGE3_NUM_GROUPS                 1
-#define PL_STAGE3_INVOCATIONS                PL_STAGE3_NUM_GROUPS*PL_STAGE3_GROUP_SIZE
+#define PL_STAGE_3_ITERATIONS                 8
+#define PL_STAGE_3_GROUP_SIZE                 256
+#define PL_STAGE_3_NUM_GROUPS                 1
+#define PL_STAGE_3_INVOCATIONS                PL_STAGE_3_NUM_GROUPS*PL_STAGE_3_GROUP_SIZE
 
-class plDonorState
+class plDonorSolution
 {
     public:
      
-        plSeq<plVector4>  graftPositions;
-        plSeq<plVector4>  graftNormals;
-        plSeq<plVector4>  graftZDirections;
-    
-        float             totalRms;
-    
-        plDonorState();
-        
-        ~plDonorState();
+        std::vector<plVector4>  graftPositions;
+        std::vector<plVector4>  graftNormals;
+        float                   lowestRMS;
 
-        void update(); 
-        
-    private:
-    
-        PLuint _donorPositionsBufferID;
-        PLuint _donorNormalsBufferID;
-        PLuint _donorZDirectionsBufferID;       
-        PLuint _totalRMSBufferID; 
-        
-        void _createBuffers ();
-        void _destroyBuffers();
-        
-        void _bindBuffers  ();
-        void _unbindBuffers();
-          
-        PLint  _getLowestRmsIndex(); 
-            
+        plDonorSolution() 
+            : lowestRMS( FLT_MAX ) 
+        {}
+
+        void extractBestSolution( PLuint graftCount, const plSSBO &totalRmsSSBO, const plSSBO &donorSolutionPositionsSSBO, const plSSBO &donorSolutionNormalsSSBO );
+       
 };
 
 
 namespace plPlannerStage3
 {
-    plDonorState run( const plSeq<plSiteGrid> &donorSites, const plDefectState &defectState, const plRmsData &rmsInput );      
+    void run( plDonorSolution &donorSolution, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plRmsData &rmsInput );
 }
 
 

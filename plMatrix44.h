@@ -69,7 +69,7 @@ class plMatrix44
         plVector4   operator* ( const plVector4 &v) const;
         plTriangle  operator* ( const plTriangle &tri) const;
 		plMatrix44  operator* ( const plMatrix44 &m) const;
-        plSeq<plTriangle> operator*(const plSeq<plTriangle> &tris) const;
+        std::vector<plTriangle> operator*(const std::vector<plTriangle> &tris) const;
 
 	protected:
 

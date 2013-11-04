@@ -12,17 +12,16 @@ class plMesh
     public:
 		
 		plMesh();		
-		plMesh( const plSeq<plTriangle> &triangles );        
-        plMesh( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices );       
+		plMesh( const std::vector<plTriangle> &triangles );        
+        plMesh( const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices );       
         plMesh( const plMesh &mesh );
-        
         virtual ~plMesh();
         
         plMesh& operator = ( const plMesh &mesh ); 
-              
-        virtual void setBuffers( const plSeq<plVector3> &vertices, const plSeq<PLuint> &indices);
+
+        virtual void setBuffers( const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices);
         virtual void draw() const;	        	
-		virtual void draw( const plSeq<PLuint> &indices ) const;    // draw with newly defined index order ( for transparency sorting )
+		virtual void draw( const std::vector<PLuint> &indices ) const;    // draw with newly defined index order ( for transparency sorting )
         
     protected:
 
@@ -35,7 +34,7 @@ class plMesh
 		
 		virtual void _destroy();
 		virtual void _copyMesh( const plMesh &mesh );
-		virtual void _triangleToInterleaved( const plSeq<plTriangle> &triangles );
+		virtual void _triangleToInterleaved( const std::vector<plTriangle> &triangles );
         
 		
 

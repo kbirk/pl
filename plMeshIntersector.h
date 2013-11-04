@@ -9,7 +9,7 @@ class plMeshIntersector : public plMeshAlgorithm
 
   public:
 
-    PLbool intersect(plSeq<plTriangle> &, PLuint verbose=PL_LOGGER_LEVEL_INFO, PLuint depth=0);
+    PLbool intersect(std::vector<plTriangle> &, PLuint verbose=PL_LOGGER_LEVEL_INFO, PLuint depth=0);
 
   private:
 

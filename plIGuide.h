@@ -3,7 +3,7 @@
 
 #include "plCommon.h"
 #include "plModelSpecific.h"
-#include "plSeq.h"
+
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plBoundary.h"
@@ -72,23 +72,23 @@ class plIGuide : public plRenderable
         PLfloat                 thickness;
         PLfloat                 printerOffset;
 
-        plSeq<plModel*>         iGuideModelsToAdd;
-        plSeq<plModel*>         iGuideModelsToSubtract;
+        std::vector<plModel*>         iGuideModelsToAdd;
+        std::vector<plModel*>         iGuideModelsToSubtract;
 
         plIGuideSite            *site;
         PLuint                  siteID;
         
-        plSeq<plPlugInfo>       plugs;
-        plSeq<plKWire*>         kWires;
-        plSeq<PLuint>           kWireIDs;
+        std::vector<plPlugInfo>       plugs;
+        std::vector<plKWire*>         kWires;
+        std::vector<PLuint>           kWireIDs;
 
-        plSeq<const plSpline*>  splines;
-        plSeq<PLuint>           defectIDs;
+        std::vector<const plSpline*>  splines;
+        std::vector<PLuint>           defectIDs;
         
         // MEMBERS
         // constructors
         plIGuide();
-        plIGuide( plIGuideSite *s, PLuint sid, const plSeq<plPlugInfo> &p, const plSeq<plKWire*> &k, const plSeq<PLuint> &kids, const plSeq<const plSpline*> splines, plSeq<PLuint> &defectIDs );
+        plIGuide( plIGuideSite *s, PLuint sid, const std::vector<plPlugInfo> &p, const std::vector<plKWire*> &k, const std::vector<PLuint> &kids, const std::vector<const plSpline*> splines, std::vector<PLuint> &defectIDs );
 
         // core functionality
         PLbool generateIGuideModels ();
@@ -103,12 +103,12 @@ class plIGuide : public plRenderable
     private:
 
         plString			_prepareFilenameWithVariables   ( PLint operation, PLchar type, PLint graftIndex, const plString &pieceName );
-        plSeq<plTriangle>	_createTemplatePieceTransformed ( const plSeq<plTriangle> &baseTriObject,
+        std::vector<plTriangle>	_createTemplatePieceTransformed ( const std::vector<plTriangle> &baseTriObject,
                                                               const plMatrix44  &plugTransform,
-                                                              const PLdouble    &zOffset,
+                                                              const PLfloat     &zOffset,
                                                               const plVector3   &scale,
-                                                              const PLdouble    &keyTranslationXAxis,
-                                                              const PLdouble    &keyRotationZAxis );
+                                                              const PLfloat     &keyTranslationXAxis,
+                                                              const PLfloat     &keyRotationZAxis );
       
 		
     

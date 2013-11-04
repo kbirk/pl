@@ -41,8 +41,8 @@ class plCap
 
     public:
 
-        plSeq<plTriangle>       triangles;
-        plSeq<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above
+        std::vector<plTriangle>       triangles;
+        std::vector<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above
     
         plCap() {}
 };
@@ -54,8 +54,7 @@ class plGraft : public plRenderable,
 
     public:
    
-        plGraft();
-        
+        plGraft();      
         plGraft( const plPlug &harvest, 
                  const plPlug &recipient, 
                  PLfloat radius,
@@ -70,9 +69,9 @@ class plGraft : public plRenderable,
         const PLfloat   &cartilageThickness() const { return _cartilageThickness; }     
         const plVector3 &markDirection()      const { return _markDirection; } 
         
-        void adjustHeightOffset ( PLfloat adjustment) { _heightOffset += adjustment; } 
-        void adjustRadius       ( PLfloat adjustment) { _radius += adjustment; if (_radius < 0) _radius = 0; _setCaps(); } 
-        void adjustLength       ( PLfloat adjustment) { _length += adjustment; if (_length < 0) _length = 0; _setCaps(); } 
+        void adjustHeightOffset ( PLfloat adjustment ) { _heightOffset += adjustment; } 
+        void adjustRadius       ( PLfloat adjustment ) { _radius += adjustment; if (_radius < 0) _radius = 0; _setCaps(); } 
+        void adjustLength       ( PLfloat adjustment ) { _length += adjustment; if (_length < 0) _length = 0; _setCaps(); } 
 
         const plTransform &transform ( PLuint type ) const;
         const plPlug      &plug      ( PLuint type ) const;
@@ -114,8 +113,8 @@ class plGraft : public plRenderable,
                   
         void      _setCaps();        
         void      _findCap              ( plCap &cap, const plModel &model );
-        plSeq<plVector3> _pointsOutsideTriangles( plVector3 *verts, PLfloat radiusSquared ) const;
-        plSeq<plVector3> _pointsInsideTriangles ( plVector3 *verts, PLfloat *dist, PLfloat radiusSquared ) const;
+        std::vector<plVector3> _pointsOutsideTriangles( plVector3 *verts, PLfloat radiusSquared ) const;
+        std::vector<plVector3> _pointsInsideTriangles ( plVector3 *verts, PLfloat *dist, PLfloat radiusSquared ) const;
 
         bool      _triangleIntersection ( plCap &cap, const plTriangle &triangle ) const;
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;

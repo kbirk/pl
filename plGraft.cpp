@@ -136,8 +136,8 @@ void plGraft::_updateCartilageMesh()
 {
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
-    plSeq<plVector3> vertices;
-    plSeq<PLuint>    indices;
+    std::vector<plVector3> vertices;     vertices.reserve( _cartilageCap.triangles.size()*6 + ( _cartilageCap.perimeter.size() + _boneCap.perimeter.size() )*6 );
+    std::vector<PLuint>    indices;      indices.reserve( _cartilageCap.triangles.size()*3 + ( _cartilageCap.perimeter.size() + _boneCap.perimeter.size() )*3 );
     
     for (PLuint i = 0; i < _cartilageCap.triangles.size(); i++)
     {
@@ -148,18 +148,18 @@ void plGraft::_updateCartilageMesh()
         const plVector3 &p2 = _cartilageCap.triangles[i].point2();
         const plVector3 &n  = _cartilageCap.triangles[i].normal();
         
-        vertices.add( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
-        vertices.add( n );                                     // normal
+        vertices.push_back( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
+        vertices.push_back( n );                                     // normal
 
-        vertices.add( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
-        vertices.add( n );                                     // normal
+        vertices.push_back( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
+        vertices.push_back( n );                                     // normal
         
-        vertices.add( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
-        vertices.add( n );                                     // normal
+        vertices.push_back( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
+        vertices.push_back( n );                                     // normal
 
-        indices.add(base+0);
-        indices.add(base+1); 
-        indices.add(base+2);   
+        indices.push_back(base+0);
+        indices.push_back(base+1); 
+        indices.push_back(base+2);   
     }
     
     // cartilage walls
@@ -180,13 +180,13 @@ void plGraft::_updateCartilageMesh()
         
             plVector3 n = (_cartilageCap.perimeter[c].point).normalize();
     
-            indices.add(vertices.size()/2);
-            vertices.add( _cartilageCap.perimeter[c].point );   // position
-            vertices.add( n );                                  // normal
+            indices.push_back(vertices.size()/2);
+            vertices.push_back( _cartilageCap.perimeter[c].point );   // position
+            vertices.push_back( n );                                  // normal
             
-            indices.add(vertices.size()/2);
-            vertices.add( _boneCap.perimeter[b].point );        // position
-            vertices.add( n );                                  // normal
+            indices.push_back(vertices.size()/2);
+            vertices.push_back( _boneCap.perimeter[b].point );        // position
+            vertices.push_back( n );                                  // normal
         
             if (cAngle < bAngle) 
             {	
@@ -198,9 +198,9 @@ void plGraft::_updateCartilageMesh()
                     cOffset = 2 * PL_PI;
                 }
         
-                indices.add(vertices.size()/2);
-                vertices.add( _cartilageCap.perimeter[c].point );    // position
-                vertices.add( n );                                  // normal
+                indices.push_back(vertices.size()/2);
+                vertices.push_back( _cartilageCap.perimeter[c].point );    // position
+                vertices.push_back( n );                                  // normal
             }  
             else 
             {			
@@ -212,9 +212,9 @@ void plGraft::_updateCartilageMesh()
                     bOffset = 2 * PL_PI;
                 }
         
-                indices.add(vertices.size()/2);
-                vertices.add( _boneCap.perimeter[b].point );        // position
-                vertices.add( n );                                  // normal
+                indices.push_back(vertices.size()/2);
+                vertices.push_back( _boneCap.perimeter[b].point );        // position
+                vertices.push_back( n );                                  // normal
             }
             stepsLeft--;
         }
@@ -231,9 +231,10 @@ void plGraft::_updateBoneMesh()
 {        
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
-    plSeq<plVector3> vertices;
-    plSeq<PLuint>    indices; 
+    std::vector<plVector3> vertices;     vertices.reserve( _boneCap.triangles.size()*6 + _boneCap.perimeter.size()*6 + 14 );
+    std::vector<PLuint>    indices;      indices.reserve( _boneCap.triangles.size()*3 + _boneCap.perimeter.size() * 9 ); 
     
+    // generate surface vertices for cap
     for (PLuint i = 0; i < _boneCap.triangles.size(); i++)
     {
         PLint base = vertices.size()/2;
@@ -243,21 +244,21 @@ void plGraft::_updateBoneMesh()
         const plVector3 &p2 = _boneCap.triangles[i].point2();
         const plVector3 &n  = _boneCap.triangles[i].normal();
         
-        vertices.add( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
-        vertices.add( n );                                     // normal
+        vertices.emplace_back( plVector3( p0.x, p0.y+0.01f, p0.z) ); // position
+        vertices.push_back( n );                                     // normal
 
-        vertices.add( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
-        vertices.add( n );                                     // normal
+        vertices.emplace_back( plVector3( p1.x, p1.y+0.01f, p1.z) ); // position
+        vertices.push_back( n );                                     // normal
         
-        vertices.add( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
-        vertices.add( n );                                     // normal
+        vertices.emplace_back( plVector3( p2.x, p2.y+0.01f, p2.z) ); // position
+        vertices.push_back( n );                                     // normal
 
-        indices.add(base+0);
-        indices.add(base+1); 
-        indices.add(base+2);   
+        indices.push_back(base+0);
+        indices.push_back(base+1); 
+        indices.push_back(base+2);   
     }
     
-    // bone walls
+    // generate cylinder walls
     plVector3 centreBottom = -(_length) * y;
     plVector3 z(0,0,1);
     plVector3 x(1,0,0);
@@ -273,14 +274,14 @@ void plGraft::_updateBoneMesh()
         plVector3 prevBot = centreBottom + _radius * cos(theta) * z + _radius * sin(theta) * x;
 
         // top side
-        vertices.add( prevTop ); // position
-        vertices.add( n);        // normal
+        vertices.push_back( prevTop ); // position
+        vertices.push_back( n);        // normal
         // bottom side
-        vertices.add( prevBot ); // position
-        vertices.add( n);        // normal
+        vertices.push_back( prevBot ); // position
+        vertices.push_back( n);        // normal
         // bottom bottom
-        vertices.add( prevBot ); // position 
-        vertices.add( -y);       // normal
+        vertices.push_back( prevBot ); // position 
+        vertices.push_back( -y);       // normal
         
         for (PLuint i=0; i<_boneCap.perimeter.size(); i++) 
         {
@@ -290,42 +291,42 @@ void plGraft::_updateBoneMesh()
 
             plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
             // top side
-            vertices.add( top ); // position
-            vertices.add( n);    // normal
+            vertices.push_back( top ); // position
+            vertices.push_back( n);    // normal
             // bottom side    
-            vertices.add( bot ); // position
-            vertices.add( n);    // normal
+            vertices.push_back( bot ); // position
+            vertices.push_back( n);    // normal
             // bottom bottom
-            vertices.add( bot ); // position 
-            vertices.add( -y);   // normal
+            vertices.push_back( bot ); // position 
+            vertices.push_back( -y);   // normal
         }
         // top side
-        vertices.add( prevTop ); // position
-        vertices.add( n);        // normal
+        vertices.push_back( prevTop ); // position
+        vertices.push_back( n);        // normal
         // bottom side
-        vertices.add( prevBot ); // position
-        vertices.add( n);        // normal
+        vertices.push_back( prevBot ); // position
+        vertices.push_back( n);        // normal
         // bottom bottom
-        vertices.add( prevBot ); // position 
-        vertices.add( -y);       // normal
+        vertices.push_back( prevBot ); // position 
+        vertices.push_back( -y);       // normal
         // bottom centre point
-        vertices.add( centreBottom );   // position
-        vertices.add( -y );             // normal  
+        vertices.push_back( centreBottom );   // position
+        vertices.push_back( -y );             // normal  
         
         for (PLuint j = 0; j <= _boneCap.perimeter.size()*3; j+=3) 
         {
             // side t1
-            indices.add(base+j);
-            indices.add(base+j+1);
-            indices.add(base+j+3);
+            indices.push_back(base+j);
+            indices.push_back(base+j+1);
+            indices.push_back(base+j+3);
             // side t2
-            indices.add(base+j+1);
-            indices.add(base+j+4);
-            indices.add(base+j+3);
+            indices.push_back(base+j+1);
+            indices.push_back(base+j+4);
+            indices.push_back(base+j+3);
             // bottom t3
-            indices.add(base+j+2);
-            indices.add(vertices.size()/2 - 1);
-            indices.add(base+j+5);
+            indices.push_back(base+j+2);
+            indices.push_back(vertices.size()/2 - 1);
+            indices.push_back(base+j+5);
         }
 
     }
@@ -341,16 +342,16 @@ void plGraft::_findCap( plCap &cap, const plModel &model )
     cap.perimeter.clear();
 
     plSet<const plTriangle*> triangles;
-
     model.octree().graftIntersect( triangles, _harvest.transform, _radius );
-
-    // must use iterators for set
-    plSet<const plTriangle*>::iterator tri_itr = triangles.begin();
-    plSet<const plTriangle*>::iterator tri_end = triangles.end();
-    for ( ; tri_itr != tri_end; ++tri_itr)
+    
+    // reserve for max number of triangles
+    cap.triangles.reserve( triangles.size() );
+    
+    // iterate through and add triangles
+    for ( const plTriangle* tri : triangles )
     {
         // check if triangle is on cap
-        _triangleIntersection( cap, *(*tri_itr) );
+        _triangleIntersection( cap, *tri );
     } 
 
     // calc just under radius
@@ -381,11 +382,9 @@ void plGraft::_findCap( plCap &cap, const plModel &model )
     {       
         cap.perimeter.reserve( angles.size() );  // reserve size
         
-        plSet<plPointAndAngle>::iterator angle_itr = angles.begin();
-        plSet<plPointAndAngle>::iterator angle_end = angles.end();
-        for ( ; angle_itr != angle_end; ++angle_itr)
+        for ( const plPointAndAngle& angle : angles )
         {
-            cap.perimeter.add( *angle_itr );
+            cap.perimeter.push_back( angle );
         }
     }
 
@@ -407,7 +406,7 @@ bool plGraft::_isBeyondHeightThresholds( const plVector3 &p0, const plVector3 &p
 }
 
 
-plSeq<plVector3> plGraft::_pointsOutsideTriangles( plVector3 *verts, PLfloat radiusSquared ) const
+std::vector<plVector3> plGraft::_pointsOutsideTriangles( plVector3 *verts, PLfloat radiusSquared ) const
 {
     // closest points on each segment
     plVector3 e[3];
@@ -422,12 +421,12 @@ plSeq<plVector3> plGraft::_pointsOutsideTriangles( plVector3 *verts, PLfloat rad
     d[2] = _harvest.transform.squaredDistToAxis( e[2] ); 
     
     // indexs of inside points
-    plSeq<PLuint> insideEdges;
-    if ( d[0] < radiusSquared ) insideEdges.add( 0 );
-    if ( d[1] < radiusSquared ) insideEdges.add( 1 );
-    if ( d[2] < radiusSquared ) insideEdges.add( 2 );
+    std::vector<PLuint> insideEdges;
+    if ( d[0] < radiusSquared ) insideEdges.push_back( 0 );
+    if ( d[1] < radiusSquared ) insideEdges.push_back( 1 );
+    if ( d[2] < radiusSquared ) insideEdges.push_back( 2 );
     
-    plSeq<plVector3> points(4);
+    std::vector<plVector3> points;      points.reserve(4);
     
     switch ( insideEdges.size() )
     {
@@ -447,10 +446,10 @@ plSeq<plVector3> plGraft::_pointsOutsideTriangles( plVector3 *verts, PLfloat rad
             plVector3 &m0p0 = verts[ insideEdges[0] ];                
             plVector3 &m0p1 = verts[ (insideEdges[0]+1) % 3 ]; 
 
-            points.add( _pointOnCircumference( m0, m0p1 ) );
-            points.add( _pointOnCircumference( m1, m0 ) );
-            points.add( _pointOnCircumference( m2, m0 ) );
-            points.add( _pointOnCircumference( m0p0, m0 ) );
+            points.emplace_back( _pointOnCircumference( m0, m0p1 ) );
+            points.emplace_back( _pointOnCircumference( m1, m0 ) );
+            points.emplace_back( _pointOnCircumference( m2, m0 ) );
+            points.emplace_back( _pointOnCircumference( m0p0, m0 ) );
             
             break;
         }    
@@ -473,10 +472,10 @@ plSeq<plVector3> plGraft::_pointsOutsideTriangles( plVector3 *verts, PLfloat rad
             plVector3 &m0p1 = verts[ (insideEdges[0]+1) % 3 ]; 
             plVector3 &m1p1 = verts[ (insideEdges[1]+1) % 3 ];
             
-            points.add( _pointOnCircumference( m0, m0p1 ) );
-            points.add( _pointOnCircumference( m1p0, m1 ) );
-            points.add( _pointOnCircumference( m1, m1p1 ) );
-            points.add( _pointOnCircumference( m0p0, m0 ) ); 
+            points.emplace_back( _pointOnCircumference( m0, m0p1 ) );
+            points.emplace_back( _pointOnCircumference( m1p0, m1 ) );
+            points.emplace_back( _pointOnCircumference( m1, m1p1 ) );
+            points.emplace_back( _pointOnCircumference( m0p0, m0 ) ); 
             
             break;            
         }
@@ -490,7 +489,7 @@ plSeq<plVector3> plGraft::_pointsOutsideTriangles( plVector3 *verts, PLfloat rad
     return points;
 }
 
-plSeq<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloat *dist, PLfloat radiusSquared ) const
+std::vector<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloat *dist, PLfloat radiusSquared ) const
 {
     // at least one point is within radius, set it as first point
     if (dist[0] <= radiusSquared) 
@@ -518,7 +517,7 @@ plSeq<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloat *dis
 
     bool prevInside = true; // always starts as true (ds[0] <= radiusSquared)
 
-    plSeq<plVector3> points(5);
+    std::vector<plVector3> points;      points.reserve(5);
     
     for ( int i=0; i<3; i++ ) 
     {
@@ -529,19 +528,19 @@ plSeq<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloat *dis
         if ( prevInside && currentInside ) 
         {
             // Add inside triangle point
-            points.add( verts[j] );
+            points.push_back( verts[j] );
         } 
         else if ( prevInside && !currentInside ) 
         {
             // Find point on edge of graft
-            points.add( _pointOnCircumference( verts[i], verts[j] ) );
+            points.emplace_back( _pointOnCircumference( verts[i], verts[j] ) );
         } 
         else if ( !prevInside && currentInside ) 
         {
             // Find entering point and angle 
-            points.add( _pointOnCircumference( verts[i], verts[j] ) );
+            points.emplace_back( _pointOnCircumference( verts[i], verts[j] ) );
             // Add inside triangle point    
-            points.add( verts[j] );
+            points.push_back( verts[j] );
         }
         else if ( !prevInside && !currentInside )
         {
@@ -551,8 +550,8 @@ plSeq<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloat *dis
             if ( d < radiusSquared )
             {
                 // inside
-                points.add( _pointOnCircumference( verts[i], m ) );
-                points.add( _pointOnCircumference( m, verts[j] ) );
+                points.emplace_back( _pointOnCircumference( verts[i], m ) );
+                points.emplace_back( _pointOnCircumference( m, verts[j] ) );
             }
         }
 
@@ -596,11 +595,11 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
     // if all points of triangle are withing radius, accept whole triangle, exit early
     if ( maxDist <= radiusSquared ) 
     {
-        cap.triangles.add( plTriangle( normal, verts[0], verts[1], verts[2] ) );
+        cap.triangles.push_back( plTriangle( normal, verts[0], verts[1], verts[2] ) );
         return true;
     }  
     
-    plSeq<plVector3> points(6);
+    std::vector<plVector3> points;      points.reserve(6);
     
     if (minDist > radiusSquared)
     {  
@@ -617,17 +616,17 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
         return false;
 
     // add first triangle
-    cap.triangles.add( plTriangle( normal, points[0], points[1], points[2] ) );
+    cap.triangles.emplace_back( plTriangle( normal, points[0], points[1], points[2] ) );
     
     if ( points.size() >= 4 )
     {
         // if there are 4 points, create a second triangle
-        cap.triangles.add( plTriangle( normal, points[0], points[2], points[3] ) );
+        cap.triangles.emplace_back( plTriangle( normal, points[0], points[2], points[3] ) );
     }
     if ( points.size() == 5 )
     {
         // if there are 5 points, create a third triangle
-        cap.triangles.add( plTriangle( normal, points[0], points[3], points[4] ) );
+        cap.triangles.emplace_back( plTriangle( normal, points[0], points[3], points[4] ) );
     }
     return true;
 }

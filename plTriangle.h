@@ -4,7 +4,7 @@
 #include "plCommon.h"
 #include "plString.h"
 #include "plVector3.h"
-#include "plSeq.h"
+
 
 
 // a struct for storing information about ray intersection with a triangle
@@ -72,7 +72,7 @@ class plTriangle
 
     private:
     
-        plSeq<plVector3> _points;
+        std::vector<plVector3> _points;
         plVector3        _normal;
         plVector3        _centroid;
         PLfloat          _radius;
@@ -85,9 +85,9 @@ std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
 
 namespace plSTL
 {
-    PLbool importFile      ( plSeq<plTriangle> &triangles, const plString &filename );
-    PLbool exportFileBinary( const plSeq<plTriangle> &triangles , const plString &filename );
-    PLbool exportFileASCII ( const plSeq<plTriangle> &triangles , const plString &filename );
+    PLbool importFile      ( std::vector<plTriangle> &triangles, const plString &filename );
+    PLbool exportFileBinary( const std::vector<plTriangle> &triangles , const plString &filename );
+    PLbool exportFileASCII ( const std::vector<plTriangle> &triangles , const plString &filename );
 }
 
 #endif

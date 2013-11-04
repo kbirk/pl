@@ -3,7 +3,7 @@
 
 #include "plCommon.h"
 #include "plString.h"
-#include "plSeq.h"
+
 #include "plVector3.h"
 #include "plCSV.h"
 #include "plRenderable.h"
@@ -43,12 +43,12 @@ class plPlan : public plRenderable
         const plBoneAndCartilage& models     ( PLuint index ) const  { return *_models[index];      }
         
         // const array getters (gives access to array without allowing control to add, remove, etc)
-        const plSeq<plDefectSite*>&       defectSites() const { return _defectSites; }
-        const plSeq<plDonorSite*>&        donorSites()  const { return _donorSites;  }
-        const plSeq<plIGuideSite*>&       iGuideSites() const { return _iGuideSites; }
-        const plSeq<plIGuide*>&           iGuides()     const { return _iGuides;     }
-        const plSeq<plGraft*>&            grafts()      const { return _grafts; }
-        const plSeq<plBoneAndCartilage*>& models()      const { return _models; }
+        const std::vector<plDefectSite*>&       defectSites() const { return _defectSites; }
+        const std::vector<plDonorSite*>&        donorSites()  const { return _donorSites;  }
+        const std::vector<plIGuideSite*>&       iGuideSites() const { return _iGuideSites; }
+        const std::vector<plIGuide*>&           iGuides()     const { return _iGuides;     }
+        const std::vector<plGraft*>&            grafts()      const { return _grafts; }
+        const std::vector<plBoneAndCartilage*>& models()      const { return _models; }
         
         void addDefectSite( PLuint modelIndex = 0 );
         void addDonorSite ( PLuint modelIndex = 0 );
@@ -71,13 +71,13 @@ class plPlan : public plRenderable
 
     private: 
     
-        plSeq<plDefectSite*>       _defectSites;
-        plSeq<plDonorSite*>        _donorSites;
-        plSeq<plIGuideSite*>       _iGuideSites;
-        plSeq<plIGuide*>           _iGuides;
-        plSeq<plKWire*>            _kWires;
-        plSeq<plGraft*>            _grafts;
-        plSeq<plBoneAndCartilage*> _models;
+        std::vector<plDefectSite*>       _defectSites;
+        std::vector<plDonorSite*>        _donorSites;
+        std::vector<plIGuideSite*>       _iGuideSites;
+        std::vector<plIGuide*>           _iGuides;
+        std::vector<plKWire*>            _kWires;
+        std::vector<plGraft*>            _grafts;
+        std::vector<plBoneAndCartilage*> _models;
 };
 
 #endif

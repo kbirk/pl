@@ -3,7 +3,7 @@
 
 plBoneAndCartilage::plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile, const plString &combinedFile)
     :   bone(boneFile, 5), cartilage(cartilageFile, 7), combined(combinedFile, 5)
-{      
+{
 }
 
 

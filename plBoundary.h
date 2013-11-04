@@ -3,7 +3,7 @@
 
 #include "plCommon.h"
 #include "plMath.h"
-#include "plSeq.h"
+
 #include "plVector3.h"
 #include "plRenderable.h"
 #include "plEditable.h"
@@ -18,7 +18,7 @@ class plBoundary : public plRenderable,
     public:
 
         plBoundary();      
-        plBoundary( const plSeq<plString> &row );
+        plBoundary( const std::vector<plString> &row );
  
         PLuint size() const;
 
@@ -35,8 +35,8 @@ class plBoundary : public plRenderable,
         
     protected:
 
-        plSeq<plVector3> _points;       // always in counterclockwise direction
-        plSeq<plVector3> _normals;   
+        std::vector<plVector3> _points;       // always in counterclockwise direction
+        std::vector<plVector3> _normals;   
         plMesh           _mesh;    
 
         void             _setColour() const;    

@@ -164,19 +164,19 @@ void calc_p(PLint x, PLint y, PLfloat p[])
     PLint width  = viewport[2] + viewport[0]*2;
     PLint height = viewport[3] + viewport[1]*2;
     
-    p[0] =  2.0 * ( x - 0.5*width ) / width;
-    p[1] = -2.0 * ( -(y-height) - 0.5*height ) / height;
+    p[0] =  2.0f * ( x - 0.5f*width ) / width;
+    p[1] = -2.0f * ( -(y-height) - 0.5f*height ) / height;
     r = p[0]*p[0] + p[1]*p[1];
-    if (r > 1.0) 
+    if (r > 1.0f) 
     {
-        s = 1.0/sqrt(r);
+        s = 1.0f/sqrt(r);
         p[0] *= s;
         p[1] *= s;
-        p[2] = 0.0;
+        p[2] = 0.0f;
     } 
     else 
     {
-        p[2] = sqrt(1.0 - r);
+        p[2] = sqrt(1.0f - r);
     }
 }
 
@@ -194,8 +194,8 @@ plVector4 calc_quat(PLint x0, PLint y0, PLint x1, PLint y1)
     q.z = p0[0]*p1[1] - p1[0]*p0[1];
     q.w = (p0[0]*p1[0] + p0[1]*p1[1] + p0[2]*p1[2]);
     
-    if (q.w < -1.0) 
-        q.w = -1.0;
+    if (q.w < -1.0f) 
+        q.w = -1.0f;
         
     return q;
 }

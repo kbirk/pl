@@ -3,7 +3,7 @@
 
 #include "plCommon.h"
 #include "plVector3.h"
-#include "plSeq.h"
+
 #include "plPolygon.h"
 #include "plTriangle.h"
 #include "plMatrix44.h"
@@ -19,7 +19,7 @@ namespace plMath
     PLfloat   fsqrt                        ( PLfloat x );
     PLfloat   clamp                        ( PLfloat val, PLfloat min = -1, PLfloat max = 1);
 
-    plIntersection rayIntersect     ( const plSeq<plTriangle> &triangles, 
+    plIntersection rayIntersect     ( const std::vector<plTriangle> &triangles, 
                                       const plVector3 &rayOrigin, 
                                       const plVector3 &rayDirection, 
                                       PLbool ignoreBehindRay = false, 
@@ -27,8 +27,8 @@ namespace plMath
 
     PLbool solveMatrix22Equation(PLfloat a11, PLfloat a12, PLfloat a21, PLfloat a22, PLfloat b1, PLfloat b2, PLfloat &x, PLfloat &y);
 
-	void convexPolysToTris         ( plSeq<plTriangle> &tris, const plSeq<plPolygon> &polys );
-	void concavePolysToTris        ( plSeq<plTriangle> &tris, const plSeq<plPolygon> &polys );
+	void convexPolysToTris         ( std::vector<plTriangle> &tris, const std::vector<plPolygon> &polys );
+	void concavePolysToTris        ( std::vector<plTriangle> &tris, const std::vector<plPolygon> &polys );
 
 };
 
