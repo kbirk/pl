@@ -1,21 +1,21 @@
 #include "plChessBoard.h"
 
-plChessBoard::plChessBoard( PLfloat blocksize )
+plChessBoard::plChessBoard()
 {           
-    _generate( blocksize );
-    setTransparent();
     _readChessBoardCalib();
+    _generate();
+    setTransparent();
 }
 
 
-void plChessBoard::_generate( PLfloat blocksize )
+void plChessBoard::_generate()
 {  
     
     PLint  width_blocks   = 8;
-    PLfloat width         = width_blocks * blocksize; 
+    PLfloat width         = width_blocks * _blockSize;
       
     PLint  height_blocks  = 9;
-    PLfloat height        = height_blocks * blocksize;
+    PLfloat height        = height_blocks * _blockSize;
     
     PLbool black = true;
 
@@ -24,16 +24,16 @@ void plChessBoard::_generate( PLfloat blocksize )
 
     for (PLint i = -1; i < width_blocks-1; i++)
     {
-        PLfloat width_pos  = i * blocksize;
+        PLfloat width_pos  = i * _blockSize;
 
         for (PLint j = -1; j < height_blocks-1; j++)
         {       
-            PLfloat height_pos = j * blocksize;
+            PLfloat height_pos = j * _blockSize;
             
             plVector3 v0( width_pos, height_pos, 0.0f );
-            plVector3 v1( width_pos+blocksize, height_pos, 0.0f );
-            plVector3 v2( width_pos+blocksize, height_pos+blocksize, 0.0f );
-            plVector3 v3( width_pos, height_pos+blocksize, 0.0f );
+            plVector3 v1( width_pos+_blockSize, height_pos, 0.0f );
+            plVector3 v2( width_pos+_blockSize, height_pos+_blockSize, 0.0f );
+            plVector3 v3( width_pos, height_pos+_blockSize, 0.0f );
             
             plVector3 n = ( (v1-v0) ^ (v2-v0) ).normalize();
             
@@ -215,6 +215,12 @@ PLbool plChessBoard::_readChessBoardCalib()
     }
     std::getline(infile, line);
     if ( sscanf( line.c_str(), "%f %f %f", &_calibYAxisPoint.x, &_calibYAxisPoint.y, &_calibYAxisPoint.z ) != 3 )
+    {
+        std::cerr << "Invalid base calibration file: " << chessBoardCalibFile << std::endl;
+        return false;
+    }
+    std::getline(infile, line);
+    if ( sscanf( line.c_str(), "%f", &_blockSize) != 1)
     {
         std::cerr << "Invalid base calibration file: " << chessBoardCalibFile << std::endl;
         return false;

@@ -300,7 +300,7 @@ plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const
 
 void plMatrix44::setRotationD(PLfloat angle_degree, const plVector3 &axis) 
 {
-    setRotation(angle_degree*0.017453292f, axis);
+    setRotation(angle_degree*PL_PI/180.f, axis);
 }
 
 
@@ -414,7 +414,6 @@ void plMatrix44::setRotation( const plVector4 &quat )
     _data[11] = 0.0f;
     _data[15] = 1.0f;
 }
-  
      
 void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_vector) 
 {

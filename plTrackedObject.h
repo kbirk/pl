@@ -37,7 +37,7 @@ class plTrackedObject : public plRenderable
     
         plDRBTransform   _DRBToTrackedPoint;
         plDRBTransform   _DRBToTrackedEnd;
-        plDRBTransform   _toFemurSTL;
+        plDRBTransform   _FemurDRBtoSTL;
 
         plVector3       _zeroVec;
         plVector3       _trackedTip, _tipWorldCoords, _rotationAxis;
