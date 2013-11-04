@@ -21,6 +21,8 @@ namespace plDraw
     void disk     ( float scale, PLbool flip = false );
     void cube     ( float halfwidth );
     void cube     ( const plVector3 &origin, float halfwidth );
+    void laserLine     ( const plVector3 &origin, const plVector3 &direction, float length);
+
 
 }
 
