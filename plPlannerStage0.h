@@ -24,7 +24,7 @@
 #define PL_STAGE_0_INVOCATIONS                PL_STAGE_0_NUM_GROUPS*PL_STAGE_0_GROUP_SIZE
 
 #define PL_STAGE_0_INITIAL_TEMPERATURE        1.0f
-#define PL_STAGE_0_COOLING_RATE               0.05f //0.00175f
+#define PL_STAGE_0_COOLING_RATE               0.01f //0.00175f
 
 
 class plAnnealingGroup

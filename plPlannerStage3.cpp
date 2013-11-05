@@ -11,7 +11,7 @@ plGreedyGroup::plGreedyGroup()
         _totalRmsSSBO               ( PL_STAGE_3_INVOCATIONS*sizeof( PLfloat ) )       
 {   
     // initialize all rms to -1
-    std::vector<PLfloat> totalRMS( PL_STAGE_3_INVOCATIONS, 1.0f );
+    std::vector<PLfloat> totalRMS( PL_STAGE_3_INVOCATIONS, -1.0f );
     _totalRmsSSBO.set( totalRMS, totalRMS.size() );
 }       
  
@@ -36,7 +36,7 @@ void plGreedyGroup::unbind()
 
 void plGreedyGroup::update()
 {
-    std::vector<PLfloat> totalRMS( PL_STAGE_3_INVOCATIONS, 1.0f );
+    std::vector<PLfloat> totalRMS( PL_STAGE_3_INVOCATIONS, -1.0f );
     _totalRmsSSBO.read( totalRMS, totalRMS.size() );
 
     // find invocation with lowest RMS
@@ -59,8 +59,8 @@ void plGreedyGroup::update()
         _lowestRMS = minRMS;
 
         _donorSolutionPositionsSSBO.read( _lowestPositions, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
-        _donorSolutionNormalsSSBO.read( _lowestNormals, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
-        _donorSolutionXAxesSSBO.read( _lowestXAxes, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
+        _donorSolutionNormalsSSBO.read  ( _lowestNormals,   PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
+        _donorSolutionXAxesSSBO.read    ( _lowestXAxes,     PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
     }
 
 }
