@@ -152,6 +152,24 @@ namespace plPlannerStage3
         rmsData.rmsSSBO.unbind( 2 );
         greedyBuffers.unbind();
         
+        // DEBUG
+        std::cout << std::endl << "DEBUG: " << std::endl;
+        for ( PLuint i=0; i<defectSolution.graftCount; i++)
+        {
+            std::cout << "Graft " << i << ",\tPosition: " << donorSolution.graftPositions[i] 
+                                       << ",\tNormal: "   << donorSolution.graftNormals[i] << std::endl;
+            /*       
+            plVector3 origin( donorSolution.graftPositions[i] );
+            plVector3 y     ( donorSolution.graftNormals[i]   );                    
+            plVector3 x =   ( y ^ plVector3( 0, 0, 1 ) ).normalize();      
+                                     
+            plRenderer::queue( plDebugTransform( x, y, origin ) );  
+            */          
+        }
+        std::cout << std::endl;
+        //
+        
+        
         /*
         if (donorSolution.graftPositions.size() > 0 )
         {

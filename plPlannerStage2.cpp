@@ -52,6 +52,12 @@ namespace plPlannerStage2
         capData.donorCapIndexSSBO.bind( 3 );
         rmsData.rmsSSBO.bind( 4 );
 
+        plSSBO debugSSBO ( planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4) );
+        debugSSBO.bind(5);
+
+        plSSBO matrixSSBO ( planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plMatrix44 ) );
+        matrixSSBO.bind(6);
+
         const PLuint NUM_WORKGROUPS = ceil( planningData.totalDonorGridPoints() / (PLfloat) PL_STAGE_2_GROUP_SIZE); // ensure enough workgroups are used
         
         for ( PLuint i=0; i < PL_NUM_COMPARISION_DIRECTIONS; i++ )
@@ -80,6 +86,26 @@ namespace plPlannerStage2
         {
             std::cout << rmsBuffer[i] << "  ";
         }
+
+        std::vector<plVector4> debugBuffer( planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION, plVector4(-1.0, -1.0, -1.0, -1.0 ) );                
+        debugSSBO.read( debugBuffer, debugBuffer.size() );
+      
+        std::vector<plMatrix44> debugMatrixBuffer( planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION, plMatrix44() );                
+        matrixSSBO.read( debugMatrixBuffer, debugMatrixBuffer.size() );
+      
+      
+        std::cout << std::endl << "DEBUG: " << std::endl;
+        for ( PLuint i=0; i<defectSolution.graftCount; i++)
+        {
+            plVector3 position = planningData.donorSites[0].gridPoints[100+i*25];
+            plVector3 normal = debugBuffer[ ( ( 100 + (i*25) ) * PL_MAX_GRAFTS_PER_SOLUTION ) + i ];
+        
+            std::cout << "RotationMatrix:\n" << debugMatrixBuffer[ ( ( 100 + (i*25) ) * PL_MAX_GRAFTS_PER_SOLUTION ) + i ] << std::endl;
+        
+            std::cout << "Graft " << i << ",\tPosition: " << position
+                                       << ",\tNormal: "   << normal << std::endl;
+        }   
+
 
         planningData.defectSiteSSBO.unbind( 0 );
         planningData.donorSitesSSBO.unbind( 1 );

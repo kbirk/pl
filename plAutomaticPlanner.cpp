@@ -141,8 +141,8 @@ namespace plAutomaticPlanner
                 plVector3 originalRecipientOrigin( defectSolution.graftPositions[i] );
                 plVector3 originalRecipientY     ( defectSolution.graftNormals[i]   );        
                 
-                plPlug recipient( 0, plan.models(0), plTransform( originalRecipientY ^ plVector3( 0, 0, 1 ), originalRecipientY, originalRecipientOrigin ) );
-                plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY ^ plVector3( 0, 0, 1 ), originalHarvestY,   originalHarvestOrigin   ) );
+                plPlug recipient( 0, plan.models(0), plTransform( (originalRecipientY ^ plVector3( 0, 0, 1 ) ).normalize(), originalRecipientY, originalRecipientOrigin ) );
+                plPlug harvest  ( 0, plan.models(0), plTransform( (originalHarvestY ^ plVector3( 0, 0, 1 ) ).normalize(), originalHarvestY,   originalHarvestOrigin   ) );
                 
                 plan.addGraft( harvest, recipient, defectSolution.graftRadii[i], 0, 0 );
 

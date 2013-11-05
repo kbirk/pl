@@ -1351,7 +1351,7 @@ objects/plTransparentRenderable.o: plTransparentRenderable.h plCommon.h
 objects/plTransparentRenderable.o: plRenderable.h plVector3.h plString.h
 objects/plTriangle.o: plTriangle.h plCommon.h plString.h plVector3.h
 objects/plUtility.o: plUtility.h plCommon.h
-objects/plVector3.o: plVector3.h plCommon.h plString.h
+objects/plVector3.o: plVector3.h plCommon.h plString.h plVector4.h
 objects/plVector4.o: plVector4.h plCommon.h plString.h plVector3.h
 objects/plWindow.o: plWindow.h plCommon.h plMatrix44.h plVector3.h plString.h
 objects/plWindow.o: plVector4.h plTriangle.h plRenderingPipeline.h
