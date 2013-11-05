@@ -33,9 +33,11 @@ class plGreedyGroup
         PLfloat                _lowestRMS;
         std::vector<plVector4> _lowestPositions;
         std::vector<plVector4> _lowestNormals;
+        std::vector<plVector4> _lowestXAxes;
         
         plSSBO _donorSolutionPositionsSSBO; 
         plSSBO _donorSolutionNormalsSSBO;
+        plSSBO _donorSolutionXAxesSSBO;
         plSSBO _totalRmsSSBO;
 };
 

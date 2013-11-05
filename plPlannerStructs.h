@@ -48,6 +48,7 @@ class plDonorSolution
      
         std::vector<plVector4>  graftPositions;
         std::vector<plVector4>  graftNormals;
+        std::vector<plVector4>  graftXAxes;
         float                   rms;
 
         plDonorSolution() {};

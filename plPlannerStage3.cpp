@@ -3,9 +3,11 @@
 plGreedyGroup::plGreedyGroup()
     :   _lowestRMS       ( FLT_MAX ),
         _lowestPositions ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4() ),
-        _lowestNormals   ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4() ),        
+        _lowestNormals   ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4() ),
+        _lowestXAxes     ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4() ),
         _donorSolutionPositionsSSBO ( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
         _donorSolutionNormalsSSBO   ( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
+        _donorSolutionXAxesSSBO     ( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
         _totalRmsSSBO               ( PL_STAGE_3_INVOCATIONS*sizeof( PLfloat ) )       
 {   
     // initialize all rms to -1
@@ -18,7 +20,8 @@ void plGreedyGroup::bind()
 {
     _donorSolutionPositionsSSBO.bind( 3 );
     _donorSolutionNormalsSSBO.bind( 4 );
-    _totalRmsSSBO.bind( 5 );
+    _donorSolutionXAxesSSBO.bind( 5 );
+    _totalRmsSSBO.bind( 6 );
 }
 
 
@@ -26,7 +29,8 @@ void plGreedyGroup::unbind()
 {
     _donorSolutionPositionsSSBO.unbind( 3 );
     _donorSolutionNormalsSSBO.unbind( 4 );
-    _totalRmsSSBO.unbind( 5 );   
+    _donorSolutionXAxesSSBO.unbind( 5 );
+    _totalRmsSSBO.unbind( 6 );   
 }
 
 
@@ -56,6 +60,7 @@ void plGreedyGroup::update()
 
         _donorSolutionPositionsSSBO.read( _lowestPositions, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
         _donorSolutionNormalsSSBO.read( _lowestNormals, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
+        _donorSolutionXAxesSSBO.read( _lowestXAxes, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
     }
 
 }
@@ -65,6 +70,7 @@ void plGreedyGroup::getSolution( plDonorSolution &solution )
 {
     solution.graftPositions = _lowestPositions;
     solution.graftNormals   = _lowestNormals;  
+    solution.graftXAxes     = _lowestXAxes;  
     solution.rms = _lowestRMS;
 }
 
@@ -118,7 +124,7 @@ namespace plPlannerStage3
         planningData.defectSiteSSBO.bind( 0 );
         planningData.donorSitesSSBO.bind( 1 );
         rmsData.rmsSSBO.bind( 2 );
-        greedyBuffers.bind(); // 3, 4, 5
+        greedyBuffers.bind(); // 3, 4, 5, 6
 
 
         for (PLuint i=0; i<PL_STAGE_3_ITERATIONS; i++ )
