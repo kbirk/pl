@@ -161,9 +161,10 @@ namespace plPlannerStage0
             for ( PLint i=its; i>=0; i-- )
             {       
                 // call compute shader with 1D workgrouping
+#ifndef SKIP_COMPUTE_SHADER
                 glDispatchCompute( PL_STAGE_0_NUM_GROUPS, 1, 1 );
-                
-                // memory barrier      
+#endif
+                // memory barrier
                 glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
                 
                 stage0Shader.setLocalLoadUniform( i );                

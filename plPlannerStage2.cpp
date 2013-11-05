@@ -65,8 +65,9 @@ namespace plPlannerStage2
             stage2Shader.setRotationIndexUniform( i );
             
             // call compute shader with 1D workgrouping
+#ifndef SKIP_COMPUTE_SHADER
             glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
-             
+#endif
             // memory barrier      
             glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 

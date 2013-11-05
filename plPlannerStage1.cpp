@@ -57,8 +57,9 @@ namespace plPlannerStage1
         const PLuint NUM_WORKGROUPS = ceil( planningData.totalDonorGridPoints() + defectSolution.graftCount / (PLfloat) PL_STAGE_1_GROUP_SIZE ); // ensure enough workgroups are used    
             
         // call compute shader with 1D workgrouping
+#ifndef SKIP_COMPUTE_SHADER
         glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
-        
+#endif
         // memory barrier      
         glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
