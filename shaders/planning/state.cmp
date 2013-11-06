@@ -1,0 +1,491 @@
+
+
+// structs
+
+struct state
+{
+    vec4  positions     [PL_MAX_GRAFTS_PER_SOLUTION];
+    vec4  normals       [PL_MAX_GRAFTS_PER_SOLUTION];
+    float radii         [PL_MAX_GRAFTS_PER_SOLUTION];
+    uint  graftCount;
+};
+
+
+//functions
+
+float getInvoEnergies()
+{
+    return invoEnergies[ gl_GlobalInvocationID.x ];
+}
+
+
+vec4 getInvoGraftPositions( in uint index )
+{
+    return invoGraftPositions[ ( gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION ) + index ];
+}
+
+
+vec4 getInvoGraftNormals( in uint index )
+{
+    return invoGraftNormals[ ( gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION ) + index ];
+}
+
+
+float getInvoGraftRadii( in uint index )
+{
+    return invoGraftRadii[ ( gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION ) + index ];
+}
+
+
+uint getInvoGraftCounts()
+{
+    return invoGraftCounts[ gl_GlobalInvocationID.x ];
+}
+
+float getInvoEnergies( in uint invoIndex )
+{
+    return invoEnergies[ invoIndex ];
+}
+
+
+vec4 getInvoGraftPositions( in uint invoIndex, in uint graftIndex )
+{
+    return invoGraftPositions[ ( invoIndex*PL_MAX_GRAFTS_PER_SOLUTION ) + graftIndex ];
+}
+
+
+vec4 getInvoGraftNormals( in uint invoIndex, in uint graftIndex )
+{
+    return invoGraftNormals[ ( invoIndex*PL_MAX_GRAFTS_PER_SOLUTION ) + graftIndex ];
+}
+
+
+float getInvoGraftRadii( in uint invoIndex, in uint graftIndex )
+{
+    return invoGraftRadii[ ( invoIndex*PL_MAX_GRAFTS_PER_SOLUTION ) + graftIndex ];
+}
+
+
+uint getInvoGraftCounts( in uint invoIndex)
+{
+    return invoGraftCounts[ invoIndex ];
+}
+
+
+float getGroupEnergies()
+{
+    return groupEnergies[ gl_WorkGroupID.x ];
+}
+
+
+vec4 getGroupGraftPositions( in uint index )
+{
+    return groupGraftPositions[ gl_WorkGroupID.x*PL_MAX_GRAFTS_PER_SOLUTION + index ];
+}
+
+
+vec4 getGroupGraftNormals( in uint index )
+{
+    return groupGraftNormals[ gl_WorkGroupID.x*PL_MAX_GRAFTS_PER_SOLUTION + index ];
+}
+
+
+float getGroupGraftRadii( in uint index )
+{
+    return groupGraftRadii[ gl_WorkGroupID.x*PL_MAX_GRAFTS_PER_SOLUTION + index ];
+}
+
+
+uint getGroupGraftCounts()
+{
+    return groupGraftCounts[ gl_WorkGroupID.x ];
+}
+
+
+void setInvoEnergies( in float energy  )
+{
+    invoEnergies[ gl_GlobalInvocationID.x ] = energy;
+}
+
+
+void setInvoGraftPositions( in uint index, in vec4 position )
+{
+    invoGraftPositions[ ( gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION ) + index ] = position;
+}
+
+
+void setInvoGraftNormals( in uint index, in vec4 normal )
+{
+    invoGraftNormals[ ( gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION ) + index ] = normal;
+}
+
+
+void setInvoGraftRadii( in uint index, in float radius )
+{
+    invoGraftRadii[ ( gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION ) + index ] = radius;
+}
+
+
+void setInvoGraftCounts( in uint count )
+{
+    invoGraftCounts[ gl_GlobalInvocationID.x ] = count;
+}
+
+
+void setGroupEnergies( in float energy  )
+{
+    groupEnergies[ gl_WorkGroupID.x ] = energy;
+}
+
+
+void setGroupGraftPositions( in uint index, in vec4 position )
+{
+    groupGraftPositions[ gl_WorkGroupID.x*PL_MAX_GRAFTS_PER_SOLUTION + index ] = position;
+}
+
+
+void setGroupGraftNormals( in uint index, in vec4 normal )
+{
+    groupGraftNormals[ gl_WorkGroupID.x*PL_MAX_GRAFTS_PER_SOLUTION + index ] = normal;
+}
+
+
+void setGroupGraftRadii( in uint index, in float radius )
+{
+    groupGraftRadii[ gl_WorkGroupID.x*PL_MAX_GRAFTS_PER_SOLUTION + index ] = radius;
+}
+
+
+void setGroupGraftCounts( in uint count )
+{
+    groupGraftCounts[ gl_WorkGroupID.x ] = count;
+}
+
+
+void translateGraft( inout vec4 graftPosition, in vec4 graftNormal, in float graftRadius, inout uint seed )
+{
+    // get random translation
+    float tx = rand( seed );
+    float ty = rand( seed );
+    float tz = rand( seed ); 
+
+    // project translation so that it is perpendicular to the site normal, normalize for a direction
+    vec3 planeDir = normalize( projectOntoPlane( vec3( tx, ty, tz ), uDefectSiteAvgNormal.xyz ) );        
+    // scale translation between [-uTemperature .. uTemperature]   
+    vec3 trans = planeDir * ( rand( seed, -1.0, 1.0 ) * uTemperature );
+    // get new position
+    vec3 newPosition = graftPosition.xyz + trans;
+    
+    // check if new position is valid
+    if ( isWithinDefectBoundaryThreshold( newPosition, graftNormal.xyz, graftRadius*PL_STAGE_0_SITE_OVERLAP_THRESHOLD ) )    
+    {
+        graftPosition = vec4( newPosition, 1.0 );        
+    }
+
+}
+
+
+void rotateGraft( inout vec4 graftNormal, inout uint seed )
+{
+    // get random rotation        
+    float angle = rand( seed, -1.0, 1.0 ) * (uTemperature+0.05) * 5.0;
+    float ax = rand( seed );
+    float ay = rand( seed );
+    float az = rand( seed );    
+    vec3 axis = normalize( vec3( ax, ay, az ) );
+    mat4 rot;   getRotation( rot, angle, axis );
+
+    // rotate new normal
+    vec3 newNormal = normalize( vec3( rot * vec4( graftNormal.xyz, 0.0 ) ) );   
+            
+    // check that normal is within rotation threshold
+    if ( isWithinDefectRotationThreshold( newNormal, PL_MAX_GRAFT_ROTATION ) )
+    {
+        graftNormal = vec4( newNormal, 1.0 );
+    }  
+}
+
+
+void perturbState( inout state s, inout uint seed )
+{
+    for (uint i=0; i<s.graftCount; i++)
+    {       
+        // translate graft
+        translateGraft( s.positions[i], s.normals[i], s.radii[i], seed );
+        
+        // rotate graft
+        rotateGraft( s.normals[i], seed );
+    }
+}
+
+
+void addCap( inout state s, inout uint seed )
+{   
+    float radius = uint( rand( seed ) * (PL_MAX_GRAFT_RADIUS-PL_MIN_GRAFT_RADIUS+1) + PL_MIN_GRAFT_RADIUS); 
+    uint  index  = uint( uDefectSiteGridPointCount*rand( seed ) );
+    
+    if ( isWithinDefectBoundaryThreshold( vec3( defectSitePositions( index ) ), vec3( defectSiteNormals( index ) ), radius*PL_STAGE_0_SITE_OVERLAP_THRESHOLD ) )
+    {    
+        s.positions[s.graftCount] = defectSitePositions( index );
+        s.normals  [s.graftCount] = defectSiteNormals  ( index );
+        s.radii    [s.graftCount] = radius;   
+        s.graftCount++;  
+    }
+}
+
+
+void removeCap( inout state s, inout uint seed )
+{ 
+    uint index = uint( s.graftCount*rand( seed ) );
+    
+    // shift all other elements down
+    for (uint i=index; i<s.graftCount; i++)
+    {
+        if (i+1 == PL_MAX_GRAFTS_PER_SOLUTION)  // max sure doesnt go out of bounds
+            break;
+        /*    
+        {
+            s.positions[i] = vec4(-1, -1, -1, -1);
+            s.normals  [i] = vec4(-1, -1, -1, -1);
+            s.radii    [i] = -1.0; 
+        }  
+        */        
+        s.positions[i] = s.positions[i+1];
+        s.normals  [i] = s.normals  [i+1];
+        s.radii    [i] = s.radii    [i+1];                              
+    }
+    s.graftCount--;
+}
+
+
+void copyGroupState( inout state s )
+{
+    s.graftCount = getGroupGraftCounts();
+    
+    for (int i=0; i<s.graftCount; i++)
+    {       
+        s.positions[i] = getGroupGraftPositions( i );
+        s.normals  [i] = getGroupGraftNormals  ( i );
+        s.radii    [i] = getGroupGraftRadii    ( i );
+    } 
+}
+
+
+void copyLocalState( inout state s )
+{
+    s.graftCount = getInvoGraftCounts();
+    
+    for (int i=0; i<s.graftCount; i++)
+    {       
+        s.positions[i] = getInvoGraftPositions( i );
+        s.normals  [i] = getInvoGraftNormals  ( i );
+        s.radii    [i] = getInvoGraftRadii    ( i );
+    }    
+}
+
+
+void copyPreviousState( inout state s )
+{
+    if ( uLoadLocal > 0 )  
+    {       
+        copyLocalState( s );
+    }
+    else   
+    {
+        copyGroupState( s );         
+    }
+}
+
+
+void storeState( in state s, inout uint seed )
+{
+    // store state graft count
+    setInvoGraftCounts( s.graftCount );
+
+    // store state positions, normals, and radii   
+    for (uint i=0; i<s.graftCount; i++)
+    {
+        setInvoGraftPositions( i, s.positions[i] );
+        setInvoGraftNormals  ( i, s.normals  [i] );
+        setInvoGraftRadii    ( i, s.radii    [i] );
+    } 
+
+    if ( uLoadLocal == 1 )
+    {
+        // calc and store state energy on last local iteration
+        setInvoEnergies( energy( s ) );             
+    }   
+    
+    memoryBarrier();
+}
+
+
+void progressState( inout state s, inout uint seed )
+{
+    // determine which case
+    uint changeCase = uint( rand( seed ) * 20 );
+        
+    if ( s.graftCount == 0 || changeCase == 0 )
+    {
+        // add random
+        if ( s.graftCount < PL_MAX_GRAFTS_PER_SOLUTION )
+        {
+            addCap( s, seed );
+        }
+    }
+    else if (changeCase == 1)
+    {
+        // remove random
+        removeCap( s, seed );
+    }
+
+    // peturb state
+    perturbState( s, seed );
+}
+
+
+void storeLocalToGroup( in uint localIndex )
+{
+    // transfer data from a invo state to a group state
+    setGroupEnergies   ( getInvoEnergies   ( localIndex ) );
+    setGroupGraftCounts( getInvoGraftCounts( localIndex ) );  
+
+    uint graftCount = getInvoGraftCounts( localIndex );
+
+    for (uint i=0; i<graftCount; i++)
+    {
+        setGroupGraftPositions( i, getInvoGraftPositions( localIndex, i ) );
+        setGroupGraftNormals  ( i, getInvoGraftNormals  ( localIndex, i ) );
+        setGroupGraftRadii    ( i, getInvoGraftRadii    ( localIndex, i ) );
+    } 
+    
+    memoryBarrier();
+}
+
+
+void getShuffledIndexArray( inout uint array[ PL_STAGE_0_WORKGROUP_SIZE ], inout uint seed )
+{   
+    // generate indices in proper bounds
+    uint invoOffset = gl_WorkGroupID.x * PL_STAGE_0_WORKGROUP_SIZE; 
+
+    // fill array with incremental indices
+    for (uint i=0; i < PL_STAGE_0_WORKGROUP_SIZE; i++)
+    {
+        array[i] = invoOffset + i;
+    }
+
+    // randomize orders
+    for (uint i = 0; i < PL_STAGE_0_WORKGROUP_SIZE; i++) 
+    {
+        uint j = uint( rand( seed ) * float( PL_STAGE_0_WORKGROUP_SIZE ) );
+        uint t = array[j];
+        array[j] = array[i];
+        array[i] = t;
+    }    
+}
+
+
+void updateGroupStates( inout uint seed )
+{    
+    /*
+    uint round1[ 32 ];
+    uint round2[ 16 ];
+    uint round3[ 8 ];
+    uint round4[ 4 ];
+    uint round5[ 2 ];
+    
+    if ( gl_LocalInvocationID.x % 2 == 0 )
+    {
+        uint i = gl_LocalInvocationID.x;
+        float e1 = getInvoEnergies( gl_GlobalInvocationID.x );
+        float e2 = getInvoEnergies( gl_GlobalInvocationID.x+1 );       
+        round1[gl_LocalInvocationID.x/2] = ( acceptanceProbability( e1, e2 ) > rand( seed ) ) ? i+1 : i; 
+    }
+
+    if ( gl_LocalInvocationID.x % 4 == 0 )
+    {
+        uint i = gl_LocalInvocationID.x / 2;
+        float e1 = getInvoEnergies( round2[ i ]   );
+        float e2 = getInvoEnergies( round2[ i+1 ] );
+        round2[gl_LocalInvocationID.x/4] = ( acceptanceProbability( e1, e2 ) > rand( seed ) ) ? i+1 : i; 
+    }
+    
+    if ( gl_LocalInvocationID.x % 8 == 0 )
+    {
+        uint i = gl_LocalInvocationID.x / 4;
+        float e1 = getInvoEnergies( round2[ i ]   );
+        float e2 = getInvoEnergies( round2[ i+1 ] );
+        round3[gl_LocalInvocationID.x/8] = ( acceptanceProbability( e1, e2 ) > rand( seed ) ) ? i+1 : i;   
+    }
+    
+    if ( gl_LocalInvocationID.x % 16 == 0 )
+    {
+        uint i = gl_LocalInvocationID.x / 8;
+        float e1 = getInvoEnergies( round3[ i ]   );
+        float e2 = getInvoEnergies( round3[ i+1 ] );
+        round4[gl_LocalInvocationID.x/16] = ( acceptanceProbability( e1, e2 ) > rand( seed ) ) ? i+1 : i;    
+    }
+    
+    if ( gl_LocalInvocationID.x % 32 == 0 )
+    {
+        uint i = gl_LocalInvocationID.x / 16;
+        float e1 = getInvoEnergies( round4[ i ]   );
+        float e2 = getInvoEnergies( round4[ i+1 ] );
+        round5[gl_LocalInvocationID.x/32] = ( acceptanceProbability( e1, e2 ) > rand( seed ) ) ? i+1 : i;    
+    }
+    
+    uint index;
+    
+    if ( gl_LocalInvocationID.x % 64 == 0 )
+    {
+        uint i = gl_LocalInvocationID.x / 32;
+        float e1 = getInvoEnergies( round5[ i ]   );
+        float e2 = getInvoEnergies( round5[ i+1 ] );
+        index = ( acceptanceProbability( e1, e2 ) > rand( seed ) ) ? i+1 : i;   
+    }
+
+    float currentGroupEnergy = getGroupEnergies();
+    uint bestIndex = gl_WorkGroupID.x*PL_STAGE_0_WORKGROUP_SIZE + index;
+    float bestEnergy = getInvoEnergies( bestIndex );
+    if ( acceptanceProbability( currentGroupEnergy, bestEnergy ) > rand( seed ) )
+    {    
+        // better local state found
+        storeLocalToGroup( bestIndex );
+    }
+    */
+    
+    // only have first local index do work
+    if ( gl_LocalInvocationID.x == 0 )
+    {   
+        // generate shuffled indices from correct workgroup section of SSBO
+        uint shuffledIndices[ PL_STAGE_0_WORKGROUP_SIZE ];
+        getShuffledIndexArray( shuffledIndices, seed );
+
+        // set current group energy
+        float currentGroupEnergy = getGroupEnergies();
+        // set best index to -1
+        int bestIndex = -1;
+
+        for ( uint i=0; i < PL_STAGE_0_WORKGROUP_SIZE; i++ )
+        {              
+            // get a shuffled index to prevent bias       
+            uint j = shuffledIndices[i];
+            // get the energy
+            float newEnergy = getInvoEnergies( j );
+
+            if ( acceptanceProbability( currentGroupEnergy, newEnergy ) > rand( seed ) )
+            {    
+                // better local state found
+                currentGroupEnergy = newEnergy;
+                bestIndex = int(j);
+            }
+        }
+    
+        if ( bestIndex >= 0 )
+        {
+            storeLocalToGroup( uint( bestIndex ) );
+        }          
+    } 
+}
+
+

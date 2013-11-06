@@ -13,7 +13,8 @@ class plPlug : public plModelSpecific
 {
     public:
 
-        plTransform transform; 
+        plTransform transform;         
+        plTransform rotationOffset;
 
         plPlug();
         plPlug( PLuint _modelID, const plBoneAndCartilage &_model, const plTransform &t );
@@ -24,6 +25,8 @@ class plPlug : public plModelSpecific
         void rotate     ( const plVector3 &axis, PLfloat angleDegrees );
         
     private:
+    
+        
     
         PLbool _surfaceIntersection( plVector3 &point, plVector3 &normal, const plVector3 &translation ) const;       
 };

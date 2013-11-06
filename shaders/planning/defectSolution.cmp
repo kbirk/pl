@@ -1,0 +1,44 @@
+
+
+// functions
+
+uint defectSolutionGraftCount()
+{
+    return uDefectSolutionGraftCount;
+}
+
+
+vec3 defectSolutionGraftPositions( in uint i )
+{
+    return uDefectSolutionGraftPositions[i].xyz;
+}
+
+
+vec3 defectSolutionGraftNormals( in uint i )
+{
+    return uDefectSolutionGraftNormals[i].xyz;
+}
+
+
+float defectSolutionGraftRadii( in uint i )
+{
+    return uDefectSolutionGraftRadii[i];
+}
+
+
+vec3 defectSolutionSurfaceNormals( in uint i )
+{
+    return uDefectSolutionSurfaceNormals[i].xyz;
+}
+
+
+void defectToDonorRotation( inout mat4 rotation, in vec3 defectSurfaceNormal, in vec3 donorSurfaceNormal, in float rotationAngle )
+{
+    // get rotational transform from defect space to donor space
+    mat4 graftRot;     getRotationFromTo( graftRot, defectSurfaceNormal, donorSurfaceNormal );      
+    // get rotation around defect surface normal
+    mat4 rotationRot;  getRotation( rotationRot, rotationAngle, defectSurfaceNormal );
+    // concat rotations, rotate graft, then transform it into donor site
+    rotation = graftRot * rotationRot;
+}
+
