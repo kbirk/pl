@@ -11,18 +11,87 @@ CXX = g++
 
 OBJECTS = $(patsubst %.cpp,objects/%.o,$(SOURCES))
 
-SOURCES = main.cpp PlannerWindow.cpp pl.cpp plAutomaticPlanner.cpp plBoneAndCartilage.cpp plBoundary.cpp \
-          plBoundaryEditor.cpp plCamera.cpp plChessBoard.cpp plColourMap.cpp plColourMesh.cpp \
-          plCSV.cpp plDebugTransform.cpp plDebugSphere.cpp plDefectSite.cpp plDonorSite.cpp plDraw.cpp plDRBTransform.cpp plEditable.cpp \
-          plGraft.cpp plGraftEditor.cpp plIGuide.cpp plIGuideSite.cpp plLineMesh.cpp plMath.cpp plMatrix44.cpp     \
-	      plMatrixStack.cpp plMesh.cpp plMeshAlgorithm.cpp plMeshConnectivityData.cpp plMeshCutter.cpp plMeshExtruder.cpp plMeshIntersector.cpp \
-          plMinimalShader.cpp plModel.cpp plModelSpecific.cpp \
-	      plOctree.cpp plPhongShader.cpp plPickingShader.cpp plPickingTexture.cpp plPlan.cpp plPlannerStage0.cpp plPlannerStage1.cpp plPlannerStage2.cpp plPlannerStage3.cpp \
-	      plPlannerStage0Shader.cpp plPlannerStage1Shader.cpp plPlannerStage2Shader.cpp plPlannerStage3Shader.cpp plPlannerStructs.cpp plPlanningBufferData.cpp plPlanningSite.cpp plPlug.cpp plPolygon.cpp plProjection.cpp \
-	      plRenderable.cpp plRenderer.cpp plRenderingPipeline.cpp plScan.cpp plScanPoint.cpp plScanVolume.cpp \
-          plShader.cpp plShapeMesh.cpp \
-	      plSpline.cpp plSSBO.cpp plString.cpp plTexture2D.cpp plTexture2DMesh.cpp plTexture2DShader.cpp plTexture3D.cpp plTexture3DMesh.cpp plTexture3DShader.cpp plTrackedObject.cpp \
-	      plTransform.cpp plTransparentRenderable.cpp plTriangle.cpp plUtility.cpp plVector3.cpp plVector4.cpp plWindow.cpp Window.cpp
+SOURCES =   main.cpp \
+            PlannerWindow.cpp \
+            pl.cpp \
+            plAutomaticPlanner.cpp \
+            plBoneAndCartilage.cpp \
+            plBoundary.cpp \
+            plBoundaryEditor.cpp \
+            plCamera.cpp \
+            plChessBoard.cpp \
+            plColourMap.cpp \
+            plColourMesh.cpp \
+            plCSV.cpp \
+            plDebugTransform.cpp \
+            plDebugSphere.cpp \
+            plDefectSite.cpp \
+            plDonorSite.cpp \
+            plDraw.cpp \
+            plDRBTransform.cpp \
+            plEditable.cpp \
+            plGraft.cpp \
+            plGraftEditor.cpp \
+            plIGuide.cpp \
+            plIGuideSite.cpp \
+            plLineMesh.cpp \
+            plMath.cpp \
+            plMatrix44.cpp \
+            plMatrixStack.cpp \
+            plMesh.cpp \
+            plMeshAlgorithm.cpp \
+            plMeshConnectivityData.cpp \
+            plMeshCutter.cpp \
+            plMeshExtruder.cpp \
+            plMeshIntersector.cpp \
+            plMinimalShader.cpp \
+            plModel.cpp \
+            plModelSpecific.cpp \
+            plOctree.cpp \
+            plPhongShader.cpp \
+            plPickingShader.cpp \
+            plPickingTexture.cpp \
+            plPlan.cpp \
+            plPlannerStage0.cpp \
+            plPlannerStage1.cpp \
+            plPlannerStage2.cpp \
+            plPlannerStage3.cpp \
+            plPlannerStage0Shader.cpp \
+            plPlannerStage1Shader.cpp \
+            plPlannerStage2Shader.cpp \
+            plPlannerStage3Shader.cpp \
+            plPlannerStructs.cpp \
+            plPlanningBufferData.cpp \
+            plPlanningSite.cpp \
+            plPlug.cpp \
+            plPolygon.cpp \
+            plProjection.cpp \
+            plRenderable.cpp \
+            plRenderer.cpp \
+            plRenderingPipeline.cpp \
+            plScan.cpp \
+            plScanPoint.cpp \
+            plScanVolume.cpp \
+            plShader.cpp \
+            plShapeMesh.cpp \
+            plSpline.cpp \
+            plSSBO.cpp \
+            plString.cpp \
+            plTexture2D.cpp \
+            plTexture2DMesh.cpp \
+            plTexture2DShader.cpp \
+            plTexture3D.cpp \
+            plTexture3DMesh.cpp \
+            plTexture3DShader.cpp \
+            plTrackedObject.cpp \
+            plTransform.cpp \
+            plTransparentRenderable.cpp \
+            plTriangle.cpp \
+            plUtility.cpp \
+            plVector3.cpp \
+            plVector4.cpp \
+            plWindow.cpp \
+            Window.cpp
        
 EXE  = planner
 
