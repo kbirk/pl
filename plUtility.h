@@ -47,6 +47,9 @@ namespace plUtility
         return std::find( vector.begin(), vector.end(), t ) != vector.end();      
     }
 
+
+    void printProgressBar( float percent, PLuint length = 100 );
+
 };
 
 

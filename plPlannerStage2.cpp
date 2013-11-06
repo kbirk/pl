@@ -39,8 +39,6 @@ namespace plPlannerStage2
         stage2Shader.setDefectSolutionUniforms( defectSolution );
         stage2Shader.setRotationAngleUniforms( PL_NUM_COMPARISION_DIRECTIONS );
 
-        reportOpenGLError( "compiled/n" );
-
         // create and initialize cap indices SSBOs to 0
         std::vector<PLfloat> rmsBuffer( planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*PL_NUM_COMPARISION_DIRECTIONS, -1.0f );        
         rmsData.rmsSSBO.set( rmsBuffer, rmsBuffer.size() );
@@ -65,30 +63,28 @@ namespace plPlannerStage2
             // memory barrier      
             glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-            PLuint size = planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION;
+            //PLuint size = planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*PL_NUM_COMPARISION_DIRECTIONS;
+            //std::vector<PLfloat> tempRms( size, -1.0f );
+            //rmsData.rmsSSBO.read( tempRms, size );
+            rmsData.rmsSSBO.read( rmsBuffer, rmsBuffer.size() );
 
-            std::vector<PLfloat> tempRms( size, -1.0f );
-            rmsData.rmsSSBO.read( tempRms, size, 0, size*i );
-
-            std::cout << "\t Rotation angle: " << ( 360.0f / (float)(PL_NUM_COMPARISION_DIRECTIONS) ) * i << std::endl;
-
-            reportOpenGLError( "go/n" );           
+            plUtility::printProgressBar( i / (float)PL_NUM_COMPARISION_DIRECTIONS );        
         }
 
-        rmsData.rmsSSBO.read( rmsBuffer, rmsBuffer.size() );
-
+        plUtility::printProgressBar( 1.0 );
+        /*
+        rmsData.rmsSSBO.read( rmsBuffer, rmsBuffer.size() );       
         for (PLuint i=0; i < rmsBuffer.size(); i+=planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION )
         {
             std::cout << rmsBuffer[i] << "  ";
         }
+        */
 
         planningData.defectSiteSSBO.unbind( 0 );
         planningData.donorSitesSSBO.unbind( 1 );
         capData.defectCapIndexSSBO.unbind( 2 );
         capData.donorCapIndexSSBO.unbind( 3 );
         rmsData.rmsSSBO.unbind( 4 );
-        
-        reportOpenGLError( "done/n" );  
     }
 
 }

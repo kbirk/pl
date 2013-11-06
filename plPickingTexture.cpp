@@ -96,7 +96,7 @@ plPickingInfo plPickingTexture::readPixel( PLuint x, PLuint y )
     glReadBuffer     ( GL_NONE );
     glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
         
-    std::cout << "picking: " << _lastPick.type << " " << _lastPick.id << " " << _lastPick.index << "\n"; 
+    //std::cout << "picking: " << _lastPick.type << " " << _lastPick.id << " " << _lastPick.index << "\n"; 
     
     return _lastPick;
     

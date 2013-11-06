@@ -47,7 +47,7 @@ void plPlannerStage2Shader::setDefectSiteUniforms( const plPlanningSite &defectS
 void plPlannerStage2Shader::setDonorSiteUniforms( const std::vector<plPlanningSite> &donorSites ) const
 {
     PLuint totalGridPoints = 0;
-    PLuint previousTotalSize = 0;
+    PLuint dataIndexOffset = 0;
     std::vector<PLuint> gridPointCounts;
     std::vector<PLuint> triangleCounts;   
     std::vector<PLuint> boundaryPointCounts;       
@@ -59,8 +59,8 @@ void plPlannerStage2Shader::setDonorSiteUniforms( const std::vector<plPlanningSi
         gridPointCounts.push_back     ( donorSite.gridPoints.size()     );
         triangleCounts.push_back      ( donorSite.triangles.size()      );            
         boundaryPointCounts.push_back ( donorSite.boundaryPoints.size() );          
-        dataOffsets.push_back( previousTotalSize );        
-        previousTotalSize = donorSite.totalSize();
+        dataOffsets.push_back( dataIndexOffset );        
+        dataIndexOffset += donorSite.totalSize();
     }
 
     glUniform1ui  ( _donorSiteCountID,               donorSites.size() );  

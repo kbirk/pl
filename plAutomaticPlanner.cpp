@@ -4,10 +4,10 @@
 namespace plAutomaticPlanner
 {
     // private function prototypes             
-    void _dispatch          (  plPlan &plan, const plPlanningBufferData &planningData );      
+    void _dispatch          ( plPlan &plan, const plPlanningBufferData &planningData );      
     void _clearPreviousPlan ( plPlan &plan );
 
-    // public functions
+
     void calculate( plPlan &plan )
     {   
         // error checking
@@ -26,10 +26,11 @@ namespace plAutomaticPlanner
         if ( !planningData.good() )
         {    
             std::cerr << "plAutomaticPlanner::calculate() error: could not produce coherent planning data buffers" << std::endl;
+            return;
         }
 
         // proceed with plan
-        std::cout << "Calculating plan ... \n";
+        std::cout << std::endl << std::endl << std::endl << std::endl;
         _dispatch( plan, planningData );
     } 
 
@@ -45,7 +46,6 @@ namespace plAutomaticPlanner
     }
 
 
-    // private functions
     void _dispatch(  plPlan &plan, const plPlanningBufferData &planningData )
     {    
         PLtime t0, t1;
@@ -55,51 +55,33 @@ namespace plAutomaticPlanner
         plRmsData        rmsData;
         plDonorSolution  donorSolution;
 
-        // stage 0 timing //
-        std::cout << "\n--------------------------- Initiating Stage 0 --------------------------- \n" <<
-                       "-------------------------------------------------------------------------- \n";
+        // stage 0
+        std::cout << std::endl << "Stage 0:   Optimizing defect site graft surface area coverage" << std::endl << std::endl;
         t0 = plTimer::now();
-
-        plPlannerStage0::run( defectSolution, planningData, plan );    
-        
+        plPlannerStage0::run( defectSolution, planningData, plan );          
         t1 = plTimer::now();
-        std::cout << "\n---------------------------- Stage 0 Complete --------------------------- \n" <<
-                       "------------------------- Execution time: " << t1 - t0 << " ms ----------------------" << std::endl;
-        ////////////////////
-        // stage 1 timing //
-        std::cout << "\n--------------------------- Initiating Stage 1 --------------------------- \n" <<
-                       "--------------------------------------------------------------------------" << std::endl;
-        t0 = plTimer::now();
+        std::cout << ", elapsed time: " << (t1 - t0) / 1000.0f << " sec" << std::endl;
 
+        // stage 1
+        std::cout << std::endl << "Stage 1:   Preprocessing and caching defect site graft surface indices" << std::endl << std::endl;
+        t0 = plTimer::now();
         plPlannerStage1::run( capIndices, planningData, defectSolution );
-        
         t1 = plTimer::now();
-        std::cout << "\n---------------------------- Stage 1 Complete ---------------------------- \n" <<
-                       "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
-        //////////////////// 
-        // stage 2 timing //
-        std::cout << "\n--------------------------- Initiating Stage 2 --------------------------- \n" <<
-                       "--------------------------------------------------------------------------" << std::endl;
+        std::cout << ", elapsed time: " << (t1 - t0) / 1000.0f << " sec" << std::endl;
+        
+        // stage 2
+        std::cout << std::endl << "Stage 2:   Calculating potential donor grafts surface RMS error" << std::endl << std::endl;
         t0 = plTimer::now();
-
-        plPlannerStage2::run( rmsData, planningData, defectSolution, capIndices );
-        
+        plPlannerStage2::run( rmsData, planningData, defectSolution, capIndices );       
         t1 = plTimer::now();
-        std::cout << "\n---------------------------- Stage 2 Complete ---------------------------- \n" <<
-                       "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
+        std::cout << ", elapsed time: " << (t1 - t0) / 1000.0f << " sec" << std::endl;
 
-        ////////////////////
-        // stage 3 timing //
-        std::cout << "\n--------------------------- Initiating Stage 3 --------------------------- \n" <<
-                       "-------------------------------------------------------------------------- \n";
+        // stage 3
+        std::cout << std::endl << "Stage 3:   Optimizing donor cap selection" << std::endl << std::endl;;
         t0 = plTimer::now();
-
-        plPlannerStage3::run( donorSolution, planningData, defectSolution, rmsData );    
-        
+        plPlannerStage3::run( donorSolution, planningData, defectSolution, rmsData );
         t1 = plTimer::now();
-        std::cout << "\n---------------------------- Stage 3 Complete --------------------------- \n" <<
-                       "------------------------- Execution time: " << t1 - t0 << " ms ------------------------ \n";
-        ////////////////////
+        std::cout << ", elapsed time: " << (t1 - t0) / 1000.0f << " sec" << std::endl;
            
         if ( donorSolution.graftPositions.size() > 0 )
         {
@@ -114,9 +96,6 @@ namespace plAutomaticPlanner
                 plIntersection intersection = plan.models(0).bone.rayIntersect( originalHarvestOrigin, -originalHarvestY );   
                 // set correct harvest origin to bone intersection point             
                 plVector3 correctHarvestOrigin = intersection.point;            
-
-                // calculate how thick the cartilage is ( the distance from the cartilage point to bone point )
-                PLfloat cartilageThickness = ( correctHarvestOrigin - originalHarvestOrigin ).length();
             
                 // ray cast from cartilage positions in negative direction of normal to get recipient bone position
                 plVector3 originalRecipientOrigin( defectSolution.graftPositions[i].x,  defectSolution.graftPositions[i].y,   defectSolution.graftPositions[i].z );
@@ -135,6 +114,7 @@ namespace plAutomaticPlanner
                 plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   correctHarvestOrigin   ) );
                 */ 
 
+                // get graft transforms
                 plVector3 originalHarvestOrigin( donorSolution.graftPositions[i] );
                 plVector3 originalHarvestY     ( donorSolution.graftNormals[i]   );    
                 plVector3 originalHaverstX     ( donorSolution.graftXAxes[i]     );   
@@ -143,15 +123,21 @@ namespace plAutomaticPlanner
                 plVector3 originalRecipientY     ( defectSolution.graftNormals[i]   );        
                 plVector3 originalRecipientX     ( (originalRecipientY ^ plVector3( 0, 0, 1 ) ).normalize() ); 
                 
+                // calculate how thick the cartilage is ( the distance from the cartilage point to bone point )
+                PLfloat cartilageThickness = 0.0f; //( correctHarvestOrigin - originalHarvestOrigin ).length();
+                
                 plPlug harvest  ( 0, plan.models(0), plTransform( originalHaverstX ,  originalHarvestY,   originalHarvestOrigin   ) );
                 plPlug recipient( 0, plan.models(0), plTransform( originalRecipientX, originalRecipientY, originalRecipientOrigin ) );
                 
-                
-                plan.addGraft( harvest, recipient, defectSolution.graftRadii[i], 0, 0 );
-
+                plan.addGraft( harvest, recipient, defectSolution.graftRadii[i], cartilageThickness, 0 );
             } 
         }
         
+        
+        for ( PLuint i = 0; i < plan.iGuideSites().size(); i++ )
+        {
+            plan.iGuideSites(i).boundary.setInvisible();
+        }       
         
         for ( PLuint i = 0; i < plan.defectSites().size(); i++ )
         {

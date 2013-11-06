@@ -9,7 +9,7 @@
 #include "plPlannerStage3Shader.h"
 
 #define PL_STAGE_3_ITERATIONS                 8
-#define PL_STAGE_3_GROUP_SIZE                 256
+#define PL_STAGE_3_GROUP_SIZE                 64
 #define PL_STAGE_3_NUM_GROUPS                 1
 #define PL_STAGE_3_INVOCATIONS                PL_STAGE_3_NUM_GROUPS*PL_STAGE_3_GROUP_SIZE
 

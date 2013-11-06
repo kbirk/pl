@@ -37,8 +37,6 @@ namespace plPlannerStage1
         stage1Shader.setDonorSiteUniforms( planningData.donorSites );
         stage1Shader.setDefectSolutionUniforms( defectSolution );
     
-        reportOpenGLError( "compiled/n" );
-
         // create and initialize cap indices SSBOs to 0
         std::vector<PLuint> defectIndices( defectSolution.graftCount*PL_MAX_CAP_TRIANGLES, 0 );
         std::vector<PLuint> donorIndices( planningData.totalDonorGridPoints()*PL_MAX_CAP_TRIANGLES, 0 );
@@ -51,11 +49,11 @@ namespace plPlannerStage1
         planningData.donorSitesSSBO.bind( 1 );
         capData.defectCapIndexSSBO.bind( 2 );
         capData.donorCapIndexSSBO.bind( 3 );
-        
-        reportOpenGLError( "bind/n" );
-            
+          
         const PLuint NUM_WORKGROUPS = ceil( planningData.totalDonorGridPoints() + defectSolution.graftCount / (PLfloat) PL_STAGE_1_GROUP_SIZE ); // ensure enough workgroups are used    
             
+        plUtility::printProgressBar( 0.0 );
+
         // call compute shader with 1D workgrouping
 #ifndef SKIP_COMPUTE_SHADER
         glDispatchCompute( NUM_WORKGROUPS, 1, 1 );
@@ -63,9 +61,10 @@ namespace plPlannerStage1
         // memory barrier      
         glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
-        reportOpenGLError( "go/n" );
-
+        plUtility::printProgressBar( 1.0 );
+        
         // DEBUG
+        /*
         capData.defectCapIndexSSBO.read( defectIndices, defectIndices.size() );
         capData.donorCapIndexSSBO.read ( donorIndices,  donorIndices.size()  );
         
@@ -75,12 +74,6 @@ namespace plPlannerStage1
             std::cout << "Graft " << i/PL_MAX_CAP_TRIANGLES << ",\t cap index count: " << defectIndices[i] << std::endl;
         }
         std::cout << std::endl;
-        /*
-        std::cout << "Donor index counts: " << std::endl;
-        for ( PLuint i=0; i<PL_MAX_CAP_TRIANGLES*100; i+=PL_MAX_CAP_TRIANGLES )
-        {
-            std::cout << i/PL_MAX_CAP_TRIANGLES << ": " << donorIndices[i] << "  ";
-        }
         */
         //
 
@@ -88,9 +81,7 @@ namespace plPlannerStage1
         planningData.donorSitesSSBO.unbind( 1 );
         capData.defectCapIndexSSBO.unbind( 2 );
         capData.donorCapIndexSSBO.unbind( 3 );
-        
-        reportOpenGLError( "done/n" );
-    
+
     }
     
 }

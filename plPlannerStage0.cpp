@@ -54,8 +54,11 @@ void plAnnealingGroup::unbind()
 void plAnnealingGroup::getSolution( plDefectSolution &solution, const plPlanningBufferData &planningData )
 {
     PLuint index;
-    getBestGroupInfo( &index, NULL, &solution.graftCount );
+    PLfloat energy;
+    getLowestGroupInfo( index, energy );
 
+    // read graft count
+    _groupGraftCountsSSBO.readBytes<PLuint>( &solution.graftCount, sizeof(PLuint), 0, index*sizeof(PLuint) );
     _groupGraftPositionsSSBO.read<plVector4>( solution.graftPositions, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION );
     _groupGraftNormalsSSBO.read<plVector4>( solution.graftNormals, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION );
     _groupGraftRadiiSSBO.read<PLfloat>( solution.graftRadii, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION ); 
@@ -74,7 +77,7 @@ void plAnnealingGroup::getSolution( plDefectSolution &solution, const plPlanning
 }
 
 
-void plAnnealingGroup::getBestGroupInfo( PLuint *index, PLfloat *energy, PLuint *graftCount )
+void plAnnealingGroup::getLowestGroupInfo( PLuint &index, float &energy )
 {
     // read energies
     std::vector< PLfloat > energies;
@@ -83,29 +86,25 @@ void plAnnealingGroup::getBestGroupInfo( PLuint *index, PLfloat *energy, PLuint 
     // find best group
     PLfloat lowestEnergy = FLT_MAX;
     PLuint  lowestGroup  = 0;
-    //std::cout << "gid: ";
+    
     for ( PLuint i=0; i < PL_STAGE_0_NUM_GROUPS; i++ )
     {    
-        //std::cout << energies[i] << ", ";
-        
         if ( energies[i] < lowestEnergy )
         {    
             lowestEnergy = energies[i];
             lowestGroup = i;
         }
     }
-    //std::cout << std::endl;
-    if (energy) *energy = lowestEnergy;
-    if (index)  *index  = lowestGroup;
 
-    // read graft count
-    std::vector< PLuint > gCounts;
-    _groupGraftCountsSSBO.read<PLuint>( gCounts, 1, 0, lowestGroup );
-
-    if (graftCount) *graftCount = gCounts[0];
-    reportOpenGLError( "plAnnealingGroup::getBestGroupInfo() error\n" );
+    energy = lowestEnergy;
+    index  = lowestGroup;
 }
 
+
+PLuint logBN( float base, float num )
+{
+    return log10( num ) / log10( base );
+}
 
 
 namespace plPlannerStage0
@@ -113,7 +112,6 @@ namespace plPlannerStage0
 
     void run( plDefectSolution &defectSolution, const plPlanningBufferData &planningData, plPlan& plan )
     {       
-        checkOpenGLImplementation();
         std::vector< plString > shaderfiles;
         
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
@@ -150,8 +148,11 @@ namespace plPlannerStage0
 
         PLfloat temperature = PL_STAGE_0_INITIAL_TEMPERATURE;
 
+        PLuint TOTAL_ITERATIONS = logBN( 1.0 - PL_STAGE_0_COOLING_RATE, PL_STAGE_0_STOPPING_TEMPERATURE );
+        PLuint iterationNum = 0;
+        
         // simulated annealing                
-        while ( temperature > 0.01f )
+        while ( temperature > PL_STAGE_0_STOPPING_TEMPERATURE )
         {
             stage0Shader.setLocalLoadUniform  ( 0 );         
             stage0Shader.setTemperatureUniform( temperature ); 
@@ -170,39 +171,31 @@ namespace plPlannerStage0
                 stage0Shader.setLocalLoadUniform( i );                
             }
 
-            PLuint bestGroup = 0;
-            PLuint graftCount = 0;
-            PLfloat energy = 0;
+            PLuint bestGroup;
+            PLfloat energy;
             // get best group info 
-            annealingBuffers.getBestGroupInfo( &bestGroup, &energy, &graftCount );   
-
-            std::cout << "\t Best Work Group: " << bestGroup <<", Energy: " << energy<< ",\t" 
-                          << graftCount << " grafts,\t Temperature: " << temperature << std::endl;   
+            annealingBuffers.getLowestGroupInfo( bestGroup, energy );   
 
             // cool temperature
             temperature *= 1 - PL_STAGE_0_COOLING_RATE;
+            
+            plUtility::printProgressBar( iterationNum++ / (float)TOTAL_ITERATIONS );
         }
+        plUtility::printProgressBar( 1.0 );
 
         // load global solution from annealing state to defect state
         annealingBuffers.getSolution( defectSolution, planningData );
         
-        // DEBUG
+        /* DEBUG
         std::cout << std::endl << "DEBUG: " << std::endl;
         for ( PLuint i=0; i<defectSolution.graftCount; i++)
         {
             std::cout << "Graft " << i << ",\tPosition: " << defectSolution.graftPositions[i] 
                                        << ",\tNormal: "   << defectSolution.graftNormals[i] 
                                        << ",\tRadius: "   << defectSolution.graftRadii[i] << std::endl;         
-            /*                                   
-            plVector3 origin( defectSolution.graftPositions[i] );
-            plVector3 y     ( defectSolution.graftNormals[i]   );                    
-            plVector3 x =   ( y ^ plVector3( 0, 0, 1 ) ).normalize();      
-                                      
-            plRenderer::queue( plDebugTransform( x, y, origin ) );  
-            */
         }
         std::cout << std::endl;
-        //
+        */
 
         // unbind and delete site and temporary buffers
         planningData.defectSiteSSBO.unbind( 0 );

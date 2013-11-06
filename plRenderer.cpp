@@ -337,7 +337,7 @@ namespace plRenderer
         }
 
         // draw debug spheres
-        for (int i = 0; i < _debugSpheresToDraw.size(); i++)
+        for (PLuint i = 0; i < _debugSpheresToDraw.size(); i++)
         {
             _debugSpheresToDraw[i].draw();
 

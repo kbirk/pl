@@ -14,7 +14,6 @@
 #include "plPlan.h"
 
 #define PL_MAX_GRAFTS_PER_SOLUTION           16
-#define PL_MAX_DONOR_SITES                   5
 #define PL_MAX_CAP_TRIANGLES                 2048
 #define PL_NUM_COMPARISION_DIRECTIONS        32
 
@@ -24,7 +23,8 @@
 #define PL_STAGE_0_INVOCATIONS                PL_STAGE_0_NUM_GROUPS*PL_STAGE_0_GROUP_SIZE
 
 #define PL_STAGE_0_INITIAL_TEMPERATURE        1.0f
-#define PL_STAGE_0_COOLING_RATE               0.01f //0.00175f
+#define PL_STAGE_0_STOPPING_TEMPERATURE       0.001f
+#define PL_STAGE_0_COOLING_RATE               0.015f //0.00175f
 
 
 class plAnnealingGroup
@@ -37,7 +37,7 @@ class plAnnealingGroup
         void unbind();
 
         void getSolution( plDefectSolution &solution, const plPlanningBufferData &planningData );
-        void getBestGroupInfo( PLuint *index, PLfloat *energy, PLuint *graftCount );
+        void getLowestGroupInfo( PLuint &index, PLfloat &energy );
 
     private:
             

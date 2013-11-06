@@ -9,6 +9,8 @@
 #include "plDonorSite.h"
 #include "plSSBO.h"
 
+#define PL_MAX_DONOR_SITES                   5
+
 class plPlanningBufferData
 {
     public:

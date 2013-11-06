@@ -96,11 +96,14 @@ void plSSBO::_create( PLuint numBytes, const void *buffer )
 void plSSBO::_copy( const plSSBO &ssbo )
 {
     // read data from previous ssbo
-    std::vector<PLchar> buffer;
+    //std::vector<PLchar> buffer;
+    PLchar *buffer = new PLchar[ _numBytes ];
+
     ssbo.readBytes( buffer, _numBytes );
     // copy number of bytes and create buffer on gpu
-    _create( ssbo._numBytes, (void*)(&buffer[0]) );
+    _create( ssbo._numBytes, (void*)buffer );
     
+    delete [] buffer;
     // set this data
     //setBytes( buffer, _numBytes );  
 }

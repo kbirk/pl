@@ -22,55 +22,55 @@ iguide_site
 
 graft
 	recipient_model_id,  0
-	recipient_transform, 83.8117 -79.9572 -72.2858,-0.947004 -0.321221 0,0.310048 -0.914066 -0.261446
+	recipient_transform, 94.3069 -78.9605 -64.3635,-0.968836 -0.247703 0,0.226154 -0.884552 -0.407949
 	harvest_model_id,    0
-	harvest_transform,   51.076 -68.0885 -78.9916,0.292811 -0.738062 0.607887,-0.785819 -0.547951 -0.286773
+	harvest_transform,   47.8023 -69.6282 -92.9172,-0.381537 0.196053 -0.903323,-0.790263 -0.576116 0.208746
 	radius,              4
-	cartilage_thickness, 2.37946
+	cartilage_thickness, 2.00316
 	length,              15
 	height_offset,       0
 	mark_direction,      0 0 1
 
 graft
 	recipient_model_id,  0
-	recipient_transform, 87.3841 -81.5421 -65.2062,-0.946598 -0.322417 0,0.280734 -0.82422 -0.491783
+	recipient_transform, 84.1739 -79.8143 -72.2944,-0.967433 -0.253127 0,0.245877 -0.939722 -0.237629
 	harvest_model_id,    0
-	harvest_transform,   49.2234 -72.7092 -94.4013,-0.0871947 -0.442735 -0.892403,-0.48799 -0.761992 0.425716
+	harvest_transform,   52.0425 -69.9154 -78.0425,0.291011 -0.534192 0.793695,-0.633406 -0.729321 -0.258626
 	radius,              4
-	cartilage_thickness, 1.89329
+	cartilage_thickness, 2.46672
 	length,              15
 	height_offset,       0
 	mark_direction,      0 0 1
 
 graft
 	recipient_model_id,  0
-	recipient_transform, 91.4053 -77.1322 -71.1295,-0.97223 -0.234026 0,0.226221 -0.939803 -0.256115
+	recipient_transform, 91.736 -76.9802 -71.0815,-0.974837 -0.222918 0,0.214742 -0.93908 -0.268356
 	harvest_model_id,    0
-	harvest_transform,   65.408 -80.2821 -93.2796,-0.753822 0.118946 -0.646223,-0.476731 -0.775824 0.413309
+	harvest_transform,   65.408 -80.2821 -93.2796,-0.473388 -0.00867827 -0.880811,-0.486368 -0.831126 0.269585
 	radius,              4
-	cartilage_thickness, 1.27507
+	cartilage_thickness, 1.28657
 	length,              15
 	height_offset,       0
 	mark_direction,      0 0 1
 
 graft
 	recipient_model_id,  0
-	recipient_transform, 80.6637 -82.8641 -66.8847,-0.858996 -0.511982 0,0.488881 -0.820238 -0.296994
+	recipient_transform, 87.4218 -81.5386 -65.1739,-0.91808 -0.396395 0,0.345549 -0.800317 -0.489987
 	harvest_model_id,    0
-	harvest_transform,   59.8653 -79.5359 -69.6749,0.11083 -0.187134 -0.976062,-0.374036 -0.917758 0.133485
+	harvest_transform,   53.5002 -76.0218 -93.8728,0.806826 -0.525121 0.270701,-0.568257 -0.564461 0.598721
+	radius,              4
+	cartilage_thickness, 1.70488
+	length,              15
+	height_offset,       0
+	mark_direction,      0 0 1
+
+graft
+	recipient_model_id,  0
+	recipient_transform, 80.6869 -82.7881 -67.1789,-0.945011 -0.327038 0,0.310341 -0.896761 -0.31545
+	harvest_model_id,    0
+	harvest_transform,   66.0892 -81.4866 -67.6167,0.706203 -0.268439 -0.655148,-0.330579 -0.943296 0.0301635
 	radius,              3
-	cartilage_thickness, 2.27176
-	length,              15
-	height_offset,       0
-	mark_direction,      0 0 1
-
-graft
-	recipient_model_id,  0
-	recipient_transform, 94.2246 -79.0816 -64.1237,-0.970747 -0.240105 0,0.230289 -0.931059 -0.283012
-	harvest_model_id,    0
-	harvest_transform,   55.7533 -78.198 -94.6236,-0.317028 -0.0109369 -0.948353,-0.512013 -0.839725 0.180847
-	radius,              4
-	cartilage_thickness, 1.94756
+	cartilage_thickness, 1.76361
 	length,              15
 	height_offset,       0
 	mark_direction,      0 0 1

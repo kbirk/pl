@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./planner ./patient1/plan2.csv
+./planner ./patient1/plan.csv
 

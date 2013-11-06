@@ -54,7 +54,7 @@ void plGreedyGroup::update()
     }
 
     // is it better than global solution?
-    if ( minIndex > 0 && minRMS < _lowestRMS )
+    if ( minIndex != -1 && minRMS < _lowestRMS )
     {
         _lowestRMS = minRMS;
 
@@ -115,8 +115,6 @@ namespace plPlannerStage3
         stage3Shader.setDefectSolutionUniforms( defectSolution );
         stage3Shader.setRotationAngleUniforms( PL_NUM_COMPARISION_DIRECTIONS );
 
-        reportOpenGLError( "compiled/n" );
-
         // create and initialize cap indices SSBOs to 0
         plGreedyGroup greedyBuffers;
 
@@ -126,12 +124,11 @@ namespace plPlannerStage3
         rmsData.rmsSSBO.bind( 2 );
         greedyBuffers.bind(); // 3, 4, 5, 6
 
-
         for (PLuint i=0; i<PL_STAGE_3_ITERATIONS; i++ )
         {
             // update seed uniform
             stage3Shader.setSeedUniform();
-            reportOpenGLError( "BEFORE OF SHADER STAGE 3\n" ); 
+
             // call compute shader with 1D workgrouping
 #ifndef SKIP_COMPUTE_SHADER
             glDispatchCompute( PL_STAGE_3_NUM_GROUPS, 1, 1 );
@@ -142,8 +139,9 @@ namespace plPlannerStage3
             // check latest solution
             greedyBuffers.update();
  
-            std:: cout << "\tIteration " << i <<", Current lowest total RMS: " << greedyBuffers.lowestRMS() << "\n";
-        }    
+            plUtility::printProgressBar( i / (float)PL_STAGE_3_ITERATIONS ); 
+        }   
+        plUtility::printProgressBar( 1.0 );
 
         greedyBuffers.getSolution( donorSolution );
 
@@ -160,33 +158,15 @@ namespace plPlannerStage3
         greedyBuffers.unbind();
         
         // DEBUG
+        /*
         std::cout << std::endl << "DEBUG: " << std::endl;
         for ( PLuint i=0; i<defectSolution.graftCount; i++)
         {
             std::cout << "Graft " << i << ",\tPosition: " << donorSolution.graftPositions[i] 
-                                       << ",\tNormal: "   << donorSolution.graftNormals[i] << std::endl;
-            /*       
-            plVector3 origin( donorSolution.graftPositions[i] );
-            plVector3 y     ( donorSolution.graftNormals[i]   );                    
-            plVector3 x =   ( y ^ plVector3( 0, 0, 1 ) ).normalize();      
-                                     
-            plRenderer::queue( plDebugTransform( x, y, origin ) );  
-            */          
+                                       << ",\tNormal: "   << donorSolution.graftNormals[i] << std::endl;         
         }
         std::cout << std::endl;
         //
-        
-        
-        /*
-        if (donorSolution.graftPositions.size() > 0 )
-        {
-            std::cout << "\tDonor locations and normals:\n";    
-            for (PLuint i=0; i < donorSolution.graftCount; i++)
-            {
-                std::cout << "\t\tPosition "    << i << ": \t" << donorSolution.graftPositions[i]   << "\n";
-                std::cout << "\t\tNormal "      << i << ": \t" << donorSolution.graftNormals[i]     << "\n";
-            }
-        }
         */
     }
     

@@ -28,14 +28,14 @@ class plSSBO
         void set( std::vector<T> &ts, PLuint count, PLuint index = 0, PLuint ssboIndex = 0 );
 
         template < class T > 
-        void setBytes( std::vector<T> &ts, PLuint numBytes, PLuint byteOffset = 0, PLuint ssboByteOffset = 0 );
+        void setBytes( T *ts, PLuint numBytes, PLuint byteOffset = 0, PLuint ssboByteOffset = 0 );
 
         // read
         template < class T > 
         void read( std::vector<T> &ts, PLuint count, PLuint index = 0, PLuint ssboIndex = 0 ) const;
 
         template < class T > 
-        void readBytes( std::vector<T> &ts, PLuint numBytes, PLuint byteOffset = 0, PLuint ssboByteOffset = 0 ) const;
+        void readBytes( T *ts, PLuint numBytes, PLuint byteOffset = 0, PLuint ssboByteOffset = 0 ) const;
 
     private:
 
@@ -57,7 +57,7 @@ void plSSBO::set( std::vector<T> &ts, PLuint count, PLuint index, PLuint ssboInd
         return;
     }
 
-    setBytes( ts, count*sizeof( T ), index*sizeof( T ), ssboIndex*sizeof( T ) );
+    setBytes( &ts[0], count*sizeof( T ), index*sizeof( T ), ssboIndex*sizeof( T ) );
 
     /*
     glBindBuffer( GL_SHADER_STORAGE_BUFFER, _id );            
@@ -73,7 +73,7 @@ void plSSBO::set( std::vector<T> &ts, PLuint count, PLuint index, PLuint ssboInd
 
 
 template < class T > 
-void plSSBO::setBytes( std::vector<T> &ts, PLuint numBytes, PLuint byteOffset, PLuint ssboByteOffset )
+void plSSBO::setBytes( T *ts, PLuint numBytes, PLuint byteOffset, PLuint ssboByteOffset )
 {
     if ( numBytes == 0 )
     {
@@ -84,7 +84,7 @@ void plSSBO::setBytes( std::vector<T> &ts, PLuint numBytes, PLuint byteOffset, P
     if ( !_id || numBytes > _numBytes )
     {
         // ssbo has not been generated yet or is too small to map properly
-        _create( numBytes, (void*)(&ts[0]) );
+        _create( numBytes, (void*)ts ); // (&ts[0]) );
         return; // no need to map
     }
 
@@ -94,7 +94,7 @@ void plSSBO::setBytes( std::vector<T> &ts, PLuint numBytes, PLuint byteOffset, P
                                               numBytes, 
                                               GL_MAP_WRITE_BIT );
                                                                                                                                    
-    memcpy( mappedBuffer, reinterpret_cast< PLchar* >( &ts[0] )+byteOffset, numBytes ); // cast to char array to ensure bytewise increments
+    memcpy( mappedBuffer, reinterpret_cast< PLchar* >( ts )+byteOffset, numBytes ); // cast to char array to ensure bytewise increments
     glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );  
 }
    
@@ -120,7 +120,10 @@ void plSSBO::read( std::vector<T> &ts, PLuint count, PLuint index, PLuint ssboIn
         return;
     }
     
-    readBytes( ts, count*sizeof( T ), index*sizeof( T ), ssboIndex*sizeof( T ) );
+    if ( ts.size() < count )
+         ts.resize( count );
+
+    readBytes( &ts[0], count*sizeof( T ), index*sizeof( T ), ssboIndex*sizeof( T ) );
 
     /*
     if ( ts.size() < index+count )
@@ -139,7 +142,7 @@ void plSSBO::read( std::vector<T> &ts, PLuint count, PLuint index, PLuint ssboIn
   
 
 template < class T > 
-void plSSBO::readBytes( std::vector<T> &ts, PLuint numBytes, PLuint byteOffset, PLuint ssboByteOffset ) const
+void plSSBO::readBytes( T *ts, PLuint numBytes, PLuint byteOffset, PLuint ssboByteOffset ) const
 {
     if ( !_id )
     {
@@ -159,17 +162,13 @@ void plSSBO::readBytes( std::vector<T> &ts, PLuint numBytes, PLuint byteOffset, 
         return;
     }
 
-    PLuint count = (byteOffset + numBytes)/sizeof( T );
-    if ( ts.size() < count )
-        ts.resize( count );
-
     glBindBuffer( GL_SHADER_STORAGE_BUFFER, _id );    
     T *mappedBuffer = (T*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
                                              ssboByteOffset, 
                                              numBytes, 
                                              GL_MAP_READ_BIT );    
                                                                                            
-    memcpy( reinterpret_cast< PLchar* >( &ts[0] )+byteOffset, &mappedBuffer[0], numBytes );
+    memcpy( reinterpret_cast< PLchar* >( ts )+byteOffset, &mappedBuffer[0], numBytes );
     glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
 }
 
