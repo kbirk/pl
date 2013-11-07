@@ -1,5 +1,6 @@
 #include "plDebugSphere.h"
 
+plDebugSphere::plDebugSphere() { }
 
 plDebugSphere::plDebugSphere( const plVector3 &origin, PLfloat radius, const plVector4 &colour )
     : _origin( origin ), _radius( radius ), _colour( colour )
