@@ -11,6 +11,7 @@ void GLUTmouseAction( int button, int state, int x, int y );
 void GLUTactiveMouseMotion( int x, int y );
 void GLUTpassiveMouseMotion( int x, int y );
 void GLUTkeyAction( unsigned char c, int x, int y );
+void GLUTidle();
 
 class Window 
 {
@@ -24,6 +25,7 @@ class Window
         virtual void passiveMouseMotion( int mx, int my )                        = 0;
         virtual void keyAction( unsigned char key, int mx, int my )              = 0;       
         virtual void setCursor( int mx, int my)                                  = 0;
+        virtual void idle     ()                                                 = 0;
         virtual void reshape  ( int width, int height );
         
         

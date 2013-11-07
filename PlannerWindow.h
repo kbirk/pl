@@ -21,6 +21,7 @@ class PlannerWindow : public Window
         void activeMouseMotion ( int mx, int my );       
         void keyAction         ( unsigned char key, int mx, int my );      
         void setCursor         ( int mx, int my );
+        void idle              ();
                 
     protected:
 

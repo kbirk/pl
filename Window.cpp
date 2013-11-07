@@ -26,6 +26,7 @@ Window::Window( int x, int y, int width, int height, std::string title )
     glutMotionFunc  ( GLUTactiveMouseMotion );
     glutPassiveMotionFunc( GLUTpassiveMouseMotion );
     glutKeyboardFunc( GLUTkeyAction );
+    glutIdleFunc    ( GLUTidle );
 
 }
 
@@ -82,4 +83,9 @@ void GLUTpassiveMouseMotion( int x, int y )
 void GLUTkeyAction( unsigned char c, int x, int y ) 
 {
     windows[ glutGetWindow() ]->keyAction( c, x, y );
+}
+
+void GLUTidle()
+{
+    windows[ glutGetWindow() ]->idle();
 }

@@ -12,6 +12,10 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
     plInit();
 }
 
+void PlannerWindow::idle()
+{
+    glutPostRedisplay();
+}
 
 void PlannerWindow::display()
 {
