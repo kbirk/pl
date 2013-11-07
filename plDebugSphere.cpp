@@ -14,3 +14,17 @@ void plDebugSphere::draw() const
     plColourStack::pop();
 }
 
+void plDebugSphere::colour(const plVector4& c)
+{
+    _colour = c;
+}
+
+void plDebugSphere::radius(const PLfloat &r)
+{
+    _radius = r;
+}
+
+void plDebugSphere::origin(const plVector3& o)
+{
+    _origin = o;
+}
