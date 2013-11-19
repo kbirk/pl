@@ -4,13 +4,14 @@
 #include "plCommon.h"
 
 #include "plMesh.h"
-#include "plOctree.h"
 #include "plTriangle.h"
 #include "plTransparentRenderable.h"
 #include "plPickingTexture.h"
 #include "plRenderingPipeline.h"
+#include "plOctreeMesh.h"
+#include "plVAO.h"
 
-#define PL_MODEL_DEFAULT_OCTREE_DEPTH 7
+#define PL_MODEL_DEFAULT_OCTREE_DEPTH   7
 
 // used to order triangles for drawing transparent meshes
 class plOrderPair
@@ -24,6 +25,8 @@ class plOrderPair
             : index(i), distance(d)
         {
         }
+        
+        PLbool operator< ( const plOrderPair& orderPair ) const { return distance > orderPair.distance; } // greater distance is considered "less"
     
 };
 
@@ -32,31 +35,23 @@ class plModel : public plTransparentRenderable
 {
     public:
 
-        plModel( const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
-        plModel( const std::vector<plTriangle> &triangles, const plString &filename, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
-        
-        const std::vector<plTriangle> &triangles() const { return _triangles; }
-        const plOctree          &octree()    const { return _octree;    }
-        const plString          &filename()  const { return _filename;  }
-        
+        plString filename;
+
+        plModel( const plString &file, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
+        plModel( const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
+               
+        const plOctreeMesh& mesh() const { return _mesh; }
+
+        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
+
         void draw( const plVector3 &colour ) const;
 
-        void      getMinMax       ( plVector3 &min, plVector3 &max ) const;        
-        plVector3 getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
-                
-        plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false, PLbool backFaceCull = false ) const;
-     
 	private:
 	
-		plMesh             _mesh;
-        std::vector<plTriangle>  _triangles;
-        plOctree           _octree;
-		plString           _filename;
-
-        // prevent empty constructor, copy constructor, and assignment, which will invalidate the octree's pointers if rhs is scoped
-        plModel();
-        plModel( const plModel &m );
-        plModel operator=( const plModel &m ) const;
+	    plOctreeMesh _mesh;
+        plVAO        _vao;
+        
+        void _generateVAO();
 
 };
 

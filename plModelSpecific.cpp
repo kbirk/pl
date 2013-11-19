@@ -6,19 +6,7 @@ plModelSpecific::plModelSpecific()
 }
 
 
-plModelSpecific::plModelSpecific( PLuint modelID, const plBoneAndCartilage &model )
+plModelSpecific::plModelSpecific( PLuint modelID, const plBoneAndCartilage& model )
     : _modelID(modelID), _model(&model)
 {
 }
-
-
-
-
-
-
-
-
-
-
-
-

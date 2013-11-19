@@ -5,23 +5,24 @@
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plBoundary.h"
-#include "plColourMesh.h"
 #include "plRenderable.h"
 #include "plEditable.h"
-#include "plPickingShader.h"
 #include "plPickingTexture.h"
 #include "plColourMap.h"
-#include "plModel.h"
+#include "plOctreeMesh.h"
+#include "plVAO.h"
 
 class plSpline : public plBoundary
 {
     public:
 
         plSpline();
-        plSpline( const plModel &cartilage );
-        plSpline( const std::vector<plString> &row, const plModel &cartilage );
+        plSpline( const plMesh &cartilageMesh );
+        plSpline( const std::vector<plString> &row, const plMesh &cartilageMesh );
 
-        const std::vector<plTriangle> &triangles() const { return _triangles; }
+        const plMesh& surfaceMesh() const { return _surfaceMesh; }
+
+        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
 
         void   draw() const;           
 
@@ -35,11 +36,12 @@ class plSpline : public plBoundary
 
     private:
     
-        const plModel    *_cartilage;
+        const plMesh *_cartilageMesh;
     
-        PLtime            _lastUpdate;
-        plColourMesh      _surfaceMesh;
-        std::vector<plTriangle> _triangles;
+        PLtime        _lastUpdate;
+        
+        plMesh        _surfaceMesh;
+        plVAO         _surfaceVAO;
 
         std::vector<plVector3>  _averageCornerNormals() const;
               

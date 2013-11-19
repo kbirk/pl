@@ -2,184 +2,236 @@
 
 namespace plRenderer
 {
+    plFBO *_fbo;
+    
+    std::shared_ptr< plTexture2D > _opaqueTexture;
+    std::shared_ptr< plTexture2D > _outlineTexture;
+    std::shared_ptr< plTexture2D > _pickingTexture;
+    std::shared_ptr< plTexture2D > _depthStencilTexture;
+                  
+    std::map< PLuint, // technique enum
+              std::map< PLuint, // render component enum
+                        std::vector< plRenderComponent > > _renderLists;
+    
+    plPickingInfo _previousPick;
+    PLuint _viewportHeight;
+    PLuint _viewportWidth;
+    PLuint _vBuffer, _hBuffer;
+
+    
     // private function prototypes
     void _setOpenGLState();
-    
-    void _beginPicking();
-    void _endPicking();
-    
     void _beginDrawing();
     void _endDrawing();
-    
-    void _drawScene( PLuint x, PLuint y );
-    void _drawScenePicking();
+    void _updateViewport( PLuint width, PLuint height );
+    void _generateFBO( PLuint width, PLuint height );
 
-    void _clearRenderQueue();
-
-    void _drawArthroTexture();
-
-    // private variable declarations
-    const plPlan*                 _planToDraw           = NULL;
-    const plGraftEditor*          _graftEditorToDraw    = NULL;
-    const plBoundaryEditor*       _boundaryEditorToDraw = NULL;
-    const plTexture2DMesh*        _arthroTextureToDraw  = NULL;
-    const plTrackedObject*        _probeToDraw          = NULL;
-    const plTrackedObject*        _scopeToDraw          = NULL;
-    const plChessBoard*           _chessBoardToDraw     = NULL;
-    const plScan*                 _scanToDraw           = NULL;
-    std::vector<plDebugSphere>    _debugSpheresToDraw;
-    std::vector<plDebugTransform> _debugTransformsToDraw;
-    std::vector<plLaserLine>      _laserLinesToDraw;
-
-
-    plMinimalShader*              _minimalShader        = NULL;
-    plPhongShader*                _phongShader          = NULL;
-    plPickingShader*              _pickingShader        = NULL;
-    plTexture2DShader*            _textureShader        = NULL;
 
     void init()
-    {   
-        delete _minimalShader;
-        delete _phongShader;
-        delete _pickingShader;
-        delete _textureShader;
-        
-        _minimalShader = new plMinimalShader( PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag");       
-        _phongShader   = new plPhongShader  ( PL_FILE_PREPATH"shaders/phong.vert",   PL_FILE_PREPATH"shaders/phong.frag"  );        
-        _pickingShader = new plPickingShader( PL_FILE_PREPATH"shaders/picking.vert", PL_FILE_PREPATH"shaders/picking.frag");         
-        _textureShader = new plTexture2DShader( PL_FILE_PREPATH"shaders/texture.vert", PL_FILE_PREPATH"shaders/texture.frag");  
+    {
+        _setOpenGLState();
+        _generateFBO( 1, 1 );
+        plProjectionStack::load( plProjection( PL_FIELD_OF_VIEW , PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE ) ); 
     } 
-
-
-    void _clearRenderQueue()
+    
+    
+    void _updateViewport( PLuint width, PLuint height )
     {
-        _planToDraw           = NULL;
-        _graftEditorToDraw    = NULL;
-        _boundaryEditorToDraw = NULL;
-        _arthroTextureToDraw  = NULL;
-        _probeToDraw          = NULL;
-        _scopeToDraw          = NULL;
-        _chessBoardToDraw     = NULL;
-        _scanToDraw           = NULL;
-        _debugSpheresToDraw.clear();;
-        _laserLinesToDraw.clear();
-    }
+        _viewportHeight = width / PL_ASPECT_RATIO ;
 
-
-    void queue( const plPlan &plan )
-    {
-        if (_planToDraw != NULL)
-            std::cerr << "plRenderer queue() error: plPlan already queued to draw, overridding previous \n";
-            
-        _planToDraw = &plan;
-    }
-
-
-    void queue( const plGraftEditor &editor )
-    {
-        if (_graftEditorToDraw != NULL)
-            std::cerr << "plRenderer queue() error: plGraftEditor already queued to draw, overridding previous \n";
-            
-        _graftEditorToDraw = &editor;
-    }
-
-
-    void queue( const plBoundaryEditor &editor )
-    {
-        if (_boundaryEditorToDraw != NULL)
-            std::cerr << "plRenderer queue() error: plBoundaryEditor already queued to draw, overridding previous \n";
-            
-        _boundaryEditorToDraw = &editor;
-    }
-
-
-    void queue( const plTexture2DMesh &arthroTexture )
-    {
-        if (_arthroTextureToDraw != NULL)
-            std::cerr << "plRenderer queue() error: plTextureMesh already queued to draw, overridding previous \n";
-            
-        _arthroTextureToDraw = &arthroTexture;
-    }
-
-
-    void queue( const plTrackedObject &object )
-    {
-        if ( object.isArthroscope() )
+        if ( _viewportHeight <= height )
         {
-            if (_scopeToDraw != NULL)
-                std::cerr << "plRenderer queue() error: Arthroscope already queued to draw, overridding previous \n";
-            
-            _scopeToDraw = &object;
+            _vBuffer = ( height - _viewportHeight )*0.5f;
+            _hBuffer = 0;
+            _viewportWidth = width;
         }
         else
         {
-            if (_probeToDraw != NULL)
-                std::cerr << "plRenderer queue() error: Probe already queued to draw, overridding previous \n";
-            
-            _probeToDraw = &object;
-        }
-    }
-
-
-    void queue( const plChessBoard &chessboard )
-    {
-        if (_chessBoardToDraw != NULL)
-            std::cerr << "plRenderer queue() error: plChessBoard already queued to draw, overridding previous \n";
-            
-        _chessBoardToDraw = &chessboard;
-    }
-
-
-    void queue( const plScan &scan )
-    {
-        if (_scanToDraw != NULL)
-            std::cerr << "plRenderer queue() error: plScan already queued to draw, overridding previous \n";
-
-        _scanToDraw = &scan;
-    }
-
-
-    void queue( const plDebugSphere &debugSphere )
-    {
-        _debugSpheresToDraw.push_back( debugSphere );
+            _viewportWidth = height * PL_ASPECT_RATIO;
+            _viewportHeight = height;
+            _hBuffer = ( width - _viewportWidth )*0.5f;
+            _vBuffer = 0;
+        }    
     }
     
-
-    void queue( const std::vector <plDebugSphere> &debugSpheres )
+    
+    void _generateFBO( PLuint width, PLuint height )
     {
-        _debugSpheresToDraw.insert( _debugSpheresToDraw.end(),
-                                    debugSpheres.begin(), debugSpheres.end());
+        delete _fbo;
+        _fbo = new plFBO();
+        
+        _opaqueTexture       = std::shared_ptr<plTexture2D> ( new plTexture2D( width, height, GL_RGBA8,  GL_RGBA,        GL_UNSIGNED_BYTE, NULL ) );
+        _outlineTexture      = std::shared_ptr<plTexture2D> ( new plTexture2D( width, height, GL_RGBA8,  GL_RGBA,        GL_UNSIGNED_BYTE, NULL ) );
+        _pickingTexture      = std::shared_ptr<plTexture2D> ( new plTexture2D( width, height, GL_RGB32I, GL_RGB_INTEGER, GL_INT,           NULL  ) );        
+        _depthStencilTexture = std::shared_ptr<plTexture2D> ( new plTexture2D( width, height, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL ) );
+
+        _fbo->attach( _opaqueTexture,       GL_COLOR_ATTACHMENT0  );
+        _fbo->attach( _outlineTexture,      GL_COLOR_ATTACHMENT1  );
+        _fbo->attach( _pickingTexture,      GL_COLOR_ATTACHMENT2  );
+        _fbo->attach( _depthStencilTexture, GL_DEPTH_ATTACHMENT   );
+        _fbo->attach( _depthStencilTexture, GL_STENCIL_ATTACHMENT );  
+    }
+    
+    
+    void resize( PLuint width, PLuint height )
+    {      
+        _updateViewport( width, height );
+        _generateFBO( _viewportWidth, _viewportHeight );        
+    }
+    
+    
+    void queue( const plRenderable& renderable )
+    {
+        renderable.extractRenderComponents( _renderQueue );
+
+        
+        
     }
 
 
-    void queue ( const plDebugTransform &debugTransform )
+    
+
+    void _testTexture()
     {
-        _debugTransformsToDraw.push_back( debugTransform );
+        // VAO GENERATION
+        std::vector<plVector3> vertices;
+        std::vector<PLuint>    indices;
+        std::vector<PLuint>    attributeTypes;
+        
+        attributeTypes.push_back( PL_POSITION_ATTRIBUTE );  
+        attributeTypes.push_back( PL_TEXCOORD_ATTRIBUTE );
+        
+        // position                                     // texture coord       
+        vertices.push_back( plVector3( -1, -1, 0 ) );   vertices.push_back( plVector3( 0,0,0) );   
+        vertices.push_back( plVector3(  1, -1, 0 ) );   vertices.push_back( plVector3( 1,0,0) );   
+        vertices.push_back( plVector3(  1,  1, 0 ) );   vertices.push_back( plVector3( 1,1,0) );    
+        vertices.push_back( plVector3( -1,  1, 0 ) );   vertices.push_back( plVector3( 0,1,0) );
+        
+        indices.push_back( 0 );   indices.push_back( 1 );   indices.push_back( 2 );
+        indices.push_back( 0 );   indices.push_back( 2 );   indices.push_back( 3 );
+           
+        static plVAO vao( vertices, attributeTypes, indices );
+        ///
+        
+        // TEX
+        std::vector<PLuint> texUnits;
+        texUnits.push_back( 0 );
+        texUnits.push_back( 1 );
+        //
+              
+        plMatrix44 ortho( -1, 1, -1, 1, -1, 1 );
+
+        plMatrix44 camera( 1, 0,  0, 0,
+                           0, 1,  0, 0,
+                           0, 0, -1, 0,
+                           0, 0,  0, 1 ); 
+            
+        plTexture2DStack::push ( *_opaqueTexture,  0 );    
+        plTexture2DStack::push ( *_outlineTexture, 1 );       
+        plShaderStack::push    ( PL_FBO_SHADER );                   
+        plProjectionStack::push( ortho );        // ortho projection
+        plModelStack::push     ( plMatrix44() ); // identity model matrix
+        plCameraStack::push    ( camera );       // default camera matrix
+
+        _renderQueue.insert( plRenderComponent( &vao, texUnits ) );
+      
+        plProjectionStack::pop(); 
+        plModelStack::pop();       
+        plCameraStack::pop();    
+        plShaderStack::pop();
+        plTexture2DStack::pop( 0 );
+        plTexture2DStack::pop( 1 );
     }
 
 
-    void queue( const plLaserLine &laserLine )
+    void draw()
     {
-        _laserLinesToDraw.push_back( laserLine );
+        _beginDrawing();
+        _fbo->bind();   
+        
+        // clear opaque buffer
+        /*
+        GLenum buffers0[2] = { GL_COLOR_ATTACHMENT0, GL_NONE };  
+        _fbo->setDrawBuffers( buffers0, 2 );
+        glClearColor( PL_CLEAR_COLOUR );          
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+        
+        // clear blend buffer
+        GLenum buffers1[2] = { GL_NONE, GL_COLOR_ATTACHMENT1 };  
+        _fbo->setDrawBuffers( buffers1, 2 );        
+        */
+                
+        // clear fbo
+        glClearColor( 0, 0, 0, 0 );          
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+        glViewport( 0, 0, _viewportWidth, _viewportHeight ); 
+        //
+          
+          
+             
+        for ( const std::set renderQueue : _renderQueues )
+        {
+            for ( const plRenderComponent& renderComponent : _renderQueue )
+            { 
+                renderComponent.draw();   
+            }
+        }     
+             
+        
+        _endDrawing();
+        
+        // this should not be manual, should be enabled by flags  
+        _fbo->unbind();  
+        glClearColor( PL_CLEAR_COLOUR );          
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );         
+        glViewport( _hBuffer, _vBuffer, _viewportWidth, _viewportHeight );       
+        //
+        
+        _renderQueue.clear();  
+        _testTexture();
+        for ( const plRenderComponent& renderComponent : _renderQueue )
+        { 
+            renderComponent.draw();   
+        }
+        
+        _renderQueue.clear();
     }
-
-
-    void queue( const std::vector <plLaserLine> &laserLine )
-    {
-        _laserLinesToDraw.insert( _laserLinesToDraw.end(), laserLine.begin(), laserLine.end());
-    }
-
+    
 
     void _setOpenGLState()
     {
         glEnable( GL_CULL_FACE );
         glCullFace( GL_BACK );    
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-        glEnable( GL_DEPTH_TEST );   
+        glEnable( GL_DEPTH_TEST ); 
+        glEnable( GL_BLEND );  
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );  
+        glDepthFunc( GL_LEQUAL );
+    }
+
+    
+    //template< typename T>
+    //plPixel<T>        
+    const plPickingInfo& pickPixel( PLuint x, PLuint y )
+    {
+        plPixel<PLint> pick = _fbo->readPixel<PLint>( GL_COLOR_ATTACHMENT2, x - _hBuffer, y - _vBuffer );
+
+        _previousPick = plPickingInfo( pick.r, pick.g, pick.b );
+
+        std::cout << "picking: " << _previousPick.r << " " << _previousPick.g << " " << _previousPick.b << "\n"; 
+    
+        return _previousPick;   
     }
 
 
+    //template< typename T>
+    //plPixel<T> 
+    const plPickingInfo& previousPick()
+    {
+        return _previousPick;
+    }
+
+    /*
     void draw( PLuint x, PLuint y )
     {
         _setOpenGLState();
@@ -212,7 +264,7 @@ namespace plRenderer
         plShaderStack::push( _pickingShader );
         
         // bind picking texture
-        plPicking::texture->bind();
+        plPicking::bind();
 
         // clear picking texture
         glClearColor(0,0,0,0);
@@ -224,31 +276,32 @@ namespace plRenderer
     void _endPicking()
     {
         plShaderStack::pop();
-        plPicking::texture->unbind();  
+        plPicking::unbind();  
     }
-
+    */
 
     void _beginDrawing()
     {
         glEnable( GL_BLEND );
         
-        glClearColor( 0.137, 0.137, 0.137, 1 );
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClearColor( PL_CLEAR_COLOUR );
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
         
-        glStencilFunc( GL_ALWAYS, 0x00, 0x00);               // only render to bits = 0 (have not been written)
-	    plShaderStack::push( _phongShader );
+        //glStencilFunc( GL_ALWAYS, 0x00, 0x00);               // only render to bits = 0 (have not been written)
+	    //plShaderStack::push( _phongShader );
     }
 
 
     void _endDrawing()
     {
-        plShaderStack::pop(); 
+       // plShaderStack::pop(); 
     }
 
-
+    /*
     void _drawScene( PLuint x, PLuint y )
     {
         // arthro texture
+        
         if (_arthroTextureToDraw != NULL)
         {
             _drawArthroTexture();
@@ -330,6 +383,7 @@ namespace plRenderer
         }
         */
         
+        /*
         // draw scanner information
         if (_scanToDraw != NULL)
         {
@@ -344,7 +398,7 @@ namespace plRenderer
         }
 
         // draw debug transforms
-        for (int i = 0; i < _debugTransformsToDraw.size(); i++)
+        for (PLuint i = 0; i < _debugTransformsToDraw.size(); i++)
         {
             _debugTransformsToDraw[i].draw();
 
@@ -352,7 +406,7 @@ namespace plRenderer
 
         // draw lines (currently just thin cylinders)
 
-        for (int i = 0; i < _laserLinesToDraw.size(); i++)
+        for (PLuint i = 0; i < _laserLinesToDraw.size(); i++)
         {
             plColourStack::push( _laserLinesToDraw[i].colour );
             plDraw::laserLine( _laserLinesToDraw[i].origin,
@@ -372,11 +426,11 @@ namespace plRenderer
             plColourStack::load( 0.3, 0.1, 0.4 );
             //_planToDraw->models(i).bone.octree().draw();
             //plColourStack::load( 0.1, 0.4, 0.3 );
-            _planToDraw->models(i).cartilage.octree().draw();
+            _planToDraw->models(i).cartilage.mesh().octree().draw();
         }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         */
-
+        /*
     }
 
 
@@ -396,7 +450,7 @@ namespace plRenderer
         {
             glDisable( GL_DEPTH_TEST );
 
-            _arthroTextureToDraw->draw();
+            //_arthroTextureToDraw->draw();
              
             glEnable( GL_DEPTH_TEST ); 
         }       
@@ -451,5 +505,5 @@ namespace plRenderer
         }   
 
     }
-
+    */
 }

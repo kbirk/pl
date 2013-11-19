@@ -4,6 +4,7 @@
 #include "plCommon.h"
 #include "plMatrix44.h"
 #include "plRenderingPipeline.h"
+#include "plRenderer.h"
 
 namespace plWindow
 {

@@ -103,7 +103,7 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
     // Compute ray/plane intersection
     PLfloat dn = rayDir * _normal;
 
-    if (dn == 0 || (backFaceCull && dn > 0) )
+    if ( dn == 0 || (backFaceCull && dn > 0) )
         return plIntersection(false);   // ray is parallel to plane, or coming from behind    
 
     //PLfloat dist = _points[0] * _normal;

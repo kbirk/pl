@@ -20,8 +20,10 @@ class plIGuideSite : public plModelSpecific,
         plBoundary boundary;
 
         plIGuideSite();
-        plIGuideSite( PLuint _modelID, const plBoneAndCartilage &_model );
-        plIGuideSite( PLuint _modelID, const plBoneAndCartilage &_model, const plBoundary &b );
+        plIGuideSite( PLuint modelID, const plBoneAndCartilage& model );
+        plIGuideSite( PLuint modelID, const plBoneAndCartilage& model, const plBoundary &b );
+
+        void extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const;  
 
         const std::vector<plTriangle> &templateBase() const { return _templateBase; }
 
@@ -31,7 +33,7 @@ class plIGuideSite : public plModelSpecific,
 
     private:
  
-        std::vector<plTriangle>    _templateBase;                                         // for use in generating iGuides
+        std::vector<plTriangle>  _templateBase;    // for use in generating iGuides
 
 };
 

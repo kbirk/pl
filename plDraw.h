@@ -2,8 +2,7 @@
 #define PL_DRAW_H
 
 #include "plCommon.h"
-#include "plShapeMesh.h"
-#include "plTrackedObject.h"
+#include "plVAO.h"
 
 namespace plDraw
 {
@@ -23,7 +22,14 @@ namespace plDraw
     void cube     ( const plVector3 &origin, float halfwidth );
     void laserLine     ( const plVector3 &origin, const plVector3 &direction, float length);
 
+    // shape generation functions
+    plVAO generateCubeVAO     ( float halfWidth );
+    plVAO generateCubeLineVAO ( float halfWidth );
+    plVAO generateSphereVAO   ( float radius, int slices, int stacks );
+    plVAO generateCylinderVAO ( float baseRadius, float topRadius, float height, int slices, int stacks );
+    plVAO generateDiskVAO     ( float innerRadius, float outerRadius, int slices, int loops, bool up = true );
 
 }
+
 
 #endif

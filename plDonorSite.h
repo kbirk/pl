@@ -16,8 +16,10 @@ class plDonorSite : public plModelSpecific,
         plBoundary boundary; 
                 
         plDonorSite();
-        plDonorSite( PLuint _modelID, const plBoneAndCartilage &_model );
-        plDonorSite( PLuint _modelID, const plBoneAndCartilage &_model, const plBoundary &b );
+        plDonorSite( PLuint modelID, const plBoneAndCartilage& model );
+        plDonorSite( PLuint modelID, const plBoneAndCartilage& model, const plBoundary &b );
+
+        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;  
 
         void draw() const;      
 };

@@ -22,10 +22,11 @@ void PlannerWindow::display()
     plCameraStack::load( _camera );
     
     plRenderer::queue( _plan );
-    plRenderer::queue( _graftEditor );
-    plRenderer::queue( _boundaryEditor );   
 
-    plRenderer::draw( _previousMouse.x, _previousMouse.y );
+    plRenderer::queue( _graftEditor );
+    //plRenderer::queue( _boundaryEditor );   
+
+    plRenderer::draw();
 
     glutSwapBuffers();
 }
@@ -94,7 +95,6 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
         case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
         case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 
-        case 'm':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_MARKER );      break; 
         case 'v':   _graftEditor.toggleSelectedVisibility();  
                     _boundaryEditor.toggleSelectedVisibility();                 break;
         case 'g':   _plan.iGuides(0).generateIGuideModels();                    break; // TODO: This is broken at the moment. Need to not have static 0 here

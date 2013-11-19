@@ -14,8 +14,58 @@ plBoundary::plBoundary( const std::vector<plString> &row )
         _normals.push_back( plVector3( row[j+1] ) );
     } 
     // construct mesh
-    _updateMesh(); 
+    _generateVAO(); 
 }
+
+
+void plBoundary::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+{
+    if ( !_isVisible )
+        return;
+
+    plColourStack::load( _getColour() );
+
+    // draw walls
+    if ( _points.size() > 1 )
+    {
+        plPickingStack::loadBlue( -1 ); // draw walls with index of -1
+        
+        plRenderComponent rc( &_vao );
+        rc.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        rc.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        rc.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        rc.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        rc.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        rc.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        
+        renderComponents[ PL_PLANNER_TECHNIQUE ][ PL_MAIN_COMPONENT ].insert( rc );      
+    }
+        
+    // draw points
+    _extractPointRenderComponents( renderComponents );
+}
+
+
+void plBoundary::_extractPointRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+{
+    // draw points
+    for (PLuint i=0; i<_points.size(); i++) 
+    {
+        plPickingStack::loadBlue( i );    
+             
+        if ( _isSelected && _selectedValue == i )   // is the current point selected?
+        {
+            // scale larger
+            plRenderer::queue( plSphere( _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
+        }
+        else
+        {
+            // regular size
+            plRenderer::queue( plSphere( _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
+        }
+    } 
+}
+
 
 
 plVector3 plBoundary::getAverageNormal() const
@@ -42,7 +92,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         // 0 or 1 _points, doesnt matter, just add
         _points.push_back( point );
         _normals.push_back( normal );
-        _updateMesh();
+        _generateVAO();
         return _points.size()-1;
     }
     else if (_points.size() == 2) 
@@ -56,22 +106,16 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
             _points.push_back( point );
             _normals.push_back( normal );
             
-            _updateMesh(); 
+            _generateVAO(); 
             return 2;
         }
         else
         {
             // clock-wise, add new point between existing two
-            /*
-            _points.shift(1);
-            _normals.shift(1);
-            _points[1] = point;
-            _normals[1] = normal;
-            */
-            _points.insert( _points.begin()+1, point );
+            _points.insert ( _points.begin()+1, point );
             _normals.insert( _normals.begin()+1, normal );
 
-            _updateMesh(); 
+            _generateVAO(); 
             return 1;
         }
     } 
@@ -131,17 +175,11 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
                 shift_i = j;
             }
         }
-        /*
-        _normals.shift(shift_i);
-        _normals[shift_i] = normal;
 
-        _points.shift(shift_i);
-        _points[shift_i] = point; 
-        */
-        _points.insert( _points.begin()+shift_i, point );
+        _points.insert ( _points.begin()+shift_i, point );
         _normals.insert( _normals.begin()+shift_i, normal );
 
-        _updateMesh(); 
+        _generateVAO(); 
         return shift_i;  
     }
 }
@@ -151,19 +189,16 @@ void plBoundary::movePointAndNormal( PLuint index, const plVector3 &point, const
 {
     _points[index] = point;    
     _normals[index] = normal;
-    _updateMesh(); 
+    _generateVAO(); 
 }
 
 
 void plBoundary::removePointAndNormal( PLuint index )
 {
-    /*
-    _points.remove(index);
-    _normals.remove(index);
-    */
-    _points.erase( _points.begin()+index );
+
+    _points.erase ( _points.begin()+index );
     _normals.erase( _normals.begin()+index );
-    _updateMesh(); 
+    _generateVAO(); 
 }
 
 
@@ -171,73 +206,90 @@ void plBoundary::clear()
 {
     _points.clear();
     _normals.clear();
-    _updateMesh(); 
+    _generateVAO(); 
 }
 
 
-void plBoundary::_setColour() const
+plVector4 plBoundary::_getColour() const
 {
     if (_isSelected)
     {
         // selected
-        switch (plPicking::value.type)
+        switch ( plPickingStack::topRed() )
         {
             case PL_PICKING_TYPE_DEFECT_CORNERS:
                 // defect corners 
-                plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
-                break;
+                return plVector4( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
 
             case PL_PICKING_TYPE_DEFECT_BOUNDARY:
                 // defect boundary
-                plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL ); 
-                break;
+                return plVector4( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL ); 
  
             case PL_PICKING_TYPE_DONOR_BOUNDARY:
                 // donor boundary
-                plColourStack::load( PL_BOUNDARY_DONOR_COLOUR_DULL );
-                break;
+                return plVector4( PL_BOUNDARY_DONOR_COLOUR_DULL );
 
             case PL_PICKING_TYPE_IGUIDE_BOUNDARY:     
                 // iguide boundary
-                plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR_DULL );   
-                break;
+                return plVector4( PL_BOUNDARY_IGUIDE_COLOUR_DULL );   
         }
     }
     else
     {
         // not selected
-        switch (plPicking::value.type)
+        switch ( plPickingStack::topRed() )
         {
             case PL_PICKING_TYPE_DEFECT_CORNERS:
                 // defect corners 
-                plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
-                break;
+                return plVector4( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
 
             case PL_PICKING_TYPE_DEFECT_BOUNDARY:
                 // defect boundary
-                plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
-                break;
+                return plVector4( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
  
             case PL_PICKING_TYPE_DONOR_BOUNDARY:
                 // donor boundary
-                plColourStack::load( PL_BOUNDARY_DONOR_COLOUR );
-                break;
+                return plVector4( PL_BOUNDARY_DONOR_COLOUR );
 
             case PL_PICKING_TYPE_IGUIDE_BOUNDARY:     
                 // iguide boundary
-                plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR );   
-                break;
+                return plVector4( PL_BOUNDARY_IGUIDE_COLOUR );   
         }
     }
 }
 
 
-void plBoundary::_updateMesh()
+void plBoundary::_generateVAO()
 {
     if (_points.size() < 2)
         return;
 
     plVector3 n = getAverageNormal();
+
+    /*
+    std::vector< plVector3 > incrementalPoints;
+    const float INCREMENT_LENGTH = 0.25f;
+    for (PLuint i = 0; i < _points.size(); i++)
+    {        
+        int j = (i+1) % _points.size();            // next index
+
+        incrementalPoints.push_back( _points[i] );
+
+        plVector3 edge = _points[j] - _points[i];
+        PLfloat sqrLength = edge.squaredLength();
+        edge = edge.normalize();
+        
+        while ( sqrLength > INCREMENT_LENGTH )
+        {
+            plIntersection intersection = _model->combined.mesh().rayIntersect( incrementalPoints.back() + edge * INCREMENT_LENGTH, -n );
+            
+            if ( intersection.exists )
+                incrementalPoints.push_back( intersection.point );
+
+            sqrLength -= INCREMENT_LENGTH;
+        }
+    }
+    */
 
     std::vector<plVector3> vertices;    vertices.reserve( _points.size() * 10 );
     std::vector<PLuint>    indices;     indices.reserve ( _points.size() * 6 * 4 );
@@ -369,7 +421,11 @@ void plBoundary::_updateMesh()
         }
     }
 
-    _mesh.setBuffers(vertices, indices);
+    std::vector< PLuint > attributeTypes;    
+    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
+    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
+
+    _vao.set( vertices, attributeTypes, indices );
 }
 
 
@@ -378,9 +434,9 @@ void plBoundary::_drawPoints() const
     // draw _points
     for (PLuint i=0; i<_points.size(); i++) 
     {
-        plPicking::value.index = i;
+        plPickingStack::loadBlue( i );    
             
-        if (_isSelected && _selectedValue == i)   // is the current point selected?
+        if ( _isSelected && _selectedValue == i )   // is the current point selected?
         {
             plDraw::sphere( _points[i], 1.0 );
         }
@@ -391,7 +447,7 @@ void plBoundary::_drawPoints() const
     }
 }
 
-
+/*
 void plBoundary::draw() const
 {        
     if ( !_isVisible )
@@ -402,14 +458,14 @@ void plBoundary::draw() const
     // draw walls
     if ( _points.size() > 1 )
     {
-        plPicking::value.index = -1; // draw walls with index of -1
-        _mesh.draw();
+        plPickingStack::loadBlue( -1 ); // draw walls with index of -1
+        _vao.draw();
     }
    
     // draw points
     _drawPoints();      
 }
-
+*/
 
 std::ostream& operator << ( std::ostream& out, const plBoundary &b )
 {

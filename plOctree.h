@@ -5,13 +5,11 @@
 
 #include "plVector3.h"
 #include "plMath.h"
-#include "plLineMesh.h"
 #include "plTriangle.h"
 #include "plRenderable.h"
 #include "plTransform.h"
-
-// NOTE:    plOctrees are not exclusive, if a triangle is in a node, it will also be in its parent node
-//          as well. This is not as memory efficient, but gives much better performance for queries
+#include "plVAO.h"
+#include "plDraw.h"
 
 // children quadrant indices 
 // (functions rely on specific bitwise AND operations)
@@ -26,66 +24,52 @@
     [7] = + + +
 */
 
-class plOctreeNode 
-{
-    public:
-       
-        plOctreeNode( const plVector3 &c, PLfloat hw ); 
-        ~plOctreeNode();
-
-        void insert( const plTriangle &tri, PLuint depth);
-        void clear ();        
-        void draw() const;        
-
-        PLbool rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat boxInflation = 0, PLbool ignoreBehindRay = false ) const;
-               
-    private:
-                         
-        plLineMesh _mesh;
-
-        plVector3  _centre;                             // center point of octree node (not strictly needed)    
-        PLfloat    _halfWidth;                          // half the width of the node volume (not strictly needed)           
-        std::vector< const plTriangle* >  _contained;   // triangles contained at this node 
-        std::vector< plOctreeNode* >      _children;    // pointers to the eight children nodes   
-        
-        void      _insertChild( PLuint index, const plTriangle &tri, PLuint depth);
-        PLfloat   _squaredDistanceFromPoint( const plVector3 &point, PLint child = -1 ) const;
-        plVector3 _closestPointInBox( const plVector3 &point, PLint child ) const;
-        PLbool    _sphereCheck      ( const plVector3 &centre, PLfloat radius, PLint child = -1 ) const;        
-        void      _updateMesh();
-        
-};
-
 
 class plOctree : public plRenderable
 {
+
     public:
-          
-        plOctree();        
-        plOctree( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth );
-
-        ~plOctree();
-         
-        void build( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth);  
-              
-        plIntersection rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay = false,  PLbool backFaceCull = false ) const;
-        
-        void graftIntersect ( plSet<const plTriangle*> &triangles, const plTransform &transform, PLfloat radius) const;
-
-        void draw() const;
-        
-    private:
-           
-        plOctreeNode *_root;   
-          
-        void _clear();       
-        void _fill ( const std::vector<plTriangle> &triangles, PLuint depth );
-           
-        // prevent copy construction and assignment   
-        plOctree( const plOctree &o );
-        plOctree operator= ( const plOctree &o ) const;    
     
+        plOctree ();
+        plOctree ( const plVector3 &centre, PLfloat halfWidth, PLuint depth );    // child constructor
+        plOctree ( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth ); // root constructor        
+        plOctree ( const plOctree& octree );
+        plOctree ( plOctree&& octree );
+        
+        plOctree& operator= ( const plOctree& octree );
+        plOctree& operator= ( plOctree&& octree );
+        
+        ~plOctree();
+
+        PLuint depth() const { return _depth; }
+
+        void build ( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth);  
+        void clear ();   
+                     
+        void extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const;          
+
+        PLbool rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat rayRadius = 0.0f, PLbool ignoreBehindRay = false ) const;
+               
+    private:
+                         
+        PLuint                            _depth;
+        plVector3                         _centre;       // center point of octree node (not strictly needed)    
+        PLfloat                           _halfWidth;    // half the width of the node volume (not strictly needed)  
+        std::vector<plOctree*>            _children;     // pointers to the eight children nodes         
+        std::vector< const plTriangle* >  _contained;    // triangles contained at this node 
+           
+        void      _insert            ( const plTriangle &tri );       
+        void      _insertIntoChild   ( PLuint index, const plTriangle &tri );
+        PLfloat   _sqrDistFromPoint  ( const plVector3 &point, PLint child ) const;
+        plVector3 _closestPointInBox ( const plVector3 &point, PLint child ) const;
+        PLbool    _sphereCheck       ( const plVector3 &centre, PLfloat radius, PLint child ) const;        
+        
+        plVAO     _generateVAO( PLfloat halfWidth ) const;
+        
+        void      _move( plOctree &&octree );
+        void      _copy( const plOctree& octree );
         
 };
+
 
 #endif

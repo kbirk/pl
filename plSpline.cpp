@@ -7,14 +7,14 @@ plSpline::plSpline()
 }
 
 
-plSpline::plSpline( const plModel &cartilage )
-    : _cartilage( &cartilage )
+plSpline::plSpline( const plMesh& cartilageMesh )
+    : _cartilageMesh( &cartilageMesh )
 {
 }
 
 
-plSpline::plSpline( const std::vector<plString> &row, const plModel &cartilage )
-    : plBoundary( row ), _cartilage( &cartilage )
+plSpline::plSpline( const std::vector<plString> &row, const plMesh& cartilageMesh )
+    : plBoundary( row ), _cartilageMesh( &cartilageMesh )
 {
     // construct spline 
     if (size() == 4)
@@ -27,7 +27,7 @@ plSpline::plSpline( const std::vector<plString> &row, const plModel &cartilage )
 void plSpline::clear()
 {
     plBoundary::clear();
-    _triangles.clear();
+    _surfaceMesh = plMesh();
 }
 
 
@@ -77,15 +77,47 @@ plVector3 plSpline::getAverageNormalOverCorners()
 
     return averageNormalOverCorners.normalize();
 }
-  
+ 
+
+void plSpline::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+{
+    if ( !_isVisible )
+        return;
+   
+    plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS );
+    
+    // if not full 4 corners, display walls
+    if ( size() < 4 )
+    {
+        // draw boundary walls
+        plBoundary::extractRenderComponents( renderComponents );
+    }
+    else
+    {
+        plColourStack::load( _getColour() );
         
+        // draw points
+        _extractPointRenderComponents( renderComponents );
+        
+        // draw spline
+        plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS ); 
+        plPickingStack::loadBlue( -1 );  // unused  
+        
+        // set colour flag to use vertex attribute colours
+        plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );        
+        renderComponents.insert( plRenderComponent( &_surfaceVAO ) );
+        plColourStack::pop();
+    }  
+}
+
+  
+  /*      
 void plSpline::draw() const
 {      
     if ( !_isVisible )
         return;
    
-    plPicking::value.type = PL_PICKING_TYPE_DEFECT_CORNERS;
-   
+    plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS );
     if (size() < 4 )
     {
         // draw boundary walls
@@ -97,13 +129,14 @@ void plSpline::draw() const
         // draw points
         _drawPoints();
         // draw spline
-        plPicking::value.type  = PL_PICKING_TYPE_DEFECT_CORNERS; //PL_PICKING_TYPE_DEFECT_SPLINE;  
-        plPicking::value.index = -1;   
-        plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR );   
-        _surfaceMesh.draw();        
+        plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS ); //PL_PICKING_TYPE_DEFECT_SPLINE; 
+        plPickingStack::loadBlue( -1 );  // unused  
+        plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );   
+        _surfaceVAO.draw();  
+        plColourStack::pop();
     }           
 }
-
+*/
 
 PLfloat Q( PLfloat s, PLfloat t, const std::vector<PLfloat> &st, const std::vector<PLfloat> &tt)
 {
@@ -132,10 +165,10 @@ std::vector<plVector3> plSpline::_averageCornerNormals() const
     std::vector<plVector3> n;
 
     // compute averages normals
-    n.push_back( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
-    n.push_back( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
-    n.push_back( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
-    n.push_back( _cartilage->getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
+    n.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
+    n.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
+    n.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
+    n.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
     
     return n;
 }
@@ -225,8 +258,8 @@ void plSpline::_computeHermite()
     const PLfloat   MAX_DISTANCE = 1.0f;            // colour map max distance, anything beyond this is dark red   
     const plVector3 NO_DATA_COLOUR(0.2, 0.2, 0.2);  // default colour if no data available  
 
-    _triangles.clear();
-    _triangles.reserve( NUM_INC*NUM_INC*2 );
+    std::vector<plTriangle> triangles;
+    triangles.reserve( NUM_INC*NUM_INC*2 );
  
     std::vector<plVector3> points;      points.reserve( (NUM_INC+1)*(NUM_INC+1) );
     std::vector<plVector3> colours;     colours.reserve( (NUM_INC+1)*(NUM_INC+1) );
@@ -257,7 +290,7 @@ void plSpline::_computeHermite()
             plVector3 pos  = (1.0f-u)*p03 + u*p12 + z*norm;          // inflate this point using normal scaled by z value returned by hermite spline
         
             // intersect cartilage
-            plIntersection intersection = _cartilage->rayIntersect( pos+(10.0f*norm), -norm, false, true ); 
+            plIntersection intersection = _cartilageMesh->rayIntersect( pos+(10.0f*norm), -norm, false, false, true ); 
         
             // get colour value
             plVector3 colour = (intersection.exists) ? plColourMap::map( (intersection.point - pos).squaredLength()/MAX_DISTANCE ) : NO_DATA_COLOUR;
@@ -275,8 +308,8 @@ void plSpline::_computeHermite()
                 
                 plVector3 normal = ( ( points[i2] - points[i1]) ^ (points[i0] - points[i1]) ).normalize();
 
-                _triangles.emplace_back( plTriangle( normal, points[i0], points[i1], points[i2] ) );
-                _triangles.emplace_back( plTriangle( normal, points[i0], points[i2], points[i3] ) );
+                triangles.emplace_back( plTriangle( normal, points[i0], points[i1], points[i2] ) );
+                triangles.emplace_back( plTriangle( normal, points[i0], points[i2], points[i3] ) );
 
                 PLuint base = vertices.size() / 3;
 
@@ -293,7 +326,14 @@ void plSpline::_computeHermite()
             
     }   
 
-    _surfaceMesh.setBuffers( vertices, indices );
+    _surfaceMesh = plMesh( triangles );
+
+    std::vector< PLuint > attributeTypes;    
+    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
+    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
+    attributeTypes.push_back( PL_COLOUR_ATTRIBUTE );
+    
+    _surfaceVAO.set( vertices, attributeTypes, indices );
 
     // update timer to store time of last update
     _lastUpdate = plTimer::now();

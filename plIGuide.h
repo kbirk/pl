@@ -72,8 +72,8 @@ class plIGuide : public plRenderable
         PLfloat                 thickness;
         PLfloat                 printerOffset;
 
-        std::vector<plModel*>         iGuideModelsToAdd;
-        std::vector<plModel*>         iGuideModelsToSubtract;
+        std::vector<plModel*>   iGuideModelsToAdd;
+        std::vector<plModel*>   iGuideModelsToSubtract;
 
         plIGuideSite            *site;
         PLuint                  siteID;
@@ -96,6 +96,8 @@ class plIGuide : public plRenderable
         void   clearIGuideModels    ();
 
         // rendering
+        void extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const {};
+        
         void draw();
 
         void toggleVisibility();

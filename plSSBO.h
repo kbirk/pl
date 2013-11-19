@@ -2,20 +2,18 @@
 #define PL_SSBO_H
 
 #include "plCommon.h"
+#include "plBufferObject.h"
 
-
-
-class plSSBO 
+class plSSBO : public plBufferObject
 {
 
     public:                    
           
         plSSBO();
         plSSBO( PLuint numBytes, const void *buffer = NULL );  
+        
         plSSBO( const plSSBO& ssbo );
         plSSBO( plSSBO&& ssbo );
-
-        ~plSSBO();
 
         plSSBO& operator= ( plSSBO&& ssbo ); 
         plSSBO& operator= ( const plSSBO& ssbo ); 
@@ -39,12 +37,9 @@ class plSSBO
 
     private:
 
-        GLuint _id;
-        PLuint _numBytes;
-
         void _create( PLuint numBytes, const void *buffer = NULL );
-        void _destroy(); 
         void _copy  ( const plSSBO &ssbo );
+        void _move  ( plSSBO&& ssbo ); 
 };
 
 
@@ -58,17 +53,6 @@ void plSSBO::set( std::vector<T> &ts, PLuint count, PLuint index, PLuint ssboInd
     }
 
     setBytes( &ts[0], count*sizeof( T ), index*sizeof( T ), ssboIndex*sizeof( T ) );
-
-    /*
-    glBindBuffer( GL_SHADER_STORAGE_BUFFER, _id );            
-    T *mappedBuffer = (T*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
-                                              ssboIndex*sizeof( T ), 
-                                              count*sizeof( T ), 
-                                              GL_MAP_WRITE_BIT ); 
-                                                                                 
-    memcpy( mappedBuffer, &ts[index], count*sizeof( T ) );
-    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-    */
 }
 
 
@@ -84,15 +68,15 @@ void plSSBO::setBytes( T *ts, PLuint numBytes, PLuint byteOffset, PLuint ssboByt
     if ( !_id || numBytes > _numBytes )
     {
         // ssbo has not been generated yet or is too small to map properly
-        _create( numBytes, (void*)ts ); // (&ts[0]) );
+        _create( numBytes, (void*)ts );
         return; // no need to map
     }
 
     glBindBuffer( GL_SHADER_STORAGE_BUFFER, _id );            
     T *mappedBuffer = (T*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
-                                              ssboByteOffset, 
-                                              numBytes, 
-                                              GL_MAP_WRITE_BIT );
+                                             ssboByteOffset, 
+                                             numBytes, 
+                                             GL_MAP_WRITE_BIT );
                                                                                                                                    
     memcpy( mappedBuffer, reinterpret_cast< PLchar* >( ts )+byteOffset, numBytes ); // cast to char array to ensure bytewise increments
     glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );  
@@ -124,20 +108,6 @@ void plSSBO::read( std::vector<T> &ts, PLuint count, PLuint index, PLuint ssboIn
          ts.resize( count );
 
     readBytes( &ts[0], count*sizeof( T ), index*sizeof( T ), ssboIndex*sizeof( T ) );
-
-    /*
-    if ( ts.size() < index+count )
-        ts.resize( index+count );
-
-    glBindBuffer( GL_SHADER_STORAGE_BUFFER, _id );    
-    T *mappedBuffer = (T*) glMapBufferRange( GL_SHADER_STORAGE_BUFFER, 
-                                             ssboIndex*sizeof( T ), 
-                                             count*sizeof( T ), 
-                                             GL_MAP_READ_BIT );  
-                                                                                             
-    memcpy( &ts[index], &mappedBuffer[0], count*sizeof( T ) );
-    glUnmapBuffer( GL_SHADER_STORAGE_BUFFER );
-    */
 }
   
 

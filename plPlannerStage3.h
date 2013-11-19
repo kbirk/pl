@@ -6,7 +6,7 @@
 #include "plPlannerStructs.h"
 #include "plPlannerStage0.h"
 #include "plPlannerStage2.h"
-#include "plPlannerStage3Shader.h"
+#include "plPlannerShader.h"
 
 #define PL_STAGE_3_ITERATIONS                 8
 #define PL_STAGE_3_GROUP_SIZE                 64

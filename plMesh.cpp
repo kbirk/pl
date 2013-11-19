@@ -1,88 +1,145 @@
 #include "plMesh.h"
 
 plMesh::plMesh() 
-    : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
 {
 }
 
 
 plMesh::plMesh(const std::vector<plTriangle> &triangles)
-    : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
+    : _triangles( triangles )
 {
-	// convert triangles to interleaved
-	_triangleToInterleaved(triangles);
+}
+
+		 
+plMesh::plMesh( std::vector<plTriangle>&& triangles )
+    : _triangles( std::move( triangles ) )
+{    
+} 
+
+           
+plMesh::plMesh( const plMesh &mesh )
+    : _triangles( mesh._triangles )
+{
 }
 
 
-plMesh::plMesh(const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices)
-    : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
-{            
-	// set VBO and VAO
-    setBuffers(vertices, indices);
-}
-
+plMesh::plMesh( plMesh&& mesh )
+    : _triangles( std::move( mesh._triangles ) )
+{
+}      
+        
 
 plMesh::~plMesh()
 {
-    _destroy();
 }
 
 
-plMesh::plMesh( const plMesh &mesh )
-    : _vertexBufferObject(0), _vertexBufferIndices(0), _vertexArrayObject(0)
-{
-    _copyMesh( mesh );
-}
-
-
-plMesh& plMesh::operator = ( const plMesh &mesh ) 
+plMesh& plMesh::operator= ( const plMesh& mesh ) 
 { 
-    _copyMesh( mesh );
+    _triangles = mesh._triangles;
     return *this;
 }
 
 
+plMesh& plMesh::operator= ( plMesh&& mesh ) 
+{ 
+    _triangles = std::move( mesh._triangles );
+    return *this;
+}
+
+
+void plMesh::getMinMax(plVector3 &min, plVector3 &max) const
+{
+    min = plVector3( FLT_MAX, FLT_MAX, FLT_MAX );
+    max = -1 * min;
+
+    for ( const plTriangle& triangle : _triangles ) 
+    {  
+        const plVector3 &v = triangle.centroid();
+
+        if (v.x < min.x) min.x = v.x;
+        if (v.y < min.y) min.y = v.y;
+        if (v.z < min.z) min.z = v.z;
+
+        if (v.x > max.x) max.x = v.x;
+        if (v.y > max.y) max.y = v.y;
+        if (v.z > max.z) max.z = v.z;
+    }
+}
+
+
+plVector3 plMesh::getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const
+{
+    plVector3 normal(0,0,0);
+    PLint count = 0;
+    float radiusSquared = radius * radius;
+    
+    // Find polygons on top of graft
+    for ( const plTriangle& triangle : _triangles ) 
+    {
+        if ( triangle.normal() * up > 0.001)
+        {        
+            PLfloat dist1 = ( triangle.point0() - origin ).squaredLength();
+            PLfloat dist2 = ( triangle.point1() - origin ).squaredLength();
+            PLfloat dist3 = ( triangle.point2() - origin ).squaredLength();
+           
+            // if any point of triangle is withing radial sphere, accept
+            float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
+
+            if (minDist <= radiusSquared)
+            {        
+                normal = normal + triangle.normal();
+                count++;
+            }
+        }
+    } 
+
+    if (count == 0)
+    {
+        // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
+        std::cout << "plMesh::getAverageNormal() warning: No normal found" << std::endl;
+        return up;
+    }    
+
+    return (1.0f/(PLfloat)(count) * normal).normalize();
+}
+
+
+plIntersection plMesh::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool smoothNormal, PLbool ignoreBehindRay, PLbool backFaceCull ) const
+{
+    PLfloat min = FLT_MAX;
+    plIntersection closestIntersection( false );
+
+    for ( const plTriangle& triangle : _triangles ) 
+    {  
+        plIntersection intersection = triangle.rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
+        
+        if (intersection.exists)
+        {
+            PLfloat tAbs = fabs(intersection.t);
+            if ( tAbs < min) 
+            {
+                min = tAbs;
+                closestIntersection = intersection;
+            }
+        }
+
+    }
+    
+    // smooth intersection normal if specified
+    if ( smoothNormal )
+        closestIntersection.normal = getAverageNormal( PL_NORMAL_SMOOTHING_RADIUS, closestIntersection.point, closestIntersection.normal );
+    
+    return closestIntersection;
+}
+
+
+/*
 void plMesh::_copyMesh( const plMesh &mesh )
 {
-    std::vector<plVector3> vertices( mesh._numBytes / sizeof( plVector3 ), plVector3() );
-    std::vector<PLuint>    indices ( mesh._numIndices, 0 );
-
-    // copy vertex data
-    glBindBuffer( GL_ARRAY_BUFFER, mesh._vertexBufferObject ); 
-    
-    PLfloat *vertexBuffer = (PLfloat*)glMapBuffer( GL_ARRAY_BUFFER, GL_READ_ONLY );      
-    memcpy( &vertices[0].x, vertexBuffer, mesh._numBytes );
-    glUnmapBuffer(GL_ARRAY_BUFFER);
-    
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    
-    // copy index data
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh._vertexBufferIndices );
-    
-    PLuint *indexBuffer = (PLuint*)glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_READ_ONLY );      
-    memcpy( &indices[0], indexBuffer, mesh._numIndices * sizeof( PLuint ) );
-    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-    
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 ); 
-
-    // destroy previous buffers
-    _destroy();
-
-    // set VBO and VAO
-    setBuffers( vertices, indices );  
+    _vao = mesh._vao;
 }
 
-
-void plMesh::_destroy()
-{     
-    glDeleteBuffers     (1, &_vertexBufferObject);  // delete buffer objects
-    glDeleteBuffers     (1, &_vertexBufferIndices); // delete indices  
-	glDeleteVertexArrays(1, &_vertexArrayObject);	// delete VAO		
-	
-	_vertexBufferObject  = 0;
-    _vertexBufferIndices = 0;
-    _vertexArrayObject   = 0;    
-}
 
 
 void plMesh::_triangleToInterleaved(const std::vector<plTriangle> &triangles)
@@ -119,65 +176,27 @@ void plMesh::setBuffers( const std::vector<plVector3> &vertices, const std::vect
         std::cerr << "plMesh::setBuffers() error: not enough vertices or indices " << std::endl;
     }
     
-    // size of each vertex 
-	const GLuint POS_SIZE = sizeof( plVector3 );
-	const GLuint NOR_SIZE = sizeof( plVector3 );
-    const GLuint TOTAL_SIZE = POS_SIZE + NOR_SIZE ;  
-    const GLuint ARRAY_SIZE = TOTAL_SIZE * vertices.size()/2;
     
-    // set number of indices
-    _numIndices = indices.size();
-    // set buffer size
-    _numBytes = ARRAY_SIZE;
-    
-    // create and bind VAO
-    if (_vertexArrayObject == 0)
-	    glGenVertexArrays(1, &_vertexArrayObject);   
-	      
-	glBindVertexArray(_vertexArrayObject);
-     
-	// create and bind vertex VBO
-	if (_vertexBufferObject == 0)
-	    glGenBuffers(1, &_vertexBufferObject);
-	    
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexBufferObject); 
-    glBufferData(GL_ARRAY_BUFFER, ARRAY_SIZE, &vertices[0], GL_STATIC_DRAW);    
-       
-    // set position pointer, offset and stride
-	glEnableVertexAttribArray(PL_POSITION_ATTRIBUTE);
-	glVertexAttribPointer(PL_POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, 0); 
-
-    // set normal pointer, offset and stride
-	glEnableVertexAttribArray(PL_NORMAL_ATTRIBUTE);
-	glVertexAttribPointer(PL_NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, TOTAL_SIZE, (GLvoid*)(POS_SIZE));                                
-     
-    // create and bind index VBO
-    if (_vertexBufferIndices == 0)
-        glGenBuffers(1, &_vertexBufferIndices);
+    std::vector<PLuint> attributeTypes;
+    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
+    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
         
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vertexBufferIndices);   
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices*sizeof(PLuint), &indices[0], GL_STREAM_DRAW);
-     
-	// unbind the vertex array object
-	glBindVertexArray(0);
+    _vao.set( std::vector<plVector4>( vertices.begin(), vertices.end() ), attributeTypes, indices );
 }
 
 
 void plMesh::draw() const
 {	
-    // use current shader and properly set uniforms
-    plShaderStack::use();			
-	// bind vertex array object
-	glBindVertexArray(_vertexArrayObject);
-	// draw batch
-	glDrawElements( GL_TRIANGLES, _numIndices, GL_UNSIGNED_INT, 0); 
-    // unbind VBO
-	glBindVertexArray(0); 	    
+	// use current shader and properly set uniforms
+    plShaderStack::use();	
+    // bind and draw elements from AVO
+    _vao.draw(); 
+       
 }
 
 
 void plMesh::draw(const std::vector<PLuint> &indices) const
-{
+{    
     // use current shader and properly set uniforms
     plShaderStack::use();
     // bind vertex array object
@@ -189,4 +208,6 @@ void plMesh::draw(const std::vector<PLuint> &indices) const
     // unbind VBO
 	glBindVertexArray(0); 
 }
+*/
+
 

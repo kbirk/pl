@@ -6,7 +6,7 @@
 #include "plVector4.h"
 #include "plPlannerStructs.h"
 #include "plPlannerStage1.h"
-#include "plPlannerStage2Shader.h"
+#include "plPlannerShader.h"
 
 #define PL_STAGE_2_GROUP_SIZE                   1024
 

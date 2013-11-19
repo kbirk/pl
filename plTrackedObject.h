@@ -4,8 +4,9 @@
 #include "plCommon.h"
 #include "plRenderable.h"
 #include "plDRBTransform.h"
-#include "plShapeMesh.h"
 #include "plRenderingPipeline.h"
+#include "plVAO.h"
+#include "plDraw.h"
 
 class plTrackedObject : public plRenderable
 {
@@ -30,6 +31,8 @@ class plTrackedObject : public plRenderable
         const plVector3 &getAxisY()           const  { return _yAxis;           }
         const plVector3 &getAxisZ()           const  { return _zAxis;           }
         plVector4        getRotationInfo()    const  { return plVector4( _rotationAxis, _rotationAngle); }
+
+        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const {}
 
         void draw() const;
 

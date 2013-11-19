@@ -12,8 +12,8 @@ class plVector4
 		PLfloat x, y, z, w;
 
 		plVector4();
-		plVector4( const plVector3 &v, PLfloat ww );
-		plVector4( PLfloat xx, PLfloat yy, PLfloat zz, PLfloat ww );
+		plVector4( const plVector3 &v, PLfloat ww = 1.0f );
+		plVector4( PLfloat xx, PLfloat yy, PLfloat zz, PLfloat ww = 1.0f );
 		plVector4( PLchar *string );  
 		plVector4( const plString &str );
 

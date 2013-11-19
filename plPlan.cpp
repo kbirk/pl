@@ -63,44 +63,110 @@ plPlan::~plPlan()
 }
 
 
+void plPlan::extractRenderComponents( std::set< plRenderComponent >& renderComponents, PLuint flags ) const
+{
+    if ( !_isVisible )
+        return;
+
+    plShaderStack::push( PL_PHONG_SHADER );
+
+    // Draw defect boundary 
+    for ( PLuint i = 0; i < _defectSites.size(); i++)
+    {
+        plPickingStack::loadGreen( i );
+        _defectSites[i]->extractRenderComponents( renderComponents );
+    }
+    
+    // Draw harvest boundaries   
+    for ( PLuint i = 0; i < _donorSites.size(); i++)
+    {
+        plPickingStack::loadGreen( i );      
+        _donorSites[i]->extractRenderComponents( renderComponents );            
+    }    
+
+    // Draw grafts
+    for ( PLuint i = 0; i < _grafts.size(); i++)
+    {                   
+        plPickingStack::loadGreen( i );
+        _grafts[i]->extractRenderComponents( renderComponents );
+    }
+        
+    // Draw iGuideSites
+    for ( PLuint i = 0; i < _iGuideSites.size(); i++)
+    {            
+        plPickingStack::loadGreen( i );
+        _iGuideSites[i]->extractRenderComponents( renderComponents );
+    }
+
+    // Draw iGuides
+    for ( PLuint i = 0; i < _iGuides.size(); i++)
+    {
+        plPickingStack::loadGreen( i );
+        _iGuides[i]->extractRenderComponents( renderComponents );
+    }
+
+    // draw models (draw last for proper transparency blending)
+    plPickingStack::loadBlue( -1 ); // unused by models
+    
+    for (PLuint i =0; i < _models.size(); i++)
+    {            
+        plPickingStack::loadGreen( i );          
+        
+        // DRAW BONE
+        plPickingStack::loadRed( PL_PICKING_TYPE_BONE );
+        plColourStack::load( PL_MODEL_BONE_COLOUR );       
+        _models[i]->bone.extractRenderComponents( renderComponents );
+
+        // DRAW CARTILAGE
+        plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
+        plColourStack::load( PL_MODEL_CARTILAGE_COLOUR );
+        _models[i]->cartilage.extractRenderComponents( renderComponents ); 
+    }
+
+    //plShaderStack::pop();
+
+}
+
+
+/*
 void plPlan::drawElements() const
 {
     if ( !_isVisible )
         return;
 
+
     // Draw defect boundary 
     for ( PLuint i = 0; i < _defectSites.size(); i++)
     {
-        plPicking::value.id = i; 
+        plPickingStack::loadGreen( i );
         _defectSites[i]->draw();
     }
        
     // Draw harvest boundaries   
     for ( PLuint i = 0; i < _donorSites.size(); i++)
     {
-        plPicking::value.id = i;        
+        plPickingStack::loadGreen( i );      
         _donorSites[i]->draw();            
     }    
 
     // Draw grafts
     for ( PLuint i = 0; i < _grafts.size(); i++)
-    {       
-            
-        plPicking::value.id = i; 
+    {                   
+        plPickingStack::loadGreen( i );
         _grafts[i]->draw();
     }
         
     // Draw iGuideSites
     for ( PLuint i = 0; i < _iGuideSites.size(); i++)
     {            
-        plPicking::value.id = i; 
+        plPickingStack::loadGreen( i );
         _iGuideSites[i]->draw();
     }
 
     // Draw iGuides
     for ( PLuint i = 0; i < _iGuides.size(); i++)
     {
-        plPicking::value.id = i;
+        plPickingStack::loadGreen( i );
         _iGuides[i]->draw();
     }
 }
@@ -108,16 +174,16 @@ void plPlan::drawElements() const
 void plPlan::drawModels() const
 {
     // draw models (draw last for proper transparency blending)
-    plPicking::value.index = -1; 
+    plPickingStack::loadBlue( -1 ); // unused by models
     
     for (PLuint i =0; i < _models.size(); i++)
     {            
-        plPicking::value.id = i;    
+        plPickingStack::loadGreen( i );          
         _models[i]->draw();
     }
 
 }
-
+*/
 
 void plPlan::addDefectSite( PLuint modelIndex )
 {
@@ -213,7 +279,7 @@ void plPlan::importFile( const plString &filename )
             std::cout << "Loading defect site... \n";  
             
             PLuint     modelID  ( std::stoi( csv.data[++i][1] ) ); 
-            plSpline   spline   ( csv.data[++i], _models[ modelID ]->cartilage );
+            plSpline   spline   ( csv.data[++i], _models[ modelID ]->cartilage.mesh() );
             plBoundary boundary ( csv.data[++i] );
             
             _defectSites.push_back( new plDefectSite( modelID, *_models[ modelID ], spline, boundary ) );
@@ -324,9 +390,9 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_models.size(); i++) 
         {
             out << "model"              << std::endl
-                << "\tbone_file,      " << _models[i]->bone.filename()      << std::endl
-                << "\tcartilage_file, " << _models[i]->cartilage.filename() << std::endl
-                << "\tcombined_file,  " << _models[i]->combined.filename()  << std::endl     
+                << "\tbone_file,      " << _models[i]->bone.filename       << std::endl
+                << "\tcartilage_file, " << _models[i]->cartilage.filename  << std::endl
+                << "\tcombined_file,  " << _models[i]->combined.filename   << std::endl     
                 << std::endl;
         }
 
@@ -362,15 +428,15 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_grafts.size(); i++) 
         {
             out << "graft"                   << std::endl
-                << "\trecipient_model_id,  " << _grafts[i]->recipient().modelID() << std::endl
-                << "\trecipient_transform, " << _grafts[i]->recipient().transform << std::endl
-                << "\tharvest_model_id,    " << _grafts[i]->harvest().modelID()   << std::endl
-                << "\tharvest_transform,   " << _grafts[i]->harvest().transform << std::endl
-                << "\tradius,              " << _grafts[i]->radius()              << std::endl
-                << "\tcartilage_thickness, " << _grafts[i]->cartilageThickness()  << std::endl
-                << "\tlength,              " << _grafts[i]->length()              << std::endl               
-                << "\theight_offset,       " << _grafts[i]->heightOffset()        << std::endl
-                << "\tmark_direction,      " << _grafts[i]->markDirection()       << std::endl
+                << "\trecipient_model_id,  " << _grafts[i]->recipient().modelID()   << std::endl
+                << "\trecipient_transform, " << _grafts[i]->recipient().transform() << std::endl
+                << "\tharvest_model_id,    " << _grafts[i]->harvest().modelID()     << std::endl
+                << "\tharvest_transform,   " << _grafts[i]->harvest().transform()   << std::endl
+                << "\tradius,              " << _grafts[i]->radius()                << std::endl
+                << "\tcartilage_thickness, " << _grafts[i]->cartilageThickness()    << std::endl
+                << "\tlength,              " << _grafts[i]->length()                << std::endl               
+                << "\theight_offset,       " << _grafts[i]->heightOffset()          << std::endl
+                << "\tmark_direction,      " << _grafts[i]->markDirection()         << std::endl
                 << std::endl;
         }
          

@@ -74,10 +74,12 @@ namespace plWindow
         }
         glViewport( hBuffer, vBuffer, viewportWidth, viewportHeight );
         
-        plProjectionStack::load( plProjection( 7.0f, PL_ASPECT_RATIO, 10.0f, 15000.0f) );    
+        plProjectionStack::load( plProjection( 7.0f, PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE ) );    
         
         // use window size dimensions for picking texture, while not as memory efficient it allows us to keep the current viewport and use native window coords
-        plPicking::texture->setFBO( width, height ); 
+        plPicking::resize( width, height );
+        
+        plRenderer::resize( viewportWidth, viewportHeight );
     }
 
 
@@ -141,7 +143,7 @@ namespace plWindow
 
     void cameraToMouseRay( plVector3 &rayOrigin, plVector3 &rayDirection, PLint x, PLint y ) 
     {
-        plVector3 mouseInWorld = mouseToWorld(x, y, 0);  
+        plVector3 mouseInWorld = mouseToWorld( x, y, 0 );  
 
         rayOrigin = plCameraStack::position(); 
         rayDirection = (mouseInWorld - rayOrigin).normalize();    

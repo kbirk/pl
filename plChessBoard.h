@@ -5,7 +5,7 @@
 #include "plTransparentRenderable.h"
 #include "plRenderingPipeline.h"
 #include "plTransform.h"
-#include "plColourMesh.h"
+#include "plVAO.h"
 #include "plDRBTransform.h"
 
 class plChessBoard : public plTransparentRenderable
@@ -21,7 +21,7 @@ class plChessBoard : public plTransparentRenderable
 
     private:
 
-        plColourMesh _mesh;
+        plVAO        _vao;
         plTransform  _transform;
         
         plVector3   _calibOrigin, 
@@ -30,7 +30,7 @@ class plChessBoard : public plTransparentRenderable
         PLfloat     _blockSize;
         
         bool _readChessBoardCalib();
-        void _generate();
+        void _generateVAO();
 
 };  
 

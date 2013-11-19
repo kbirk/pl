@@ -25,7 +25,7 @@
 #define PL_GRAFT_EDIT_MODE_TRANSLATE             1
 #define PL_GRAFT_EDIT_MODE_ROTATE                2 
 #define PL_GRAFT_EDIT_MODE_LENGTH                3
-#define PL_GRAFT_EDIT_MODE_MARKER                4
+#define PL_GRAFT_EDIT_MODE_RADIUS                4
 
 #define PL_AXIS_GREY                             0.2f, 0.2f, 0.2f 
 #define PL_X_AXIS_COLOUR                         1.0f, 0.2f, 0.2f
@@ -63,21 +63,23 @@
 #define PL_PICKING_TYPE_GRAFT_HANDLE_X           3
 #define PL_PICKING_TYPE_GRAFT_HANDLE_Y           4
 #define PL_PICKING_TYPE_GRAFT_HANDLE_Z           5
+#define PL_PICKING_TYPE_GRAFT_HANDLE             6
+#define PL_PICKING_TYPE_GRAFT_MARKER             7
 
-#define PL_PICKING_TYPE_GRAFT                    6
+#define PL_PICKING_TYPE_GRAFT                    8
 
-#define PL_PICKING_TYPE_DEFECT_SPLINE            7
-#define PL_PICKING_TYPE_DEFECT_CORNERS           8
-#define PL_PICKING_TYPE_DEFECT_BOUNDARY          9
+#define PL_PICKING_TYPE_DEFECT_SPLINE            9
+#define PL_PICKING_TYPE_DEFECT_CORNERS           10
+#define PL_PICKING_TYPE_DEFECT_BOUNDARY          11
 
-#define PL_PICKING_TYPE_DEFECT_HANDLE_0          10
-#define PL_PICKING_TYPE_DEFECT_HANDLE_1          11
-#define PL_PICKING_TYPE_DEFECT_HANDLE_2          12
-#define PL_PICKING_TYPE_DEFECT_HANDLE_3          13
-#define PL_PICKING_TYPE_DEFECT_HANDLE_C          14
+#define PL_PICKING_TYPE_DEFECT_HANDLE_0          12
+#define PL_PICKING_TYPE_DEFECT_HANDLE_1          13
+#define PL_PICKING_TYPE_DEFECT_HANDLE_2          14
+#define PL_PICKING_TYPE_DEFECT_HANDLE_3          15
+#define PL_PICKING_TYPE_DEFECT_HANDLE_C          16
 
-#define PL_PICKING_TYPE_DONOR_BOUNDARY           15
-#define PL_PICKING_TYPE_IGUIDE_BOUNDARY          16
+#define PL_PICKING_TYPE_DONOR_BOUNDARY           17
+#define PL_PICKING_TYPE_IGUIDE_BOUNDARY          18
 
 //INDEX 
 #define PL_PICKING_INDEX_GRAFT_DONOR             1
@@ -85,14 +87,29 @@
 
 // DRAW MACROS
 
+#define PL_ASPECT_RATIO                          ( 1280.0f / 720.0f ) 
+#define PL_NEAR_PLANE                            10.0f
+#define PL_FAR_PLANE                             15000.0f
+#define PL_FIELD_OF_VIEW                         7.0f
+
+#define PL_LIGHT_POSITION                        10, 10, 15
+#define PL_CLEAR_COLOUR                          0.137f, 0.137f, 0.137f, 1.0f
+#define PL_EDITOR_MENU_HORIZONTAL_BUFFER         50
+#define PL_EDITOR_MENU_VERTICAL_BUFFER           50
+#define PL_EDITOR_MENU_HORIZONTAL_SPACING        40
+#define PL_EDITOR_MENU_VERTICAL_SPACING          40   
+#define PL_EDITOR_MENU_CIRCLE_RADIUS             14
+
+
 #define PL_COLOUR_MESH_OPAQUE_COLOUR             0, 0, 0, 0
 #define PL_COLOUR_MESH_TRANSPARENT_COLOUR        -1, -1, -1, 0
 
-#define PL_HANDLE_RADIUS                         0.6f
-#define PL_HANDLE_LENGTH                         7.0f
-#define PL_ARROW_LENGTH                          3.0f
+#define PL_HANDLE_SPHERE_RADIUS                  0.75f
+#define PL_HANDLE_RADIUS                         0.3f
+#define PL_HANDLE_LENGTH                         4.0f
+#define PL_ARROW_LENGTH                          2.0f
 #define PL_CIRCLE_LENGTH                         1.0f
-#define PL_HEAD_RADIUS                           2.0f
+#define PL_HEAD_RADIUS                           1.0f
 #define PL_SLICE_NUM                             30
 #define PL_STACK_NUM                             1
  
@@ -118,7 +135,8 @@
 #define PL_MAX_OF_2(a,b)                         (a>=b ? a : b)     
 #define PL_MIN_OF_3(a,b,c)                       (a<=b ? (a<=c ? a : c) : (b<=c ? b : c))
 #define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c)) 
-#define PL_ASPECT_RATIO                          ( 1280.0f / 720.0f ) 
+
+
 
 #define PL_NORMAL_SMOOTHING_RADIUS               4.0f
 
@@ -137,6 +155,9 @@
 #include <set>
 #include <chrono>
 #include <iomanip>
+#include <memory>
+#include <map>
+
 
 #ifdef WIN32
 

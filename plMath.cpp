@@ -26,6 +26,17 @@ namespace plMath
         return a + t * ab;
     }
 
+
+    plVector3 closestPointOnLine( const plVector3 &point, const plVector3 &lineOrigin, const plVector3& lineDirection )
+    {
+        // Project c onto ab, computing parameterized position d(t) = a + t*(b * a)
+        PLfloat t = ((point - lineOrigin) * lineDirection) / (lineDirection * lineDirection);
+        // If outside segment, clamp t (and therefore d) to the closest endpoint
+        // Compute projected position from the clamped t
+        return lineOrigin + t * lineDirection;
+    }
+   
+
     PLbool closestPointsBetweenSegments(const plVector3 &edge1Point1, const plVector3 &edge1Point2, const plVector3 &edge2Point1, const plVector3 &edge2Point2, plVector3& closestPointEdge1, plVector3& closestPointEdge2, PLfloat& distanceBetweenLines)
     {
         plVector3 edge1Direction = edge1Point2 - edge1Point1;

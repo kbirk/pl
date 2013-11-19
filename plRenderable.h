@@ -3,8 +3,9 @@
 
 #include "plCommon.h"
 #include "plVector3.h"
+#include "plRenderComponent.h"
 
-enum visibilityState
+enum plVisibilityStateEnum
 {
     PL_NOT_VISIBLE = 0,
     PL_VISIBLE,
@@ -26,6 +27,8 @@ class plRenderable
 		virtual void   saveState();
 		virtual void   loadState();
 		
+        virtual void   extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const = 0;
+
     protected:     
            
         PLbool _isVisible;

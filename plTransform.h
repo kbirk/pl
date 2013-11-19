@@ -37,6 +37,8 @@ class plTransform
 
         friend std::ostream& operator << ( std::ostream& out, const plTransform &t );
   
+        plTransform operator* ( const plTransform &transform ) const;
+  
     private:
     
         plMatrix44  _transform;

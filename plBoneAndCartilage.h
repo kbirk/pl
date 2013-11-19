@@ -4,26 +4,26 @@
 #include "plCommon.h"
 #include "plModel.h"
 
-class plBoneAndCartilage
+class plBoneAndCartilage 
 {
     public:
-       
+    
         plModel bone;
-		plModel	cartilage;
-        plModel	combined;
+        plModel cartilage;
+        plModel combined;
 
         plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile, const plString &combinedFile );
 
-        plVector3  getCentroid() const; 
+        plVector3 getCentroid() const; 
 
-        void draw() const;
+        //void draw() const;
 
     private:
 
         // prevent empty constructor, copy constructor, and assignment, which will invalidate the octree's pointers if rhs is scoped
-        plBoneAndCartilage();
-        plBoneAndCartilage( const plBoneAndCartilage &m );
-        plBoneAndCartilage operator= ( const plBoneAndCartilage &m ) const;    
+        //plBoneAndCartilage();
+        //plBoneAndCartilage( const plBoneAndCartilage &m );
+        //plBoneAndCartilage operator= ( const plBoneAndCartilage &m ) const;    
         
 };
 

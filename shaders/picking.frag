@@ -8,5 +8,5 @@ uniform int uBlueBits;
 
 void main()
 {
-    fragColour = ivec3(uRedBits, uGreenBits, uBlueBits);
+    fragColour = ivec3( uRedBits, uGreenBits, uBlueBits );
 }

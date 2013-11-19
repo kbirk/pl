@@ -2,14 +2,45 @@
 
 namespace plPicking
 {
-    plPickingTexture *texture;
-    plPickingInfo     value;
+    plPickingTexture *_texture;
+
 
     void init()
     {
-        delete texture;
-        texture = new plPickingTexture(1,1);
+        delete _texture;
+        _texture = new plPickingTexture(1,1);
     }
+    
+
+    const plPickingInfo& previousPick()
+    {
+        return _texture->previousPick();
+    }
+    
+    
+    plPickingInfo readPixel( PLuint x, PLuint y )
+    {
+        return _texture->readPixel( x, y );
+    }
+
+
+    void bind()
+    {
+        _texture->bind();
+    }
+    
+    
+    void unbind()
+    {
+        _texture->unbind();
+    }
+    
+    
+    void resize( PLuint width, PLuint height )
+    {
+        _texture->setFBO( width, height ); 
+    }
+
 
 }
 ///////////////////////////////////////////////////////////////////////
@@ -83,7 +114,7 @@ plPickingInfo plPickingTexture::readPixel( PLuint x, PLuint y )
 {
     if (_readSinceLastDraw)
     {
-        return _lastPick; // already read, no need to read buffer again
+        return _previousPick; // already read, no need to read buffer again
     }
 
     _readSinceLastDraw = true;
@@ -91,14 +122,14 @@ plPickingInfo plPickingTexture::readPixel( PLuint x, PLuint y )
     glBindFramebuffer( GL_READ_FRAMEBUFFER, _fbo );
     glReadBuffer     ( GL_COLOR_ATTACHMENT0 );
 
-    glReadPixels( x, y, 1, 1, GL_RGB_INTEGER, GL_INT, &_lastPick);
+    glReadPixels( x, y, 1, 1, GL_RGB_INTEGER, GL_INT, &_previousPick);
 
     glReadBuffer     ( GL_NONE );
     glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
         
-    //std::cout << "picking: " << _lastPick.type << " " << _lastPick.id << " " << _lastPick.index << "\n"; 
+    std::cout << "picking: " << _previousPick.r << " " << _previousPick.g << " " << _previousPick.b << "\n"; 
     
-    return _lastPick;
+    return _previousPick;
     
 }
 

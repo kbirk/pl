@@ -33,7 +33,7 @@ PLbool plIGuide::generateIGuideModels()
     }
 
     plString anatomyFilename ( _prepareFilenameWithVariables(false,'M',0,"bone") );
-    iGuideModelsToSubtract.push_back( new plModel( std::vector<plTriangle>( site->model().combined.triangles() ), anatomyFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+    iGuideModelsToSubtract.push_back( new plModel( site->model().combined.mesh().triangles(), anatomyFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
 
     // template base TODO: recreate the template base shape ONLY if it needs updating
 
@@ -55,7 +55,7 @@ PLbool plIGuide::generateIGuideModels()
         // get data from splines
         //std::vector< plTriangle > splineTriangles;
         //splineTriangles.push_back( splines[i]->triangles() );
-        std::vector< plTriangle > splineTriangles = splines[i]->triangles();
+        std::vector< plTriangle > splineTriangles = splines[i]->surfaceMesh().triangles();
 
         plVector3 splineOffsetDirection( splines[i]->getAverageNormal() );
 
@@ -163,11 +163,11 @@ PLbool plIGuide::exportIGuideModels( const plString &directory )
 
     for (PLuint i = 0; i < iGuideModelsToAdd.size(); i++)
     {
-        plSTL::exportFileBinary( iGuideModelsToAdd[i]->triangles(), ( directory + iGuideModelsToAdd[i]->filename() ) );
+        plSTL::exportFileBinary( iGuideModelsToAdd[i]->mesh().triangles(), ( directory + iGuideModelsToAdd[i]->filename ) );
     }
     for (PLuint i = 0; i < iGuideModelsToSubtract.size(); i++)
     {
-        plSTL::exportFileBinary( iGuideModelsToSubtract[i]->triangles(), ( directory + iGuideModelsToSubtract[i]->filename() ) );
+        plSTL::exportFileBinary( iGuideModelsToSubtract[i]->mesh().triangles(), ( directory + iGuideModelsToSubtract[i]->filename ) );
     }
     return true;
 }
@@ -230,7 +230,7 @@ void plIGuide::clearIGuideModels ()
     iGuideModelsToSubtract.clear();
 }
 
-
+/*
 void plIGuide::draw() 
 {
     for (PLuint i = 0; i < iGuideModelsToAdd.size(); i++)
@@ -244,7 +244,7 @@ void plIGuide::draw()
     //plPicking::value.type = PL_PICKING_TYPE_IGUIDE_BOUNDARY;
     //boundary.draw();
 }
-
+*/
 
 void plIGuide::toggleVisibility()
 {

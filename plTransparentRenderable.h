@@ -21,6 +21,8 @@ class plTransparentRenderable : public plRenderable
 		virtual void saveState();
 		virtual void loadState();
 
+        virtual void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const = 0;
+
     protected:     
            
         PLbool _isTransparent;

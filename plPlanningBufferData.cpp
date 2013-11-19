@@ -5,7 +5,7 @@ plPlanningBufferData::plPlanningBufferData( const plDefectSite& defect, const st
 {
     // generate defect site and buffer
     std::cout << "\tGenerating defect site planning data" << std::endl;    
-    defectSite = plPlanningSite( defect.spline.triangles(), defect.boundary, false );
+    defectSite = plPlanningSite( defect.spline.surfaceMesh().triangles(), defect.boundary, false );
     
     std::cout << "\tGenerating defect site SSBO" << std::endl;   
     defectSiteSSBO = defectSite.getSSBO();       
@@ -17,7 +17,7 @@ plPlanningBufferData::plPlanningBufferData( const plDefectSite& defect, const st
     for (PLuint i=0; i<donorSiteCount; i++)
     {
         std::cout << "\tGenerating donor site planning data " << i << " planning data " << std::endl;
-        donorSites.push_back( plPlanningSite( donors[i]->model().combined.triangles(), 
+        donorSites.push_back( plPlanningSite( donors[i]->model().combined.mesh().triangles(), 
                                               donors[i]->boundary,
                                               true ) );                                 
     }

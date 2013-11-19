@@ -12,109 +12,165 @@ plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius
 }
 
 
-void plGraft::_setBoneColour() const
+plVector4 plGraft::_getBoneColour() const
 {
+    /*
     if (_isSelected)
     {
         // selected
-        if (plPicking::value.index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        if ( plPickingStack::topBlue() == PL_PICKING_INDEX_GRAFT_DEFECT )
         {
-            plColourStack::load( PL_GRAFT_DEFECT_BONE_COLOUR_DULL );
+            return plVector4( PL_GRAFT_DEFECT_BONE_COLOUR_DULL );
         }
         else
         {
-            plColourStack::load( PL_GRAFT_DONOR_BONE_COLOUR_DULL );
+            return plVector4( PL_GRAFT_DONOR_BONE_COLOUR_DULL );
         }
     }
     else
     {
+    */
         // not selected
-        if (plPicking::value.index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        if ( plPickingStack::topBlue() == PL_PICKING_INDEX_GRAFT_DEFECT )
         {
-            plColourStack::load( PL_GRAFT_DEFECT_BONE_COLOUR );
+            return plVector4( PL_GRAFT_DEFECT_BONE_COLOUR );
         }
         else
         {
-            plColourStack::load( PL_GRAFT_DONOR_BONE_COLOUR );
+            return plVector4( PL_GRAFT_DONOR_BONE_COLOUR );
         } 
-    }
+    //}
 }
 
 
-void plGraft::_setCartilageColour() const
+plVector4 plGraft::_getCartilageColour() const
 {
+
+    /*
     if (_isSelected)
     {
         // selected
-        if (plPicking::value.index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        if ( plPickingStack::topBlue() == PL_PICKING_INDEX_GRAFT_DEFECT )
         {
-            plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
+            return plVector4( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
         }
         else
         {
-            plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL );
+            return plVector4( PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL );
         }  
     }
     else
     {
+    */
+    
         // not selected
-        if (plPicking::value.index == PL_PICKING_INDEX_GRAFT_DEFECT)
+        if ( plPickingStack::topBlue() == PL_PICKING_INDEX_GRAFT_DEFECT )
         {
-            plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR );
+            return plVector4( PL_GRAFT_DEFECT_CARTILAGE_COLOUR );
         }
         else
         {
-            plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR );
+            return plVector4( PL_GRAFT_DONOR_CARTILAGE_COLOUR );
         }
-    }      
+    //}      
 }
 
-
+/*
 void plGraft::draw() const
 {
     if ( !_isVisible )
         return;
 
     // Draw at harvest location
-    plModelStack::push( _harvest.transform.matrix() );
+    plModelStack::push( _harvest.transform().matrix() );
     {
-        plPicking::value.index = PL_PICKING_INDEX_GRAFT_DONOR;           
+        plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DONOR );                  
         _drawGraft();
     }
     plModelStack::pop();
 
     // Draw at recipient location
-    plModelStack::push( _recipient.transform.matrix() );
+    plModelStack::push( _recipient.transform().matrix() );
     {
         plModelStack::translate( 0, _heightOffset, 0 );
-        plPicking::value.index = PL_PICKING_INDEX_GRAFT_DEFECT;
+        plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
         _drawGraft();
     }
     plModelStack::pop();
 }
+*/
 
 
+void plGraft::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+{
+    if ( !_isVisible )
+        return;
+
+    // Draw at harvest location
+    plModelStack::push( _harvest.transform().matrix() );
+    {
+        plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DONOR );                  
+        _extractGraftRenderComponents( renderComponents );
+    }
+    plModelStack::pop();
+
+    // Draw at recipient location
+    plModelStack::push( _recipient.transform().matrix() );
+    {
+        plModelStack::translate( 0, _heightOffset, 0 );
+        plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
+        _extractGraftRenderComponents( renderComponents );
+    }
+    plModelStack::pop();
+
+}
+
+
+void plGraft::_extractGraftRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+{
+    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT ); 
+
+    // draw cartilage cap
+    if ( _cartilageCap.triangles.size() > 0 )  // may not always have the cartilage top
+    {
+        plColourStack::load( _getCartilageColour() );    
+        renderComponents.insert( plRenderComponent( &_cartilageVAO, _isSelected ) ); 
+    }
+    
+    // draw bone cap
+    plColourStack::load( _getBoneColour() );
+    renderComponents.insert( plRenderComponent( &_boneVAO, _isSelected ) ); 
+    
+    // draw marker   
+    plColourStack::load( PL_GRAFT_MARKER_COLOUR );
+    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_MARKER );
+    plRenderer::queue( plSphere( _markPosition, 0.5f ) );
+
+}
+
+/*
 void plGraft::_drawGraft() const
 {
-    plPicking::value.type = PL_PICKING_TYPE_GRAFT; 
+    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT ); 
 
     // draw cartilage cap
     if (_cartilageCap.triangles.size() > 0)  // may not always have the cartilage top
     {
         _setCartilageColour();
-        _cartilageMesh.draw();
+        _cartilageVAO.draw();
     }
     
     // draw bone cap
     _setBoneColour();
-    _boneMesh.draw();
+    _boneVAO.draw();
     
     // draw marker   
     plColourStack::load( PL_GRAFT_MARKER_COLOUR );
+    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_MARKER );
     plDraw::sphere( _markPosition, 0.5 );
 
 }
-
+*/
 
 void plGraft::_setCaps()
 {
@@ -123,8 +179,8 @@ void plGraft::_setCaps()
     _findCap( _boneCap,      _harvest.model().bone      );
     
     // generate meshes   
-    _updateCartilageMesh();
-    _updateBoneMesh(); 
+    _generateCartilageVAO();
+    _generateBoneVAO(); 
 
     // update values
     _updateMarkPosition();      
@@ -132,7 +188,7 @@ void plGraft::_setCaps()
 }
 
 
-void plGraft::_updateCartilageMesh()
+void plGraft::_generateCartilageVAO()
 {
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
@@ -222,12 +278,16 @@ void plGraft::_updateCartilageMesh()
 
     if (indices.size() > 0)
     {   
-        _cartilageMesh.setBuffers(vertices, indices);  
+        std::vector< PLuint > attributeTypes;
+        attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
+        attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
+
+        _cartilageVAO.set( vertices, attributeTypes, indices );  
     }
 }
 
 
-void plGraft::_updateBoneMesh()
+void plGraft::_generateBoneVAO()
 {        
     const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
 
@@ -331,7 +391,11 @@ void plGraft::_updateBoneMesh()
 
     }
 
-    _boneMesh.setBuffers(vertices, indices);
+    std::vector< PLuint > attributeTypes;
+    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
+    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
+
+    _boneVAO.set(vertices, attributeTypes, indices);
 }
 
 
@@ -342,7 +406,7 @@ void plGraft::_findCap( plCap &cap, const plModel &model )
     cap.perimeter.clear();
 
     plSet<const plTriangle*> triangles;
-    model.octree().graftIntersect( triangles, _harvest.transform, _radius );
+    model.mesh().octree().rayIntersect( triangles, _harvest.transform().origin(), _harvest.transform().y(), _radius );
     
     // reserve for max number of triangles
     cap.triangles.reserve( triangles.size() );
@@ -395,9 +459,9 @@ void plGraft::_findCap( plCap &cap, const plModel &model )
 bool plGraft::_isBeyondHeightThresholds( const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) const
 {
     const PLfloat VERTICAL_THRESHOLD = 8.0f;
-    float proj0 = _harvest.transform.projectedDistOnAxis( p0 );
-    float proj1 = _harvest.transform.projectedDistOnAxis( p1 );
-    float proj2 = _harvest.transform.projectedDistOnAxis( p2 );
+    float proj0 = _harvest.transform().projectedDistOnAxis( p0 );
+    float proj1 = _harvest.transform().projectedDistOnAxis( p1 );
+    float proj2 = _harvest.transform().projectedDistOnAxis( p2 );
 
     float maxProj = PL_MAX_OF_3( proj0, proj1, proj2 );
     float minProj = PL_MIN_OF_3( proj0, proj1, proj2 );
@@ -416,9 +480,9 @@ std::vector<plVector3> plGraft::_pointsOutsideTriangles( plVector3 *verts, PLflo
   
     // distances from each point to centre
     float d[3];
-    d[0] = _harvest.transform.squaredDistToAxis( e[0] ); 
-    d[1] = _harvest.transform.squaredDistToAxis( e[1] ); 
-    d[2] = _harvest.transform.squaredDistToAxis( e[2] ); 
+    d[0] = _harvest.transform().squaredDistToAxis( e[0] ); 
+    d[1] = _harvest.transform().squaredDistToAxis( e[1] ); 
+    d[2] = _harvest.transform().squaredDistToAxis( e[2] ); 
     
     // indexs of inside points
     std::vector<PLuint> insideEdges;
@@ -546,7 +610,7 @@ std::vector<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloa
         {
             // check closest point on edge to see if it crosses into graft
             plVector3 m = plMath::closestPointOnSegment ( plVector3(0, 0, 0), verts[i], verts[j] );
-            float     d = _harvest.transform.squaredDistToAxis( m ); 
+            float     d = _harvest.transform().squaredDistToAxis( m ); 
             if ( d < radiusSquared )
             {
                 // inside
@@ -564,7 +628,7 @@ std::vector<plVector3> plGraft::_pointsInsideTriangles( plVector3 *verts, PLfloa
 bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) const
 {
     // if triangle is overlapping cap, cut it (if necessary) and add it to cap triangle list
-    if (triangle.normal() * _harvest.transform.y() < 0)
+    if (triangle.normal() * _harvest.transform().y() < 0)
         return false;
 
     // get squared radius
@@ -572,9 +636,9 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
 
     // get triangle verts relative to graft local coordinate system
     plVector3 verts[3];
-    verts[0] = _harvest.transform.applyInverse( triangle.point0() );
-    verts[1] = _harvest.transform.applyInverse( triangle.point1() );
-    verts[2] = _harvest.transform.applyInverse( triangle.point2() );
+    verts[0] = _harvest.transform().applyInverse( triangle.point0() );
+    verts[1] = _harvest.transform().applyInverse( triangle.point1() );
+    verts[2] = _harvest.transform().applyInverse( triangle.point2() );
     
     // if too far above or below graft origin, reject.
     if ( _isBeyondHeightThresholds( verts[0], verts[1], verts[2] ) ) 
@@ -582,15 +646,15 @@ bool plGraft::_triangleIntersection( plCap &cap, const plTriangle &triangle ) co
     
     // Compute distance to graft axis
     float dist[3];
-    dist[0] = _harvest.transform.squaredDistToAxis( verts[0] );
-    dist[1] = _harvest.transform.squaredDistToAxis( verts[1] );
-    dist[2] = _harvest.transform.squaredDistToAxis( verts[2] );
+    dist[0] = _harvest.transform().squaredDistToAxis( verts[0] );
+    dist[1] = _harvest.transform().squaredDistToAxis( verts[1] );
+    dist[2] = _harvest.transform().squaredDistToAxis( verts[2] );
           
     float minDist = PL_MIN_OF_3( dist[0], dist[1], dist[2] );
     float maxDist = PL_MAX_OF_3( dist[0], dist[1], dist[2] );
        
     // At least some of the triangle is inside
-    plVector3 normal = _harvest.transform.applyNormalInverse( triangle.normal() );   
+    plVector3 normal = _harvest.transform().applyNormalInverse( triangle.normal() );   
        
     // if all points of triangle are withing radius, accept whole triangle, exit early
     if ( maxDist <= radiusSquared ) 
@@ -706,8 +770,8 @@ void plGraft::_updateMarkPosition()
 void plGraft::_updateCartilageThickness()
 {
     // intersect cartilage and bone
-    plIntersection boneIntersection = _harvest.model().bone.rayIntersect     ( _harvest.transform.origin(), -_harvest.transform.y() );  
-    plIntersection cartIntersection = _harvest.model().cartilage.rayIntersect( _harvest.transform.origin(), -_harvest.transform.y() );  
+    plIntersection boneIntersection = _harvest.model().bone.mesh().rayIntersect     ( _harvest.transform().origin(), -_harvest.transform().y() );  
+    plIntersection cartIntersection = _harvest.model().cartilage.mesh().rayIntersect( _harvest.transform().origin(), -_harvest.transform().y() );  
 
     if ( boneIntersection.exists )
     {     
@@ -716,7 +780,7 @@ void plGraft::_updateCartilageThickness()
     } 
 }
 
-
+/*
 void plGraft::spinMark( PLfloat degrees )
 {
     plVector3 axis(0,1,0);
@@ -724,19 +788,26 @@ void plGraft::spinMark( PLfloat degrees )
     _markDirection = (rot * _markDirection).normalize();    
     _updateMarkPosition();
 }
+*/
+
+void plGraft::setMark( const plVector3 &direction )
+{   
+    _markDirection = direction.normalize();    
+    _updateMarkPosition();
+}
 
 
-const plTransform &plGraft::transform( PLuint type ) const
+const plTransform& plGraft::transform( PLuint type ) const
 {
     switch (type)
     {
-        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.transform;        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.transform;
+        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.transform();        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.transform();
             
         default:
         
-            std::cerr << "plGraft transform() error: invalid type enumeration provided, defaulting to recipient \n";
-            return _recipient.transform;   
+            std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient \n";
+            return _recipient.transform();   
     } 
 }
 
@@ -755,7 +826,30 @@ const plPlug &plGraft::plug( PLuint type ) const
     } 
 }
 
+void plGraft::move( PLuint type, const plVector3 &origin, const plVector3 &y )
+{
+    switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:
+        
+            _harvest.move( origin, y );            
+            _setCaps();
+            break;
+        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:
+        
+            _recipient.move( origin, y );
+            break;
+            
+        default:
+        
+            std::cerr << "plGraft translate() error: invalid type enumeration provided \n";
+            break;    
+    } 
+}
 
+
+/*
 void plGraft::translate( PLuint type, const plVector3 &translation )
 {       
     switch (type)
@@ -823,7 +917,7 @@ void plGraft::translateZ( PLuint type, PLfloat distance, const plVector3 &planeN
             break;    
     } 
 }
-
+*/
 
 void plGraft::rotate( PLuint type, const plVector3 &axis, PLfloat angleDegrees )
 {    

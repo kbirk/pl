@@ -44,7 +44,7 @@ void Window::registerWindow( int windowId )
 
 void Window::reshape( int width, int height ) 
 {
-    plWindow::reshape( width, height );
+    plRenderer::resize( width, height );
     glutPostRedisplay();       
 }
         

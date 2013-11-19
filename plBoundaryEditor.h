@@ -11,8 +11,10 @@
 #include "plMatrixStack.h"
 #include "plDraw.h"
 #include "plWindow.h"
+#include "plRenderer.h"
+#include "plDisk.h"
 
-class plBoundaryEditor
+class plBoundaryEditor : public plRenderable
 {
     public:
 
@@ -35,7 +37,9 @@ class plBoundaryEditor
         void    removeSelectedSite      ( plPlan &plan );
         void    toggleSelectedVisibility();
 
-        void    drawMenu( const plPlan &plan, PLuint x, PLuint y ) const;
+        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const; 
+
+        //void    drawMenu( const plPlan &plan, PLuint x, PLuint y ) const;
 
     private: 
     

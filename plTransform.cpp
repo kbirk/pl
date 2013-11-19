@@ -95,6 +95,16 @@ PLfloat plTransform::projectedDistOnAxis( const plVector3 &v ) const
 }
 
 
+plTransform plTransform::operator* ( const plTransform &transform ) const
+{
+    plMatrix44 m = _transform * transform.matrix();
+
+    return plTransform ( plVector3( m(0,0), m(1,0), m(2,0) ),
+                         plVector3( m(0,1), m(1,1), m(2,1) ),
+                         plVector3( m(0,3), m(1,3), m(2,3) ) );
+}
+
+
 std::ostream& operator << ( std::ostream& out, const plTransform &t )
 {
     out << t._origin << "," << t._x << "," << t._y;  

@@ -3,12 +3,12 @@
 plChessBoard::plChessBoard()
 {           
     _readChessBoardCalib();
-    _generate();
+    _generateVAO();
     setTransparent();
 }
 
 
-void plChessBoard::_generate()
+void plChessBoard::_generateVAO()
 {  
     
     PLint  width_blocks   = 8;
@@ -41,7 +41,6 @@ void plChessBoard::_generate()
             
             PLuint base = vertices.size()/3;
             
-            // front side
             vertices.push_back( v0 ); vertices.push_back( n ); vertices.push_back( c );
             vertices.push_back( v1 ); vertices.push_back( n ); vertices.push_back( c );
             vertices.push_back( v2 ); vertices.push_back( n ); vertices.push_back( c );
@@ -50,89 +49,15 @@ void plChessBoard::_generate()
             indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
             indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );
             
-        /* Commented out other faces of the 3D chessboard.
-            base = vertices.size()/3;
-            
-            // back side 
-            vertices.push_back( v1 + blocksize*-n); vertices.push_back( -n ); vertices.push_back( c );
-            vertices.push_back( v0 + blocksize*-n); vertices.push_back( -n ); vertices.push_back( c );
-            vertices.push_back( v3 + blocksize*-n); vertices.push_back( -n ); vertices.push_back( c );
-            vertices.push_back( v2 + blocksize*-n); vertices.push_back( -n ); vertices.push_back( c );
-            
-            indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
-            indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 ); 
-                   
-            black = !black;
-            
-            // left side
-            if ( i == -1 )
-            {
-                base = vertices.size()/3;
-             
-                plVector3 leftNormal = ( n^(v3 - v0) ).normalize();
-             
-                vertices.push_back( v3 + blocksize*-n); vertices.push_back( leftNormal ); vertices.push_back( c );
-                vertices.push_back( v0 + blocksize*-n); vertices.push_back( leftNormal ); vertices.push_back( c );
-                vertices.push_back( v0 );               vertices.push_back( leftNormal ); vertices.push_back( c );
-                vertices.push_back( v3 );               vertices.push_back( leftNormal ); vertices.push_back( c );
-                
-                indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
-                indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );  
-            
-            }
-
-            // right side
-            if ( i == width_blocks-2 )
-            {
-                base = vertices.size()/3;
-             
-                plVector3 rightNormal = ( n^(v1 - v2) ).normalize();
-             
-                vertices.push_back( v1 + blocksize*-n); vertices.push_back( rightNormal ); vertices.push_back( c );
-                vertices.push_back( v2 + blocksize*-n); vertices.push_back( rightNormal ); vertices.push_back( c );
-                vertices.push_back( v2 );               vertices.push_back( rightNormal ); vertices.push_back( c );
-                vertices.push_back( v1 );               vertices.push_back( rightNormal ); vertices.push_back( c );
-                
-                indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
-                indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );  
-            }
-            
-            // bottom side
-            if ( j == -1 )
-            {
-                base = vertices.size()/3;
-             
-                plVector3 bottomNormal = ( n^(v0 - v1) ).normalize();
-             
-                vertices.push_back( v0 + blocksize*-n); vertices.push_back( bottomNormal ); vertices.push_back( c );
-                vertices.push_back( v1 + blocksize*-n); vertices.push_back( bottomNormal ); vertices.push_back( c );
-                vertices.push_back( v1 );               vertices.push_back( bottomNormal ); vertices.push_back( c );
-                vertices.push_back( v0 );               vertices.push_back( bottomNormal ); vertices.push_back( c );
-                
-                indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
-                indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 ); 
-            }
-            
-            // top side
-            if ( j == height_blocks-2 )
-            {
-                base = vertices.size()/3;
-             
-                plVector3 topNormal = ( n^(v2 - v3) ).normalize();
-             
-                vertices.push_back( v2 + blocksize*-n); vertices.push_back( topNormal ); vertices.push_back( c );
-                vertices.push_back( v3 + blocksize*-n); vertices.push_back( topNormal ); vertices.push_back( c );
-                vertices.push_back( v3 );               vertices.push_back( topNormal ); vertices.push_back( c );
-                vertices.push_back( v2 );               vertices.push_back( topNormal ); vertices.push_back( c );
-                
-                indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
-                indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 ); 
-            }
-        */
         }
     }
     
-    _mesh.setBuffers( vertices, indices );
+    std::vector< PLuint > attributeTypes;    
+    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
+    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
+    attributeTypes.push_back( PL_COLOUR_ATTRIBUTE );
+    
+    _vao.set( vertices, attributeTypes, indices );
 }
 
 
@@ -169,17 +94,20 @@ void plChessBoard::draw() const
    
     plModelStack::push( _transform.matrix() );
     {
-        if ( _isTransparent ) {
-            plColourStack::load( PL_COLOUR_MESH_TRANSPARENT_COLOUR );
+        if ( _isTransparent ) 
+        {
+            plColourStack::push( PL_COLOUR_MESH_TRANSPARENT_COLOUR );
         }
-        else {
-            plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR );
+        else 
+        {
+            plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );
         }
-
 
         glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-        _mesh.draw();
+        _vao.draw();
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
+        plColourStack::pop();
     }
     plModelStack::pop();
     

@@ -2,175 +2,218 @@
 
 
 plOctree::plOctree()
-    : _root(0)
+    : _children( 8, (plOctree*)(NULL) )
 {
-} 
- 
- 
-plOctree::plOctree( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth)   
-    : _root(0)                                    
+}
+
+
+plOctree::plOctree( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth )    
+    : _children( 8, (plOctree*)(NULL) )
 {
+    // build from root
     build( min, max, triangles, depth );
 }
 
 
-plOctree::~plOctree()
+plOctree::plOctree( const plVector3 &centre, PLfloat halfWidth, PLuint depth )
+    : _centre( centre ), _halfWidth( halfWidth ), _depth( depth ), _children( 8, (plOctree*)(NULL) )
 {
-    _clear();
 }
 
 
-void plOctree::_clear()
+plOctree::plOctree ( const plOctree& octree )
+    : _children( 8, (plOctree*)(NULL) )
 {
-    // clear all children recursively
-    if ( _root )
-        _root->clear();
-    // delete root and set pointer to null    
-    delete _root;
-    _root = 0;
+    _copy( octree );
 }
 
 
-void plOctree::build(  const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth )
+plOctree::plOctree ( plOctree&& octree )
+    : _children( 8, (plOctree*)(NULL) )
 {
-    if (depth == 0)
-    {
-        std::cerr << "plOctree::build() error: depth must be greater than 0\n";
-        return;
-    }
-    
-    std::cout << "Building octree for " << triangles.size() << " triangles (depth = " << depth << ")...";
-    
-    // centre point of octree
-    plVector3 centre = 0.5f * (min+max);
-    
-    // find largest distance component, becomes half width
-    plVector3 minDiff = min - centre;
-    plVector3 maxDiff = max - centre;
-    PLfloat minMax    = PL_MAX_OF_3( fabs(minDiff.x), fabs(minDiff.y), fabs(minDiff.z) );
-    PLfloat maxMax    = PL_MAX_OF_3( fabs(maxDiff.x), fabs(maxDiff.y), fabs(maxDiff.z) );       
-    // half width of octree cell
-    PLfloat halfWidth = PL_MAX_OF_2( minMax, maxMax );
-    
-    // clear, construct, and fill in _root 
-    _clear();
-    _root = new plOctreeNode( centre, halfWidth );
- 
-    // traverse and fill sub cubes with triangles until desired depth is reached  
-    _fill( triangles, depth ); 
-    
-    std::cout << "\tComplete.\n";
+    _move( std::move( octree ) );
 }
 
 
-void plOctree::_fill( const std::vector<plTriangle> &triangles, PLuint depth )
-{
-    for (PLuint i=0; i< triangles.size(); i++)
-    {
-        _root->insert( triangles[i], depth-1 );
-    }
-    
-}
-
-
-void plOctree::draw() const
-{
-    if ( !_isVisible )
-        return;
-
-    _root->draw();
-}
-
-
-plIntersection plOctree::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull) const
-{
-    if ( _root == NULL )
-        return plIntersection(false);
-
-    plIntersection closestIntersection( false );
-
-    // find set of potentially intersected triangles
-    plSet<const plTriangle*> triangles;
-    if ( _root->rayIntersect( triangles, rayOrigin, rayDirection, 0, ignoreBehindRay ) )
-    {
-        // find closest triangle in set
-        PLfloat min = FLT_MAX;
-
-        for ( const plTriangle* tri : triangles )
-        {  
-            // intersect triangle
-            plIntersection intersection = tri->rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );           
-            if (intersection.exists)
-            {
-                PLfloat tAbs = fabs(intersection.t);
-                if ( tAbs < min) 
-                {
-                    min = tAbs;
-                    closestIntersection = intersection;
-                }
-            }
-
-        }
-    }
-    
-    return closestIntersection;     
-}
-
-
-void plOctree::graftIntersect( plSet<const plTriangle*> &triangles, const plTransform &transform, PLfloat radius ) const
-{
-    _root->rayIntersect( triangles, transform.origin(), transform.y(), radius, false );
-}
-
-
-plOctreeNode::plOctreeNode( const plVector3 &c, PLfloat hw)
-    : _children( 8, (plOctreeNode*)(NULL) ), _centre( c ), _halfWidth( hw )
-{
-    // create mesh
-    _updateMesh();
-}
-
-
-plOctreeNode::~plOctreeNode()
+plOctree::~plOctree ()
 {
     clear();
 }
 
 
-void plOctreeNode::clear()
+plOctree& plOctree::operator= ( const plOctree& octree )
+{
+    _copy( octree );
+    return *this;
+}
+
+
+plOctree& plOctree::operator= ( plOctree&& octree )
+{
+    _move( std::move( octree ) );
+    return *this;
+}
+
+
+void plOctree::clear()
 {
     for (PLuint i=0; i < 8; i++)
-    { 
-        if ( _children[i] )
-            _children[i]->clear();
-        delete _children[i];
+    {       
+        if ( _children[i] )  
+        {
+            // recursively delete children's children
+            _children[i]->clear();       
+            // delete child    
+            delete _children[i];
+        }
     }
 }
 
 
-void plOctreeNode::draw() const
+void plOctree::build(  const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth )
 {
-    PLint count = 0;
+    std::cout << "Building octree for " << triangles.size() << " triangles (depth = " << depth << ")...";
+    
+    // centre point of octree
+    _centre = 0.5f * (min+max);   
+    _depth = depth;
 
+    // find largest distance component, becomes half width
+    plVector3 minDiff = min - _centre;
+    plVector3 maxDiff = max - _centre;
+    PLfloat minMax    = PL_MAX_OF_3( fabs(minDiff.x), fabs(minDiff.y), fabs(minDiff.z) );
+    PLfloat maxMax    = PL_MAX_OF_3( fabs(maxDiff.x), fabs(maxDiff.y), fabs(maxDiff.z) ); 
+          
+    // half width of octree cell
+    _halfWidth = PL_MAX_OF_2( minMax, maxMax );
+    
+    // clear just incase
+    clear();
+    
+    // insert triangles into octree
+    for ( const plTriangle& triangle : triangles )
+    {
+        _insert( triangle );
+    }
+    
+    std::cout << "\tComplete.\n";
+}
+
+
+void plOctree::extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const
+{
+    if ( !_isVisible )
+        return;
+     
+    static plVAO vao = _generateVAO( 1.0f );
+
+    PLint count = 0;
+    // draw child nodes
     for (PLuint i=0; i < 8; i++)
     {
-        if ( _children[i] != NULL )
+        if ( _children[i] )
+        {
+            _children[i]->extractRenderComponents( renderComponents );
+            count++;
+        }
+    }
+    
+    // draw current node
+    if ( _contained.size() > 0 || count > 0 )    // only draw if contains objects, or has children that contain
+    {
+        plModelStack::push();
+        plModelStack::translate( _centre );
+        plModelStack::scale( plVector3( _halfWidth, _halfWidth, _halfWidth ) );
+        
+        renderComponents.insert( plRenderComponent( &vao ) );
+        
+        plModelStack::pop();
+    }
+    
+
+}
+
+
+plVAO plOctree::_generateVAO( PLfloat halfWidth ) const
+{
+    std::vector<plVector3> vertices;    vertices.reserve( 8 );
+    std::vector<PLuint>    indices;     indices.reserve( 8*3 );   
+
+    // front face
+    vertices.emplace_back( plVector3( -halfWidth, -halfWidth, halfWidth ) );
+    vertices.emplace_back( plVector3(  halfWidth, -halfWidth, halfWidth ) );
+    vertices.emplace_back( plVector3(  halfWidth, halfWidth, halfWidth ) );
+    vertices.emplace_back( plVector3( -halfWidth, halfWidth, halfWidth ) );
+
+    // back face
+    vertices.emplace_back( plVector3( -halfWidth, -halfWidth, -halfWidth ) );
+    vertices.emplace_back( plVector3(  halfWidth, -halfWidth, -halfWidth ) );
+    vertices.emplace_back( plVector3(  halfWidth,  halfWidth, -halfWidth ) );
+    vertices.emplace_back( plVector3( -halfWidth,  halfWidth, -halfWidth ) );
+
+    // front
+    indices.push_back( 0 );   indices.push_back( 1 );   
+    indices.push_back( 1 );   indices.push_back( 2 );   
+    indices.push_back( 2 );   indices.push_back( 3 );   
+    indices.push_back( 3 );   indices.push_back( 0 );   
+
+    // sides 
+    indices.push_back( 0 );   indices.push_back( 4 );   
+    indices.push_back( 1 );   indices.push_back( 5 );   
+    indices.push_back( 2 );   indices.push_back( 6 );   
+    indices.push_back( 3 );   indices.push_back( 7 ); 
+
+    // back
+    indices.push_back( 4 );   indices.push_back( 5 );   
+    indices.push_back( 5 );   indices.push_back( 6 );   
+    indices.push_back( 6 );   indices.push_back( 7 );   
+    indices.push_back( 7 );   indices.push_back( 4 );
+
+    std::vector<PLuint> attributeTypes; 
+    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
+
+    return plVAO( vertices, attributeTypes, indices, GL_LINES );
+}
+
+
+/*
+void plOctree::draw() const
+{
+    if ( !_isVisible )
+        return;
+     
+    static plVAO cube( plDraw::generateCubeLineVAO( 1.0f ) );
+
+    PLint count = 0;
+
+    // draw child nodes
+    for (PLuint i=0; i < 8; i++)
+    {
+        if ( _children[i] )
         {
             _children[i]->draw();
             count++;
         }
     }
-
-    if ( _contained.size() > 0 || count > 0 )    // only draw if contains objects, or has children that contain
-        _mesh.draw();
     
+    // draw current node
+    if ( _contained.size() > 0 || count > 0 )    // only draw if contains objects, or has children that contain
+    {
+        plModelStack::push();
+        plModelStack::translate( _centre );
+        plModelStack::scale( plVector3( _halfWidth, _halfWidth, _halfWidth ) );
+        
+        cube.draw();
+        plModelStack::pop();
+    }
 }
+*/
 
 
-void plOctreeNode::insert( const plTriangle &tri, PLuint depth )
+void plOctree::_insert( const plTriangle &tri  )
 {    
     // only add triangle if leaf node
-    if ( depth == 0 )
+    if ( _depth == 0 )
         _contained.push_back( &tri );
 
     // distance from each axis
@@ -182,12 +225,13 @@ void plOctreeNode::insert( const plTriangle &tri, PLuint depth )
     if ( fabs(dx) < tri.radius() || fabs(dy) < tri.radius() || fabs(dz) < tri.radius() )
     {
         // straddles a boundary try to add to intersected children
-        for (PLuint i=0; i<8; i++)
-        {               
-            if ( _sphereCheck( tri.centroid(), tri.radius(), i) )
+        for ( PLuint i=0; i<8; i++ )
+        {       
+            // check if triangle bounding sphere intersects this child       
+            if ( _sphereCheck( tri.centroid(), tri.radius(), i ) )
             {
                 // part of bounding sphere intersects child, insert
-                _insertChild( i, tri, depth ); 
+                _insertIntoChild( i, tri ); 
             }
         }    
     }    
@@ -200,38 +244,38 @@ void plOctreeNode::insert( const plTriangle &tri, PLuint depth )
         if ( dy > 0 ) child += 2;
         if ( dz > 0 ) child += 4;
          
-        _insertChild( child, tri, depth );
+        _insertIntoChild( child, tri );
     } 
 }
 
 
-void plOctreeNode::_insertChild( PLuint index, const plTriangle &tri, PLuint depth)
+void plOctree::_insertIntoChild( PLuint index, const plTriangle &tri )
 {
-    if ( _children[index] != NULL )    
+    if ( _children[ index ] )    
     {     
         // child already exists, recursively insert
-        _children[index]->insert( tri, depth-1 );
-    }    
+        _children[ index ]->_insert( tri );
+    }
     else   
     { 
         // child does not exist, if terminal depth has not been reached, create child node
-        if (depth > 0)
+        if ( _depth > 0 )
         {        
             plVector3 offset;
             PLfloat step = _halfWidth * 0.5f;
-            offset.x = ((index & 1) ? step : -step);
-            offset.y = ((index & 2) ? step : -step);
-            offset.z = ((index & 4) ? step : -step);
-            _children[index] = new plOctreeNode( _centre + offset, step);
-            _children[index]->insert( tri, depth - 1 );
+            offset.x = ( (index & 1) ? step : -step );
+            offset.y = ( (index & 2) ? step : -step );
+            offset.z = ( (index & 4) ? step : -step );
+            _children[ index ] = new plOctree( _centre + offset, step, _depth-1 );
+            _children[ index ]->_insert( tri );
         }
     }
 }
 
 
-PLfloat plOctreeNode::_squaredDistanceFromPoint( const plVector3 &point, PLint child ) const
+PLfloat plOctree::_sqrDistFromPoint( const plVector3 &point, PLint child ) const
 {
-    // shift AABB dimesions based on which child cell is begin tested  
+    // shift AABB dimesions based on which child cell is begin tested
     plVector3 offsetCentre = _centre;
     PLfloat step = 0.5f * _halfWidth;
     offsetCentre.x += ( (child & 1) ? step : -step );
@@ -256,7 +300,7 @@ PLfloat plOctreeNode::_squaredDistanceFromPoint( const plVector3 &point, PLint c
 }
 
 
-plVector3 plOctreeNode::_closestPointInBox( const plVector3 &point, PLint child ) const
+plVector3 plOctree::_closestPointInBox( const plVector3 &point, PLint child ) const
 {
     // shift AABB dimesions based on which child cell is begin tested      
     PLfloat step = 0.5f * _halfWidth;
@@ -276,24 +320,19 @@ plVector3 plOctreeNode::_closestPointInBox( const plVector3 &point, PLint child 
 }
 
 
-PLbool plOctreeNode::_sphereCheck( const plVector3 &centre, PLfloat radius, PLint child ) const
+PLbool plOctree::_sphereCheck( const plVector3 &centre, PLfloat radius, PLint child ) const
 {   
-    //plVector3 closestPointInBox = _closestPointInBox( centre, child );
-    //return (centre - closestPointInBox).squaredLength() <= radius*radius;
-      
-    // compute squared distance between sphere center and AABB
-    PLfloat dist = _squaredDistanceFromPoint( centre, child );
+    // compute squared distance between sphere centre and AABB
+    PLfloat dist = _sqrDistFromPoint( centre, child );
     // sphere and AABB intersect if the distance is less than the sphere radius
     return dist <= radius*radius;
-    
-
 }
 
 
-PLbool plOctreeNode::rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat boxInflation, PLbool ignoreBehindRay ) const
+PLbool plOctree::rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat rayRadius, PLbool ignoreBehindRay ) const
 { 
     // box inflation is used to intersect cylinder with box rather than ray, used for grafts
-    PLfloat boxExtents = _halfWidth + boxInflation;  
+    PLfloat boxExtents = _halfWidth + rayRadius;  
     
     // check if ray origin is inside box
     plVector3 diff = rayOrigin - _centre;
@@ -304,32 +343,33 @@ PLbool plOctreeNode::rayIntersect( plSet<const plTriangle*> &triangles, const pl
 	    if( fabs(diff.y) > boxExtents && diff.y*rayDirection.y >= 0.0f)	return false;
 	    if( fabs(diff.z) > boxExtents && diff.z*rayDirection.z >= 0.0f)	return false;
     }
-	plVector3 fabsDirection( fabs(rayDirection.x), fabs(rayDirection.y), fabs(rayDirection.z) );
+    
+	plVector3 absDirection( fabs(rayDirection.x), fabs(rayDirection.y), fabs(rayDirection.z) );
 
 	float f;
-	f = rayDirection.y * diff.z - rayDirection.z * diff.y;	if( fabs(f) > boxExtents*fabsDirection.z + boxExtents*fabsDirection.y ) return false;
-	f = rayDirection.z * diff.x - rayDirection.x * diff.z;	if( fabs(f) > boxExtents*fabsDirection.z + boxExtents*fabsDirection.x )	return false;
-	f = rayDirection.x * diff.y - rayDirection.y * diff.x;	if( fabs(f) > boxExtents*fabsDirection.y + boxExtents*fabsDirection.x )	return false;
+	f = rayDirection.y * diff.z - rayDirection.z * diff.y;	if( fabs(f) > boxExtents*absDirection.z + boxExtents*absDirection.y ) return false;
+	f = rayDirection.z * diff.x - rayDirection.x * diff.z;	if( fabs(f) > boxExtents*absDirection.z + boxExtents*absDirection.x ) return false;
+	f = rayDirection.x * diff.y - rayDirection.y * diff.x;	if( fabs(f) > boxExtents*absDirection.y + boxExtents*absDirection.x ) return false;
 
 	// intersection exists, recurse further
     PLuint childCount = 0;
     
-    for (PLuint i=0; i<_children.size(); i++)
+    for ( PLuint i=0; i<8; i++ )
     {       
-        if (_children[i] != NULL)
+        if ( _children[i] )
         {
             // not a leaf, recurse
-            _children[i]->rayIntersect( triangles, rayOrigin, rayDirection, boxInflation, ignoreBehindRay ); 
+            _children[i]->rayIntersect( triangles, rayOrigin, rayDirection, rayRadius, ignoreBehindRay ); 
             childCount++;            
         }           
     }
 
     if (childCount == 0)
     {
-        // leaf, add triangles
-        for (PLuint i=0; i<_contained.size(); i++)
+        // leaf node, add triangles to collision set
+        for ( const plTriangle* tri : _contained )
         {
-            triangles.insert( _contained[i] );
+            triangles.insert( tri );
         }        
     }
 
@@ -337,42 +377,52 @@ PLbool plOctreeNode::rayIntersect( plSet<const plTriangle*> &triangles, const pl
 }
 
 
-void plOctreeNode::_updateMesh()
+void plOctree::_move( plOctree &&octree )
 {
-    // DEBUG MESH
-    std::vector<plVector3> vertices;    vertices.reserve( 8 );
-    std::vector<PLuint>    indices;     indices.reserve( 8*3 );
-    
-    // front face
-    vertices.push_back( plVector3( _centre.x - _halfWidth, _centre.y - _halfWidth, _centre.z + _halfWidth) );
-    vertices.push_back( plVector3( _centre.x + _halfWidth, _centre.y - _halfWidth, _centre.z + _halfWidth) );
-    vertices.push_back( plVector3( _centre.x + _halfWidth, _centre.y + _halfWidth, _centre.z + _halfWidth) );
-    vertices.push_back( plVector3( _centre.x - _halfWidth, _centre.y + _halfWidth, _centre.z + _halfWidth) );
-    
-    // back face
-    vertices.push_back( plVector3( _centre.x - _halfWidth, _centre.y - _halfWidth, _centre.z - _halfWidth) );
-    vertices.push_back( plVector3( _centre.x + _halfWidth, _centre.y - _halfWidth, _centre.z - _halfWidth) );
-    vertices.push_back( plVector3( _centre.x + _halfWidth, _centre.y + _halfWidth, _centre.z - _halfWidth) );
-    vertices.push_back( plVector3( _centre.x - _halfWidth, _centre.y + _halfWidth, _centre.z - _halfWidth) );
-    
-    // front
-    indices.push_back( 0 );   indices.push_back( 1 );   
-    indices.push_back( 1 );   indices.push_back( 2 );   
-    indices.push_back( 2 );   indices.push_back( 3 );   
-    indices.push_back( 3 );   indices.push_back( 0 );   
-
-    // sides 
-    indices.push_back( 0 );   indices.push_back( 4 );   
-    indices.push_back( 1 );   indices.push_back( 5 );   
-    indices.push_back( 2 );   indices.push_back( 6 );   
-    indices.push_back( 3 );   indices.push_back( 7 ); 
-
-    // back
-    indices.push_back( 4 );   indices.push_back( 5 );   
-    indices.push_back( 5 );   indices.push_back( 6 );   
-    indices.push_back( 6 );   indices.push_back( 7 );   
-    indices.push_back( 7 );   indices.push_back( 4 );
-
-    _mesh.setBuffers( vertices, indices );
+    for (PLuint i=0; i < 8; i++)
+    { 
+        _children[i] = octree._children[i];
+        octree._children[i] = 0;
+    }   
+    _depth     = octree._depth;
+    _centre    = octree._centre;
+    _halfWidth = octree._halfWidth;
+    _contained = octree._contained; 
 }
+
+
+void plOctree::_copy( const plOctree& octree )
+{ 
+    // clear this entire octree
+    clear();
+    
+    // copy data
+    _depth     = octree._depth;
+    _centre    = octree._centre;
+    _halfWidth = octree._halfWidth;
+    _contained = octree._contained;    
+
+    // copy children
+    for (PLuint i=0; i < 8; i++)
+    { 
+        if ( octree._children[i] )
+        {
+            // this child exists, allocate if needed
+            if ( !_children[i] )
+                _children[i] = new plOctree();
+                
+            // copy node
+            _children[i]->_copy( *( octree._children[i] ) );    
+                
+        }  
+        else
+        {
+            // nothign to copy, free this child
+            delete _children[i];
+        }
+        
+    }  
+}
+
+
 

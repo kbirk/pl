@@ -24,7 +24,7 @@ enum ImageManipulation
 };
 
 
-class plArthroscope 
+class plArthroscope
 {
 
     public:

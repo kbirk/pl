@@ -2,14 +2,11 @@
 
 
 plSSBO::plSSBO()
-    : _id( 0 )
 {
-    //_create( 0 );
 }
 
 
 plSSBO::plSSBO( PLuint numBytes, const void *buffer  )
-    : _id( 0 )
 {
     _create( numBytes, buffer );     
 }  
@@ -22,43 +19,22 @@ plSSBO::plSSBO( const plSSBO& ssbo )
 
 
 plSSBO::plSSBO( plSSBO&& ssbo )
-    : _id ( ssbo._id ), _numBytes( ssbo._numBytes )
-
 {
-    ssbo._numBytes = 0;
-    ssbo._id = 0;
+    _move( std::move( ssbo ) );
 }
 
 
 plSSBO& plSSBO::operator = ( plSSBO&& ssbo )
 {
-    _destroy();
-    _numBytes = ssbo._numBytes;
-    _id = ssbo._id;
-    ssbo._numBytes = 0;
-    ssbo._id = 0;
+    _move( std::move( ssbo ) );
     return *this;
 }
 
 
 plSSBO& plSSBO::operator = ( const plSSBO& ssbo )
 {
-    _destroy();
     _copy( ssbo ); 
     return *this;
-}
-
-
-plSSBO::~plSSBO()
-{
-    _destroy();
-}
-
-
-void plSSBO::_destroy() 
-{
-    glDeleteBuffers( 1, &_id );
-    _id = 0;
 }
 
 
@@ -96,15 +72,22 @@ void plSSBO::_create( PLuint numBytes, const void *buffer )
 void plSSBO::_copy( const plSSBO &ssbo )
 {
     // read data from previous ssbo
-    //std::vector<PLchar> buffer;
     PLchar *buffer = new PLchar[ _numBytes ];
-
     ssbo.readBytes( buffer, _numBytes );
+    
     // copy number of bytes and create buffer on gpu
     _create( ssbo._numBytes, (void*)buffer );
     
+    // dealloc temp memory
     delete [] buffer;
-    // set this data
-    //setBytes( buffer, _numBytes );  
+}
+
+
+void plSSBO::_move( plSSBO&& ssbo )
+{
+    _numBytes = ssbo._numBytes;
+    _id = ssbo._id;
+    ssbo._numBytes = 0;
+    ssbo._id = 0;
 }
 

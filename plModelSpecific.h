@@ -10,9 +10,9 @@ class plModelSpecific
     public:
                
         plModelSpecific();
-        plModelSpecific( PLuint _modelID, const plBoneAndCartilage &_model );
+        plModelSpecific( PLuint modelID, const plBoneAndCartilage& model );
 
-        PLint                     modelID() const { return _modelID; }
+        PLint         modelID() const { return _modelID; }
         const plBoneAndCartilage& model()   const { return *_model;  }
 
     protected:

@@ -80,7 +80,7 @@ namespace plPlannerStage3
    
     void run( plDonorSolution &donorSolution, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plRmsData &rmsData )
     {
-        std::vector< plString > shaderfiles;
+        std::vector< std::string > shaderfiles;
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
 
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.hcmp" );
@@ -102,7 +102,7 @@ namespace plPlannerStage3
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/stage3.cmp" );
         
         // compile / link stage 2 shader
-        plPlannerStage3Shader stage3Shader( shaderfiles );
+        plPlannerShader stage3Shader( shaderfiles );
         
         if ( !stage3Shader.good() )
             return;

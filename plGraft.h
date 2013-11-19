@@ -7,13 +7,13 @@
 #include "plVector3.h"
 #include "plTriangle.h"
 #include "plDraw.h"
-#include "plPickingShader.h"
 #include "plPickingTexture.h"
-#include "plMesh.h"
+#include "plVAO.h"
 #include "plPlug.h"
 #include "plPolygon.h"
 #include "plUtility.h"
-
+#include "plRenderer.h"
+#include "plSphere.h"
 
 class plPointAndAngle 
 {
@@ -45,6 +45,7 @@ class plCap
         std::vector<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above
     
         plCap() {}
+
 };
 
 
@@ -78,11 +79,16 @@ class plGraft : public plRenderable,
         const plPlug      &harvest   () const { return _harvest;   }
         const plPlug      &recipient () const { return _recipient; }
         
-        void translate  ( PLuint type, const plVector3 &translation );
-        void translateX ( PLuint type, PLfloat distance, const plVector3 &planeNormal );
-        void translateZ ( PLuint type, PLfloat distance, const plVector3 &planeNormal );
+        void move       ( PLuint type, const plVector3 &origin, const plVector3 &y );
+        //void translate  ( PLuint type, const plVector3 &translation );
+        //void translateX ( PLuint type, PLfloat distance, const plVector3 &planeNormal );
+        //void translateZ ( PLuint type, PLfloat distance, const plVector3 &planeNormal );
         void rotate     ( PLuint type, const plVector3 &axis, PLfloat angleDegrees );
-        void spinMark   ( PLfloat degrees );
+        //void spinMark   ( PLfloat degrees );
+        void setMark    ( const plVector3 &direction ); 
+         
+         
+        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
          
         void draw() const;
 
@@ -101,14 +107,17 @@ class plGraft : public plRenderable,
         plVector3  _markDirection;
         plVector3  _markPosition;
 
-        plMesh     _boneMesh;
-        plMesh     _cartilageMesh;
+        plVAO     _boneVAO;
+        plVAO     _cartilageVAO;
 
         plCap      _boneCap;
         plCap      _cartilageCap;
                 
-        void      _setBoneColour     () const;
-        void      _setCartilageColour() const;              
+        plVector4 _getBoneColour     () const;
+        plVector4 _getCartilageColour() const;    
+        
+        void      _extractGraftRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
+                  
         void      _drawGraft() const;
                   
         void      _setCaps();        
@@ -119,8 +128,8 @@ class plGraft : public plRenderable,
         bool      _triangleIntersection ( plCap &cap, const plTriangle &triangle ) const;
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b ) const;
         bool      _isBeyondHeightThresholds( const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) const;
-        void      _updateCartilageMesh();
-        void      _updateBoneMesh     ();
+        void      _generateCartilageVAO();
+        void      _generateBoneVAO     ();
         void      _updateMarkPosition ();
         void      _updateCartilageThickness();
         

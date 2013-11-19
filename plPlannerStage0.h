@@ -6,7 +6,7 @@
 
 #include "plVector4.h"
 #include "plPlannerStructs.h"
-#include "plPlannerStage0Shader.h"
+#include "plPlannerShader.h"
 #include "plPlanningBufferData.h"
 
 #include "plRenderer.h"

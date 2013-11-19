@@ -83,10 +83,10 @@ void plTrackedObject::draw() const
 void plTrackedObject::_drawScope() const
 {
     // Draw the TA104 arthroscope
-    static plShapeMesh c1(1.5f, 2.0f, 120.0f, 16, 4);
-    static plShapeMesh c2(4.0f, 4.0f, 30.0f, 16, 4 );
-    static plShapeMesh c3(8.0f, 8.0f, 60.0f, 16, 4 );
-    static plShapeMesh c4(8.0f, 0.0f, 0.0f, 16, 4  );
+    static plVAO c1 = plDraw::generateCylinderVAO( 1.5f, 2.0f, 120.0f, 16, 4 );
+    static plVAO c2 = plDraw::generateCylinderVAO( 4.0f, 4.0f, 30.0f, 16, 4 );
+    static plVAO c3 = plDraw::generateCylinderVAO( 8.0f, 8.0f, 60.0f, 16, 4 );
+    static plVAO c4 = plDraw::generateCylinderVAO( 8.0f, 0.0f, 0.0f, 16, 4  );
 
     if ( _isVisible )
         plColourStack::load(0.4, 0.4, 0.4);
@@ -118,8 +118,8 @@ void plTrackedObject::_drawScope() const
 
 void plTrackedObject::_drawProbe() const
 {
-    static plShapeMesh c1(0.0f, 1.0f, 4.0f, 16, 4);
-    static plShapeMesh c2(1.0f, 2.5f, 124.0f, 16, 4);
+    static plVAO c1 = plDraw::generateCylinderVAO( 0.0f, 1.0f, 4.0f, 16, 4);
+    static plVAO c2 = plDraw::generateCylinderVAO( 1.0f, 2.5f, 124.0f, 16, 4);
     
     // Draw the TA002 probe
     if ( _isVisible )

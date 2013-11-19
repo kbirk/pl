@@ -1,97 +1,104 @@
 #include "plModel.h"
 
-plModel::plModel( const std::vector<plTriangle> &triangles, const plString &filename, PLuint octreeDepth )
-    : _triangles( triangles ), _mesh( triangles ), _filename( filename )
+plModel::plModel( const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth )
+    : _mesh( triangles, octreeDepth ), filename( file )
 {
-    // get min and max extents of model
-    plVector3 min, max;
-    getMinMax(min,max);
-    
-    // build octree
-    _octree.build( min, max, _triangles, octreeDepth );
+    _generateVAO();
 }
 
 
-plModel::plModel( const plString &filename, PLuint octreeDepth )
-    : _filename(filename)
+plModel::plModel( const plString &file, PLuint octreeDepth )
+    : filename( file )
 {
+
+    std::vector< plTriangle > triangles;
     // import triangles from STL file
-    if ( !plSTL::importFile( _triangles, filename ) )
+    if ( !plSTL::importFile( triangles, filename ) )
         return;
      
-    // build mesh
-    _mesh = plMesh( _triangles );
-    // get min and max extents of model
-    plVector3 min, max;
-    getMinMax(min,max);
-    // build octree
-    _octree.build( min, max, _triangles, octreeDepth );
-}
-
-
-void plModel::getMinMax(plVector3 &min, plVector3 &max) const
-{
-    min = plVector3(FLT_MAX, FLT_MAX, FLT_MAX);
-    max = -1 * min;
-
-    for ( PLuint i = 0; i < _triangles.size(); i++)
-    {  
-        const plVector3 &v = _triangles[i].centroid();
-
-        if (v.x < min.x) min.x = v.x;
-        if (v.y < min.y) min.y = v.y;
-        if (v.z < min.z) min.z = v.z;
-
-        if (v.x > max.x) max.x = v.x;
-        if (v.y > max.y) max.y = v.y;
-        if (v.z > max.z) max.z = v.z;
-    }
-}
-
-
-plVector3 plModel::getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const
-{
-    plVector3 normal(0,0,0);
-    PLint count = 0;
-    float radiusSquared = radius * radius;
+    _mesh = plOctreeMesh( std::move( triangles ), octreeDepth );
     
-    // Find polygons on top of graft
-    for (PLuint i=0; i<_triangles.size(); i++) 
-    {
-        if (_triangles[i].normal() * up > 0.001)
-        {        
-            PLfloat dist1 = (_triangles[i].point0() - origin).squaredLength();
-            PLfloat dist2 = (_triangles[i].point1() - origin).squaredLength();
-            PLfloat dist3 = (_triangles[i].point2() - origin).squaredLength();
-           
-            // if any point of triangle is withing radial sphere, accept
-            float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
+    _generateVAO();
+}
 
-            if (minDist <= radiusSquared)
-            {        
-                normal = normal + _triangles[i].normal();
-                count++;
-            }
+
+void plModel::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+{
+    if ( !_isVisible )
+        return;
+
+    if ( !_isTransparent ) 
+    {
+        //glDisable( GL_STENCIL_TEST );            // if opaque, allow overwriting pixels during picking
+        //plColourStack::load( colour.x, colour.y, colour.z, 1.0f ); 
+        
+        renderComponents.insert( plRenderComponent( &_vao ) );
+    }
+    else
+    {
+        //glEnable( GL_STENCIL_TEST );             // if transparent, prevent overwriting pixels during picking
+        //plColourStack::load( colour.x, colour.y, colour.z, 0.2f );
+        plVector4 tC( PL_MODEL_BONE_COLOUR );
+        plColourStack::load( plVector4( tC.x, tC.y, tC.z, 0.4) ); 
+        renderComponents.insert( plRenderComponent( &_vao ) );
+        /*
+        // Sort by distance
+        plVector3 viewDir = plCameraStack::direction();
+
+        std::vector<plOrderPair> order;     order.reserve( _mesh.triangles().size() );
+        PLuint index = 0;
+        for ( const plTriangle& triangle : _mesh.triangles() )
+        {
+            order.emplace_back( plOrderPair( index++, triangle.centroid() * viewDir) );
         }
+        std::sort( order.begin(), order.end() );
+
+        std::vector<PLuint> indices;    indices.reserve( _mesh.triangles().size()*3 );
+        for (PLuint i = 0; i < order.size(); i++)
+        {
+            indices.push_back( order[i].index*3 );
+            indices.push_back( order[i].index*3+1 );
+            indices.push_back( order[i].index*3+2 );
+        }             
+        _vao.draw( indices );
+        */
+        //glDisable( GL_STENCIL_TEST ); 
     } 
 
-    if (count == 0)
-    {
-        // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
-        std::cout << "plModel::getAverageNormal() warning: No normal found\n";
-        return up;
-    }    
-
-    return (1.0f/(PLfloat)(count) * normal).normalize();
 }
 
 
-PLbool _compareOrderPairs( const plOrderPair &a, const plOrderPair &b )
-{
-    return (a.distance > b.distance);
+void plModel::_generateVAO()
+{			
+	// convert to interleaved format
+	std::vector<plVector3> vertices;    vertices.reserve( _mesh.triangles().size() * 3 * 2 );
+	std::vector<PLuint>    indices;     indices.reserve ( _mesh.triangles().size() * 3);
+
+    int indexCount = 0;
+    for ( const plTriangle& triangle : _mesh.triangles() )
+    {  
+        // p1
+	    vertices.emplace_back( triangle.point0() );    // position
+	    vertices.emplace_back( triangle.normal() );    // normal
+	    indices.emplace_back( indexCount++ );
+	    // p2
+	    vertices.emplace_back( triangle.point1() );
+	    vertices.emplace_back( triangle.normal() );
+	    indices.emplace_back( indexCount++ );
+	    // p3
+	    vertices.emplace_back( triangle.point2() );
+	    vertices.emplace_back( triangle.normal() );
+	    indices.emplace_back( indexCount++ );	    
+	}
+
+    std::vector<PLuint> attributeTypes;  
+	attributeTypes.push_back( PL_POSITION_ATTRIBUTE ); 
+	attributeTypes.push_back( PL_NORMAL_ATTRIBUTE   ); 
+
+    _vao.set( vertices, attributeTypes, indices );
 }
 
-
+/*
 void plModel::draw( const plVector3 &colour ) const
 {
     if ( !_isVisible )
@@ -100,49 +107,43 @@ void plModel::draw( const plVector3 &colour ) const
     if ( !_isTransparent ) 
     {
         glDisable( GL_STENCIL_TEST );            // if opaque, allow overwriting pixels during picking
-        plColourStack::load( colour.x, colour.y, colour.z, 1.0); 
-        _mesh.draw();
+        plColourStack::load( colour.x, colour.y, colour.z, 1.0f ); 
+        _vao.draw();
     }
     else
     {
         glEnable( GL_STENCIL_TEST );             // if transparent, prevent overwriting pixels during picking
-        plColourStack::load( colour.x, colour.y, colour.z, 0.2);
+        plColourStack::load( colour.x, colour.y, colour.z, 0.2f );
 
         // Sort by distance
         plVector3 viewDir = plCameraStack::direction();
 
-        std::vector<plOrderPair> order;     order.reserve(_triangles.size() );
-        for (PLuint i=0; i<_triangles.size(); i++)
+        std::vector<plOrderPair> order;     order.reserve( _mesh.triangles().size() );
+        PLuint index = 0;
+        for ( const plTriangle& triangle : _mesh.triangles() )
         {
-            order.push_back( plOrderPair( i, _triangles[i].centroid() * viewDir) );
+            order.emplace_back( plOrderPair( index++, triangle.centroid() * viewDir) );
         }
-        std::sort(order.begin(), order.end(), _compareOrderPairs);
+        std::sort( order.begin(), order.end() );
 
-        std::vector<PLuint> indices;    indices.reserve( _triangles.size()*3 );
+        std::vector<PLuint> indices;    indices.reserve( _mesh.triangles().size()*3 );
         for (PLuint i = 0; i < order.size(); i++)
         {
             indices.push_back( order[i].index*3 );
             indices.push_back( order[i].index*3+1 );
             indices.push_back( order[i].index*3+2 );
-        }        
-        _mesh.draw(indices);
+        }             
+        _vao.draw( indices );
 
-        _mesh.draw();
         glDisable( GL_STENCIL_TEST ); 
     } 
 }
-
-
-plIntersection plModel::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull ) const        
-{
-    // intersect the octree
-    return _octree.rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
-}
+*/
 
 
 std::ostream& operator << ( std::ostream& out, const plModel &m )
 {
-    out << m.filename();
+    out << m.filename;
     return out;
 }
 

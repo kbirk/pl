@@ -11,18 +11,6 @@
 #include "plPlannerStage2.h"
 #include "plPlannerStage3.h"
 
-/*
-    TODO:
-    
-        - store donor x , and defect x
-        
-        - boundary position is valid checks
-        
-        - use deviation from defect site normal as a penalty function
-        
-*/
-
-
 
 namespace plAutomaticPlanner
 {

@@ -34,7 +34,7 @@ plScanVolume::~plScanVolume()
 {
     if (voxels != NULL)
         delete[] voxels;
-    delete _minimalShader;
+    //delete _minimalShader;
 }
 
 void plScanVolume::initializeVolume(const plVector3& originW, const plVector3& dimensionsW, PLfloat resolutionW)
@@ -58,7 +58,7 @@ void plScanVolume::initializeVolume(const plVector3& originW, const plVector3& d
     this->voxels      = new plScanVoxel[arraySizeI];
 
     // rendering stuff
-    this->_minimalShader = new plMinimalShader( PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag");
+    //this->_minimalShader = new plMinimalShader( PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag");
 
     this->updateBoundingBox();
 
@@ -92,7 +92,10 @@ void plScanVolume::updateBoundingBox()
     indices.push_back( 6 );   indices.push_back( 7 );
     indices.push_back( 7 );   indices.push_back( 4 );
 
-    boundingBox.setBuffers( vertices, indices );
+    std::vector< PLuint > attributeTypes;
+    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
+
+    boundingBoxVAO.set( vertices, attributeTypes, indices, GL_LINES );
 }
 
 PLbool plScanVolume::enlargeVolume(const plVector3 &originTranslationW, const plVector3 &dimensionExpansionW)
@@ -196,9 +199,9 @@ PLfloat plScanVolume::distanceWusingI(PLuint index1, PLuint index2) const
 
 PLbool plScanVolume::draw() const
 {
-    plShaderStack::push( _minimalShader );
+    //plShaderStack::push( _minimalShader );
     plColourStack::load( 1.0, 1.0, 1.0, 1.0);
-    boundingBox.draw();
+    boundingBoxVAO.draw();
     plShaderStack::pop();
 
     plDraw::cube(plVector3(0,0,0),0.1f);

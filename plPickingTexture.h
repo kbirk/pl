@@ -8,12 +8,17 @@ class plPickingInfo
 {
     public:
 
-	    PLint type;
-	    PLint id;
-	    PLint index;
+	    PLint r;
+	    PLint g;
+	    PLint b;
 	
 	    plPickingInfo()
-	        : type(-1), id(-1), index(-1)
+	        : r(-1), g(-1), b(-1)
+	    {
+	    }
+	    
+	    plPickingInfo( PLint red, PLint green, PLint blue) 
+	        : r( red ), g( green ), b( blue )
 	    {
 	    }
 };
@@ -25,7 +30,7 @@ class plPickingTexture
 	
 		plPickingTexture(GLuint width, GLuint height);
 
-        const plPickingInfo &lastPick() const { return _lastPick; }
+        const plPickingInfo &previousPick() const { return _previousPick; }
 
 		void setFBO(PLuint width, PLuint height);
 		void destroy();
@@ -39,7 +44,7 @@ class plPickingTexture
 	private:
 	
         PLbool        _readSinceLastDraw;
-        plPickingInfo _lastPick;
+        plPickingInfo _previousPick;
 
 		GLuint        _fbo;
 		GLuint        _pickingTexture;
@@ -49,11 +54,16 @@ class plPickingTexture
 
 namespace plPicking
 {
-    extern plPickingInfo     value;
-    extern plPickingTexture *texture;
-    
     void init();
-  
+    
+    const plPickingInfo& previousPick ();
+    plPickingInfo        readPixel    ( PLuint x, PLuint y );
+
+    void bind();
+    void unbind();
+    
+    void resize( PLuint width, PLuint height );
+
 }
 
 #endif

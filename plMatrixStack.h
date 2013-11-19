@@ -11,6 +11,8 @@ class plMatrixStack
 		
 		plMatrixStack();
 
+        PLbool empty() { return _stack.size() == 0; }
+
         void load( const plMatrix44 &m );
 		void push();
 		void push( const plMatrix44 &m );

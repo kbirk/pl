@@ -2,51 +2,42 @@
 #define PL_SHADER_H
 
 #include "plCommon.h"
-
 #include "plString.h"
-
-// attribute locations, set by VBOs and mirrored in shader files
-#define PL_POSITION_ATTRIBUTE  0
-#define PL_NORMAL_ATTRIBUTE    1
-#define PL_COLOUR_ATTRIBUTE    2
-#define PL_TEXCOORD_ATTRIBUTE  3
+#include "plOpenGLInfo.h"
+#include "plUniform.h"
 
 class plShader 
 {
 
     public:                    
           
-        plShader( const plString &shaderFile, GLenum shaderType);      
-        plShader( const std::vector< plString > &shaderFiles, GLenum shaderType );      
-        plShader( const plString &vertexFile, const plString &fragmentFile);
-
+        plShader();
 		~plShader();
                 
-		void bind()   const { glUseProgram(_shaderProgramID);  }	    
-		void unbind() const { glUseProgram(0);                 }
+		void bind()   const { glUseProgram( _id );  }	    
+		void unbind() const { glUseProgram( 0 );    }
 		
-		bool good() const { return _good; }
-		
-		virtual void getUniformLocations() = 0;
-		
+		bool good()   const { return _good; }
+
+        virtual void setUniform( const plUniformBase& uniform ) const {};
+        
     protected:
 
-        GLuint _shaderProgramID;
+        GLuint _id;
         bool   _good;
         
-        char*  _readShaderFile( const plString &filename );                
-        GLuint _createShader( const plString &shaderFile, GLenum shaderType ); 
-        GLuint _createShader( const std::vector<plString> &shaderFiles, GLenum shaderType );
-        GLuint _compileShader(GLuint shader);        
-        void   _printCompileError(GLuint shader);        
-        GLuint _linkProgram();        
+        char*  _readShaderFile( const std::string &filename );                
+        GLuint _createShader( const std::string &shaderFile, GLenum shaderType ); 
+        GLuint _createShader( const std::vector<std::string> &shaderFiles, GLenum shaderType );
+        PLbool _compileShader( GLuint shader );     
+        GLuint _createAndCompileShader( const std::string &shaderFile, GLenum shaderType );
+        GLuint _createAndCompileShader( const std::vector<std::string> &shaderFiles, GLenum shaderType );
+        void   _printCompileError( GLuint shader );        
+        PLbool _linkProgram();        
         void   _printLinkError();
 
+        virtual void _getUniformLocations() = 0;
 };
-
-std::string mapGLErrorToString( GLenum errorCode );
-void reportOpenGLError        ( const std::string &str );
-void checkOpenGLImplementation();   
 
 
 #endif

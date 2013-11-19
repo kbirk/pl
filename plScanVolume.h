@@ -5,9 +5,8 @@
 #include <cmath>
 #include "plVector3.h"
 #include "plCommon.h"
-
 #include "plDraw.h"
-#include "plLineMesh.h"
+#include "plVAO.h"
 //#include "plRenderable.h"
 
 const float probeRadius   = 1.5;             // 1.5 mm radius
@@ -15,7 +14,7 @@ const float coneHalfAngle = 60.0/180.0*PL_PI; // 60 degree half-angle
 
 class plScanVolume //: public plRenderable
 {
-    plMinimalShader* _minimalShader;
+    //plMinimalShader* _minimalShader;
 
     public:
 
@@ -50,7 +49,7 @@ class plScanVolume //: public plRenderable
 
         plScanVoxel*      voxels;         // voxels[x][y][z] is indexed as voxels[ x + dimx * (y + dimy * z) ]
 
-        plLineMesh        boundingBox;
+        plVAO             boundingBoxVAO;
 
         //plRenderMethod renderMethod;    // how voxels are rendered
 

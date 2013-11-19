@@ -18,8 +18,10 @@ class plDefectSite : public plModelSpecific,
         plSpline    spline;
              
         plDefectSite();
-        plDefectSite( PLuint _modelID, const plBoneAndCartilage &_model );
-        plDefectSite( PLuint _modelID, const plBoneAndCartilage &_model, const plSpline &s, const plBoundary &b );
+        plDefectSite( PLuint modelID, const plBoneAndCartilage& model );
+        plDefectSite( PLuint modelID, const plBoneAndCartilage& model, const plSpline &s, const plBoundary &b );
+
+        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;  
 
         void draw() const;   
                 

@@ -112,7 +112,7 @@ namespace plPlannerStage0
 
     void run( plDefectSolution &defectSolution, const plPlanningBufferData &planningData, plPlan& plan )
     {       
-        std::vector< plString > shaderfiles;
+        std::vector< std::string > shaderfiles;
         
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
 
@@ -131,7 +131,7 @@ namespace plPlannerStage0
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/stage0.cmp" );
 
         // compile / link stage 0 shader
-        plPlannerStage0Shader stage0Shader( shaderfiles );
+        plPlannerShader stage0Shader( shaderfiles );
         
         if ( !stage0Shader.good() )
             return;
@@ -168,7 +168,8 @@ namespace plPlannerStage0
                 // memory barrier
                 glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
                 
-                stage0Shader.setLocalLoadUniform( i );                
+                stage0Shader.setLocalLoadUniform( i );  
+                stage0Shader.setSeedUniform();
             }
 
             PLuint bestGroup;
