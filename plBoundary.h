@@ -7,7 +7,7 @@
 #include "plVector3.h"
 #include "plRenderable.h"
 #include "plEditable.h"
-#include "plPickingTexture.h"
+#include "plPicking.h"
 #include "plBoneAndCartilage.h"
 #include "plVAO.h"
 #include "plDraw.h"
@@ -28,7 +28,7 @@ class plBoundary : public plRenderable,
  
         PLuint size() const;
 
-        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
+        void extractRenderComponents( plRenderMap& renderMap ) const;
 
         const plVector3& points ( PLuint index ) const { return _points[index];  }
         const plVector3& normals( PLuint index ) const { return _normals[index]; }
@@ -38,8 +38,7 @@ class plBoundary : public plRenderable,
         virtual PLuint addPointAndNormal   ( const plVector3 &point, const plVector3 &normal);
         virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);
         virtual void   removePointAndNormal( PLuint index );
-        virtual void   clear();        
-        //virtual void   draw() const;     
+        virtual void   clear();            
         
     protected:
 
@@ -49,10 +48,10 @@ class plBoundary : public plRenderable,
         plVAO _vao;    
 
         plVector4 _getColour() const;    
-        void _drawPoints() const;
+        
         void _generateVAO(); 
         
-        void _extractPointRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
+        void _extractPointRenderComponents( plRenderMap& renderMap ) const;
         
 };
 

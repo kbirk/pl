@@ -3,83 +3,82 @@
 namespace plWindow
 {
 
+    PLuint _width;
+    PLuint _height;
+    PLuint _viewportWidth;
+    PLuint _viewportHeight;
+    PLuint _viewportX;
+    PLuint _viewportY;
+
+
+    void reshape( PLuint width, PLuint height )
+    {    
+        _width = width;
+        _height = height;
+    
+        _viewportHeight = _width / PL_ASPECT_RATIO ;
+
+        if ( _viewportHeight <= _height )
+        {
+            _viewportY = ( _height - _viewportHeight )*0.5f;
+            _viewportX = 0;
+            _viewportWidth = _width;
+        }
+        else
+        {
+            _viewportWidth = _height * PL_ASPECT_RATIO;
+            _viewportHeight = _height;
+            _viewportX = ( _width - _viewportWidth )*0.5f;
+            _viewportY = 0; 
+        } 
+    }
+    
+
     PLuint width()
     {
-        GLint viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );
-        return viewport[2] + viewport[0]*2;
+        return _width;
     }
 
 
     PLuint height()
     {
-        GLint viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );
-        return viewport[3] + viewport[1]*2;
+        return _height;
     }
 
 
     PLuint viewportWidth()
     {
-        GLint viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );
-        return viewport[2];
+        return _viewportWidth;
     }
 
 
     PLuint viewportHeight()
     {
-        GLint viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );
-        return viewport[3];
+        return _viewportHeight;
     }
     
+    
+    PLuint viewportX()
+    {
+        return _viewportX;
+    }
 
+
+    PLuint viewportY()
+    {
+        return _viewportY;
+    }
+    
+    
     PLint windowToViewportX( PLint x )
     {
-        GLint viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );
-        return x - viewport[0];
+        return x - _viewportX;
     }
     
     
     PLint windowToViewportY( PLint y )
     {
-        GLint viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );
-        return y - viewport[1];
-    }
-
-
-    void reshape( PLuint width, PLuint height )
-    {    
-        
-        float viewportHeight = width / PL_ASPECT_RATIO ;
-        float viewportWidth;
-        float vBuffer, hBuffer;
-        if (viewportHeight <= height)
-        {
-            vBuffer = (height-viewportHeight)*0.5f;
-            hBuffer = 0;
-            viewportWidth = width;
-
-        }
-        else
-        {
-            viewportWidth = height * PL_ASPECT_RATIO;
-            viewportHeight = height;
-            hBuffer = (width-viewportWidth)*0.5f;
-            vBuffer = 0;
-
-        }
-        glViewport( hBuffer, vBuffer, viewportWidth, viewportHeight );
-        
-        plProjectionStack::load( plProjection( 7.0f, PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE ) );    
-        
-        // use window size dimensions for picking texture, while not as memory efficient it allows us to keep the current viewport and use native window coords
-        plPicking::resize( width, height );
-        
-        plRenderer::resize( viewportWidth, viewportHeight );
+        return y - _viewportY;
     }
 
 
@@ -88,12 +87,9 @@ namespace plWindow
         plMatrix44 mvp = ( plProjectionStack::top() * plCameraStack::top() * plModelStack::top() );   
         plMatrix44 mvpInverse = mvp.inverse();
         
-        GLint viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );
-        
         // map window coords to range [0 .. 1]       
-        PLfloat nx = ( (PLfloat)(x)-(PLfloat)(viewport[0]) ) / (PLfloat)(viewport[2]);
-        PLfloat ny = ( (PLfloat)(y)-(PLfloat)(viewport[1]) ) / (PLfloat)(viewport[3]);
+        PLfloat nx = ( (PLfloat)(x)-(PLfloat)( _viewportX ) ) / (PLfloat)( _viewportWidth );
+        PLfloat ny = ( (PLfloat)(y)-(PLfloat)( _viewportY   ) ) / (PLfloat)( _viewportHeight );
         PLfloat nz = (PLfloat)(z);
         
         // map to range of [-1 .. 1] 
@@ -106,7 +102,7 @@ namespace plWindow
 
         if( output.w == 0.0f)
         {
-             std::cerr << "plWindow mouseToWorld() error \n";
+             std::cerr << "plWindow::mouseToWorld() error, w == 0" << std::endl;
              return plVector3();
         }
 
@@ -116,27 +112,25 @@ namespace plWindow
     }
 
 
-    plVector3 worldToScreen( PLfloat x, PLfloat y, PLfloat z ) 
+    plVector3 worldToScreen( PLfloat x, PLfloat y, PLfloat z )
     {
         plVector4 temp1 = ( plCameraStack::top() * plModelStack::top() ) * plVector4(x,y,z,1);
         plVector4 temp2 = plProjectionStack::top() * temp1;
 
         if (temp2.w == 0.0f)
         {
-            std::cerr << "plWindow worldToScreen() error \n";
+            std::cerr << "plWindow::mouseToWorld() error, w == 0" << std::endl;
             return plVector3();
         }
+        
         // perspective division
         temp2.x /= temp2.w;
         temp2.y /= temp2.w;
         temp2.z /= temp2.w;
 
-        GLint    viewport[4];
-        glGetIntegerv( GL_VIEWPORT, viewport );  
-
-        return plVector3( (temp2.x*0.5f+0.5f)*viewport[2]+viewport[0],
-                          (temp2.y*0.5f+0.5f)*viewport[3]+viewport[1],
-                          (1.0+temp2.z)*0.5 ); 
+        return plVector3( ( temp2.x*0.5f + 0.5f)* _viewportWidth  + _viewportX,
+                          ( temp2.y*0.5f + 0.5f)* _viewportHeight + _viewportY,
+                          ( 1.0f+temp2.z)*0.5f ); 
                           
     }
 
@@ -146,7 +140,7 @@ namespace plWindow
         plVector3 mouseInWorld = mouseToWorld( x, y, 0 );  
 
         rayOrigin = plCameraStack::position(); 
-        rayDirection = (mouseInWorld - rayOrigin).normalize();    
+        rayDirection = ( mouseInWorld - rayOrigin ).normalize();    
     }
 
 }

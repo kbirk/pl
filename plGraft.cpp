@@ -101,7 +101,7 @@ void plGraft::draw() const
 */
 
 
-void plGraft::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+void plGraft::extractRenderComponents( plRenderMap& renderMap ) const
 {
     if ( !_isVisible )
         return;
@@ -110,7 +110,7 @@ void plGraft::extractRenderComponents( std::set<plRenderComponent>& renderCompon
     plModelStack::push( _harvest.transform().matrix() );
     {
         plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DONOR );                  
-        _extractGraftRenderComponents( renderComponents );
+        _extractGraftRenderComponents( renderMap );
     }
     plModelStack::pop();
 
@@ -119,14 +119,14 @@ void plGraft::extractRenderComponents( std::set<plRenderComponent>& renderCompon
     {
         plModelStack::translate( 0, _heightOffset, 0 );
         plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
-        _extractGraftRenderComponents( renderComponents );
+        _extractGraftRenderComponents( renderMap );
     }
     plModelStack::pop();
 
 }
 
 
-void plGraft::_extractGraftRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap ) const
 {
     plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT ); 
 
@@ -134,17 +134,39 @@ void plGraft::_extractGraftRenderComponents( std::set<plRenderComponent>& render
     if ( _cartilageCap.triangles.size() > 0 )  // may not always have the cartilage top
     {
         plColourStack::load( _getCartilageColour() );    
-        renderComponents.insert( plRenderComponent( &_cartilageVAO, _isSelected ) ); 
+          
+        // create render component
+        plRenderComponent component( &_cartilageVAO );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        // insert into render map     
+        renderMap[ PL_PLAN_TECHNIQUE ].insert( component );   
     }
     
     // draw bone cap
     plColourStack::load( _getBoneColour() );
-    renderComponents.insert( plRenderComponent( &_boneVAO, _isSelected ) ); 
+       
+    // create render component
+    plRenderComponent component( &_boneVAO );
+    // attached uniforms
+    component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+    component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+    component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+    component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+    component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+    component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+    // insert into render map   
+    renderMap[ PL_PLAN_TECHNIQUE ].insert( component );  
     
     // draw marker   
     plColourStack::load( PL_GRAFT_MARKER_COLOUR );
     plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_MARKER );
-    plRenderer::queue( plSphere( _markPosition, 0.5f ) );
+    plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, _markPosition, 0.5f ) );
 
 }
 
@@ -278,11 +300,19 @@ void plGraft::_generateCartilageVAO()
 
     if (indices.size() > 0)
     {   
-        std::vector< PLuint > attributeTypes;
-        attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
-        attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
-
-        _cartilageVAO.set( vertices, attributeTypes, indices );  
+        // set vbo and attach attribute pointers
+        std::shared_ptr<plVBO> vbo( new plVBO() );
+        vbo->set( vertices );
+        vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
+        vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
+        // set eabo
+        std::shared_ptr<plEABO> eabo( new plEABO() );   
+        eabo->set( indices );
+        // attach to vao
+        _cartilageVAO.attach( vbo );
+        _cartilageVAO.attach( eabo );
+        // upload to gpu
+        _cartilageVAO.upload(); 
     }
 }
 
@@ -391,11 +421,19 @@ void plGraft::_generateBoneVAO()
 
     }
 
-    std::vector< PLuint > attributeTypes;
-    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
-    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
-
-    _boneVAO.set(vertices, attributeTypes, indices);
+    // set vbo and attach attribute pointers
+    std::shared_ptr<plVBO> vbo( new plVBO() );
+    vbo->set( vertices );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
+    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
+    // set eabo
+    std::shared_ptr<plEABO> eabo( new plEABO() );     
+    eabo->set( indices );
+    // attach to vao
+    _boneVAO.attach( vbo );
+    _boneVAO.attach( eabo );
+    // upload to gpu
+    _boneVAO.upload(); 
 }
 
 

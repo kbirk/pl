@@ -6,7 +6,7 @@
 #include "plModelSpecific.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
-#include "plPickingTexture.h"
+#include "plPicking.h"
 #include "plMeshCutter.h"
 #include "plMeshExtruder.h"
 
@@ -23,7 +23,7 @@ class plIGuideSite : public plModelSpecific,
         plIGuideSite( PLuint modelID, const plBoneAndCartilage& model );
         plIGuideSite( PLuint modelID, const plBoneAndCartilage& model, const plBoundary &b );
 
-        void extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const;  
+        void extractRenderComponents( plRenderMap& renderMap ) const;  
 
         const std::vector<plTriangle> &templateBase() const { return _templateBase; }
 

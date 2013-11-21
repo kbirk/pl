@@ -1,5 +1,6 @@
 #include "plDraw.h"
  
+/*
 namespace plDraw
 {
 
@@ -570,4 +571,5 @@ namespace plDraw
 
 
 }
+*/
 

@@ -1,301 +1,71 @@
 #include "plRenderer.h"
 
+
 namespace plRenderer
 {
-    plFBO *_fbo;
-    
-    std::shared_ptr< plTexture2D > _opaqueTexture;
-    std::shared_ptr< plTexture2D > _outlineTexture;
-    std::shared_ptr< plTexture2D > _pickingTexture;
-    std::shared_ptr< plTexture2D > _depthStencilTexture;
-                  
-    std::map< PLuint, // technique enum
-              std::map< PLuint, // render component enum
-                        std::vector< plRenderComponent > > _renderLists;
-    
-    plPickingInfo _previousPick;
-    PLuint _viewportHeight;
-    PLuint _viewportWidth;
-    PLuint _vBuffer, _hBuffer;
 
-    
+    plRenderMap _renderMap;
+
+    std::map< PLuint, std::shared_ptr<plRenderTechnique> > _techniques;
+
     // private function prototypes
-    void _setOpenGLState();
-    void _beginDrawing();
-    void _endDrawing();
-    void _updateViewport( PLuint width, PLuint height );
-    void _generateFBO( PLuint width, PLuint height );
-
-
+    void _initTechniques();  
+    
+    
     void init()
     {
-        _setOpenGLState();
-        _generateFBO( 1, 1 );
-        plProjectionStack::load( plProjection( PL_FIELD_OF_VIEW , PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE ) ); 
+        _initTechniques();
     } 
-    
-    
-    void _updateViewport( PLuint width, PLuint height )
-    {
-        _viewportHeight = width / PL_ASPECT_RATIO ;
 
-        if ( _viewportHeight <= height )
-        {
-            _vBuffer = ( height - _viewportHeight )*0.5f;
-            _hBuffer = 0;
-            _viewportWidth = width;
-        }
-        else
-        {
-            _viewportWidth = height * PL_ASPECT_RATIO;
-            _viewportHeight = height;
-            _hBuffer = ( width - _viewportWidth )*0.5f;
-            _vBuffer = 0;
-        }    
-    }
-    
-    
-    void _generateFBO( PLuint width, PLuint height )
-    {
-        delete _fbo;
-        _fbo = new plFBO();
-        
-        _opaqueTexture       = std::shared_ptr<plTexture2D> ( new plTexture2D( width, height, GL_RGBA8,  GL_RGBA,        GL_UNSIGNED_BYTE, NULL ) );
-        _outlineTexture      = std::shared_ptr<plTexture2D> ( new plTexture2D( width, height, GL_RGBA8,  GL_RGBA,        GL_UNSIGNED_BYTE, NULL ) );
-        _pickingTexture      = std::shared_ptr<plTexture2D> ( new plTexture2D( width, height, GL_RGB32I, GL_RGB_INTEGER, GL_INT,           NULL  ) );        
-        _depthStencilTexture = std::shared_ptr<plTexture2D> ( new plTexture2D( width, height, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL ) );
-
-        _fbo->attach( _opaqueTexture,       GL_COLOR_ATTACHMENT0  );
-        _fbo->attach( _outlineTexture,      GL_COLOR_ATTACHMENT1  );
-        _fbo->attach( _pickingTexture,      GL_COLOR_ATTACHMENT2  );
-        _fbo->attach( _depthStencilTexture, GL_DEPTH_ATTACHMENT   );
-        _fbo->attach( _depthStencilTexture, GL_STENCIL_ATTACHMENT );  
-    }
-    
-    
-    void resize( PLuint width, PLuint height )
-    {      
-        _updateViewport( width, height );
-        _generateFBO( _viewportWidth, _viewportHeight );        
-    }
-    
     
     void queue( const plRenderable& renderable )
-    {
-        renderable.extractRenderComponents( _renderQueue );
-
-        
-        
+    {    
+        // it would be nice to have each technique contain its own set of rc's
+        renderable.extractRenderComponents( _renderMap );
     }
-
-
     
-
-    void _testTexture()
-    {
-        // VAO GENERATION
-        std::vector<plVector3> vertices;
-        std::vector<PLuint>    indices;
-        std::vector<PLuint>    attributeTypes;
-        
-        attributeTypes.push_back( PL_POSITION_ATTRIBUTE );  
-        attributeTypes.push_back( PL_TEXCOORD_ATTRIBUTE );
-        
-        // position                                     // texture coord       
-        vertices.push_back( plVector3( -1, -1, 0 ) );   vertices.push_back( plVector3( 0,0,0) );   
-        vertices.push_back( plVector3(  1, -1, 0 ) );   vertices.push_back( plVector3( 1,0,0) );   
-        vertices.push_back( plVector3(  1,  1, 0 ) );   vertices.push_back( plVector3( 1,1,0) );    
-        vertices.push_back( plVector3( -1,  1, 0 ) );   vertices.push_back( plVector3( 0,1,0) );
-        
-        indices.push_back( 0 );   indices.push_back( 1 );   indices.push_back( 2 );
-        indices.push_back( 0 );   indices.push_back( 2 );   indices.push_back( 3 );
-           
-        static plVAO vao( vertices, attributeTypes, indices );
-        ///
-        
-        // TEX
-        std::vector<PLuint> texUnits;
-        texUnits.push_back( 0 );
-        texUnits.push_back( 1 );
-        //
-              
-        plMatrix44 ortho( -1, 1, -1, 1, -1, 1 );
-
-        plMatrix44 camera( 1, 0,  0, 0,
-                           0, 1,  0, 0,
-                           0, 0, -1, 0,
-                           0, 0,  0, 1 ); 
-            
-        plTexture2DStack::push ( *_opaqueTexture,  0 );    
-        plTexture2DStack::push ( *_outlineTexture, 1 );       
-        plShaderStack::push    ( PL_FBO_SHADER );                   
-        plProjectionStack::push( ortho );        // ortho projection
-        plModelStack::push     ( plMatrix44() ); // identity model matrix
-        plCameraStack::push    ( camera );       // default camera matrix
-
-        _renderQueue.insert( plRenderComponent( &vao, texUnits ) );
-      
-        plProjectionStack::pop(); 
-        plModelStack::pop();       
-        plCameraStack::pop();    
-        plShaderStack::pop();
-        plTexture2DStack::pop( 0 );
-        plTexture2DStack::pop( 1 );
-    }
-
-
+    
     void draw()
     {
-        _beginDrawing();
-        _fbo->bind();   
+        std::cout << "here" << std::endl;
         
-        // clear opaque buffer
+        for ( auto& pair : _techniques )
+        {
+            // get technique ptr and enum
+            PLuint techniqueEnum = pair.first;
+            auto&  technique = pair.second;
+            std::cout << "2\n";     
+            technique->render( _renderMap[ techniqueEnum ] );
+        }
+
+        // clear map for this frame
+        _renderMap.clear();
+    }
+    
+
+    void _initTechniques()
+    {
+        // create techniques
+        _techniques[ PL_PLAN_TECHNIQUE ] = std::shared_ptr<plPlannerTechnique>( new plPlannerTechnique() );
+        
         /*
-        GLenum buffers0[2] = { GL_COLOR_ATTACHMENT0, GL_NONE };  
-        _fbo->setDrawBuffers( buffers0, 2 );
-        glClearColor( PL_CLEAR_COLOUR );          
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-        
-        // clear blend buffer
-        GLenum buffers1[2] = { GL_NONE, GL_COLOR_ATTACHMENT1 };  
-        _fbo->setDrawBuffers( buffers1, 2 );        
+        _techniques[ PL_ARTHRO_CAM_TECHNIQUE ] = std::shared_ptr<plPlannerTechnique>( new plArthoCamTechnique() );
         */
-                
-        // clear fbo
-        glClearColor( 0, 0, 0, 0 );          
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-        glViewport( 0, 0, _viewportWidth, _viewportHeight ); 
-        //
-          
-          
-             
-        for ( const std::set renderQueue : _renderQueues )
-        {
-            for ( const plRenderComponent& renderComponent : _renderQueue )
-            { 
-                renderComponent.draw();   
-            }
-        }     
-             
-        
-        _endDrawing();
-        
-        // this should not be manual, should be enabled by flags  
-        _fbo->unbind();  
-        glClearColor( PL_CLEAR_COLOUR );          
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );         
-        glViewport( _hBuffer, _vBuffer, _viewportWidth, _viewportHeight );       
-        //
-        
-        _renderQueue.clear();  
-        _testTexture();
-        for ( const plRenderComponent& renderComponent : _renderQueue )
-        { 
-            renderComponent.draw();   
-        }
-        
-        _renderQueue.clear();
     }
-    
-
-    void _setOpenGLState()
-    {
-        glEnable( GL_CULL_FACE );
-        glCullFace( GL_BACK );    
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-        glEnable( GL_DEPTH_TEST ); 
-        glEnable( GL_BLEND );  
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );  
-        glDepthFunc( GL_LEQUAL );
-    }
-
-    
-    //template< typename T>
-    //plPixel<T>        
-    const plPickingInfo& pickPixel( PLuint x, PLuint y )
-    {
-        plPixel<PLint> pick = _fbo->readPixel<PLint>( GL_COLOR_ATTACHMENT2, x - _hBuffer, y - _vBuffer );
-
-        _previousPick = plPickingInfo( pick.r, pick.g, pick.b );
-
-        std::cout << "picking: " << _previousPick.r << " " << _previousPick.g << " " << _previousPick.b << "\n"; 
-    
-        return _previousPick;   
-    }
+     
+     
 
 
-    //template< typename T>
-    //plPixel<T> 
-    const plPickingInfo& previousPick()
-    {
-        return _previousPick;
-    }
-
-    /*
-    void draw( PLuint x, PLuint y )
-    {
-        _setOpenGLState();
-
-        // picking draw    
-        _beginPicking();
-        {
-            _drawScenePicking();
-        }
-        _endPicking();
-  
-        // normal draw
-        _beginDrawing();
-        {
-            _drawScene( x, y );
-        }
-
-        _endDrawing();
-
-        // clear queues from this frame
-        _clearRenderQueue();
-    }
 
 
-    void _beginPicking()
-    {
-        glDisable( GL_BLEND );
-
-        // bind picking shader
-        plShaderStack::push( _pickingShader );
-        
-        // bind picking texture
-        plPicking::bind();
-
-        // clear picking texture
-        glClearColor(0,0,0,0);
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  
-
-    }
 
 
-    void _endPicking()
-    {
-        plShaderStack::pop();
-        plPicking::unbind();  
-    }
-    */
-
-    void _beginDrawing()
-    {
-        glEnable( GL_BLEND );
-        
-        glClearColor( PL_CLEAR_COLOUR );
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-        
-        //glStencilFunc( GL_ALWAYS, 0x00, 0x00);               // only render to bits = 0 (have not been written)
-	    //plShaderStack::push( _phongShader );
-    }
 
 
-    void _endDrawing()
-    {
-       // plShaderStack::pop(); 
-    }
+
+
+
+
 
     /*
     void _drawScene( PLuint x, PLuint y )

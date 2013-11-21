@@ -32,9 +32,9 @@ class plTrackedObject : public plRenderable
         const plVector3 &getAxisZ()           const  { return _zAxis;           }
         plVector4        getRotationInfo()    const  { return plVector4( _rotationAxis, _rotationAngle); }
 
-        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const {}
+        void extractRenderComponents( plRenderMap& renderMap ) const {}
 
-        void draw() const;
+        //void draw() const;
 
     private:
     
@@ -50,8 +50,8 @@ class plTrackedObject : public plRenderable
         PLfloat         _rotationAngle;
         PLbool          _isArthroscope;
         
-        void _drawScope() const;
-        void _drawProbe() const;
+        //void _drawScope() const;
+        //void _drawProbe() const;
 
 };
 

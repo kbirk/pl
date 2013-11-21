@@ -24,7 +24,7 @@ void plBoundaryEditor::clearSelection( plPlan &plan )
 
 PLbool plBoundaryEditor::processMouseClick( plPlan &plan, PLint x, PLint y)
 {
-    plPickingInfo pixel = plRenderer::pickPixel( x, y );
+    plPickingInfo pixel = plPicking::pickPixel( x, y );
 
     switch ( pixel.r ) 
     {  
@@ -48,7 +48,7 @@ PLbool plBoundaryEditor::processMouseClick( plPlan &plan, PLint x, PLint y)
 
 PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y)
 {
-    plPickingInfo pixel = plRenderer::previousPick(); // read pick from last click, not what is currently under mouse
+    plPickingInfo pixel = plPicking::previousPick(); // read pick from last click, not what is currently under mouse
 
     switch ( pixel.r ) 
     {  
@@ -294,13 +294,13 @@ void plBoundaryEditor::clearSelectedBoundary( plPlan &plan )
 }
 
 
-void plBoundaryEditor::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap ) const
 {
-    plShaderStack::push( PL_OUTLINE_SHADER );
+    //plShaderStack::push( PL_OUTLINE_SHADER );
     
-    _selectedBoundary->extractRenderComponents( renderComponents ); 
+    _selectedBoundary->extractRenderComponents( renderMap ); 
 
-    plShaderStack::pop();    
+    //plShaderStack::pop();    
 }
 
 /*

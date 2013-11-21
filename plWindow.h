@@ -4,14 +4,16 @@
 #include "plCommon.h"
 #include "plMatrix44.h"
 #include "plRenderingPipeline.h"
-#include "plRenderer.h"
 
 namespace plWindow
 {
+
     PLuint    width            ();
     PLuint    height           ();    
     PLuint    viewportWidth    ();
     PLuint    viewportHeight   ();
+    PLuint    viewportX        ();
+    PLuint    viewportY        ();
     PLint     windowToViewportX( PLint x );
     PLint     windowToViewportY( PLint y );
     
@@ -22,3 +24,4 @@ namespace plWindow
 }
 
 #endif
+

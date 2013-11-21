@@ -157,7 +157,7 @@ void plString::stripCharacter( char c)
 
 void plString::stripPreceedingWhitespace()
 {
-    size_t startpos = find_first_not_of(" \t");
+    size_t startpos = find_first_not_of("     ");
     if (startpos < length())
         *this = substr( startpos );
 }  
@@ -175,7 +175,7 @@ plString plString::withoutFilepath() const
 
 bool plString::isOnlyWhitespace() const
 {
-    return (length() == 0) || (find_first_not_of("\t\n\r ") == plString::npos);
+    return (length() == 0) || (find_first_not_of("    \n\r ") == plString::npos);
 } 
 
 

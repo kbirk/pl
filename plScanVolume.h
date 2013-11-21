@@ -34,7 +34,7 @@ class plScanVolume //: public plRenderable
                     type = UNKNOWN;
                 }
 
-                PLbool draw( const plVector3& coordV ) const;
+                //PLbool draw( const plVector3& coordV ) const;
 
         };
 
@@ -70,7 +70,7 @@ class plScanVolume //: public plRenderable
         plVector3 coordinatesWtoV(const plVector3& coordsW)      const;
         PLfloat   distanceWusingI(PLuint index1, PLuint index2)  const;
 
-        PLbool    draw() const;
+        //PLbool    draw() const;
 
         plScanVolume& operator=(const plScanVolume&);
 };

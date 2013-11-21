@@ -17,14 +17,14 @@ plDonorSite::plDonorSite( PLuint modelID, const plBoneAndCartilage& model, const
 }
 
 
-void plDonorSite::extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const
+void plDonorSite::extractRenderComponents( plRenderMap& renderMap ) const
 {
     if ( !_isVisible )
         return;
       
     // draw spline boundary 
     plPickingStack::loadRed( PL_PICKING_TYPE_DONOR_BOUNDARY );
-    boundary.extractRenderComponents( renderComponents ); 
+    boundary.extractRenderComponents( renderMap ); 
 }
 
 

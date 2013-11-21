@@ -23,7 +23,7 @@ class plScan
         // output/visualization
         PLbool printPoints() const;
         PLbool printField() const;
-        PLbool draw() const;
+        //PLbool draw() const;
 
     private:
         // attributes

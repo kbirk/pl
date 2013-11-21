@@ -106,9 +106,11 @@ PLbool plScan::printField() const
     return true;
 }
 
+/*
 PLbool plScan::draw() const
 {
     _field->draw();
     return true;
 }
+*/
 

@@ -43,7 +43,7 @@ void plGraftEditor::setEditMode( PLuint editMode )
 
 PLbool plGraftEditor::processMouseClick( plPlan &plan, PLint x, PLint y )
 {
-    plPickingInfo pick = plRenderer::pickPixel( x, y );
+    plPickingInfo pick = plPicking::pickPixel( x, y );
 
     switch ( pick.r ) 
     {     
@@ -79,7 +79,7 @@ PLbool plGraftEditor::processMouseClick( plPlan &plan, PLint x, PLint y )
 
 PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
 {
-    plPickingInfo pick = plRenderer::previousPick();  // read pick from last click, not what is currently under mouse
+    plPickingInfo pick = plPicking::previousPick();  // read pick from last click, not what is currently under mouse
 
     switch ( pick.r ) 
     {  
@@ -217,14 +217,14 @@ void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
 }
 
 
-void plGraftEditor::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+void plGraftEditor::extractRenderComponents( plRenderMap& renderMap ) const
 {
     if ( _selectedGraft == NULL )    
         return;                 // no graft selected
         
-    plShaderStack::push( PL_OUTLINE_SHADER );
-    _selectedGraft->extractRenderComponents( renderComponents );
-    plShaderStack::pop();
+    //plShaderStack::push( PL_OUTLINE_SHADER );
+    _selectedGraft->extractRenderComponents( renderMap );
+    //plShaderStack::pop();
 }
 
 
@@ -437,7 +437,7 @@ plVector3 plGraftEditor::_getScreenAxis( const plVector3 &edit_axis, const plVec
     return (screenAxisTip - screenOrigin).normalize();
 }
 
-
+/*
 void plGraftEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
 { 
     // menu interface
@@ -578,12 +578,8 @@ void plGraftEditor::drawHandles() const
 
     }
     plModelStack::pop();
-
-
-    
-
 }
-
+*/
 
 
 

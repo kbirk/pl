@@ -191,9 +191,9 @@ namespace plPlannerStage0
         std::cout << std::endl << "DEBUG: " << std::endl;
         for ( PLuint i=0; i<defectSolution.graftCount; i++)
         {
-            std::cout << "Graft " << i << ",\tPosition: " << defectSolution.graftPositions[i] 
-                                       << ",\tNormal: "   << defectSolution.graftNormals[i] 
-                                       << ",\tRadius: "   << defectSolution.graftRadii[i] << std::endl;         
+            std::cout << "Graft " << i << ",    Position: " << defectSolution.graftPositions[i] 
+                                       << ",    Normal: "   << defectSolution.graftNormals[i] 
+                                       << ",    Radius: "   << defectSolution.graftRadii[i] << std::endl;         
         }
         std::cout << std::endl;
         */

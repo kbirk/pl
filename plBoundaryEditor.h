@@ -37,7 +37,7 @@ class plBoundaryEditor : public plRenderable
         void    removeSelectedSite      ( plPlan &plan );
         void    toggleSelectedVisibility();
 
-        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const; 
+        void extractRenderComponents( plRenderMap& renderMap ) const; 
 
         //void    drawMenu( const plPlan &plan, PLuint x, PLuint y ) const;
 

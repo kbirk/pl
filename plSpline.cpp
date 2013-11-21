@@ -79,7 +79,7 @@ plVector3 plSpline::getAverageNormalOverCorners()
 }
  
 
-void plSpline::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
 {
     if ( !_isVisible )
         return;
@@ -90,14 +90,14 @@ void plSpline::extractRenderComponents( std::set<plRenderComponent>& renderCompo
     if ( size() < 4 )
     {
         // draw boundary walls
-        plBoundary::extractRenderComponents( renderComponents );
+        plBoundary::extractRenderComponents( renderMap );
     }
     else
     {
         plColourStack::load( _getColour() );
         
         // draw points
-        _extractPointRenderComponents( renderComponents );
+        _extractPointRenderComponents( renderMap );
         
         // draw spline
         plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS ); 
@@ -105,7 +105,19 @@ void plSpline::extractRenderComponents( std::set<plRenderComponent>& renderCompo
         
         // set colour flag to use vertex attribute colours
         plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );        
-        renderComponents.insert( plRenderComponent( &_surfaceVAO ) );
+        
+        // create render component
+        plRenderComponent component( &_surfaceVAO );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        // insert into render map     
+        renderMap[ PL_PLAN_TECHNIQUE ].insert( component );  
+
         plColourStack::pop();
     }  
 }
@@ -328,12 +340,20 @@ void plSpline::_computeHermite()
 
     _surfaceMesh = plMesh( triangles );
 
-    std::vector< PLuint > attributeTypes;    
-    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
-    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
-    attributeTypes.push_back( PL_COLOUR_ATTRIBUTE );
-    
-    _surfaceVAO.set( vertices, attributeTypes, indices );
+    // set vbo and attach attribute pointers
+    std::shared_ptr<plVBO> vbo( new plVBO() );
+    vbo->set( vertices );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
+    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
+    vbo->set( plVertexAttributePointer( PL_COLOUR_ATTRIBUTE,   32 ) );
+    // set eabo
+    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    eabo->set( indices );
+    // attach to vao
+    _surfaceVAO.attach( vbo );
+    _surfaceVAO.attach( eabo );
+    // upload to gpu
+    _surfaceVAO.upload(); 
 
     // update timer to store time of last update
     _lastUpdate = plTimer::now();

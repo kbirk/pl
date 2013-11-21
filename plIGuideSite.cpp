@@ -17,10 +17,10 @@ plIGuideSite::plIGuideSite( PLuint modelID, const plBoneAndCartilage& model, con
 }
 
 
-void plIGuideSite::extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const
+void plIGuideSite::extractRenderComponents( plRenderMap& renderMap ) const
 {
     plPickingStack::loadRed( PL_PICKING_TYPE_IGUIDE_BOUNDARY );
-    boundary.extractRenderComponents( renderComponents );
+    boundary.extractRenderComponents( renderMap );
 }  
 
 /*

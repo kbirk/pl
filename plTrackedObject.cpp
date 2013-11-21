@@ -67,7 +67,7 @@ void plTrackedObject::updatePosition( const plDRBTransform &DRBToWorld, const pl
     _rotationAngle  = - acos((_trackedEnd-_trackedTip).normalize() * plVector3(0,0,1)) * 57.295779513082320876798154;
 }
 
-
+/*
 void plTrackedObject::draw() const
 {
     if ( _isArthroscope )
@@ -141,7 +141,7 @@ void plTrackedObject::_drawProbe() const
     }
     plModelStack::pop();
 }
-
+*/
 
 
 

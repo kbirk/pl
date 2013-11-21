@@ -154,25 +154,23 @@ PLuint plTexture2D::_getFormatSize() const
         case GL_UNSIGNED_INT:       size = sizeof( GLuint );      break;
         case GL_INT:                size = sizeof( GLint );       break;
         case GL_FLOAT:              size = sizeof( GLfloat );     break;
+        case GL_DOUBLE:             size = sizeof( GLdouble );    break;
         
         // not 100% sure about these
         case GL_UNSIGNED_BYTE_3_3_2:
-        case GL_UNSIGNED_BYTE_2_3_3_REV:
-            return 1;     break;
+        case GL_UNSIGNED_BYTE_2_3_3_REV:            return 1;     break;
         
         case GL_UNSIGNED_SHORT_5_6_5:
         case GL_UNSIGNED_SHORT_5_6_5_REV:
         case GL_UNSIGNED_SHORT_4_4_4_4:
         case GL_UNSIGNED_SHORT_4_4_4_4_REV:   
         case GL_UNSIGNED_SHORT_5_5_5_1:       
-        case GL_UNSIGNED_SHORT_1_5_5_5_REV:   
-            return 2;     break;
+        case GL_UNSIGNED_SHORT_1_5_5_5_REV:         return 2;     break;
         
         case GL_UNSIGNED_INT_8_8_8_8:        
         case GL_UNSIGNED_INT_8_8_8_8_REV:    
         case GL_UNSIGNED_INT_10_10_10_2:      
-        case GL_UNSIGNED_INT_2_10_10_10_REV:  
-            return 4;     break;        
+        case GL_UNSIGNED_INT_2_10_10_10_REV:        return 4;     break;        
     } 
     
     return multiplier * size;

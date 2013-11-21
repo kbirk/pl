@@ -22,25 +22,34 @@ plModel::plModel( const plString &file, PLuint octreeDepth )
 }
 
 
-void plModel::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+void plModel::extractRenderComponents( plRenderMap& renderMap ) const
 {
     if ( !_isVisible )
         return;
 
+    // create render component
+    plRenderComponent component( &_vao );
+    // attached uniforms
+    component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+    component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+    component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+    component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) );    
+
     if ( !_isTransparent ) 
     {
-        //glDisable( GL_STENCIL_TEST );            // if opaque, allow overwriting pixels during picking
-        //plColourStack::load( colour.x, colour.y, colour.z, 1.0f ); 
-        
-        renderComponents.insert( plRenderComponent( &_vao ) );
+        component.attach( plUniform( PL_PICKING_UNIFORM, plPickingStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,  plColourStack::top()  ) ); 
+        // insert into render map   
+        renderMap[ PL_MODEL_TECHNIQUE ].insert( component );        
     }
     else
     {
-        //glEnable( GL_STENCIL_TEST );             // if transparent, prevent overwriting pixels during picking
-        //plColourStack::load( colour.x, colour.y, colour.z, 0.2f );
         plVector4 tC( PL_MODEL_BONE_COLOUR );
         plColourStack::load( plVector4( tC.x, tC.y, tC.z, 0.4) ); 
-        renderComponents.insert( plRenderComponent( &_vao ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,  plColourStack::top()  ) ); 
+        // insert into render map   
+        renderMap[ PL_TRANSPARENT_TECHNIQUE ].insert( component );
+        
         /*
         // Sort by distance
         plVector3 viewDir = plCameraStack::direction();
@@ -62,7 +71,6 @@ void plModel::extractRenderComponents( std::set<plRenderComponent>& renderCompon
         }             
         _vao.draw( indices );
         */
-        //glDisable( GL_STENCIL_TEST ); 
     } 
 
 }
@@ -91,11 +99,20 @@ void plModel::_generateVAO()
 	    indices.emplace_back( indexCount++ );	    
 	}
 
-    std::vector<PLuint> attributeTypes;  
-	attributeTypes.push_back( PL_POSITION_ATTRIBUTE ); 
-	attributeTypes.push_back( PL_NORMAL_ATTRIBUTE   ); 
+    // set vbo and attach attribute pointers
+    std::shared_ptr<plVBO> vbo( new plVBO() );
+    vbo->set( vertices );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
+    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
+    // set eabo
+    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    eabo->set( indices );
+    // attach to vao
+    _vao.attach( vbo );
+    _vao.attach( eabo );
+    // upload to gpu
+    _vao.upload();
 
-    _vao.set( vertices, attributeTypes, indices );
 }
 
 /*

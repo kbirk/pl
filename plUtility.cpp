@@ -8,7 +8,7 @@ namespace plUtility
         PLuint prevPrecision = std::cout.precision();    
         std::cout << std::fixed << std::setprecision(2);
 
-        std::cout << "\r\tProgress: [";
+        std::cout << "\r    Progress: [";
 
         for (PLuint i=0; i < PLuint(percent*length); i++) 
             std::cout << "=";

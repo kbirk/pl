@@ -52,12 +52,19 @@ void plChessBoard::_generateVAO()
         }
     }
     
-    std::vector< PLuint > attributeTypes;    
-    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
-    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
-    attributeTypes.push_back( PL_COLOUR_ATTRIBUTE );
-    
-    _vao.set( vertices, attributeTypes, indices );
+    // set vbo and attach attribute pointers
+    std::shared_ptr<plVBO> vbo;
+    vbo->set( vertices );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
+    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
+    // set eabo
+    std::shared_ptr<plEABO> eabo;    
+    eabo->set( indices );
+    // attach to vao
+    _vao.attach( vbo );
+    _vao.attach( eabo );
+    // upload to gpu
+    _vao.upload(); 
 }
 
 

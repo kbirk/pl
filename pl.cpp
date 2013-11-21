@@ -2,10 +2,10 @@
 
 void plInit()
 {   
-    // initialize openGL specific buffers/shaders
+    // initialize openGL specific objects
     plOpenGLInfo::init();
     plRenderer::init();
-    plPicking::init();
+    plRenderResources::init();
 }
 
 

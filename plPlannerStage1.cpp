@@ -71,7 +71,7 @@ namespace plPlannerStage1
         std::cout << std::endl << "DEBUG: " << std::endl;       
         for ( PLuint i=0; i<defectIndices.size(); i+=PL_MAX_CAP_TRIANGLES )
         {
-            std::cout << "Graft " << i/PL_MAX_CAP_TRIANGLES << ",\t cap index count: " << defectIndices[i] << std::endl;
+            std::cout << "Graft " << i/PL_MAX_CAP_TRIANGLES << ",     cap index count: " << defectIndices[i] << std::endl;
         }
         std::cout << std::endl;
         */

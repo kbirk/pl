@@ -2,7 +2,7 @@
 
 PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert* vert, const plMeshConnectivityDataEdge* edge, PLuint verbose, PLuint depth)
 {
-    //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "\t"; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge::_intersectsVert()" << std::endl; }
+    //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "    "; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge::_intersectsVert()" << std::endl; }
 
     if ( plUtility::exists( edge->verts, vert ) ) // if it is on the edge, this is not an intersection
         return false;
@@ -60,7 +60,7 @@ PLbool plMeshIntersector::_intersectionVertEdge(const plMeshConnectivityDataVert
 
 PLbool plMeshIntersector::_intersectionEdgeEdge(const plMeshConnectivityDataEdge* e1, const plMeshConnectivityDataEdge* e2, plVector3& intersection, PLuint verbose, PLuint depth)
 {
-    //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "\t"; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge::_intersectsEdge()" << std::endl; }
+    //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "    "; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataEdge::_intersectsEdge()" << std::endl; }
 
     if ( plUtility::exists( e2->verts, e1->verts[1] ) || plUtility::exists( e2->verts, e1->verts[1] ) )
         return false;
@@ -86,7 +86,7 @@ PLbool plMeshIntersector::_intersectionEdgeEdge(const plMeshConnectivityDataEdge
 
 PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert* vert, const plMeshConnectivityDataFace* face, PLuint verbose, PLuint depth)
 {
-    //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "\t"; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataFace::_intersectsVert()" << std::endl; }
+    //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "    "; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataFace::_intersectsVert()" << std::endl; }
 
     // don't consider vertices that are a part of this triangle
     if ( plUtility::exists( face->verts, vert ) )
@@ -104,7 +104,7 @@ PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert
         return false;
 
     /*for (PLuint i=0;i<depth;i++)
-        std::cout << "\t";
+        std::cout << "    ";
     std::cout << "Barycentric weights: " << barycentricCoords << std::endl;
     plVector3 v0 = (face.face.point1() - face.face.point0()).normalize(),
               v1 = (face.face.point2() - face.face.point0()).normalize(),
@@ -124,24 +124,24 @@ PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert
 
     PLfloat denomF = d00 * d11 - d01 * d01;
     for (PLuint i=0;i<depth;i++)
-        std::cout << "\t";
+        std::cout << "    ";
     std::cout << "float denom: " << denomF << std::endl;
     PLfloat vF = (d11 * d20 - d01 * d21) / denomF;
     PLfloat wF = (d00 * d21 - d01 * d20) / denomF;
     PLfloat uF = 1.0f - vF - wF;
     for (PLuint i=0;i<depth;i++)
-        std::cout << "\t";
+        std::cout << "    ";
     std::cout << "float params: " << uF << " " << vF << " " << wF << std::endl;
 
     PLdouble denomD = d00 * d11 - d01 * d01;
     for (PLuint i=0;i<depth;i++)
-        std::cout << "\t";
+        std::cout << "    ";
     std::cout << "double denom: " << denomD << std::endl;
     PLfloat vD = (d11 * d20 - d01 * d21) / denomD;
     PLfloat wD = (d00 * d21 - d01 * d20) / denomD;
     PLfloat uD = 1.0f - vD - wD;
     for (PLuint i=0;i<depth;i++)
-        std::cout << "\t";
+        std::cout << "    ";
     std::cout << "double params: " << uD << " " << vD << " " << wD << std::endl;*/
 
     // on the edge, don't consider as an intersection
@@ -155,7 +155,7 @@ PLbool plMeshIntersector::_intersectionVertFace(const plMeshConnectivityDataVert
 
 PLbool plMeshIntersector::_intersectionEdgeFace(const plMeshConnectivityDataEdge* edge, const plMeshConnectivityDataFace* face, plVector3& intersection, PLuint verbose, PLuint depth)
 {
-    //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "\t"; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataFace::_intersectsEdge()" << std::endl; }
+    //if (verbose >= PL_LOGGER_LEVEL_DEBUG) { for (PLuint i=0;i<depth;i++) std::cout << "    "; std::cout << "Debug: Entering plMeshIntersectorConnectivityData::plMeshIntersectorConnectivityDataFace::_intersectsEdge()" << std::endl; }
 
     // don't consider edges that are a part of this triangle
     if ( plUtility::exists( face->verts, edge->verts[0] ) || plUtility::exists( face->verts, edge->verts[1] ) )
@@ -200,7 +200,7 @@ PLbool plMeshIntersector::_findAndFixVertEdgeIntersections(PLuint startIndex, PL
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
+            std::cout << "    ";
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findAndFixVertEdgeIntersections()" << std::endl;
     }
 
@@ -226,7 +226,7 @@ PLbool plMeshIntersector::_findAndFixVertFaceIntersections(PLuint startIndex, PL
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
+            std::cout << "    ";
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findAndFixVertFaceIntersections()" << std::endl;
     }
 
@@ -252,7 +252,7 @@ PLbool plMeshIntersector::_findAndFixEdgeEdgeIntersections(PLuint startIndex, PL
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
+            std::cout << "    ";
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findAndFixEdgeEdgeIntersections()" << std::endl;
     }
 
@@ -282,7 +282,7 @@ PLbool plMeshIntersector::_findAndFixEdgeFaceIntersections(PLuint startIndex, PL
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
+            std::cout << "    ";
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_findAndFixEdgeFaceIntersections()" << std::endl;
     }
 
@@ -312,7 +312,7 @@ PLbool plMeshIntersector::intersect( std::vector<plTriangle> &outputTris, PLuint
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
+            std::cout << "    ";
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::intersect()" << std::endl;
     }
 

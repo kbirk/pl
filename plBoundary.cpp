@@ -18,7 +18,7 @@ plBoundary::plBoundary( const std::vector<plString> &row )
 }
 
 
-void plBoundary::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+void plBoundary::extractRenderComponents( plRenderMap& renderMap ) const
 {
     if ( !_isVisible )
         return;
@@ -30,23 +30,25 @@ void plBoundary::extractRenderComponents( std::set<plRenderComponent>& renderCom
     {
         plPickingStack::loadBlue( -1 ); // draw walls with index of -1
         
-        plRenderComponent rc( &_vao );
-        rc.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
-        rc.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
-        rc.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
-        rc.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
-        rc.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
-        rc.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
-        
-        renderComponents[ PL_PLANNER_TECHNIQUE ][ PL_MAIN_COMPONENT ].insert( rc );      
+        // create render component
+        plRenderComponent component( &_vao );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        // insert into render map
+        renderMap[ PL_PLAN_TECHNIQUE ].insert( component );            
     }
         
     // draw points
-    _extractPointRenderComponents( renderComponents );
+    _extractPointRenderComponents( renderMap );
 }
 
 
-void plBoundary::_extractPointRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap ) const
 {
     // draw points
     for (PLuint i=0; i<_points.size(); i++) 
@@ -56,12 +58,12 @@ void plBoundary::_extractPointRenderComponents( std::set<plRenderComponent>& ren
         if ( _isSelected && _selectedValue == i )   // is the current point selected?
         {
             // scale larger
-            plRenderer::queue( plSphere( _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
+            plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
         }
         else
         {
             // regular size
-            plRenderer::queue( plSphere( _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
+            plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
         }
     } 
 }
@@ -421,51 +423,21 @@ void plBoundary::_generateVAO()
         }
     }
 
-    std::vector< PLuint > attributeTypes;    
-    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
-    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
-
-    _vao.set( vertices, attributeTypes, indices );
+    // set vbo and attach attribute pointers
+    std::shared_ptr<plVBO> vbo( new plVBO() );
+    vbo->set( vertices );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
+    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
+    // set eabo
+    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    eabo->set( indices );
+    // attach to vao
+    _vao.attach( vbo );
+    _vao.attach( eabo );
+    // upload to gpu
+    _vao.upload(); 
 }
 
-
-void plBoundary::_drawPoints() const
-{
-    // draw _points
-    for (PLuint i=0; i<_points.size(); i++) 
-    {
-        plPickingStack::loadBlue( i );    
-            
-        if ( _isSelected && _selectedValue == i )   // is the current point selected?
-        {
-            plDraw::sphere( _points[i], 1.0 );
-        }
-        else
-        {
-            plDraw::sphere( _points[i], 0.75 );
-        }
-    }
-}
-
-/*
-void plBoundary::draw() const
-{        
-    if ( !_isVisible )
-        return;
-
-    _setColour();
-        
-    // draw walls
-    if ( _points.size() > 1 )
-    {
-        plPickingStack::loadBlue( -1 ); // draw walls with index of -1
-        _vao.draw();
-    }
-   
-    // draw points
-    _drawPoints();      
-}
-*/
 
 std::ostream& operator << ( std::ostream& out, const plBoundary &b )
 {

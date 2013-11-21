@@ -7,7 +7,7 @@
 #include "plVector3.h"
 #include "plTriangle.h"
 #include "plDraw.h"
-#include "plPickingTexture.h"
+#include "plPicking.h"
 #include "plVAO.h"
 #include "plPlug.h"
 #include "plPolygon.h"
@@ -23,8 +23,8 @@ class plPointAndAngle
         plVector3 point;
         
         plPointAndAngle() {}
-        plPointAndAngle( const PLfloat &a, const plVector3 &p ) 
-            : point(p), angle(a)
+        plPointAndAngle( const PLfloat &angle, const plVector3 &point ) 
+            : angle( angle ), point( point )
         { 
         }
         
@@ -88,7 +88,7 @@ class plGraft : public plRenderable,
         void setMark    ( const plVector3 &direction ); 
          
          
-        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
+        void extractRenderComponents( plRenderMap& renderMap ) const;
          
         void draw() const;
 
@@ -116,7 +116,7 @@ class plGraft : public plRenderable,
         plVector4 _getBoneColour     () const;
         plVector4 _getCartilageColour() const;    
         
-        void      _extractGraftRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
+        void      _extractGraftRenderComponents( plRenderMap& renderMap ) const;
                   
         void      _drawGraft() const;
                   

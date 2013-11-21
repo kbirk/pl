@@ -8,7 +8,7 @@
 #include "plVector4.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
-#include "plPickingTexture.h"
+#include "plPicking.h"
 #include "plGraft.h"
 #include "plPolygon.h"
 #include "plIGuideSite.h"
@@ -96,7 +96,7 @@ class plIGuide : public plRenderable
         void   clearIGuideModels    ();
 
         // rendering
-        void extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const {};
+        void extractRenderComponents( plRenderMap& renderMap ) const {};
         
         void draw();
 

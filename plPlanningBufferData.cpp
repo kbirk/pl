@@ -4,10 +4,10 @@
 plPlanningBufferData::plPlanningBufferData( const plDefectSite& defect, const std::vector<plDonorSite*>& donors )
 {
     // generate defect site and buffer
-    std::cout << "\tGenerating defect site planning data" << std::endl;    
+    std::cout << "    Generating defect site planning data" << std::endl;    
     defectSite = plPlanningSite( defect.spline.surfaceMesh().triangles(), defect.boundary, false );
     
-    std::cout << "\tGenerating defect site SSBO" << std::endl;   
+    std::cout << "    Generating defect site SSBO" << std::endl;   
     defectSiteSSBO = defectSite.getSSBO();       
        
     // ensure number of sites remains within maximum
@@ -16,12 +16,12 @@ plPlanningBufferData::plPlanningBufferData( const plDefectSite& defect, const st
     // generate donor sites and buffer   
     for (PLuint i=0; i<donorSiteCount; i++)
     {
-        std::cout << "\tGenerating donor site planning data " << i << " planning data " << std::endl;
+        std::cout << "    Generating donor site planning data " << i << " planning data " << std::endl;
         donorSites.push_back( plPlanningSite( donors[i]->model().combined.mesh().triangles(), 
                                               donors[i]->boundary,
                                               true ) );                                 
     }
-    std::cout << "\tGenerating donor sites SSBO" << std::endl;   
+    std::cout << "    Generating donor sites SSBO" << std::endl;   
     donorSitesSSBO = _getGroupSSBO(); 
 }
 
@@ -68,7 +68,7 @@ plSSBO plPlanningBufferData::_getGroupSSBO()
     
     PLuint numBytes = dataSize * sizeof( plVector4 );
 
-    std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;     
+    std::cout << "        Total buffer size: " << numBytes << " bytes " << std::endl;     
 
     return plSSBO( numBytes, (void*)(&data[0]) );
 }

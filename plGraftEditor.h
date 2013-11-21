@@ -31,11 +31,7 @@ class plGraftEditor : public plRenderable
         
         void    setEditMode( PLuint editMode );
 
-
-        void    extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
-
-        void    drawHandles() const;
-        void    drawMenu( const plPlan &plan, PLuint x, PLuint y ) const;
+        void    extractRenderComponents( plRenderMap& renderMap ) const;
         
         PLbool  isGraftSelected() const { return ( _selectedGraft != NULL ); }    
 

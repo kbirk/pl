@@ -7,10 +7,10 @@
 #include "plBoundary.h"
 #include "plRenderable.h"
 #include "plEditable.h"
-#include "plPickingTexture.h"
 #include "plColourMap.h"
 #include "plOctreeMesh.h"
 #include "plVAO.h"
+#include "plRenderer.h"
 
 class plSpline : public plBoundary
 {
@@ -22,7 +22,7 @@ class plSpline : public plBoundary
 
         const plMesh& surfaceMesh() const { return _surfaceMesh; }
 
-        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
+        void extractRenderComponents( plRenderMap& renderMap ) const;
 
         void   draw() const;           
 

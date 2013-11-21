@@ -607,7 +607,7 @@ std::ostream& operator << ( std::ostream& stream, const plMatrix44 &m )
 {
     for (PLuint i=0; i < 4; i++)
     {
-       stream << m(i,0) << "\t" << m(i,1) << "\t" << m(i,2) << "\t" << m(i,3) << "\n";
+       stream << m(i,0) << "    " << m(i,1) << "    " << m(i,2) << "    " << m(i,3) << "\n";
     }
 
     return stream;

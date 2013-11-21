@@ -23,8 +23,8 @@ plPlanningSite::plPlanningSite( const std::vector<plTriangle> &tris, const plBou
     _calcArea();
     _calcNormal();   
        
-    std::cout << "\t\t" <<  triangles.size()  << " triangles calculated \n";
-    std::cout << "\t\t" <<  gridPoints.size() << " grid points calculated \n";       
+    std::cout << "        " <<  triangles.size()  << " triangles calculated \n";
+    std::cout << "        " <<  gridPoints.size() << " grid points calculated \n";       
 }
 
 
@@ -144,7 +144,7 @@ plSSBO plPlanningSite::getSSBO() const
 
     PLuint numBytes = totalSize() * sizeof( plVector4 );
 
-    std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;     
+    std::cout << "        Total buffer size: " << numBytes << " bytes " << std::endl;     
 
     return plSSBO( numBytes, (void*)(&data[0]) );
 }
@@ -280,7 +280,7 @@ void plPlanningSite::_calcArea()
     {
         area += triangles[i].getArea();
     }    
-    std::cout << "\t\tSite area: " << area << "\n";
+    std::cout << "        Site area: " << area << "\n";
 }        
 
 

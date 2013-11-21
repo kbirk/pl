@@ -40,6 +40,9 @@ class plTexture2D
         void bind  ( PLuint unit ) const;   // bind textures AFTER binding shader AND BEFORE drawing arrays 
         void unbind( PLuint unit ) const;
 
+        PLuint width()  const { return _width;  }
+        PLuint height() const { return _height; }
+
         void set( PLuint width, PLuint height, GLvoid* image = NULL );
         void set( PLuint width, PLuint height, PLuint internalFormat, PLuint format, PLuint type, GLvoid* image = NULL );        
         void setParameter( PLuint pname, PLuint param ); 

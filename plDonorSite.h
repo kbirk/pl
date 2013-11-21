@@ -6,7 +6,7 @@
 #include "plModelSpecific.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
-#include "plPickingTexture.h"
+#include "plPicking.h"
 
 class plDonorSite : public plModelSpecific,
                     public plRenderable
@@ -19,7 +19,7 @@ class plDonorSite : public plModelSpecific,
         plDonorSite( PLuint modelID, const plBoneAndCartilage& model );
         plDonorSite( PLuint modelID, const plBoneAndCartilage& model, const plBoundary &b );
 
-        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;  
+        void extractRenderComponents( plRenderMap& renderMap ) const;  
 
         void draw() const;      
 };

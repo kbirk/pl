@@ -19,7 +19,7 @@ class plShader
 		
 		bool good()   const { return _good; }
 
-        virtual void setUniform( const plUniformBase& uniform ) const {};
+        virtual void setUniform( const plUniform& uniform ) const {};
         
     protected:
 

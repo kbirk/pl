@@ -6,10 +6,8 @@
 #include "plMatrixStack.h"
 #include "plProjection.h"
 #include "plCamera.h"
-#include "plPickingTexture.h"
-#include "plFBO.h"
-#include "plOpenGLInfo.h"
-#include "plVertexFragmentShader.h"
+#include "plPicking.h"
+
 
 namespace plColourStack
 {
@@ -93,43 +91,6 @@ namespace plProjectionStack
 	
     const plMatrix44& top();
 }
-
-
-enum plShaderTypesEnum
-{
-    PL_MINIMAL_SHADER = 0,
-    PL_PHONG_SHADER,
-    PL_OUTLINE_SHADER,
-    PL_TEXTURE_2D_SHADER,
-    PL_FBO_SHADER,
-    PL_PICKING_SHADER
-};
-
-
-namespace plShaderStack
-{   
-	void push( PLuint shader );		
-	void pop();   
-	const plShader* top();          
-}
-
-
-namespace plFrameBufferStack
-{
-    void push( const plFBO& fbo );		
-    void load( const plFBO& fbo );
-	void pop();   
-	const plFBO* top();
-}
-
-
-namespace plTexture2DStack
-{
-    void push( const plTexture2D& texture, PLuint unit );		
-    void load( const plTexture2D& texture, PLuint unit );
-	void pop( PLuint unit );   
-	const plTexture2D* top( PLuint unit );
-}       
 
 
 #endif

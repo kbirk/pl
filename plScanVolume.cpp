@@ -92,10 +92,18 @@ void plScanVolume::updateBoundingBox()
     indices.push_back( 6 );   indices.push_back( 7 );
     indices.push_back( 7 );   indices.push_back( 4 );
 
-    std::vector< PLuint > attributeTypes;
-    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
-
-    boundingBoxVAO.set( vertices, attributeTypes, indices, GL_LINES );
+    // set vbo and attach attribute pointers
+    std::shared_ptr<plVBO> vbo;
+    vbo->set( vertices );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, sizeof( plVector4 ) ) );
+    // set eabo
+    std::shared_ptr<plEABO> eabo;    
+    eabo->set( indices, GL_LINES );
+    // attach to vao
+    boundingBoxVAO.attach( vbo );
+    boundingBoxVAO.attach( eabo );
+    // upload to gpu
+    boundingBoxVAO.upload(); 
 }
 
 PLbool plScanVolume::enlargeVolume(const plVector3 &originTranslationW, const plVector3 &dimensionExpansionW)
@@ -197,6 +205,7 @@ PLfloat plScanVolume::distanceWusingI(PLuint index1, PLuint index2) const
     return (coordinatesItoW(index1) - coordinatesItoW(index2)).length();
 }
 
+/*
 PLbool plScanVolume::draw() const
 {
     //plShaderStack::push( _minimalShader );
@@ -216,6 +225,7 @@ PLbool plScanVolume::draw() const
     return true;
 }
 
+
 // ============================================================= VOXEL ===================================================================
 
 PLbool plScanVolume::plScanVoxel::draw( const plVector3& coordV ) const
@@ -227,7 +237,7 @@ PLbool plScanVolume::plScanVoxel::draw( const plVector3& coordV ) const
     }
     return true;
 }
-
+*/
 // ============================================================= MASK ====================================================================
 
 plScanMask::plScanMask()

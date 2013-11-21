@@ -100,7 +100,7 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const std::ve
 }
 
 
-void plOctree::extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const
+void plOctree::extractRenderComponents( plRenderMap& renderMap ) const
 {
     if ( !_isVisible )
         return;
@@ -113,7 +113,7 @@ void plOctree::extractRenderComponents( std::set< plRenderComponent >& renderCom
     {
         if ( _children[i] )
         {
-            _children[i]->extractRenderComponents( renderComponents );
+            _children[i]->extractRenderComponents( renderMap );
             count++;
         }
     }
@@ -125,7 +125,15 @@ void plOctree::extractRenderComponents( std::set< plRenderComponent >& renderCom
         plModelStack::translate( _centre );
         plModelStack::scale( plVector3( _halfWidth, _halfWidth, _halfWidth ) );
         
-        renderComponents.insert( plRenderComponent( &vao ) );
+        // create render component
+        plRenderComponent component( &vao );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) );  
+        // insert into render map     
+        renderMap[ PL_DEBUG_TECHNIQUE ].insert( component );  
         
         plModelStack::pop();
     }
@@ -169,10 +177,21 @@ plVAO plOctree::_generateVAO( PLfloat halfWidth ) const
     indices.push_back( 6 );   indices.push_back( 7 );   
     indices.push_back( 7 );   indices.push_back( 4 );
 
-    std::vector<PLuint> attributeTypes; 
-    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
+    // set vbo and attach attribute pointers
+    std::shared_ptr<plVBO> vbo( new plVBO() );
+    vbo->set( vertices );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0 ) );
+    // set eabo
+    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    eabo->set( indices, GL_LINES );
+    // create and attach to vao
+    plVAO vao;
+    vao.attach( vbo );
+    vao.attach( eabo );
+    // upload to gpu
+    vao.upload(); 
 
-    return plVAO( vertices, attributeTypes, indices, GL_LINES );
+    return vao;
 }
 
 

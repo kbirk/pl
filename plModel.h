@@ -3,13 +3,13 @@
 
 #include "plCommon.h"
 
-#include "plMesh.h"
+#include "plOctreeMesh.h"
 #include "plTriangle.h"
 #include "plTransparentRenderable.h"
-#include "plPickingTexture.h"
+#include "plPicking.h"
 #include "plRenderingPipeline.h"
-#include "plOctreeMesh.h"
 #include "plVAO.h"
+#include "plRenderer.h"
 
 #define PL_MODEL_DEFAULT_OCTREE_DEPTH   7
 
@@ -42,7 +42,7 @@ class plModel : public plTransparentRenderable
                
         const plOctreeMesh& mesh() const { return _mesh; }
 
-        void extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const;
+        void extractRenderComponents( plRenderMap& renderMap ) const;
 
         void draw( const plVector3 &colour ) const;
 

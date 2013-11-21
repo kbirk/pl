@@ -23,7 +23,7 @@ class plPlan : public plRenderable
         
         ~plPlan();
 
-        void extractRenderComponents( std::set< plRenderComponent >& renderComponents, PLuint flags = 0 ) const;
+        void extractRenderComponents( plRenderMap& renderMap ) const;
 
         void importFile( const plString &filename );        
         void exportFile( const plString &filename );

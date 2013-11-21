@@ -11,13 +11,13 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
 
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) {
         for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
+            std::cout << "    ";
         std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_splitEdgeOnVect()" << std::endl;
         for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
+            std::cout << "    ";
         std::cout << "Debug: Splitting on vertex " << vertN  << " - " << vertN->vert << std::endl;
         for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
+            std::cout << "    ";
         std::cout << "Debug: Edge being split is " << edgeAB << " - " << edgeAB->edge.pt1 << " - " << edgeAB->edge.pt2 << std::endl;
     }
 
@@ -51,28 +51,28 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
         if (vertC == NULL)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the C vertex. Aborting operation." << std::endl;
             return false;
         }
         if (vertC == vertN)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is N vertex. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
         if (vertC == vertA)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is A vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
             continue;
         }
         if (vertC == vertB)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): C vertex is B vertex. This should never happen, and is indicitave of a programming logic error. Aborting." << std::endl;
             continue;
         }
@@ -91,42 +91,42 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
         if (edgeAC == NULL)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the AC edge. Aborting operation." << std::endl;
             return false;
         }
         if (edgeBC == NULL)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the BC edge. Aborting operation." << std::endl;
             return false;
         }
         if (edgeBC == edgeAN)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): BC edge is AN edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
         if (edgeAC == edgeAN)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is AN edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
         if (edgeBC == edgeNB)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): BC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
         if (edgeAC == edgeNB)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Warning in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): AC edge is NB edge. This is possibly due to epsilon being too large. Aborting this particular face split, but beware of future errors." << std::endl;
             continue;
         }
@@ -188,7 +188,7 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( const plMeshConnectivityDataFace* face
     if (edge01 == NULL || edge12 == NULL || edge20 == NULL)
     {
         for (PLuint i=0;i<depth;i++)
-            std::cout << "\t";
+            std::cout << "    ";
         std::cout << "Error in plMeshIntersectorConnectivityData::_splitFaceOnVect(): Could not find one of the edges in the face. Aborting operation." << std::endl;
         return false;
     }
@@ -215,7 +215,7 @@ PLbool plMeshAlgorithm::_checkArraySizes( PLuint verbose, PLuint depth )
         if (eit->faces.size() % 2 != 0 || eit->faces.size() == 0)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): faces for edge " << &(*eit) << " is of non positive even size " << eit->faces.size()  << ". Should be even." << std::endl;
             std::cout << (*eit) << std::endl;
             good = false;
@@ -223,7 +223,7 @@ PLbool plMeshAlgorithm::_checkArraySizes( PLuint verbose, PLuint depth )
         if (eit->verts.size() != 2)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): verts for edge " << &(*eit) << " is of size " << eit->verts.size() << ". Should be 2." << std::endl;
             good = false;
             std::cout << (*eit) << std::endl;
@@ -234,7 +234,7 @@ PLbool plMeshAlgorithm::_checkArraySizes( PLuint verbose, PLuint depth )
         if (fit->verts.size() != 3)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): verts for face " << &(*fit) << " is of size " << fit->verts.size() << ". Should be 3." << std::endl;
             good = false;
             std::cout << (*fit) << std::endl;
@@ -242,7 +242,7 @@ PLbool plMeshAlgorithm::_checkArraySizes( PLuint verbose, PLuint depth )
         if (fit->edges.size() != 3)
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Error in plMeshIntersectorConnectivityData::_checkArraySizes(): edges for face " << &(*fit) << " is of size " << fit->edges.size() << ". Should be 3." << std::endl;
             good = false;
             std::cout << (*fit) << std::endl;
@@ -266,7 +266,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
             if ( plUtility::exists( indices, vit->edges[j] ) )
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): vertex " << &(*vit) << " contains a duplicate edge: " << vit->edges[j] << "." << std::endl;
                 good = false;
                 std::cout << (*vit) << std::endl;
@@ -284,7 +284,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
             if ( plUtility::exists( indices, vit->faces[j] ) )
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): vertex " << &(*vit) << " contains a duplicate face: " << vit->faces[j] << "." << std::endl;
                 good = false;
                 std::cout << (*vit) << std::endl;
@@ -306,7 +306,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
             if ( plUtility::exists( indices, eit->verts[j] ) )
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): edge " << &(*eit) << " contains a duplicate vertex: " << eit->verts[j] << "." << std::endl;
                 good = false;
                 std::cout << (*eit) << std::endl;
@@ -325,7 +325,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
             if ( plUtility::exists( indices, eit->faces[j] ) )
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): edge " << &(*eit) << " contains a duplicate face: " << eit->faces[j] << "." << std::endl;
                 good = false;
                 std::cout << (*eit) << std::endl;
@@ -347,7 +347,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
             if ( plUtility::exists( indices, fit->verts[j] ) )
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): face " << &(*fit) << " contains a duplicate vertex: " << fit->verts[j] << "." << std::endl;
                 good = false;
                 std::cout << (*fit) << std::endl;
@@ -366,7 +366,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
             if ( plUtility::exists( indices, fit->edges[j] ) )      
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoDuplicates(): face " << &(*fit) << " contains a duplicate edge: " << fit->edges[j] << "." << std::endl;
                 good = false;
                 std::cout << (*fit) << std::endl;
@@ -394,7 +394,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
             if ( plUtility::exists( vit->edges[j]->verts, &(*vit) ) ) 
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): vert " << &(*vit) << " references edge " << vit->edges[j] << ", but not vice versa." << std::endl;
                 good = false;
                 std::cout << (*vit) << std::endl;
@@ -409,7 +409,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
             if ( plUtility::exists( vit->faces[j]->verts, &(*vit) ) ) 
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): vert " << &(*vit) << " references face " << vit->faces[j] << ", but not vice versa." << std::endl;
                 good = false;
                 std::cout << (*vit) << std::endl;
@@ -427,7 +427,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
             if ( plUtility::exists( eit->verts[j]->edges, &(*eit) ) ) 
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): edge " << &(*eit) << " references vert " << eit->verts[j] << ", but not vice versa." << std::endl;
                 good = false;
                 std::cout << (*eit) << std::endl;
@@ -442,7 +442,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
             if ( plUtility::exists( eit->faces[j]->edges, &(*eit) ) ) 
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): edge " << &(*eit) << " references face " << eit->faces[j] << ", but not vice versa." << std::endl;
                 good = false;
                 std::cout << (*eit) << std::endl;
@@ -460,7 +460,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
             if ( plUtility::exists( fit->verts[j]->faces, &(*fit) ) ) 
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): face " << &(*fit) << " references vert " << fit->verts[j] << ", but not vice versa." << std::endl;
                 good = false;
                 std::cout << (*fit) << std::endl;
@@ -475,7 +475,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
             if ( plUtility::exists( fit->edges[j]->faces, &(*fit) ) ) 
             {
                 for (PLuint i=0;i<depth;i++)
-                    std::cout << "\t";
+                    std::cout << "    ";
                 std::cout << "Error in plMeshIntersectorConnectivityData::_checkBidirectionalConnections(): face " << &(*fit) << " references edge " << fit->edges[j] << ", but not vice versa." << std::endl;
                 good = false;
                 std::cout << (*fit) << std::endl;
@@ -495,7 +495,7 @@ PLbool plMeshAlgorithm::_checkNoSliverTriangles( PLuint verbose, PLuint depth )
               ((fit->face.point2())-(fit->face.point0())).normalize()).length() == 0.f )
         {
             for (PLuint i=0;i<depth;i++)
-                std::cout << "\t";
+                std::cout << "    ";
             std::cout << "Error in plMeshIntersectorConnectivityData::_checkNoSliverTriangles(): face " << &(*fit) << " appears to be ultra thin. This is bad." << std::endl;
             good = false;
             std::cout << (*fit) << std::endl;

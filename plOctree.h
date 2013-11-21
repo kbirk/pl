@@ -10,6 +10,7 @@
 #include "plTransform.h"
 #include "plVAO.h"
 #include "plDraw.h"
+#include "plRenderer.h"
 
 // children quadrant indices 
 // (functions rely on specific bitwise AND operations)
@@ -46,7 +47,7 @@ class plOctree : public plRenderable
         void build ( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth);  
         void clear ();   
                      
-        void extractRenderComponents( std::set< plRenderComponent >& renderComponents ) const;          
+        void extractRenderComponents( plRenderMap& renderMap ) const;          
 
         PLbool rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat rayRadius = 0.0f, PLbool ignoreBehindRay = false ) const;
                
