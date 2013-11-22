@@ -223,7 +223,7 @@ void plGraftEditor::extractRenderComponents( plRenderMap& renderMap ) const
         return;                 // no graft selected
         
     //plShaderStack::push( PL_OUTLINE_SHADER );
-    _selectedGraft->extractRenderComponents( renderMap );
+    _selectedGraft->extractEditorRenderComponents( renderMap );
     //plShaderStack::pop();
 }
 

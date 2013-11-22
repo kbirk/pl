@@ -109,7 +109,7 @@ void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
         // create render component
         plRenderComponent component( &_surfaceVAO );
         // attached uniforms
-        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
         component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
         component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
@@ -122,8 +122,32 @@ void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
     }  
 }
 
-  
-  /*      
+void plSpline::extractEditorRenderComponents( plRenderMap& renderMap ) const
+{
+    // if not full 4 corners, display walls
+    if ( size() < 4 )
+    {
+        // draw boundary walls
+        plBoundary::extractEditorRenderComponents( renderMap );
+    }
+    else
+    {
+        // draw points
+        _extractPointEditorRenderComponents( renderMap );
+        
+        // create render component
+        plRenderComponent component( &_surfaceVAO );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        // insert into render map     
+        renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component );  
+    } 
+}
+
+
+  /*     
 void plSpline::draw() const
 {      
     if ( !_isVisible )
@@ -349,6 +373,8 @@ void plSpline::_computeHermite()
     // set eabo
     std::shared_ptr<plEABO> eabo( new plEABO() );    
     eabo->set( indices );
+
+    _surfaceVAO.clear();
     // attach to vao
     _surfaceVAO.attach( vbo );
     _surfaceVAO.attach( eabo );

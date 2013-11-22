@@ -93,11 +93,11 @@ void plScanVolume::updateBoundingBox()
     indices.push_back( 7 );   indices.push_back( 4 );
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo;
+    std::shared_ptr<plVBO> vbo( new plVBO() );
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, sizeof( plVector4 ) ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo;    
+    std::shared_ptr<plEABO> eabo( new plEABO() );    
     eabo->set( indices, GL_LINES );
     // attach to vao
     boundingBoxVAO.attach( vbo );

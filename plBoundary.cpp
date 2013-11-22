@@ -33,7 +33,7 @@ void plBoundary::extractRenderComponents( plRenderMap& renderMap ) const
         // create render component
         plRenderComponent component( &_vao );
         // attached uniforms
-        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
         component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
         component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
@@ -68,6 +68,44 @@ void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap ) const
     } 
 }
 
+
+void plBoundary::extractEditorRenderComponents( plRenderMap& renderMap ) const
+{
+    // draw walls
+    if ( _points.size() > 1 )
+    {
+        // create render component
+        plRenderComponent component( &_vao );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        // insert into render map
+        renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component );            
+    }
+        
+    // draw points
+    _extractPointEditorRenderComponents( renderMap );
+}
+
+
+void plBoundary::_extractPointEditorRenderComponents( plRenderMap& renderMap ) const
+{
+    // draw points
+    for (PLuint i=0; i<_points.size(); i++) 
+    {   
+        if ( _isSelected && _selectedValue == i )   // is the current point selected?
+        {
+            // scale larger
+            plRenderer::queue( plSphere( PL_OUTLINE_TECHNIQUE, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
+        }
+        else
+        {
+            // regular size
+            plRenderer::queue( plSphere( PL_OUTLINE_TECHNIQUE, _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
+        }
+    } 
+}
 
 
 plVector3 plBoundary::getAverageNormal() const
@@ -214,6 +252,7 @@ void plBoundary::clear()
 
 plVector4 plBoundary::_getColour() const
 {
+    /*
     if (_isSelected)
     {
         // selected
@@ -238,6 +277,7 @@ plVector4 plBoundary::_getColour() const
     }
     else
     {
+    */
         // not selected
         switch ( plPickingStack::topRed() )
         {
@@ -257,7 +297,7 @@ plVector4 plBoundary::_getColour() const
                 // iguide boundary
                 return plVector4( PL_BOUNDARY_IGUIDE_COLOUR );   
         }
-    }
+    //}
 }
 
 
@@ -432,6 +472,7 @@ void plBoundary::_generateVAO()
     std::shared_ptr<plEABO> eabo( new plEABO() );    
     eabo->set( indices );
     // attach to vao
+    _vao.clear();
     _vao.attach( vbo );
     _vao.attach( eabo );
     // upload to gpu

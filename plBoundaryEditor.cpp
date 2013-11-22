@@ -296,11 +296,10 @@ void plBoundaryEditor::clearSelectedBoundary( plPlan &plan )
 
 void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap ) const
 {
-    //plShaderStack::push( PL_OUTLINE_SHADER );
-    
-    _selectedBoundary->extractRenderComponents( renderMap ); 
-
-    //plShaderStack::pop();    
+    if (_selectedBoundary == NULL)
+        return;
+        
+    _selectedBoundary->extractEditorRenderComponents( renderMap );  
 }
 
 /*

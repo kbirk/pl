@@ -40,7 +40,7 @@ void plModel::extractRenderComponents( plRenderMap& renderMap ) const
         component.attach( plUniform( PL_PICKING_UNIFORM, plPickingStack::top() ) );
         component.attach( plUniform( PL_COLOUR_UNIFORM,  plColourStack::top()  ) ); 
         // insert into render map   
-        renderMap[ PL_MODEL_TECHNIQUE ].insert( component );        
+        renderMap[ PL_PLAN_TECHNIQUE ].insert( component );        
     }
     else
     {

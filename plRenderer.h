@@ -7,8 +7,9 @@
 #include "plRenderable.h"
 #include "plRenderComponent.h"
 #include "plFBO.h"
-#include "plPlannerTechnique.h"
-
+#include "plPlanTechnique.h"
+#include "plScreenQuadTechnique.h"
+#include "plOutlineTechnique.h"
 
 enum plTechniqueEnums
 {
@@ -19,7 +20,8 @@ enum plTechniqueEnums
     PL_EDITOR_TECHNIQUE,
     PL_DEBUG_TECHNIQUE,
     PL_MENU_TECHNIQUE,
-    PL_ARTHRO_CAM_TECHNIQUE,   
+    PL_ARTHRO_CAM_TECHNIQUE,  
+    PL_SCREEN_QUAD_TECHNIQUE
 };
 
 

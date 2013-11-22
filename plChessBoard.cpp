@@ -53,12 +53,12 @@ void plChessBoard::_generateVAO()
     }
     
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo;
+    std::shared_ptr<plVBO> vbo( new plVBO() );
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo;    
+    std::shared_ptr<plEABO> eabo( new plEABO() );    
     eabo->set( indices );
     // attach to vao
     _vao.attach( vbo );

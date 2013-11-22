@@ -7,7 +7,6 @@ namespace plAutomaticPlanner
     void _dispatch          ( plPlan &plan, const plPlanningBufferData &planningData );      
     void _clearPreviousPlan ( plPlan &plan );
 
-
     void calculate( plPlan &plan )
     {   
         // error checking

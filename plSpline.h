@@ -23,7 +23,8 @@ class plSpline : public plBoundary
         const plMesh& surfaceMesh() const { return _surfaceMesh; }
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
-
+        void extractEditorRenderComponents( plRenderMap& renderMap ) const;
+        
         void   draw() const;           
 
         PLuint addPointAndNormal   ( const plVector3 &point, const plVector3 &normal );
