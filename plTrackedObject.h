@@ -38,13 +38,12 @@ class plTrackedObject : public plRenderable
 
         //void draw() const;
 
-    private:
+    protected:
     
         plDRBTransform   _DRBToTrackedPoint;
         plDRBTransform   _DRBToTrackedEnd;
         plDRBTransform   _FemurDRBtoSTL;
 
-        plVector3       _zeroVec;
         plVector3       _trackedTip, _tipWorldCoords, _rotationAxis;
         plVector3       _trackedEnd, _endWorldCoords;
         plVector3       _xAxis, _yAxis, _zAxis;

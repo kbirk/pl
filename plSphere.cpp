@@ -9,6 +9,16 @@ plSphere::plSphere( PLuint techniqueEnum, const plVector3& position, PLfloat rad
 }
 
 
+void plSphere::position( const plVector3 position )
+{
+    _position = position;
+}
+
+void plSphere::radius  ( PLfloat radius  )
+{
+    _radius = radius;
+}
+
 void plSphere::extractRenderComponents( plRenderMap& renderMap ) const
 {
     static plVAO vao = _generateVAO( 1.0f, 20, 20 );
@@ -17,7 +27,7 @@ void plSphere::extractRenderComponents( plRenderMap& renderMap ) const
     plModelStack::translate( _position );   // transform
     plModelStack::scale( _radius );         // scale
 
-    plRenderComponent component( &vao );
+    plRenderComponent component( std::make_shared<plVAO>( vao ) );
     
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );

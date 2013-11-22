@@ -147,8 +147,6 @@ void plVAO::upload()
 
 void plVAO::_copy( const plVAO& vao )
 {
-    std::cout << "vao copy" << std::endl;
-
     attach( std::shared_ptr< plEABO >( new plEABO( *vao._eabo ) ) );
     for ( auto& vbo : vao._vbos )
     {

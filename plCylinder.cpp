@@ -15,16 +15,15 @@ void plCylinder::extractRenderComponents( plRenderMap& renderMap ) const
 {
     static plVAO vao = _generateVAO( 1.0f, 1.0f, 1.0f, 30, 1 ); 
 
-    plMatrix44 rot; rot.setRotation( plVector3(0,0,1), _direction.normalize());
+    plMatrix44 rot; rot.setRotation( plVector3(0,0,1), _direction.normalize() );
 
     plModelStack::push();
     {
         plModelStack::translate( _position.x, _position.y, _position.z );
         plModelStack::mult( rot ); 
-        plModelStack::translate( 0, 0, -_length );          
         plModelStack::scale( _radius, _radius, _length );        
        
-        plRenderComponent component( &vao );
+        plRenderComponent component( std::make_shared<plVAO>(vao) );
     
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );

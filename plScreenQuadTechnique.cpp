@@ -88,7 +88,7 @@ plRenderComponent plScreenQuadTechnique::_generateComponent() const
 
     const std::shared_ptr< plFBO >& fbo = plRenderResources::fbos( PL_MAIN_FBO );
 
-    plRenderComponent component( &screenQuadVAO );
+    plRenderComponent component( std::make_shared<plVAO>( screenQuadVAO ) );
 
     // attach transformation uniforms
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44() ) );

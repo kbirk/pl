@@ -32,7 +32,6 @@ namespace plRenderer
             // get technique ptr and enum
             PLuint techniqueEnum = pair.first;
             auto&  technique = pair.second;
-   
             technique->render( _renderMap[ techniqueEnum ] );
         }
 
@@ -53,19 +52,6 @@ namespace plRenderer
         */
     }
      
-     
-
-
-
-
-
-
-
-
-
-
-
-
 
     /*
     void _drawScene( PLuint x, PLuint y )

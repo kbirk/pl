@@ -7,7 +7,6 @@ plPlanTechnique::plPlanTechnique()
 
 void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet ) const
 {
-
     const std::shared_ptr< plFBO >&    fbo    = plRenderResources::fbos( PL_MAIN_FBO );
     const std::shared_ptr< plShader >& shader = plRenderResources::shaders( PL_PHONG_SHADER );
 
@@ -23,7 +22,7 @@ void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet 
     glClearColor( 0, 0, 0, 0 );          
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() );      
-    
+
     // draw main render components
     for ( const plRenderComponent& component : componentSet )
     { 
@@ -34,7 +33,7 @@ void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet 
     shader->unbind();
     // unbind fbo
     fbo->unbind();      
-        
+
     /*      
     // clear back buffer
     glClearColor( PL_CLEAR_COLOUR );          

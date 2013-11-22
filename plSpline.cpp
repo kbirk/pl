@@ -107,7 +107,7 @@ void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
         plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );        
         
         // create render component
-        plRenderComponent component( &_surfaceVAO );
+        plRenderComponent component( std::make_shared<plVAO>( _surfaceVAO ) );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -136,7 +136,7 @@ void plSpline::extractEditorRenderComponents( plRenderMap& renderMap ) const
         _extractPointEditorRenderComponents( renderMap );
         
         // create render component
-        plRenderComponent component( &_surfaceVAO );
+        plRenderComponent component( std::make_shared<plVAO>( _surfaceVAO ) );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );

@@ -126,7 +126,7 @@ void plOctree::extractRenderComponents( plRenderMap& renderMap ) const
         plModelStack::scale( plVector3( _halfWidth, _halfWidth, _halfWidth ) );
         
         // create render component
-        plRenderComponent component( &vao );
+        plRenderComponent component( std::make_shared<plVAO>( vao ) );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );

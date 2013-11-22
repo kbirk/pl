@@ -1,8 +1,13 @@
 #include "plLaserLine.h"
 
 
+plLaserLine::plLaserLine()
+{
+}
+
+
 plLaserLine::plLaserLine( const plVector3 &position, const plVector3 &direction, PLfloat length )
-    : _techniqueEnum( techniqueEnum ), _position( position ), _direction( direction ), _length( length )
+    : _position( position ), _direction( direction ), _length( length )
 {
 }
 

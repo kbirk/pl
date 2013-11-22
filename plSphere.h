@@ -14,6 +14,9 @@ class plSphere : public plRenderable
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
 
+        void position( const plVector3 position );
+        void radius  ( PLfloat radius  );
+
     private:
     
         plVector3 _position;

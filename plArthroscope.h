@@ -6,6 +6,7 @@
 #include <opencv.hpp>
 
 #include "plCommon.h"
+#include "plTrackedObject.h"
 
 // set the camera dimensions here
 #define CAPTURE_WIDTH           1280
@@ -25,7 +26,7 @@ enum ImageManipulation
 };
 
 
-class plArthroscope : plTrackedObject 
+class plArthroscope : public plTrackedObject
 //public plRenderable
 {
 
@@ -40,19 +41,20 @@ class plArthroscope : plTrackedObject
         PLuint             width()      const;
         PLuint             height()     const;
         plMatrix44         getProjectionMatrix() const;
-        plMatriz44         getCameraMatrix() const;
+        plMatrix44         getCameraMatrix() const;
         
         void updateImage( PLuint imageManipulation );
          
         void extractRenderComponents( plRenderMap& renderMap ) const;        
           
         void toggleCameraView() { _isCameraView = !_isCameraView; }
-        void isCameraView()     { return _isCameraView;           }
+        PLbool isCameraView()     { return _isCameraView;           }
          
     private:
     
         PLbool      _isCameraView;
         plTexture2D _texture;
+        plVAO       _vao;
     
         CvCapture *_capture;
         IplImage  *_image;
@@ -76,6 +78,7 @@ class plArthroscope : plTrackedObject
         
         void _callCircle();
         
+        void _generateVAO();
         void _extractCameraRenderComponents( plRenderMap& renderMap ) const;        
         void _extractScopeRenderComponents( plRenderMap& renderMap ) const; 
 

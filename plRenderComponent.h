@@ -15,7 +15,7 @@ class plRenderComponent
 
     public:
 
-        plRenderComponent( const plVAO* vao );       
+        plRenderComponent( const std::shared_ptr<plVAO>& vao );
 
         PLbool operator< ( const plRenderComponent& rc ) const;
 
@@ -25,8 +25,8 @@ class plRenderComponent
 
     private:
 
-        const plVAO             *_vao;
-        std::vector< plUniform > _uniforms;
+        std::shared_ptr< plVAO >  _vao;
+        std::vector< plUniform >  _uniforms;
 
         //const plShader  *_shader;                
         //const plFBO     *_fbo;      

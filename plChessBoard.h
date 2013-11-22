@@ -17,7 +17,7 @@ class plChessBoard : public plTransparentRenderable
         
         void updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL );
         
-        void draw() const;
+        void extractRenderComponents( plRenderMap& renderMap ) const;
 
     private:
 

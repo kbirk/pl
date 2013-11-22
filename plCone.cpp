@@ -24,7 +24,7 @@ void plCone::extractRenderComponents( plRenderMap& renderMap ) const
         plModelStack::translate( _position.x, _position.y, _position.z );
         plModelStack::mult( rot );     
        
-        plRenderComponent component( &*vao );
+        plRenderComponent component( vao );
     
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );

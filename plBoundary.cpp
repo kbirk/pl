@@ -31,7 +31,7 @@ void plBoundary::extractRenderComponents( plRenderMap& renderMap ) const
         plPickingStack::loadBlue( -1 ); // draw walls with index of -1
         
         // create render component
-        plRenderComponent component( &_vao );
+        plRenderComponent component( std::make_shared<plVAO>( _vao ) );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -75,7 +75,7 @@ void plBoundary::extractEditorRenderComponents( plRenderMap& renderMap ) const
     if ( _points.size() > 1 )
     {
         // create render component
-        plRenderComponent component( &_vao );
+        plRenderComponent component( std::make_shared<plVAO>( _vao ) );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );

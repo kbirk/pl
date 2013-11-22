@@ -92,20 +92,20 @@ void plChessBoard::updateTransform( const plDRBTransform &currentFemurDRBToWorld
     
     _transform.set( chessXAxis, chessYAxis, chessOriginTrans );
 }
-        
 
-void plChessBoard::draw() const
-{      
+
+void plChessBoard::extractRenderComponents( plRenderMap& renderMap ) const
+{
     if ( !_isVisible )
         return;
-   
+    /*
     plModelStack::push( _transform.matrix() );
     {
-        if ( _isTransparent ) 
+        if ( _isTransparent )
         {
             plColourStack::push( PL_COLOUR_MESH_TRANSPARENT_COLOUR );
         }
-        else 
+        else
         {
             plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );
         }
@@ -117,8 +117,7 @@ void plChessBoard::draw() const
         plColourStack::pop();
     }
     plModelStack::pop();
-    
-    
+    */
 }
 
 

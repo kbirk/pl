@@ -28,7 +28,7 @@ void plModel::extractRenderComponents( plRenderMap& renderMap ) const
         return;
 
     // create render component
-    plRenderComponent component( &_vao );
+    plRenderComponent component( std::make_shared<plVAO>( _vao ) );
     // attached uniforms
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );

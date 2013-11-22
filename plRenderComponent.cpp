@@ -1,7 +1,7 @@
 #include "plRenderComponent.h"
 
        
-plRenderComponent::plRenderComponent( const plVAO* vao )
+plRenderComponent::plRenderComponent( const std::shared_ptr<plVAO>& vao )
     :   _vao ( vao )
 { 
 }
@@ -19,7 +19,6 @@ void plRenderComponent::attach( const plUniform& uniform )
 {
     _uniforms.push_back( uniform );
 }
-
 
 
 void plRenderComponent::draw( const plShader& shader ) const
