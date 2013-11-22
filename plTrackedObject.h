@@ -6,7 +6,9 @@
 #include "plDRBTransform.h"
 #include "plRenderingPipeline.h"
 #include "plVAO.h"
-#include "plDraw.h"
+#include "plCylinder.h"
+#include "plCone.h"
+#include "plRenderer.h"
 
 class plTrackedObject : public plRenderable
 {
@@ -15,24 +17,24 @@ class plTrackedObject : public plRenderable
            
         plTrackedObject ();                                                                           //  empty Constructor, allows for declaration of trackedObjects in headers        
         plTrackedObject ( const plDRBTransform &ToTrackedPoint, const plDRBTransform &ToTrackedEnd,   //  real constructor requiring three DRB transforms (and an arthro flag)
-                          const plDRBTransform &FemurDRBToFemurSTL, bool isArthro = false);
+                          const plDRBTransform &FemurDRBToFemurSTL, bool isArthro = false );
                             
         void            updatePosition( const plDRBTransform &DRBToWorld, const plDRBTransform &FemurToWorld );
 
         // Single line accessors
         PLbool           isArthroscope()      const  { return _isArthroscope;   }
-        const plVector3 &getPoint()           const  { return _trackedTip;      }
-        const plVector3 &getEnd()             const  { return _trackedEnd;      }
-        const plVector3 &getTipWorldCoords()  const  { return _tipWorldCoords;  }
-        const plVector3 &getEndWorldCoords()  const  { return _endWorldCoords;  }
-        const plVector3 &getRotationAxis()    const  { return _rotationAxis;    }
+        const plVector3& getPoint()           const  { return _trackedTip;      }
+        const plVector3& getEnd()             const  { return _trackedEnd;      }
+        const plVector3& getTipWorldCoords()  const  { return _tipWorldCoords;  }
+        const plVector3& getEndWorldCoords()  const  { return _endWorldCoords;  }
+        const plVector3& getRotationAxis()    const  { return _rotationAxis;    }
         PLfloat          getRotationAngle()   const  { return _rotationAngle;   }
-        const plVector3 &getAxisX()           const  { return _xAxis;           }
-        const plVector3 &getAxisY()           const  { return _yAxis;           }
-        const plVector3 &getAxisZ()           const  { return _zAxis;           }
+        const plVector3& getAxisX()           const  { return _xAxis;           }
+        const plVector3& getAxisY()           const  { return _yAxis;           }
+        const plVector3& getAxisZ()           const  { return _zAxis;           }
         plVector4        getRotationInfo()    const  { return plVector4( _rotationAxis, _rotationAngle); }
 
-        void extractRenderComponents( plRenderMap& renderMap ) const {}
+        virtual void extractRenderComponents( plRenderMap& renderMap ) const;
 
         //void draw() const;
 
@@ -50,9 +52,6 @@ class plTrackedObject : public plRenderable
         PLfloat         _rotationAngle;
         PLbool          _isArthroscope;
         
-        //void _drawScope() const;
-        //void _drawProbe() const;
-
 };
 
 #endif

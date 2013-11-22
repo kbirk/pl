@@ -15,7 +15,8 @@
 #define ARTHRO_DIAM	            720
 #define INTERPOLATION_LIMIT     4
 #define INTERPOLATION_WEIGHTS   0.2, 0.2, 0.2, 0.2, 0.2
-
+#define ARTHRO_CAM_RES_X        1280
+#define ARTHRO_CAM_RES_Y        720
 
 enum ImageManipulation
 { 
@@ -24,12 +25,14 @@ enum ImageManipulation
 };
 
 
-class plArthroscope
+class plArthroscope : plTrackedObject 
+//public plRenderable
 {
 
     public:
 
         plArthroscope();
+        plArthroscope( const plDRBTransform &ToTrackedPoint, const plDRBTransform &ToTrackedEnd, const plDRBTransform &FemurDRBToFemurSTL );
         ~plArthroscope();
 
         const PLchar*      image()      const;
@@ -37,10 +40,19 @@ class plArthroscope
         PLuint             width()      const;
         PLuint             height()     const;
         plMatrix44         getProjectionMatrix() const;
+        plMatriz44         getCameraMatrix() const;
         
-        void  updateImage( PLuint imageManipulation );
-                
+        void updateImage( PLuint imageManipulation );
+         
+        void extractRenderComponents( plRenderMap& renderMap ) const;        
+          
+        void toggleCameraView() { _isCameraView = !_isCameraView; }
+        void isCameraView()     { return _isCameraView;           }
+         
     private:
+    
+        PLbool      _isCameraView;
+        plTexture2D _texture;
     
         CvCapture *_capture;
         IplImage  *_image;
@@ -63,6 +75,9 @@ class plArthroscope
         PLuint _radius;
         
         void _callCircle();
+        
+        void _extractCameraRenderComponents( plRenderMap& renderMap ) const;        
+        void _extractScopeRenderComponents( plRenderMap& renderMap ) const; 
 
 };
 

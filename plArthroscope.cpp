@@ -2,9 +2,13 @@
 
 
 plArthroscope::plArthroscope() 
-    :    _interpolationDeque( INTERPOLATION_LIMIT )
+    :   _plTrackedObject( const plDRBTransform &ToTrackedPoint, const plDRBTransform &ToTrackedEnd, const plDRBTransform &FemurDRBToFemurSTL, true )
+        _interpolationDeque( INTERPOLATION_LIMIT ),
+        _isCameraView( false ),
+        _texture( ARTHRO_CAM_RES_X, ARTHRO_CAM_RES_Y, GL_RGB, GL_BGR, GL_UNSIGNED_BYTE ), 
 { 
-//   _weights = { INTERPOLATION_WEIGHTS };
+
+    //_weights = { INTERPOLATION_WEIGHTS };
 
     _capture = cvCreateCameraCapture(0);
     if ( !_capture ) 
@@ -80,6 +84,90 @@ plMatrix44 plArthroscope::getProjectionMatrix() const
 }
 
 
+plMatriz44 getCameraMatrix() const;
+{
+    // calculate vector down along the probe.
+    plCamera scopeCamera;
+    
+    scopeCamera.position = getPoint();  // calculate vector down along the probe.
+    scopeCamera.up       = -getAxisY();
+    scopeCamera.lookat   = scopeCamera.position + getAxisZ();  // lookat position, scope tip + unit vector down along the probe
+    
+    return scopeCamera.getMatrix();
+}
+
+
+void plBoundary::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    if ( _isCameraView )
+    {
+        _extractCameraRenderComponents( renderMap );
+    }
+    else
+    {
+        _extractScopeRenderComponents( renderMap );
+    }    
+}
+
+
+void _extractCameraRenderComponents( plRenderMap& renderMap ) const
+{
+
+    static plMatrix44 ortho( -1, 1, -1, 1, -1, 1 );
+
+    static plMatrix44 camera( 1, 0,  0, 0,
+                              0, 1,  0, 0,
+                              0, 0, -1, 0,
+                              0, 0,  0, 1 ); 
+
+    // draw walls
+    // create render component
+    plRenderComponent component( &_vao );
+    // attached uniforms
+    component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44() ) );
+    component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       camera       ) );
+    component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, ortho        ) );
+    component.attach( plUniform( PL_TEXTURE_UNIT_0_UNIFORM,    &_texture    ) ); 
+    // insert into render map
+    renderMap[ PL_ARTHRO_CAM_TECHNIQUE ].insert( component );           
+}  
+
+     
+void _extractScopeRenderComponents( plRenderMap& renderMap ) const
+{
+    if ( _isVisible )
+        plColourStack::load(0.4, 0.4, 0.4);
+    else
+        plColourStack::load(1.0, 0.25, 0.05);
+
+    plModelStack::push();
+    {
+        plModelStack::translate( _trackedTip );
+        plModelStack::rotate( _rotationAngle, _rotationAxis );
+
+        plRenderer::queue( plCone( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 1.5f, 2.0f, 120.0f ) );
+        
+        plModelStack::push();
+        {
+            plModelStack::translate(0, 0, 120);
+            plRenderer::queue( plCylinder( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 4.0, 30.0f ) );   
+    
+            plModelStack::push();
+            {
+                plModelStack::translate(0,0,30);
+                plRenderer::queue( plCylinder( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 8.0, 60.0f ) );  
+    
+                plModelStack::translate(0,0,60);
+                plRenderer::queue( plCone( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 8.0, 0.0f, 0.0f ) );  
+            }
+            plModelStack::pop();
+        }    
+        plModelStack::pop();
+    }
+    plModelStack::pop();
+} 
+
+
 void plArthroscope::updateImage( PLuint imageManipulation )
 {
     // setting up the undistort map is really slow, we want to do it only once
@@ -116,7 +204,8 @@ void plArthroscope::updateImage( PLuint imageManipulation )
             */
 //        }
     }
-
+    
+    _texture.set( arthroscope.image(), _image->width, _image->height, GL_RGB, GL_BGR, GL_UNSIGNED_BYTE, image->imageData );
 }
 
 /*

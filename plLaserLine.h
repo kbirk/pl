@@ -1,23 +1,26 @@
-#ifndef PLLASERLINE_H
-#define PLLASERLINE_H
+#ifndef PL_LASERLINE_H
+#define PL_LASERLINE_H
 
 #include "plCommon.h"
 #include "plVector3.h"
 #include "plVector4.h"
 
-class plLaserLine
+class plLaserLine : public plRenderable
 {
 
     public:
-        plLaserLine();
-        plLaserLine( const plVector3 &origin, const plVector3 &direction, PLfloat length = 10,
-            const plVector4 &colour = plVector4( 1.0f, 0.0f, 0.0f, 1.0f ) );
+    
+        plLaserLine( const plVector3 &position, const plVector3 &direction, PLfloat length = 10 );
 
-        PLfloat     length;
-        plVector3   origin;
-        plVector3   direction;
-        plVector4   colour;
+        void extractRenderComponents( plRenderMap& renderMap ) const;
+
+    private:  
+    
+        PLuint      _techniqueEnum; 
+        PLfloat     _length;
+        plVector3   _position;
+        plVector3   _direction;
 
 };
 
-#endif // PLLASERLINE_H
+#endif

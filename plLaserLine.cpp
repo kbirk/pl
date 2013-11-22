@@ -1,15 +1,13 @@
 #include "plLaserLine.h"
 
-plLaserLine::plLaserLine()
-{
 
+plLaserLine::plLaserLine( const plVector3 &position, const plVector3 &direction, PLfloat length )
+    : _techniqueEnum( techniqueEnum ), _position( position ), _direction( direction ), _length( length )
+{
 }
 
-plLaserLine::plLaserLine( const plVector3 &origin, const plVector3 &direction,
-                PLfloat length, const plVector4 &colour)
+
+void plLaserLine::extractRenderComponents( plRenderMap& renderMap ) const
 {
-    this->origin    = origin;
-    this->direction = direction;
-    this->length    = length;
-    this->colour    = colour;
+    plRenderer::queue( plCylinder( PL_PLAN_TECHNIQUE, _position, _direction, 0.1f, _length ) );  
 }

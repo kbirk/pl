@@ -22,7 +22,9 @@ SOURCES =   main.cpp \
             plCamera.cpp \
             plChessBoard.cpp \
             plColourMap.cpp \
+            plCone.cpp \
             plCSV.cpp \
+            plCylinder.cpp \
             plDefectSite.cpp \
             plDonorSite.cpp \
             plDraw.cpp \
