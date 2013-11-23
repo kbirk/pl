@@ -50,14 +50,12 @@ namespace plRenderResources
         // texture for outlining
         _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT1,     
                                      std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGBA8,  GL_RGBA, GL_UNSIGNED_BYTE, NULL ) ) );
-        // colour picking texture
-        _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT2,     
-                                     std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGB32I, GL_RGB_INTEGER, GL_INT, NULL ) ) );
-
         // arthro camera texture
-        _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT3,
+        _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT2,
                                      std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, NULL ) ) );
-
+        // colour picking texture
+        _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT3,
+                                     std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGB32I, GL_RGB_INTEGER, GL_INT, NULL ) ) );
         // depth-stencil buffer texture
         _fbos[ PL_MAIN_FBO ]->attach( GL_DEPTH_ATTACHMENT, 
                                       GL_STENCIL_ATTACHMENT, 

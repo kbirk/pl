@@ -97,7 +97,7 @@ plRenderComponent plScreenQuadTechnique::_generateComponent() const
     // attach texture uniforms
     component.attach( plUniform( PL_TEXTURE_UNIT_0_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT0 ) ) ) );
     component.attach( plUniform( PL_TEXTURE_UNIT_1_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT1 ) ) ) );     
-    component.attach( plUniform( PL_TEXTURE_UNIT_2_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT3 ) ) ) );
+    component.attach( plUniform( PL_TEXTURE_UNIT_2_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT2 ) ) ) );
 
     return component;
 }

@@ -5,7 +5,7 @@
 #define BLUR_KERNAL_SIZE        6
 #define BLUR_KERNAL_STRIDE      1
 
-#define OUTLINE_COLOUR          0.5, 1.0, 0.7
+#define OUTLINE_COLOUR          1.0, 1.0, 1.0
 
 in vec2 texCoordOut;
 
@@ -45,23 +45,28 @@ void main()
     // get outline buffer colour
     vec4 opaque  = texture2D( uTextureUnit0, vec2( texCoordOut.x, texCoordOut.y ) );
     vec4 outline = texture2D( uTextureUnit1, vec2( texCoordOut.x, texCoordOut.y ) );
-    //vec4 arthro  = texture2D( uTextureUnit2, vec2( texCoordOut.x, texCoordOut.y ) );
-       
+    vec4 arthro  = texture2D( uTextureUnit2, vec2( texCoordOut.x, texCoordOut.y ) );
+    
     // if it is not clear, render normal buffer only    
     if ( outline.r > 0 )
     {
-        colour = texture2D( uTextureUnit0, vec2( texCoordOut.x, texCoordOut.y ) );
+        colour = mix( arthro, opaque, opaque.a );
         return;
     }
-    
+
+    vec4 temp = mix( arthro, opaque, opaque.a );
+    vec4 blur = getBlurredPixel();
+    colour = mix( temp, blur, blur.a );
+
+    /*
     vec4 blur = getBlurredPixel();
     if ( opaque.a == 0 )
     {
-        colour = blur;
+        colour = blur + vec4( (1 - blur.a)*arthro.rgb, arthro.a );  //blur;
         return;
     }
 
     // otherwise, render blurred edge outline
-    colour = opaque + vec4 (blur.rgb* blur.a, 0.0 );
-
+    colour =  opaque + vec4 (blur.rgb* blur.a, 0.0 ) + vec4( (1 - blur.a)*arthro.rgb, arthro.a ); // opaque + vec4 (blur.rgb* blur.a, 0.0 );
+    */
 }
