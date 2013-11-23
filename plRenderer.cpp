@@ -46,7 +46,8 @@ namespace plRenderer
         _techniques[ PL_PLAN_TECHNIQUE ]        = std::shared_ptr<plPlanTechnique>( new plPlanTechnique() );
         _techniques[ PL_OUTLINE_TECHNIQUE ]     = std::shared_ptr<plOutlineTechnique>( new plOutlineTechnique() );
         _techniques[ PL_SCREEN_QUAD_TECHNIQUE ] = std::shared_ptr<plScreenQuadTechnique>( new plScreenQuadTechnique() );
-        
+        _techniques[ PL_ARTHRO_CAM_TECHNIQUE ]  = std::shared_ptr<plArthroCamTechnique>( new plArthroCamTechnique() );
+
         /*
         _techniques[ PL_ARTHRO_CAM_TECHNIQUE ] = std::shared_ptr<plPlannerTechnique>( new plArthoCamTechnique() );
         */

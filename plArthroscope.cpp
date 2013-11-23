@@ -118,8 +118,8 @@ void plArthroscope::extractRenderComponents( plRenderMap& renderMap ) const
 
 void plArthroscope::_generateVAO()
 {
-    std::vector<plVector3> vertices;        vertices.reserve( 8 );
-    std::vector<PLuint>    indices;         indices.reserve( 6 );
+    std::vector<plVector3> vertices;    vertices.reserve( 8 );
+    std::vector<PLuint>    indices;     indices.reserve( 6 );
 
     // position                                     // texture coord
     vertices.push_back( plVector3( -1, -1, 0 ) );   vertices.push_back( plVector3( 0,0,0) );
@@ -200,6 +200,7 @@ void plArthroscope::updateImage( PLuint imageManipulation )
         firstTime = false;
     }
 
+    /*
     _frame = cvQueryFrame( _capture );
     _image = _frame;
 
@@ -225,9 +226,31 @@ void plArthroscope::updateImage( PLuint imageManipulation )
             // circle( _frameMatrix, center, _radius, Scalar(0,255,00), 3, 8, 0 );
             */
 //        }
+
+
+    /*
     }
-    
     _texture.set( _image->width, _image->height, GL_RGB, GL_BGR, GL_UNSIGNED_BYTE, _image->imageData );
+    */
+
+    std::vector<char> i;
+    i.push_back( 0 );
+    i.push_back( 255 );
+    i.push_back( 255 );
+
+    i.push_back( 255 );
+    i.push_back( 0 );
+    i.push_back( 255 );
+
+    i.push_back( 255 );
+    i.push_back( 255 );
+    i.push_back( 0 );
+
+    i.push_back( 0 );
+    i.push_back( 0 );
+    i.push_back( 255 );
+
+    _texture.set( 2, 2, GL_RGB, GL_BGR, GL_UNSIGNED_BYTE, &i[0] );
 }
 
 /*

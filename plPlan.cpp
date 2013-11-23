@@ -68,8 +68,6 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
     if ( !_isVisible )
         return;
 
-    plProjectionStack::load( plProjection( PL_FIELD_OF_VIEW , PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE ) );
-
     // Draw defect boundary 
     for ( PLuint i = 0; i < _defectSites.size(); i++)
     {

@@ -11,6 +11,7 @@ in vec2 texCoordOut;
 
 uniform sampler2D uTextureUnit0;
 uniform sampler2D uTextureUnit1;
+uniform sampler2D uTextureUnit2;
 
 out vec4 colour;
 
@@ -40,11 +41,11 @@ vec4 getBlurredPixel()
 
 
 void main()
-{
-    
+{   
     // get outline buffer colour
-    vec4 opaque = texture2D( uTextureUnit0, vec2( texCoordOut.x, texCoordOut.y ) );
+    vec4 opaque  = texture2D( uTextureUnit0, vec2( texCoordOut.x, texCoordOut.y ) );
     vec4 outline = texture2D( uTextureUnit1, vec2( texCoordOut.x, texCoordOut.y ) );
+    //vec4 arthro  = texture2D( uTextureUnit2, vec2( texCoordOut.x, texCoordOut.y ) );
        
     // if it is not clear, render normal buffer only    
     if ( outline.r > 0 )

@@ -19,8 +19,9 @@ void PlannerWindow::idle()
 
 void PlannerWindow::display()
 {
-    plCameraStack::load( _camera );
-    
+    plCameraStack::load( _camera );  
+    plProjectionStack::load( plProjection( PL_FIELD_OF_VIEW , PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE ) );
+
     plRenderer::queue( _plan );
 
     plRenderer::queue( _graftEditor );

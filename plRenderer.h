@@ -10,6 +10,7 @@
 #include "plPlanTechnique.h"
 #include "plScreenQuadTechnique.h"
 #include "plOutlineTechnique.h"
+#include "plArthroCamTechnique.h"
 
 enum plTechniqueEnums
 {
@@ -17,10 +18,10 @@ enum plTechniqueEnums
     PL_TRANSPARENT_TECHNIQUE,
     PL_PLAN_TECHNIQUE,    
     PL_OUTLINE_TECHNIQUE,
+    PL_ARTHRO_CAM_TECHNIQUE,
     PL_EDITOR_TECHNIQUE,
     PL_DEBUG_TECHNIQUE,
     PL_MENU_TECHNIQUE,
-    PL_ARTHRO_CAM_TECHNIQUE,  
     PL_SCREEN_QUAD_TECHNIQUE
 };
 
@@ -31,11 +32,6 @@ namespace plRenderer
     void queue( const plRenderable& renderable ); 
     void draw();  
 }
-
-
-
-
-
 
 
 #endif

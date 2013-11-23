@@ -2,10 +2,10 @@
 #define PL_ARTHRO_CAM_TECHNIQUE_H
 
 #include "plCommon.h"
-#include "plScreenQuadTechnique.h"
+#include "plRenderTechnique.h"
 
 
-class plArthroCamTechnique : public plScreenQuadTechnique
+class plArthroCamTechnique : public plRenderTechnique
 {
 
     public:

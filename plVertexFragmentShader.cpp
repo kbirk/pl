@@ -79,7 +79,14 @@ void plVertexFragmentShader::setUniform( const plUniform& uniform ) const
             glUniform1i( _textureUnit1SamplerID, 1 );    
             break;
         }    
-        case PL_TEXTURE_UNIT_2_UNIFORM:    glUniform1i( _textureUnit2SamplerID,  0 );    break;
+        case PL_TEXTURE_UNIT_2_UNIFORM:
+        {
+            glActiveTexture( GL_TEXTURE2 );
+            const plTexture2D* tex = *( plTexture2D** )( uniform.data() );
+            tex->bind( 2 );
+            glUniform1i( _textureUnit2SamplerID, 2 );
+            break;
+        }
         case PL_TEXTURE_UNIT_3_UNIFORM:    glUniform1i( _textureUnit3SamplerID,  0 );    break;
     }
 }

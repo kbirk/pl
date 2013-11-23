@@ -16,8 +16,8 @@ void plScreenQuadTechnique::render( const std::set< plRenderComponent >& compone
     shader->bind();
 
     // clear back buffer
-    glClearColor( PL_CLEAR_COLOUR );          
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );         
+    glClearColor( PL_CLEAR_COLOUR );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     glViewport( plWindow::viewportX(), plWindow::viewportY(), plWindow::viewportWidth(), plWindow::viewportHeight() );   
     
     plRenderComponent component = _generateComponent();
@@ -97,6 +97,7 @@ plRenderComponent plScreenQuadTechnique::_generateComponent() const
     // attach texture uniforms
     component.attach( plUniform( PL_TEXTURE_UNIT_0_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT0 ) ) ) );
     component.attach( plUniform( PL_TEXTURE_UNIT_1_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT1 ) ) ) );     
+    component.attach( plUniform( PL_TEXTURE_UNIT_2_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT3 ) ) ) );
 
     return component;
 }
