@@ -15,7 +15,7 @@ namespace plPicking
         PLuint viewportX = x - viewport[0];
         PLuint viewportY = y - viewport[1];
     
-        plPixel<PLint> pick = plRenderResources::fbos( PL_MAIN_FBO )->readPixel<PLint>( GL_COLOR_ATTACHMENT3, viewportX, viewportY );
+        plPixel<PLint> pick = plRenderResources::fbos( PL_MAIN_FBO )->readPixel<PLint>( GL_COLOR_ATTACHMENT4, viewportX, viewportY );
 
         _previousPick = plPickingInfo( pick.r, pick.g, pick.b );
 

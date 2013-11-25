@@ -50,11 +50,16 @@ namespace plRenderResources
         // texture for outlining
         _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT1,     
                                      std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGBA8,  GL_RGBA, GL_UNSIGNED_BYTE, NULL ) ) );
-        // arthro camera texture
+
+        // transparent texture
         _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT2,
                                      std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, NULL ) ) );
-        // colour picking texture
+        // arthro camera texture
         _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT3,
+                                     std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, NULL ) ) );
+
+        // colour picking texture
+        _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT4,
                                      std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGB32I, GL_RGB_INTEGER, GL_INT, NULL ) ) );
         // depth-stencil buffer texture
         _fbos[ PL_MAIN_FBO ]->attach( GL_DEPTH_ATTACHMENT, 
@@ -66,12 +71,13 @@ namespace plRenderResources
     void _initShaders()
     {
         // create shader objects
-        _shaders[ PL_MINIMAL_SHADER    ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag" ) );  
-        _shaders[ PL_PHONG_SHADER      ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/phong.vert",   PL_FILE_PREPATH"shaders/phong.frag"   ) ); 
-        _shaders[ PL_OUTLINE_SHADER    ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/outline.vert", PL_FILE_PREPATH"shaders/outline.frag" ) );                 
-        _shaders[ PL_TEXTURE_2D_SHADER ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/texture.vert", PL_FILE_PREPATH"shaders/texture.frag" ) );  
-        _shaders[ PL_ARTHRO_CAM_SHADER ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/arthro.vert",  PL_FILE_PREPATH"shaders/arthro.frag"  ) );
-        _shaders[ PL_FBO_SHADER        ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/fbo.vert",     PL_FILE_PREPATH"shaders/fbo.frag"     ) );
+        _shaders[ PL_MINIMAL_SHADER      ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag" ) );  
+        _shaders[ PL_PHONG_SHADER        ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/phong.vert",   PL_FILE_PREPATH"shaders/phong.frag"   ) ); 
+        _shaders[ PL_OUTLINE_SHADER      ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/outline.vert", PL_FILE_PREPATH"shaders/outline.frag" ) );  
+        _shaders[ PL_OUTLINE_BLUR_SHADER ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/outlineBlur.vert", PL_FILE_PREPATH"shaders/outlineBlur.frag" ) );
+        _shaders[ PL_TEXTURE_2D_SHADER   ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/texture.vert", PL_FILE_PREPATH"shaders/texture.frag" ) );  
+        _shaders[ PL_ARTHRO_CAM_SHADER   ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/arthro.vert",  PL_FILE_PREPATH"shaders/arthro.frag"  ) );
+        _shaders[ PL_FBO_SHADER          ] = std::shared_ptr<plVertexFragmentShader>( new plVertexFragmentShader( PL_FILE_PREPATH"shaders/fbo.vert",     PL_FILE_PREPATH"shaders/fbo.frag"     ) );
     }
     
 }

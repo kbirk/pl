@@ -53,7 +53,7 @@ class plGraftCap : public plRenderable,
 
     protected:
 
-        plVAO _vao;
+        std::shared_ptr< plVAO > _vao;
         
         virtual plVector4 _getColour() const = 0;
 

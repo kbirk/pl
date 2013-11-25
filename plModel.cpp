@@ -28,7 +28,7 @@ void plModel::extractRenderComponents( plRenderMap& renderMap ) const
         return;
 
     // create render component
-    plRenderComponent component( std::make_shared<plVAO>( _vao ) );
+    plRenderComponent component( _vao );
     // attached uniforms
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -44,13 +44,11 @@ void plModel::extractRenderComponents( plRenderMap& renderMap ) const
     }
     else
     {
-        plVector4 tC( PL_MODEL_BONE_COLOUR );
-        plColourStack::load( plVector4( tC.x, tC.y, tC.z, 0.4) ); 
-        component.attach( plUniform( PL_COLOUR_UNIFORM,  plColourStack::top()  ) ); 
+        plVector4 currentColour = plColourStack::top();
+        component.attach( plUniform( PL_COLOUR_UNIFORM,  plVector4( currentColour.x, currentColour.y, currentColour.z, 0.7)  ) ); 
         // insert into render map   
-        renderMap[ PL_TRANSPARENT_TECHNIQUE ].insert( component );
+        renderMap[ PL_MODEL_TECHNIQUE ].insert( component );        
         
-        /*
         // Sort by distance
         plVector3 viewDir = plCameraStack::direction();
 
@@ -69,8 +67,8 @@ void plModel::extractRenderComponents( plRenderMap& renderMap ) const
             indices.push_back( order[i].index*3+1 );
             indices.push_back( order[i].index*3+2 );
         }             
-        _vao.draw( indices );
-        */
+        const_cast< std::shared_ptr< plVAO >& >( _vao )->eabo()->set( indices );
+        const_cast< std::shared_ptr< plVAO >& >( _vao )->upload();
     } 
 
 }
@@ -100,19 +98,19 @@ void plModel::_generateVAO()
 	}
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices );
-    // attach to vao
-    _vao.attach( vbo );
-    _vao.attach( eabo );
+    // create vao, attach eabo and vbo, upload to gpu
+    _vao = std::make_shared< plVAO >();
+    _vao->attach( vbo );
+    _vao->attach( eabo );
     // upload to gpu
-    _vao.upload();
-
+    _vao->upload(); 
 }
 
 /*

@@ -105,7 +105,7 @@ void plOctree::extractRenderComponents( plRenderMap& renderMap ) const
     if ( !_isVisible )
         return;
      
-    static plVAO vao = _generateVAO( 1.0f );
+    static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( _generateVAO( 1.0f ) );
 
     PLint count = 0;
     // draw child nodes
@@ -126,7 +126,7 @@ void plOctree::extractRenderComponents( plRenderMap& renderMap ) const
         plModelStack::scale( plVector3( _halfWidth, _halfWidth, _halfWidth ) );
         
         // create render component
-        plRenderComponent component( std::make_shared<plVAO>( vao ) );
+        plRenderComponent component( vao );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -178,11 +178,11 @@ plVAO plOctree::_generateVAO( PLfloat halfWidth ) const
     indices.push_back( 7 );   indices.push_back( 4 );
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices, GL_LINES );
     // create and attach to vao
     plVAO vao;

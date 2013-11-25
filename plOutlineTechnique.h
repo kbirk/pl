@@ -18,8 +18,8 @@ class plOutlineTechnique : public plRenderTechnique
     private:
 
         void _initState() const;
-        void _drawFbo() const;
-       
+        plVAO _generateQuad() const;
+        plRenderComponent _generateComponent() const;
 };
 
 

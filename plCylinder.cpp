@@ -13,7 +13,7 @@ plCylinder::plCylinder( PLuint techniqueEnum, const plVector3 &position, const p
 
 void plCylinder::extractRenderComponents( plRenderMap& renderMap ) const
 {
-    static plVAO vao = _generateVAO( 1.0f, 1.0f, 1.0f, 30, 1 ); 
+    static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( _generateVAO( 1.0f, 1.0f, 1.0f, 30, 1 ) ); 
 
     plMatrix44 rot; rot.setRotation( plVector3(0,0,1), _direction.normalize() );
 
@@ -23,7 +23,7 @@ void plCylinder::extractRenderComponents( plRenderMap& renderMap ) const
         plModelStack::mult( rot ); 
         plModelStack::scale( _radius, _radius, _length );        
        
-        plRenderComponent component( std::make_shared<plVAO>(vao) );
+        plRenderComponent component( vao );
     
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -87,12 +87,12 @@ plVAO plCylinder::_generateVAO( float baseRadius, float topRadius, float height,
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO >();    
     eabo->set( indices );
     // create and attach to vao
     plVAO vao;

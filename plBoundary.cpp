@@ -31,7 +31,7 @@ void plBoundary::extractRenderComponents( plRenderMap& renderMap ) const
         plPickingStack::loadBlue( -1 ); // draw walls with index of -1
         
         // create render component
-        plRenderComponent component( std::make_shared<plVAO>( _vao ) );
+        plRenderComponent component( _vao );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -75,7 +75,7 @@ void plBoundary::extractEditorRenderComponents( plRenderMap& renderMap ) const
     if ( _points.size() > 1 )
     {
         // create render component
-        plRenderComponent component( std::make_shared<plVAO>( _vao ) );
+        plRenderComponent component( _vao );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -464,19 +464,19 @@ void plBoundary::_generateVAO()
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices );
     // attach to vao
-    _vao.clear();
-    _vao.attach( vbo );
-    _vao.attach( eabo );
+    _vao = std::make_shared< plVAO >();
+    _vao->attach( vbo );
+    _vao->attach( eabo );
     // upload to gpu
-    _vao.upload(); 
+    _vao->upload(); 
 }
 
 

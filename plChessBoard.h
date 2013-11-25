@@ -21,7 +21,7 @@ class plChessBoard : public plTransparentRenderable
 
     private:
 
-        plVAO        _vao;
+        std::shared_ptr< plVAO > _vao;
         plTransform  _transform;
         
         plVector3   _calibOrigin, 

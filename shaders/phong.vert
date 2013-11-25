@@ -29,7 +29,7 @@ void main()
     }    
     else if ( uColour == vec4( PL_COLOUR_MESH_TRANSPARENT_COLOUR ) )
     {
-        colourInterp = vec4( vColour.x, vColour.y, vColour.z, 0.2 );
+        colourInterp = vec4( vColour.x, vColour.y, vColour.z, 0.7 );
     }  
     else
         colourInterp = uColour;

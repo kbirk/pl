@@ -10,12 +10,15 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       Window( x, y, width, height, title )
 {  
     plInit();
+    _graftEditor.selectGraft( _plan, 0, PL_PICKING_INDEX_GRAFT_DONOR );
 }
+
 
 void PlannerWindow::idle()
 {
-    glutPostRedisplay();
+    //glutPostRedisplay();
 }
+
 
 void PlannerWindow::display()
 {
@@ -26,6 +29,8 @@ void PlannerWindow::display()
 
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );   
+
+    std::cout << "draw" << std::endl;
 
     plRenderer::draw();
 

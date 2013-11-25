@@ -14,6 +14,7 @@ OBJECTS = $(patsubst %.cpp,objects/%.o,$(SOURCES))
 SOURCES =   main.cpp \
             PlannerWindow.cpp \
             pl.cpp \
+            plArthroCamTechnique.cpp \
             plAutomaticPlanner.cpp \
             plBoneAndCartilage.cpp \
             plBoundary.cpp \
@@ -48,6 +49,7 @@ SOURCES =   main.cpp \
             plMeshIntersector.cpp \
             plModel.cpp \
             plModelSpecific.cpp \
+            plModelTechnique.cpp \
             plOctree.cpp \
             plOctreeMesh.cpp \
             plOpenGLInfo.cpp \
