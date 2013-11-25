@@ -54,7 +54,7 @@ class plArthroscope : public plTrackedObject
     
         PLbool      _isCameraView;
         plTexture2D _texture;
-        plVAO       _vao;
+        std::shared_ptr< plVAO > _vao;
     
         CvCapture *_capture;
         IplImage  *_image;
