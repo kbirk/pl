@@ -35,6 +35,7 @@ class plTrackedObject : public plRenderable
         plVector4        getRotationInfo()    const  { return plVector4( _rotationAxis, _rotationAngle); }
 
         virtual void extractRenderComponents( plRenderMap& renderMap ) const;
+        virtual void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
         //void draw() const;
 

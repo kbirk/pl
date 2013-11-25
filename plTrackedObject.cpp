@@ -69,7 +69,7 @@ void plTrackedObject::updatePosition( const plDRBTransform &DRBToWorld, const pl
 }
 
 
-void plTrackedObject::extractRenderComponents( plRenderMap& renderMap ) const
+void plTrackedObject::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     // Draw the TA002 probe
     if ( _isVisible )
@@ -81,11 +81,18 @@ void plTrackedObject::extractRenderComponents( plRenderMap& renderMap ) const
     {
         plModelStack::translate( _trackedTip );
         plModelStack::rotate( _rotationAngle, _rotationAxis );
-        plRenderer::queue( plCone( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 0.0, 1.0f, 4.0f ) ); 
-        plRenderer::queue( plCone( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 4 ), plVector3( 0, 0, 1 ), 1.0, 2.5f, 124.0f ) );
+        plRenderer::queue( plCone( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 0.0, 1.0f, 4.0f ) );
+        plRenderer::queue( plCone( technique, plVector3( 0, 0, 4 ), plVector3( 0, 0, 1 ), 1.0, 2.5f, 124.0f ) );
     }
     plModelStack::pop();
 }
+
+
+void plTrackedObject::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+}
+
 
 /*
 void plTrackedObject::_extractScopeRenderComponents( plRenderMap& renderMap ) const
