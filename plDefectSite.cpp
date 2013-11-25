@@ -17,18 +17,25 @@ plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage& model, con
 }
 
 
-void plDefectSite::extractRenderComponents( plRenderMap& renderMap ) const
+void plDefectSite::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( !_isVisible )
         return;
       
     // draw spline boundary 
     plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_BOUNDARY );
-    boundary.extractRenderComponents( renderMap );   
+    boundary.extractRenderComponents( renderMap, technique );   
      
     // draw spline corners
-    spline.extractRenderComponents( renderMap );
+    spline.extractRenderComponents( renderMap, technique );
 }
+
+
+void plDefectSite::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+}
+
 
 /*
 void plDefectSite::draw() const

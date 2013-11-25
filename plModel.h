@@ -43,7 +43,8 @@ class plModel : public plTransparentRenderable
         const plOctreeMesh& mesh() const { return _mesh; }
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
-
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
         void draw( const plVector3 &colour ) const;
 
 	private:

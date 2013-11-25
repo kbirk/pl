@@ -24,7 +24,8 @@ class plIGuideSite : public plModelSpecific,
         plIGuideSite( PLuint modelID, const plBoneAndCartilage& model, const plBoundary &b );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;  
-
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
         const std::vector<plTriangle> &templateBase() const { return _templateBase; }
 
         PLbool generateTemplateBase();

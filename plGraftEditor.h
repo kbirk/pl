@@ -11,6 +11,8 @@
 #include "plWindow.h"
 #include "plMath.h"
 #include "plRenderer.h"
+#include "plCylinder.h"
+#include "plCone.h"
 
 #define PL_DRAG_SENSITIVITY                      0.1f
 #define PL_GRAFT_SELECTED_IS_DONOR               ( _selectedType == PL_PICKING_INDEX_GRAFT_DONOR )
@@ -32,6 +34,7 @@ class plGraftEditor : public plRenderable
         void    setEditMode( PLuint editMode );
 
         void    extractRenderComponents( plRenderMap& renderMap ) const;
+        void    extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
         
         PLbool  isGraftSelected() const { return ( _selectedGraft != NULL ); }    
 

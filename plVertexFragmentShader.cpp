@@ -61,7 +61,7 @@ void plVertexFragmentShader::setUniform( const plUniform& uniform ) const
         // picking
         case PL_PICKING_UNIFORM:              glUniform3iv      ( _pickingUniformID,          1, (GLint*)( uniform.data() ) );	              break;
         // outline 
-        case PL_OUTLINE_UNIFORM:              glUniform1i       ( _outlineUniformID, *(GLint*)( uniform.data() ) );                           break;
+        case PL_OUTLINE_UNIFORM:              glUniform3iv      ( _outlineUniformID,          1, (GLint*)( uniform.data() ) );                break;
         // texture
         case PL_TEXTURE_UNIT_0_UNIFORM: 
         {   

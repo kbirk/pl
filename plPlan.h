@@ -24,6 +24,7 @@ class plPlan : public plRenderable
         ~plPlan();
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
         void importFile( const plString &filename );        
         void exportFile( const plString &filename );

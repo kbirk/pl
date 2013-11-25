@@ -13,7 +13,8 @@ class plSphere : public plRenderable
         plSphere( PLuint techniqueEnum, const plVector3 &position, PLfloat radius = 1.0f );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
-
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
         void position( const plVector3 position );
         void radius  ( PLfloat radius  );
 

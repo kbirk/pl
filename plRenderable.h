@@ -28,7 +28,8 @@ class plRenderable
 		virtual void   loadState();
 		
         virtual void   extractRenderComponents( plRenderMap& renderMap ) const = 0;
-
+        virtual void   extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const = 0;
+        
     protected:     
            
         PLbool _isVisible;

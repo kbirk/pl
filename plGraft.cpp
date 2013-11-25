@@ -12,21 +12,50 @@ plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius
 }
 
 
-void plGraft::extractEditorRenderComponents( plRenderMap& renderMap ) const
+void plGraft::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
+    if ( !_isVisible )
+        return;
+
     // Draw at harvest location
     plModelStack::push( _harvest.transform().matrix() );
-    _extractGraftEditorRenderComponents( renderMap );
+    plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DONOR );                  
+    _extractGraftRenderComponents( renderMap, technique );
     plModelStack::pop();
 
     // Draw at recipient location
     plModelStack::push( _recipient.transform().matrix() );
     plModelStack::translate( 0, _heightOffset, 0 );
-    _extractGraftEditorRenderComponents( renderMap );
+    plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
+    _extractGraftRenderComponents( renderMap, technique );
     plModelStack::pop();
 }
 
 
+void plGraft::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+}
+
+
+void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap, PLuint technique ) const
+{
+    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT ); 
+
+    // draw cartilage cap
+    _cartilageCap.extractRenderComponents( renderMap, technique );
+    // draw bone cap
+    _boneCap.extractRenderComponents( renderMap, technique );
+
+    // draw marker   
+    plColourStack::load( PL_GRAFT_MARKER_COLOUR );
+    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_MARKER );
+    plRenderer::queue( plSphere( technique, _markPositions[0], 0.5f ) );
+}
+
+
+
+/*
 void plGraft::_extractGraftEditorRenderComponents( plRenderMap& renderMap ) const
 {
     // draw cartilage cap
@@ -57,23 +86,8 @@ void plGraft::extractRenderComponents( plRenderMap& renderMap ) const
     plModelStack::pop();
 
 }
+*/
 
-
-void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap ) const
-{
-    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT ); 
-
-    // draw cartilage cap
-    _cartilageCap.extractRenderComponents( renderMap );
-    // draw bone cap
-    _boneCap.extractRenderComponents( renderMap );
-
-    // draw marker   
-    plColourStack::load( PL_GRAFT_MARKER_COLOUR );
-    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_MARKER );
-    plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, _markPosition, 0.5f ) );
-
-}
 
 
 void plGraft::_generateCaps()
@@ -83,7 +97,7 @@ void plGraft::_generateCaps()
     _boneCap.generateCap( _harvest.model().bone, _harvest.transform(), _radius );
 
     // generate vaos 
-    _cartilageCap.generateVAO( _boneCap.perimeter );
+    _cartilageCap.generateVAO( _radius, _length, _boneCap.perimeter );
     _boneCap.generateVAO( _radius, _length );
 
     // update values
@@ -94,6 +108,35 @@ void plGraft::_generateCaps()
 
 void plGraft::_updateMarkPosition()
 {
+    for ( PLuint i=0; i < 4; i++ )
+    {
+        plMatrix44 rotation;  rotation.setRotationD( i*-90.0f,  plVector3( 0, 1, 0 ) );
+    
+        // Mark at tool alignment direction on cartilage
+        _markPositions[i] = _radius * ( rotation * _markDirection ).normalize();
+
+        // First, find the closest top perimeter point in the mark direction.
+        float minDist = FLT_MAX;
+        float minY;
+
+        const std::vector<plPointAndAngle>& perimeter = ( _cartilageCap.triangles.empty() ) ? _boneCap.perimeter : _cartilageCap.perimeter;
+
+        for ( PLuint j=0; j<perimeter.size(); j++ ) 
+        {
+            const plVector3 &v = perimeter[j].point;
+            float dist = (v.x-_markPositions[i].x)*(v.x-_markPositions[i].x) + (v.z-_markPositions[i].z)*(v.z-_markPositions[i].z);
+            if (dist < minDist) 
+            {
+                minDist = dist;
+                minY = v.y;
+            }
+        }
+
+        // Draw marker  
+        _markPositions[i].y = minY;
+    }
+
+    /*
     // Mark at tool alignment direction on cartilage
     _markPosition = _radius * _markDirection;
 
@@ -116,6 +159,7 @@ void plGraft::_updateMarkPosition()
 
     // Draw marker  
     _markPosition.y = minY;
+    */
 }
 
 

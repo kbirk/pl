@@ -63,7 +63,7 @@ plPlan::~plPlan()
 }
 
 
-void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
+void plPlan::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( !_isVisible )
         return;
@@ -72,14 +72,14 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
     for ( PLuint i = 0; i < _defectSites.size(); i++)
     {
         plPickingStack::loadGreen( i );
-        _defectSites[i]->extractRenderComponents( renderMap );
+        _defectSites[i]->extractRenderComponents( renderMap, technique );
     }
    
     // Draw harvest boundaries   
     for ( PLuint i = 0; i < _donorSites.size(); i++)
     {
         plPickingStack::loadGreen( i );      
-        _donorSites[i]->extractRenderComponents( renderMap );            
+        _donorSites[i]->extractRenderComponents( renderMap, technique );            
     }    
 
 
@@ -87,21 +87,21 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
     for ( PLuint i = 0; i < _grafts.size(); i++)
     {                   
         plPickingStack::loadGreen( i );
-        _grafts[i]->extractRenderComponents( renderMap );
+        _grafts[i]->extractRenderComponents( renderMap, technique );
     }
 
     // Draw iGuideSites
     for ( PLuint i = 0; i < _iGuideSites.size(); i++)
     {            
         plPickingStack::loadGreen( i );
-        _iGuideSites[i]->extractRenderComponents( renderMap );
+        _iGuideSites[i]->extractRenderComponents( renderMap, technique );
     }
 
     // Draw iGuides
     for ( PLuint i = 0; i < _iGuides.size(); i++)
     {
         plPickingStack::loadGreen( i );
-        _iGuides[i]->extractRenderComponents( renderMap );
+        _iGuides[i]->extractRenderComponents( renderMap, technique );
     }
 
     // draw models (draw last for proper transparency blending)
@@ -111,25 +111,16 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
     {            
         plPickingStack::loadGreen( i );          
         
-        _models[i]->extractRenderComponents( renderMap ); 
-
-        /*
-        // DRAW CARTILAGE
-        plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
-        plColourStack::load( PL_MODEL_CARTILAGE_COLOUR );
-        _models[i]->cartilage.extractRenderComponents( renderMap ); 
-
-        // DRAW BONE
-        plPickingStack::loadRed( PL_PICKING_TYPE_BONE );
-        plColourStack::load( PL_MODEL_BONE_COLOUR );       
-        _models[i]->bone.extractRenderComponents( renderMap );
-        */
-        
+        _models[i]->extractRenderComponents( renderMap, technique ); 
     }
 
 }
 
 
+void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+}
 /*
 void plPlan::drawElements() const
 {

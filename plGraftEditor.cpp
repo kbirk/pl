@@ -217,16 +217,74 @@ void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
 }
 
 
-void plGraftEditor::extractRenderComponents( plRenderMap& renderMap ) const
+void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( _selectedGraft == NULL )    
         return;                 // no graft selected
         
     //plShaderStack::push( PL_OUTLINE_SHADER );
-    _selectedGraft->extractEditorRenderComponents( renderMap );
+    _selectedGraft->extractRenderComponents( renderMap, technique );   
+    const plTransform& transform = ( _selectedType == PL_PICKING_INDEX_GRAFT_DONOR ) ? _selectedGraft->harvest().transform() : _selectedGraft->recipient().transform();   
+    //plRenderer::queue( plCylinder( technique, transform.origin(), transform.y(), _selectedGraft->radius(), 20 ) );
+    
+    PLint id = 100;
+    PLfloat SPACING = 5.0f;
+    PLfloat LINE_WIDTH = 0.04f;
+    PLfloat LINE_LENGTH = 10.0f;
+    // i    
+    plModelStack::push( transform.matrix() );
+    plPickingStack::loadRed( id++ );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(0), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    
+    // ii
+    plModelStack::push();
+    plPickingStack::loadRed( id++ );
+    plModelStack::rotate( -SPACING/2, plVector3( 0, 1, 0 ) );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(1), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+    plPickingStack::loadRed( id++ );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(1), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    plModelStack::pop();
+    
+    // iii
+    plModelStack::push();
+    plPickingStack::loadRed( id++ );
+    plModelStack::rotate( -SPACING, plVector3( 0, 1, 0 ) );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(2), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+    plPickingStack::loadRed( id++ );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(2), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+    plPickingStack::loadRed( id++ );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(2), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    plModelStack::pop();
+    
+    // iiii
+    plModelStack::push();
+    plPickingStack::loadRed( id++ );
+    plModelStack::rotate( (-3/2)*SPACING, plVector3( 0, 1, 0 ) );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(3), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+    plPickingStack::loadRed( id++ );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(3), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+    plPickingStack::loadRed( id++ );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(3), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+    plPickingStack::loadRed( id++ );
+    plRenderer::queue( plCone( technique, _selectedGraft->markPositions(3), plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+    plModelStack::pop();
+    
+    plModelStack::pop();
+
     //plShaderStack::pop();
 }
 
+void plGraftEditor::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_OUTLINE_TECHNIQUE );
+
+}
 
 void plGraftEditor::_dragMarker( plPlan &plan, PLint x, PLint y )
 {

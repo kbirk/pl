@@ -12,7 +12,13 @@ plLaserLine::plLaserLine( const plVector3 &position, const plVector3 &direction,
 }
 
 
+void plLaserLine::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
+{
+    plRenderer::queue( plCylinder( technique, _position, _direction, 0.1f, _length ) );  
+}
+
+
 void plLaserLine::extractRenderComponents( plRenderMap& renderMap ) const
 {
-    plRenderer::queue( plCylinder( PL_PLAN_TECHNIQUE, _position, _direction, 0.1f, _length ) );  
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }

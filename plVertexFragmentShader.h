@@ -12,7 +12,7 @@
 #define PL_COLOUR_UNIFORM_NAME                      "uColour"
 #define PL_LIGHT_POSITION_UNIFORM_NAME              "uLightPosition"
 #define PL_PICKING_UNIFORM_NAME                     "uPickingColour"
-#define PL_OUTLINE_UNIFORM_NAME                     "uOutlineEnabled"
+#define PL_OUTLINE_UNIFORM_NAME                     "uOutlineColour"
 #define PL_TEXTURE_UNIT_0_SAMPLER_UNIFORM_NAME      "uTextureUnit0"
 #define PL_TEXTURE_UNIT_1_SAMPLER_UNIFORM_NAME      "uTextureUnit1"
 #define PL_TEXTURE_UNIT_2_SAMPLER_UNIFORM_NAME      "uTextureUnit2"

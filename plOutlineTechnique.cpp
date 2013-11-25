@@ -35,10 +35,14 @@ void plOutlineTechnique::render( const std::set< plRenderComponent >& componentS
     // bind shader
     shader0->bind();
 
+    PLint outlineID = 0;
+
     // draw shapes to outline buffer
     for ( const plRenderComponent& component : componentSet )
     { 
+        //const_cast< plRenderComponent& >( component ).attach( plUniform( PL_OUTLINE_UNIFORM, std::vector<PLint>( { outlineID, 1, 1 } ) ) );   
         component.draw( *shader0 );   
+        outlineID+=25;
     }
 
     //glDepthMask( true );

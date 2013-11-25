@@ -398,6 +398,7 @@ namespace plOpenGLInfo
         }
     }
 
+
     PLuint sizeOfType( PLuint glEnum )
     {
         switch( glEnum )

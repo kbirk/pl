@@ -49,8 +49,7 @@ namespace plRenderResources
                                      std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGBA8,  GL_RGBA, GL_UNSIGNED_BYTE, NULL ) ) );
         // texture for outlining
         _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT1,     
-                                     std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGBA8,  GL_RGBA, GL_UNSIGNED_BYTE, NULL ) ) );
-
+                                     std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGBA32I,  GL_RGBA_INTEGER, GL_INT, NULL ) ) );
         // transparent texture
         _fbos[ PL_MAIN_FBO ]->attach( GL_COLOR_ATTACHMENT2,
                                      std::shared_ptr<plTexture2D>( new plTexture2D( width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, NULL ) ) );

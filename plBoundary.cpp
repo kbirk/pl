@@ -18,7 +18,7 @@ plBoundary::plBoundary( const std::vector<plString> &row )
 }
 
 
-void plBoundary::extractRenderComponents( plRenderMap& renderMap ) const
+void plBoundary::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( !_isVisible )
         return;
@@ -40,15 +40,21 @@ void plBoundary::extractRenderComponents( plRenderMap& renderMap ) const
         component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
         component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
         // insert into render map
-        renderMap[ PL_PLAN_TECHNIQUE ].insert( component );            
+        renderMap[ technique ].insert( component );            
     }
         
     // draw points
-    _extractPointRenderComponents( renderMap );
+    _extractPointRenderComponents( renderMap, technique );
 }
 
 
-void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap ) const
+void plBoundary::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+}
+
+
+void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     // draw points
     for (PLuint i=0; i<_points.size(); i++) 
@@ -58,17 +64,17 @@ void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap ) const
         if ( _isSelected && _selectedValue == i )   // is the current point selected?
         {
             // scale larger
-            plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
+            plRenderer::queue( plSphere( technique, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
         }
         else
         {
             // regular size
-            plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
+            plRenderer::queue( plSphere( technique, _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
         }
     } 
 }
 
-
+/*
 void plBoundary::extractEditorRenderComponents( plRenderMap& renderMap ) const
 {
     // draw walls
@@ -106,7 +112,7 @@ void plBoundary::_extractPointEditorRenderComponents( plRenderMap& renderMap ) c
         }
     } 
 }
-
+*/
 
 plVector3 plBoundary::getAverageNormal() const
 {

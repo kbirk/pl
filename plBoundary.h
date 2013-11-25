@@ -29,7 +29,7 @@ class plBoundary : public plRenderable,
         PLuint size() const;
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractEditorRenderComponents( plRenderMap& renderMap ) const;
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
         
         const plVector3& points ( PLuint index ) const { return _points[index];  }
         const plVector3& normals( PLuint index ) const { return _normals[index]; }
@@ -52,8 +52,7 @@ class plBoundary : public plRenderable,
         
         void _generateVAO(); 
         
-        void _extractPointRenderComponents( plRenderMap& renderMap ) const;
-        void _extractPointEditorRenderComponents( plRenderMap& renderMap ) const;
+        void _extractPointRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
         
 };
 

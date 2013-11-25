@@ -16,6 +16,7 @@
 #include "plSphere.h"
 #include "plGraftCap.h"
 
+#include "plCylinder.h"
 
 class plGraft : public plRenderable,
                 public plEditable
@@ -37,6 +38,7 @@ class plGraft : public plRenderable,
         const PLfloat&     length()             const { return _length; }
         const PLfloat&     cartilageThickness() const { return _cartilageThickness; }     
         const plVector3&   markDirection()      const { return _markDirection; } 
+        const plVector3&   markPositions( PLuint index )       const { return _markPositions[ index ]; } 
         const plTransform& transform ( PLuint type ) const;
         const plPlug&      plug      ( PLuint type ) const;
         const plPlug&      harvest   () const { return _harvest;   }
@@ -51,7 +53,7 @@ class plGraft : public plRenderable,
         void setMark    ( const plVector3 &direction ); 
                  
         void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractEditorRenderComponents( plRenderMap& renderMap ) const;
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
     private:
 
@@ -63,13 +65,12 @@ class plGraft : public plRenderable,
         PLfloat    _length;
         PLfloat    _cartilageThickness;
         plVector3  _markDirection;
-        plVector3  _markPosition;
+        plVector3  _markPositions[4];
 
         plBoneCap      _boneCap;
         plCartilageCap _cartilageCap;
                       
-        void  _extractGraftRenderComponents( plRenderMap& renderMap ) const;
-        void  _extractGraftEditorRenderComponents( plRenderMap& renderMap ) const;
+        void  _extractGraftRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
         void  _generateCaps();     
         void  _updateMarkPosition();

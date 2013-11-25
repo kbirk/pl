@@ -14,8 +14,6 @@ class plEditable
         friend class plGraftEditor;
         friend class plBoundaryEditor;
 
-        virtual void extractEditorRenderComponents( plRenderMap& renderMap ) const {};
-
     protected:     
            
         PLuint _selectedValue;

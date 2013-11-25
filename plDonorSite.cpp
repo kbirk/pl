@@ -17,7 +17,7 @@ plDonorSite::plDonorSite( PLuint modelID, const plBoneAndCartilage& model, const
 }
 
 
-void plDonorSite::extractRenderComponents( plRenderMap& renderMap ) const
+void plDonorSite::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( !_isVisible )
         return;
@@ -25,6 +25,12 @@ void plDonorSite::extractRenderComponents( plRenderMap& renderMap ) const
     // draw spline boundary 
     plPickingStack::loadRed( PL_PICKING_TYPE_DONOR_BOUNDARY );
     boundary.extractRenderComponents( renderMap ); 
+}
+
+
+void plDonorSite::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
 
 

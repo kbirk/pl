@@ -12,7 +12,7 @@ plCone::plCone( PLuint techniqueEnum, const plVector3 &position, const plVector3
 }
 
 
-void plCone::extractRenderComponents( plRenderMap& renderMap ) const
+void plCone::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     // can't use static for cones as normals scale inversely, 
     std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( _generateVAO( _bottomRadius, _topRadius, _length, 30, 1 ) ); 
@@ -33,10 +33,16 @@ void plCone::extractRenderComponents( plRenderMap& renderMap ) const
         component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
         component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
         
-        renderMap[ _techniqueEnum ].insert( component );  
+        renderMap[ technique ].insert( component );  
        
     }
     plModelStack::pop();      
+}
+
+
+void plCone::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, _techniqueEnum );     
 }
 
 

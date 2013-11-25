@@ -100,7 +100,7 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const std::ve
 }
 
 
-void plOctree::extractRenderComponents( plRenderMap& renderMap ) const
+void plOctree::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( !_isVisible )
         return;
@@ -133,12 +133,16 @@ void plOctree::extractRenderComponents( plRenderMap& renderMap ) const
         component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
         component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) );  
         // insert into render map     
-        renderMap[ PL_DEBUG_TECHNIQUE ].insert( component );  
+        renderMap[ technique ].insert( component );  
         
         plModelStack::pop();
     }
-    
+}
 
+
+void plOctree::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_DEBUG_TECHNIQUE );
 }
 
 

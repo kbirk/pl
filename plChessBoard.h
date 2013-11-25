@@ -7,6 +7,7 @@
 #include "plTransform.h"
 #include "plVAO.h"
 #include "plDRBTransform.h"
+#include "plRenderer.h"
 
 class plChessBoard : public plTransparentRenderable
 {
@@ -18,7 +19,8 @@ class plChessBoard : public plTransparentRenderable
         void updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL );
         
         void extractRenderComponents( plRenderMap& renderMap ) const;
-
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
     private:
 
         std::shared_ptr< plVAO > _vao;

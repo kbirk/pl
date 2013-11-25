@@ -22,7 +22,7 @@ plModel::plModel( const plString &file, PLuint octreeDepth )
 }
 
 
-void plModel::extractRenderComponents( plRenderMap& renderMap ) const
+void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( !_isVisible )
         return;
@@ -40,7 +40,7 @@ void plModel::extractRenderComponents( plRenderMap& renderMap ) const
         component.attach( plUniform( PL_PICKING_UNIFORM, plPickingStack::top() ) );
         component.attach( plUniform( PL_COLOUR_UNIFORM,  plColourStack::top()  ) ); 
         // insert into render map   
-        renderMap[ PL_PLAN_TECHNIQUE ].insert( component );        
+        renderMap[ technique ].insert( component );        
     }
     else
     {
@@ -69,8 +69,14 @@ void plModel::extractRenderComponents( plRenderMap& renderMap ) const
         }             
         const_cast< std::shared_ptr< plVAO >& >( _vao )->eabo()->set( indices );
         const_cast< std::shared_ptr< plVAO >& >( _vao )->upload();
-    } 
+    }    
+}
+        
 
+
+void plModel::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
 
 

@@ -19,7 +19,7 @@ void plSphere::radius  ( PLfloat radius  )
     _radius = radius;
 }
 
-void plSphere::extractRenderComponents( plRenderMap& renderMap ) const
+void plSphere::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     static std::shared_ptr< plVAO > vao =  std::make_shared<plVAO>( _generateVAO( 1.0f, 20, 20 ) );
 
@@ -36,9 +36,15 @@ void plSphere::extractRenderComponents( plRenderMap& renderMap ) const
     component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
     component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
     
-    renderMap[ _techniqueEnum ].insert( component );  
+    renderMap[ technique ].insert( component );  
 
     plModelStack::pop();         
+}
+
+
+void plSphere::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, _techniqueEnum );
 }
 
 

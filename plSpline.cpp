@@ -79,7 +79,7 @@ plVector3 plSpline::getAverageNormalOverCorners()
 }
  
 
-void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
+void plSpline::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( !_isVisible )
         return;
@@ -90,14 +90,14 @@ void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
     if ( size() < 4 )
     {
         // draw boundary walls
-        plBoundary::extractRenderComponents( renderMap );
+        plBoundary::extractRenderComponents( renderMap, technique );
     }
     else
     {
         plColourStack::load( _getColour() );
         
         // draw points
-        _extractPointRenderComponents( renderMap );
+        _extractPointRenderComponents( renderMap, technique );
         
         // draw spline
         plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS ); 
@@ -116,12 +116,19 @@ void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
         component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
         component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
         // insert into render map     
-        renderMap[ PL_PLAN_TECHNIQUE ].insert( component );  
+        renderMap[ technique ].insert( component );  
 
         plColourStack::pop();
     }  
 }
 
+
+void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+}
+
+/*
 void plSpline::extractEditorRenderComponents( plRenderMap& renderMap ) const
 {
     // if not full 4 corners, display walls
@@ -145,7 +152,7 @@ void plSpline::extractEditorRenderComponents( plRenderMap& renderMap ) const
         renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component );  
     } 
 }
-
+*/
 
   /*     
 void plSpline::draw() const

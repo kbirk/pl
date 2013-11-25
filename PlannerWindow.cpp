@@ -30,8 +30,6 @@ void PlannerWindow::display()
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );   
 
-    std::cout << "draw" << std::endl;
-
     plRenderer::draw();
 
     glutSwapBuffers();

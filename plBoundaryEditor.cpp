@@ -294,12 +294,18 @@ void plBoundaryEditor::clearSelectedBoundary( plPlan &plan )
 }
 
 
-void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap ) const
+void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if (_selectedBoundary == NULL)
         return;
         
-    _selectedBoundary->extractEditorRenderComponents( renderMap );  
+    _selectedBoundary->extractRenderComponents( renderMap, technique );  
+}
+
+
+void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap ) const
+{
+     extractRenderComponents( renderMap, PL_OUTLINE_TECHNIQUE );
 }
 
 /*

@@ -17,11 +17,18 @@ plIGuideSite::plIGuideSite( PLuint modelID, const plBoneAndCartilage& model, con
 }
 
 
-void plIGuideSite::extractRenderComponents( plRenderMap& renderMap ) const
+void plIGuideSite::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     plPickingStack::loadRed( PL_PICKING_TYPE_IGUIDE_BOUNDARY );
-    boundary.extractRenderComponents( renderMap );
+    boundary.extractRenderComponents( renderMap, technique );
 }  
+
+
+void plIGuideSite::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+}  
+
 
 /*
 void plIGuideSite::draw() const

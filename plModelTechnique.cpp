@@ -16,12 +16,23 @@ void plModelTechnique::render( const std::set< plRenderComponent >& componentSet
     
     // bind fbo
     fbo->bind(); 
+    
+    // set draw buffers
+    std::vector<GLenum> drawBuffers;
+    drawBuffers.push_back( GL_COLOR_ATTACHMENT0 );
+    drawBuffers.push_back( GL_NONE );
+    drawBuffers.push_back( GL_NONE );
+    drawBuffers.push_back( GL_NONE );
+    drawBuffers.push_back( GL_NONE );   // no picking output
+    fbo->setDrawBuffers( drawBuffers );
+
     // bind shader
     shader->bind();
 
     // clear fbo          
     glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() );      
 
+    glDepthMask( false );
     //glDisable( GL_CULL_FACE );
 
     // draw main render components
@@ -30,6 +41,7 @@ void plModelTechnique::render( const std::set< plRenderComponent >& componentSet
         component.draw( *shader );   
     }
 
+    glDepthMask( true );
     //glEnable( GL_CULL_FACE );
 
     // unbind shader

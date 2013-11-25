@@ -48,7 +48,8 @@ class plOctree : public plRenderable
         void clear ();   
                      
         void extractRenderComponents( plRenderMap& renderMap ) const;          
-
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
         PLbool rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat rayRadius = 0.0f, PLbool ignoreBehindRay = false ) const;
                
     private:

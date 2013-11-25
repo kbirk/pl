@@ -13,7 +13,8 @@ class plDisk : public plRenderable
         plDisk( PLuint techniqueEnum, const plVector3 &position, PLfloat radius = 1.0f, PLbool flip = false );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
-
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
     private:
     
         plVector3 _position;

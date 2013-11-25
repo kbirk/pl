@@ -15,6 +15,7 @@ class plBoneAndCartilage : plRenderable
         plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile, const plString &combinedFile );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
         plVector3 getCentroid() const; 
 

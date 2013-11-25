@@ -95,7 +95,7 @@ void plChessBoard::updateTransform( const plDRBTransform &currentFemurDRBToWorld
 }
 
 
-void plChessBoard::extractRenderComponents( plRenderMap& renderMap ) const
+void plChessBoard::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( !_isVisible )
         return;
@@ -119,6 +119,12 @@ void plChessBoard::extractRenderComponents( plRenderMap& renderMap ) const
     }
     plModelStack::pop();
     */
+}
+
+
+void plChessBoard::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
 
 

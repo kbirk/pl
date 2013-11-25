@@ -97,6 +97,7 @@ class plIGuide : public plRenderable
 
         // rendering
         void extractRenderComponents( plRenderMap& renderMap ) const {};
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const {};
         
         void draw();
 

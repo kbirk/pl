@@ -22,7 +22,8 @@ class plDefectSite : public plModelSpecific,
         plDefectSite( PLuint modelID, const plBoneAndCartilage& model, const plSpline &s, const plBoundary &b );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;  
-
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
         void draw() const;   
                 
 };

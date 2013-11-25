@@ -13,7 +13,8 @@ class plCylinder : public plRenderable
         plCylinder( PLuint techniqueEnum, const plVector3 &origin, const plVector3 &direction, PLfloat radius, PLfloat length );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
-
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
     private:
     
         plVector3 _position;

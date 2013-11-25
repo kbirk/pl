@@ -13,7 +13,8 @@ class plCone : public plRenderable
         plCone( PLuint techniqueEnum, const plVector3 &origin, const plVector3 &direction, PLfloat bottomRadius, PLfloat topRadius, PLfloat length );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
-
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
     private:
     
         plVector3 _position;

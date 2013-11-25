@@ -47,16 +47,18 @@ class plGraftCap : public plRenderable,
         plGraftCap();
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractEditorRenderComponents( plRenderMap& renderMap ) const;
+        virtual void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
-        void  generateCap( const plModel& model, const plTransform& transform, PLfloat radius );
-
+        void generateCap( const plModel& model, const plTransform& transform, PLfloat radius );
+        
     protected:
 
         std::shared_ptr< plVAO > _vao;
         
+        
+               
         virtual plVector4 _getColour() const = 0;
-
+       
         std::vector<plVector3> _pointsOutsideTriangles( plVector3 verts[3], const plTransform& transform, PLfloat radius ) const;
         std::vector<plVector3> _pointsInsideTriangles ( plVector3 verts[3], PLfloat dist[3], const plTransform& transform, PLfloat radius ) const;
 
@@ -74,12 +76,17 @@ class plCartilageCap : public plGraftCap
 
         plCartilageCap();
 
-        void generateVAO( const std::vector<plPointAndAngle>& bonePerimeter );
+        void generateVAO( PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter );
+        
+        //virtual void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
     private:
 
+        std::shared_ptr< plVAO > _projectionVAO;
+
         plVector4 _getColour() const;
-        
+        void _generateProjectionVAO( PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter );
+
 };
 
 
