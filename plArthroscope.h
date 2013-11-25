@@ -45,8 +45,9 @@ class plArthroscope : public plTrackedObject
         
         void updateImage( PLuint imageManipulation );
          
-        void extractRenderComponents( plRenderMap& renderMap ) const;        
-          
+        void extractRenderComponents( plRenderMap& renderMap ) const;
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+
         void toggleCameraView() { _isCameraView = !_isCameraView; }
         PLbool isCameraView()     { return _isCameraView;           }
          
@@ -80,7 +81,7 @@ class plArthroscope : public plTrackedObject
         
         void _generateVAO();
         void _extractCameraRenderComponents( plRenderMap& renderMap ) const;        
-        void _extractScopeRenderComponents( plRenderMap& renderMap ) const; 
+        void _extractScopeRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
 };
 

@@ -103,7 +103,7 @@ plMatrix44 plArthroscope::getCameraMatrix() const
 }
 
 
-void plArthroscope::extractRenderComponents( plRenderMap& renderMap ) const
+void plArthroscope::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( _isCameraView )
     {
@@ -111,8 +111,14 @@ void plArthroscope::extractRenderComponents( plRenderMap& renderMap ) const
     }
     else
     {
-        _extractScopeRenderComponents( renderMap );
+        _extractScopeRenderComponents( renderMap, technique );
     }    
+}
+
+
+void plArthroscope::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
 
 
@@ -170,7 +176,7 @@ void plArthroscope::_extractCameraRenderComponents( plRenderMap& renderMap ) con
 }  
 
      
-void plArthroscope::_extractScopeRenderComponents( plRenderMap& renderMap ) const
+void plArthroscope::_extractScopeRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( _isVisible )
         plColourStack::load(0.4, 0.4, 0.4);
@@ -182,10 +188,10 @@ void plArthroscope::_extractScopeRenderComponents( plRenderMap& renderMap ) cons
         plModelStack::translate( _trackedTip );
         plModelStack::rotate( _rotationAngle, _rotationAxis );
 
-        plRenderer::queue( plCone    ( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 1.5f, 2.0f, 120.0f ) );
-        plRenderer::queue( plCylinder( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 120 ), plVector3( 0, 0, 1 ), 4.0, 30.0f ) );
-        plRenderer::queue( plCylinder( PL_PLAN_TECHNIQUE, plVector3( 0,0,150 ), plVector3( 0, 0, 1 ), 8.0, 60.0f ) );
-        plRenderer::queue( plCone    ( PL_PLAN_TECHNIQUE, plVector3( 0,0,210 ), plVector3( 0, 0, 1 ), 8.0, 0.0f, 0.0f ) );
+        plRenderer::queue( plCone    ( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 1.5f, 2.0f, 120.0f ) );
+        plRenderer::queue( plCylinder( technique, plVector3( 0, 0, 120 ), plVector3( 0, 0, 1 ), 4.0, 30.0f ) );
+        plRenderer::queue( plCylinder( technique, plVector3( 0,0,150 ), plVector3( 0, 0, 1 ), 8.0, 60.0f ) );
+        plRenderer::queue( plCone    ( technique, plVector3( 0,0,210 ), plVector3( 0, 0, 1 ), 8.0, 0.0f, 0.0f ) );
     }
     plModelStack::pop();
 } 
