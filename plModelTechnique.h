@@ -1,17 +1,17 @@
-#ifndef PL_PLANNER_TECHNIQUE_H
-#define PL_PLANNER_TECHNIQUE_H
+#ifndef PL_MODEL_TECHNIQUE_H
+#define PL_MODEL_TECHNIQUE_H
 
 #include "plCommon.h"
 #include "plRenderTechnique.h"
 #include "plRenderResources.h"
 
 
-class plPlanTechnique : public plRenderTechnique
+class plModelTechnique : public plRenderTechnique
 {
 
     public:
 
-        plPlanTechnique();       
+        plModelTechnique();       
 
         void render( const std::set< plRenderComponent >& componentSet ) const;
 

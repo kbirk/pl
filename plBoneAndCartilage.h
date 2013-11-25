@@ -4,7 +4,7 @@
 #include "plCommon.h"
 #include "plModel.h"
 
-class plBoneAndCartilage 
+class plBoneAndCartilage : plRenderable
 {
     public:
     
@@ -14,16 +14,13 @@ class plBoneAndCartilage
 
         plBoneAndCartilage( const plString &boneFile, const plString &cartilageFile, const plString &combinedFile );
 
-        plVector3 getCentroid() const; 
+        void extractRenderComponents( plRenderMap& renderMap ) const;
 
-        //void draw() const;
+        plVector3 getCentroid() const; 
 
     private:
 
-        // prevent empty constructor, copy constructor, and assignment, which will invalidate the octree's pointers if rhs is scoped
-        //plBoneAndCartilage();
-        //plBoneAndCartilage( const plBoneAndCartilage &m );
-        //plBoneAndCartilage operator= ( const plBoneAndCartilage &m ) const;    
+        //plVAO _generateTransparencyVAO() const;
         
 };
 

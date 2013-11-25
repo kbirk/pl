@@ -42,7 +42,7 @@ class plSpline : public plBoundary
         PLtime        _lastUpdate;
         
         plMesh        _surfaceMesh;
-        plVAO         _surfaceVAO;
+        std::shared_ptr< plVAO > _surfaceVAO;
 
         std::vector<plVector3>  _averageCornerNormals() const;
               

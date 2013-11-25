@@ -82,13 +82,14 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
         _donorSites[i]->extractRenderComponents( renderMap );            
     }    
 
+
     // Draw grafts
     for ( PLuint i = 0; i < _grafts.size(); i++)
     {                   
         plPickingStack::loadGreen( i );
         _grafts[i]->extractRenderComponents( renderMap );
     }
-        
+
     // Draw iGuideSites
     for ( PLuint i = 0; i < _iGuideSites.size(); i++)
     {            
@@ -110,15 +111,20 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
     {            
         plPickingStack::loadGreen( i );          
         
-        // DRAW BONE
-        plPickingStack::loadRed( PL_PICKING_TYPE_BONE );
-        plColourStack::load( PL_MODEL_BONE_COLOUR );       
-        _models[i]->bone.extractRenderComponents( renderMap );
+        _models[i]->extractRenderComponents( renderMap ); 
 
+        /*
         // DRAW CARTILAGE
         plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
         plColourStack::load( PL_MODEL_CARTILAGE_COLOUR );
         _models[i]->cartilage.extractRenderComponents( renderMap ); 
+
+        // DRAW BONE
+        plPickingStack::loadRed( PL_PICKING_TYPE_BONE );
+        plColourStack::load( PL_MODEL_BONE_COLOUR );       
+        _models[i]->bone.extractRenderComponents( renderMap );
+        */
+        
     }
 
 }

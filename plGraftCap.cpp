@@ -16,7 +16,7 @@ void plGraftCap::extractRenderComponents( plRenderMap& renderMap ) const
         return;
 
     // create render component
-    plRenderComponent component( std::make_shared<plVAO>( _vao ) );
+    plRenderComponent component( _vao );
     // attached uniforms
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -36,7 +36,7 @@ void plGraftCap::extractEditorRenderComponents( plRenderMap& renderMap ) const
         return;
 
     // create render component
-    plRenderComponent component( std::make_shared<plVAO>( _vao ) );
+    plRenderComponent component( _vao );
     // attached uniforms
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -425,13 +425,13 @@ void plCartilageCap::generateVAO( const std::vector<plPointAndAngle>& bonePerime
         const plVector3 &p2 = triangles[i].point2();
         const plVector3 &n  = triangles[i].normal();
         
-        vertices.push_back( plVector3( p0.x, p0.y+0.01f, p0.z) );    // position
+        vertices.push_back( plVector3( p0.x, p0.y+0.05f, p0.z) );    // position
         vertices.push_back( n );                                     // normal
 
-        vertices.push_back( plVector3( p1.x, p1.y+0.01f, p1.z) );    // position
+        vertices.push_back( plVector3( p1.x, p1.y+0.05f, p1.z) );    // position
         vertices.push_back( n );                                     // normal
         
-        vertices.push_back( plVector3( p2.x, p2.y+0.01f, p2.z) );    // position
+        vertices.push_back( plVector3( p2.x, p2.y+0.05f, p2.z) );    // position
         vertices.push_back( n );                                     // normal
 
         indices.push_back(base+0);
@@ -459,11 +459,11 @@ void plCartilageCap::generateVAO( const std::vector<plPointAndAngle>& bonePerime
     
             indices.push_back(vertices.size()/2);
             vertices.push_back( perimeter[c].point );   // position
-            vertices.push_back( n );                                  // normal
+            vertices.push_back( n );                    // normal
             
             indices.push_back(vertices.size()/2);
             vertices.push_back( bonePerimeter[b].point );        // position
-            vertices.push_back( n );                                  // normal
+            vertices.push_back( n );                             // normal
         
             if (cAngle < bAngle) 
             {	
@@ -500,20 +500,19 @@ void plCartilageCap::generateVAO( const std::vector<plPointAndAngle>& bonePerime
     if ( indices.size() > 0 )
     {   
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO> vbo( new plVBO() );
+        std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
         vbo->set( vertices );
         vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
         vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
         // set eabo
-        std::shared_ptr<plEABO> eabo( new plEABO() );   
+        std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();   
         eabo->set( indices );
-
-        _vao.clear();
-        // attach to vao
-        _vao.attach( vbo );
-        _vao.attach( eabo );
+        // create vao, attach eabo and vbo, upload to gpu
+        _vao = std::make_shared< plVAO >();
+        _vao->attach( vbo );
+        _vao->attach( eabo );
         // upload to gpu
-        _vao.upload(); 
+        _vao->upload(); 
     }
 }
 
@@ -641,19 +640,18 @@ void plBoneCap::generateVAO( PLfloat radius, PLfloat length )
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );     
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();     
     eabo->set( indices );
-
-    _vao.clear();
-    // attach to vao
-    _vao.attach( vbo );
-    _vao.attach( eabo );
+    // create vao, attach eabo and vbo, upload to gpu
+    _vao = std::make_shared< plVAO >();
+    _vao->attach( vbo );
+    _vao->attach( eabo );
     // upload to gpu
-    _vao.upload(); 
+    _vao->upload(); 
 }
 

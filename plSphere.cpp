@@ -21,13 +21,13 @@ void plSphere::radius  ( PLfloat radius  )
 
 void plSphere::extractRenderComponents( plRenderMap& renderMap ) const
 {
-    static plVAO vao = _generateVAO( 1.0f, 20, 20 );
+    static std::shared_ptr< plVAO > vao =  std::make_shared<plVAO>( _generateVAO( 1.0f, 20, 20 ) );
 
     plModelStack::push();
     plModelStack::translate( _position );   // transform
     plModelStack::scale( _radius );         // scale
 
-    plRenderComponent component( std::make_shared<plVAO>( vao ) );
+    plRenderComponent component( vao );
     
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -144,12 +144,12 @@ plVAO plSphere::_generateVAO( float radius, int slices, int stacks ) const
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices );
     // create and attach to vao
     plVAO vao;

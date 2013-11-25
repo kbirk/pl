@@ -9,7 +9,7 @@ plDisk::plDisk( PLuint techniqueEnum, const plVector3& position, PLfloat radius,
 
 void plDisk::extractRenderComponents( plRenderMap& renderMap ) const
 {
-    static plVAO vao = _generateVAO( 0.0f, 1.0f, 20, 20 );
+    static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( _generateVAO( 0.0f, 1.0f, 20, 20 ) );
 
     plModelStack::push();
     plModelStack::translate( _position );   // transform
@@ -19,7 +19,7 @@ void plDisk::extractRenderComponents( plRenderMap& renderMap ) const
         plModelStack::rotate( 180.0f, plVector3(1,0,0) );
 
     // create render component
-    plRenderComponent component( &vao );
+    plRenderComponent component( vao );
     // attached uniforms
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -102,12 +102,12 @@ plVAO plDisk::_generateVAO( float innerRadius, float outerRadius, int slices, in
     }
         
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices );
     // create and attach to vao
     plVAO vao;

@@ -147,6 +147,8 @@ void plVAO::upload()
 
 void plVAO::_copy( const plVAO& vao )
 {
+    static int c = 0;
+        std::cout << "copy: " << c++ << "\n";
     attach( std::shared_ptr< plEABO >( new plEABO( *vao._eabo ) ) );
     for ( auto& vbo : vao._vbos )
     {
@@ -175,6 +177,7 @@ void plVAO::_move( plVAO&& vao )
 
 void plVAO::_destroy()
 {   
+
     glDeleteVertexArrays( 1, &_id) ;	// delete vao
     _id = 0;
 }

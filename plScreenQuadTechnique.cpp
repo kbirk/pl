@@ -22,7 +22,13 @@ void plScreenQuadTechnique::render( const std::set< plRenderComponent >& compone
     
     plRenderComponent component = _generateComponent();
 
-    component.draw( *shader );   
+    //glEnable( GL_STENCIL_TEST );
+    //glStencilFunc( GL_NOTEQUAL, 1, 1 );
+    //glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
+
+    component.draw( *shader ); 
+
+    //glDisable( GL_STENCIL_TEST );
 }
 
 
@@ -56,12 +62,12 @@ plVAO plScreenQuadTechnique::_generateQuad() const
     indices.push_back( 0 );   indices.push_back( 2 );   indices.push_back( 3 );
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_TEXCOORD_ATTRIBUTE, 16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices );
 
     plVAO vao;
@@ -84,20 +90,20 @@ plRenderComponent plScreenQuadTechnique::_generateComponent() const
                               0, 0, -1, 0,
                               0, 0,  0, 1 ); 
 
-    static plVAO screenQuadVAO = _generateQuad();
+    static std::shared_ptr< plVAO > screenQuadVAO = std::make_shared<plVAO>( _generateQuad() );
 
     const std::shared_ptr< plFBO >& fbo = plRenderResources::fbos( PL_MAIN_FBO );
 
-    plRenderComponent component( std::make_shared<plVAO>( screenQuadVAO ) );
+    plRenderComponent component( screenQuadVAO );
 
     // attach transformation uniforms
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44() ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       camera       ) );
     component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, ortho        ) );
     // attach texture uniforms
-    component.attach( plUniform( PL_TEXTURE_UNIT_0_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT0 ) ) ) );
-    component.attach( plUniform( PL_TEXTURE_UNIT_1_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT1 ) ) ) );     
-    component.attach( plUniform( PL_TEXTURE_UNIT_2_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT2 ) ) ) );
+    component.attach( plUniform( PL_TEXTURE_UNIT_0_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT0 ) ) ) );     // colour buffer
+    component.attach( plUniform( PL_TEXTURE_UNIT_1_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT1 ) ) ) );     // outline buffer
+    component.attach( plUniform( PL_TEXTURE_UNIT_2_UNIFORM, &( *fbo->texture2DAttachment( GL_COLOR_ATTACHMENT3 ) ) ) );     // arthro cam buffer
 
     return component;
 }

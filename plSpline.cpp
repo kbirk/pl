@@ -107,7 +107,7 @@ void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
         plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );        
         
         // create render component
-        plRenderComponent component( std::make_shared<plVAO>( _surfaceVAO ) );
+        plRenderComponent component( _surfaceVAO );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -136,7 +136,7 @@ void plSpline::extractEditorRenderComponents( plRenderMap& renderMap ) const
         _extractPointEditorRenderComponents( renderMap );
         
         // create render component
-        plRenderComponent component( std::make_shared<plVAO>( _surfaceVAO ) );
+        plRenderComponent component( _surfaceVAO );
         // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
@@ -365,21 +365,20 @@ void plSpline::_computeHermite()
     _surfaceMesh = plMesh( triangles );
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     vbo->set( plVertexAttributePointer( PL_COLOUR_ATTRIBUTE,   32 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );    
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices );
-
-    _surfaceVAO.clear();
-    // attach to vao
-    _surfaceVAO.attach( vbo );
-    _surfaceVAO.attach( eabo );
+    // create vao, attach eabo and vbo, upload to gpu
+    _surfaceVAO = std::make_shared< plVAO >();
+    _surfaceVAO->attach( vbo );
+    _surfaceVAO->attach( eabo );
     // upload to gpu
-    _surfaceVAO.upload(); 
+    _surfaceVAO->upload(); 
 
     // update timer to store time of last update
     _lastUpdate = plTimer::now();

@@ -46,7 +46,7 @@ class plBoundary : public plRenderable,
         std::vector<plVector3> _points;       // always in counterclockwise direction
         std::vector<plVector3> _normals;   
         
-        plVAO _vao;    
+        std::shared_ptr< plVAO > _vao;    
 
         plVector4 _getColour() const;    
         

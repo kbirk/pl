@@ -29,7 +29,7 @@ class plEABO : public plVertexSpecBuffer
         void bind  () const { glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _id ); }
         void unbind() const { glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0   ); }
 
-        void drawElements() const;
+        void drawElements( PLuint index = 0 ) const;
 
     private:
 

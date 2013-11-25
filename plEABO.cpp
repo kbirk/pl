@@ -81,9 +81,9 @@ void plEABO::upload()
 }
 
 
-void plEABO::drawElements() const
+void plEABO::drawElements( PLuint index ) const
 {
-    glDrawElements( _mode, _data.size(), _type, 0 ); 
+    glDrawElements( _mode, _data.size(), _type, (GLvoid*)(index) ); 
 }
 
 
