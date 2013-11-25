@@ -131,19 +131,20 @@ void plArthroscope::_generateVAO()
     indices.push_back( 0 );   indices.push_back( 2 );   indices.push_back( 3 );
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo( new plVBO() );
+    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_TEXCOORD_ATTRIBUTE, 16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo( new plEABO() );
+    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
     eabo->set( indices );
 
-    // attach to vao
-    _vao.attach( vbo );
-    _vao.attach( eabo );
+    // create vao and attach buffers
+    _vao = std::make_shared<plVAO>();
+    _vao->attach( vbo );
+    _vao->attach( eabo );
     // upload to gpu
-    _vao.upload();
+    _vao->upload();
 }
 
 
@@ -158,7 +159,7 @@ void plArthroscope::_extractCameraRenderComponents( plRenderMap& renderMap ) con
 
     // draw walls
     // create render component
-    plRenderComponent component( std::make_shared<plVAO>( _vao ) );
+    plRenderComponent component( _vao );
     // attached uniforms
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44() ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       camera       ) );
