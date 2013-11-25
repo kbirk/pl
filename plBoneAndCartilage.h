@@ -19,10 +19,6 @@ class plBoneAndCartilage : plRenderable
 
         plVector3 getCentroid() const; 
 
-    private:
-
-        //plVAO _generateTransparencyVAO() const;
-        
 };
 
 

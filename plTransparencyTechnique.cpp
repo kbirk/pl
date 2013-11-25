@@ -1,11 +1,11 @@
-#include "plModelTechnique.h"
+#include "plTransparencyTechnique.h"
 
-plModelTechnique::plModelTechnique()
+plTransparencyTechnique::plTransparencyTechnique()
 {
 }      
 
 
-void plModelTechnique::render( const std::set< plRenderComponent >& componentSet ) const
+void plTransparencyTechnique::render( const std::set< plRenderComponent >& componentSet ) const
 {
 
     const std::shared_ptr< plFBO >&    fbo    = plRenderResources::fbos( PL_MAIN_FBO );
@@ -52,7 +52,7 @@ void plModelTechnique::render( const std::set< plRenderComponent >& componentSet
 }
 
 
-void plModelTechnique::_initState() const
+void plTransparencyTechnique::_initState() const
 {
     // enable back face culling
     glEnable( GL_CULL_FACE );
@@ -67,7 +67,7 @@ void plModelTechnique::_initState() const
 }
 
 /*
-void plModelTechnique::_drawFbo() const
+void plTransparencyTechnique::_drawFbo() const
 {
     // VAO GENERATION
     std::vector<plVector3> vertices;

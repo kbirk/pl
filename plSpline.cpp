@@ -128,58 +128,6 @@ void plSpline::extractRenderComponents( plRenderMap& renderMap ) const
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
 
-/*
-void plSpline::extractEditorRenderComponents( plRenderMap& renderMap ) const
-{
-    // if not full 4 corners, display walls
-    if ( size() < 4 )
-    {
-        // draw boundary walls
-        plBoundary::extractEditorRenderComponents( renderMap );
-    }
-    else
-    {
-        // draw points
-        _extractPointEditorRenderComponents( renderMap );
-        
-        // create render component
-        plRenderComponent component( _surfaceVAO );
-        // attached uniforms
-        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
-        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
-        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
-        // insert into render map     
-        renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component );  
-    } 
-}
-*/
-
-  /*     
-void plSpline::draw() const
-{      
-    if ( !_isVisible )
-        return;
-   
-    plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS );
-    if (size() < 4 )
-    {
-        // draw boundary walls
-        plBoundary::draw();
-    }
-    else
-    {
-        _setColour();
-        // draw points
-        _drawPoints();
-        // draw spline
-        plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS ); //PL_PICKING_TYPE_DEFECT_SPLINE; 
-        plPickingStack::loadBlue( -1 );  // unused  
-        plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );   
-        _surfaceVAO.draw();  
-        plColourStack::pop();
-    }           
-}
-*/
 
 PLfloat Q( PLfloat s, PLfloat t, const std::vector<PLfloat> &st, const std::vector<PLfloat> &tt)
 {

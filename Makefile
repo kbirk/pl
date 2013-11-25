@@ -49,7 +49,6 @@ SOURCES =   main.cpp \
             plMeshIntersector.cpp \
             plModel.cpp \
             plModelSpecific.cpp \
-            plModelTechnique.cpp \
             plOctree.cpp \
             plOctreeMesh.cpp \
             plOpenGLInfo.cpp \
@@ -87,6 +86,7 @@ SOURCES =   main.cpp \
             plTexture3D.cpp \
             plTrackedObject.cpp \
             plTransform.cpp \
+            plTransparencyTechnique.cpp \
             plTransparentRenderable.cpp \
             plTriangle.cpp \
             plUtility.cpp \

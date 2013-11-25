@@ -11,13 +11,12 @@
 #include "plScreenQuadTechnique.h"
 #include "plOutlineTechnique.h"
 #include "plArthroCamTechnique.h"
-#include "plModelTechnique.h"
+#include "plTransparencyTechnique.h"
 
 enum plTechniqueEnums
 {   
-    PL_TRANSPARENT_TECHNIQUE = 1,
-    PL_PLAN_TECHNIQUE,  
-    PL_MODEL_TECHNIQUE,
+    PL_PLAN_TECHNIQUE = 1,  
+    PL_TRANSPARENCY_TECHNIQUE,
     PL_OUTLINE_TECHNIQUE,
     PL_ARTHRO_CAM_TECHNIQUE,
     PL_EDITOR_TECHNIQUE,

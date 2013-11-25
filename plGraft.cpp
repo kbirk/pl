@@ -54,42 +54,6 @@ void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap, PLuint tech
 }
 
 
-
-/*
-void plGraft::_extractGraftEditorRenderComponents( plRenderMap& renderMap ) const
-{
-    // draw cartilage cap
-    _cartilageCap.extractEditorRenderComponents( renderMap );
-    // draw bone cap
-    _boneCap.extractEditorRenderComponents( renderMap );
-    // draw marker   
-    plRenderer::queue( plSphere( PL_OUTLINE_TECHNIQUE, _markPosition, 0.5f ) );
-}
-
-
-void plGraft::extractRenderComponents( plRenderMap& renderMap ) const
-{
-    if ( !_isVisible )
-        return;
-
-    // Draw at harvest location
-    plModelStack::push( _harvest.transform().matrix() );
-    plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DONOR );                  
-    _extractGraftRenderComponents( renderMap );
-    plModelStack::pop();
-
-    // Draw at recipient location
-    plModelStack::push( _recipient.transform().matrix() );
-    plModelStack::translate( 0, _heightOffset, 0 );
-    plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
-    _extractGraftRenderComponents( renderMap );
-    plModelStack::pop();
-
-}
-*/
-
-
-
 void plGraft::_generateCaps()
 {
     // generate cap polygons

@@ -6,12 +6,12 @@
 #include "plRenderResources.h"
 
 
-class plModelTechnique : public plRenderTechnique
+class plTransparencyTechnique : public plRenderTechnique
 {
 
     public:
 
-        plModelTechnique();       
+        plTransparencyTechnique();       
 
         void render( const std::set< plRenderComponent >& componentSet ) const;
 

@@ -74,45 +74,6 @@ void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap, PLuint t
     } 
 }
 
-/*
-void plBoundary::extractEditorRenderComponents( plRenderMap& renderMap ) const
-{
-    // draw walls
-    if ( _points.size() > 1 )
-    {
-        // create render component
-        plRenderComponent component( _vao );
-        // attached uniforms
-        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
-        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
-        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
-        // insert into render map
-        renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component );            
-    }
-        
-    // draw points
-    _extractPointEditorRenderComponents( renderMap );
-}
-
-
-void plBoundary::_extractPointEditorRenderComponents( plRenderMap& renderMap ) const
-{
-    // draw points
-    for (PLuint i=0; i<_points.size(); i++) 
-    {   
-        if ( _isSelected && _selectedValue == i )   // is the current point selected?
-        {
-            // scale larger
-            plRenderer::queue( plSphere( PL_OUTLINE_TECHNIQUE, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
-        }
-        else
-        {
-            // regular size
-            plRenderer::queue( plSphere( PL_OUTLINE_TECHNIQUE, _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
-        }
-    } 
-}
-*/
 
 plVector3 plBoundary::getAverageNormal() const
 {
@@ -258,52 +219,27 @@ void plBoundary::clear()
 
 plVector4 plBoundary::_getColour() const
 {
-    /*
-    if (_isSelected)
+    // not selected
+    switch ( plPickingStack::topRed() )
     {
-        // selected
-        switch ( plPickingStack::topRed() )
-        {
-            case PL_PICKING_TYPE_DEFECT_CORNERS:
-                // defect corners 
-                return plVector4( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
+        case PL_PICKING_TYPE_DEFECT_CORNERS:
+            // defect corners 
+            return plVector4( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
 
-            case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-                // defect boundary
-                return plVector4( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL ); 
- 
-            case PL_PICKING_TYPE_DONOR_BOUNDARY:
-                // donor boundary
-                return plVector4( PL_BOUNDARY_DONOR_COLOUR_DULL );
+        case PL_PICKING_TYPE_DEFECT_BOUNDARY:
+            // defect boundary
+            return plVector4( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
 
-            case PL_PICKING_TYPE_IGUIDE_BOUNDARY:     
-                // iguide boundary
-                return plVector4( PL_BOUNDARY_IGUIDE_COLOUR_DULL );   
-        }
+        case PL_PICKING_TYPE_DONOR_BOUNDARY:
+            // donor boundary
+            return plVector4( PL_BOUNDARY_DONOR_COLOUR );
+
+        case PL_PICKING_TYPE_IGUIDE_BOUNDARY: 
+        default:    
+            // iguide boundary
+            return plVector4( PL_BOUNDARY_IGUIDE_COLOUR );   
     }
-    else
-    {
-    */
-        // not selected
-        switch ( plPickingStack::topRed() )
-        {
-            case PL_PICKING_TYPE_DEFECT_CORNERS:
-                // defect corners 
-                return plVector4( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
 
-            case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-                // defect boundary
-                return plVector4( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
- 
-            case PL_PICKING_TYPE_DONOR_BOUNDARY:
-                // donor boundary
-                return plVector4( PL_BOUNDARY_DONOR_COLOUR );
-
-            case PL_PICKING_TYPE_IGUIDE_BOUNDARY:     
-                // iguide boundary
-                return plVector4( PL_BOUNDARY_IGUIDE_COLOUR );   
-        }
-    //}
 }
 
 

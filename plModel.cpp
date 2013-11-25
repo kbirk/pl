@@ -47,7 +47,7 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
         plVector4 currentColour = plColourStack::top();
         component.attach( plUniform( PL_COLOUR_UNIFORM,  plVector4( currentColour.x, currentColour.y, currentColour.z, 0.7)  ) ); 
         // insert into render map   
-        renderMap[ PL_MODEL_TECHNIQUE ].insert( component );        
+        renderMap[ PL_TRANSPARENCY_TECHNIQUE ].insert( component );        
         
         // Sort by distance
         plVector3 viewDir = plCameraStack::direction();

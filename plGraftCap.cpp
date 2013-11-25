@@ -510,7 +510,7 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
         
                 indices.push_back(vertices.size()/2);
                 vertices.push_back( perimeter[c].point );    // position
-                vertices.push_back( n );                                  // normal
+                vertices.push_back( n );                     // normal
             }  
             else 
             {			
@@ -524,7 +524,7 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
         
                 indices.push_back(vertices.size()/2);
                 vertices.push_back( bonePerimeter[b].point );        // position
-                vertices.push_back( n );                                  // normal
+                vertices.push_back( n );                             // normal
             }
             stepsLeft--;
         }
