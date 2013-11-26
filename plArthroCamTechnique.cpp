@@ -15,6 +15,15 @@ void plArthroCamTechnique::render( const std::set< plRenderComponent >& componen
 
     // bind fbo
     fbo->bind();
+
+    std::vector<GLenum> drawBuffers;
+    drawBuffers.push_back( GL_NONE );
+    drawBuffers.push_back( GL_NONE );
+    drawBuffers.push_back( GL_NONE );
+    drawBuffers.push_back( GL_COLOR_ATTACHMENT3 );
+    drawBuffers.push_back( GL_NONE );
+    fbo->setDrawBuffers( drawBuffers );
+
     // bind shader
     shader->bind();
 
