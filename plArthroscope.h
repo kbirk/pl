@@ -26,8 +26,7 @@ enum ImageManipulation
 };
 
 
-class plArthroscope : public plTrackedObject,
-                      public plRenderable
+class plArthroscope : public plTrackedObject
 {
 
     public:
