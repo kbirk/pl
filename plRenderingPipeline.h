@@ -49,6 +49,7 @@ namespace plModelStack
 {  		
 	void push();
 	void push( const plMatrix44 &m );
+	void load( const plMatrix44 &m );
 	void mult( const plMatrix44 &m );
 	void pop();
 	

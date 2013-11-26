@@ -42,11 +42,7 @@ class plGraftEditor : public plRenderable
         PLbool  processMouseDrag    ( plPlan &plan, PLint x, PLint y );
         PLbool  processMouseRelease ( plPlan &plan, PLint x, PLint y );
         PLbool  processJoystickDrag ( plPlan &plan, PLint x, PLint y );
-            
-        //void    translateSelected ( const plVector3 &translation );
-        //void    rotateSelected    ( const plVector3 &axis, PLfloat angle_degrees );
-        //void    spinMarkSelected  ( PLfloat angle_degrees );
-        
+
         void    toggleSelectedVisibility();
 
     private: 
@@ -57,15 +53,14 @@ class plGraftEditor : public plRenderable
         plVector3   _editAxis;
         plVector3   _screenEditAxis;
         
-        PLbool      _handlesEnabled;
+        //PLbool      _handlesEnabled;
 
         PLint       _selectedType;
         plGraft    *_selectedGraft;
         
         plVector3   _previousMousePos;
-        plVector3   _translationPlaneNormal;
+        //plVector3   _translationPlaneNormal;
         
-        void      _selectMarker( plPlan &plan, PLuint x, PLuint y, PLuint index, PLuint type );
         void      _selectHandle ( plPlan &plan, PLint x, PLint y, PLuint type );
         void      _dragHandle   ( plPlan &plan, PLint x, PLint y );
         void      _dragMarker   ( plPlan &plan, PLint x, PLint y );

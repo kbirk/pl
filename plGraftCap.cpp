@@ -624,7 +624,7 @@ void plCartilageCap::_generateProjectionVAO( PLfloat radius, PLfloat length, con
     
     if ( perimeter.size() > 0 ) 
     {
-        PLfloat PROJECTION_LENGTH = 10;
+        PLfloat PROJECTION_LENGTH = 15;
         PLfloat CONTRACTED_RADIUS = radius - 0.1f;
         // generate cylinder walls
         plVector3 centreTop = ( PROJECTION_LENGTH ) * y;

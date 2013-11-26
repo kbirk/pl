@@ -99,6 +99,7 @@ namespace plModelStack
 
 	void push()				         { _stack.push(_stack.top());      }	
 	void push( const plMatrix44 &m ) { _stack.push(m);			       }	
+    void load( const plMatrix44 &m ) { _stack.load(m);                 }
 	void mult( const plMatrix44 &m ) { _stack.load( _stack.top() * m); } 
 	void pop()                       { if ( !_stack.empty() ) _stack.pop(); }
 	

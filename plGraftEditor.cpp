@@ -6,7 +6,7 @@ plGraftEditor::plGraftEditor()
     _editAxis       = plVector3(1,0,0);
     _selectedGraft  = NULL; 
     _selectedType   = -1;
-    _handlesEnabled = true;
+    //_handlesEnabled = true;
     _isDraggingMenu = false;
 }
 
@@ -54,18 +54,10 @@ PLbool plGraftEditor::processMouseClick( plPlan &plan, PLint x, PLint y )
             return true;
 
         case PL_PICKING_TYPE_GRAFT_HANDLE: 
-        /*
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Y: 
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Z: 
-        */
+
             _selectHandle( plan, x, y, pick.r );
             return true;
-
-        
-        
-            //_selectMarker( plan, x, y, pick.green, pick.blue );
-            //return true;
-            
+           
         default:
 
             clearSelection( plan );
@@ -84,10 +76,7 @@ PLbool plGraftEditor::processMouseDrag( plPlan &plan, PLint x, PLint y )
     switch ( pick.r ) 
     {  
         case PL_PICKING_TYPE_GRAFT_HANDLE:
-        /* 
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Y: 
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Z: 
-        */    
+ 
             _dragHandle( plan, x, y );
             return true;
         
@@ -159,31 +148,6 @@ void plGraftEditor::selectGraft( plPlan &plan, PLuint index, PLuint type )
 }
 
 
-void plGraftEditor::_selectMarker( plPlan &plan, PLuint x, PLuint y, PLuint index, PLuint type )
-{
-    // clear any previous selections
-    clearSelection( plan ); 
-
-    for (PLuint i=0; i<plan.grafts().size(); i++)
-    {
-        if (i == index)
-        {
-            plan.grafts(i)._selectedValue = type;
-            plan.grafts(i)._isSelected    = true;
-            _selectedType                 = type;
-            _selectedGraft                = &plan.grafts(i);
-        }
-    } 
-    /*
-    _previousMousePos = plVector3( x, y, 0.0f );                                                                   
-    _editAxis         = _selectedGraft->transform(_selectedType).y();            
-
-    plVector3 origin = _selectedGraft->transform(_selectedType).origin();                                               
-    _screenEditAxis = _getScreenAxis( _editAxis, origin );
-    */
-}
-
-
 void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
 {   
     if ( _selectedGraft == NULL )    
@@ -196,7 +160,7 @@ void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
         case PL_PICKING_TYPE_GRAFT_HANDLE_X: 
 
             _editAxis               = _selectedGraft->transform(_selectedType).x();          
-            _translationPlaneNormal = _selectedGraft->transform(_selectedType).z();            
+            //_translationPlaneNormal = _selectedGraft->transform(_selectedType).z();            
             break;
             
         case PL_PICKING_TYPE_GRAFT_HANDLE_Y: 
@@ -207,7 +171,7 @@ void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
         case PL_PICKING_TYPE_GRAFT_HANDLE_Z: 
         
             _editAxis               =  _selectedGraft->transform(_selectedType).z();            
-            _translationPlaneNormal = -_selectedGraft->transform(_selectedType).x(); 
+            //_translationPlaneNormal = -_selectedGraft->transform(_selectedType).x(); 
             break;
     }                                                         
      
@@ -216,21 +180,6 @@ void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
     _screenEditAxis = _getScreenAxis( _editAxis, origin );      
 }
 
-
-void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
-{
-    if ( _selectedGraft == NULL )    
-        return;                 // no graft selected
-        
-    //_selectedGraft->extractRenderComponents( renderMap, technique );   
-    
-}
-
-void plGraftEditor::extractRenderComponents( plRenderMap& renderMap ) const
-{
-    extractRenderComponents( renderMap, PL_OUTLINE_TECHNIQUE );
-
-}
 
 void plGraftEditor::_dragMarker( plPlan &plan, PLint x, PLint y )
 {
@@ -247,8 +196,7 @@ void plGraftEditor::_dragMarker( plPlan &plan, PLint x, PLint y )
     // project mouse and origin back into world coords
     plVector3 mouseWorld  = plWindow::mouseToWorld( x, y, 0.0f );
     plVector3 originWorld = plWindow::mouseToWorld( originWindow.x, originWindow.y, 0.0f );
-    
-    
+     
     plVector3 direction      = (mouseWorld - originWorld).normalize();   
     plVector3 tangent        = (direction ^ graftY).normalize();   
     plVector3 orthoDirection = (graftY ^ tangent).normalize() + graftOrigin;
@@ -268,8 +216,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
     {
         case PL_GRAFT_EDIT_MODE_TRANSLATE:
         {            
-            // translation      
-            
+            // translation                
             plVector3 rayOrigin, rayDirection;
             plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
             
@@ -318,14 +265,13 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
             {
                 // intersect model
                 intersection = _selectedGraft->plug( _selectedType ).model().combined.mesh().rayIntersect( rayOrigin, rayDirection, true ); // smooth normal
-                
-                
             }
 
             if ( intersection.exists )
             { 
                 _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
             }
+            
             break;
             
             /*      
@@ -388,42 +334,15 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
     } 
     
     // update initial drag position
-    _previousMousePos = plVector3(x,y,0.0f);          
+    _previousMousePos = plVector3( x, y, 0.0f );          
 }
-
-/*
-void plGraftEditor::translateSelected( const plVector3 &translation )
-{
-    if (_selectedGraft == NULL)    
-        return;                 // no graft selected
-    
-    _selectedGraft->translate( _selectedType, translation );
-}
-
-
-void plGraftEditor::rotateSelected( const plVector3 &axis, PLfloat angle_degrees )
-{
-    if (_selectedGraft == NULL)    
-        return;                 // no graft selected
-    
-    _selectedGraft->rotate( _selectedType, axis, angle_degrees);
-}
-
-
-void plGraftEditor::spinMarkSelected( PLfloat angle_degrees )
-{
-    if (_selectedGraft == NULL)    
-        return;                 // no graft selected
-    
-    _selectedGraft->spinMark( angle_degrees );
-}
-*/
 
 
 void plGraftEditor::toggleSelectedVisibility()
 {
     if (_selectedGraft == NULL)
         return;
+        
     _selectedGraft->toggleVisibility();
 }
 
@@ -438,8 +357,41 @@ plVector3 plGraftEditor::_getScreenAxis( const plVector3 &edit_axis, const plVec
                                                        edit_axis.y + world_position.y, 
                                                        edit_axis.z + world_position.z );
 
-    return (screenAxisTip - screenOrigin).normalize();
+    return ( screenAxisTip - screenOrigin ).normalize();
 }
+
+
+void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
+{
+    if ( _selectedGraft == NULL )    
+        return;                 // no graft selected
+        
+    _selectedGraft->extractRenderComponents( renderMap, technique );  
+    
+    /* 
+    if ( _selectedGraft == NULL || !_selectedGraft->isVisible() )
+        return;
+
+    plModelStack::push();
+    plModelStack::load( _selectedGraft->transform(_selectedType).matrix() );
+
+    if ( PL_GRAFT_SELECTED_IS_DEFECT )
+        plModelStack::translate( 0, _selectedGraft->heightOffset(), 0 );
+
+    plColourStack::load( PL_AXIS_GREY ); 
+    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_HANDLE );
+    plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), PL_HANDLE_SPHERE_RADIUS ) );
+   
+    plModelStack::pop();
+    */
+}
+
+
+void plGraftEditor::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_OUTLINE_TECHNIQUE );
+}
+
 
 /*
 void plGraftEditor::drawMenu( const plPlan &plan, PLuint x, PLuint y ) const
