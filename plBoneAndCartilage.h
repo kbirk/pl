@@ -4,7 +4,8 @@
 #include "plCommon.h"
 #include "plModel.h"
 
-class plBoneAndCartilage : plRenderable
+class plBoneAndCartilage : public plRenderable,
+                           public plArthroViewable
 {
     public:
     
@@ -19,6 +20,8 @@ class plBoneAndCartilage : plRenderable
 
         plVector3 getCentroid() const; 
 
+        void toggleArthroView();
+            
 };
 
 

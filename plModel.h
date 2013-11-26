@@ -6,6 +6,7 @@
 #include "plOctreeMesh.h"
 #include "plTriangle.h"
 #include "plTransparentRenderable.h"
+#include "plArthroViewable.h"
 #include "plPicking.h"
 #include "plRenderingPipeline.h"
 #include "plVAO.h"
@@ -31,7 +32,8 @@ class plOrderPair
 };
 
 
-class plModel : public plTransparentRenderable
+class plModel : public plTransparentRenderable,
+                public plArthroViewable
 {
     public:
 
@@ -44,12 +46,10 @@ class plModel : public plTransparentRenderable
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
-        
-        void draw( const plVector3 &colour ) const;
 
 	private:
 	
-	    plOctreeMesh _mesh;
+	    plOctreeMesh             _mesh;
         std::shared_ptr< plVAO > _vao;
         
         void _generateVAO();

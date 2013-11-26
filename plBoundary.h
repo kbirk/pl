@@ -43,15 +43,14 @@ class plBoundary : public plRenderable,
         
     protected:
 
-        std::vector<plVector3> _points;       // always in counterclockwise direction
-        std::vector<plVector3> _normals;   
+        std::vector< plVector3 > _points;       // always in counterclockwise direction
+        std::vector< plVector3 > _normals;   
         
         std::shared_ptr< plVAO > _vao;    
 
         plVector4 _getColour() const;    
         
-        void _generateVAO(); 
-        
+        void _generateVAO();         
         void _extractPointRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
         
 };

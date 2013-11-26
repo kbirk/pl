@@ -7,7 +7,7 @@ plDisk::plDisk( PLuint techniqueEnum, const plVector3& position, PLfloat radius,
 }
 
 
-void plDisk::extractRenderComponents( plRenderMap& renderMap ) const
+void plDisk::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( _generateVAO( 0.0f, 1.0f, 20, 20 ) );
 
@@ -28,11 +28,15 @@ void plDisk::extractRenderComponents( plRenderMap& renderMap ) const
     component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
     component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
     // insert into render map
-    renderMap[ _techniqueEnum ].insert( component );  
+    renderMap[ technique ].insert( component );  
     
     plModelStack::pop();         
 }
 
+void plDisk::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, _techniqueEnum );
+}
 
 plVAO plDisk::_generateVAO( float innerRadius, float outerRadius, int slices, int loops, bool up ) const
 {

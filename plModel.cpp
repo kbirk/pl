@@ -33,43 +33,53 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
     component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
-    component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) );    
-
-    if ( !_isTransparent ) 
+    component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM, plVector3( PL_LIGHT_POSITION ) ) );
+    component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+    
+    if ( !_inArthroView )
     {
-        component.attach( plUniform( PL_PICKING_UNIFORM, plPickingStack::top() ) );
-        component.attach( plUniform( PL_COLOUR_UNIFORM,  plColourStack::top()  ) ); 
-        // insert into render map   
-        renderMap[ technique ].insert( component );        
-    }
+        if ( !_isTransparent ) 
+        {
+            component.attach( plUniform( PL_COLOUR_UNIFORM,  plColourStack::top()  ) ); 
+            // insert into render map   
+            renderMap[ technique ].insert( component );        
+        }
+        else
+        {
+            plVector4 currentColour = plColourStack::top();
+            component.attach( plUniform( PL_COLOUR_UNIFORM,  plVector4( currentColour.x, currentColour.y, currentColour.z, 0.7)  ) ); 
+            // insert into render map   
+            renderMap[ PL_TRANSPARENCY_TECHNIQUE ].insert( component );        
+            
+            // Sort by distance
+            plVector3 viewDir = plCameraStack::direction();
+
+            std::vector<plOrderPair> order;     order.reserve( _mesh.triangles().size() );
+            PLuint index = 0;
+            for ( const plTriangle& triangle : _mesh.triangles() )
+            {
+                order.emplace_back( plOrderPair( index++, triangle.centroid() * viewDir) );
+            }
+            std::sort( order.begin(), order.end() );
+
+            std::vector<PLuint> indices;    indices.reserve( _mesh.triangles().size()*3 );
+            for (PLuint i = 0; i < order.size(); i++)
+            {
+                indices.push_back( order[i].index*3 );
+                indices.push_back( order[i].index*3+1 );
+                indices.push_back( order[i].index*3+2 );
+            }   
+            
+            // dirty const_cast          
+            const_cast< std::shared_ptr< plVAO >& >( _vao )->eabo()->set( indices );
+            const_cast< std::shared_ptr< plVAO >& >( _vao )->upload();
+        }  
+    }  
     else
     {
-        plVector4 currentColour = plColourStack::top();
-        component.attach( plUniform( PL_COLOUR_UNIFORM,  plVector4( currentColour.x, currentColour.y, currentColour.z, 0.7)  ) ); 
-        // insert into render map   
-        renderMap[ PL_TRANSPARENCY_TECHNIQUE ].insert( component );        
-        
-        // Sort by distance
-        plVector3 viewDir = plCameraStack::direction();
-
-        std::vector<plOrderPair> order;     order.reserve( _mesh.triangles().size() );
-        PLuint index = 0;
-        for ( const plTriangle& triangle : _mesh.triangles() )
-        {
-            order.emplace_back( plOrderPair( index++, triangle.centroid() * viewDir) );
-        }
-        std::sort( order.begin(), order.end() );
-
-        std::vector<PLuint> indices;    indices.reserve( _mesh.triangles().size()*3 );
-        for (PLuint i = 0; i < order.size(); i++)
-        {
-            indices.push_back( order[i].index*3 );
-            indices.push_back( order[i].index*3+1 );
-            indices.push_back( order[i].index*3+2 );
-        }             
-        const_cast< std::shared_ptr< plVAO >& >( _vao )->eabo()->set( indices );
-        const_cast< std::shared_ptr< plVAO >& >( _vao )->upload();
-    }    
+        // in arthro camera view
+        renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component );
+    }
 }
         
 

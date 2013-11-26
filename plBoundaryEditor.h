@@ -39,7 +39,6 @@ class plBoundaryEditor : public plRenderable
 
         void extractRenderComponents( plRenderMap& renderMap ) const; 
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
-        //void    drawMenu( const plPlan &plan, PLuint x, PLuint y ) const;
 
     private: 
     

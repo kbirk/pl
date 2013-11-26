@@ -2,10 +2,10 @@
 
 #extension GL_EXT_gpu_shader4 : enable
 
-#define BLUR_KERNAL_SIZE        10
+#define BLUR_KERNAL_SIZE        5
 #define BLUR_KERNAL_STRIDE      1
 
-#define OUTLINE_COLOUR          0.8, 1.0, 1.0 //0.3, 1.0, 0.5 
+#define OUTLINE_COLOUR          0.8, 1.0, 1.0
 
 in vec2 texCoordOut;
 

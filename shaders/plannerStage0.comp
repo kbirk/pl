@@ -35,7 +35,7 @@ layout ( std430, binding = 7 ) buffer workGroupStates
     uint  groupGraftCounts    [ PL_NUM_WORKGROUPS ];
     vec4  groupGraftPositions [ PL_NUM_WORKGROUPS * PL_MAX_GRAFTS_PER_SOLUTION ];
     vec4  groupGraftNormals   [ PL_NUM_WORKGROUPS * PL_MAX_GRAFTS_PER_SOLUTION ];
-    float groupGraftRadii     [ PL_NUM_WORKGROUPS * PL_MAX_GRAFTS_PER_SOLUTION ];         
+    float groupGraftRadii     [ PL_NUM_WORKGROUPS * PL_MAX_GRAFTS_PER_SOLUTION ];        
 };
 
 

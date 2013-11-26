@@ -47,7 +47,7 @@ void plSSBO::_create( PLuint numBytes, const void *buffer )
         glGenBuffers(1, &_id);   
 
     // bind and buffer data
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id);
+    glBindBuffer( GL_SHADER_STORAGE_BUFFER, _id );
 
     if ( !buffer )
     {

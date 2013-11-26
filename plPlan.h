@@ -14,7 +14,8 @@
 #include "plIGuideSite.h"
 #include "plIGuide.h"
 
-class plPlan : public plRenderable
+class plPlan : public plRenderable,
+               public plArthroViewable
 {
     public:
 
@@ -70,6 +71,8 @@ class plPlan : public plRenderable
         void saveVisibilityState();
         void loadVisibilityState();
         
+        void toggleArthroView();
+                
         void clear();
 
     private: 

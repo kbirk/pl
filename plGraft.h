@@ -3,6 +3,7 @@
 
 #include "plCommon.h"
 #include "plRenderable.h"
+#include "plArthroViewable.h"
 #include "plEditable.h"
 #include "plVector3.h"
 #include "plTriangle.h"
@@ -15,11 +16,12 @@
 #include "plRenderer.h"
 #include "plSphere.h"
 #include "plGraftCap.h"
-
+#include "plCone.h"
 #include "plCylinder.h"
 
 class plGraft : public plRenderable,
-                public plEditable
+                public plEditable,
+                public plArthroViewable
 {
 
     public:
@@ -38,7 +40,7 @@ class plGraft : public plRenderable,
         const PLfloat&     length()             const { return _length; }
         const PLfloat&     cartilageThickness() const { return _cartilageThickness; }     
         const plVector3&   markDirection()      const { return _markDirection; } 
-        const plVector3&   markPositions( PLuint index )       const { return _markPositions[ index ]; } 
+        const plVector3&   markPositions( PLuint index ) const { return _markPositions[ index ]; } 
         const plTransform& transform ( PLuint type ) const;
         const plPlug&      plug      ( PLuint type ) const;
         const plPlug&      harvest   () const { return _harvest;   }
@@ -51,7 +53,9 @@ class plGraft : public plRenderable,
         void move       ( PLuint type, const plVector3 &origin, const plVector3 &y );
         void rotate     ( PLuint type, const plVector3 &axis, PLfloat angleDegrees );
         void setMark    ( const plVector3 &direction ); 
-                 
+             
+        void toggleArthroView() { plArthroViewable::toggleArthroView(); _cartilageCap.toggleArthroView(); }    
+                            
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 

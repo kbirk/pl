@@ -10,7 +10,6 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       Window( x, y, width, height, title )
 {  
     plInit();
-    _graftEditor.selectGraft( _plan, 0, PL_PICKING_INDEX_GRAFT_DONOR );
 }
 
 
@@ -93,6 +92,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
 
         case 'b':   _plan.models(0).bone.toggleVisibility();                    break;            
         case 'c':   _plan.models(0).cartilage.toggleVisibility();               break;
+        case 'a':   _plan.toggleArthroView();                                   break;
         case 'i':   _plan.iGuides(0).toggleVisibility();                        break;
         case 'p':   _plan.toggleVisibility();                                   break;    
         case 'z':   _camera.reset( _plan.models(0).getCentroid() );             break;          

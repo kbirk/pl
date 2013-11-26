@@ -17,14 +17,22 @@ void plBoneAndCartilage::extractRenderComponents( plRenderMap& renderMap, PLuint
     // draw bone
     plPickingStack::loadRed( PL_PICKING_TYPE_BONE );
     plColourStack::load( PL_MODEL_BONE_COLOUR );       
-    bone.extractRenderComponents( renderMap, technique );
-    
+    bone.extractRenderComponents( renderMap, technique );  
 }
 
 
 void plBoneAndCartilage::extractRenderComponents( plRenderMap& renderMap ) const
 {
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+}
+
+
+void plBoneAndCartilage::toggleArthroView()
+{
+    plArthroViewable::toggleArthroView();
+    bone.toggleArthroView();
+    cartilage.toggleArthroView();
+    combined.toggleArthroView();
 }
 
 

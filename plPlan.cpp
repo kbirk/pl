@@ -63,55 +63,86 @@ plPlan::~plPlan()
 }
 
 
+void plPlan::toggleArthroView()
+{ 
+    plArthroViewable::toggleArthroView();
+    for ( plGraft* graft : _grafts )
+    {                   
+        graft->toggleArthroView();
+    }
+    for ( plBoneAndCartilage* model : _models )
+    {             
+        model->toggleArthroView(); 
+    }
+}   
+
+
 void plPlan::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
-    if ( !_isVisible )
-        return;
+    if ( !_inArthroView )
+    {  
+        if ( !_isVisible )
+            return;
 
-    // Draw defect boundary 
-    for ( PLuint i = 0; i < _defectSites.size(); i++)
+        // Draw defect boundary 
+        for ( PLuint i = 0; i < _defectSites.size(); i++)
+        {
+            plPickingStack::loadGreen( i );
+            _defectSites[i]->extractRenderComponents( renderMap, technique );
+        }
+       
+        // Draw harvest boundaries   
+        for ( PLuint i = 0; i < _donorSites.size(); i++)
+        {
+            plPickingStack::loadGreen( i );      
+            _donorSites[i]->extractRenderComponents( renderMap, technique );            
+        }    
+
+        // Draw iGuideSites
+        for ( PLuint i = 0; i < _iGuideSites.size(); i++)
+        {            
+            plPickingStack::loadGreen( i );
+            _iGuideSites[i]->extractRenderComponents( renderMap, technique );
+        }
+
+        // Draw iGuides
+        for ( PLuint i = 0; i < _iGuides.size(); i++)
+        {
+            plPickingStack::loadGreen( i );
+            _iGuides[i]->extractRenderComponents( renderMap, technique );
+        }
+
+        // Draw grafts
+        for ( PLuint i = 0; i < _grafts.size(); i++)
+        {                   
+            plPickingStack::loadGreen( i );
+            _grafts[i]->extractRenderComponents( renderMap, technique );
+        }
+
+        // draw models
+        for (PLuint i =0; i < _models.size(); i++)
+        {            
+            plPickingStack::loadGreen( i );          
+            plPickingStack::loadBlue( -1 ); // unused by models    
+            _models[i]->extractRenderComponents( renderMap, technique ); 
+        }
+    }
+    else
     {
-        plPickingStack::loadGreen( i );
-        _defectSites[i]->extractRenderComponents( renderMap, technique );
-    }
-   
-    // Draw harvest boundaries   
-    for ( PLuint i = 0; i < _donorSites.size(); i++)
-    {
-        plPickingStack::loadGreen( i );      
-        _donorSites[i]->extractRenderComponents( renderMap, technique );            
-    }    
+        // Draw grafts
+        for ( PLuint i = 0; i < _grafts.size(); i++)
+        {                   
+            plPickingStack::loadGreen( i );
+            _grafts[i]->extractRenderComponents( renderMap, technique );
+        }
 
-
-    // Draw grafts
-    for ( PLuint i = 0; i < _grafts.size(); i++)
-    {                   
-        plPickingStack::loadGreen( i );
-        _grafts[i]->extractRenderComponents( renderMap, technique );
-    }
-
-    // Draw iGuideSites
-    for ( PLuint i = 0; i < _iGuideSites.size(); i++)
-    {            
-        plPickingStack::loadGreen( i );
-        _iGuideSites[i]->extractRenderComponents( renderMap, technique );
-    }
-
-    // Draw iGuides
-    for ( PLuint i = 0; i < _iGuides.size(); i++)
-    {
-        plPickingStack::loadGreen( i );
-        _iGuides[i]->extractRenderComponents( renderMap, technique );
-    }
-
-    // draw models (draw last for proper transparency blending)
-    plPickingStack::loadBlue( -1 ); // unused by models
-    
-    for (PLuint i =0; i < _models.size(); i++)
-    {            
-        plPickingStack::loadGreen( i );          
-        
-        _models[i]->extractRenderComponents( renderMap, technique ); 
+        // draw models
+        for (PLuint i =0; i < _models.size(); i++)
+        {            
+            plPickingStack::loadGreen( i );          
+            plPickingStack::loadBlue( -1 ); // unused by models    
+            _models[i]->extractRenderComponents( renderMap, technique ); 
+        }
     }
 
 }

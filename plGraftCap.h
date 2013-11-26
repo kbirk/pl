@@ -13,7 +13,10 @@
 #include "plTransform.h"
 #include "plModel.h"
 #include "plRenderer.h"
+#include "plArthroViewable.h"
 
+
+#define PL_CAP_OFFEST       0.05f
 
 class plPointAndAngle 
 {
@@ -37,7 +40,8 @@ class plPointAndAngle
 
 
 class plGraftCap : public plRenderable,
-                   public plEditable
+                   public plEditable,
+                   public plArthroViewable
 {
     public:
 
@@ -54,9 +58,7 @@ class plGraftCap : public plRenderable,
     protected:
 
         std::shared_ptr< plVAO > _vao;
-        
-        
-               
+         
         virtual plVector4 _getColour() const = 0;
        
         std::vector<plVector3> _pointsOutsideTriangles( plVector3 verts[3], const plTransform& transform, PLfloat radius ) const;
@@ -78,10 +80,11 @@ class plCartilageCap : public plGraftCap
 
         void generateVAO( PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter );
         
-        //virtual void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        virtual void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
     private:
 
+        std::shared_ptr< plVAO > _capVAO;
         std::shared_ptr< plVAO > _projectionVAO;
 
         plVector4 _getColour() const;

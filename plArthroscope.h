@@ -26,8 +26,8 @@ enum ImageManipulation
 };
 
 
-class plArthroscope : public plTrackedObject
-//public plRenderable
+class plArthroscope : public plTrackedObject,
+                      public plRenderable
 {
 
     public:
@@ -49,7 +49,7 @@ class plArthroscope : public plTrackedObject
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
         void toggleCameraView() { _isCameraView = !_isCameraView; }
-        PLbool isCameraView()     { return _isCameraView;           }
+        PLbool isCameraView()   { return _isCameraView;           }
          
     private:
     

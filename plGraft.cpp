@@ -42,15 +42,75 @@ void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap, PLuint tech
 {
     plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT ); 
 
-    // draw cartilage cap
-    _cartilageCap.extractRenderComponents( renderMap, technique );
-    // draw bone cap
-    _boneCap.extractRenderComponents( renderMap, technique );
+    if ( !_inArthroView )
+    {
+        // draw cartilage cap
+        _cartilageCap.extractRenderComponents( renderMap, technique );
+        // draw bone cap
+        _boneCap.extractRenderComponents( renderMap, technique );
+        
+        // draw marker   
+        plColourStack::load( PL_GRAFT_MARKER_COLOUR );
+        plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_MARKER );
+        plRenderer::queue( plSphere( technique, _markPositions[0], 0.5f ) );
+    }
+    else
+    {
+        if ( _isSelected )
+        {
+            // draw cartilage cap
+            _cartilageCap.extractRenderComponents( renderMap, PL_OUTLINE_TECHNIQUE );
 
-    // draw marker   
-    plColourStack::load( PL_GRAFT_MARKER_COLOUR );
-    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_MARKER );
-    plRenderer::queue( plSphere( technique, _markPositions[0], 0.5f ) );
+            PLint id = 101;
+            PLfloat SPACING = 5.0f;
+            PLfloat LINE_WIDTH = 0.04f;
+            PLfloat LINE_LENGTH = 10.0f;
+              
+            // i 
+            plPickingStack::loadRed( id++ );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[0], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            
+            // ii
+            plModelStack::push();
+            plPickingStack::loadRed( id++ );
+            plModelStack::rotate( -SPACING/2, plVector3( 0, 1, 0 ) );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+            plPickingStack::loadRed( id++ );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plModelStack::pop();
+            
+            // iii
+            plModelStack::push();
+            plPickingStack::loadRed( id++ );
+            plModelStack::rotate( -SPACING, plVector3( 0, 1, 0 ) );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+            plPickingStack::loadRed( id++ );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+            plPickingStack::loadRed( id++ );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plModelStack::pop();
+            
+            // iiii
+            plModelStack::push();
+            plPickingStack::loadRed( id++ );
+            plModelStack::rotate( (-3/2)*SPACING, plVector3( 0, 1, 0 ) );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+            plPickingStack::loadRed( id++ );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+            plPickingStack::loadRed( id++ );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
+            plPickingStack::loadRed( id++ );
+            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plModelStack::pop();
+
+        }
+    }
 }
 
 

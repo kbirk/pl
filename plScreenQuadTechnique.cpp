@@ -22,13 +22,7 @@ void plScreenQuadTechnique::render( const std::set< plRenderComponent >& compone
     
     plRenderComponent component = _generateComponent();
 
-    //glEnable( GL_STENCIL_TEST );
-    //glStencilFunc( GL_NOTEQUAL, 1, 1 );
-    //glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-
     component.draw( *shader ); 
-
-    //glDisable( GL_STENCIL_TEST );
 }
 
 

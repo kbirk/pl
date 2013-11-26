@@ -418,29 +418,50 @@ plVector4 plCartilageCap::_getColour() const
     }    
 }
 
-/*
+
 void plCartilageCap::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
-    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT ); 
-    plColourStack::load( _getColour() );
+    if ( !_inArthroView )
+    {
+        plGraftCap::extractRenderComponents( renderMap, technique );
+    }
+    else
+    {
+        plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT ); 
+        plVector4 colour = _getColour();
+        plColourStack::load( colour.x, colour.y, colour.z, 0.7f );
 
-    // if empty, do not draw
-    if ( triangles.empty() )
-        return;
+        // if empty, do not draw
+        if ( triangles.empty() )
+            return;
 
-    // create render component
-    plRenderComponent component( _projectionVAO );
-    // attached uniforms
-    component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
-    component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
-    component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
-    component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
-    component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
-    component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
-    // insert into render map     
-    renderMap[ technique ].insert( component );   
+        // create render component
+        plRenderComponent component( _capVAO );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        // insert into render map     
+        renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component );  
+        
+               
+        plPickingStack::loadRed( 100 ); 
+        // create render component
+        plRenderComponent component1( _projectionVAO );
+        // attached uniforms
+        component1.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component1.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component1.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component1.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component1.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        // insert into render map     
+        renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component1 );  
+    } 
 }
-*/
+
 
 void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter )
 {
@@ -458,13 +479,13 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
         const plVector3 &p2 = triangles[i].point2();
         const plVector3 &n  = triangles[i].normal();
         
-        vertices.push_back( plVector3( p0.x, p0.y+0.05f, p0.z) );    // position
+        vertices.push_back( plVector3( p0.x, p0.y+PL_CAP_OFFEST, p0.z) );    // position
         vertices.push_back( n );                                     // normal
 
-        vertices.push_back( plVector3( p1.x, p1.y+0.05f, p1.z) );    // position
+        vertices.push_back( plVector3( p1.x, p1.y+PL_CAP_OFFEST, p1.z) );    // position
         vertices.push_back( n );                                     // normal
         
-        vertices.push_back( plVector3( p2.x, p2.y+0.05f, p2.z) );    // position
+        vertices.push_back( plVector3( p2.x, p2.y+PL_CAP_OFFEST, p2.z) );    // position
         vertices.push_back( n );                                     // normal
 
         indices.push_back(base+0);
@@ -487,11 +508,11 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
         {
             float cAngle = perimeter[c].angle + cOffset;
             float bAngle = bonePerimeter[b].angle + bOffset;
-        
+             
             plVector3 n = (perimeter[c].point).normalize();
     
             indices.push_back(vertices.size()/2);
-            vertices.push_back( perimeter[c].point );   // position
+            vertices.push_back( plVector3( perimeter[c].point.x, perimeter[c].point.y+PL_CAP_OFFEST, perimeter[c].point.z ) );   // position
             vertices.push_back( n );                    // normal
             
             indices.push_back(vertices.size()/2);
@@ -509,7 +530,7 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
                 }
         
                 indices.push_back(vertices.size()/2);
-                vertices.push_back( perimeter[c].point );    // position
+                vertices.push_back( plVector3( perimeter[c].point.x, perimeter[c].point.y+PL_CAP_OFFEST, perimeter[c].point.z ) );    // position
                 vertices.push_back( n );                     // normal
             }  
             else 
@@ -555,7 +576,7 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
 void plCartilageCap::_generateProjectionVAO( PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter )
 {
 
-    const plVector3 y(0,1,0);		        // y is cylinder axis (pointing upward)
+    const plVector3 y(0,1,0);		// y is cylinder axis (pointing upward)
 
     std::vector<plVector3> vertices;     vertices.reserve( triangles.size()*6 + ( perimeter.size() + bonePerimeter.size() )*6 );
     std::vector<PLuint>    indices;      indices.reserve( triangles.size()*3 + ( perimeter.size() + bonePerimeter.size() )*3 );
@@ -583,12 +604,31 @@ void plCartilageCap::_generateProjectionVAO( PLfloat radius, PLfloat length, con
         indices.push_back(base+2);   
     }
     
+    // set vbo and attach attribute pointers
+    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
+    vbo->set( vertices );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
+    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
+    // set eabo
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();     
+    eabo->set( indices );
+    // create vao, attach eabo and vbo, upload to gpu
+    _capVAO = std::make_shared< plVAO >();
+    _capVAO->attach( vbo );
+    _capVAO->attach( eabo );
+    // upload to gpu
+    _capVAO->upload(); 
+    
+    vertices.clear();
+    indices.clear();
+    
     if ( perimeter.size() > 0 ) 
     {
         PLfloat PROJECTION_LENGTH = 10;
-    
+        PLfloat CONTRACTED_RADIUS = radius - 0.1f;
         // generate cylinder walls
-        plVector3 centreBottom = ( PROJECTION_LENGTH ) * y;
+        plVector3 centreTop = ( PROJECTION_LENGTH ) * y;
+        plVector3 centreBottom = -( length ) * y;
         plVector3 z(0,0,1);
         plVector3 x(1,0,0);
     
@@ -597,59 +637,59 @@ void plCartilageCap::_generateProjectionVAO( PLfloat radius, PLfloat length, con
         float theta = perimeter[0].angle;
         plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
 
-        plVector3 prevTop = perimeter[0].point;
-        plVector3 prevBot = centreBottom + radius * cos(theta) * z + radius * sin(theta) * x;
+        plVector3 prevBot = perimeter[0].point; //centreBottom + CONTRACTED_RADIUS * cos(theta) * z + CONTRACTED_RADIUS * sin(theta) * x; 
+        plVector3 prevTop = centreTop + CONTRACTED_RADIUS * cos(theta) * z + CONTRACTED_RADIUS * sin(theta) * x;
 
-        // top side
-        vertices.push_back( prevTop ); // position
-        vertices.push_back( n);        // normal
         // bottom side
         vertices.push_back( prevBot ); // position
+        vertices.push_back( n);        // normal
+        // top side
+        vertices.push_back( prevTop ); // position
         vertices.push_back( n);        // normal
         
         for ( PLuint i=0; i< perimeter.size(); i++ ) 
         {
             float theta = perimeter[i].angle;
-            plVector3 top = perimeter[i].point;
-            plVector3 bot = centreBottom + radius * cos(theta) * z + radius * sin(theta) * x;
+            plVector3 bot =  perimeter[i].point; //centreBottom + CONTRACTED_RADIUS * cos(theta) * z + CONTRACTED_RADIUS * sin(theta) * x;
+            plVector3 top = centreTop + CONTRACTED_RADIUS * cos(theta) * z + CONTRACTED_RADIUS * sin(theta) * x;
 
             plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
-            // top side
-            vertices.push_back( top ); // position
-            vertices.push_back( n);    // normal
-            // bottom side    
+            // bottom side
             vertices.push_back( bot ); // position
+            vertices.push_back( n);    // normal
+            // top side    
+            vertices.push_back( top ); // position
             vertices.push_back( n);    // normal
         }
         
-        // top side
-        vertices.push_back( prevTop ); // position
-        vertices.push_back( n);        // normal
         // bottom side
         vertices.push_back( prevBot ); // position
+        vertices.push_back( n);        // normal
+        // top side
+        vertices.push_back( prevTop ); // position
         vertices.push_back( n);        // normal    
         
         for (PLuint j = 0; j <= perimeter.size()*2; j+=2) 
         {
             // side t1
             indices.push_back(base+j);
-            indices.push_back(base+j+1);
             indices.push_back(base+j+2);
-            // side t2
-            indices.push_back(base+j+2);
-            indices.push_back(base+j+1);
             indices.push_back(base+j+3);
+            // side t2
+            indices.push_back(base+j);
+            indices.push_back(base+j+3);
+            indices.push_back(base+j+1);
         }
 
     }
-    
+
     // set vbo and attach attribute pointers
-    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
+    vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();     
+    eabo = std::make_shared< plEABO >();     
     eabo->set( indices );
     // create vao, attach eabo and vbo, upload to gpu
     _projectionVAO = std::make_shared< plVAO >();

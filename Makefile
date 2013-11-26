@@ -15,6 +15,7 @@ SOURCES =   main.cpp \
             PlannerWindow.cpp \
             pl.cpp \
             plArthroCamTechnique.cpp \
+            plArthroViewable.cpp \
             plAutomaticPlanner.cpp \
             plBoneAndCartilage.cpp \
             plBoundary.cpp \

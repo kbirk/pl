@@ -385,11 +385,11 @@ void plBoundary::_generateVAO()
             indices.push_back(base+6);    indices.push_back(base+10);    indices.push_back(base+11);
             indices.push_back(base+6);    indices.push_back(base+11);    indices.push_back(base+9);
 
-            indices.push_back(base+10);    indices.push_back(base+0);    indices.push_back(base+3);
-            indices.push_back(base+10);    indices.push_back(base+3);    indices.push_back(base+11);
+            indices.push_back(base+10);   indices.push_back(base+0);    indices.push_back(base+3);
+            indices.push_back(base+10);   indices.push_back(base+3);    indices.push_back(base+11);
 
             indices.push_back(base+9);    indices.push_back(base+11);    indices.push_back(base+4);
-            indices.push_back(base+11);    indices.push_back(base+3);    indices.push_back(base+4);
+            indices.push_back(base+11);   indices.push_back(base+3);    indices.push_back(base+4);
 
             // "front" indices
             indices.push_back(base+1);    indices.push_back(base+12);   indices.push_back(base+13);
