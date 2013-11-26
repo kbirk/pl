@@ -75,7 +75,6 @@ void main()
     ivec4 outline = texture( uTextureUnit1, vec2( texCoordOut.x, texCoordOut.y ) );
     vec4  arthro  = texture( uTextureUnit2, vec2( texCoordOut.x, texCoordOut.y ) );
 
-
     // if it is not clear, render normal buffer only   
     if ( outline.a == 0 )
     {
@@ -85,6 +84,7 @@ void main()
 
     vec4 temp = mix( arthro, colour, colour.a );
     vec4 blur = getBlurredPixel( outline.rgb );
+
     //colourOutput = temp + vec4( blur.rgb * blur.a, blur.a );
     colourOutput = mix( temp, blur, blur.a ) + vec4( blur.rgb * blur.a, blur.a );
     

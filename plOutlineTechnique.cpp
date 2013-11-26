@@ -9,9 +9,8 @@ void plOutlineTechnique::render( const std::set< plRenderComponent >& componentS
 {
     //std::cout << "outline technique" << std::endl;
 
-    const std::shared_ptr< plFBO >&    fbo     = plRenderResources::fbos( PL_MAIN_FBO );
-    const std::shared_ptr< plShader >& shader0 = plRenderResources::shaders( PL_OUTLINE_SHADER );
-    const std::shared_ptr< plShader >& shader1 = plRenderResources::shaders( PL_OUTLINE_BLUR_SHADER );
+    const std::shared_ptr< plFBO >&    fbo    = plRenderResources::fbos( PL_MAIN_FBO );
+    const std::shared_ptr< plShader >& shader = plRenderResources::shaders( PL_OUTLINE_SHADER );
 
     // set initial rendering state
     _initState();
@@ -19,9 +18,7 @@ void plOutlineTechnique::render( const std::set< plRenderComponent >& componentS
     // bind fbo
     fbo->bind(); 
 
-    // clear fbo
-    //glClearColor( 0, 0, 0, 0 );          
-    //glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+    // set viewport
     glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() );   
 
     std::vector<GLenum> drawBuffers;
@@ -33,91 +30,16 @@ void plOutlineTechnique::render( const std::set< plRenderComponent >& componentS
     fbo->setDrawBuffers( drawBuffers );
 
     // bind shader
-    shader0->bind();
+    shader->bind();
 
     // draw shapes to outline buffer
     for ( const plRenderComponent& component : componentSet )
     { 
-        //const_cast< plRenderComponent& >( component ).attach( plUniform( PL_OUTLINE_UNIFORM, std::vector<PLint>( { outlineID, 1, 1 } ) ) );   
-        component.draw( *shader0 );   
+        component.draw( *shader );
     }
-
-
-
-    /*
-    glClearStencil(0);
-    glClear(GL_STENCIL_BUFFER_BIT);
-
-    // Render the mesh into the stencil buffer.
-	
-    glEnable(GL_STENCIL_TEST);
-
-    glStencilFunc(GL_ALWAYS, 1, -1);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-    // draw shapes to outline buffer
-    for ( const plRenderComponent& component : componentSet )
-    { 
-        component.draw( *shader0 );   
-    }
-
-    // Render the thick wireframe version.
-
-    glStencilFunc(GL_NOTEQUAL, 1, -1);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-
-    glLineWidth(30);
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    //glEnable( GL_LINE_SMOOTH );
-    //glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-    glEnable( GL_POLYGON_OFFSET_LINE );
-    glPolygonOffset( -1.0f, -1.0f );
-    glDisable( GL_CULL_FACE );
-
-
-    // draw shapes to outline buffer
-    for ( const plRenderComponent& component : componentSet )
-    { 
-        component.draw( *shader0 );   
-    }
-
-    glLineWidth(1);
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    glEnable( GL_CULL_FACE );
-    //glDisable( GL_LINE_SMOOTH );
-
-    glDisable( GL_POLYGON_OFFSET_LINE );
-    glDisable(GL_STENCIL_TEST);
-    */
-
-    /*
-    // bind outline blur shader
-    shader1->bind();
-
-    std::vector<GLenum> drawBuffers1;
-    drawBuffers1.push_back( GL_COLOR_ATTACHMENT0 );
-    drawBuffers1.push_back( GL_NONE );
-    drawBuffers1.push_back( GL_NONE );
-    drawBuffers1.push_back( GL_NONE );
-    drawBuffers1.push_back( GL_NONE );
-    fbo->setDrawBuffers( drawBuffers1 );
-
-    // get screen quad
-    plRenderComponent component = _generateComponent();
-
-    glDepthMask( false );
-    glDisable( GL_DEPTH_TEST ); 
-
-    // draw outline texture to main texture
-    component.draw( *shader1 ); 
-
-    glDepthMask( true );
-    glEnable( GL_DEPTH_TEST ); 
-    */
 
     // unbind shader
-    shader1->unbind();
+    shader->unbind();
     // unbind fbo
     fbo->unbind();      
 }
