@@ -4,6 +4,7 @@
 #include "plCommon.h"
 #include "plVector3.h"
 #include "plTriangle.h"
+#include "plMath.h"
 
 class plMesh
 {

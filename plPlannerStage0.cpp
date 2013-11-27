@@ -69,11 +69,11 @@ void plAnnealingGroup::getSolution( plDefectSolution &solution, const plPlanning
         plVector3 rayOrigin   ( solution.graftPositions[i].x, solution.graftPositions[i].y, solution.graftPositions[i].z );
         plVector3 rayDirection( solution.graftNormals[i].x,   solution.graftNormals[i].y,   solution.graftNormals[i].z   );
     
-        plIntersection intersection = plMath::rayIntersect( planningData.defectSite.triangles, rayOrigin, rayDirection );
-        solution.graftPositions[i]  = plVector4( intersection.point,  1.0f );
-        solution.graftSurfaceNormals.push_back( plVector4( planningData.defectSite.getSmoothNormal( intersection.point, intersection.normal, PL_NORMAL_SMOOTHING_RADIUS ), 1.0f ) );
-    }
-    
+        plIntersection intersection = plMath::rayIntersect( planningData.defectSite.triangles, rayOrigin, rayDirection, true );
+
+        solution.graftPositions[i] = plVector4( intersection.point,  1.0f );
+        solution.graftSurfaceNormals.push_back( plVector4( intersection.normal, 1.0f ) ); //plVector4( planningData.defectSite.getSmoothNormal( intersection.point, intersection.normal, PL_NORMAL_SMOOTHING_RADIUS ), 1.0f ) );
+    }   
 }
 
 
@@ -115,7 +115,6 @@ namespace plPlannerStage0
         std::vector< std::string > shaderfiles;
         
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
-
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.hcmp" );
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSite.hcmp" );  
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/state.hcmp" );        
@@ -136,7 +135,7 @@ namespace plPlannerStage0
         if ( !stage0Shader.good() )
             return;
         
-        stage0Shader.bind();                            // bind shader  
+        stage0Shader.bind(); // bind shader  
         stage0Shader.setDefectSiteUniforms( planningData.defectSite ); 
 
         plSSBO triangleAreaSSBO ( planningData.defectSite.triangles.size()*PL_STAGE_0_INVOCATIONS*sizeof( PLfloat ) ); 

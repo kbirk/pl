@@ -84,7 +84,6 @@ void main()
 
     vec4 temp = mix( arthro, colour, colour.a );
     vec4 blur = getBlurredPixel( outline.rgb );
-
     //colourOutput = temp + vec4( blur.rgb * blur.a, blur.a );
     colourOutput = mix( temp, blur, blur.a ) + vec4( blur.rgb * blur.a, blur.a );
     

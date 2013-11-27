@@ -170,7 +170,6 @@ namespace plMath
     // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
     PLbool intersectTwoLines(const plVector3 &edge1Point, const plVector3 &edge2Point, const plVector3 &edge1Direction, const plVector3 &edge2Direction, PLfloat &edge1Param, PLfloat &edge2Param)
     {
-        // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
         edge1Param = 0.f;
         edge2Param = 0.f;
         plVector3 crossProductRightSideEdge1 ((edge2Point-edge1Point)^edge2Direction);
@@ -239,16 +238,21 @@ namespace plMath
     }*/
 
 
-    plIntersection rayIntersect( const std::vector<plTriangle> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool ignoreBehindRay, PLbool backFaceCull )
+
+    plIntersection rayIntersect( const std::vector<plTriangle>& triangles, 
+                                 const plVector3 &rayOrigin, 
+                                 const plVector3 &rayDirection,
+                                 PLbool smoothNormal, 
+                                 PLbool ignoreBehindRay, 
+                                 PLbool backFaceCull )
     {
         PLfloat min = FLT_MAX;
         plIntersection closestIntersection( false );
 
-        for ( PLuint i = 0; i < triangles.size(); i++)
+        for ( const plTriangle& triangle : triangles )
         {  
-            plIntersection intersection = triangles[i].rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
-            
-            if (intersection.exists)
+            plIntersection intersection = triangle.rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );           
+            if ( intersection.exists )
             {
                 PLfloat tAbs = fabs(intersection.t);
                 if ( tAbs < min) 
@@ -257,12 +261,50 @@ namespace plMath
                     closestIntersection = intersection;
                 }
             }
+        }        
 
-        }
-        
+        if ( smoothNormal )
+            closestIntersection.normal = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, closestIntersection.point, closestIntersection.normal );
+
         return closestIntersection;
-    }   
+    } 
 
+
+    plVector3 getAverageNormal( const std::vector<plTriangle>& triangles, PLfloat radius, const plVector3 &origin, const plVector3 &normal )
+    {
+        plVector3 avgNormal( 0, 0, 0 );
+        PLint count = 0;
+        float radiusSquared = radius * radius;
+    
+        // Find polygons on top of graft
+        for ( const plTriangle& triangle : triangles )
+        {
+            if ( triangle.normal() * normal > 0.001)
+            {        
+                PLfloat dist1 = ( triangle.point0() - origin ).squaredLength();
+                PLfloat dist2 = ( triangle.point1() - origin ).squaredLength();
+                PLfloat dist3 = ( triangle.point2() - origin ).squaredLength();
+           
+                // if any point of triangle is withing radial sphere, accept
+                float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
+
+                if ( minDist <= radiusSquared )
+                {        
+                    avgNormal = avgNormal + triangle.normal();
+                    count++;
+                }
+            }
+        } 
+
+        if ( count == 0 )
+        {
+            // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
+            //std::cout << "plMath::getAverageNormal() warning: No normal found" << std::endl;
+            return normal;
+        }    
+
+        return ( 1.0f/(PLfloat)(count) * avgNormal ).normalize();
+    }
 
 
     void convexPolysToTris( std::vector<plTriangle> &tris, const std::vector<plPolygon> &polys )

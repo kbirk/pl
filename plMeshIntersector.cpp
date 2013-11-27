@@ -162,12 +162,19 @@ PLbool plMeshIntersector::_intersectionEdgeFace(const plMeshConnectivityDataEdge
         return false;
 
     // first find the line intersection with the plane
+    /*
     std::vector<plTriangle> triSeq;
-    triSeq.push_back(face->face);
+    triSeq.push_back( face->face );
     plIntersection intersectionData = plMath::rayIntersect( triSeq, edge->edge.pt1, (edge->edge.pt2-edge->edge.pt1), false, false);
-    if (!intersectionData.exists)
+    */
+
+    plIntersection intersectionData = face->face.rayIntersect( edge->edge.pt1, (edge->edge.pt2-edge->edge.pt1), false, false );
+
+
+    if ( !intersectionData.exists )
         return false;
-    if (intersectionData.t < 0.f || intersectionData.t > 1.f)
+
+    if ( intersectionData.t < 0.0f || intersectionData.t > 1.0f )
         return false;
 
     // now see if the barycentric coordinates are in the right ranges

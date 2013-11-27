@@ -59,20 +59,20 @@ void plOctreeMesh::_buildOctree( PLuint depth )
 }
 
 
-plVector3 plOctreeMesh::getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const
+plVector3 plOctreeMesh::getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &normal ) const
 {
     // get potential triangles in radius from octree
-    plSet<const plTriangle*> triangles;   
-    _octree.rayIntersect( triangles, origin, -up, radius );
+    plSet< const plTriangle* > triangles;   
+    _octree.rayIntersect( triangles, origin, -normal, radius );
 
-    plVector3 normal(0,0,0);
+    plVector3 avgNormal(0,0,0);
     PLint count = 0;
     float radiusSquared = radius * radius;
     
     // Find polygons on top of graft
     for ( const plTriangle* triangle : triangles ) 
     {
-        if ( triangle->normal() * up > 0.001)
+        if ( triangle->normal() * normal > 0.001)
         {        
             PLfloat dist1 = ( triangle->point0() - origin ).squaredLength();
             PLfloat dist2 = ( triangle->point1() - origin ).squaredLength();
@@ -83,7 +83,7 @@ plVector3 plOctreeMesh::getAverageNormal( PLfloat radius, const plVector3 &origi
 
             if (minDist <= radiusSquared)
             {        
-                normal = normal + triangle->normal();
+                avgNormal = avgNormal + triangle->normal();
                 count++;
             }
         }
@@ -92,18 +92,18 @@ plVector3 plOctreeMesh::getAverageNormal( PLfloat radius, const plVector3 &origi
     if (count == 0)
     {
         // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
-        std::cout << "plOctreeMesh::getAverageNormal() warning: No normal found" << std::endl;
-        return up;
+        //std::cout << "plOctreeMesh::getAverageNormal() warning: No normal found" << std::endl;
+        return normal;
     }    
 
-    return ( 1.0f/ (PLfloat)(count) * normal ).normalize();
+    return ( 1.0f/ (PLfloat)(count) * avgNormal ).normalize();
 }
 
 
 plIntersection plOctreeMesh::rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool smoothNormal, PLbool ignoreBehindRay, PLbool backFaceCull ) const
 {
     // get potential triangles from octree
-    plSet<const plTriangle*> triangles;   
+    plSet< const plTriangle* > triangles;   
     _octree.rayIntersect( triangles, rayOrigin, rayDirection, 0.0f, ignoreBehindRay );
 
     plIntersection closestIntersection( false );
@@ -122,9 +122,8 @@ plIntersection plOctreeMesh::rayIntersect( const plVector3 &rayOrigin, const plV
                 closestIntersection = intersection;
             }
         }
-
     }
-    
+
     // smooth intersection normal if specified
     if ( smoothNormal )
         closestIntersection.normal = getAverageNormal( PL_NORMAL_SMOOTHING_RADIUS, closestIntersection.point, closestIntersection.normal );

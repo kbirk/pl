@@ -51,26 +51,19 @@ class plPlan : public plRenderable,
         const std::vector<plDonorSite*>&        donorSites()  const { return _donorSites;  }
         const std::vector<plIGuideSite*>&       iGuideSites() const { return _iGuideSites; }
         const std::vector<plIGuide*>&           iGuides()     const { return _iGuides;     }
-        const std::vector<plGraft*>&            grafts()      const { return _grafts; }
-        const std::vector<plBoneAndCartilage*>& models()      const { return _models; }
+        const std::vector<plGraft*>&            grafts()      const { return _grafts;      }
+        const std::vector<plBoneAndCartilage*>& models()      const { return _models;      }
         
         void addDefectSite( PLuint modelIndex = 0 );
         void addDonorSite ( PLuint modelIndex = 0 );
         void addIGuideSite( PLuint modelIndex = 0 );
-        void addGraft     ( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat cartilageThickness, PLfloat heightOffset = 0.0f, PLfloat length = 15.0f );
+        void addGraft     ( const plPlug& harvest, const plPlug& recipient, PLfloat radius, PLfloat length = 15.0f );
 
         void removeDefectSite( PLuint index );
         void removeDonorSite ( PLuint index );
         void removeIGuideSite( PLuint index );
         void removeGraft     ( PLuint index );
-        
-        void drawElements() const;
-        void drawModels()   const;
 
-        void defaultCameraVisibilityState();
-        void saveVisibilityState();
-        void loadVisibilityState();
-        
         void toggleArthroView();
                 
         void clear();

@@ -100,7 +100,7 @@ namespace plWindow
          
         plVector4 output = mvpInverse * input;
 
-        if( output.w == 0.0f)
+        if ( output.w == 0.0f )
         {
              std::cerr << "plWindow::mouseToWorld() error, w == 0" << std::endl;
              return plVector3();
@@ -114,23 +114,22 @@ namespace plWindow
 
     plVector3 worldToScreen( PLfloat x, PLfloat y, PLfloat z )
     {
-        plVector4 temp1 = ( plCameraStack::top() * plModelStack::top() ) * plVector4(x,y,z,1);
-        plVector4 temp2 = plProjectionStack::top() * temp1;
+        plVector4 projected = ( plProjectionStack::top() * plCameraStack::top() * plModelStack::top() ) * plVector4(x,y,z,1);
 
-        if (temp2.w == 0.0f)
+        if ( projected.w == 0.0f )
         {
             std::cerr << "plWindow::mouseToWorld() error, w == 0" << std::endl;
             return plVector3();
         }
         
         // perspective division
-        temp2.x /= temp2.w;
-        temp2.y /= temp2.w;
-        temp2.z /= temp2.w;
+        projected.x /= projected.w;
+        projected.y /= projected.w;
+        projected.z /= projected.w;
 
-        return plVector3( ( temp2.x*0.5f + 0.5f)* _viewportWidth  + _viewportX,
-                          ( temp2.y*0.5f + 0.5f)* _viewportHeight + _viewportY,
-                          ( 1.0f+temp2.z)*0.5f ); 
+        return plVector3( ( projected.x*0.5f + 0.5f)* _viewportWidth  + _viewportX,
+                          ( projected.y*0.5f + 0.5f)* _viewportHeight + _viewportY,
+                          ( 1.0f+projected.z)*0.5f ); 
                           
     }
 

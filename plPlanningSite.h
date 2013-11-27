@@ -22,8 +22,18 @@ class plPointAndNormal
         {}
 
         PLbool operator < (const plPointAndNormal &pn) const
-        {       
-            return point.x < pn.point.x || point.y < pn.point.y || point.z < pn.point.z;
+        { 
+            if ( point.x == pn.point.x )
+            {
+                if ( point.y == pn.point.y )
+                {
+                    return point.z < pn.point.z;
+                }
+                else
+                    return point.y < pn.point.y;
+            }
+            else
+                return point.x < pn.point.x;
         }
 };
 
@@ -37,8 +47,8 @@ class plPlanningSite
         std::vector<plVector4>  gridNormals;
         std::vector<plVector4>  boundaryPoints;
         std::vector<plVector4>  boundaryNormals;
-        PLfloat           area;
-        plVector3         avgNormal;
+        PLfloat                 area;
+        plVector3               avgNormal;
     
         plPlanningSite();
         plPlanningSite( const std::vector<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain = false );          
@@ -50,17 +60,14 @@ class plPlanningSite
         
         void   getData( std::vector<plVector4> &data ) const { _bufferGridData( data ); _bufferMeshData( data ); _bufferBoundaryData( data ); }
         plSSBO getSSBO() const;
-        
-        plVector3 getSmoothNormal( const plVector3 &centroid, const plVector3 &up, PLfloat radius ) const;
-        
+
         PLbool good() const;
 
     private:
 
         void _bufferGridData     ( std::vector<plVector4> &data ) const;
         void _bufferMeshData     ( std::vector<plVector4> &data ) const;
-        void _bufferBoundaryData ( std::vector<plVector4> &data ) const;
-        
+        void _bufferBoundaryData ( std::vector<plVector4> &data ) const;       
         
         void _generateCoarseGridPoints ();  
         void _generateFineGridPoints   ();  

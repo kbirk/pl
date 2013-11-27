@@ -68,7 +68,7 @@ plSSBO plPlanningBufferData::_getGroupSSBO()
     
     PLuint numBytes = dataSize * sizeof( plVector4 );
 
-    std::cout << "        Total buffer size: " << numBytes << " bytes " << std::endl;     
+    std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;     
 
     return plSSBO( numBytes, (void*)(&data[0]) );
 }

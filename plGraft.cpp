@@ -1,12 +1,13 @@
 #include "plGraft.h"
 
 plGraft::plGraft()
+    :   _recipient( PL_PICKING_INDEX_GRAFT_DEFECT ), _harvest( PL_PICKING_INDEX_GRAFT_DONOR )
 {
 }
 
 
-plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat cartilageThickness, PLfloat heightOffset, PLfloat length, const plVector3 &markDirection  )
-    : _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length ), _cartilageThickness( cartilageThickness ), _heightOffset( heightOffset ) 
+plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat length, const plVector3 &markDirection  )
+    :   _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length )
 {
     _generateCaps();   
 }
@@ -25,7 +26,6 @@ void plGraft::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
 
     // Draw at recipient location
     plModelStack::push( _recipient.transform().matrix() );
-    plModelStack::translate( 0, _heightOffset, 0 );
     plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
     _extractGraftRenderComponents( renderMap, technique );
     plModelStack::pop();
@@ -126,7 +126,6 @@ void plGraft::_generateCaps()
 
     // update values
     _updateMarkPosition();      
-    _updateCartilageThickness();
 }
 
 
@@ -187,20 +186,6 @@ void plGraft::_updateMarkPosition()
 }
 
 
-void plGraft::_updateCartilageThickness()
-{
-    // intersect cartilage and bone
-    plIntersection boneIntersection = _harvest.model().bone.mesh().rayIntersect     ( _harvest.transform().origin(), -_harvest.transform().y() );  
-    plIntersection cartIntersection = _harvest.model().cartilage.mesh().rayIntersect( _harvest.transform().origin(), -_harvest.transform().y() );  
-
-    if ( boneIntersection.exists )
-    {     
-        // calculate new cartilage thickness
-        _cartilageThickness = ( !cartIntersection.exists ) ? 0.0f : ( boneIntersection.point - cartIntersection.point ).length();        
-    } 
-}
-
-
 void plGraft::setMark( const plVector3 &direction )
 {   
     _markDirection = direction.normalize();    
@@ -223,6 +208,22 @@ const plTransform& plGraft::transform( PLuint type ) const
 }
 
 
+const plVector3& plGraft::surfaceNormal( PLuint type ) const
+{
+    switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.surfaceNormal();        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.surfaceNormal();
+            
+        default:
+        
+            std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient \n";
+            return _recipient.surfaceNormal();   
+    } 
+
+}
+
+
 const plPlug &plGraft::plug( PLuint type ) const
 {
     switch (type)
@@ -237,19 +238,19 @@ const plPlug &plGraft::plug( PLuint type ) const
     } 
 }
 
-void plGraft::move( PLuint type, const plVector3 &origin, const plVector3 &y )
+void plGraft::move( PLuint type, const plVector3& origin, const plVector3& y, const plVector3& surfaceNormal )
 {
     switch (type)
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
         
-            _harvest.move( origin, y );            
+            _harvest.move( origin, y, surfaceNormal );            
             _generateCaps();
             break;
         
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
-            _recipient.move( origin, y );
+            _recipient.move( origin, y, surfaceNormal );
             break;
             
         default:
@@ -261,75 +262,6 @@ void plGraft::move( PLuint type, const plVector3 &origin, const plVector3 &y )
 
 
 /*
-void plGraft::translate( PLuint type, const plVector3 &translation )
-{       
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:
-        
-            _harvest.translate( translation );            
-            _setCaps();
-            break;
-        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:
-        
-            _recipient.translate( translation );
-            break;
-            
-        default:
-        
-            std::cerr << "plGraft translate() error: invalid type enumeration provided \n";
-            break;    
-    } 
-}
-
-
-void plGraft::translateX( PLuint type, PLfloat distance, const plVector3 &planeNormal  )
-{    
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:
-        
-            _harvest.translateX( distance, planeNormal );
-            _setCaps();
-            break;
-        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:
-        
-            _recipient.translateX( distance, planeNormal );
-            break;
-            
-        default:
-        
-            std::cerr << "plGraft translateX() error: invalid type enumeration provided \n";
-            break;    
-    } 
-}
-
-
-void plGraft::translateZ( PLuint type, PLfloat distance, const plVector3 &planeNormal  )
-{    
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:
-        
-            _harvest.translateZ( distance, planeNormal );
-            _setCaps();
-            break;
-        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:
-        
-            _recipient.translateZ( distance, planeNormal );
-            break;
-            
-        default:
-        
-            std::cerr << "plGraft translateZ() error: invalid type enumeration provided \n";
-            break;    
-    } 
-}
-*/
-
 void plGraft::rotate( PLuint type, const plVector3 &axis, PLfloat angleDegrees )
 {    
     switch (type)
@@ -351,5 +283,5 @@ void plGraft::rotate( PLuint type, const plVector3 &axis, PLfloat angleDegrees )
             break;    
     } 
 }
-
+*/
 

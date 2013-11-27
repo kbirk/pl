@@ -6,10 +6,9 @@ namespace plPlannerStage1
 
     void run( plCapIndices &capData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution )
     {    
-        
         std::vector< std::string > shaderfiles;
-        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
 
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.hcmp" );
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSite.hcmp" );  
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/donorSites.hcmp" );

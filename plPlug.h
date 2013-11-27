@@ -13,25 +13,21 @@ class plPlug : public plModelSpecific
 {
     public:
 
-        plPlug();
-        plPlug( PLuint _modelID, const plBoneAndCartilage &_model, const plTransform &t );
+        plPlug( PLuint type );
+        plPlug( PLuint modelID, const plBoneAndCartilage &model, PLuint type, const plTransform &transform, const plVector3 surfaceNormal );
 
-        const plTransform& transform()  const { return _transform; }
+        const plTransform& transform() const { return _transform; }
+        const plVector3& surfaceNormal() const { return _surfaceNormal; }
 
-        void move       ( const plVector3 &origin, const plVector3 &y );
-        //void translate  ( const plVector3 &translation );
-        //void translateX ( PLfloat distance, const plVector3 &planeNormal );
-        //void translateZ ( PLfloat distance, const plVector3 &planeNormal );
-        void rotate     ( const plVector3 &axis, PLfloat angleDegrees );
+        void move       ( const plVector3& origin, const plVector3& y, const plVector3& surfaceNormal );
+        //void rotate     ( const plVector3 &axis, PLfloat angleDegrees );
         
     private:
-                       
-        plTransform _transform;         // used to cache transform, also allows references / pointers to this      
-        //plTransform _surfaceTransform;         
-        //plTransform _rotationTransform;
-    
-        //void   _updateTransform()  { _transform = _surfaceTransform * _rotationTransform; }
-        PLbool _surfaceIntersection( plVector3 &point, plVector3 &normal, const plVector3 &translation ) const;       
+        
+        PLuint      _type;
+        plVector3   _surfaceNormal;
+        plTransform _transform;    
+     
 };
 
 #endif

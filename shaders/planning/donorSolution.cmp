@@ -25,6 +25,13 @@ void setDonorSolutionXAxes( in vec3 xAxis, in uint graftIndex )
     memoryBarrier();    
 }
 
+void setDonorSolutionSiteIndex( in uint siteIndex, in uint graftIndex )
+{
+    uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;         
+    donorSolutionSiteIndices[ offset + graftIndex ] = siteIndex;  
+    memoryBarrier();
+
+}
 
 vec3 getDonorSolutionPositions( in uint graftIndex )
 {

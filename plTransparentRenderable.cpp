@@ -6,12 +6,6 @@ plTransparentRenderable::plTransparentRenderable()
 }
 
 
-PLbool plTransparentRenderable::isTransparent() const 
-{ 
-    return _isTransparent; 
-}
-
-
 void plTransparentRenderable::toggleVisibility()
 {
     if (_isTransparent) 
@@ -25,36 +19,6 @@ void plTransparentRenderable::toggleVisibility()
     else 
     {
         setTransparent();
-    }
-}
-
-
-void plTransparentRenderable::toggleTransparency()
-{
-    if (_isTransparent)
-    {
-        setTransparent();
-    }
-    else
-    {
-        setVisible();
-    }
-}
-
-
-void plTransparentRenderable::saveState()
-{
-    if ( _isTransparent )
-    {
-        _storedVisibilityState = PL_TRANSPARENT;
-    }
-    else if ( _isVisible )
-    {
-        _storedVisibilityState = PL_VISIBLE;
-    }
-    else
-    {
-        _storedVisibilityState = PL_NOT_VISIBLE;
     }
 }
 
@@ -80,24 +44,10 @@ void plTransparentRenderable::setInvisible()
 }
 
 
-void plTransparentRenderable::loadState()
-{
-    switch ( _storedVisibilityState )
-    {   
-        case PL_TRANSPARENT:  
-        
-            setTransparent();
-            break;
-           
-        case PL_VISIBLE:  
-        
-            setVisible();
-            break;
-            
-        case PL_NOT_VISIBLE:  
-        
-            setInvisible();
-            break;       
-    }
+
+PLbool plTransparentRenderable::isTransparent() const 
+{ 
+    return _isTransparent; 
 }
+
 

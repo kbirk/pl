@@ -3,7 +3,7 @@
 plGraftEditor::plGraftEditor() 
 {
     _editMode       = PL_GRAFT_EDIT_MODE_TRANSLATE;
-    _editAxis       = plVector3(1,0,0);
+    //_editAxis       = plVector3(1,0,0);
     _selectedGraft  = NULL; 
     _selectedType   = -1;
     //_handlesEnabled = true;
@@ -153,14 +153,14 @@ void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
     if ( _selectedGraft == NULL )    
         return;                 // no graft selected
 
+    /*
     _previousMousePos = plVector3( x, y, 0.0f );
                                                                  
     switch ( type ) 
     {
         case PL_PICKING_TYPE_GRAFT_HANDLE_X: 
 
-            _editAxis               = _selectedGraft->transform(_selectedType).x();          
-            //_translationPlaneNormal = _selectedGraft->transform(_selectedType).z();            
+            _editAxis               = _selectedGraft->transform(_selectedType).x();                     
             break;
             
         case PL_PICKING_TYPE_GRAFT_HANDLE_Y: 
@@ -171,13 +171,11 @@ void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
         case PL_PICKING_TYPE_GRAFT_HANDLE_Z: 
         
             _editAxis               =  _selectedGraft->transform(_selectedType).z();            
-            //_translationPlaneNormal = -_selectedGraft->transform(_selectedType).x(); 
             break;
     }                                                         
-     
-    plVector3 origin = _selectedGraft->transform(_selectedType).origin(); 
-                                              
-    _screenEditAxis = _getScreenAxis( _editAxis, origin );      
+    */
+    //plVector3 origin = _selectedGraft->transform(_selectedType).origin();                                               
+    //_screenEditAxis = _getScreenAxis( _editAxis, origin );      
 }
 
 
@@ -210,7 +208,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
     if ( _selectedGraft == NULL )    
         return;                 // no graft selected
 
-    plVector3 screenDragVector = plVector3( x, y, 0.0f ) - _previousMousePos;
+    //plVector3 screenDragVector = plVector3( x, y, 0.0f ) - _previousMousePos;
     
     switch ( _editMode )
     {
@@ -269,7 +267,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
 
             if ( intersection.exists )
             { 
-                _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
+                _selectedGraft->move( _selectedType, intersection.point, intersection.normal, intersection.normal );
             }
             
             break;
@@ -308,10 +306,41 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
         case PL_GRAFT_EDIT_MODE_ROTATE:
         {
             // rotation
+            
+            // get rotation from graft y to screen normal ( facing viewer )
+            plVector3 viewDir = plCameraStack::direction();
+            plVector3 graftY  = _selectedGraft->surfaceNormal( _selectedType );
 
-            plVector3 screenAxisNormal(-_screenEditAxis.y, _screenEditAxis.x, 0 );
-            PLfloat angle = -(screenDragVector * screenAxisNormal);
-            _selectedGraft->rotate( _selectedType, _editAxis, angle );          
+            // transfrom from graft surface normal to screen normal ( facing viewer )
+            plMatrix44 graftToScreen;
+            graftToScreen.setRotation( graftY, -viewDir );
+
+            // get graft origin in screen coords
+            plVector3 graftOrigin = _selectedGraft->transform( _selectedType ).origin();
+            plVector3 originWindow = plWindow::worldToScreen( graftOrigin.x, graftOrigin.y, graftOrigin.z );
+
+            // get scaled direction vector between graft origin and mouse
+            plVector3 mouseDirection = PL_ROTATION_SENSITIVITY * ( plVector3( -y, 0, x ) - plVector3( -originWindow.y, 0, originWindow.x ) ); //.normalize();
+
+            // transform mouse direction to world direction by applying transform from graft normal to view direction
+            // add graft surface normal to this vector to allow distance sensitive rotation ( more rotation if u move away from graft origin )
+            plVector3 newGraftY = ( ( graftToScreen * mouseDirection ) + graftY ).normalize(); 
+
+            // check angle between new and old y axis
+            PLfloat angle = acos( graftY * newGraftY );
+
+            // if past threshold, set to
+            if ( angle > PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) )
+            {
+                // find vector in plane of graftY and newGraftY that is orthogonal to graftY
+                plVector3 tangent = newGraftY ^ graftY;               
+                plVector3 ortho = ( graftY ^ tangent ).normalize();                
+                // trig to find scaling of new vector on plane
+                newGraftY = ( graftY*cos( PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) ) + ortho*sin( PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) ) ).normalize();
+            } 
+
+             _selectedGraft->move( _selectedType, graftOrigin, newGraftY, graftY );      
+             
             break;
         }
         
@@ -363,27 +392,22 @@ plVector3 plGraftEditor::_getScreenAxis( const plVector3 &edit_axis, const plVec
 
 void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
-    if ( _selectedGraft == NULL )    
+    if ( _selectedGraft == NULL || !_selectedGraft->isVisible() )    
         return;                 // no graft selected
-        
+      
+    // select graft  
     _selectedGraft->extractRenderComponents( renderMap, technique );  
-    
-    /* 
-    if ( _selectedGraft == NULL || !_selectedGraft->isVisible() )
-        return;
-
+         
+    // draw graft editor 
     plModelStack::push();
     plModelStack::load( _selectedGraft->transform(_selectedType).matrix() );
-
-    if ( PL_GRAFT_SELECTED_IS_DEFECT )
-        plModelStack::translate( 0, _selectedGraft->heightOffset(), 0 );
 
     plColourStack::load( PL_AXIS_GREY ); 
     plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_HANDLE );
     plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), PL_HANDLE_SPHERE_RADIUS ) );
    
     plModelStack::pop();
-    */
+
 }
 
 

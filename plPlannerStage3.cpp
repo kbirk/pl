@@ -5,10 +5,11 @@ plGreedyGroup::plGreedyGroup()
         _lowestPositions ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4() ),
         _lowestNormals   ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4() ),
         _lowestXAxes     ( PL_MAX_GRAFTS_PER_SOLUTION, plVector4() ),
-        _donorSolutionPositionsSSBO ( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
-        _donorSolutionNormalsSSBO   ( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
-        _donorSolutionXAxesSSBO     ( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
-        _totalRmsSSBO               ( PL_STAGE_3_INVOCATIONS*sizeof( PLfloat ) )       
+        _donorSolutionPositionsSSBO  ( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
+        _donorSolutionNormalsSSBO    ( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
+        _donorSolutionXAxesSSBO      ( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( plVector4 ) ),
+        _donorSolutionSiteIndicesSSBO( PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof( PLuint ) ),
+        _totalRmsSSBO                ( PL_STAGE_3_INVOCATIONS*sizeof( PLfloat ) )       
 {   
     // initialize all rms to -1
     std::vector<PLfloat> totalRMS( PL_STAGE_3_INVOCATIONS, -1.0f );
@@ -21,7 +22,8 @@ void plGreedyGroup::bind()
     _donorSolutionPositionsSSBO.bind( 3 );
     _donorSolutionNormalsSSBO.bind( 4 );
     _donorSolutionXAxesSSBO.bind( 5 );
-    _totalRmsSSBO.bind( 6 );
+    _donorSolutionSiteIndicesSSBO.bind( 6 );
+    _totalRmsSSBO.bind( 7 );
 }
 
 
@@ -30,7 +32,8 @@ void plGreedyGroup::unbind()
     _donorSolutionPositionsSSBO.unbind( 3 );
     _donorSolutionNormalsSSBO.unbind( 4 );
     _donorSolutionXAxesSSBO.unbind( 5 );
-    _totalRmsSSBO.unbind( 6 );   
+    _donorSolutionSiteIndicesSSBO.bind( 6 );
+    _totalRmsSSBO.unbind( 7 );   
 }
 
 
@@ -57,21 +60,34 @@ void plGreedyGroup::update()
     if ( minIndex != -1 && minRMS < _lowestRMS )
     {
         _lowestRMS = minRMS;
-
-        _donorSolutionPositionsSSBO.read( _lowestPositions, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
-        _donorSolutionNormalsSSBO.read  ( _lowestNormals,   PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
-        _donorSolutionXAxesSSBO.read    ( _lowestXAxes,     PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
+        _donorSolutionPositionsSSBO.read  ( _lowestPositions,   PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
+        _donorSolutionNormalsSSBO.read    ( _lowestNormals,     PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
+        _donorSolutionXAxesSSBO.read      ( _lowestXAxes,       PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
+        _donorSolutionSiteIndicesSSBO.read( _lowestSiteIndices, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION );
     }
 
 }
 
 
-void plGreedyGroup::getSolution( plDonorSolution &solution )
+void plGreedyGroup::getSolution( plDonorSolution &solution, const plPlanningBufferData &planningData )
 {
     solution.graftPositions = _lowestPositions;
     solution.graftNormals   = _lowestNormals;  
     solution.graftXAxes     = _lowestXAxes;  
+    solution.graftSiteIndices = _lowestSiteIndices;
     solution.rms = _lowestRMS;
+
+    for ( PLuint i=0; i < solution.graftPositions.size(); i++ )
+    {
+        // intersect surface
+        plIntersection intersection = plMath::rayIntersect( planningData.donorSites[ solution.graftSiteIndices[i] ].triangles, 
+                                                            solution.graftPositions[i], 
+                                                            -solution.graftNormals[i], 
+                                                            true );
+        // set surface normal for graft
+        solution.graftSurfaceNormals.push_back( plVector4( intersection.normal, 1.0f ) ); 
+        
+    }   
 }
 
 
@@ -81,8 +97,8 @@ namespace plPlannerStage3
     void run( plDonorSolution &donorSolution, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plRmsData &rmsData )
     {
         std::vector< std::string > shaderfiles;
-        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
 
+        shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defines.hcmp" ); 
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/geometry.hcmp" );
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/defectSite.hcmp" );  
         shaderfiles.push_back( PL_FILE_PREPATH"shaders/planning/donorSites.hcmp" );
@@ -122,7 +138,7 @@ namespace plPlannerStage3
         planningData.defectSiteSSBO.bind( 0 );
         planningData.donorSitesSSBO.bind( 1 );
         rmsData.rmsSSBO.bind( 2 );
-        greedyBuffers.bind(); // 3, 4, 5, 6
+        greedyBuffers.bind(); // 3, 4, 5, 6, 7
 
         for (PLuint i=0; i<PL_STAGE_3_ITERATIONS; i++ )
         {
@@ -143,7 +159,7 @@ namespace plPlannerStage3
         }   
         plUtility::printProgressBar( 1.0 );
 
-        greedyBuffers.getSolution( donorSolution );
+        greedyBuffers.getSolution( donorSolution, planningData );
 
         // no state found                              
         if ( donorSolution.rms == FLT_MAX )

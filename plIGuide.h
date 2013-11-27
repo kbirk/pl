@@ -22,15 +22,13 @@ class plPlugInfo
     
         const plTransform &transform          () const { return *_transform;           }
         PLfloat            radius             () const { return *_radius;              }
-        PLfloat            cartilageThickness () const { return *_cartilageThickness;  }
         PLfloat            length             () const { return *_length;              }
-        PLfloat            heightOffset       () const { return *_heightOffset;        }
         PLuint             type               () const { return _type;                 }
         PLuint             graftID            () const { return _graftID;              }
 
         plPlugInfo() {}
-        plPlugInfo( const plTransform *transform, const PLfloat *radius, const PLfloat *thickness, const PLfloat *length, const PLfloat *heightOffset, PLuint type, PLuint id )
-            : _transform( transform ), _radius( radius ), _cartilageThickness( thickness ), _length(length), _heightOffset(heightOffset), _type( type ), _graftID( id )
+        plPlugInfo( const plTransform *transform, const PLfloat *radius, const PLfloat *length, PLuint type, PLuint id )
+            : _transform( transform ), _radius( radius ), _length(length), _type( type ), _graftID( id )
         {        
             std::cout << "type: " << type << std::endl;
         }
@@ -39,9 +37,7 @@ class plPlugInfo
     
         const plTransform *_transform;
         const PLfloat     *_radius;
-        const PLfloat     *_cartilageThickness;
         const PLfloat     *_length;
-        const PLfloat     *_heightOffset;
         PLuint             _type;
         PLuint             _graftID;    
         

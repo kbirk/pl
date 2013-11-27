@@ -20,16 +20,19 @@ namespace plMath
     PLfloat   fsqrt                        ( PLfloat x );
     PLfloat   clamp                        ( PLfloat val, PLfloat min = -1, PLfloat max = 1);    
 
-    plIntersection rayIntersect     ( const std::vector<plTriangle> &triangles, 
-                                      const plVector3 &rayOrigin, 
-                                      const plVector3 &rayDirection, 
-                                      PLbool ignoreBehindRay = false, 
-                                      PLbool backFaceCull    = false );
-
     PLbool solveMatrix22Equation( PLfloat a11, PLfloat a12, PLfloat a21, PLfloat a22, PLfloat b1, PLfloat b2, PLfloat &x, PLfloat &y );
 
 	void convexPolysToTris         ( std::vector<plTriangle> &tris, const std::vector<plPolygon> &polys );
 	void concavePolysToTris        ( std::vector<plTriangle> &tris, const std::vector<plPolygon> &polys );
+
+    plIntersection rayIntersect( const std::vector<plTriangle>& triangles, 
+                                 const plVector3 &rayOrigin, 
+                                 const plVector3 &rayDirection,
+                                 PLbool smoothNormal = false, 
+                                 PLbool ignoreBehindRay = false, 
+                                 PLbool backFaceCull = false );  
+
+    plVector3 getAverageNormal( const std::vector<plTriangle>& triangles, PLfloat radius, const plVector3 &origin, const plVector3 &normal );
 
 };
 

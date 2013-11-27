@@ -90,12 +90,11 @@ PLbool plIGuide::generateIGuideModels()
     
     for ( PLuint i = 0; i < plugs.size(); i++ )
     {   
-        plMatrix44 cylinderToPlugTransform           = plugs[i].transform().matrix();
-        plVector4  plugToCartilageSurfaceTranslation = plVector4( ( plugs[i].cartilageThickness() + ( ( plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR ) ? 0.f : plugs[i].heightOffset() ) ) *
-                                                                  ( plugs[i].transform().matrix()*plVector4(0.f,1.f,0.f,0.f) ) );
-        plMatrix44 plugToCartilageSurfaceTransform   = plMatrix44(plugToCartilageSurfaceTranslation.x,plugToCartilageSurfaceTranslation.y,plugToCartilageSurfaceTranslation.z);
-
-        plMatrix44 cylinderToCartilageSurfaceTransform = plugToCartilageSurfaceTransform * cylinderToPlugTransform;
+        plMatrix44 cylinderToPlugTransform( plugs[i].transform().matrix() );
+        
+        //plVector4  plugToCartilageSurfaceTranslation = plVector4( 0.0f, 0.0f, 0.0f, 0.0f );
+        //plMatrix44 plugToCartilageSurfaceTransform( plugToCartilageSurfaceTranslation.x, plugToCartilageSurfaceTranslation.y, plugToCartilageSurfaceTranslation.z );
+        //plMatrix44 cylinderToCartilageSurfaceTransform = plugToCartilageSurfaceTransform * cylinderToPlugTransform;
         
         PLfloat   keyTranslation = 6.f;
         PLfloat   keyRotation    = 0.f;
@@ -108,7 +107,7 @@ PLbool plIGuide::generateIGuideModels()
         PLfloat   holderDiameter  = baseDiameter   + 4.f ;
         PLfloat   correctDiameter = holderDiameter + 0.1f;
 
-        PLfloat   sleeveHeight = toolDepth - plugs[i].length() - plugs[i].cartilageThickness();
+        PLfloat   sleeveHeight = toolDepth - plugs[i].length(); // - plugs[i].cartilageThickness();
         
         plVector3 holeScale   ( holeDiameter,   36.f, holeDiameter   );
         plVector3 sleeveScale ( sleeveDiameter, sleeveHeight, sleeveDiameter );
@@ -120,12 +119,12 @@ PLbool plIGuide::generateIGuideModels()
         //if ( plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR )
             //plVector3 supportScale( 18.f,  4.f, 18.f  );
         
-        std::vector<plTriangle> holeTriangles    = _createTemplatePieceTransformed(sharpCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, holeScale,    0.0f,           0.0f);
-        std::vector<plTriangle> sleeveTriangles  = _createTemplatePieceTransformed(roundCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, sleeveScale,  0.0f,           0.0f);
-        std::vector<plTriangle> baseTriangles    = _createTemplatePieceTransformed(sharpCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, baseScale,    0.0f,           0.0f);
-        std::vector<plTriangle> holderTriangles  = _createTemplatePieceTransformed(roundCylinder,   cylinderToCartilageSurfaceTransform, 0.0f, holderScale,  0.0f,           0.0f);
-        std::vector<plTriangle> keyTriangles     = _createTemplatePieceTransformed(keyCube,         cylinderToCartilageSurfaceTransform, 0.0f, keyScale,     keyTranslation, 0.0f);
-        std::vector<plTriangle> correctTriangles = _createTemplatePieceTransformed(correctCylinder, cylinderToCartilageSurfaceTransform, 0.0f, correctScale, 0.0f,           0.0f);
+        std::vector<plTriangle> holeTriangles    = _createTemplatePieceTransformed(sharpCylinder,   cylinderToPlugTransform, 0.0f, holeScale,    0.0f,           0.0f);
+        std::vector<plTriangle> sleeveTriangles  = _createTemplatePieceTransformed(roundCylinder,   cylinderToPlugTransform, 0.0f, sleeveScale,  0.0f,           0.0f);
+        std::vector<plTriangle> baseTriangles    = _createTemplatePieceTransformed(sharpCylinder,   cylinderToPlugTransform, 0.0f, baseScale,    0.0f,           0.0f);
+        std::vector<plTriangle> holderTriangles  = _createTemplatePieceTransformed(roundCylinder,   cylinderToPlugTransform, 0.0f, holderScale,  0.0f,           0.0f);
+        std::vector<plTriangle> keyTriangles     = _createTemplatePieceTransformed(keyCube,         cylinderToPlugTransform, 0.0f, keyScale,     keyTranslation, 0.0f);
+        std::vector<plTriangle> correctTriangles = _createTemplatePieceTransformed(correctCylinder, cylinderToPlugTransform, 0.0f, correctScale, 0.0f,           0.0f);
 
         //if (plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR)
             //std::vector<plTriangle> supportTriangles( createTemplatePieceTransformed(sharpCylinder, recipientTransform, cylinderRecipientSupportOffset, supportScale, 0.0f, 0.0f) );
@@ -179,15 +178,15 @@ plString plIGuide::_prepareFilenameWithVariables( PLint operation, PLchar type, 
     strstream << type << graftIndex;
     switch (operation) // TODO: a DEFINE or enum or something
     {
-    case PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE:
-        strstream << "Difference";
-        break;
-    case PL_IGUIDE_BOOLEAN_MESH_UNION:
-        strstream << "Union";
-        break;
-    case PL_IGUIDE_BOOLEAN_MESH_INTERSECTION:
-        strstream << "Intersect";
-        break;
+        case PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE:
+            strstream << "Difference";
+            break;
+        case PL_IGUIDE_BOOLEAN_MESH_UNION:
+            strstream << "Union";
+            break;
+        case PL_IGUIDE_BOOLEAN_MESH_INTERSECTION:
+            strstream << "Intersect";
+            break;
     }
     strstream << pieceName << ".stl";
     return strstream.str();
@@ -201,10 +200,10 @@ std::vector<plTriangle> plIGuide::_createTemplatePieceTransformed ( const std::v
                                                               const PLfloat&    keyTranslationXAxis,
                                                               const PLfloat&    keyRotationZAxis )
 {
-    plMatrix44 zTranslationMatrix   = plMatrix44();     zTranslationMatrix.setTranslation(0.0f, zOffset, 0.0f);
-    plMatrix44 scaleMatrix          = plMatrix44();     scaleMatrix.setScale(scale);
-    plMatrix44 keyTranslationMatrix = plMatrix44();     keyTranslationMatrix.setTranslation(keyTranslationXAxis, 0.0f, 0.0f);
-    plMatrix44 keyRotationMatrix    = plMatrix44();     keyRotationMatrix.setRotationD(keyRotationZAxis, plVector3(0,1,0));
+    plMatrix44 zTranslationMatrix;    zTranslationMatrix.setTranslation(0.0f, zOffset, 0.0f);
+    plMatrix44 scaleMatrix;           scaleMatrix.setScale(scale);
+    plMatrix44 keyTranslationMatrix;  keyTranslationMatrix.setTranslation(keyTranslationXAxis, 0.0f, 0.0f);
+    plMatrix44 keyRotationMatrix;     keyRotationMatrix.setRotationD(keyRotationZAxis, plVector3(0,1,0));
     plMatrix44 transformationMatrix = plugTransform * zTranslationMatrix * keyRotationMatrix * keyTranslationMatrix * scaleMatrix;
 
     std::vector<plTriangle> outputTriObject;

@@ -14,13 +14,10 @@
 #include "plCylinder.h"
 #include "plCone.h"
 
-#define PL_DRAG_SENSITIVITY                      0.1f
-#define PL_GRAFT_SELECTED_IS_DONOR               ( _selectedType == PL_PICKING_INDEX_GRAFT_DONOR )
-#define PL_GRAFT_SELECTED_IS_DEFECT              ( _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
-#define PL_GRAFT_EDIT_SHOW_Y_HANDLE              (( _editMode      == PL_GRAFT_EDIT_MODE_ROTATE &&     \
-                                                    _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT) || \
-                                                  ( _editMode     == PL_GRAFT_EDIT_MODE_TRANSLATE &&   \
-                                                    _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT))
+#define PL_ROTATION_SENSITIVITY                  0.010f   // lower is less sensitive
+
+#define PL_MAX_GRAFT_ROTATION                    25.00f
+
 
 class plGraftEditor : public plRenderable
 {
@@ -50,8 +47,8 @@ class plGraftEditor : public plRenderable
         PLbool      _isDraggingMenu;
     
         PLint       _editMode;
-        plVector3   _editAxis;
-        plVector3   _screenEditAxis;
+        //plVector3   _editAxis;
+        //plVector3   _screenEditAxis;
         
         //PLbool      _handlesEnabled;
 

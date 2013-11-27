@@ -1,15 +1,8 @@
 #include "plRenderable.h"
 
 plRenderable::plRenderable()
-{  
-    _isVisible = true; 
-    _storedVisibilityState = PL_VISIBLE;
-}
-
-
-PLbool plRenderable::isVisible() const
-{
-    return _isVisible;
+    : _isVisible( true )
+{ 
 }
 
 
@@ -31,32 +24,8 @@ void plRenderable::setInvisible()
 }
 
 
-void plRenderable::saveState()
+PLbool plRenderable::isVisible() const
 {
-    if ( _isVisible )
-    {
-        _storedVisibilityState = PL_VISIBLE;
-    }
-    else
-    {
-        _storedVisibilityState = PL_NOT_VISIBLE;
-    }
-}
-
-
-void plRenderable::loadState()
-{
-    switch ( _storedVisibilityState )
-    {   
-        case PL_VISIBLE:  
-            
-            setVisible();   
-            break;    
-                    
-        case PL_NOT_VISIBLE: 
-         
-            setInvisible();  
-            break;       
-    }
+    return _isVisible;
 }
 

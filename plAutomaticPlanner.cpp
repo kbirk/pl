@@ -86,49 +86,24 @@ namespace plAutomaticPlanner
         {
             for ( PLuint i=0; i < defectSolution.graftCount; i++ )
             {    
-                /*
-                // all graft origins generated from the planner shaders have their origins flush with the cartilage surface, these
-                // must be changed to be flush with the bone surface for mouse drag editing to behave nicely
-                       
-                // ray cast from cartilage positions in negative direction of normal to get harvest bone position
-                  
-                plIntersection intersection = plan.models(0).bone.rayIntersect( originalHarvestOrigin, -originalHarvestY );   
-                // set correct harvest origin to bone intersection point             
-                plVector3 correctHarvestOrigin = intersection.point;            
-            
-                // ray cast from cartilage positions in negative direction of normal to get recipient bone position
-                plVector3 originalRecipientOrigin( defectSolution.graftPositions[i].x,  defectSolution.graftPositions[i].y,   defectSolution.graftPositions[i].z );
-                plVector3 originalRecipientY     ( defectSolution.graftNormals[i].x,    defectSolution.graftNormals[i].y,     defectSolution.graftNormals[i].z   );        
-                plVector3 originalRecipientZ     ( donorSolution.graftZDirections[i].x, donorSolution.graftZDirections[i].y,  donorSolution.graftZDirections[i].z ); // use from donor state!
-                plVector3 originalRecipientX = (originalRecipientY ^ originalRecipientZ).normalize();
-                                               
-                intersection = plan.models(0).bone.rayIntersect( originalRecipientOrigin, -originalRecipientY );      
-                // set correct recipient origin to bone intersection point   
-                plVector3 correctRecipientOrigin = intersection.point; 
-
-                // get height offset so that cap is flush with cartilage surface, remember to subtract cartilage thickness 
-                PLfloat recipientHeightOffset = ( correctRecipientOrigin - originalRecipientOrigin ).length() - cartilageThickness;
-    
-                plPlug recipient( 0, plan.models(0), plTransform( originalRecipientX, originalRecipientY, correctRecipientOrigin ) );
-                plPlug harvest  ( 0, plan.models(0), plTransform( originalHarvestY,   correctHarvestOrigin   ) );
-                */ 
-
                 // get graft transforms
-                plVector3 originalHarvestOrigin( donorSolution.graftPositions[i] );
-                plVector3 originalHarvestY     ( donorSolution.graftNormals[i]   );    
-                plVector3 originalHaverstX     ( donorSolution.graftXAxes[i]     );   
-                   
-                plVector3 originalRecipientOrigin( defectSolution.graftPositions[i] );
-                plVector3 originalRecipientY     ( defectSolution.graftNormals[i]   );        
-                plVector3 originalRecipientX     ( (originalRecipientY ^ plVector3( 0, 0, 1 ) ).normalize() ); 
-                
+                plVector3 harvestOrigin( donorSolution.graftPositions[i] );
+                plVector3 harvestY     ( donorSolution.graftNormals[i]   );    
+                plVector3 harvestX     ( donorSolution.graftXAxes[i]     );   
+                plVector3 harvestSurfaceNormal( donorSolution.graftSurfaceNormals[i] );    
+
+                plVector3 recipientOrigin( defectSolution.graftPositions[i] );
+                plVector3 recipientY     ( defectSolution.graftNormals[i]   );        
+                plVector3 recipientX     ( (recipientY ^ plVector3( 0, 0, 1 ) ).normalize() ); 
+                plVector3 recipientSurfaceNormal( defectSolution.graftSurfaceNormals[i] ); 
+
                 // calculate how thick the cartilage is ( the distance from the cartilage point to bone point )
-                PLfloat cartilageThickness = 0.0f; //( correctHarvestOrigin - originalHarvestOrigin ).length();
+                PLfloat cartilageThickness = 0.0f; // this is to be removed
                 
-                plPlug harvest  ( 0, plan.models(0), plTransform( originalHaverstX ,  originalHarvestY,   originalHarvestOrigin   ) );
-                plPlug recipient( 0, plan.models(0), plTransform( originalRecipientX, originalRecipientY, originalRecipientOrigin ) );
+                plPlug harvest  ( 0, plan.models(0), PL_PICKING_INDEX_GRAFT_DONOR, plTransform( harvestX,  harvestY,   harvestOrigin    ), harvestSurfaceNormal   );
+                plPlug recipient( 0, plan.models(0), PL_PICKING_INDEX_GRAFT_DEFECT, plTransform( recipientX, recipientY, recipientOrigin ), recipientSurfaceNormal );
                 
-                plan.addGraft( harvest, recipient, defectSolution.graftRadii[i], cartilageThickness, 0 );
+                plan.addGraft( harvest, recipient, defectSolution.graftRadii[i] );
             } 
         }
         

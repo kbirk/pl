@@ -153,15 +153,15 @@ std::vector<plVector3> plSpline::_averageCornerNormals() const
 {
     const PLfloat AVERAGE_RADIUS = 2.0f;
 
-    std::vector<plVector3> n;
+    std::vector<plVector3> cornerNormals;
 
     // compute averages normals
-    n.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
-    n.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
-    n.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
-    n.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
+    cornerNormals.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
+    cornerNormals.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
+    cornerNormals.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
+    cornerNormals.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
     
-    return n;
+    return cornerNormals;
 }
 
 

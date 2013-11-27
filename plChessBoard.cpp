@@ -9,24 +9,23 @@ plChessBoard::plChessBoard()
 
 
 void plChessBoard::_generateVAO()
-{  
-    
-    PLint  width_blocks   = 8;
-    PLfloat width         = width_blocks * _blockSize;
+{    
+    PLint  WIDTH_COUNT = 8;
+    PLfloat width      = WIDTH_COUNT * _blockSize;
       
-    PLint  height_blocks  = 9;
-    PLfloat height        = height_blocks * _blockSize;
+    PLint  HEIGHT_COUNT = 9;
+    PLfloat height      = HEIGHT_COUNT * _blockSize;
     
     PLbool black = true;
 
     std::vector<plVector3> vertices;
     std::vector<PLuint>    indices;
 
-    for (PLint i = -1; i < width_blocks-1; i++)
+    for (PLint i = -1; i < WIDTH_COUNT-1; i++)
     {
         PLfloat width_pos  = i * _blockSize;
 
-        for (PLint j = -1; j < height_blocks-1; j++)
+        for (PLint j = -1; j < HEIGHT_COUNT-1; j++)
         {       
             PLfloat height_pos = j * _blockSize;
             
@@ -46,12 +45,16 @@ void plChessBoard::_generateVAO()
             vertices.push_back( v2 ); vertices.push_back( n ); vertices.push_back( c );
             vertices.push_back( v3 ); vertices.push_back( n ); vertices.push_back( c );
             
-            indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
-            indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );
-            
+            indices.push_back( base + 0 ); indices.push_back( base + 1 ); 
+            indices.push_back( base + 1 ); indices.push_back( base + 2 );
+            indices.push_back( base + 2 ); indices.push_back( base + 3 ); 
+            indices.push_back( base + 3 ); indices.push_back( base + 4 );
+            indices.push_back( base + 0 ); indices.push_back( base + 2 );
+
+            //indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
+            //indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );           
         }
-    }
-    
+    }   
     // set vbo and attach attribute pointers
     std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
@@ -59,7 +62,7 @@ void plChessBoard::_generateVAO()
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
     // set eabo
     std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
-    eabo->set( indices );
+    eabo->set( indices, GL_LINES );
     // attach to vao
     _vao = std::make_shared< plVAO >();
     _vao->attach( vbo );
@@ -99,26 +102,29 @@ void plChessBoard::extractRenderComponents( plRenderMap& renderMap, PLuint techn
 {
     if ( !_isVisible )
         return;
-    /*
+
     plModelStack::push( _transform.matrix() );
     {
         if ( _isTransparent )
         {
-            plColourStack::push( PL_COLOUR_MESH_TRANSPARENT_COLOUR );
+            plColourStack::load( PL_COLOUR_MESH_TRANSPARENT_COLOUR );
         }
         else
         {
-            plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );
+            plColourStack::load( PL_COLOUR_MESH_OPAQUE_COLOUR );
         }
 
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-        _vao.draw();
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
-        plColourStack::pop();
+        // create render component
+        plRenderComponent component( _vao );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        // insert into render map
+        renderMap[ technique ].insert( component );      
     }
     plModelStack::pop();
-    */
 }
 
 

@@ -104,8 +104,6 @@ void plCamera::translate(PLint x, PLint y)
 {
     const PLfloat TRANSLATION_SENSITIVITY = 0.1f;
     
-    //PLfloat distance = (lookat -position).length();
-    
     plVector3 ydir = up.normalize();
     plVector3 zdir = (position - lookat).normalize();
     plVector3 xdir = (ydir ^ zdir).normalize();

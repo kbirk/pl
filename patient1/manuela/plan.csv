@@ -18,45 +18,45 @@ donor_site
 
 graft
     recipient_model_id,  0
-    recipient_transform, 77.1869 89.7001 65.5006,0.458223 0.888837 -0,-0.353854 0.182422 -0.917338
+    recipient_transform, 83.9327 88.5137 62.1386,0.562324 0.826917 -0,-0.529585 0.36013 -0.768015
+    recipient_surface_normal, -0.262528 0.318373 -0.910889
     harvest_model_id,    0
-    harvest_transform,   85.2063 59.6387 65.7189,-0.968648 -0.238886 0.0682284,-0.0542876 -0.0644658 -0.996442
+    harvest_transform,   47.9856 49.8256 73.7528,-0.209344 -0.843603 0.494478,0.494328 -0.527609 -0.690846
+    harvest_surface_normal, 0.211509 -0.628367 -0.748612
     radius,              4
-    cartilage_thickness, 0
     length,              15
-    height_offset,       0
     mark_direction,      0 0 1
 
 graft
     recipient_model_id,  0
-    recipient_transform, 84.0357 94.64 64.4976,0.443682 0.896184 -0,-0.534342 0.264542 -0.802806
+    recipient_transform, 77.0621 89.3709 65.876,0.849862 0.527005 -0,-0.281755 0.454366 -0.845083
+    recipient_surface_normal, -0.569445 0.333936 -0.751145
     harvest_model_id,    0
-    harvest_transform,   75.8649 50.263 75.7149,-0.852417 0.184727 -0.489144,-0.136363 -0.981677 -0.133098
+    harvest_transform,   76.3266 50.7997 74.469,0.168434 0.721352 -0.671775,-0.21235 -0.638956 -0.739353
+    harvest_surface_normal, -0.341374 -0.802669 -0.489067
     radius,              4
-    cartilage_thickness, 0
     length,              15
-    height_offset,       0
     mark_direction,      0 0 1
 
 graft
     recipient_model_id,  0
-    recipient_transform, 83.7464 88.5115 61.606,0.474687 0.880154 -0,-0.540333 0.291414 -0.789378
+    recipient_transform, 83.9008 94.688 64.9217,0.471474 0.88188 -0,-0.545741 0.291766 -0.785519
+    recipient_surface_normal, -0.265579 0.471104 -0.841147
     harvest_model_id,    0
-    harvest_transform,   47.9317 44.402 79.682,0.079384 -0.682224 0.726821,0.461767 -0.62101 -0.633339
+    harvest_transform,   85.3572 59.4841 65.7885,0.923055 0.128685 -0.362504,-0.312355 -0.299268 -0.901595
+    harvest_surface_normal, 0.00971032 -0.398141 -0.917273
     radius,              4
-    cartilage_thickness, 0
     length,              15
-    height_offset,       0
     mark_direction,      0 0 1
 
 graft
     recipient_model_id,  0
-    recipient_transform, 78.4894 82.4356 62.0614,0.598856 0.800856 -0,-0.519278 0.3883 -0.761297
+    recipient_transform, 78.879 82.3176 62.38,0.734046 0.6791 -0,-0.439937 0.475532 -0.761791
+    recipient_surface_normal, -0.44196 0.20653 -0.872936
     harvest_model_id,    0
-    harvest_transform,   47.9246 49.9576 73.6101,-0.13891 -0.68339 0.716717,0.357273 -0.709576 -0.607337
+    harvest_transform,   47.3217 44.057 80.0505,0.176376 0.700623 -0.69139,-0.0463031 -0.695718 -0.716821
+    harvest_surface_normal, 0.140843 -0.830354 -0.539144
     radius,              4
-    cartilage_thickness, 0
     length,              15
-    height_offset,       0
     mark_direction,      0 0 1
 

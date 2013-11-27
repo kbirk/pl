@@ -9,7 +9,6 @@ plPlanningSite::plPlanningSite( const std::vector<plTriangle> &tris, const plBou
 {
     // generate interior triangles
     plMeshCutter::findInteriorMesh( triangles, tris, boundary );
-
     if ( fineGrain )
     {
         _generateFineGridPoints(); 
@@ -18,13 +17,12 @@ plPlanningSite::plPlanningSite( const std::vector<plTriangle> &tris, const plBou
     {
         _generateCoarseGridPoints(); 
     }
-    
     _generateBoundaryPoints( boundary ); 
     _calcArea();
     _calcNormal();   
        
-    std::cout << "        " <<  triangles.size()  << " triangles calculated \n";
-    std::cout << "        " <<  gridPoints.size() << " grid points calculated \n";       
+    std::cout << "\t\t" <<  triangles.size()  << " triangles calculated \n";
+    std::cout << " \t\t" <<  gridPoints.size() << " grid points calculated \n";       
 }
 
 
@@ -62,43 +60,6 @@ PLbool plPlanningSite::good() const
               boundaryNormals.size() == 0 ||
               area == 0.0f ||
               avgNormal.length() == 0.0f );
-}
-
-
-plVector3 plPlanningSite::getSmoothNormal( const plVector3 &point, const plVector3 &up, PLfloat radius ) const
-{
-    plVector3 normal(0,0,0);        
-    float radiusSquared = radius * radius;
-    PLint count = 0;
-    
-    // Find polygons on top of graft
-    for (PLuint i=0; i<triangles.size(); i++) 
-    {
-        if ( triangles[i].normal() * up > 0.001 )
-        {        
-            PLfloat dist1 = ( triangles[i].point0() - point ).squaredLength();
-            PLfloat dist2 = ( triangles[i].point1() - point ).squaredLength();
-            PLfloat dist3 = ( triangles[i].point2() - point ).squaredLength();
-           
-            // if any point of triangle is withing radial sphere, accept
-            float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
-
-            if (minDist <= radiusSquared)
-            {        
-                normal = normal + triangles[i].normal();
-                count++;
-            }
-        }
-    } 
-
-    if (count == 0)
-    {
-        // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
-        std::cout << "plPlanningSite::getSmoothNormal() warning: No normal found\n";
-        return up;
-    }    
-
-    return ( ( 1.0f/(PLfloat)count ) * normal ).normalize();      
 }
 
 
@@ -144,7 +105,7 @@ plSSBO plPlanningSite::getSSBO() const
 
     PLuint numBytes = totalSize() * sizeof( plVector4 );
 
-    std::cout << "        Total buffer size: " << numBytes << " bytes " << std::endl;     
+    std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;     
 
     return plSSBO( numBytes, (void*)(&data[0]) );
 }
@@ -152,24 +113,21 @@ plSSBO plPlanningSite::getSSBO() const
 
 void plPlanningSite::_generateCoarseGridPoints()
 {   
-    plSet<plPointAndNormal> p;
-    for (PLuint i=0; i < triangles.size(); i++)
+    plSet<plPointAndNormal> pointsAndNormals;
+    for ( const plTriangle& triangle : triangles )
     {   
-        plVector3 smoothNormal0 = getSmoothNormal( triangles[i].point0(), triangles[i].normal(), PL_NORMAL_SMOOTHING_RADIUS );   
-        plVector3 smoothNormal1 = getSmoothNormal( triangles[i].point1(), triangles[i].normal(), PL_NORMAL_SMOOTHING_RADIUS );  
-        plVector3 smoothNormal2 = getSmoothNormal( triangles[i].point2(), triangles[i].normal(), PL_NORMAL_SMOOTHING_RADIUS );  
-        p.insert( plPointAndNormal( triangles[i].point0(), smoothNormal0 ) );
-        p.insert( plPointAndNormal( triangles[i].point1(), smoothNormal1 ) );
-        p.insert( plPointAndNormal( triangles[i].point2(), smoothNormal2 ) );
+        plVector3 smoothNormal0 = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point0(), triangle.normal() );
+        plVector3 smoothNormal1 = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point1(), triangle.normal() );
+        plVector3 smoothNormal2 = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point2(), triangle.normal() ); 
+        pointsAndNormals.insert( plPointAndNormal( triangle.point0(), smoothNormal0 ) );
+        pointsAndNormals.insert( plPointAndNormal( triangle.point1(), smoothNormal1 ) );
+        pointsAndNormals.insert( plPointAndNormal( triangle.point2(), smoothNormal2 ) );
     }
     
-    plSet<plPointAndNormal>::iterator p_itr = p.begin();
-    plSet<plPointAndNormal>::iterator p_end = p.end();
-    
-    for ( ; p_itr != p_end; ++p_itr )
+    for ( const plPointAndNormal& pointNormal : pointsAndNormals )
     {
-        gridPoints.push_back( plVector4( p_itr->point,  1) );
-        gridNormals.push_back( plVector4( p_itr->normal, 1) );
+        gridPoints.push_back( plVector4( pointNormal.point,  1) );
+        gridNormals.push_back( plVector4( pointNormal.normal, 1) );
     }
 }    
 
@@ -178,7 +136,7 @@ void plPlanningSite::_generateFineGridPoints()
 {
     const PLfloat GRID_SPACING = 0.6f;
     
-    plSet<plPointAndNormal> p;
+    plSet<plPointAndNormal> pointsAndNormals;
     
     // select points in each triangle at approx spacing    
     for (PLuint i=0; i < triangles.size(); i++)
@@ -236,20 +194,17 @@ void plPlanningSite::_generateFineGridPoints()
                 {
                     break;  // outside of triangle edge, go to next row
                 }
-                plVector3 smoothNormal = getSmoothNormal( point, triangles[i].normal(), 4.0f );  
-                p.insert( plPointAndNormal( point, smoothNormal ) );                
+                plVector3 smoothNormal = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, point, triangles[i].normal() );
+                pointsAndNormals.insert( plPointAndNormal( point, smoothNormal ) );                
             }   
         }
         
     }
     
-    plSet<plPointAndNormal>::iterator p_itr = p.begin();
-    plSet<plPointAndNormal>::iterator p_end = p.end();
-    
-    for ( ; p_itr != p_end; ++p_itr )
+    for ( const plPointAndNormal& pointNormal : pointsAndNormals )
     {
-        gridPoints.push_back( plVector4( p_itr->point,  1) );
-        gridNormals.push_back( plVector4( p_itr->normal, 1) );
+        gridPoints.push_back( plVector4( pointNormal.point,  1) );
+        gridNormals.push_back( plVector4( pointNormal.normal, 1) );
     }
     
 }
@@ -280,7 +235,7 @@ void plPlanningSite::_calcArea()
     {
         area += triangles[i].getArea();
     }    
-    std::cout << "        Site area: " << area << "\n";
+    std::cout << "\t\tSite area: " << area << "\n";
 }        
 
 

@@ -152,62 +152,7 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
 {
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
-/*
-void plPlan::drawElements() const
-{
-    if ( !_isVisible )
-        return;
 
-
-    // Draw defect boundary 
-    for ( PLuint i = 0; i < _defectSites.size(); i++)
-    {
-        plPickingStack::loadGreen( i );
-        _defectSites[i]->draw();
-    }
-       
-    // Draw harvest boundaries   
-    for ( PLuint i = 0; i < _donorSites.size(); i++)
-    {
-        plPickingStack::loadGreen( i );      
-        _donorSites[i]->draw();            
-    }    
-
-    // Draw grafts
-    for ( PLuint i = 0; i < _grafts.size(); i++)
-    {                   
-        plPickingStack::loadGreen( i );
-        _grafts[i]->draw();
-    }
-        
-    // Draw iGuideSites
-    for ( PLuint i = 0; i < _iGuideSites.size(); i++)
-    {            
-        plPickingStack::loadGreen( i );
-        _iGuideSites[i]->draw();
-    }
-
-    // Draw iGuides
-    for ( PLuint i = 0; i < _iGuides.size(); i++)
-    {
-        plPickingStack::loadGreen( i );
-        _iGuides[i]->draw();
-    }
-}
-
-void plPlan::drawModels() const
-{
-    // draw models (draw last for proper transparency blending)
-    plPickingStack::loadBlue( -1 ); // unused by models
-    
-    for (PLuint i =0; i < _models.size(); i++)
-    {            
-        plPickingStack::loadGreen( i );          
-        _models[i]->draw();
-    }
-
-}
-*/
 
 void plPlan::addDefectSite( PLuint modelIndex )
 {
@@ -242,9 +187,9 @@ void plPlan::addIGuideSite( PLuint modelIndex )
 }
 
 
-void plPlan::addGraft( const plPlug &h, const plPlug &r, PLfloat radius, PLfloat cartilageThickness, PLfloat heightOffset, PLfloat length )
+void plPlan::addGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat length )
 {
-    _grafts.push_back( new plGraft( h, r, radius, cartilageThickness, heightOffset, length ) );
+    _grafts.push_back( new plGraft( harvest, recipient, radius, length ) );
 }
 
 
@@ -331,18 +276,18 @@ void plPlan::importFile( const plString &filename )
             
             PLuint      recipientModelID   ( std::stoi( csv.data[++i][1] ) );     
             plTransform recipientTransform (            csv.data[++i]      );
+            plVector3   recipientSurfaceNormal(         csv.data[++i][1]   );
             PLuint      harvestModelID     ( std::stoi( csv.data[++i][1] ) );   
-            plTransform harvestTransform   (            csv.data[++i]      );            
+            plTransform harvestTransform   (            csv.data[++i]      );
+            plVector3   harvestSurfaceNormal(           csv.data[++i][1]   );
             PLfloat     radius             ( std::stof( csv.data[++i][1] ) );  
-            PLfloat     cartilageThickness ( std::stof( csv.data[++i][1] ) );  
-            PLfloat     length             ( std::stof( csv.data[++i][1] ) );                
-            PLfloat     heightOffset       ( std::stof( csv.data[++i][1] ) );             
+            PLfloat     length             ( std::stof( csv.data[++i][1] ) );                            
             plVector3   markDirection      (            csv.data[++i][1]   );
             
-            plPlug      recipientPlug ( recipientModelID, *_models[ recipientModelID ], recipientTransform );
-            plPlug      harvestPlug   ( harvestModelID,   *_models[ harvestModelID   ], harvestTransform   );
+            plPlug      recipientPlug ( recipientModelID, *_models[ recipientModelID ], PL_PICKING_INDEX_GRAFT_DEFECT, recipientTransform, recipientSurfaceNormal );
+            plPlug      harvestPlug   ( harvestModelID,   *_models[ harvestModelID   ], PL_PICKING_INDEX_GRAFT_DONOR,  harvestTransform,   harvestSurfaceNormal );
 
-            _grafts.push_back( new plGraft( harvestPlug, recipientPlug, radius, cartilageThickness, heightOffset, length, markDirection ) );
+            _grafts.push_back( new plGraft( harvestPlug, recipientPlug, radius, length, markDirection ) );
         }        
         else if (field.compareCaseInsensitive( "iguide" ) ) 
         {
@@ -358,10 +303,8 @@ void plPlan::importFile( const plString &filename )
                 PLuint  type    ( std::stoi( csv.data[i][3+(j*2)] ) );
                 const plTransform *transform    ( &( _grafts[ graftID ]->transform( type ) ) );
                 const PLfloat     *radius       ( &( _grafts[ graftID ]->radius() ) );
-                const PLfloat     *thickness    ( &( _grafts[ graftID ]->cartilageThickness() ) );
                 const PLfloat     *length       ( &( _grafts[ graftID ]->length() ) );
-                const PLfloat     *heightOffset ( &( _grafts[ graftID ]->heightOffset() ) );
-                plugs.push_back( plPlugInfo( transform, radius, thickness, length, heightOffset, type, graftID ) );
+                plugs.push_back( plPlugInfo( transform, radius, length, type, graftID ) );
             }
             
             PLuint  kWireCount ( std::stoi( csv.data[++i][1] ) );  
@@ -448,15 +391,15 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_grafts.size(); i++) 
         {
             out << "graft"                   << std::endl
-                << "    recipient_model_id,  " << _grafts[i]->recipient().modelID()   << std::endl
-                << "    recipient_transform, " << _grafts[i]->recipient().transform() << std::endl
-                << "    harvest_model_id,    " << _grafts[i]->harvest().modelID()     << std::endl
-                << "    harvest_transform,   " << _grafts[i]->harvest().transform()   << std::endl
-                << "    radius,              " << _grafts[i]->radius()                << std::endl
-                << "    cartilage_thickness, " << _grafts[i]->cartilageThickness()    << std::endl
-                << "    length,              " << _grafts[i]->length()                << std::endl               
-                << "    height_offset,       " << _grafts[i]->heightOffset()          << std::endl
-                << "    mark_direction,      " << _grafts[i]->markDirection()         << std::endl
+                << "    recipient_model_id,       " << _grafts[i]->recipient().modelID()   << std::endl
+                << "    recipient_transform,      " << _grafts[i]->recipient().transform() << std::endl
+                << "    recipient_surface_normal, " << _grafts[i]->recipient().surfaceNormal() << std::endl
+                << "    harvest_model_id,         " << _grafts[i]->harvest().modelID()     << std::endl
+                << "    harvest_transform,        " << _grafts[i]->harvest().transform()   << std::endl
+                << "    harvest_surface_normal,   " << _grafts[i]->harvest().surfaceNormal() << std::endl
+                << "    radius,                   " << _grafts[i]->radius()                << std::endl
+                << "    length,                   " << _grafts[i]->length()                << std::endl               
+                << "    mark_direction,           " << _grafts[i]->markDirection()         << std::endl
                 << std::endl;
         }
          
@@ -492,95 +435,6 @@ void plPlan::exportFile( const plString &filename )
     
         std::cout << "Saved plan in CSV format in '" << filename << "'." << std::endl;
     }
-}
-
-void plPlan::defaultCameraVisibilityState()
-{
-    for ( PLuint i = 0; i < _models.size(); i++ )
-    {
-        _models[i]->bone.setTransparent();
-        _models[i]->cartilage.setTransparent();   
-    }
-
-    for ( PLuint i = 0; i < _defectSites.size(); i++ )
-    {
-        _defectSites[i]->boundary.setInvisible();
-        _defectSites[i]->spline.setInvisible();
-    }
-
-    for ( PLuint i = 0; i < _donorSites.size();  i++ )
-    {
-        _donorSites[i]->boundary.setInvisible();
-    }
-
-    for ( PLuint i = 0; i < _iGuideSites.size(); i++ )
-    {
-        _iGuideSites[i]->boundary.setInvisible();
-    }
-}
-
-
-void plPlan::saveVisibilityState()
-{
-    for ( PLuint i = 0; i < _models.size();      i++ ) 
-    { 
-        _models[i]->bone.saveState();  
-        _models[i]->cartilage.saveState();
-    }
-    
-    for ( PLuint i = 0; i < _defectSites.size(); i++ ) 
-    { 
-        _defectSites[i]->boundary.saveState(); 
-        _defectSites[i]->spline.saveState();
-    }
-        
-    for ( PLuint i = 0; i < _donorSites.size();  i++ ) 
-    { 
-        _donorSites[i]->boundary.saveState(); 
-    }
-
-    for ( PLuint i = 0; i < _grafts.size();      i++ ) 
-    {
-        _grafts[i]->saveState();
-    }
-
-    for ( PLuint i = 0; i < _iGuideSites.size(); i++ )
-    {
-        _iGuideSites[i]->boundary.saveState(); 
-    } 
-  
-}
-
-
-void plPlan::loadVisibilityState()
-{
-    for ( PLuint i = 0; i < _models.size();      i++ ) 
-    { 
-        _models[i]->bone.loadState();  
-        _models[i]->cartilage.loadState();
-    }
-    
-    for ( PLuint i = 0; i < _defectSites.size(); i++ ) 
-    { 
-        _defectSites[i]->boundary.loadState(); 
-        _defectSites[i]->spline.loadState();
-    }
-        
-    for ( PLuint i = 0; i < _donorSites.size();  i++ ) 
-    { 
-        _donorSites[i]->boundary.loadState(); 
-    }
-
-    for ( PLuint i = 0; i < _grafts.size();      i++ ) 
-    {
-        _grafts[i]->loadState();
-    }
-
-    for ( PLuint i = 0; i < _iGuideSites.size(); i++ )
-    {
-        _iGuideSites[i]->boundary.loadState(); 
-    } 
-  
 }
 
 
