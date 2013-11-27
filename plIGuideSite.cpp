@@ -19,7 +19,6 @@ plIGuideSite::plIGuideSite( const plBoundary& boundary )
 
 void plIGuideSite::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
-    plPickingStack::loadRed( PL_PICKING_TYPE_IGUIDE_BOUNDARY );
     boundary.extractRenderComponents( renderMap, technique );
 }  
 

@@ -23,7 +23,6 @@ void plDonorSite::extractRenderComponents( plRenderMap& renderMap, PLuint techni
         return;
       
     // draw spline boundary 
-    plPickingStack::loadRed( PL_PICKING_TYPE_DONOR_BOUNDARY );
     boundary.extractRenderComponents( renderMap ); 
 }
 
