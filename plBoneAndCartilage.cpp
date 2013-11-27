@@ -9,6 +9,13 @@ plBoneAndCartilage::plBoneAndCartilage( const plString &boneFile, const plString
 
 void plBoneAndCartilage::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {   
+
+    // draw combined
+    plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
+    plColourStack::load( PL_MODEL_BONE_COLOUR );
+    combined.extractRenderComponents( renderMap, technique );  
+
+    /*
     // draw cartilage
     plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
     plColourStack::load( PL_MODEL_CARTILAGE_COLOUR );
@@ -18,6 +25,7 @@ void plBoneAndCartilage::extractRenderComponents( plRenderMap& renderMap, PLuint
     plPickingStack::loadRed( PL_PICKING_TYPE_BONE );
     plColourStack::load( PL_MODEL_BONE_COLOUR );       
     bone.extractRenderComponents( renderMap, technique );  
+    */
 }
 
 

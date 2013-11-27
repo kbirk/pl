@@ -33,7 +33,7 @@ PLbool plIGuide::generateIGuideModels()
     }
 
     plString anatomyFilename ( _prepareFilenameWithVariables(false,'M',0,"bone") );
-    iGuideModelsToSubtract.push_back( new plModel( site->model().combined.mesh().triangles(), anatomyFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+    iGuideModelsToSubtract.push_back( new plModel( site->boundary.mesh().triangles(), anatomyFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
 
     // template base TODO: recreate the template base shape ONLY if it needs updating
 
@@ -55,7 +55,7 @@ PLbool plIGuide::generateIGuideModels()
         // get data from splines
         //std::vector< plTriangle > splineTriangles;
         //splineTriangles.push_back( splines[i]->triangles() );
-        std::vector< plTriangle > splineTriangles = splines[i]->surfaceMesh().triangles();
+        std::vector< plTriangle > splineTriangles = splines[i]->mesh().triangles();
 
         plVector3 splineOffsetDirection( splines[i]->getAverageNormal() );
 

@@ -183,37 +183,7 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint 
     plVector3 rayOrigin, rayDirection;
     plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
     
-    plIntersection intersection( false ); 
-
-    // depending on boundary type, intersect different models
-    switch ( _selectedBoundaryType )
-    {        
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:
-        {
-            intersection = plan.defectSites( _selectedSiteIndex ).spline.surfaceMesh().rayIntersect( rayOrigin, rayDirection );  
-            break;
-        }
-        
-        case PL_PICKING_TYPE_DEFECT_CORNERS:
-        {
-            intersection = plan.defectSites( _selectedSiteIndex ).model().combined.mesh().rayIntersect( rayOrigin, rayDirection );  
-            break;
-        }
-        
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:
-        {    
-            intersection = plan.donorSites( _selectedSiteIndex).model().combined.mesh().rayIntersect( rayOrigin, rayDirection ); 
-            break;
-        }
-        
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
-        {
-            intersection = plan.iGuideSites( _selectedSiteIndex).model().combined.mesh().rayIntersect( rayOrigin, rayDirection );
-            break;
-        }                
-    }
-
-    return intersection;
+    return _selectedBoundary->mesh().rayIntersect( rayOrigin, rayDirection );
 }
 
 
@@ -223,7 +193,7 @@ void plBoundaryEditor::moveSelectedPoint( plPlan &plan, PLuint x, PLuint y )
         return;         
 
     plIntersection intersection = _getBoundaryIntersection( plan, x, y );
-    
+
     if ( intersection.exists ) 
     {            
         _selectedBoundary->movePointAndNormal( _selectedPointIndex, intersection.point, intersection.normal);
@@ -260,7 +230,7 @@ void plBoundaryEditor::removeSelectedPoint()
 
     _selectedBoundary->removePointAndNormal(_selectedPointIndex);   
     _selectedBoundary->_selectedValue = -1;
-    _selectedPointIndex    = -1;    
+    _selectedPointIndex = -1;    
 }
 
 
@@ -293,7 +263,13 @@ void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap, PLuint t
     if (_selectedBoundary == NULL)
         return;
         
-    _selectedBoundary->extractRenderComponents( renderMap, technique );  
+    _selectedBoundary->extractRenderComponents( renderMap, technique );   
+    
+    if ( _selectedPointIndex > 0 )
+    {
+        plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, _selectedBoundary->points( _selectedPointIndex ), PL_SELECTED_BOUNDARY_POINT_RADIUS ) );         
+        plRenderer::queue( plSphere( technique, _selectedBoundary->points( _selectedPointIndex ), PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
+    }    
 }
 
 

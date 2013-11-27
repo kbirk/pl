@@ -3,26 +3,23 @@
 
 #include "plCommon.h"
 #include "plVector3.h"
-#include "plModelSpecific.h"
+#include "plMeshSpecific.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
 #include "plPicking.h"
 
-class plDonorSite : public plModelSpecific,
-                    public plRenderable
+class plDonorSite : public plRenderable
 {
     public:
 
         plBoundary boundary; 
                 
         plDonorSite();
-        plDonorSite( PLuint modelID, const plBoneAndCartilage& model );
-        plDonorSite( PLuint modelID, const plBoneAndCartilage& model, const plBoundary &b );
+        plDonorSite( const plMesh& mesh );
+        plDonorSite( const plBoundary &boundary );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;  
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
-        
-        void draw() const;      
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;   
 };
 
 

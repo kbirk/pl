@@ -117,8 +117,8 @@ void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap, PLuint tech
 void plGraft::_generateCaps()
 {
     // generate cap polygons
-    _cartilageCap.generateCap( _harvest.model().cartilage, _harvest.transform(), _radius );
-    _boneCap.generateCap( _harvest.model().bone, _harvest.transform(), _radius );
+    _cartilageCap.generateCap( ( const plOctreeMesh& )_harvest.mesh(), _harvest.transform(), _radius );
+    _boneCap.generateCap(  ( const plOctreeMesh& )_harvest.mesh(), _harvest.transform(), _radius );
 
     // generate vaos 
     _cartilageCap.generateVAO( _radius, _length, _boneCap.perimeter );
@@ -158,31 +158,6 @@ void plGraft::_updateMarkPosition()
         // Draw marker  
         _markPositions[i].y = minY;
     }
-
-    /*
-    // Mark at tool alignment direction on cartilage
-    _markPosition = _radius * _markDirection;
-
-    // First, find the closest top perimeter point in the mark direction.
-    float minDist = FLT_MAX;
-    float minY;
-
-    const std::vector<plPointAndAngle>& perimeter = ( _cartilageCap.triangles.empty() ) ? _boneCap.perimeter : _cartilageCap.perimeter;
-
-    for (PLuint i=0; i<perimeter.size(); i++) 
-    {
-        const plVector3 &v = perimeter[i].point;
-        float dist = (v.x-_markPosition.x)*(v.x-_markPosition.x) + (v.z-_markPosition.z)*(v.z-_markPosition.z);
-        if (dist < minDist) 
-        {
-            minDist = dist;
-            minY = v.y;
-        }
-    }
-
-    // Draw marker  
-    _markPosition.y = minY;
-    */
 }
 
 
@@ -238,19 +213,20 @@ const plPlug &plGraft::plug( PLuint type ) const
     } 
 }
 
-void plGraft::move( PLuint type, const plVector3& origin, const plVector3& y, const plVector3& surfaceNormal )
+
+void plGraft::move( PLuint type, const plVector3& origin, const plVector3& y )
 {
     switch (type)
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
         
-            _harvest.move( origin, y, surfaceNormal );            
+            _harvest.move( origin, y );            
             _generateCaps();
             break;
         
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
-            _recipient.move( origin, y, surfaceNormal );
+            _recipient.move( origin, y );
             break;
             
         default:
@@ -260,28 +236,4 @@ void plGraft::move( PLuint type, const plVector3& origin, const plVector3& y, co
     } 
 }
 
-
-/*
-void plGraft::rotate( PLuint type, const plVector3 &axis, PLfloat angleDegrees )
-{    
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:
-        
-            _harvest.rotate( axis, angleDegrees );
-            _generateCaps();
-            break;
-        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:
-        
-            _recipient.rotate( axis, angleDegrees );
-            break;
-            
-        default:
-        
-            std::cerr << "plGraft rotate() error: invalid type enumeration provided \n";
-            break;    
-    } 
-}
-*/
 

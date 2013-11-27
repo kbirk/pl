@@ -17,7 +17,7 @@ plPlanningBufferData::plPlanningBufferData( const plDefectSite& defect, const st
     for (PLuint i=0; i<donorSiteCount; i++)
     {
         std::cout << "    Generating donor site planning data " << i << " planning data " << std::endl;
-        donorSites.push_back( plPlanningSite( donors[i]->model().combined.mesh().triangles(), 
+        donorSites.push_back( plPlanningSite( donors[i]->boundary.mesh().triangles(), 
                                               donors[i]->boundary,
                                               true ) );                                 
     }

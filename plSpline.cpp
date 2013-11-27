@@ -2,19 +2,18 @@
 
 
 plSpline::plSpline() 
-    : plBoundary()
 {
 }
 
 
-plSpline::plSpline( const plMesh& cartilageMesh )
-    : _cartilageMesh( &cartilageMesh )
+plSpline::plSpline( const plMesh &mesh )
+    : plBoundary( PL_PICKING_TYPE_DEFECT_CORNERS, mesh )
 {
 }
 
 
-plSpline::plSpline( const std::vector<plString> &row, const plMesh& cartilageMesh )
-    : plBoundary( row ), _cartilageMesh( &cartilageMesh )
+plSpline::plSpline( const plMesh &mesh, const std::vector<plString> &row )
+    : plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh, row )
 {
     // construct spline 
     if (size() == 4)
@@ -65,27 +64,11 @@ void plSpline::removePointAndNormal( PLuint index )
 }
 
 
-plVector3 plSpline::getAverageNormalOverCorners()
-{
-    plVector3        averageNormalOverCorners(0.f,0.f,0.f);
-    std::vector<plVector3> cornerNormals = _averageCornerNormals();
-
-    for (PLuint i = 0; i < 4; i++)
-    {
-        averageNormalOverCorners = averageNormalOverCorners + cornerNormals[i];
-    }
-
-    return averageNormalOverCorners.normalize();
-}
- 
-
 void plSpline::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( !_isVisible )
         return;
    
-    plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS );
-    
     // if not full 4 corners, display walls
     if ( size() < 4 )
     {
@@ -93,14 +76,14 @@ void plSpline::extractRenderComponents( plRenderMap& renderMap, PLuint technique
         plBoundary::extractRenderComponents( renderMap, technique );
     }
     else
-    {
+    {    
+        plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS );   
         plColourStack::load( _getColour() );
         
         // draw points
         _extractPointRenderComponents( renderMap, technique );
         
         // draw spline
-        plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS ); 
         plPickingStack::loadBlue( -1 );  // unused  
         
         // set colour flag to use vertex attribute colours
@@ -156,10 +139,10 @@ std::vector<plVector3> plSpline::_averageCornerNormals() const
     std::vector<plVector3> cornerNormals;
 
     // compute averages normals
-    cornerNormals.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
-    cornerNormals.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
-    cornerNormals.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
-    cornerNormals.push_back( _cartilageMesh->getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
+    cornerNormals.push_back( _mesh->getAverageNormal( AVERAGE_RADIUS, _points[0], _normals[0]) ); 
+    cornerNormals.push_back( _mesh->getAverageNormal( AVERAGE_RADIUS, _points[1], _normals[1]) ); 
+    cornerNormals.push_back( _mesh->getAverageNormal( AVERAGE_RADIUS, _points[2], _normals[2]) ); 
+    cornerNormals.push_back( _mesh->getAverageNormal( AVERAGE_RADIUS, _points[3], _normals[3]) ); 
     
     return cornerNormals;
 }
@@ -246,7 +229,7 @@ void plSpline::_computeHermite()
     const PLfloat   INC      = 0.015f;  // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
     const PLuint    NUM_INC  = 1.0f/INC;
     const PLfloat   fNUM_INC = 1.0f/INC;     
-    const PLfloat   MAX_DISTANCE = 1.0f;            // colour map max distance, anything beyond this is dark red   
+    const PLfloat   MAX_DISTANCE = 2.0f;            // colour map max distance, anything beyond this is dark red   
     const plVector3 NO_DATA_COLOUR(0.2, 0.2, 0.2);  // default colour if no data available  
 
     std::vector<plTriangle> triangles;
@@ -281,10 +264,13 @@ void plSpline::_computeHermite()
             plVector3 pos  = (1.0f-u)*p03 + u*p12 + z*norm;          // inflate this point using normal scaled by z value returned by hermite spline
         
             // intersect cartilage
-            plIntersection intersection = _cartilageMesh->rayIntersect( pos+(10.0f*norm), -norm, false, false, true ); 
+            plIntersection intersection = _mesh->rayIntersect( pos+(10.0f*norm), -norm, false, false, true ); 
         
-            // get colour value
-            plVector3 colour = (intersection.exists) ? plColourMap::map( (intersection.point - pos).squaredLength()/MAX_DISTANCE ) : NO_DATA_COLOUR;
+            PLfloat distance = (intersection.point - pos ).squaredLength() / MAX_DISTANCE;
+           
+            // get colour value 
+            plVector3 colour = ( distance <= MAX_DISTANCE ) ? plColourMap::map( (intersection.point - pos ).squaredLength() / MAX_DISTANCE ) : NO_DATA_COLOUR;
+             
              
             points.push_back( pos );
             colours.push_back( colour );

@@ -3,6 +3,7 @@
 
 // MODEL MACROS  
 
+#define PL_MODEL_COLOUR                          0.80f, 0.80f, 0.80f
 #define PL_MODEL_BONE_COLOUR                     0.80f, 0.80f, 0.80f
 #define PL_MODEL_CARTILAGE_COLOUR                0.50f, 0.20f, 0.20f      
 

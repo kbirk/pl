@@ -3,10 +3,8 @@
 plGraftEditor::plGraftEditor() 
 {
     _editMode       = PL_GRAFT_EDIT_MODE_TRANSLATE;
-    //_editAxis       = plVector3(1,0,0);
     _selectedGraft  = NULL; 
     _selectedType   = -1;
-    //_handlesEnabled = true;
     _isDraggingMenu = false;
 }
 
@@ -24,7 +22,7 @@ void plGraftEditor::clearSelection( plPlan &plan )
 
 void plGraftEditor::setEditMode( PLuint editMode )
 {
-    switch (editMode)
+    switch ( editMode )
     {
         case PL_GRAFT_EDIT_MODE_TRANSLATE:
         case PL_GRAFT_EDIT_MODE_ROTATE: 
@@ -52,10 +50,9 @@ PLbool plGraftEditor::processMouseClick( plPlan &plan, PLint x, PLint y )
         
             selectGraft( plan, pick.g, pick.b );
             return true;
-
-        case PL_PICKING_TYPE_GRAFT_HANDLE: 
-
-            _selectHandle( plan, x, y, pick.r );
+           
+        case PL_PICKING_TYPE_GRAFT_HANDLE:  
+           
             return true;
            
         default:
@@ -109,22 +106,20 @@ PLbool plGraftEditor::processJoystickDrag( plPlan &plan, PLint x, PLint y )
 
     plVector3 translation( -y, 0.0f, x);
     
-    if (translation.squaredLength() > 1.0)
+    if ( translation.squaredLength() > 1.0 )
     {
         translation = translation.normalize();
     }
     
     // get screen plane
-    plVector3 localXAxis = (plCameraStack::direction() ^ _selectedGraft->transform(_selectedType).y()).normalize();
-    plVector3 localZAxis = (_selectedGraft->transform(_selectedType).y() ^ localXAxis).normalize();
-    plVector3 localYAxis = (localXAxis ^ localZAxis).normalize();
+    plVector3 localXAxis = ( plCameraStack::direction() ^ _selectedGraft->transform( _selectedType ).y() ).normalize();
+    plVector3 localZAxis = ( _selectedGraft->transform( _selectedType ).y() ^ localXAxis ).normalize();
+    plVector3 localYAxis = ( localXAxis ^ localZAxis ).normalize();
 
-    translation = (translation * localXAxis) * localXAxis +
-                  (translation * localYAxis) * localYAxis +
-                  (translation * localZAxis) * localZAxis;
+    translation = ( translation * localXAxis ) * localXAxis +
+                  ( translation * localYAxis ) * localYAxis +
+                  ( translation * localZAxis ) * localZAxis;
 
-    // translate by local coords
-    //translateSelected( 0.3f * translation );
     return true;
 }
 
@@ -148,42 +143,11 @@ void plGraftEditor::selectGraft( plPlan &plan, PLuint index, PLuint type )
 }
 
 
-void plGraftEditor::_selectHandle( plPlan &plan, PLint x, PLint y, PLuint type )
-{   
-    if ( _selectedGraft == NULL )    
-        return;                 // no graft selected
-
-    /*
-    _previousMousePos = plVector3( x, y, 0.0f );
-                                                                 
-    switch ( type ) 
-    {
-        case PL_PICKING_TYPE_GRAFT_HANDLE_X: 
-
-            _editAxis               = _selectedGraft->transform(_selectedType).x();                     
-            break;
-            
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Y: 
-        
-            _editAxis               = _selectedGraft->transform(_selectedType).y();            
-            break;
-            
-        case PL_PICKING_TYPE_GRAFT_HANDLE_Z: 
-        
-            _editAxis               =  _selectedGraft->transform(_selectedType).z();            
-            break;
-    }                                                         
-    */
-    //plVector3 origin = _selectedGraft->transform(_selectedType).origin();                                               
-    //_screenEditAxis = _getScreenAxis( _editAxis, origin );      
-}
-
-
 void plGraftEditor::_dragMarker( plPlan &plan, PLint x, PLint y )
 {
     if ( _selectedGraft == NULL )    
         return;                 // no graft selected
-    
+
     // get grafts origin and y    
     plVector3 graftOrigin = _selectedGraft->transform( _selectedType ).origin();
     plVector3 graftY      = _selectedGraft->transform( _selectedType ).y();
@@ -200,6 +164,7 @@ void plGraftEditor::_dragMarker( plPlan &plan, PLint x, PLint y )
     plVector3 orthoDirection = (graftY ^ tangent).normalize() + graftOrigin;
 
     _selectedGraft->setMark( _selectedGraft->transform( _selectedType ).applyInverse( orthoDirection ) );
+        
 }
 
 
@@ -208,8 +173,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
     if ( _selectedGraft == NULL )    
         return;                 // no graft selected
 
-    //plVector3 screenDragVector = plVector3( x, y, 0.0f ) - _previousMousePos;
-    
+
     switch ( _editMode )
     {
         case PL_GRAFT_EDIT_MODE_TRANSLATE:
@@ -230,6 +194,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
                         break;    
                 }
                 
+                // if not on spline, find closest point on spline
                 if ( !intersection.exists )
                 {
                     PLfloat lowestDist = FLT_MAX;
@@ -262,45 +227,15 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
             else
             {
                 // intersect model
-                intersection = _selectedGraft->plug( _selectedType ).model().combined.mesh().rayIntersect( rayOrigin, rayDirection, true ); // smooth normal
+                intersection = _selectedGraft->plug( _selectedType ).mesh().rayIntersect( rayOrigin, rayDirection, true ); // smooth normal
             }
 
             if ( intersection.exists )
             { 
-                _selectedGraft->move( _selectedType, intersection.point, intersection.normal, intersection.normal );
+                _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
             }
             
-            break;
-            
-            /*      
-            const plTransform &transform = _selectedGraft->transform(_selectedType);           
-
-            PLfloat distOnAxis = (screenDragVector * _screenEditAxis) * PL_DRAG_SENSITIVITY;
-
-            if (_editAxis == transform.y())  
-            {
-                // translating along y
-                _selectedGraft->adjustHeightOffset( distOnAxis );  
-                break;              
-            }
-            
-            distOnAxis = plMath::clamp( distOnAxis );   // prevent values outside of [-1 .. 1] to prevent translation 'jumps' due to discrete algorithm
-
-            // use axis transforms with plane normal to preserve directional plane while draggin
-            if (_editAxis == transform.x())  
-            {
-                _selectedGraft->translateX( _selectedType, distOnAxis, _translationPlaneNormal); 
-                _editAxis = transform.x(); 
-            } 
-            else
-            {
-                _selectedGraft->translateZ( _selectedType, distOnAxis, _translationPlaneNormal); 
-                _editAxis = transform.z(); 
-            }     
-                       
-            break;
-            */
-            
+            break;            
         }
         
         case PL_GRAFT_EDIT_MODE_ROTATE:
@@ -339,7 +274,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
                 newGraftY = ( graftY*cos( PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) ) + ortho*sin( PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) ) ).normalize();
             } 
 
-             _selectedGraft->move( _selectedType, graftOrigin, newGraftY, graftY );      
+             _selectedGraft->move( _selectedType, graftOrigin, newGraftY );      
              
             break;
         }
@@ -360,10 +295,7 @@ void plGraftEditor::_dragHandle( plPlan &plan, PLint x, PLint y )
             
             break;
         }
-    } 
-    
-    // update initial drag position
-    _previousMousePos = plVector3( x, y, 0.0f );          
+    }        
 }
 
 
@@ -373,20 +305,6 @@ void plGraftEditor::toggleSelectedVisibility()
         return;
         
     _selectedGraft->toggleVisibility();
-}
-
-
-plVector3 plGraftEditor::_getScreenAxis( const plVector3 &edit_axis, const plVector3 &world_position)
-{
-    plVector3 screenOrigin = plWindow::worldToScreen( world_position.x, 
-                                                      world_position.y, 
-                                                      world_position.z );
-    
-    plVector3 screenAxisTip = plWindow::worldToScreen( edit_axis.x + world_position.x, 
-                                                       edit_axis.y + world_position.y, 
-                                                       edit_axis.z + world_position.z );
-
-    return ( screenAxisTip - screenOrigin ).normalize();
 }
 
 

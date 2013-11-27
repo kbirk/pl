@@ -8,7 +8,7 @@
 #include "plRenderable.h"
 #include "plEditable.h"
 #include "plPicking.h"
-#include "plBoneAndCartilage.h"
+#include "plMeshSpecific.h"
 #include "plVAO.h"
 #include "plDraw.h"
 #include "plSphere.h"
@@ -19,12 +19,14 @@
 
 
 class plBoundary : public plRenderable,
-                   public plEditable
+                   public plEditable,
+                   public plMeshSpecific
 {
     public:
 
-        plBoundary();      
-        plBoundary( const std::vector<plString> &row );
+        plBoundary();
+        plBoundary( PLuint type, const plMesh& mesh );    
+        plBoundary( PLuint type, const plMesh& mesh, const std::vector<plString> &row );
  
         PLuint size() const;
 
@@ -42,6 +44,8 @@ class plBoundary : public plRenderable,
         virtual void   clear();            
         
     protected:
+
+        PLint _type;
 
         std::vector< plVector3 > _points;       // always in counterclockwise direction
         std::vector< plVector3 > _normals;   

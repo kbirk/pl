@@ -7,21 +7,22 @@ plPlug::plPlug( PLuint type )
 }
 
 
-plPlug::plPlug( PLuint modelID, const plBoneAndCartilage &model, PLuint type, const plTransform &transform, const plVector3 surfaceNormal )
-    : _type( type ), _transform( transform ), _surfaceNormal( surfaceNormal ), plModelSpecific( modelID, model )
+plPlug::plPlug( const plMesh& mesh, PLuint type, const plTransform &transform, const plVector3 surfaceNormal )
+    :  plMeshSpecific( mesh ), _type( type ), _transform( transform ), _surfaceNormal( surfaceNormal )
 {
 }
 
 
-void plPlug::move( const plVector3& origin, const plVector3& y, const plVector3& surfaceNormal )
+void plPlug::move( const plVector3& origin, const plVector3& y )
 {
     // translate  
     plVector3 x = y ^ _transform.z();
     
     _transform.set( x, y, origin );
 
+    plIntersection intersecion = _mesh->rayIntersect( origin, -y );
 
-    _surfaceNormal = surfaceNormal;
+    _surfaceNormal = intersecion.normal;
 }
 
 /*

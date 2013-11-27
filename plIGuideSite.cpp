@@ -5,14 +5,14 @@ plIGuideSite::plIGuideSite()
 }
 
 
-plIGuideSite::plIGuideSite( PLuint modelID, const plBoneAndCartilage& model )
-    : plModelSpecific( modelID, model )
+plIGuideSite::plIGuideSite( const plMesh& mesh )
+    : boundary( PL_PICKING_TYPE_IGUIDE_BOUNDARY, mesh )
 {
 }
 
 
-plIGuideSite::plIGuideSite( PLuint modelID, const plBoneAndCartilage& model, const plBoundary &b )
-    : plModelSpecific( modelID, model ), boundary( b )
+plIGuideSite::plIGuideSite( const plBoundary& boundary )
+    : boundary( boundary )
 {
 }
 
@@ -30,20 +30,12 @@ void plIGuideSite::extractRenderComponents( plRenderMap& renderMap ) const
 }  
 
 
-/*
-void plIGuideSite::draw() const
-{
-    plPickingStack::loadRed( PL_PICKING_TYPE_IGUIDE_BOUNDARY );
-    boundary.draw();
-}
-*/
-
 PLbool plIGuideSite::generateTemplateBase()
 {
     _templateBase.clear();
 
     // find the surface for the iGuide
-    if ( !plMeshCutter::findInteriorMesh( _templateBase, _model->combined.mesh().triangles(), boundary ) ) // find surface
+    if ( !plMeshCutter::findInteriorMesh( _templateBase, boundary.mesh().triangles(), boundary ) ) // find surface
     {
         std::cerr << "Error in plIGuideSite::generateTemplateBase(): findInteriorMesh() failed. Aborting iGuideSite surface calculation." << std::endl;
         return false;

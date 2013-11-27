@@ -11,7 +11,7 @@
 #include "plPolygon.h"
 #include "plUtility.h"
 #include "plTransform.h"
-#include "plModel.h"
+#include "plOctreeMesh.h"
 #include "plRenderer.h"
 #include "plArthroViewable.h"
 
@@ -53,7 +53,7 @@ class plGraftCap : public plRenderable,
         void extractRenderComponents( plRenderMap& renderMap ) const;
         virtual void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
-        void generateCap( const plModel& model, const plTransform& transform, PLfloat radius );
+        void generateCap( const plOctreeMesh& mesh, const plTransform& transform, PLfloat radius );
         
     protected:
 
@@ -67,7 +67,7 @@ class plGraftCap : public plRenderable,
         bool      _triangleIntersection ( const plTriangle &triangle, const plTransform& transform, PLfloat radius );
         plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b, PLfloat radius ) const;
         bool      _isBeyondHeightThresholds( const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform ) const;
-        
+               
 };
 
 

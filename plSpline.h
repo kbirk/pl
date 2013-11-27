@@ -17,31 +17,25 @@ class plSpline : public plBoundary
     public:
 
         plSpline();
-        plSpline( const plMesh &cartilageMesh );
-        plSpline( const std::vector<plString> &row, const plMesh &cartilageMesh );
+        plSpline( const plMesh &mesh );
+        plSpline( const plMesh &mesh, const std::vector<plString> &row );
 
         const plMesh& surfaceMesh() const { return _surfaceMesh; }
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
-        
-        void   draw() const;           
 
         PLuint addPointAndNormal   ( const plVector3 &point, const plVector3 &normal );
         void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal );
         void   removePointAndNormal( PLuint index );
 
-        plVector3 getAverageNormalOverCorners();
-
         void   clear();
 
     private:
-    
-        const plMesh *_cartilageMesh;
-    
+
         PLtime        _lastUpdate;
         
-        plMesh        _surfaceMesh;
+        plMesh                   _surfaceMesh;
         std::shared_ptr< plVAO > _surfaceVAO;
 
         std::vector<plVector3>  _averageCornerNormals() const;

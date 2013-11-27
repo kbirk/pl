@@ -56,14 +56,14 @@ void plGraftCap::extractEditorRenderComponents( plRenderMap& renderMap ) const
 }
 */
 
-void plGraftCap::generateCap( const plModel& model, const plTransform& transform, const PLfloat radius  )
+void plGraftCap::generateCap( const plOctreeMesh& mesh, const plTransform& transform, const PLfloat radius  )
 {   
     // clear previous cap incase
     triangles.clear();
     perimeter.clear();
 
     plSet<const plTriangle*> potentialTriangles;
-    model.mesh().octree().rayIntersect( potentialTriangles, transform.origin(), transform.y(), radius );
+    mesh.octree().rayIntersect( potentialTriangles, transform.origin(), transform.y(), radius );
     
     // reserve for max number of triangles
     triangles.reserve( triangles.size() );

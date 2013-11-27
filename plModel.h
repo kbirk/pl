@@ -47,6 +47,8 @@ class plModel : public plTransparentRenderable,
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
+        plVector3 getCentroid() const; 
+
 	private:
 	
 	    plOctreeMesh             _mesh;

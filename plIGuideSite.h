@@ -3,7 +3,7 @@
 
 #include "plCommon.h"
 #include "plVector3.h"
-#include "plModelSpecific.h"
+#include "plMeshSpecific.h"
 #include "plBoundary.h"
 #include "plRenderable.h"
 #include "plPicking.h"
@@ -11,8 +11,7 @@
 #include "plMeshExtruder.h"
 
 
-class plIGuideSite : public plModelSpecific,
-                     public plRenderable
+class plIGuideSite : public plRenderable
 {    
 
     public:
@@ -20,8 +19,8 @@ class plIGuideSite : public plModelSpecific,
         plBoundary boundary;
 
         plIGuideSite();
-        plIGuideSite( PLuint modelID, const plBoneAndCartilage& model );
-        plIGuideSite( PLuint modelID, const plBoneAndCartilage& model, const plBoundary &b );
+        plIGuideSite( const plMesh& mesh );
+        plIGuideSite( const plBoundary& boundary );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;  
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
@@ -29,8 +28,6 @@ class plIGuideSite : public plModelSpecific,
         const std::vector<plTriangle> &templateBase() const { return _templateBase; }
 
         PLbool generateTemplateBase();
-
-        void draw() const;
 
     private:
  

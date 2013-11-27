@@ -1,16 +1,26 @@
 #include "plBoundary.h"
 
+
 plBoundary::plBoundary()
+    : _type( -1 )
 {
 }
 
 
-plBoundary::plBoundary( const std::vector<plString> &row )
+plBoundary::plBoundary( PLuint type, const plMesh& mesh )
+    : _type( type ), plMeshSpecific( mesh )
+{
+
+}
+
+   
+plBoundary::plBoundary( PLuint type, const plMesh& mesh, const std::vector<plString> &row )
+    : _type( type ), plMeshSpecific( mesh )
 {
     // assumes points are counter-clockwise
     for ( PLuint j = 1; j < row.size(); j+=2)
     {               
-        _points.push_back( plVector3( row[j] ) );                  
+        _points.push_back ( plVector3( row[j]   ) );                  
         _normals.push_back( plVector3( row[j+1] ) );
     } 
     // construct mesh
@@ -23,6 +33,7 @@ void plBoundary::extractRenderComponents( plRenderMap& renderMap, PLuint techniq
     if ( !_isVisible )
         return;
 
+    plPickingStack::loadRed( _type );
     plColourStack::load( _getColour() );
 
     // draw walls
@@ -60,13 +71,14 @@ void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap, PLuint t
     for (PLuint i=0; i<_points.size(); i++) 
     {
         plPickingStack::loadBlue( i );    
-             
+         
+         /*    
         if ( _isSelected && _selectedValue == i )   // is the current point selected?
         {
             // scale larger
             plRenderer::queue( plSphere( technique, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
         }
-        else
+        else*/
         {
             // regular size
             plRenderer::queue( plSphere( technique, _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
@@ -220,10 +232,11 @@ void plBoundary::clear()
 plVector4 plBoundary::_getColour() const
 {
     // not selected
-    switch ( plPickingStack::topRed() )
+    switch ( _type )
     {
         case PL_PICKING_TYPE_DEFECT_CORNERS:
-            // defect corners 
+        case PL_PICKING_TYPE_DEFECT_SPLINE:
+            // defect spline / corners 
             return plVector4( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
 
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
@@ -235,9 +248,9 @@ plVector4 plBoundary::_getColour() const
             return plVector4( PL_BOUNDARY_DONOR_COLOUR );
 
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY: 
-        default:    
+        default:
             // iguide boundary
-            return plVector4( PL_BOUNDARY_IGUIDE_COLOUR );   
+            return plVector4( PL_BOUNDARY_IGUIDE_COLOUR );  
     }
 
 }

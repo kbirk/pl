@@ -26,7 +26,6 @@
 #include "plMesh.h"
 #include "plMeshCutter.h"
 #include "plModel.h"
-#include "plModelSpecific.h"
 #include "plOctree.h"
 #include "plOpenGLInfo.h"
 #include "plPlan.h"

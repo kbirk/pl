@@ -2,7 +2,7 @@
 #define PL_I_GUIDE_H
 
 #include "plCommon.h"
-#include "plModelSpecific.h"
+#include "plMeshSpecific.h"
 
 #include "plVector3.h"
 #include "plVector4.h"

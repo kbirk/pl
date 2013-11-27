@@ -33,22 +33,17 @@ plPlan::plPlan( int argc, char **argv )
         }
         importFile( filename );
     }
+    /*
     else
     {
-        // 3+ arguments
-        if ( (argc-1) % 3 != 0)  
-        {
-            std::cerr << "Model files must be submitted in twos (bone and cartilage)\n";
-            exit(1);
-        }
-        
         // load models
-        for (PLint i = 1; i < argc; i+=3)
+        for (PLint i = 1; i < argc; i++)
         {
             // model input order: bone, cartilage, bone, cartilage, etc...
-            _models.push_back( new plBoneAndCartilage( argv[i], argv[i+1], argv[i+2] ) );
+            _models.push_back( new plModel( argv[i] ) );
         }
     }
+    */
 
 }
 
@@ -70,7 +65,7 @@ void plPlan::toggleArthroView()
     {                   
         graft->toggleArthroView();
     }
-    for ( plBoneAndCartilage* model : _models )
+    for ( plModel* model : _models )
     {             
         model->toggleArthroView(); 
     }
@@ -161,7 +156,7 @@ void plPlan::addDefectSite( PLuint modelIndex )
         std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
         return;
     }
-    _defectSites.push_back( new plDefectSite( modelIndex, *_models[modelIndex] ) );
+    _defectSites.push_back( new plDefectSite( _models[modelIndex]->mesh() ) );
 }
 
 
@@ -172,7 +167,7 @@ void plPlan::addDonorSite( PLuint modelIndex )
         std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
         return;
     }
-    _donorSites.push_back( new plDonorSite( modelIndex, *_models[modelIndex] ) );
+    _donorSites.push_back( new plDonorSite(_models[modelIndex]->mesh() ) );
 }
 
 
@@ -183,7 +178,7 @@ void plPlan::addIGuideSite( PLuint modelIndex )
         std::cerr << " plPlan addIGuide() error: model ID does not exist\n";
         return;
     }
-    _iGuideSites.push_back( new plIGuideSite( modelIndex, *_models[modelIndex] ) );
+    _iGuideSites.push_back( new plIGuideSite( _models[modelIndex]->mesh() ) );
 }
 
 
@@ -233,48 +228,44 @@ void plPlan::importFile( const plString &filename )
         {
             std::cout << "Loading model files... \n";
               
-            plString modelBoneFile ( csv.data[++i][1] );
-            plString modelCartFile ( csv.data[++i][1] );
-            plString modelCombFile ( csv.data[++i][1] );
+            plString modelFile ( csv.data[++i][1] );
             
-            _models.push_back( new plBoneAndCartilage( modelBoneFile, modelCartFile, modelCombFile ) );
+            _models.push_back( new plModel( modelFile ) );
         }        
         else if (field.compareCaseInsensitive( "defect_site") )
         {
             std::cout << "Loading defect site... \n";  
             
-            PLuint     modelID  ( std::stoi( csv.data[++i][1] ) ); 
-            plSpline   spline   ( csv.data[++i], _models[ modelID ]->cartilage.mesh() );
-            plBoundary boundary ( csv.data[++i] );
-            
-            _defectSites.push_back( new plDefectSite( modelID, *_models[ modelID ], spline, boundary ) );
+            PLuint     splineModelID  ( std::stoi( csv.data[++i][1] ) ); 
+            plSpline   spline         ( _models[ splineModelID ]->mesh(), csv.data[++i] );
+            _defectSites.push_back( new plDefectSite( spline, csv.data[++i] ) );
 
         }
         else if (field.compareCaseInsensitive( "donor_site") )
         {
             std::cout << "Loading donor site... \n";
             
-            PLuint     modelID  ( std::stoi( csv.data[++i][1] ) );        
-            plBoundary boundary ( csv.data[++i] );
+            PLuint     boundaryModelID( std::stoi( csv.data[++i][1] ) );        
+            plBoundary boundary       ( PL_PICKING_TYPE_DONOR_BOUNDARY, _models[ boundaryModelID ]->mesh(), csv.data[++i] );
             
-            _donorSites.push_back( new plDonorSite( modelID, *_models[ modelID ], boundary ) );
+            _donorSites.push_back( new plDonorSite( boundary ) );
     
         }  
         else if (field.compareCaseInsensitive( "iGuide_site") )
         {
             std::cout << "Loading iGuide site... \n";  
             
-            PLuint     modelID  ( std::stoi( csv.data[++i][1] ) );    
-            plBoundary boundary ( csv.data[++i] );
+            PLuint     boundaryModelID( std::stoi( csv.data[++i][1] ) );    
+            plBoundary boundary       ( PL_PICKING_TYPE_IGUIDE_BOUNDARY, _models[ boundaryModelID ]->mesh(), csv.data[++i] );
             
-            _iGuideSites.push_back( new plIGuideSite( modelID, *_models[ modelID ], boundary ) );
+            _iGuideSites.push_back( new plIGuideSite( boundary ) );
     
         }      
         else if (field.compareCaseInsensitive( "graft" ) ) 
         {       
             std::cout << "Loading graft... \n";       
             
-            PLuint      recipientModelID   ( std::stoi( csv.data[++i][1] ) );     
+            PLuint      recipientSiteID    ( std::stoi( csv.data[++i][1] ) );     
             plTransform recipientTransform (            csv.data[++i]      );
             plVector3   recipientSurfaceNormal(         csv.data[++i][1]   );
             PLuint      harvestModelID     ( std::stoi( csv.data[++i][1] ) );   
@@ -284,8 +275,8 @@ void plPlan::importFile( const plString &filename )
             PLfloat     length             ( std::stof( csv.data[++i][1] ) );                            
             plVector3   markDirection      (            csv.data[++i][1]   );
             
-            plPlug      recipientPlug ( recipientModelID, *_models[ recipientModelID ], PL_PICKING_INDEX_GRAFT_DEFECT, recipientTransform, recipientSurfaceNormal );
-            plPlug      harvestPlug   ( harvestModelID,   *_models[ harvestModelID   ], PL_PICKING_INDEX_GRAFT_DONOR,  harvestTransform,   harvestSurfaceNormal );
+            plPlug recipientPlug ( _defectSites[ recipientSiteID ]->spline.surfaceMesh(), PL_PICKING_INDEX_GRAFT_DEFECT, recipientTransform, recipientSurfaceNormal );
+            plPlug harvestPlug   ( _models[ harvestModelID ]->mesh(),                     PL_PICKING_INDEX_GRAFT_DONOR,  harvestTransform,   harvestSurfaceNormal );
 
             _grafts.push_back( new plGraft( harvestPlug, recipientPlug, radius, length, markDirection ) );
         }        
@@ -353,9 +344,7 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_models.size(); i++) 
         {
             out << "model"              << std::endl
-                << "    bone_file,      " << _models[i]->bone.filename       << std::endl
-                << "    cartilage_file, " << _models[i]->cartilage.filename  << std::endl
-                << "    combined_file,  " << _models[i]->combined.filename   << std::endl     
+                << "    filename,      " << _models[i]->filename  << std::endl   
                 << std::endl;
         }
 
@@ -363,18 +352,19 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_defectSites.size(); i++) 
         {    
             out << "defect_site"  << std::endl
-                << "    model_id, " << _defectSites[i]->modelID()    << std::endl
-                << "    spline,   " << _defectSites[i]->spline       << std::endl
-                << "    boundary, " << _defectSites[i]->boundary     << std::endl   
+                << "    spline_model_id,   " << _getModelIndex( _defectSites[i]->spline ) << std::endl
+                << "    spline,            " << _defectSites[i]->spline             << std::endl
+                << "    boundary,          " << _defectSites[i]->boundary           << std::endl   
+                
                 << std::endl;
         }
 
         // donor sites
         for (PLuint i=0; i<_donorSites.size(); i++) 
         {
-            out << "donor_site"   << std::endl
-                << "    model_id, " << _donorSites[i]->modelID()    << std::endl
-                << "    boundary, " << _donorSites[i]->boundary     << std::endl   
+            out << "donor_site"   << std::endl              
+                << "    boundary_model_id, " << _getModelIndex( _donorSites[i]->boundary ) << std::endl 
+                << "    boundary,          " << _donorSites[i]->boundary           << std::endl  
                 << std::endl;
         }
 
@@ -382,8 +372,8 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_iGuideSites.size(); i++) 
         {
             out << "iguide_site"  << std::endl
-                << "    model_id, " << _iGuideSites[i]->modelID()    << std::endl
-                << "    boundary, " << _iGuideSites[i]->boundary     << std::endl   
+                << "    boundary_model_id, " << _getModelIndex( _iGuideSites[i]->boundary ) << std::endl 
+                << "    boundary,          " << _iGuideSites[i]->boundary           << std::endl   
                 << std::endl;
         }
 
@@ -391,10 +381,10 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_grafts.size(); i++) 
         {
             out << "graft"                   << std::endl
-                << "    recipient_model_id,       " << _grafts[i]->recipient().modelID()   << std::endl
+                << "    recipient_defect_site_id, " << _getDefectSiteIndex( _grafts[i]->recipient() )   << std::endl
                 << "    recipient_transform,      " << _grafts[i]->recipient().transform() << std::endl
                 << "    recipient_surface_normal, " << _grafts[i]->recipient().surfaceNormal() << std::endl
-                << "    harvest_model_id,         " << _grafts[i]->harvest().modelID()     << std::endl
+                << "    harvest_model_id,         " << _getModelIndex( _grafts[i]->harvest() )    << std::endl
                 << "    harvest_transform,        " << _grafts[i]->harvest().transform()   << std::endl
                 << "    harvest_surface_normal,   " << _grafts[i]->harvest().surfaceNormal() << std::endl
                 << "    radius,                   " << _grafts[i]->radius()                << std::endl
@@ -451,3 +441,28 @@ void plPlan::clear()
     _grafts.clear();
     _iGuides.clear();
 }
+
+
+PLint plPlan::_getModelIndex( const plMeshSpecific& mesh ) const
+{
+    for ( PLuint i = 0; i < _models.size(); i++ )
+    {
+        if ( &_models[i]->mesh() == &mesh.mesh() )
+            return i;        
+    }
+    return -1;
+}
+
+
+PLint plPlan::_getDefectSiteIndex( const plMeshSpecific& mesh ) const
+{
+    for ( PLuint i = 0; i < _defectSites.size(); i++ )
+    {
+        if ( &_defectSites[i]->spline.mesh() == &mesh.mesh() )
+            return i;
+    }
+    return -1;    
+}
+
+
+

@@ -14,10 +14,12 @@ void plSphere::position( const plVector3 position )
     _position = position;
 }
 
-void plSphere::radius  ( PLfloat radius  )
+
+void plSphere::radius( PLfloat radius  )
 {
     _radius = radius;
 }
+
 
 void plSphere::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
@@ -38,7 +40,7 @@ void plSphere::extractRenderComponents( plRenderMap& renderMap, PLuint technique
     
     renderMap[ technique ].insert( component );  
 
-    plModelStack::pop();         
+    plModelStack::pop();
 }
 
 

@@ -10,8 +10,8 @@ plModel::plModel( const std::vector<plTriangle> &triangles, const plString &file
 plModel::plModel( const plString &file, PLuint octreeDepth )
     : filename( file )
 {
-
     std::vector< plTriangle > triangles;
+    
     // import triangles from STL file
     if ( !plSTL::importFile( triangles, filename ) )
         return;
@@ -26,6 +26,8 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
 {
     if ( !_isVisible )
         return;
+       
+    plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
 
     // create render component
     plRenderComponent component( _vao );
@@ -35,19 +37,18 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
     component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
     component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM, plVector3( PL_LIGHT_POSITION ) ) );
     component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
-    
+ 
     if ( !_inArthroView )
     {
         if ( !_isTransparent ) 
         {
-            component.attach( plUniform( PL_COLOUR_UNIFORM,  plColourStack::top()  ) ); 
+            component.attach( plUniform( PL_COLOUR_UNIFORM,  plVector4( PL_MODEL_COLOUR )  ) ); 
             // insert into render map   
             renderMap[ technique ].insert( component );        
         }
         else
         {
-            plVector4 currentColour = plColourStack::top();
-            component.attach( plUniform( PL_COLOUR_UNIFORM,  plVector4( currentColour.x, currentColour.y, currentColour.z, 0.7)  ) ); 
+            component.attach( plUniform( PL_COLOUR_UNIFORM,  plVector4( PL_MODEL_COLOUR, 0.7)  ) ); 
             // insert into render map   
             renderMap[ PL_TRANSPARENCY_TECHNIQUE ].insert( component );        
             
@@ -129,47 +130,16 @@ void plModel::_generateVAO()
     _vao->upload(); 
 }
 
-/*
-void plModel::draw( const plVector3 &colour ) const
+
+plVector3 plModel::getCentroid() const
 {
-    if ( !_isVisible )
-        return;
+    plVector3 min, max;
+    
+    _mesh.getMinMax( min, max );
 
-    if ( !_isTransparent ) 
-    {
-        glDisable( GL_STENCIL_TEST );            // if opaque, allow overwriting pixels during picking
-        plColourStack::load( colour.x, colour.y, colour.z, 1.0f ); 
-        _vao.draw();
-    }
-    else
-    {
-        glEnable( GL_STENCIL_TEST );             // if transparent, prevent overwriting pixels during picking
-        plColourStack::load( colour.x, colour.y, colour.z, 0.2f );
+    return 0.5f * (max + min);    
+}   
 
-        // Sort by distance
-        plVector3 viewDir = plCameraStack::direction();
-
-        std::vector<plOrderPair> order;     order.reserve( _mesh.triangles().size() );
-        PLuint index = 0;
-        for ( const plTriangle& triangle : _mesh.triangles() )
-        {
-            order.emplace_back( plOrderPair( index++, triangle.centroid() * viewDir) );
-        }
-        std::sort( order.begin(), order.end() );
-
-        std::vector<PLuint> indices;    indices.reserve( _mesh.triangles().size()*3 );
-        for (PLuint i = 0; i < order.size(); i++)
-        {
-            indices.push_back( order[i].index*3 );
-            indices.push_back( order[i].index*3+1 );
-            indices.push_back( order[i].index*3+2 );
-        }             
-        _vao.draw( indices );
-
-        glDisable( GL_STENCIL_TEST ); 
-    } 
-}
-*/
 
 
 std::ostream& operator << ( std::ostream& out, const plModel &m )

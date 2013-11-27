@@ -5,15 +5,17 @@ plDefectSite::plDefectSite()
 }
 
 
-plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage& model )
-    : plModelSpecific( modelID, model ), spline( model.cartilage.mesh() )
+plDefectSite::plDefectSite( const plMesh& mesh )
+    : spline( mesh )
 {
+    boundary = plBoundary( PL_PICKING_TYPE_DEFECT_BOUNDARY, spline.surfaceMesh() );
 }
 
 
-plDefectSite::plDefectSite( PLuint modelID, const plBoneAndCartilage& model, const plSpline &s, const plBoundary &b )
-    : plModelSpecific( modelID, model ), spline( s ), boundary( b )
+plDefectSite::plDefectSite( const plSpline& splne, const std::vector<plString> &row )
+    : spline( splne )
 {
+    boundary = plBoundary( PL_PICKING_TYPE_DEFECT_BOUNDARY, spline.surfaceMesh(), row );
 }
 
 
@@ -23,7 +25,6 @@ void plDefectSite::extractRenderComponents( plRenderMap& renderMap, PLuint techn
         return;
       
     // draw spline boundary 
-    plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_BOUNDARY );
     boundary.extractRenderComponents( renderMap, technique );   
      
     // draw spline corners
@@ -36,18 +37,3 @@ void plDefectSite::extractRenderComponents( plRenderMap& renderMap ) const
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
 
-
-/*
-void plDefectSite::draw() const
-{      
-    if ( !_isVisible )
-        return;
-      
-    // draw spline boundary 
-    plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_BOUNDARY );
-    boundary.draw();   
-     
-    // draw spline corners
-    spline.draw();
-}
-*/
