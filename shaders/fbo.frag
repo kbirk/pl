@@ -73,7 +73,7 @@ void main()
     // get outline buffer colour
     vec4  colour  = texture( uTextureUnit0, vec2( texCoordOut.x, texCoordOut.y ) );
     ivec4 outline = texture( uTextureUnit1, vec2( texCoordOut.x, texCoordOut.y ) );
-    vec4  arthro  = texture( uTextureUnit2, vec2( texCoordOut.x, texCoordOut.y ) );
+    vec4  arthro  = texture( uTextureUnit2, vec2( texCoordOut.x, 1-texCoordOut.y ) ); // arthro image is inverted
 
     // if it is not clear, render normal buffer only   
     if ( outline.a == 0 )
