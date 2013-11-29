@@ -1,28 +1,23 @@
 #include "plBoundaryEditor.h"
 
 plBoundaryEditor::plBoundaryEditor() 
-{
-    _selectedBoundaryType   = -1;
-    _selectedSiteIndex      = -1;
-    _selectedBoundary       = NULL;
-    _selectedPointIndex     = -1;
-    _isDraggingMenu         = false;
+    :   _selectedSiteIndex( -1 ), 
+        _selectedPointIndex( -1 ),
+        _selectedBoundary( NULL )
+{ 
 }
 
 
-void plBoundaryEditor::clearSelection( plPlan &plan )
+void plBoundaryEditor::clearSelection()
 {
-    _selectedBoundaryType   = -1;
-    _selectedSiteIndex      = -1;
-    _selectedBoundary       = NULL;
-    _selectedPointIndex     = -1;
-    _clearDefectSiteBoundaries( plan );
-    _clearDonorSiteBoundaries ( plan );
-    _clearIGuideBoundaries    ( plan );
+    _selectedSiteIndex  = -1;
+    _selectedBoundary   = NULL;
+    _selectedPointIndex = -1;
+    _clearSiteBoundaries();
 }
 
 
-PLbool plBoundaryEditor::processMouseClick( plPlan &plan, PLint x, PLint y )
+PLbool plBoundaryEditor::processMouseClick( PLint x, PLint y )
 {
     plPickingInfo pixel = plPicking::pickPixel( x, y );
 
@@ -33,12 +28,12 @@ PLbool plBoundaryEditor::processMouseClick( plPlan &plan, PLint x, PLint y )
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
         
-            selectBoundary( plan, pixel.r, pixel.g, pixel.b );
+            selectBoundary( pixel.r, pixel.g, pixel.b );
             return true;
 
         default:
 
-            clearSelection( plan );
+            clearSelection();
             break;
     }
     
@@ -46,7 +41,7 @@ PLbool plBoundaryEditor::processMouseClick( plPlan &plan, PLint x, PLint y )
 }
 
 
-PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y )
+PLbool plBoundaryEditor::processMouseDrag ( PLint x, PLint y )
 {
     plPickingInfo pixel = plPicking::previousPick(); // read pick from last click, not what is currently under mouse
 
@@ -61,124 +56,79 @@ PLbool plBoundaryEditor::processMouseDrag ( plPlan &plan, PLint x, PLint y )
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
         
-            moveSelectedPoint( plan, x, y );
+            moveSelectedPoint( x, y );
             return true; 
     }
     return false;
 }
 
 
-PLbool plBoundaryEditor::processJoystickDrag ( plPlan &plan, PLint x, PLint y)
+PLbool plBoundaryEditor::processJoystickDrag ( PLint x, PLint y)
 {
-    if (_selectedBoundary == NULL)
+    if ( _selectedBoundary == NULL )
         return false;
     
-    return processMouseDrag( plan, x, y );
+    return processMouseDrag( x, y );
 }
 
 
-PLbool plBoundaryEditor::processMouseRelease( plPlan &plan, PLint x, PLint y )
+PLbool plBoundaryEditor::processMouseRelease( PLint x, PLint y )
 {
     _isDraggingMenu = false;
     return true;   
 }
 
 
-void plBoundaryEditor::_clearDefectSiteBoundaries( plPlan &plan  )
+void plBoundaryEditor::_clearSiteBoundaries()
 {
-    for (PLuint i=0; i<plan.defectSites().size(); i++)
+    // defect sites
+    for ( plDefectSite* defectSite : _plan->defectSites() )
     {
-        plan.defectSites(i).spline._clearSelection();     
-        plan.defectSites(i).boundary._clearSelection(); 
+        defectSite->spline._clearSelection();     
+        defectSite->boundary._clearSelection(); 
+    }  
+
+    // donor sites
+    for ( plDonorSite* donorSite : _plan->donorSites() )
+    {  
+        donorSite->boundary._clearSelection(); 
+    }  
+
+    // iguide sites
+    for ( plIGuideSite* iguideSite : _plan->iGuideSites() )
+    {  
+        iguideSite->boundary._clearSelection(); 
     }  
 }
 
 
-void plBoundaryEditor::_clearDonorSiteBoundaries( plPlan &plan )
+void plBoundaryEditor::_selectBoundary( plBoundary &boundary, PLuint boundaryIndex, PLuint pointIndex)
 {
-    for (PLuint i=0; i<plan.donorSites().size(); i++)
-    {
-        plan.donorSites(i).boundary._clearSelection();       
-    }  
+    boundary._selectedValue = pointIndex;        
+    boundary._isSelected    = true;
+    _selectedSiteIndex      = boundaryIndex;
+    _selectedPointIndex     = pointIndex;
+    _selectedBoundary       = &boundary;            
 }
 
 
-void plBoundaryEditor::_clearIGuideBoundaries( plPlan &plan )
-{
-    for (PLuint i=0; i<plan.iGuideSites().size(); i++)
-    {
-        plan.iGuideSites(i).boundary._clearSelection();       
-    }  
-}
-
-
-void plBoundaryEditor::_checkAndSelectBoundary( plBoundary &boundary, PLuint i, PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex)
-{
-    if ( i == boundaryIndex )
-    {
-        boundary._selectedValue  = pointIndex;        
-        boundary._isSelected     = true;
-        _selectedBoundaryType    = boundaryType;
-        _selectedSiteIndex       = boundaryIndex;
-        _selectedPointIndex      = pointIndex;
-        _selectedBoundary        = &boundary;            
-    }
-}
-
-
-void plBoundaryEditor::_selectDefectSiteSpline( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex )
-{
-    for (PLuint i=0; i<plan.defectSites().size(); i++)
-    {
-        _checkAndSelectBoundary( plan.defectSites(i).spline, i, PL_PICKING_TYPE_DEFECT_CORNERS, boundaryIndex, pointIndex );   
-    }  
-}
-
-
-void plBoundaryEditor::_selectDefectSiteBoundary( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex )
-{
-    for (PLuint i=0; i<plan.defectSites().size(); i++)
-    {
-        _checkAndSelectBoundary( plan.defectSites(i).boundary, i, PL_PICKING_TYPE_DEFECT_BOUNDARY, boundaryIndex, pointIndex );     
-    }  
-}
-
-
-void plBoundaryEditor::_selectDonorSiteBoundary( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex )
-{
-    for (PLuint i=0; i<plan.donorSites().size(); i++)
-    {
-        _checkAndSelectBoundary( plan.donorSites(i).boundary, i, PL_PICKING_TYPE_DONOR_BOUNDARY, boundaryIndex, pointIndex );    
-    }  
-}
-
-
-void plBoundaryEditor::_selectIGuideBoundary( plPlan &plan, PLuint boundaryIndex, PLuint pointIndex )
-{
-    for (PLuint i=0; i<plan.iGuideSites().size(); i++)
-    {
-        _checkAndSelectBoundary( plan.iGuideSites(i).boundary, i, PL_PICKING_TYPE_IGUIDE_BOUNDARY, boundaryIndex, pointIndex );    
-    }  
-}
-
-
-void plBoundaryEditor::selectBoundary( plPlan &plan, PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex)
+void plBoundaryEditor::selectBoundary( PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex)
 {   
     // clear any previous selections
-    clearSelection( plan );
+    clearSelection();
     // select
     switch (boundaryType) 
     {
-        case PL_PICKING_TYPE_DEFECT_CORNERS:    _selectDefectSiteSpline  ( plan, boundaryIndex, pointIndex );    break;
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:   _selectDefectSiteBoundary( plan, boundaryIndex, pointIndex );    break;       
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:    _selectDonorSiteBoundary ( plan, boundaryIndex, pointIndex );    break;
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:   _selectIGuideBoundary    ( plan, boundaryIndex, pointIndex );    break;  
+        case PL_PICKING_TYPE_DEFECT_CORNERS:   _selectBoundary( _plan->defectSites( boundaryIndex ).spline,   boundaryIndex, pointIndex );   break;
+        case PL_PICKING_TYPE_DEFECT_BOUNDARY:  _selectBoundary( _plan->defectSites( boundaryIndex ).boundary, boundaryIndex, pointIndex );   break;  
+        case PL_PICKING_TYPE_DONOR_BOUNDARY:   _selectBoundary( _plan->donorSites( boundaryIndex ).boundary,  boundaryIndex, pointIndex );   break;
+        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:  _selectBoundary( _plan->iGuideSites( boundaryIndex ).boundary, boundaryIndex, pointIndex );   break; 
     }
 
 }
 
 
-plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint x, PLuint y )
+plIntersection plBoundaryEditor::_getBoundaryIntersection( PLuint x, PLuint y )
 {
     plVector3 rayOrigin, rayDirection;
     plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
@@ -187,12 +137,12 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection( plPlan &plan, PLuint 
 }
 
 
-void plBoundaryEditor::moveSelectedPoint( plPlan &plan, PLuint x, PLuint y )
+void plBoundaryEditor::moveSelectedPoint( PLuint x, PLuint y )
 {
     if ( _selectedBoundary == NULL || _selectedPointIndex < 0 ) // no boundary or point is selected
         return;         
 
-    plIntersection intersection = _getBoundaryIntersection( plan, x, y );
+    plIntersection intersection = _getBoundaryIntersection( x, y );
 
     if ( intersection.exists ) 
     {            
@@ -202,12 +152,12 @@ void plBoundaryEditor::moveSelectedPoint( plPlan &plan, PLuint x, PLuint y )
 }
 
 
-void plBoundaryEditor::addPoint( plPlan &plan, PLuint x, PLuint y, PLbool selectNewPoint )
+void plBoundaryEditor::addPoint( PLuint x, PLuint y, PLbool selectNewPoint )
 {
     if ( _selectedBoundary == NULL ) // no boundary selected
         return;
 
-    plIntersection intersection = _getBoundaryIntersection( plan, x, y );    
+    plIntersection intersection = _getBoundaryIntersection( x, y );    
     
     if ( intersection.exists ) 
     {     
@@ -243,7 +193,7 @@ void plBoundaryEditor::toggleSelectedVisibility()
 }
 
 
-void plBoundaryEditor::clearSelectedBoundary( plPlan &plan )
+void plBoundaryEditor::clearSelectedBoundary()
 {
     if (_selectedBoundary == NULL)
         return;
@@ -251,25 +201,31 @@ void plBoundaryEditor::clearSelectedBoundary( plPlan &plan )
     _selectedBoundary->clear();
     
     // clearing corners, destroy defect site boundary
-    if ( _selectedBoundaryType == PL_PICKING_TYPE_DEFECT_CORNERS )
+    if ( _selectedBoundary->type() == PL_PICKING_TYPE_DEFECT_CORNERS )
     {
-        plan.defectSites( _selectedSiteIndex ).boundary.clear();
+        _plan->defectSites( _selectedSiteIndex ).boundary.clear();
     }
 }
 
 
 void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
+    _extractMenuRenderComponents( renderMap );
+
     if (_selectedBoundary == NULL)
         return;
         
     _selectedBoundary->extractRenderComponents( renderMap, technique );   
     
+
+    /*
     if ( _selectedPointIndex > 0 )
     {
+        plPickingStack::loadBlue( _selectedPointIndex );
         plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, _selectedBoundary->points( _selectedPointIndex ), PL_SELECTED_BOUNDARY_POINT_RADIUS ) );         
         plRenderer::queue( plSphere( technique, _selectedBoundary->points( _selectedPointIndex ), PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
     }    
+    */
 }
 
 
@@ -279,9 +235,7 @@ void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap ) const
 }
 
 
-
-/*
-void plBoundaryEditor::extractRenderComponents( std::set<plRenderComponent>& renderComponents ) const
+void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
 {
     const PLfloat CORNER_HORIZONTAL   = plWindow::viewportWidth() - (PL_EDITOR_MENU_HORIZONTAL_BUFFER + PL_EDITOR_MENU_CIRCLE_RADIUS + PL_EDITOR_MENU_HORIZONTAL_SPACING);  
     const PLfloat BOUNDARY_HORIZONTAL = plWindow::viewportWidth() - PL_EDITOR_MENU_HORIZONTAL_BUFFER;
@@ -290,101 +244,91 @@ void plBoundaryEditor::extractRenderComponents( std::set<plRenderComponent>& ren
     PLfloat count = 0;
     plPickingStack::loadBlue( -1 );   
        
+    static plMatrix44 ortho( 0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1 );
+
+    static plMatrix44 camera( 1, 0,  0, 0,
+                              0, 1,  0, 0,
+                              0, 0, -1, 0,
+                              0, 0,  0, 1 ); 
+
+    plCameraStack::push( camera );
+    plProjectionStack::push( ortho );
     plModelStack::push( plMatrix44() ); // load identity
     {
         // defect sites       
-        for ( PLuint i=0; i<plan.defectSites().size(); i++ )
+        for ( PLuint i=0; i<_plan->defectSites().size(); i++ )
         {
             plPickingStack::loadGreen( i );
             
             // spline menu
-            plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS );
-                           
-            if ( plan.defectSites(i).spline._isSelected )
-            {
-                plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
-            }
-            else
-            {
-                plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR ); 
-            }
-            plRenderer::queue( plDisk( plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS );           
+            plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR );
+            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            
+            if ( _plan->defectSites(i).spline._isSelected )
+                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
             
             // boundary menu    
             plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_BOUNDARY );    
-                    
-            if ( plan.defectSites(i).boundary._isSelected )
-            {
-                plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL ); 
-            }
-            else
-            {
-                plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
-            }
-            plRenderer::queue( plDisk( plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
 
+            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+
+            if ( _plan->defectSites(i).boundary._isSelected )
+                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            
             count++;
         }
 
         // donor sites       
-        for (PLuint i=0; i<plan.donorSites().size(); i++)
+        for (PLuint i=0; i<_plan->donorSites().size(); i++)
         {
             plPickingStack::loadGreen( i );
             
             // boundary menu
             plPickingStack::loadRed( PL_PICKING_TYPE_DONOR_BOUNDARY );
- 
-            if (plan.donorSites(i).boundary._isSelected)
-            {
-                plColourStack::load( PL_BOUNDARY_DONOR_COLOUR_DULL ); 
-            }
-            else
-            {
-                plColourStack::load( PL_BOUNDARY_DONOR_COLOUR ); 
-            }
-            plRenderer::queue( plDisk( plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS );
+            plColourStack::load( PL_BOUNDARY_DONOR_COLOUR ); 
+
+            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            
+            if (_plan->donorSites(i).boundary._isSelected)
+                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
             
             count++;
         }
 
         // iGuide site boundaries       
-        for (PLuint i=0; i<plan.iGuideSites().size(); i++)
+        for (PLuint i=0; i<_plan->iGuideSites().size(); i++)
         {
             plPickingStack::loadGreen( i );
             
             // boundary menu
             plPickingStack::loadRed( PL_PICKING_TYPE_IGUIDE_BOUNDARY );
-     
-            if (plan.iGuideSites(i).boundary._isSelected)
-            {
-                plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR_DULL ); 
-            }
-            else
-            {
-                plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR ); 
-            }
-            plRenderer::queue( plDisk( plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS );
+            plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR ); 
+            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
             
+            if (_plan->iGuideSites(i).boundary._isSelected)              
+                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+
             count++;
         }
 
+        /*
         // dragged menu item
         if ( _isDraggingMenu )
         {   
-            if ( _selectedBoundaryType == PL_PICKING_TYPE_IGUIDE_BOUNDARY )
-            {
-                plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR_DULL ); 
-            } 
-            else if ( _selectedBoundaryType == PL_PICKING_TYPE_DEFECT_CORNERS )
-            {
-                plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
-            } 
-            plRenderer::queue( plDisk( plVector3( plWindow::windowToViewportX( x ), plWindow::windowToViewportY( y ), 0.0f), PL_EDITOR_MENU_CIRCLE_RADIUS );            
+            plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL ); 
+
+            if ( _selectedBoundary->type() == PL_PICKING_TYPE_IGUIDE_BOUNDARY )              
+                plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, plVector3( plWindow::windowToViewportX( x ), plWindow::windowToViewportY( y ), 0.0f), PL_EDITOR_MENU_CIRCLE_RADIUS );            
         }
+        */
     }
     plModelStack::pop();
+    plCameraStack::pop();
+    plProjectionStack::pop();
 }
-*/
+
 
 
 

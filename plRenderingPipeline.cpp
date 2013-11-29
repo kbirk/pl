@@ -166,7 +166,7 @@ namespace plCameraStack
         // get rotation matrix
         plMatrix44 rot = _stack.top();   rot.setColumn(3, 0, 0, 0, 1);  // remove translation component
             
-        plVector3 d(-top()[4], -top()[5], -top()[6]);
+        plVector3 d( top()[4], top()[5], top()[6] );
         
         return d * rot;
     }

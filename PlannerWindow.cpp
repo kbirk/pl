@@ -10,6 +10,9 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
       Window( x, y, width, height, title )
 {  
     plInit();
+
+    _graftEditor.attach( _plan );
+    _boundaryEditor.attach( _plan );
 }
 
 
@@ -90,6 +93,10 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
             currentView = (PLint)(key - '0');
             break;                
 
+        case 'c':   _camera.up     = plVector3( 0, 1, 0 );  
+                    _camera.lookat = _camera.position + plVector3(0,0,1); 
+                    break;
+                    
         case 'b':   _plan.models(0).toggleVisibility();                         break;            
         case 'a':   _plan.toggleArthroView();                                   break;
         case 'i':   _plan.iGuides(0).toggleVisibility();                        break;
@@ -111,8 +118,8 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'P':   plAutomaticPlanner::calculate( _plan );                     break;
 
         case 'N':   _plan.clear();  
-                    _graftEditor.clearSelection   ( _plan );   
-                    _boundaryEditor.clearSelection( _plan );                                          
+                    _graftEditor.clearSelection   ();   
+                    _boundaryEditor.clearSelection();                                          
                     break;     
 
         case 127:	 // delete 
@@ -120,7 +127,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
 	        {
                 // delete boundary 
-	            _boundaryEditor.clearSelectedBoundary( _plan );
+	            _boundaryEditor.clearSelectedBoundary();
             }
             else
             {
@@ -144,6 +151,7 @@ void PlannerWindow::passiveMouseMotion( int mx, int my )
     // do nothing   
 }
 
+
 void PlannerWindow::activeMouseMotion( int mx, int my )
 {    
     // convert from GLUT window coords to OpenGL coords
@@ -155,8 +163,8 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
         case GLUT_LEFT_BUTTON: 
 
             // process drag movements 
-            _graftEditor.processMouseDrag   ( _plan, x, y );   
-            _boundaryEditor.processMouseDrag( _plan, x, y );  
+            _graftEditor.processMouseDrag   ( x, y );   
+            _boundaryEditor.processMouseDrag( x, y );  
             break;       
 
         case GLUT_MIDDLE_BUTTON:    
@@ -203,8 +211,8 @@ void PlannerWindow::mouseAction( int button, int state, int mx, int my )
     {
         case GLUT_UP:           
         {
-            _graftEditor.processMouseRelease   ( _plan, x, y ); 
-            _boundaryEditor.processMouseRelease( _plan, x, y ); 
+            _graftEditor.processMouseRelease   ( x, y ); 
+            _boundaryEditor.processMouseRelease( x, y ); 
             _button = GLUT_NO_BUTTON;  
             break; 
         }
@@ -218,13 +226,13 @@ void PlannerWindow::mouseAction( int button, int state, int mx, int my )
             if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
 	        {
                 // add new point
-                _boundaryEditor.addPoint( _plan, x, y ); 
+                _boundaryEditor.addPoint( x, y ); 
             }
             else
             {
                 // process mouse clicks 
-                _graftEditor.processMouseClick   ( _plan, x, y );    
-                _boundaryEditor.processMouseClick( _plan, x, y ); 
+                _graftEditor.processMouseClick   ( x, y );    
+                _boundaryEditor.processMouseClick( x, y ); 
             }
             break;
     }    

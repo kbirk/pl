@@ -270,6 +270,19 @@ namespace plMath
     } 
 
 
+    plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, const plVector3& planePoint, const plVector3& planeNormal )
+    {
+        if ( planeNormal * rayDirection == 0 )
+            return plIntersection( false );
+            
+        // Compute the t value for the directed line ab intersecting the plane
+        PLfloat t = ( (planePoint * planeNormal) - (planeNormal * rayOrigin) ) / ( planeNormal * rayDirection );
+        plVector3 intPoint = rayOrigin + t * rayDirection;
+        return plIntersection( intPoint, planeNormal, t );
+    }
+
+
+
     plVector3 getAverageNormal( const std::vector<plTriangle>& triangles, PLfloat radius, const plVector3 &origin, const plVector3 &normal )
     {
         plVector3 avgNormal( 0, 0, 0 );

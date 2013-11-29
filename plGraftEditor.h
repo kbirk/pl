@@ -13,20 +13,21 @@
 #include "plRenderer.h"
 #include "plCylinder.h"
 #include "plCone.h"
+#include "plDisk.h"
+#include "plEditor.h"
 
-#define PL_ROTATION_SENSITIVITY                  0.010f   // lower is less sensitive
-
+#define PL_ROTATION_SENSITIVITY                  0.10f   // lower is less sensitive
 #define PL_MAX_GRAFT_ROTATION                    25.00f
 
 
-class plGraftEditor : public plRenderable
+class plGraftEditor : public plEditor
 {
     public:
 
         plGraftEditor();
                
-        void clearSelection( plPlan &plan );
-        void selectGraft   ( plPlan &plan, PLuint index, PLuint type );
+        void clearSelection();
+        void selectGraft   ( PLuint index, PLuint type );
         
         void setEditMode( PLuint editMode );
 
@@ -35,25 +36,23 @@ class plGraftEditor : public plRenderable
         
         PLbool isGraftSelected() const { return ( _selectedGraft != NULL ); }    
 
-        PLbool processMouseClick   ( plPlan &plan, PLint x, PLint y );
-        PLbool processMouseDrag    ( plPlan &plan, PLint x, PLint y );
-        PLbool processMouseRelease ( plPlan &plan, PLint x, PLint y );
-        PLbool processJoystickDrag ( plPlan &plan, PLint x, PLint y );
+        PLbool processMouseClick   ( PLint x, PLint y );
+        PLbool processMouseDrag    ( PLint x, PLint y );
+        PLbool processMouseRelease ( PLint x, PLint y );
+        PLbool processJoystickDrag ( PLint x, PLint y );
 
         void toggleSelectedVisibility();
 
     private: 
     
-        PLbool      _isDraggingMenu;
-    
-        PLint       _editMode;
-        PLint       _selectedType;
-        plGraft    *_selectedGraft;
+        PLint    _editMode;
+        PLint    _selectedType;
+        plGraft *_selectedGraft;
         
-        void      _dragHandle   ( plPlan &plan, PLint x, PLint y );
-        void      _dragMarker   ( plPlan &plan, PLint x, PLint y );
+        void _dragHandle( PLint x, PLint y );
+        void _dragMarker( PLint x, PLint y );
 
-                        
+        void _extractMenuRenderComponents( plRenderMap& renderMap ) const;                
 };
 
 #endif

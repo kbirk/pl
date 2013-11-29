@@ -32,7 +32,7 @@ vec4 getBlurredPixel( in ivec3 outline )
             
             ivec4 value = texture( uTextureUnit1, vec2( x, y ) );
             
-            if ( value.rg == outline.rg )
+            if ( value.rgb == outline.rgb )
                 outlineCount += value.a;
             
             sampleCount++;

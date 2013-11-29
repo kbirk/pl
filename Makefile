@@ -28,11 +28,13 @@ SOURCES =   main.cpp \
             plCSV.cpp \
             plCylinder.cpp \
             plDefectSite.cpp \
+            plDisk.cpp \
             plDonorSite.cpp \
             plDraw.cpp \
             plDRBTransform.cpp \
             plEABO.cpp \
             plEditable.cpp \
+            plEditor.cpp \
             plFBO.cpp \
             plGraft.cpp \
             plGraftCap.cpp \
@@ -49,6 +51,7 @@ SOURCES =   main.cpp \
             plMeshExtruder.cpp \
             plMeshIntersector.cpp \
             plMeshSpecific.cpp \
+            plMinimalTechnique.cpp \
             plModel.cpp \
             plOctree.cpp \
             plOctreeMesh.cpp \
@@ -135,18 +138,19 @@ objects/PlannerWindow.o: plOctreeMesh.h plOctree.h plTransform.h plRenderer.h
 objects/PlannerWindow.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/PlannerWindow.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/PlannerWindow.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/PlannerWindow.o: plTransparentRenderable.h plUtility.h plSphere.h
-objects/PlannerWindow.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
-objects/PlannerWindow.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
-objects/PlannerWindow.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h
-objects/PlannerWindow.o: plIGuide.h plPlanningBufferData.h plPlanningSite.h
-objects/PlannerWindow.o: plSSBO.h plBufferObject.h plPlannerStage0.h
+objects/PlannerWindow.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/PlannerWindow.o: plUtility.h plSphere.h plGraftCap.h plCone.h
+objects/PlannerWindow.o: plCylinder.h plDefectSite.h plSpline.h plBoundary.h
+objects/PlannerWindow.o: plColourMap.h plDonorSite.h plIGuideSite.h
+objects/PlannerWindow.o: plMeshCutter.h plMeshExtruder.h plIGuide.h
+objects/PlannerWindow.o: plPlanningBufferData.h plPlanningSite.h plSSBO.h
+objects/PlannerWindow.o: plBufferObject.h plPlannerStage0.h
 objects/PlannerWindow.o: plPlannerStructs.h plPlannerShader.h
 objects/PlannerWindow.o: plPlannerStage1.h plPlannerStage2.h
-objects/PlannerWindow.o: plPlannerStage3.h plBoundaryEditor.h plDisk.h
-objects/PlannerWindow.o: plChessBoard.h plDRBTransform.h plGraftEditor.h
-objects/PlannerWindow.o: plScan.h plScanPoint.h plScanVolume.h plTexture3D.h
-objects/PlannerWindow.o: plTrackedObject.h
+objects/PlannerWindow.o: plPlannerStage3.h plBoundaryEditor.h plEditor.h
+objects/PlannerWindow.o: plDisk.h plChessBoard.h plDRBTransform.h
+objects/PlannerWindow.o: plGraftEditor.h plScan.h plScanPoint.h
+objects/PlannerWindow.o: plScanVolume.h plTexture3D.h plTrackedObject.h
 objects/Window.o: pl.h plCommon.h plAutomaticPlanner.h plPlan.h plString.h
 objects/Window.o: plVector3.h plCSV.h plRenderable.h plRenderComponent.h
 objects/Window.o: plVector4.h plMatrix44.h plTriangle.h plTexture2D.h plVAO.h
@@ -160,17 +164,18 @@ objects/Window.o: plBoneAndCartilage.h plModel.h plOctreeMesh.h plOctree.h
 objects/Window.o: plTransform.h plRenderer.h plPlanTechnique.h
 objects/Window.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/Window.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/Window.o: plTransparencyTechnique.h plTransparentRenderable.h
-objects/Window.o: plUtility.h plSphere.h plGraftCap.h plCone.h plCylinder.h
-objects/Window.o: plDefectSite.h plSpline.h plBoundary.h plColourMap.h
-objects/Window.o: plDonorSite.h plIGuideSite.h plMeshCutter.h
-objects/Window.o: plMeshExtruder.h plIGuide.h plPlanningBufferData.h
-objects/Window.o: plPlanningSite.h plSSBO.h plBufferObject.h
-objects/Window.o: plPlannerStage0.h plPlannerStructs.h plPlannerShader.h
-objects/Window.o: plPlannerStage1.h plPlannerStage2.h plPlannerStage3.h
-objects/Window.o: plBoundaryEditor.h plDisk.h plChessBoard.h plDRBTransform.h
-objects/Window.o: plGraftEditor.h plScan.h plScanPoint.h plScanVolume.h
-objects/Window.o: plTexture3D.h plTrackedObject.h
+objects/Window.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/Window.o: plTransparentRenderable.h plUtility.h plSphere.h
+objects/Window.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
+objects/Window.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/Window.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plIGuide.h
+objects/Window.o: plPlanningBufferData.h plPlanningSite.h plSSBO.h
+objects/Window.o: plBufferObject.h plPlannerStage0.h plPlannerStructs.h
+objects/Window.o: plPlannerShader.h plPlannerStage1.h plPlannerStage2.h
+objects/Window.o: plPlannerStage3.h plBoundaryEditor.h plEditor.h plDisk.h
+objects/Window.o: plChessBoard.h plDRBTransform.h plGraftEditor.h plScan.h
+objects/Window.o: plScanPoint.h plScanVolume.h plTexture3D.h
+objects/Window.o: plTrackedObject.h
 objects/pl.o: plCommon.h plAutomaticPlanner.h plPlan.h plString.h plVector3.h
 objects/pl.o: plCSV.h plRenderable.h plRenderComponent.h plVector4.h
 objects/pl.o: plMatrix44.h plTriangle.h plTexture2D.h plVAO.h plVBO.h
@@ -184,13 +189,14 @@ objects/pl.o: plOctreeMesh.h plOctree.h plTransform.h plRenderer.h
 objects/pl.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/pl.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/pl.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/pl.o: plTransparentRenderable.h plUtility.h plSphere.h plGraftCap.h
-objects/pl.o: plCone.h plCylinder.h plDefectSite.h plSpline.h plBoundary.h
-objects/pl.o: plColourMap.h plDonorSite.h plIGuideSite.h plMeshCutter.h
-objects/pl.o: plMeshExtruder.h plIGuide.h plPlanningBufferData.h
-objects/pl.o: plPlanningSite.h plSSBO.h plBufferObject.h plPlannerStage0.h
-objects/pl.o: plPlannerStructs.h plPlannerShader.h plPlannerStage1.h
-objects/pl.o: plPlannerStage2.h plPlannerStage3.h plBoundaryEditor.h plDisk.h
+objects/pl.o: plMinimalTechnique.h plTransparentRenderable.h plUtility.h
+objects/pl.o: plSphere.h plGraftCap.h plCone.h plCylinder.h plDefectSite.h
+objects/pl.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/pl.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plIGuide.h
+objects/pl.o: plPlanningBufferData.h plPlanningSite.h plSSBO.h
+objects/pl.o: plBufferObject.h plPlannerStage0.h plPlannerStructs.h
+objects/pl.o: plPlannerShader.h plPlannerStage1.h plPlannerStage2.h
+objects/pl.o: plPlannerStage3.h plBoundaryEditor.h plEditor.h plDisk.h
 objects/pl.o: plChessBoard.h plDRBTransform.h plGraftEditor.h plScan.h
 objects/pl.o: plScanPoint.h plScanVolume.h plTexture3D.h plTrackedObject.h
 objects/plArthroCamTechnique.o: plCommon.h plRenderTechnique.h plRenderable.h
@@ -222,6 +228,7 @@ objects/plArthroscope.o: plCylinder.h plCone.h plRenderer.h plPlanTechnique.h
 objects/plArthroscope.o: plRenderTechnique.h plWindow.h
 objects/plArthroscope.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plArthroscope.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plArthroscope.o: plMinimalTechnique.h
 objects/plAutomaticPlanner.o: plCommon.h plPlan.h plString.h plVector3.h
 objects/plAutomaticPlanner.o: plCSV.h plRenderable.h plRenderComponent.h
 objects/plAutomaticPlanner.o: plVector4.h plMatrix44.h plTriangle.h
@@ -239,7 +246,7 @@ objects/plAutomaticPlanner.o: plRenderer.h plPlanTechnique.h
 objects/plAutomaticPlanner.o: plRenderTechnique.h plWindow.h
 objects/plAutomaticPlanner.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plAutomaticPlanner.o: plArthroCamTechnique.h
-objects/plAutomaticPlanner.o: plTransparencyTechnique.h
+objects/plAutomaticPlanner.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plAutomaticPlanner.o: plTransparentRenderable.h plUtility.h
 objects/plAutomaticPlanner.o: plSphere.h plGraftCap.h plCone.h plCylinder.h
 objects/plAutomaticPlanner.o: plDefectSite.h plSpline.h plBoundary.h
@@ -264,7 +271,7 @@ objects/plBoneAndCartilage.o: plDraw.h plRenderer.h plPlanTechnique.h
 objects/plBoneAndCartilage.o: plRenderTechnique.h plWindow.h
 objects/plBoneAndCartilage.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plBoneAndCartilage.o: plArthroCamTechnique.h
-objects/plBoneAndCartilage.o: plTransparencyTechnique.h
+objects/plBoneAndCartilage.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plBoneAndCartilage.o: plTransparentRenderable.h plArthroViewable.h
 objects/plBoundary.o: plCommon.h plMath.h plVector3.h plString.h plPolygon.h
 objects/plBoundary.o: plTriangle.h plMatrix44.h plVector4.h plRenderable.h
@@ -277,7 +284,7 @@ objects/plBoundary.o: plEditable.h plMeshSpecific.h plMesh.h plDraw.h
 objects/plBoundary.o: plSphere.h plRenderer.h plPlanTechnique.h
 objects/plBoundary.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plBoundary.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plBoundary.o: plTransparencyTechnique.h
+objects/plBoundary.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plBoundaryEditor.o: plCommon.h plVector3.h plString.h plPlan.h
 objects/plBoundaryEditor.o: plCSV.h plRenderable.h plRenderComponent.h
 objects/plBoundaryEditor.o: plVector4.h plMatrix44.h plTriangle.h
@@ -294,11 +301,12 @@ objects/plBoundaryEditor.o: plOctree.h plTransform.h plRenderer.h
 objects/plBoundaryEditor.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plBoundaryEditor.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plBoundaryEditor.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plBoundaryEditor.o: plTransparentRenderable.h plUtility.h plSphere.h
-objects/plBoundaryEditor.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
-objects/plBoundaryEditor.o: plSpline.h plBoundary.h plColourMap.h
-objects/plBoundaryEditor.o: plDonorSite.h plIGuideSite.h plMeshCutter.h
-objects/plBoundaryEditor.o: plMeshExtruder.h plIGuide.h plDisk.h
+objects/plBoundaryEditor.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/plBoundaryEditor.o: plUtility.h plSphere.h plGraftCap.h plCone.h
+objects/plBoundaryEditor.o: plCylinder.h plDefectSite.h plSpline.h
+objects/plBoundaryEditor.o: plBoundary.h plColourMap.h plDonorSite.h
+objects/plBoundaryEditor.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h
+objects/plBoundaryEditor.o: plIGuide.h plEditor.h plDisk.h
 objects/plBufferObject.o: plCommon.h
 objects/plCSV.o: plCommon.h plString.h
 objects/plCamera.o: plCommon.h plVector3.h plString.h plVector4.h
@@ -315,6 +323,7 @@ objects/plChessBoard.o: plDRBTransform.h plRenderer.h plPlanTechnique.h
 objects/plChessBoard.o: plRenderTechnique.h plWindow.h
 objects/plChessBoard.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plChessBoard.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plChessBoard.o: plMinimalTechnique.h
 objects/plColourMap.o: plCommon.h plVector3.h plString.h
 objects/plCone.o: plCommon.h plRenderable.h plVector3.h plString.h
 objects/plCone.o: plRenderComponent.h plVector4.h plMatrix44.h plTriangle.h
@@ -358,7 +367,8 @@ objects/plDefectSite.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plDefectSite.o: plRenderTechnique.h plWindow.h
 objects/plDefectSite.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plDefectSite.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plDefectSite.o: plColourMap.h plOctreeMesh.h plOctree.h plTransform.h
+objects/plDefectSite.o: plMinimalTechnique.h plColourMap.h plOctreeMesh.h
+objects/plDefectSite.o: plOctree.h plTransform.h
 objects/plDisk.o: plCommon.h plRenderable.h plVector3.h plString.h
 objects/plDisk.o: plRenderComponent.h plVector4.h plMatrix44.h plTriangle.h
 objects/plDisk.o: plTexture2D.h plVAO.h plVBO.h plVertexSpecBuffer.h plEABO.h
@@ -377,6 +387,7 @@ objects/plDonorSite.o: plEditable.h plDraw.h plSphere.h plRenderer.h
 objects/plDonorSite.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plDonorSite.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plDonorSite.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plDonorSite.o: plMinimalTechnique.h
 objects/plDraw.o: plCommon.h plVAO.h plVBO.h plVertexSpecBuffer.h plVector4.h
 objects/plDraw.o: plString.h plVector3.h plEABO.h plOpenGLInfo.h
 objects/plDraw.o: plRenderingPipeline.h plMatrixStack.h plMatrix44.h
@@ -391,6 +402,24 @@ objects/plEditable.o: plOpenGLInfo.h plRenderingPipeline.h plMatrixStack.h
 objects/plEditable.o: plProjection.h plCamera.h plPicking.h
 objects/plEditable.o: plRenderResources.h plShader.h plUniform.h
 objects/plEditable.o: plVertexFragmentShader.h plFBO.h
+objects/plEditor.o: plCommon.h plRenderable.h plVector3.h plString.h
+objects/plEditor.o: plRenderComponent.h plVector4.h plMatrix44.h plTriangle.h
+objects/plEditor.o: plTexture2D.h plVAO.h plVBO.h plVertexSpecBuffer.h
+objects/plEditor.o: plEABO.h plOpenGLInfo.h plRenderingPipeline.h
+objects/plEditor.o: plMatrixStack.h plProjection.h plCamera.h plPicking.h
+objects/plEditor.o: plRenderResources.h plShader.h plUniform.h
+objects/plEditor.o: plVertexFragmentShader.h plFBO.h plPlan.h plCSV.h
+objects/plEditor.o: plGraft.h plArthroViewable.h plEditable.h plDraw.h
+objects/plEditor.o: plPlug.h plMeshSpecific.h plMesh.h plMath.h plPolygon.h
+objects/plEditor.o: plBoneAndCartilage.h plModel.h plOctreeMesh.h plOctree.h
+objects/plEditor.o: plTransform.h plRenderer.h plPlanTechnique.h
+objects/plEditor.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
+objects/plEditor.o: plOutlineTechnique.h plArthroCamTechnique.h
+objects/plEditor.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plEditor.o: plTransparentRenderable.h plUtility.h plSphere.h
+objects/plEditor.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
+objects/plEditor.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/plEditor.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plIGuide.h
 objects/plFBO.o: plCommon.h plVector3.h plString.h plTexture2D.h
 objects/plFBO.o: plOpenGLInfo.h
 objects/plGraft.o: plCommon.h plRenderable.h plVector3.h plString.h
@@ -406,8 +435,8 @@ objects/plGraft.o: plOctreeMesh.h plOctree.h plTransform.h plRenderer.h
 objects/plGraft.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plGraft.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plGraft.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraft.o: plTransparentRenderable.h plUtility.h plSphere.h
-objects/plGraft.o: plGraftCap.h plCone.h plCylinder.h
+objects/plGraft.o: plMinimalTechnique.h plTransparentRenderable.h plUtility.h
+objects/plGraft.o: plSphere.h plGraftCap.h plCone.h plCylinder.h
 objects/plGraftCap.o: plCommon.h plRenderable.h plVector3.h plString.h
 objects/plGraftCap.o: plRenderComponent.h plVector4.h plMatrix44.h
 objects/plGraftCap.o: plTriangle.h plTexture2D.h plVAO.h plVBO.h
@@ -420,7 +449,7 @@ objects/plGraftCap.o: plOctreeMesh.h plMesh.h plMath.h plOctree.h plDraw.h
 objects/plGraftCap.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plGraftCap.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plGraftCap.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraftCap.o: plArthroViewable.h
+objects/plGraftCap.o: plMinimalTechnique.h plArthroViewable.h
 objects/plGraftEditor.o: plCommon.h plVector3.h plString.h plTransform.h
 objects/plGraftEditor.o: plMatrix44.h plVector4.h plTriangle.h plPlan.h
 objects/plGraftEditor.o: plCSV.h plRenderable.h plRenderComponent.h
@@ -436,11 +465,12 @@ objects/plGraftEditor.o: plOctreeMesh.h plOctree.h plRenderer.h
 objects/plGraftEditor.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plGraftEditor.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plGraftEditor.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraftEditor.o: plTransparentRenderable.h plUtility.h plSphere.h
-objects/plGraftEditor.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
-objects/plGraftEditor.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
-objects/plGraftEditor.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h
-objects/plGraftEditor.o: plIGuide.h
+objects/plGraftEditor.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/plGraftEditor.o: plUtility.h plSphere.h plGraftCap.h plCone.h
+objects/plGraftEditor.o: plCylinder.h plDefectSite.h plSpline.h plBoundary.h
+objects/plGraftEditor.o: plColourMap.h plDonorSite.h plIGuideSite.h
+objects/plGraftEditor.o: plMeshCutter.h plMeshExtruder.h plIGuide.h plDisk.h
+objects/plGraftEditor.o: plEditor.h
 objects/plIGuide.o: plCommon.h plMeshSpecific.h plMesh.h plVector3.h
 objects/plIGuide.o: plString.h plTriangle.h plMath.h plPolygon.h plMatrix44.h
 objects/plIGuide.o: plVector4.h plBoundary.h plRenderable.h
@@ -452,12 +482,12 @@ objects/plIGuide.o: plUniform.h plVertexFragmentShader.h plFBO.h plEditable.h
 objects/plIGuide.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plIGuide.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plIGuide.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plIGuide.o: plTransparencyTechnique.h plGraft.h plArthroViewable.h
-objects/plIGuide.o: plPlug.h plBoneAndCartilage.h plModel.h plOctreeMesh.h
-objects/plIGuide.o: plOctree.h plTransform.h plTransparentRenderable.h
-objects/plIGuide.o: plUtility.h plGraftCap.h plCone.h plCylinder.h
-objects/plIGuide.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plSpline.h
-objects/plIGuide.o: plColourMap.h
+objects/plIGuide.o: plTransparencyTechnique.h plMinimalTechnique.h plGraft.h
+objects/plIGuide.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
+objects/plIGuide.o: plModel.h plOctreeMesh.h plOctree.h plTransform.h
+objects/plIGuide.o: plTransparentRenderable.h plUtility.h plGraftCap.h
+objects/plIGuide.o: plCone.h plCylinder.h plIGuideSite.h plMeshCutter.h
+objects/plIGuide.o: plMeshExtruder.h plSpline.h plColourMap.h
 objects/plIGuideSite.o: plCommon.h plVector3.h plString.h plMeshSpecific.h
 objects/plIGuideSite.o: plMesh.h plTriangle.h plMath.h plPolygon.h
 objects/plIGuideSite.o: plMatrix44.h plVector4.h plBoundary.h plRenderable.h
@@ -470,7 +500,7 @@ objects/plIGuideSite.o: plEditable.h plDraw.h plSphere.h plRenderer.h
 objects/plIGuideSite.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plIGuideSite.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plIGuideSite.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plIGuideSite.o: plMeshCutter.h plMeshExtruder.h
+objects/plIGuideSite.o: plMinimalTechnique.h plMeshCutter.h plMeshExtruder.h
 objects/plLaserLine.o: plCommon.h plVector3.h plString.h plVector4.h
 objects/plLaserLine.o: plRenderable.h plRenderComponent.h plMatrix44.h
 objects/plLaserLine.o: plTriangle.h plTexture2D.h plVAO.h plVBO.h
@@ -481,7 +511,8 @@ objects/plLaserLine.o: plUniform.h plVertexFragmentShader.h plFBO.h
 objects/plLaserLine.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plLaserLine.o: plWindow.h plScreenQuadTechnique.h
 objects/plLaserLine.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plLaserLine.o: plTransparencyTechnique.h plCylinder.h
+objects/plLaserLine.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plLaserLine.o: plCylinder.h
 objects/plMath.o: plCommon.h plVector3.h plString.h plPolygon.h plTriangle.h
 objects/plMath.o: plMatrix44.h plVector4.h
 objects/plMatrix44.o: plCommon.h plVector3.h plString.h plVector4.h
@@ -506,7 +537,7 @@ objects/plMeshCutter.o: plMeshSpecific.h plMesh.h plDraw.h plSphere.h
 objects/plMeshCutter.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plMeshCutter.o: plWindow.h plScreenQuadTechnique.h
 objects/plMeshCutter.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plMeshCutter.o: plTransparencyTechnique.h
+objects/plMeshCutter.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plMeshExtruder.o: plTriangle.h plCommon.h plString.h plVector3.h
 objects/plMeshExtruder.o: plMatrix44.h plVector4.h
 objects/plMeshIntersector.o: plMeshAlgorithm.h plCommon.h plVector3.h
@@ -536,7 +567,24 @@ objects/plModel.o: plVertexFragmentShader.h plFBO.h plTransform.h plDraw.h
 objects/plModel.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plModel.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plModel.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plModel.o: plTransparentRenderable.h plArthroViewable.h
+objects/plModel.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/plModel.o: plArthroViewable.h
+objects/plModelSpecific.o: plCommon.h plVector3.h plString.h
+objects/plModelSpecific.o: plBoneAndCartilage.h plModel.h plOctreeMesh.h
+objects/plModelSpecific.o: plMesh.h plTriangle.h plMath.h plPolygon.h
+objects/plModelSpecific.o: plMatrix44.h plVector4.h plOctree.h plRenderable.h
+objects/plModelSpecific.o: plRenderComponent.h plTexture2D.h plVAO.h plVBO.h
+objects/plModelSpecific.o: plVertexSpecBuffer.h plEABO.h plOpenGLInfo.h
+objects/plModelSpecific.o: plRenderingPipeline.h plMatrixStack.h
+objects/plModelSpecific.o: plProjection.h plCamera.h plPicking.h
+objects/plModelSpecific.o: plRenderResources.h plShader.h plUniform.h
+objects/plModelSpecific.o: plVertexFragmentShader.h plFBO.h plTransform.h
+objects/plModelSpecific.o: plDraw.h plRenderer.h plPlanTechnique.h
+objects/plModelSpecific.o: plRenderTechnique.h plWindow.h
+objects/plModelSpecific.o: plScreenQuadTechnique.h plOutlineTechnique.h
+objects/plModelSpecific.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plModelSpecific.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/plModelSpecific.o: plArthroViewable.h
 objects/plOctree.o: plCommon.h plVector3.h plString.h plMath.h plPolygon.h
 objects/plOctree.o: plTriangle.h plMatrix44.h plVector4.h plRenderable.h
 objects/plOctree.o: plRenderComponent.h plTexture2D.h plVAO.h plVBO.h
@@ -547,7 +595,7 @@ objects/plOctree.o: plUniform.h plVertexFragmentShader.h plFBO.h
 objects/plOctree.o: plTransform.h plDraw.h plRenderer.h plPlanTechnique.h
 objects/plOctree.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plOctree.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plOctree.o: plTransparencyTechnique.h
+objects/plOctree.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plOctreeMesh.o: plCommon.h plMesh.h plVector3.h plString.h
 objects/plOctreeMesh.o: plTriangle.h plMath.h plPolygon.h plMatrix44.h
 objects/plOctreeMesh.o: plVector4.h plOctree.h plRenderable.h
@@ -560,6 +608,7 @@ objects/plOctreeMesh.o: plTransform.h plDraw.h plRenderer.h plPlanTechnique.h
 objects/plOctreeMesh.o: plRenderTechnique.h plWindow.h
 objects/plOctreeMesh.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plOctreeMesh.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plOctreeMesh.o: plMinimalTechnique.h
 objects/plOpenGLInfo.o: plCommon.h
 objects/plOutlineTechnique.o: plCommon.h plRenderTechnique.h plRenderable.h
 objects/plOutlineTechnique.o: plVector3.h plString.h plRenderComponent.h
@@ -586,11 +635,11 @@ objects/plPlan.o: plBoneAndCartilage.h plModel.h plOctreeMesh.h plOctree.h
 objects/plPlan.o: plTransform.h plRenderer.h plPlanTechnique.h
 objects/plPlan.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plPlan.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plPlan.o: plTransparencyTechnique.h plTransparentRenderable.h
-objects/plPlan.o: plUtility.h plSphere.h plGraftCap.h plCone.h plCylinder.h
-objects/plPlan.o: plDefectSite.h plSpline.h plBoundary.h plColourMap.h
-objects/plPlan.o: plDonorSite.h plIGuideSite.h plMeshCutter.h
-objects/plPlan.o: plMeshExtruder.h plIGuide.h
+objects/plPlan.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plPlan.o: plTransparentRenderable.h plUtility.h plSphere.h
+objects/plPlan.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
+objects/plPlan.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/plPlan.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plIGuide.h
 objects/plPlanTechnique.o: plCommon.h plRenderTechnique.h plRenderable.h
 objects/plPlanTechnique.o: plVector3.h plString.h plRenderComponent.h
 objects/plPlanTechnique.o: plVector4.h plMatrix44.h plTriangle.h
@@ -614,8 +663,8 @@ objects/plPlannerShader.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerShader.o: plRenderTechnique.h plWindow.h
 objects/plPlannerShader.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerShader.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerShader.o: plMeshCutter.h plSSBO.h plBufferObject.h
-objects/plPlannerShader.o: plPlannerStructs.h plUtility.h
+objects/plPlannerShader.o: plMinimalTechnique.h plMeshCutter.h plSSBO.h
+objects/plPlannerShader.o: plBufferObject.h plPlannerStructs.h plUtility.h
 objects/plPlannerStage0.o: plCommon.h plUtility.h plVector4.h plString.h
 objects/plPlannerStage0.o: plVector3.h plPlannerStructs.h plSSBO.h
 objects/plPlannerStage0.o: plBufferObject.h plPlannerShader.h plShader.h
@@ -631,14 +680,15 @@ objects/plPlannerStage0.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerStage0.o: plRenderTechnique.h plWindow.h
 objects/plPlannerStage0.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerStage0.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerStage0.o: plMeshCutter.h plPlanningBufferData.h
-objects/plPlannerStage0.o: plDefectSite.h plSpline.h plColourMap.h
-objects/plPlannerStage0.o: plOctreeMesh.h plOctree.h plTransform.h
-objects/plPlannerStage0.o: plDonorSite.h plPlan.h plCSV.h plGraft.h
-objects/plPlannerStage0.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
-objects/plPlannerStage0.o: plModel.h plTransparentRenderable.h plGraftCap.h
-objects/plPlannerStage0.o: plCone.h plCylinder.h plIGuideSite.h
-objects/plPlannerStage0.o: plMeshExtruder.h plIGuide.h
+objects/plPlannerStage0.o: plMinimalTechnique.h plMeshCutter.h
+objects/plPlannerStage0.o: plPlanningBufferData.h plDefectSite.h plSpline.h
+objects/plPlannerStage0.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlannerStage0.o: plTransform.h plDonorSite.h plPlan.h plCSV.h
+objects/plPlannerStage0.o: plGraft.h plArthroViewable.h plPlug.h
+objects/plPlannerStage0.o: plBoneAndCartilage.h plModel.h
+objects/plPlannerStage0.o: plTransparentRenderable.h plGraftCap.h plCone.h
+objects/plPlannerStage0.o: plCylinder.h plIGuideSite.h plMeshExtruder.h
+objects/plPlannerStage0.o: plIGuide.h
 objects/plPlannerStage1.o: plCommon.h plVector4.h plString.h plVector3.h
 objects/plPlannerStage1.o: plPlannerStructs.h plUtility.h plSSBO.h
 objects/plPlannerStage1.o: plBufferObject.h plPlannerStage0.h
@@ -655,14 +705,15 @@ objects/plPlannerStage1.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerStage1.o: plRenderTechnique.h plWindow.h
 objects/plPlannerStage1.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerStage1.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerStage1.o: plMeshCutter.h plPlanningBufferData.h
-objects/plPlannerStage1.o: plDefectSite.h plSpline.h plColourMap.h
-objects/plPlannerStage1.o: plOctreeMesh.h plOctree.h plTransform.h
-objects/plPlannerStage1.o: plDonorSite.h plPlan.h plCSV.h plGraft.h
-objects/plPlannerStage1.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
-objects/plPlannerStage1.o: plModel.h plTransparentRenderable.h plGraftCap.h
-objects/plPlannerStage1.o: plCone.h plCylinder.h plIGuideSite.h
-objects/plPlannerStage1.o: plMeshExtruder.h plIGuide.h
+objects/plPlannerStage1.o: plMinimalTechnique.h plMeshCutter.h
+objects/plPlannerStage1.o: plPlanningBufferData.h plDefectSite.h plSpline.h
+objects/plPlannerStage1.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlannerStage1.o: plTransform.h plDonorSite.h plPlan.h plCSV.h
+objects/plPlannerStage1.o: plGraft.h plArthroViewable.h plPlug.h
+objects/plPlannerStage1.o: plBoneAndCartilage.h plModel.h
+objects/plPlannerStage1.o: plTransparentRenderable.h plGraftCap.h plCone.h
+objects/plPlannerStage1.o: plCylinder.h plIGuideSite.h plMeshExtruder.h
+objects/plPlannerStage1.o: plIGuide.h
 objects/plPlannerStage2.o: plCommon.h plVector4.h plString.h plVector3.h
 objects/plPlannerStage2.o: plPlannerStructs.h plUtility.h plSSBO.h
 objects/plPlannerStage2.o: plBufferObject.h plPlannerStage1.h
@@ -679,14 +730,15 @@ objects/plPlannerStage2.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerStage2.o: plRenderTechnique.h plWindow.h
 objects/plPlannerStage2.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerStage2.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerStage2.o: plMeshCutter.h plPlanningBufferData.h
-objects/plPlannerStage2.o: plDefectSite.h plSpline.h plColourMap.h
-objects/plPlannerStage2.o: plOctreeMesh.h plOctree.h plTransform.h
-objects/plPlannerStage2.o: plDonorSite.h plPlan.h plCSV.h plGraft.h
-objects/plPlannerStage2.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
-objects/plPlannerStage2.o: plModel.h plTransparentRenderable.h plGraftCap.h
-objects/plPlannerStage2.o: plCone.h plCylinder.h plIGuideSite.h
-objects/plPlannerStage2.o: plMeshExtruder.h plIGuide.h
+objects/plPlannerStage2.o: plMinimalTechnique.h plMeshCutter.h
+objects/plPlannerStage2.o: plPlanningBufferData.h plDefectSite.h plSpline.h
+objects/plPlannerStage2.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlannerStage2.o: plTransform.h plDonorSite.h plPlan.h plCSV.h
+objects/plPlannerStage2.o: plGraft.h plArthroViewable.h plPlug.h
+objects/plPlannerStage2.o: plBoneAndCartilage.h plModel.h
+objects/plPlannerStage2.o: plTransparentRenderable.h plGraftCap.h plCone.h
+objects/plPlannerStage2.o: plCylinder.h plIGuideSite.h plMeshExtruder.h
+objects/plPlannerStage2.o: plIGuide.h
 objects/plPlannerStage3.o: plCommon.h plVector4.h plString.h plVector3.h
 objects/plPlannerStage3.o: plPlannerStructs.h plUtility.h plSSBO.h
 objects/plPlannerStage3.o: plBufferObject.h plPlannerStage0.h
@@ -703,15 +755,15 @@ objects/plPlannerStage3.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerStage3.o: plRenderTechnique.h plWindow.h
 objects/plPlannerStage3.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerStage3.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerStage3.o: plMeshCutter.h plPlanningBufferData.h
-objects/plPlannerStage3.o: plDefectSite.h plSpline.h plColourMap.h
-objects/plPlannerStage3.o: plOctreeMesh.h plOctree.h plTransform.h
-objects/plPlannerStage3.o: plDonorSite.h plPlan.h plCSV.h plGraft.h
-objects/plPlannerStage3.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
-objects/plPlannerStage3.o: plModel.h plTransparentRenderable.h plGraftCap.h
-objects/plPlannerStage3.o: plCone.h plCylinder.h plIGuideSite.h
-objects/plPlannerStage3.o: plMeshExtruder.h plIGuide.h plPlannerStage2.h
-objects/plPlannerStage3.o: plPlannerStage1.h
+objects/plPlannerStage3.o: plMinimalTechnique.h plMeshCutter.h
+objects/plPlannerStage3.o: plPlanningBufferData.h plDefectSite.h plSpline.h
+objects/plPlannerStage3.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlannerStage3.o: plTransform.h plDonorSite.h plPlan.h plCSV.h
+objects/plPlannerStage3.o: plGraft.h plArthroViewable.h plPlug.h
+objects/plPlannerStage3.o: plBoneAndCartilage.h plModel.h
+objects/plPlannerStage3.o: plTransparentRenderable.h plGraftCap.h plCone.h
+objects/plPlannerStage3.o: plCylinder.h plIGuideSite.h plMeshExtruder.h
+objects/plPlannerStage3.o: plIGuide.h plPlannerStage2.h plPlannerStage1.h
 objects/plPlannerStructs.o: plCommon.h plUtility.h plVector4.h plString.h
 objects/plPlannerStructs.o: plVector3.h plSSBO.h plBufferObject.h
 objects/plPlanningBufferData.o: plCommon.h plVector4.h plString.h plVector3.h
@@ -729,10 +781,11 @@ objects/plPlanningBufferData.o: plRenderer.h plPlanTechnique.h
 objects/plPlanningBufferData.o: plRenderTechnique.h plWindow.h
 objects/plPlanningBufferData.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlanningBufferData.o: plArthroCamTechnique.h
-objects/plPlanningBufferData.o: plTransparencyTechnique.h plMeshCutter.h
-objects/plPlanningBufferData.o: plSSBO.h plBufferObject.h plDefectSite.h
-objects/plPlanningBufferData.o: plSpline.h plColourMap.h plOctreeMesh.h
-objects/plPlanningBufferData.o: plOctree.h plTransform.h plDonorSite.h
+objects/plPlanningBufferData.o: plTransparencyTechnique.h
+objects/plPlanningBufferData.o: plMinimalTechnique.h plMeshCutter.h plSSBO.h
+objects/plPlanningBufferData.o: plBufferObject.h plDefectSite.h plSpline.h
+objects/plPlanningBufferData.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlanningBufferData.o: plTransform.h plDonorSite.h
 objects/plPlanningSite.o: plCommon.h plVector4.h plString.h plVector3.h
 objects/plPlanningSite.o: plTriangle.h plBoundary.h plMath.h plPolygon.h
 objects/plPlanningSite.o: plMatrix44.h plRenderable.h plRenderComponent.h
@@ -746,7 +799,8 @@ objects/plPlanningSite.o: plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlanningSite.o: plRenderTechnique.h plWindow.h
 objects/plPlanningSite.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlanningSite.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlanningSite.o: plMeshCutter.h plSSBO.h plBufferObject.h
+objects/plPlanningSite.o: plMinimalTechnique.h plMeshCutter.h plSSBO.h
+objects/plPlanningSite.o: plBufferObject.h
 objects/plPlug.o: plCommon.h plMeshSpecific.h plMesh.h plVector3.h plString.h
 objects/plPlug.o: plTriangle.h plMath.h plPolygon.h plMatrix44.h plVector4.h
 objects/plPlug.o: plBoneAndCartilage.h plModel.h plOctreeMesh.h plOctree.h
@@ -758,7 +812,8 @@ objects/plPlug.o: plUniform.h plVertexFragmentShader.h plFBO.h plTransform.h
 objects/plPlug.o: plDraw.h plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plPlug.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlug.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlug.o: plTransparentRenderable.h plArthroViewable.h
+objects/plPlug.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/plPlug.o: plArthroViewable.h
 objects/plPolygon.o: plCommon.h plVector3.h plString.h
 objects/plProjection.o: plCommon.h plMatrix44.h plVector3.h plString.h
 objects/plProjection.o: plVector4.h plTriangle.h
@@ -797,7 +852,7 @@ objects/plRenderer.o: plFBO.h plRenderable.h plRenderComponent.h plVAO.h
 objects/plRenderer.o: plVBO.h plVertexSpecBuffer.h plEABO.h plPlanTechnique.h
 objects/plRenderer.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plRenderer.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plRenderer.o: plTransparencyTechnique.h
+objects/plRenderer.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plRenderingPipeline.o: plCommon.h plVector4.h plString.h plVector3.h
 objects/plRenderingPipeline.o: plMatrixStack.h plMatrix44.h plTriangle.h
 objects/plRenderingPipeline.o: plProjection.h plCamera.h plPicking.h
@@ -850,7 +905,8 @@ objects/plSpline.o: plMeshSpecific.h plMesh.h plDraw.h plSphere.h
 objects/plSpline.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plSpline.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plSpline.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plSpline.o: plColourMap.h plOctreeMesh.h plOctree.h plTransform.h
+objects/plSpline.o: plMinimalTechnique.h plColourMap.h plOctreeMesh.h
+objects/plSpline.o: plOctree.h plTransform.h
 objects/plString.o: plCommon.h
 objects/plTexture2D.o: plCommon.h plVector3.h plString.h
 objects/plTexture3D.o: plCommon.h plVector3.h plString.h
@@ -866,6 +922,7 @@ objects/plTrackedObject.o: plCylinder.h plCone.h plRenderer.h
 objects/plTrackedObject.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plTrackedObject.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plTrackedObject.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plTrackedObject.o: plMinimalTechnique.h
 objects/plTransform.o: plCommon.h plString.h plVector3.h plMatrix44.h
 objects/plTransform.o: plVector4.h plTriangle.h
 objects/plTransparencyTechnique.o: plCommon.h plRenderTechnique.h
@@ -927,18 +984,19 @@ objects/PlannerWindow.o: plOctree.h plTransform.h plRenderer.h
 objects/PlannerWindow.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/PlannerWindow.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/PlannerWindow.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/PlannerWindow.o: plTransparentRenderable.h plUtility.h plSphere.h
-objects/PlannerWindow.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
-objects/PlannerWindow.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
-objects/PlannerWindow.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h
-objects/PlannerWindow.o: plIGuide.h plPlanningBufferData.h plPlanningSite.h
-objects/PlannerWindow.o: plSSBO.h plBufferObject.h plPlannerStage0.h
+objects/PlannerWindow.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/PlannerWindow.o: plUtility.h plSphere.h plGraftCap.h plCone.h
+objects/PlannerWindow.o: plCylinder.h plDefectSite.h plSpline.h plBoundary.h
+objects/PlannerWindow.o: plColourMap.h plDonorSite.h plIGuideSite.h
+objects/PlannerWindow.o: plMeshCutter.h plMeshExtruder.h plIGuide.h
+objects/PlannerWindow.o: plPlanningBufferData.h plPlanningSite.h plSSBO.h
+objects/PlannerWindow.o: plBufferObject.h plPlannerStage0.h
 objects/PlannerWindow.o: plPlannerStructs.h plPlannerShader.h
 objects/PlannerWindow.o: plPlannerStage1.h plPlannerStage2.h
-objects/PlannerWindow.o: plPlannerStage3.h plBoundaryEditor.h plDisk.h
-objects/PlannerWindow.o: plChessBoard.h plDRBTransform.h plGraftEditor.h
-objects/PlannerWindow.o: plScan.h plScanPoint.h plScanVolume.h plTexture3D.h
-objects/PlannerWindow.o: plTrackedObject.h
+objects/PlannerWindow.o: plPlannerStage3.h plBoundaryEditor.h plEditor.h
+objects/PlannerWindow.o: plDisk.h plChessBoard.h plDRBTransform.h
+objects/PlannerWindow.o: plGraftEditor.h plScan.h plScanPoint.h
+objects/PlannerWindow.o: plScanVolume.h plTexture3D.h plTrackedObject.h
 objects/Window.o: Window.h pl.h plCommon.h plAutomaticPlanner.h plPlan.h
 objects/Window.o: plString.h plVector3.h plCSV.h plRenderable.h
 objects/Window.o: plRenderComponent.h plVector4.h plMatrix44.h plTriangle.h
@@ -952,17 +1010,18 @@ objects/Window.o: plBoneAndCartilage.h plModel.h plOctreeMesh.h plOctree.h
 objects/Window.o: plTransform.h plRenderer.h plPlanTechnique.h
 objects/Window.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/Window.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/Window.o: plTransparencyTechnique.h plTransparentRenderable.h
-objects/Window.o: plUtility.h plSphere.h plGraftCap.h plCone.h plCylinder.h
-objects/Window.o: plDefectSite.h plSpline.h plBoundary.h plColourMap.h
-objects/Window.o: plDonorSite.h plIGuideSite.h plMeshCutter.h
-objects/Window.o: plMeshExtruder.h plIGuide.h plPlanningBufferData.h
-objects/Window.o: plPlanningSite.h plSSBO.h plBufferObject.h
-objects/Window.o: plPlannerStage0.h plPlannerStructs.h plPlannerShader.h
-objects/Window.o: plPlannerStage1.h plPlannerStage2.h plPlannerStage3.h
-objects/Window.o: plBoundaryEditor.h plDisk.h plChessBoard.h plDRBTransform.h
-objects/Window.o: plGraftEditor.h plScan.h plScanPoint.h plScanVolume.h
-objects/Window.o: plTexture3D.h plTrackedObject.h
+objects/Window.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/Window.o: plTransparentRenderable.h plUtility.h plSphere.h
+objects/Window.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
+objects/Window.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/Window.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plIGuide.h
+objects/Window.o: plPlanningBufferData.h plPlanningSite.h plSSBO.h
+objects/Window.o: plBufferObject.h plPlannerStage0.h plPlannerStructs.h
+objects/Window.o: plPlannerShader.h plPlannerStage1.h plPlannerStage2.h
+objects/Window.o: plPlannerStage3.h plBoundaryEditor.h plEditor.h plDisk.h
+objects/Window.o: plChessBoard.h plDRBTransform.h plGraftEditor.h plScan.h
+objects/Window.o: plScanPoint.h plScanVolume.h plTexture3D.h
+objects/Window.o: plTrackedObject.h
 objects/main.o: PlannerWindow.h Window.h pl.h plCommon.h plAutomaticPlanner.h
 objects/main.o: plPlan.h plString.h plVector3.h plCSV.h plRenderable.h
 objects/main.o: plRenderComponent.h plVector4.h plMatrix44.h plTriangle.h
@@ -976,16 +1035,17 @@ objects/main.o: plBoneAndCartilage.h plModel.h plOctreeMesh.h plOctree.h
 objects/main.o: plTransform.h plRenderer.h plPlanTechnique.h
 objects/main.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/main.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/main.o: plTransparencyTechnique.h plTransparentRenderable.h
-objects/main.o: plUtility.h plSphere.h plGraftCap.h plCone.h plCylinder.h
-objects/main.o: plDefectSite.h plSpline.h plBoundary.h plColourMap.h
-objects/main.o: plDonorSite.h plIGuideSite.h plMeshCutter.h plMeshExtruder.h
-objects/main.o: plIGuide.h plPlanningBufferData.h plPlanningSite.h plSSBO.h
-objects/main.o: plBufferObject.h plPlannerStage0.h plPlannerStructs.h
-objects/main.o: plPlannerShader.h plPlannerStage1.h plPlannerStage2.h
-objects/main.o: plPlannerStage3.h plBoundaryEditor.h plDisk.h plChessBoard.h
-objects/main.o: plDRBTransform.h plGraftEditor.h plScan.h plScanPoint.h
-objects/main.o: plScanVolume.h plTexture3D.h plTrackedObject.h
+objects/main.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/main.o: plTransparentRenderable.h plUtility.h plSphere.h plGraftCap.h
+objects/main.o: plCone.h plCylinder.h plDefectSite.h plSpline.h plBoundary.h
+objects/main.o: plColourMap.h plDonorSite.h plIGuideSite.h plMeshCutter.h
+objects/main.o: plMeshExtruder.h plIGuide.h plPlanningBufferData.h
+objects/main.o: plPlanningSite.h plSSBO.h plBufferObject.h plPlannerStage0.h
+objects/main.o: plPlannerStructs.h plPlannerShader.h plPlannerStage1.h
+objects/main.o: plPlannerStage2.h plPlannerStage3.h plBoundaryEditor.h
+objects/main.o: plEditor.h plDisk.h plChessBoard.h plDRBTransform.h
+objects/main.o: plGraftEditor.h plScan.h plScanPoint.h plScanVolume.h
+objects/main.o: plTexture3D.h plTrackedObject.h
 objects/pl.o: pl.h plCommon.h plAutomaticPlanner.h plPlan.h plString.h
 objects/pl.o: plVector3.h plCSV.h plRenderable.h plRenderComponent.h
 objects/pl.o: plVector4.h plMatrix44.h plTriangle.h plTexture2D.h plVAO.h
@@ -999,13 +1059,14 @@ objects/pl.o: plOctreeMesh.h plOctree.h plTransform.h plRenderer.h
 objects/pl.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/pl.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/pl.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/pl.o: plTransparentRenderable.h plUtility.h plSphere.h plGraftCap.h
-objects/pl.o: plCone.h plCylinder.h plDefectSite.h plSpline.h plBoundary.h
-objects/pl.o: plColourMap.h plDonorSite.h plIGuideSite.h plMeshCutter.h
-objects/pl.o: plMeshExtruder.h plIGuide.h plPlanningBufferData.h
-objects/pl.o: plPlanningSite.h plSSBO.h plBufferObject.h plPlannerStage0.h
-objects/pl.o: plPlannerStructs.h plPlannerShader.h plPlannerStage1.h
-objects/pl.o: plPlannerStage2.h plPlannerStage3.h plBoundaryEditor.h plDisk.h
+objects/pl.o: plMinimalTechnique.h plTransparentRenderable.h plUtility.h
+objects/pl.o: plSphere.h plGraftCap.h plCone.h plCylinder.h plDefectSite.h
+objects/pl.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/pl.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plIGuide.h
+objects/pl.o: plPlanningBufferData.h plPlanningSite.h plSSBO.h
+objects/pl.o: plBufferObject.h plPlannerStage0.h plPlannerStructs.h
+objects/pl.o: plPlannerShader.h plPlannerStage1.h plPlannerStage2.h
+objects/pl.o: plPlannerStage3.h plBoundaryEditor.h plEditor.h plDisk.h
 objects/pl.o: plChessBoard.h plDRBTransform.h plGraftEditor.h plScan.h
 objects/pl.o: plScanPoint.h plScanVolume.h plTexture3D.h plTrackedObject.h
 objects/plArthroCamTechnique.o: plArthroCamTechnique.h plCommon.h
@@ -1038,7 +1099,7 @@ objects/plArthroscope.o: plFBO.h plDRBTransform.h plCylinder.h plCone.h
 objects/plArthroscope.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plArthroscope.o: plWindow.h plScreenQuadTechnique.h
 objects/plArthroscope.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plArthroscope.o: plTransparencyTechnique.h
+objects/plArthroscope.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plAutomaticPlanner.o: plAutomaticPlanner.h plCommon.h plPlan.h
 objects/plAutomaticPlanner.o: plString.h plVector3.h plCSV.h plRenderable.h
 objects/plAutomaticPlanner.o: plRenderComponent.h plVector4.h plMatrix44.h
@@ -1056,7 +1117,7 @@ objects/plAutomaticPlanner.o: plRenderer.h plPlanTechnique.h
 objects/plAutomaticPlanner.o: plRenderTechnique.h plWindow.h
 objects/plAutomaticPlanner.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plAutomaticPlanner.o: plArthroCamTechnique.h
-objects/plAutomaticPlanner.o: plTransparencyTechnique.h
+objects/plAutomaticPlanner.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plAutomaticPlanner.o: plTransparentRenderable.h plUtility.h
 objects/plAutomaticPlanner.o: plSphere.h plGraftCap.h plCone.h plCylinder.h
 objects/plAutomaticPlanner.o: plDefectSite.h plSpline.h plBoundary.h
@@ -1081,7 +1142,7 @@ objects/plBoneAndCartilage.o: plTransform.h plDraw.h plRenderer.h
 objects/plBoneAndCartilage.o: plPlanTechnique.h plRenderTechnique.h
 objects/plBoneAndCartilage.o: plWindow.h plScreenQuadTechnique.h
 objects/plBoneAndCartilage.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plBoneAndCartilage.o: plTransparencyTechnique.h
+objects/plBoneAndCartilage.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plBoneAndCartilage.o: plTransparentRenderable.h plArthroViewable.h
 objects/plBoundary.o: plBoundary.h plCommon.h plMath.h plVector3.h plString.h
 objects/plBoundary.o: plPolygon.h plTriangle.h plMatrix44.h plVector4.h
@@ -1095,6 +1156,7 @@ objects/plBoundary.o: plMeshSpecific.h plMesh.h plDraw.h plSphere.h
 objects/plBoundary.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plBoundary.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plBoundary.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plBoundary.o: plMinimalTechnique.h
 objects/plBoundaryEditor.o: plBoundaryEditor.h plCommon.h plVector3.h
 objects/plBoundaryEditor.o: plString.h plPlan.h plCSV.h plRenderable.h
 objects/plBoundaryEditor.o: plRenderComponent.h plVector4.h plMatrix44.h
@@ -1111,11 +1173,12 @@ objects/plBoundaryEditor.o: plOctree.h plTransform.h plRenderer.h
 objects/plBoundaryEditor.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plBoundaryEditor.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plBoundaryEditor.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plBoundaryEditor.o: plTransparentRenderable.h plUtility.h plSphere.h
-objects/plBoundaryEditor.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
-objects/plBoundaryEditor.o: plSpline.h plBoundary.h plColourMap.h
-objects/plBoundaryEditor.o: plDonorSite.h plIGuideSite.h plMeshCutter.h
-objects/plBoundaryEditor.o: plMeshExtruder.h plIGuide.h plDisk.h
+objects/plBoundaryEditor.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/plBoundaryEditor.o: plUtility.h plSphere.h plGraftCap.h plCone.h
+objects/plBoundaryEditor.o: plCylinder.h plDefectSite.h plSpline.h
+objects/plBoundaryEditor.o: plBoundary.h plColourMap.h plDonorSite.h
+objects/plBoundaryEditor.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h
+objects/plBoundaryEditor.o: plIGuide.h plEditor.h plDisk.h
 objects/plBufferObject.o: plBufferObject.h plCommon.h
 objects/plCSV.o: plCSV.h plCommon.h plString.h
 objects/plCamera.o: plCamera.h plCommon.h plVector3.h plString.h plVector4.h
@@ -1132,6 +1195,7 @@ objects/plChessBoard.o: plTransform.h plDRBTransform.h plRenderer.h
 objects/plChessBoard.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plChessBoard.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plChessBoard.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plChessBoard.o: plMinimalTechnique.h
 objects/plColourMap.o: plColourMap.h plCommon.h plVector3.h plString.h
 objects/plCone.o: plCone.h plCommon.h plRenderable.h plVector3.h plString.h
 objects/plCone.o: plRenderComponent.h plVector4.h plMatrix44.h plTriangle.h
@@ -1176,7 +1240,8 @@ objects/plDefectSite.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plDefectSite.o: plRenderTechnique.h plWindow.h
 objects/plDefectSite.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plDefectSite.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plDefectSite.o: plColourMap.h plOctreeMesh.h plOctree.h plTransform.h
+objects/plDefectSite.o: plMinimalTechnique.h plColourMap.h plOctreeMesh.h
+objects/plDefectSite.o: plOctree.h plTransform.h
 objects/plDisk.o: plDisk.h plCommon.h plRenderable.h plVector3.h plString.h
 objects/plDisk.o: plRenderComponent.h plVector4.h plMatrix44.h plTriangle.h
 objects/plDisk.o: plTexture2D.h plVAO.h plVBO.h plVertexSpecBuffer.h plEABO.h
@@ -1195,7 +1260,7 @@ objects/plDonorSite.o: plVertexFragmentShader.h plFBO.h plEditable.h plDraw.h
 objects/plDonorSite.o: plSphere.h plRenderer.h plPlanTechnique.h
 objects/plDonorSite.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plDonorSite.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plDonorSite.o: plTransparencyTechnique.h
+objects/plDonorSite.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plDraw.o: plDraw.h plCommon.h plVAO.h plVBO.h plVertexSpecBuffer.h
 objects/plDraw.o: plVector4.h plString.h plVector3.h plEABO.h plOpenGLInfo.h
 objects/plDraw.o: plRenderingPipeline.h plMatrixStack.h plMatrix44.h
@@ -1210,6 +1275,24 @@ objects/plEditable.o: plEABO.h plOpenGLInfo.h plRenderingPipeline.h
 objects/plEditable.o: plMatrixStack.h plProjection.h plCamera.h plPicking.h
 objects/plEditable.o: plRenderResources.h plShader.h plUniform.h
 objects/plEditable.o: plVertexFragmentShader.h plFBO.h
+objects/plEditor.o: plEditor.h plCommon.h plRenderable.h plVector3.h
+objects/plEditor.o: plString.h plRenderComponent.h plVector4.h plMatrix44.h
+objects/plEditor.o: plTriangle.h plTexture2D.h plVAO.h plVBO.h
+objects/plEditor.o: plVertexSpecBuffer.h plEABO.h plOpenGLInfo.h
+objects/plEditor.o: plRenderingPipeline.h plMatrixStack.h plProjection.h
+objects/plEditor.o: plCamera.h plPicking.h plRenderResources.h plShader.h
+objects/plEditor.o: plUniform.h plVertexFragmentShader.h plFBO.h plPlan.h
+objects/plEditor.o: plCSV.h plGraft.h plArthroViewable.h plEditable.h
+objects/plEditor.o: plDraw.h plPlug.h plMeshSpecific.h plMesh.h plMath.h
+objects/plEditor.o: plPolygon.h plBoneAndCartilage.h plModel.h plOctreeMesh.h
+objects/plEditor.o: plOctree.h plTransform.h plRenderer.h plPlanTechnique.h
+objects/plEditor.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
+objects/plEditor.o: plOutlineTechnique.h plArthroCamTechnique.h
+objects/plEditor.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plEditor.o: plTransparentRenderable.h plUtility.h plSphere.h
+objects/plEditor.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
+objects/plEditor.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/plEditor.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plIGuide.h
 objects/plFBO.o: plFBO.h plCommon.h plVector3.h plString.h plTexture2D.h
 objects/plFBO.o: plOpenGLInfo.h
 objects/plGraft.o: plGraft.h plCommon.h plRenderable.h plVector3.h plString.h
@@ -1225,8 +1308,8 @@ objects/plGraft.o: plOctreeMesh.h plOctree.h plTransform.h plRenderer.h
 objects/plGraft.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plGraft.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plGraft.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraft.o: plTransparentRenderable.h plUtility.h plSphere.h
-objects/plGraft.o: plGraftCap.h plCone.h plCylinder.h
+objects/plGraft.o: plMinimalTechnique.h plTransparentRenderable.h plUtility.h
+objects/plGraft.o: plSphere.h plGraftCap.h plCone.h plCylinder.h
 objects/plGraftCap.o: plGraftCap.h plCommon.h plRenderable.h plVector3.h
 objects/plGraftCap.o: plString.h plRenderComponent.h plVector4.h plMatrix44.h
 objects/plGraftCap.o: plTriangle.h plTexture2D.h plVAO.h plVBO.h
@@ -1239,7 +1322,7 @@ objects/plGraftCap.o: plOctreeMesh.h plMesh.h plMath.h plOctree.h plDraw.h
 objects/plGraftCap.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plGraftCap.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plGraftCap.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraftCap.o: plArthroViewable.h
+objects/plGraftCap.o: plMinimalTechnique.h plArthroViewable.h
 objects/plGraftEditor.o: plGraftEditor.h plCommon.h plVector3.h plString.h
 objects/plGraftEditor.o: plTransform.h plMatrix44.h plVector4.h plTriangle.h
 objects/plGraftEditor.o: plPlan.h plCSV.h plRenderable.h plRenderComponent.h
@@ -1255,11 +1338,12 @@ objects/plGraftEditor.o: plOctreeMesh.h plOctree.h plRenderer.h
 objects/plGraftEditor.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plGraftEditor.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plGraftEditor.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraftEditor.o: plTransparentRenderable.h plUtility.h plSphere.h
-objects/plGraftEditor.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
-objects/plGraftEditor.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
-objects/plGraftEditor.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h
-objects/plGraftEditor.o: plIGuide.h
+objects/plGraftEditor.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/plGraftEditor.o: plUtility.h plSphere.h plGraftCap.h plCone.h
+objects/plGraftEditor.o: plCylinder.h plDefectSite.h plSpline.h plBoundary.h
+objects/plGraftEditor.o: plColourMap.h plDonorSite.h plIGuideSite.h
+objects/plGraftEditor.o: plMeshCutter.h plMeshExtruder.h plIGuide.h plDisk.h
+objects/plGraftEditor.o: plEditor.h
 objects/plIGuide.o: plIGuide.h plCommon.h plMeshSpecific.h plMesh.h
 objects/plIGuide.o: plVector3.h plString.h plTriangle.h plMath.h plPolygon.h
 objects/plIGuide.o: plMatrix44.h plVector4.h plBoundary.h plRenderable.h
@@ -1271,12 +1355,12 @@ objects/plIGuide.o: plUniform.h plVertexFragmentShader.h plFBO.h plEditable.h
 objects/plIGuide.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plIGuide.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plIGuide.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plIGuide.o: plTransparencyTechnique.h plGraft.h plArthroViewable.h
-objects/plIGuide.o: plPlug.h plBoneAndCartilage.h plModel.h plOctreeMesh.h
-objects/plIGuide.o: plOctree.h plTransform.h plTransparentRenderable.h
-objects/plIGuide.o: plUtility.h plGraftCap.h plCone.h plCylinder.h
-objects/plIGuide.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plSpline.h
-objects/plIGuide.o: plColourMap.h
+objects/plIGuide.o: plTransparencyTechnique.h plMinimalTechnique.h plGraft.h
+objects/plIGuide.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
+objects/plIGuide.o: plModel.h plOctreeMesh.h plOctree.h plTransform.h
+objects/plIGuide.o: plTransparentRenderable.h plUtility.h plGraftCap.h
+objects/plIGuide.o: plCone.h plCylinder.h plIGuideSite.h plMeshCutter.h
+objects/plIGuide.o: plMeshExtruder.h plSpline.h plColourMap.h
 objects/plIGuideSite.o: plIGuideSite.h plCommon.h plVector3.h plString.h
 objects/plIGuideSite.o: plMeshSpecific.h plMesh.h plTriangle.h plMath.h
 objects/plIGuideSite.o: plPolygon.h plMatrix44.h plVector4.h plBoundary.h
@@ -1290,7 +1374,7 @@ objects/plIGuideSite.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plIGuideSite.o: plRenderTechnique.h plWindow.h
 objects/plIGuideSite.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plIGuideSite.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plIGuideSite.o: plMeshCutter.h plMeshExtruder.h
+objects/plIGuideSite.o: plMinimalTechnique.h plMeshCutter.h plMeshExtruder.h
 objects/plLaserLine.o: plLaserLine.h plCommon.h plVector3.h plString.h
 objects/plLaserLine.o: plVector4.h plRenderable.h plRenderComponent.h
 objects/plLaserLine.o: plMatrix44.h plTriangle.h plTexture2D.h plVAO.h
@@ -1301,7 +1385,8 @@ objects/plLaserLine.o: plUniform.h plVertexFragmentShader.h plFBO.h
 objects/plLaserLine.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plLaserLine.o: plWindow.h plScreenQuadTechnique.h
 objects/plLaserLine.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plLaserLine.o: plTransparencyTechnique.h plCylinder.h
+objects/plLaserLine.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plLaserLine.o: plCylinder.h
 objects/plMath.o: plMath.h plCommon.h plVector3.h plString.h plPolygon.h
 objects/plMath.o: plTriangle.h plMatrix44.h plVector4.h
 objects/plMatrix44.o: plMatrix44.h plCommon.h plVector3.h plString.h
@@ -1329,6 +1414,7 @@ objects/plMeshCutter.o: plSphere.h plRenderer.h plPlanTechnique.h
 objects/plMeshCutter.o: plRenderTechnique.h plWindow.h
 objects/plMeshCutter.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plMeshCutter.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plMeshCutter.o: plMinimalTechnique.h
 objects/plMeshExtruder.o: plMeshExtruder.h plTriangle.h plCommon.h plString.h
 objects/plMeshExtruder.o: plVector3.h plMatrix44.h plVector4.h
 objects/plMeshIntersector.o: plMeshIntersector.h plMeshAlgorithm.h plCommon.h
@@ -1338,7 +1424,7 @@ objects/plMeshIntersector.o: plMatrix44.h plVector4.h
 objects/plMeshSpecific.o: plMeshSpecific.h plCommon.h plMesh.h plVector3.h
 objects/plMeshSpecific.o: plString.h plTriangle.h plMath.h plPolygon.h
 objects/plMeshSpecific.o: plMatrix44.h plVector4.h
-objects/plMinimalTechnique.o: plPlanTechnique.h plCommon.h
+objects/plMinimalTechnique.o: plMinimalTechnique.h plCommon.h
 objects/plMinimalTechnique.o: plRenderTechnique.h plRenderable.h plVector3.h
 objects/plMinimalTechnique.o: plString.h plRenderComponent.h plVector4.h
 objects/plMinimalTechnique.o: plMatrix44.h plTriangle.h plTexture2D.h plVAO.h
@@ -1359,7 +1445,24 @@ objects/plModel.o: plVertexFragmentShader.h plFBO.h plTransform.h plDraw.h
 objects/plModel.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plModel.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plModel.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plModel.o: plTransparentRenderable.h plArthroViewable.h
+objects/plModel.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/plModel.o: plArthroViewable.h
+objects/plModelSpecific.o: plModelSpecific.h plCommon.h plVector3.h
+objects/plModelSpecific.o: plString.h plBoneAndCartilage.h plModel.h
+objects/plModelSpecific.o: plOctreeMesh.h plMesh.h plTriangle.h plMath.h
+objects/plModelSpecific.o: plPolygon.h plMatrix44.h plVector4.h plOctree.h
+objects/plModelSpecific.o: plRenderable.h plRenderComponent.h plTexture2D.h
+objects/plModelSpecific.o: plVAO.h plVBO.h plVertexSpecBuffer.h plEABO.h
+objects/plModelSpecific.o: plOpenGLInfo.h plRenderingPipeline.h
+objects/plModelSpecific.o: plMatrixStack.h plProjection.h plCamera.h
+objects/plModelSpecific.o: plPicking.h plRenderResources.h plShader.h
+objects/plModelSpecific.o: plUniform.h plVertexFragmentShader.h plFBO.h
+objects/plModelSpecific.o: plTransform.h plDraw.h plRenderer.h
+objects/plModelSpecific.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
+objects/plModelSpecific.o: plScreenQuadTechnique.h plOutlineTechnique.h
+objects/plModelSpecific.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plModelSpecific.o: plMinimalTechnique.h plTransparentRenderable.h
+objects/plModelSpecific.o: plArthroViewable.h
 objects/plOctree.o: plOctree.h plCommon.h plVector3.h plString.h plMath.h
 objects/plOctree.o: plPolygon.h plTriangle.h plMatrix44.h plVector4.h
 objects/plOctree.o: plRenderable.h plRenderComponent.h plTexture2D.h plVAO.h
@@ -1370,7 +1473,7 @@ objects/plOctree.o: plUniform.h plVertexFragmentShader.h plFBO.h
 objects/plOctree.o: plTransform.h plDraw.h plRenderer.h plPlanTechnique.h
 objects/plOctree.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plOctree.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plOctree.o: plTransparencyTechnique.h
+objects/plOctree.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plOctreeMesh.o: plOctreeMesh.h plCommon.h plMesh.h plVector3.h
 objects/plOctreeMesh.o: plString.h plTriangle.h plMath.h plPolygon.h
 objects/plOctreeMesh.o: plMatrix44.h plVector4.h plOctree.h plRenderable.h
@@ -1383,6 +1486,7 @@ objects/plOctreeMesh.o: plTransform.h plDraw.h plRenderer.h plPlanTechnique.h
 objects/plOctreeMesh.o: plRenderTechnique.h plWindow.h
 objects/plOctreeMesh.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plOctreeMesh.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plOctreeMesh.o: plMinimalTechnique.h
 objects/plOpenGLInfo.o: plOpenGLInfo.h plCommon.h
 objects/plOutlineTechnique.o: plOutlineTechnique.h plCommon.h
 objects/plOutlineTechnique.o: plRenderTechnique.h plRenderable.h plVector3.h
@@ -1411,11 +1515,11 @@ objects/plPlan.o: plBoneAndCartilage.h plModel.h plOctreeMesh.h plOctree.h
 objects/plPlan.o: plTransform.h plRenderer.h plPlanTechnique.h
 objects/plPlan.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plPlan.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plPlan.o: plTransparencyTechnique.h plTransparentRenderable.h
-objects/plPlan.o: plUtility.h plSphere.h plGraftCap.h plCone.h plCylinder.h
-objects/plPlan.o: plDefectSite.h plSpline.h plBoundary.h plColourMap.h
-objects/plPlan.o: plDonorSite.h plIGuideSite.h plMeshCutter.h
-objects/plPlan.o: plMeshExtruder.h plIGuide.h
+objects/plPlan.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plPlan.o: plTransparentRenderable.h plUtility.h plSphere.h
+objects/plPlan.o: plGraftCap.h plCone.h plCylinder.h plDefectSite.h
+objects/plPlan.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/plPlan.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h plIGuide.h
 objects/plPlanTechnique.o: plPlanTechnique.h plCommon.h plRenderTechnique.h
 objects/plPlanTechnique.o: plRenderable.h plVector3.h plString.h
 objects/plPlanTechnique.o: plRenderComponent.h plVector4.h plMatrix44.h
@@ -1439,8 +1543,8 @@ objects/plPlannerShader.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerShader.o: plRenderTechnique.h plWindow.h
 objects/plPlannerShader.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerShader.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerShader.o: plMeshCutter.h plSSBO.h plBufferObject.h
-objects/plPlannerShader.o: plPlannerStructs.h plUtility.h
+objects/plPlannerShader.o: plMinimalTechnique.h plMeshCutter.h plSSBO.h
+objects/plPlannerShader.o: plBufferObject.h plPlannerStructs.h plUtility.h
 objects/plPlannerStage0.o: plPlannerStage0.h plCommon.h plUtility.h
 objects/plPlannerStage0.o: plVector4.h plString.h plVector3.h
 objects/plPlannerStage0.o: plPlannerStructs.h plSSBO.h plBufferObject.h
@@ -1457,14 +1561,15 @@ objects/plPlannerStage0.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerStage0.o: plRenderTechnique.h plWindow.h
 objects/plPlannerStage0.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerStage0.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerStage0.o: plMeshCutter.h plPlanningBufferData.h
-objects/plPlannerStage0.o: plDefectSite.h plSpline.h plColourMap.h
-objects/plPlannerStage0.o: plOctreeMesh.h plOctree.h plTransform.h
-objects/plPlannerStage0.o: plDonorSite.h plPlan.h plCSV.h plGraft.h
-objects/plPlannerStage0.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
-objects/plPlannerStage0.o: plModel.h plTransparentRenderable.h plGraftCap.h
-objects/plPlannerStage0.o: plCone.h plCylinder.h plIGuideSite.h
-objects/plPlannerStage0.o: plMeshExtruder.h plIGuide.h
+objects/plPlannerStage0.o: plMinimalTechnique.h plMeshCutter.h
+objects/plPlannerStage0.o: plPlanningBufferData.h plDefectSite.h plSpline.h
+objects/plPlannerStage0.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlannerStage0.o: plTransform.h plDonorSite.h plPlan.h plCSV.h
+objects/plPlannerStage0.o: plGraft.h plArthroViewable.h plPlug.h
+objects/plPlannerStage0.o: plBoneAndCartilage.h plModel.h
+objects/plPlannerStage0.o: plTransparentRenderable.h plGraftCap.h plCone.h
+objects/plPlannerStage0.o: plCylinder.h plIGuideSite.h plMeshExtruder.h
+objects/plPlannerStage0.o: plIGuide.h
 objects/plPlannerStage1.o: plPlannerStage1.h plCommon.h plVector4.h
 objects/plPlannerStage1.o: plString.h plVector3.h plPlannerStructs.h
 objects/plPlannerStage1.o: plUtility.h plSSBO.h plBufferObject.h
@@ -1481,14 +1586,15 @@ objects/plPlannerStage1.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerStage1.o: plRenderTechnique.h plWindow.h
 objects/plPlannerStage1.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerStage1.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerStage1.o: plMeshCutter.h plPlanningBufferData.h
-objects/plPlannerStage1.o: plDefectSite.h plSpline.h plColourMap.h
-objects/plPlannerStage1.o: plOctreeMesh.h plOctree.h plTransform.h
-objects/plPlannerStage1.o: plDonorSite.h plPlan.h plCSV.h plGraft.h
-objects/plPlannerStage1.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
-objects/plPlannerStage1.o: plModel.h plTransparentRenderable.h plGraftCap.h
-objects/plPlannerStage1.o: plCone.h plCylinder.h plIGuideSite.h
-objects/plPlannerStage1.o: plMeshExtruder.h plIGuide.h
+objects/plPlannerStage1.o: plMinimalTechnique.h plMeshCutter.h
+objects/plPlannerStage1.o: plPlanningBufferData.h plDefectSite.h plSpline.h
+objects/plPlannerStage1.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlannerStage1.o: plTransform.h plDonorSite.h plPlan.h plCSV.h
+objects/plPlannerStage1.o: plGraft.h plArthroViewable.h plPlug.h
+objects/plPlannerStage1.o: plBoneAndCartilage.h plModel.h
+objects/plPlannerStage1.o: plTransparentRenderable.h plGraftCap.h plCone.h
+objects/plPlannerStage1.o: plCylinder.h plIGuideSite.h plMeshExtruder.h
+objects/plPlannerStage1.o: plIGuide.h
 objects/plPlannerStage2.o: plPlannerStage2.h plCommon.h plVector4.h
 objects/plPlannerStage2.o: plString.h plVector3.h plPlannerStructs.h
 objects/plPlannerStage2.o: plUtility.h plSSBO.h plBufferObject.h
@@ -1506,14 +1612,15 @@ objects/plPlannerStage2.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerStage2.o: plRenderTechnique.h plWindow.h
 objects/plPlannerStage2.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerStage2.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerStage2.o: plMeshCutter.h plPlanningBufferData.h
-objects/plPlannerStage2.o: plDefectSite.h plSpline.h plColourMap.h
-objects/plPlannerStage2.o: plOctreeMesh.h plOctree.h plTransform.h
-objects/plPlannerStage2.o: plDonorSite.h plPlan.h plCSV.h plGraft.h
-objects/plPlannerStage2.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
-objects/plPlannerStage2.o: plModel.h plTransparentRenderable.h plGraftCap.h
-objects/plPlannerStage2.o: plCone.h plCylinder.h plIGuideSite.h
-objects/plPlannerStage2.o: plMeshExtruder.h plIGuide.h
+objects/plPlannerStage2.o: plMinimalTechnique.h plMeshCutter.h
+objects/plPlannerStage2.o: plPlanningBufferData.h plDefectSite.h plSpline.h
+objects/plPlannerStage2.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlannerStage2.o: plTransform.h plDonorSite.h plPlan.h plCSV.h
+objects/plPlannerStage2.o: plGraft.h plArthroViewable.h plPlug.h
+objects/plPlannerStage2.o: plBoneAndCartilage.h plModel.h
+objects/plPlannerStage2.o: plTransparentRenderable.h plGraftCap.h plCone.h
+objects/plPlannerStage2.o: plCylinder.h plIGuideSite.h plMeshExtruder.h
+objects/plPlannerStage2.o: plIGuide.h
 objects/plPlannerStage3.o: plPlannerStage3.h plCommon.h plVector4.h
 objects/plPlannerStage3.o: plString.h plVector3.h plPlannerStructs.h
 objects/plPlannerStage3.o: plUtility.h plSSBO.h plBufferObject.h
@@ -1530,15 +1637,15 @@ objects/plPlannerStage3.o: plDraw.h plSphere.h plRenderer.h plPlanTechnique.h
 objects/plPlannerStage3.o: plRenderTechnique.h plWindow.h
 objects/plPlannerStage3.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plPlannerStage3.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plPlannerStage3.o: plMeshCutter.h plPlanningBufferData.h
-objects/plPlannerStage3.o: plDefectSite.h plSpline.h plColourMap.h
-objects/plPlannerStage3.o: plOctreeMesh.h plOctree.h plTransform.h
-objects/plPlannerStage3.o: plDonorSite.h plPlan.h plCSV.h plGraft.h
-objects/plPlannerStage3.o: plArthroViewable.h plPlug.h plBoneAndCartilage.h
-objects/plPlannerStage3.o: plModel.h plTransparentRenderable.h plGraftCap.h
-objects/plPlannerStage3.o: plCone.h plCylinder.h plIGuideSite.h
-objects/plPlannerStage3.o: plMeshExtruder.h plIGuide.h plPlannerStage2.h
-objects/plPlannerStage3.o: plPlannerStage1.h
+objects/plPlannerStage3.o: plMinimalTechnique.h plMeshCutter.h
+objects/plPlannerStage3.o: plPlanningBufferData.h plDefectSite.h plSpline.h
+objects/plPlannerStage3.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlannerStage3.o: plTransform.h plDonorSite.h plPlan.h plCSV.h
+objects/plPlannerStage3.o: plGraft.h plArthroViewable.h plPlug.h
+objects/plPlannerStage3.o: plBoneAndCartilage.h plModel.h
+objects/plPlannerStage3.o: plTransparentRenderable.h plGraftCap.h plCone.h
+objects/plPlannerStage3.o: plCylinder.h plIGuideSite.h plMeshExtruder.h
+objects/plPlannerStage3.o: plIGuide.h plPlannerStage2.h plPlannerStage1.h
 objects/plPlannerStructs.o: plPlannerStructs.h plCommon.h plUtility.h
 objects/plPlannerStructs.o: plVector4.h plString.h plVector3.h plSSBO.h
 objects/plPlannerStructs.o: plBufferObject.h
@@ -1557,10 +1664,11 @@ objects/plPlanningBufferData.o: plDraw.h plSphere.h plRenderer.h
 objects/plPlanningBufferData.o: plPlanTechnique.h plRenderTechnique.h
 objects/plPlanningBufferData.o: plWindow.h plScreenQuadTechnique.h
 objects/plPlanningBufferData.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plPlanningBufferData.o: plTransparencyTechnique.h plMeshCutter.h
-objects/plPlanningBufferData.o: plSSBO.h plBufferObject.h plDefectSite.h
-objects/plPlanningBufferData.o: plSpline.h plColourMap.h plOctreeMesh.h
-objects/plPlanningBufferData.o: plOctree.h plTransform.h plDonorSite.h
+objects/plPlanningBufferData.o: plTransparencyTechnique.h
+objects/plPlanningBufferData.o: plMinimalTechnique.h plMeshCutter.h plSSBO.h
+objects/plPlanningBufferData.o: plBufferObject.h plDefectSite.h plSpline.h
+objects/plPlanningBufferData.o: plColourMap.h plOctreeMesh.h plOctree.h
+objects/plPlanningBufferData.o: plTransform.h plDonorSite.h
 objects/plPlanningSite.o: plPlanningSite.h plCommon.h plVector4.h plString.h
 objects/plPlanningSite.o: plVector3.h plTriangle.h plBoundary.h plMath.h
 objects/plPlanningSite.o: plPolygon.h plMatrix44.h plRenderable.h
@@ -1574,8 +1682,8 @@ objects/plPlanningSite.o: plMeshSpecific.h plMesh.h plDraw.h plSphere.h
 objects/plPlanningSite.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plPlanningSite.o: plWindow.h plScreenQuadTechnique.h
 objects/plPlanningSite.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plPlanningSite.o: plTransparencyTechnique.h plMeshCutter.h plSSBO.h
-objects/plPlanningSite.o: plBufferObject.h
+objects/plPlanningSite.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plPlanningSite.o: plMeshCutter.h plSSBO.h plBufferObject.h
 objects/plPlug.o: plPlug.h plCommon.h plMeshSpecific.h plMesh.h plVector3.h
 objects/plPlug.o: plString.h plTriangle.h plMath.h plPolygon.h plMatrix44.h
 objects/plPlug.o: plVector4.h plBoneAndCartilage.h plModel.h plOctreeMesh.h
@@ -1587,8 +1695,8 @@ objects/plPlug.o: plShader.h plUniform.h plVertexFragmentShader.h plFBO.h
 objects/plPlug.o: plTransform.h plDraw.h plRenderer.h plPlanTechnique.h
 objects/plPlug.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plPlug.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plPlug.o: plTransparencyTechnique.h plTransparentRenderable.h
-objects/plPlug.o: plArthroViewable.h
+objects/plPlug.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plPlug.o: plTransparentRenderable.h plArthroViewable.h
 objects/plPolygon.o: plPolygon.h plCommon.h plVector3.h plString.h
 objects/plProjection.o: plProjection.h plCommon.h plMatrix44.h plVector3.h
 objects/plProjection.o: plString.h plVector4.h plTriangle.h
@@ -1631,7 +1739,7 @@ objects/plRenderer.o: plRenderComponent.h plVAO.h plVBO.h
 objects/plRenderer.o: plVertexSpecBuffer.h plEABO.h plPlanTechnique.h
 objects/plRenderer.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
 objects/plRenderer.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plRenderer.o: plTransparencyTechnique.h
+objects/plRenderer.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plRenderingPipeline.o: plRenderingPipeline.h plCommon.h plVector4.h
 objects/plRenderingPipeline.o: plString.h plVector3.h plMatrixStack.h
 objects/plRenderingPipeline.o: plMatrix44.h plTriangle.h plProjection.h
@@ -1685,7 +1793,8 @@ objects/plSpline.o: plMeshSpecific.h plMesh.h plDraw.h plSphere.h
 objects/plSpline.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plSpline.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plSpline.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plSpline.o: plColourMap.h plOctreeMesh.h plOctree.h plTransform.h
+objects/plSpline.o: plMinimalTechnique.h plColourMap.h plOctreeMesh.h
+objects/plSpline.o: plOctree.h plTransform.h
 objects/plString.o: plString.h plCommon.h
 objects/plTexture2D.o: plTexture2D.h plCommon.h plVector3.h plString.h
 objects/plTexture3D.o: plTexture3D.h plCommon.h plVector3.h plString.h
@@ -1702,7 +1811,7 @@ objects/plTrackedObject.o: plDRBTransform.h plCylinder.h plCone.h
 objects/plTrackedObject.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
 objects/plTrackedObject.o: plWindow.h plScreenQuadTechnique.h
 objects/plTrackedObject.o: plOutlineTechnique.h plArthroCamTechnique.h
-objects/plTrackedObject.o: plTransparencyTechnique.h
+objects/plTrackedObject.o: plTransparencyTechnique.h plMinimalTechnique.h
 objects/plTransform.o: plTransform.h plCommon.h plString.h plVector3.h
 objects/plTransform.o: plMatrix44.h plVector4.h plTriangle.h
 objects/plTransparencyTechnique.o: plTransparencyTechnique.h plCommon.h

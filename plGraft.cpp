@@ -62,8 +62,8 @@ void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap, PLuint tech
             _cartilageCap.extractRenderComponents( renderMap, PL_OUTLINE_TECHNIQUE );
 
             PLint id = 101;
-            PLfloat SPACING = 5.0f;
-            PLfloat LINE_WIDTH = 0.04f;
+            PLfloat SPACING = 7.0f;
+            PLfloat LINE_WIDTH = 0.08f;
             PLfloat LINE_LENGTH = 10.0f;
               
             // i 

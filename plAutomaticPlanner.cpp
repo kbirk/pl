@@ -100,14 +100,13 @@ namespace plAutomaticPlanner
                 // calculate how thick the cartilage is ( the distance from the cartilage point to bone point )
                 PLfloat cartilageThickness = 0.0f; // this is to be removed
                 
-                plPlug harvest  ( plan.models(0).mesh(), PL_PICKING_INDEX_GRAFT_DONOR,  plTransform( harvestX,  harvestY,   harvestOrigin    ), harvestSurfaceNormal   );
-                plPlug recipient( plan.models(0).mesh(), PL_PICKING_INDEX_GRAFT_DEFECT, plTransform( recipientX, recipientY, recipientOrigin ), recipientSurfaceNormal );
+                plPlug harvest  ( plan.models(0).mesh(),                    PL_PICKING_INDEX_GRAFT_DONOR,  plTransform( harvestX,  harvestY,   harvestOrigin    ), harvestSurfaceNormal   );
+                plPlug recipient( plan.defectSites(0).spline.surfaceMesh(), PL_PICKING_INDEX_GRAFT_DEFECT, plTransform( recipientX, recipientY, recipientOrigin ), recipientSurfaceNormal );
                 
                 plan.addGraft( harvest, recipient, defectSolution.graftRadii[i] );
-            } 
+            }
         }
-        
-        
+             
         for ( PLuint i = 0; i < plan.iGuideSites().size(); i++ )
         {
             plan.iGuideSites(i).boundary.setInvisible();

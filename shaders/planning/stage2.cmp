@@ -127,8 +127,7 @@ void main(void)
         
             rms = calcRMS( defectGraftPosition, defectGraftNormal, defectGraftX, defectGraftZ, donorGridPosition, donorGraftNormal, donorGraftX, donorGraftZ, siteIndex, i );  
         }
-        setRMS( rms, i );
-   
+        setRMS( rms, i );   
     } 
 
 }

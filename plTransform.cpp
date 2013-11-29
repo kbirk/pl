@@ -32,10 +32,10 @@ void plTransform::_compute()
         std::cerr << "x and y are not perpendicular (dot product = " << _x*_y << std::endl;
     }
 
-    _transform.setColumn(0, _x.x,      _x.y,      _x.z,      0.0f);
-    _transform.setColumn(1, _y.x,      _y.y,      _y.z,      0.0f);
-    _transform.setColumn(2, _z.x,      _z.y,      _z.z,      0.0f);
-    _transform.setColumn(3, _origin.x, _origin.y, _origin.z, 1.0f);
+    _transform.setColumn( 0, _x.x,      _x.y,      _x.z,      0.0f );
+    _transform.setColumn( 1, _y.x,      _y.y,      _y.z,      0.0f );
+    _transform.setColumn( 2, _z.x,      _z.y,      _z.z,      0.0f );
+    _transform.setColumn( 3, _origin.x, _origin.y, _origin.z, 1.0f );
 }
 
 

@@ -69,7 +69,7 @@ class plPlan : public plRenderable,
         void clear();
 
     private: 
-    
+
         std::vector<plDefectSite*> _defectSites;
         std::vector<plDonorSite*>  _donorSites;
         std::vector<plIGuideSite*> _iGuideSites;

@@ -28,7 +28,8 @@ class plBoundary : public plRenderable,
         plBoundary( PLuint type, const plMesh& mesh );    
         plBoundary( PLuint type, const plMesh& mesh, const std::vector<plString> &row );
  
-        PLuint size() const;
+        PLuint size() const { return _points.size(); }
+        PLuint type() const { return _type; }
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
@@ -43,6 +44,8 @@ class plBoundary : public plRenderable,
         virtual void   removePointAndNormal( PLuint index );
         virtual void   clear();            
         
+        //PLbool operator< ( const plBoundary& boundary ) const;
+
     protected:
 
         PLint _type;

@@ -71,14 +71,13 @@ void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap, PLuint t
     for (PLuint i=0; i<_points.size(); i++) 
     {
         plPickingStack::loadBlue( i );    
-         
-         /*    
+             
         if ( _isSelected && _selectedValue == i )   // is the current point selected?
         {
             // scale larger
             plRenderer::queue( plSphere( technique, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
         }
-        else*/
+        else
         {
             // regular size
             plRenderer::queue( plSphere( technique, _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
@@ -95,12 +94,6 @@ plVector3 plBoundary::getAverageNormal() const
         n = n + _normals[i];        
     }
     return n.normalize();
-}
-
-
-PLuint plBoundary::size() const
-{
-    return _points.size();
 }
 
 

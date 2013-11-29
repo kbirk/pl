@@ -32,6 +32,8 @@ namespace plMath
                                  PLbool ignoreBehindRay = false, 
                                  PLbool backFaceCull = false );  
 
+    plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, const plVector3 &planePoint, const plVector3 &planeNormal );
+
     plVector3 getAverageNormal( const std::vector<plTriangle>& triangles, PLfloat radius, const plVector3 &origin, const plVector3 &normal );
 
 };

@@ -34,27 +34,6 @@ void plGraftCap::extractRenderComponents( plRenderMap& renderMap ) const
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
 
-/*
-void plGraftCap::extractEditorRenderComponents( plRenderMap& renderMap ) const
-{
-    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT ); 
-    
-    // if empty, do not draw
-    if ( triangles.empty() )
-        return;
-
-    // create render component
-    plRenderComponent component( _vao );
-    // attached uniforms
-    component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
-    component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
-    component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );       
-    component.attach( plUniform( PL_OUTLINE_UNIFORM,           plPickingStack::top()    ) );
-
-    // insert into render map     
-    renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component );   
-}
-*/
 
 void plGraftCap::generateCap( const plOctreeMesh& mesh, const plTransform& transform, const PLfloat radius  )
 {   
@@ -108,8 +87,6 @@ void plGraftCap::generateCap( const plOctreeMesh& mesh, const plTransform& trans
             perimeter.push_back( angle );
         }
     }
-
-
 }
 
 
