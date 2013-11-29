@@ -45,14 +45,15 @@ void plChessBoard::_generateVAO()
             vertices.push_back( v2 ); vertices.push_back( n ); vertices.push_back( c );
             vertices.push_back( v3 ); vertices.push_back( n ); vertices.push_back( c );
             
+
             indices.push_back( base + 0 ); indices.push_back( base + 1 ); 
             indices.push_back( base + 1 ); indices.push_back( base + 2 );
             indices.push_back( base + 2 ); indices.push_back( base + 3 ); 
-            indices.push_back( base + 3 ); indices.push_back( base + 4 );
+            indices.push_back( base + 3 ); indices.push_back( base + 0 );
             indices.push_back( base + 0 ); indices.push_back( base + 2 );
 
             //indices.push_back( base + 0 ); indices.push_back( base + 1 ); indices.push_back( base + 2 );
-            //indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );           
+            //indices.push_back( base + 0 ); indices.push_back( base + 2 ); indices.push_back( base + 3 );
         }
     }   
     // set vbo and attach attribute pointers
@@ -60,6 +61,7 @@ void plChessBoard::_generateVAO()
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
     vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
+    vbo->set( plVertexAttributePointer( PL_COLOUR_ATTRIBUTE,   32 ) );
     // set eabo
     std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices, GL_LINES );
@@ -117,7 +119,7 @@ void plChessBoard::extractRenderComponents( plRenderMap& renderMap, PLuint techn
         // create render component
         plRenderComponent component( _vao );
         // attached uniforms
-        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      _transform.matrix()      ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
         component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
         component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
