@@ -46,13 +46,37 @@ plTransform plPlug::finalTransform() const
 
 void plPlug::move( const plVector3& origin, const plVector3& y )
 {
-    /*
-    // ensure transform is orthogonal
-    plVector3 x = y ^ _transform.z();   
-    _transform.set( x, y, origin );
-    // find surface normal
-    plIntersection intersecion = _mesh->rayIntersect( origin, -y, true );
-    //_surfaceNormal = intersecion.normal;
-    */
+    // find new surface normal
+    //plIntersection intersection = _mesh->rayIntersect( origin, -_surfaceTransform.y(), true );
+    // get x axis
+    plVector3 x = y ^ _surfaceTransform.z();  
+    // set transform
+    _surfaceTransform.set( x, y, origin );
+}
+
+
+void plPlug::rotate( const plVector3& y )
+{
+    const plVector3& surfaceNormal = _surfaceTransform.y();
+    
+    // check angle between new y and surface normal
+    PLfloat angle = acos( surfaceNormal * y );
+
+    plVector3 finalY = y;
+
+    // if past threshold, set to
+    if ( angle > PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) )
+    {
+        // find vector in plane of surface normal and new y that is orthogonal to surface normal
+        plVector3 planeNormal = y ^ surfaceNormal;               
+        plVector3 ortho = ( surfaceNormal ^ planeNormal ).normalize();                
+        // trig to find scaling of new vector on plane
+        finalY = ( surfaceNormal*cos( PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) ) + ortho*sin( PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) ) ).normalize();
+    } 
+
+    // get the rotation matrix
+    plMatrix44 rotation;     rotation.setRotation( surfaceNormal, finalY );
+
+    _rotationalOffset = plTransform( rotation ); 
 }
 

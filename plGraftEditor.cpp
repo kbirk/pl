@@ -159,7 +159,7 @@ void plGraftEditor::_dragMarker( PLint x, PLint y )
 }
 
 
-void plGraftEditor::_dragHandle(  PLint x, PLint y )
+void plGraftEditor::_dragHandle( PLint x, PLint y )
 {
     if ( _selectedGraft == NULL )    
         return;                 // no graft selected
@@ -215,20 +215,7 @@ void plGraftEditor::_dragHandle(  PLint x, PLint y )
                 // get vector from graft origin to intersection, scale up by graft surface normal to scale rotation by distance
                 plVector3 newGraftY = ( PL_ROTATION_SENSITIVITY * (intersection.point - graftOrigin) + graftSurfaceNormal ).normalize();
 
-                // check angle between new and old y axis
-                PLfloat angle = acos( graftSurfaceNormal * newGraftY );
-
-                // if past threshold, set to
-                if ( angle > PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) )
-                {
-                    // find vector in plane of graftY and newGraftY that is orthogonal to graftY
-                    plVector3 planeNormal = newGraftY ^ graftSurfaceNormal;               
-                    plVector3 ortho = ( graftSurfaceNormal ^ planeNormal ).normalize();                
-                    // trig to find scaling of new vector on plane
-                    newGraftY = ( graftSurfaceNormal*cos( PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) ) + ortho*sin( PL_DEG_TO_RAD( PL_MAX_GRAFT_ROTATION ) ) ).normalize();
-                } 
-
-                _selectedGraft->move( _selectedType, graftOrigin, newGraftY );      
+                _selectedGraft->rotate( _selectedType, newGraftY );    
             }
             break;
         }

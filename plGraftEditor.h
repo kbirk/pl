@@ -17,7 +17,7 @@
 #include "plEditor.h"
 
 #define PL_ROTATION_SENSITIVITY                  0.10f   // lower is less sensitive
-#define PL_MAX_GRAFT_ROTATION                    25.00f
+
 
 
 class plGraftEditor : public plEditor

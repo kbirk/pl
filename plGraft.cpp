@@ -177,7 +177,7 @@ plTransform plGraft::transform( PLuint type ) const
             
         default:
         
-            std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient \n";
+            std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient" << std::endl;
             return _recipient.finalTransform();   
     } 
 }
@@ -187,12 +187,12 @@ const plVector3& plGraft::surfaceNormal( PLuint type ) const
 {
     switch (type)
     {
-        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.transform().x();        
+        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.transform().y();        
         case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.transform().y();
             
         default:
         
-            std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient \n";
+            std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient" << std::endl;
             return _recipient.transform().y();   
     } 
 
@@ -208,7 +208,7 @@ const plPlug &plGraft::plug( PLuint type ) const
             
         default:
         
-            std::cerr << "plGraft plug() error: invalid type enumeration provided, defaulting to recipient \n";
+            std::cerr << "plGraft plug() error: invalid type enumeration provided, defaulting to recipient" << std::endl;
             return _recipient;   
     } 
 }
@@ -231,7 +231,29 @@ void plGraft::move( PLuint type, const plVector3& origin, const plVector3& y )
             
         default:
         
-            std::cerr << "plGraft translate() error: invalid type enumeration provided \n";
+            std::cerr << "plGraft move() error: invalid type enumeration provided" << std::endl;
+            break;    
+    } 
+}
+
+void plGraft::rotate( PLuint type, const plVector3& y )
+{
+        switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:
+        
+            _harvest.rotate( y );            
+            _generateCaps();
+            break;
+        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:
+        
+            _recipient.rotate( y );
+            break;
+            
+        default:
+        
+            std::cerr << "plGraft rotate() error: invalid type enumeration provided" << std::endl;
             break;    
     } 
 }

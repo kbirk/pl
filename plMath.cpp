@@ -306,9 +306,9 @@ namespace plMath
                 
                 plVector3 closestPointOnTri = triangle.closestPointTo( closestPointOnLine );
             
-                lowestDist = ( closestPointOnTri - closestPointOnLine ).squaredLength(); ;
+                lowestDist = dist; //( closestPointOnTri - closestPointOnLine ).squaredLength(); ;
                 intersection.exists = true;
-                intersection.point  = closestPointOnTri;
+                intersection.point  = closestPointOnSphere; //closestPointOnTri;
                 intersection.normal = triangle.normal();
             }
         }

@@ -9,6 +9,8 @@
 
 // TODO: FIXED DRAGGING TO INCLUDE A ROTATION OFFSET, ROTATION OFFSET CAPS AT n DEGREES AND IS MAINTAINED
 
+#define PL_MAX_GRAFT_ROTATION                    25.0f
+
 class plPlug : public plMeshSpecific
 {
     public:
@@ -21,8 +23,9 @@ class plPlug : public plMeshSpecific
         plMatrix44         matrix() const;
         plTransform        finalTransform() const; 
 
-        void move( const plVector3& origin, const plVector3& y );
-
+        void move  ( const plVector3& origin, const plVector3& y );
+        void rotate( const plVector3& y );
+        
     private:
         
         PLuint      _type;        

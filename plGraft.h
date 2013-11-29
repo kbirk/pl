@@ -47,7 +47,7 @@ class plGraft : public plRenderable,
         //void adjustLength       ( PLfloat adjustment ) { _length += adjustment; if (_length < 0) _length = 0; _generateCaps(); } 
 
         void move    ( PLuint type, const plVector3& origin, const plVector3& y );
-        //void rotate  ( PLuint type,   
+        void rotate  ( PLuint type, const plVector3& y );
         void setMark ( const plVector3 &direction ); 
              
         void toggleArthroView() { plArthroViewable::toggleArthroView(); _cartilageCap.toggleArthroView(); }    

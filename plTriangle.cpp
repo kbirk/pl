@@ -184,10 +184,10 @@ plVector3 plTriangle::closestPointTo( const plVector3& point ) const
     PLfloat d1 = ( e1 - point ).squaredLength();
     PLfloat d2 = ( e2 - point ).squaredLength();
     
-    if ( d0 < d1 && d0 < d2 )
+    if ( d0 <= d1 && d0 <= d2 )
         return e0;
     
-    if ( d1 < d0 && d1 < d2 )
+    if ( d1 <= d0 && d1 <= d2 )
         return e1;
         
     return e2;
