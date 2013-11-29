@@ -4,7 +4,8 @@
 #include "plCommon.h"
 #include "plVector3.h"
 #include "plVector4.h"
-#include "plTriangle.h"
+
+class plTriangle;
 
 class plMatrix44 
 {

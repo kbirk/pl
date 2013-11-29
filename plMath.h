@@ -2,11 +2,13 @@
 #define PL_MATH_H
 
 #include "plCommon.h"
-#include "plVector3.h"
 
-#include "plPolygon.h"
-#include "plTriangle.h"
-#include "plMatrix44.h"
+class plVector3;
+class plVector4;
+class plMatrix44;
+class plTriangle;
+class plPolygon;
+class plIntersection;
 
 namespace plMath
 {
@@ -35,6 +37,9 @@ namespace plMath
     plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, const plVector3 &planePoint, const plVector3 &planeNormal );
 
     plVector3 getAverageNormal( const std::vector<plTriangle>& triangles, PLfloat radius, const plVector3 &origin, const plVector3 &normal );
+
+    plIntersection getClosestPointToRay( const std::vector<plTriangle>& triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection );
+    
 
 };
 

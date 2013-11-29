@@ -1,4 +1,5 @@
 #include "plMatrix44.h"
+#include "plTriangle.h"
 
 // identity 
 plMatrix44::plMatrix44() 

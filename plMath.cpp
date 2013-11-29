@@ -1,4 +1,9 @@
 #include "plMath.h"
+#include "plVector3.h"
+#include "plVector4.h"
+#include "plMatrix44.h"
+#include "plTriangle.h"
+#include "plPolygon.h"
 
 namespace plMath
 {
@@ -37,7 +42,13 @@ namespace plMath
     }
    
 
-    PLbool closestPointsBetweenSegments(const plVector3 &edge1Point1, const plVector3 &edge1Point2, const plVector3 &edge2Point1, const plVector3 &edge2Point2, plVector3& closestPointEdge1, plVector3& closestPointEdge2, PLfloat& distanceBetweenLines)
+    PLbool closestPointsBetweenSegments( const plVector3 &edge1Point1, 
+                                         const plVector3 &edge1Point2, 
+                                         const plVector3 &edge2Point1, 
+                                         const plVector3 &edge2Point2, 
+                                         plVector3& closestPointEdge1,
+                                         plVector3& closestPointEdge2, 
+                                         PLfloat& distanceBetweenLines)
     {
         plVector3 edge1Direction = edge1Point2 - edge1Point1;
         plVector3 edge2Direction = edge2Point2 - edge2Point1;
@@ -70,28 +81,7 @@ namespace plMath
     }
 
 
-    void swap( PLfloat &a, PLfloat &b )
-    {
-        PLfloat temp = a;
-        a = b; 
-        b = temp;
-    }
-
-
-    void shuffle( std::vector<PLuint> &array )
-    {   
-        PLuint size = array.size();
-        for (PLuint i = 0; i < size-1; i++) 
-        {
-            PLuint j = i + rand() / (RAND_MAX / (size - i) + 1);
-            PLuint t = array[j];
-            array[j] = array[i];
-            array[i] = t;
-        }    
-    }
-
-
-    PLfloat fsqrt(PLfloat x)
+    PLfloat fsqrt( PLfloat x )
     {
         #define SQRT_MAGIC_F 0x5f3759df   
         const PLfloat xhalf = 0.5f*x;
@@ -107,45 +97,18 @@ namespace plMath
     }  
 
 
-    /*
-    int plPlaneIntersection( const plvector3 &p1_normal, const plvector3 &p2_normal, Plane p1, Plane p2, Point &p, Vector &d)
-    {
-        const PLfloat EPSILON = 0.000001f;
-        // Compute direction of intersection line
-        plVector3 d = p1_normal ^  p2_normal;
-        // If d is zero, the planes are parallel (and separated)
-        // or coincident, so they’re not considered intersecting
-        if (d * d < EPSILON) 
-            return 0;
-            
-        PLfloat d11 = p1_normal * p1_normal;
-        PLfloat d12 = p1_normal * p2_normal;
-        PLfloat d22 = p2_normal * p2_normal;
-        PLfloat denom = d11*d22 - d12*d12;
-        PLfloat k1 = (p1.d*d22 - p2.d*d12) / denom;
-        PLfloat k2 = (p2.d*d11 - p1.d*d12) / denom;
-        p = k1*p1.n + k2*p2.n;
-        return 1;
-    }
-
-    plVector3 plClosestPointOnPlane(const plVector3 &q, const plVector3 &p, const plVector3 &n)
-    {
-        float t = 1/(n * n) * (n*(q - p));
-        return q - t * n;
-    }
-    */
-
     plVector3 closestPointOnPlane(const plVector3 &lineDirection, const plVector3 &linePoint, const plVector3 &planeNormal, const plVector3 &planePoint)
     {
         PLfloat t = ((planePoint - linePoint)*planeNormal)/(lineDirection*planeNormal);
         return (t * lineDirection) + linePoint;
     }
 
-    // solve for x and y in this thing:
-    //    [ a11 a12 ] [ x ]   [ b1 ]
-    //    [ a21 a22 ] [ y ] = [ b2 ]
+    
     PLbool solveMatrix22Equation(PLfloat a11, PLfloat a12, PLfloat a21, PLfloat a22, PLfloat b1, PLfloat b2, PLfloat &x, PLfloat &y)
     {
+        // solve for x and y in this thing:
+        //    [ a11 a12 ] [ x ]   [ b1 ]
+        //    [ a21 a22 ] [ y ] = [ b2 ]
         // basically, make the inverse, store in matrix d:
         PLfloat determinant = a11 * a22 - a21 * a12;
 
@@ -165,11 +128,12 @@ namespace plMath
         y = d21 * b1 + d22 * b2;
 
         return true;
-    } // end plSolveMatrix22Equation
+    } 
 
-    // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+
     PLbool intersectTwoLines(const plVector3 &edge1Point, const plVector3 &edge2Point, const plVector3 &edge1Direction, const plVector3 &edge2Direction, PLfloat &edge1Param, PLfloat &edge2Param)
     {
+        // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect   
         edge1Param = 0.f;
         edge2Param = 0.f;
         plVector3 crossProductRightSideEdge1 ((edge2Point-edge1Point)^edge2Direction);
@@ -282,7 +246,6 @@ namespace plMath
     }
 
 
-
     plVector3 getAverageNormal( const std::vector<plTriangle>& triangles, PLfloat radius, const plVector3 &origin, const plVector3 &normal )
     {
         plVector3 avgNormal( 0, 0, 0 );
@@ -317,6 +280,40 @@ namespace plMath
         }    
 
         return ( 1.0f/(PLfloat)(count) * avgNormal ).normalize();
+    }
+
+
+    plIntersection getClosestPointToRay( const std::vector<plTriangle>& triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection )
+    {
+        plIntersection intersection( false );
+    
+        PLfloat lowestDist = FLT_MAX;
+               
+        for ( const plTriangle& triangle : triangles )
+        {
+            // find closest point on ray from triangle centre
+            plVector3 closestPointOnLine = plMath::closestPointOnLine( triangle.centroid(), rayOrigin, rayDirection );
+                
+            // find point on sphere closest to point
+            plVector3 closestPointOnSphere = triangle.centroid() + ( closestPointOnLine - triangle.centroid() ).normalize() * triangle.radius();
+            
+            // find distance
+            PLfloat dist = ( closestPointOnSphere - closestPointOnLine ).squaredLength(); 
+                
+            if ( dist < lowestDist )
+            {
+                // if less than current, find actual closest point on triangle
+                
+                plVector3 closestPointOnTri = triangle.closestPointTo( closestPointOnLine );
+            
+                lowestDist = ( closestPointOnTri - closestPointOnLine ).squaredLength(); ;
+                intersection.exists = true;
+                intersection.point  = closestPointOnTri;
+                intersection.normal = triangle.normal();
+            }
+        }
+        
+        return intersection;
     }
 
 

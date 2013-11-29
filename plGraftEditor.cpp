@@ -168,95 +168,30 @@ void plGraftEditor::_dragHandle(  PLint x, PLint y )
     switch ( _editMode )
     {
         case PL_GRAFT_EDIT_MODE_TRANSLATE:
-        {            
-            // translation                
+        {      
+            // translation
+                  
+            // get ray from camera to mouse              
             plVector3 rayOrigin, rayDirection;
             plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
             
-            plIntersection intersection( false );
+            // intersect bound mesh
+            plIntersection intersection = _selectedGraft->plug( _selectedType ).mesh().rayIntersect( rayOrigin, rayDirection, true ); // smooth normal
             
-            if ( _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
+            if ( intersection.exists )
             {
-                // intersect spline
-                intersection = _selectedGraft->plug( _selectedType ).mesh().rayIntersect( rayOrigin, rayDirection, true ); // smooth normal
-
-                /*
-                // intersect spline
-                for ( const plDefectSite* site : _plan->defectSites() )
-                {
-                    intersection = site->spline.surfaceMesh().rayIntersect( rayOrigin, rayDirection );  
-                    if ( intersection.exists )
-                        break;    
-                }
-                */
-
-                // if not on spline, find closest point on spline
-                if ( !intersection.exists )
-                {
-
-                    /*
-
-                    PLfloat lowestDist = FLT_MAX;
-                    plVector3 lowestPoint, lowestNormal;
-                    for ( const plDefectSite* site : _plan->defectSites() )
-                    {                   
-                        for ( const plTriangle& triangle : site->spline.surfaceMesh().triangles() )
-                        {
-                            // find closest point on ray from triangle centre
-                            plVector3 closestPointOnLine = plMath::closestPointOnLine( triangle.centroid(), rayOrigin, rayDirection );
-                            
-                            // find point on sphere closest to point
-                            plVector3 closestPoint = triangle.centroid() + ( closestPointOnLine - triangle.centroid() ).normalize() * triangle.radius();
-                            
-                            PLfloat dist = ( closestPoint - closestPointOnLine ).squaredLength(); 
-                            
-                            if ( dist < lowestDist )
-                            {
-                                lowestDist = dist;
-                                lowestPoint = closestPoint;
-                                lowestNormal = triangle.normal();
-                            }
-                        }
-                    }
-                    intersection.exists = true;
-                    intersection.point = lowestPoint;
-                    intersection.normal = lowestNormal;
-                    */
-
-                    PLfloat lowestDist = FLT_MAX;
-               
-                    for ( const plTriangle& triangle : _selectedGraft->plug( _selectedType ).mesh().triangles() )
-                    {
-                        // find closest point on ray from triangle centre
-                        plVector3 closestPointOnLine = plMath::closestPointOnLine( triangle.centroid(), rayOrigin, rayDirection );
-                            
-                        // find point on sphere closest to point
-                        plVector3 closestPoint = triangle.centroid() + ( closestPointOnLine - triangle.centroid() ).normalize() * triangle.radius();
-                            
-                        PLfloat dist = ( closestPoint - closestPointOnLine ).squaredLength(); 
-                            
-                        if ( dist < lowestDist )
-                        {
-                            lowestDist = dist;
-                            intersection.exists = true;
-                            intersection.point  = closestPoint;
-                            intersection.normal = triangle.normal();
-                        }
-                    }
-
-                }
+                // if intersection exists, move graft to new position
+                _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
             }
             else
             {
-                // intersect model
-                intersection = _selectedGraft->plug( _selectedType ).mesh().rayIntersect( rayOrigin, rayDirection, true ); // smooth normal
-            }
-
-            if ( intersection.exists )
-            { 
-                _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
-            }
-            
+                // if no intersection, and is defect graft, move to closest point on spline
+                if ( _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
+                {
+                    intersection = plMath::getClosestPointToRay( _selectedGraft->plug( _selectedType ).mesh().triangles(), rayOrigin, rayDirection );
+                    _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
+                }
+            }            
             break;            
         }
         

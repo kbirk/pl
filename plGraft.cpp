@@ -118,7 +118,7 @@ void plGraft::_generateCaps()
 {
     // generate cap polygons
     _cartilageCap.generateCap( ( const plOctreeMesh& )_harvest.mesh(), _harvest.transform(), _radius );
-    _boneCap.generateCap(  ( const plOctreeMesh& )_harvest.mesh(), _harvest.transform(), _radius );
+    _boneCap.generateCap( ( const plOctreeMesh& )_harvest.mesh(), _harvest.transform(), _radius );
 
     // generate vaos 
     _cartilageCap.generateVAO( _radius, _length, _boneCap.perimeter );

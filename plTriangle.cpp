@@ -174,6 +174,32 @@ PLbool plTriangle::operator== ( const plTriangle& other ) const
 }
 
 
+plVector3 plTriangle::closestPointTo( const plVector3& point ) const
+{
+    plVector3 e0 = closestPointOnEdge( 0, point );
+    plVector3 e1 = closestPointOnEdge( 1, point );
+    plVector3 e2 = closestPointOnEdge( 2, point );
+    
+    PLfloat d0 = ( e0 - point ).squaredLength();
+    PLfloat d1 = ( e1 - point ).squaredLength();
+    PLfloat d2 = ( e2 - point ).squaredLength();
+    
+    if ( d0 < d1 && d0 < d2 )
+        return e0;
+    
+    if ( d1 < d0 && d1 < d2 )
+        return e1;
+        
+    return e2;
+}
+
+
+plVector3 plTriangle::closestPointOnEdge( PLuint edgeIndex, const plVector3& point ) const
+{
+    return plMath::closestPointOnSegment( point, _points[ edgeIndex ], _points[ ( edgeIndex + 1 ) % 3 ] );
+}
+
+
 // I/O operators
 std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 {
@@ -392,14 +418,4 @@ namespace plSTL
 
 }
 
-plTriangle& plTriangle::operator=( const plTriangle& other )
-{
-    _points[0] = other._points[0];
-    _points[1] = other._points[1];
-    _points[2] = other._points[2];
-    _normal    = other._normal;
-    _centroid  = other._centroid;
-    _radius    = other._radius;
-    return *this;
-}
 
