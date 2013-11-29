@@ -16,7 +16,7 @@
 #include "plArthroViewable.h"
 
 
-#define PL_CAP_OFFEST       0.05f
+#define PL_CAP_OFFEST       0.025f
 
 class plPointAndAngle 
 {

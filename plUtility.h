@@ -48,7 +48,7 @@ namespace plUtility
     }
 
 
-    void printProgressBar( float percent, PLuint length = 100 );
+    void printProgressBar( float percent, PLuint length = 50 );
 
 };
 

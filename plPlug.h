@@ -14,19 +14,22 @@ class plPlug : public plMeshSpecific
     public:
 
         plPlug( PLuint type );
-        plPlug( const plMesh& mesh, PLuint type, const plTransform &transform, const plVector3 surfaceNormal );
+        plPlug( const plMesh& mesh, PLuint type, const plTransform& surfaceTransform, const plTransform& rotationalOffset );
 
-        const plTransform& transform()    const  { return _transform;     }
-        const plVector3&   surfaceNormal() const { return _surfaceNormal; }
+        const plTransform& transform() const; 
+        const plTransform& rotation() const;        
+        plMatrix44         matrix() const;
+        plTransform        finalTransform() const; 
 
         void move( const plVector3& origin, const plVector3& y );
 
     private:
         
-        PLuint      _type;
-        plVector3   _surfaceNormal;
-        plTransform _transform;    
-     
+        PLuint      _type;        
+        plTransform _surfaceTransform;
+        plTransform _rotationalOffset;       
+
 };
+
 
 #endif

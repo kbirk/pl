@@ -86,22 +86,41 @@ namespace plAutomaticPlanner
         {
             for ( PLuint i=0; i < defectSolution.graftCount; i++ )
             {    
-                // get graft transforms
+                // harvest transforms
                 plVector3 harvestOrigin( donorSolution.graftPositions[i] );
-                plVector3 harvestY     ( donorSolution.graftNormals[i]   );    
-                plVector3 harvestX     ( donorSolution.graftXAxes[i]     );   
+                plVector3 harvestX     ( donorSolution.graftXAxes[i]     );  
+                plVector3 harvestY     ( donorSolution.graftNormals[i]   );                     
                 plVector3 harvestSurfaceNormal( donorSolution.graftSurfaceNormals[i] );    
+
+                // we have the final transform, we need to seperate it into the surface transform, and rotational offset
+                // find rotation from the Y to surface normal
+                plMatrix44 harvestRotation;     harvestRotation.setRotation( harvestY, harvestSurfaceNormal );
+                
+                plVector3 harvestSurfaceX = ( harvestRotation * harvestX ).normalize();
+                plVector3 harvestSurfaceY = ( harvestRotation * harvestY ).normalize();;    
+
+                plTransform harvestSurfaceOrientation( harvestSurfaceX, harvestSurfaceY, harvestOrigin );
+                plTransform harvestRotationalOffset( harvestRotation.inverse() );
 
                 plVector3 recipientOrigin( defectSolution.graftPositions[i] );
                 plVector3 recipientY     ( defectSolution.graftNormals[i]   );        
                 plVector3 recipientX     ( (recipientY ^ plVector3( 0, 0, 1 ) ).normalize() ); 
                 plVector3 recipientSurfaceNormal( defectSolution.graftSurfaceNormals[i] ); 
+                
+                // find rotation from the Y to surface normal
+                plMatrix44 recipientRotation;    recipientRotation.setRotation( recipientY, recipientSurfaceNormal );
+    
+                plVector3 recipientSurfaceX = ( recipientRotation * recipientX ).normalize();
+                plVector3 recipientSurfaceY = ( recipientRotation * recipientY ).normalize();    
+  
+                plTransform recipientSurfaceOrientation( recipientSurfaceX, recipientSurfaceY, recipientOrigin );
+                plTransform recipientRotationalOffset( recipientRotation.inverse() );
 
                 // calculate how thick the cartilage is ( the distance from the cartilage point to bone point )
                 PLfloat cartilageThickness = 0.0f; // this is to be removed
                 
-                plPlug harvest  ( plan.models(0).mesh(),                    PL_PICKING_INDEX_GRAFT_DONOR,  plTransform( harvestX,   harvestY,   harvestOrigin   ), harvestSurfaceNormal   );
-                plPlug recipient( plan.defectSites(0).spline.surfaceMesh(), PL_PICKING_INDEX_GRAFT_DEFECT, plTransform( recipientX, recipientY, recipientOrigin ), recipientSurfaceNormal );
+                plPlug harvest  ( plan.models(0).mesh(),                    PL_PICKING_INDEX_GRAFT_DONOR,  harvestSurfaceOrientation,   harvestRotationalOffset   );
+                plPlug recipient( plan.defectSites(0).spline.surfaceMesh(), PL_PICKING_INDEX_GRAFT_DEFECT, recipientSurfaceOrientation, recipientRotationalOffset );
                 
                 plan.addGraft( harvest, recipient, defectSolution.graftRadii[i] );
             }

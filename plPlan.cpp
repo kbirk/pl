@@ -267,16 +267,16 @@ void plPlan::importFile( const plString &filename )
             
             PLuint      recipientSiteID    ( std::stoi( csv.data[++i][1] ) );     
             plTransform recipientTransform (            csv.data[++i]      );
-            plVector3   recipientSurfaceNormal(         csv.data[++i][1]   );
+            plTransform recipientRotation  (            csv.data[++i]      );
             PLuint      harvestModelID     ( std::stoi( csv.data[++i][1] ) );   
             plTransform harvestTransform   (            csv.data[++i]      );
-            plVector3   harvestSurfaceNormal(           csv.data[++i][1]   );
+            plTransform harvestRotation    (            csv.data[++i]      );
             PLfloat     radius             ( std::stof( csv.data[++i][1] ) );  
             PLfloat     length             ( std::stof( csv.data[++i][1] ) );                            
             plVector3   markDirection      (            csv.data[++i][1]   );
-            
-            plPlug recipientPlug ( _defectSites[ recipientSiteID ]->spline.surfaceMesh(), PL_PICKING_INDEX_GRAFT_DEFECT, recipientTransform, recipientSurfaceNormal );
-            plPlug harvestPlug   ( _models[ harvestModelID ]->mesh(),                     PL_PICKING_INDEX_GRAFT_DONOR,  harvestTransform,   harvestSurfaceNormal );
+                  
+            plPlug recipientPlug ( _defectSites[ recipientSiteID ]->spline.surfaceMesh(), PL_PICKING_INDEX_GRAFT_DEFECT, recipientTransform, recipientRotation );
+            plPlug harvestPlug   ( _models[ harvestModelID ]->mesh(),                     PL_PICKING_INDEX_GRAFT_DONOR,  harvestTransform,   harvestRotation );
 
             _grafts.push_back( new plGraft( harvestPlug, recipientPlug, radius, length, markDirection ) );
         }        
@@ -292,10 +292,11 @@ void plPlan::importFile( const plString &filename )
             {   
                 PLuint  graftID ( std::stoi( csv.data[i][2+(j*2)] ) ); 
                 PLuint  type    ( std::stoi( csv.data[i][3+(j*2)] ) );
-                const plTransform *transform    ( &( _grafts[ graftID ]->transform( type ) ) );
+                //const plTransform *transform    ( &( _grafts[ graftID ]->transform( type ) ) );
                 const PLfloat     *radius       ( &( _grafts[ graftID ]->radius() ) );
                 const PLfloat     *length       ( &( _grafts[ graftID ]->length() ) );
-                plugs.push_back( plPlugInfo( transform, radius, length, type, graftID ) );
+                //plugs.push_back( plPlugInfo( transform, radius, length, type, graftID ) );
+                plugs.push_back( plPlugInfo( NULL, radius, length, type, graftID ) );
             }
             
             PLuint  kWireCount ( std::stoi( csv.data[++i][1] ) );  
@@ -383,10 +384,10 @@ void plPlan::exportFile( const plString &filename )
             out << "graft"                   << std::endl
                 << "    recipient_defect_site_id, " << _getDefectSiteIndex( _grafts[i]->recipient() )   << std::endl
                 << "    recipient_transform,      " << _grafts[i]->recipient().transform() << std::endl
-                << "    recipient_surface_normal, " << _grafts[i]->recipient().surfaceNormal() << std::endl
+                << "    recipient_rotation,       " << _grafts[i]->recipient().rotation()  << std::endl
                 << "    harvest_model_id,         " << _getModelIndex( _grafts[i]->harvest() )    << std::endl
                 << "    harvest_transform,        " << _grafts[i]->harvest().transform()   << std::endl
-                << "    harvest_surface_normal,   " << _grafts[i]->harvest().surfaceNormal() << std::endl
+                << "    harvest_rotation,         " << _grafts[i]->harvest().rotation()    << std::endl
                 << "    radius,                   " << _grafts[i]->radius()                << std::endl
                 << "    length,                   " << _grafts[i]->length()                << std::endl               
                 << "    mark_direction,           " << _grafts[i]->markDirection()         << std::endl
@@ -458,7 +459,7 @@ PLint plPlan::_getDefectSiteIndex( const plMeshSpecific& mesh ) const
 {
     for ( PLuint i = 0; i < _defectSites.size(); i++ )
     {
-        if ( &_defectSites[i]->spline.mesh() == &mesh.mesh() )
+        if ( &_defectSites[i]->spline.surfaceMesh() == &mesh.mesh() )
             return i;
     }
     return -1;    

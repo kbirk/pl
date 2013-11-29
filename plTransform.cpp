@@ -15,12 +15,18 @@ plTransform::plTransform( const plVector3 &x, const plVector3 &y, const plVector
 
 
 plTransform::plTransform( const std::vector<plString> &row )
+    : _x( row[2] ), _y( row[3] ), _origin( row[1] )
 {
-    _origin = plVector3( row[1] );
-    _x      = plVector3( row[2] );
-    _y      = plVector3( row[3] ); 
     _compute();
 }
+
+
+plTransform::plTransform( const plMatrix44& matrix )
+    : _x( matrix(0,0), matrix(1,0), matrix(2,0) ), _y( matrix(0,1), matrix(1,1), matrix(2,1) ), _origin( matrix(0,3), matrix(1,3), matrix(2,3) )
+{
+    _compute();
+}
+
 
 
 void plTransform::_compute() 
@@ -98,6 +104,16 @@ PLfloat plTransform::projectedDistOnAxis( const plVector3 &v ) const
 plTransform plTransform::operator* ( const plTransform &transform ) const
 {
     plMatrix44 m = _transform * transform.matrix();
+
+    return plTransform ( plVector3( m(0,0), m(1,0), m(2,0) ),
+                         plVector3( m(0,1), m(1,1), m(2,1) ),
+                         plVector3( m(0,3), m(1,3), m(2,3) ) );
+}
+
+
+plTransform plTransform::operator* ( const plMatrix44 &matrix ) const
+{
+    plMatrix44 m = _transform * matrix;
 
     return plTransform ( plVector3( m(0,0), m(1,0), m(2,0) ),
                          plVector3( m(0,1), m(1,1), m(2,1) ),

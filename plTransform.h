@@ -2,7 +2,6 @@
 #define PL_TRANSFORM_H
 
 #include "plCommon.h"
-
 #include "plString.h"
 #include "plVector3.h"
 #include "plMatrix44.h"
@@ -12,14 +11,16 @@ class plTransform
     public:
 
         plTransform();
-        plTransform( const std::vector<plString> &row );
+        plTransform( const std::vector<plString> &row );        
         plTransform( const plVector3 &x, const plVector3 &y, const plVector3 &origin );
+        plTransform( const plMatrix44& matrix );
 
-        const plVector3&          x() const { return _x; }
-        const plVector3&          y() const { return _y; }
-        const plVector3&          z() const { return _z; }        
-        const plVector3&     origin() const { return _origin; }
-        const plMatrix44&    matrix() const { return _transform; }
+        const plVector3&       x()   const { return _x; }
+        const plVector3&       y()   const { return _y; }
+        const plVector3&       z()   const { return _z; }        
+        const plVector3&  origin()   const { return _origin; }
+        const plMatrix44& matrix()   const { return _transform; }
+        plMatrix44        rotation() const { plMatrix44 m( matrix() ); m.setColumn( 3, plVector3( 0, 0, 0 ) ); return m; }
 
         void x     ( const plVector3 &x )      { _x = x.normalize(); _compute(); }
         void y     ( const plVector3 &y )      { _y = y.normalize(); _compute(); }
@@ -38,6 +39,7 @@ class plTransform
         friend std::ostream& operator << ( std::ostream& out, const plTransform &t );
   
         plTransform operator* ( const plTransform &transform ) const;
+        plTransform operator* ( const plMatrix44 &matrix ) const;
   
     private:
     

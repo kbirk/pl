@@ -567,13 +567,13 @@ void plCartilageCap::_generateProjectionVAO( PLfloat radius, PLfloat length, con
         const plVector3 &p2 = triangles[i].point2();
         const plVector3 &n  = triangles[i].normal();
         
-        vertices.push_back( plVector3( p0.x, p0.y+0.05f, p0.z) );    // position
+        vertices.push_back( plVector3( p0.x, p0.y+PL_CAP_OFFEST, p0.z) );    // position
         vertices.push_back( n );                                     // normal
 
-        vertices.push_back( plVector3( p1.x, p1.y+0.05f, p1.z) );    // position
+        vertices.push_back( plVector3( p1.x, p1.y+PL_CAP_OFFEST, p1.z) );    // position
         vertices.push_back( n );                                     // normal
         
-        vertices.push_back( plVector3( p2.x, p2.y+0.05f, p2.z) );    // position
+        vertices.push_back( plVector3( p2.x, p2.y+PL_CAP_OFFEST, p2.z) );    // position
         vertices.push_back( n );                                     // normal
 
         indices.push_back(base+0);
@@ -614,7 +614,7 @@ void plCartilageCap::_generateProjectionVAO( PLfloat radius, PLfloat length, con
         float theta = perimeter[0].angle;
         plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
 
-        plVector3 prevBot = perimeter[0].point; //centreBottom + CONTRACTED_RADIUS * cos(theta) * z + CONTRACTED_RADIUS * sin(theta) * x; 
+        plVector3 prevBot = perimeter[0].point; 
         plVector3 prevTop = centreTop + CONTRACTED_RADIUS * cos(theta) * z + CONTRACTED_RADIUS * sin(theta) * x;
 
         // bottom side
@@ -627,7 +627,7 @@ void plCartilageCap::_generateProjectionVAO( PLfloat radius, PLfloat length, con
         for ( PLuint i=0; i< perimeter.size(); i++ ) 
         {
             float theta = perimeter[i].angle;
-            plVector3 bot =  perimeter[i].point; //centreBottom + CONTRACTED_RADIUS * cos(theta) * z + CONTRACTED_RADIUS * sin(theta) * x;
+            plVector3 bot =  perimeter[i].point;
             plVector3 top = centreTop + CONTRACTED_RADIUS * cos(theta) * z + CONTRACTED_RADIUS * sin(theta) * x;
 
             plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
@@ -713,13 +713,13 @@ void plBoneCap::generateVAO( PLfloat radius, PLfloat length )
         const plVector3 &p2 = triangles[i].point2();
         const plVector3 &n  = triangles[i].normal();
         
-        vertices.emplace_back( plVector3( p0.x, p0.y+0.01f, p0.z) ); // position
+        vertices.emplace_back( plVector3( p0.x, p0.y+PL_CAP_OFFEST/2.0f, p0.z) ); // position
         vertices.push_back( n );                                     // normal
 
-        vertices.emplace_back( plVector3( p1.x, p1.y+0.01f, p1.z) ); // position
+        vertices.emplace_back( plVector3( p1.x, p1.y+PL_CAP_OFFEST/2.0f, p1.z) ); // position
         vertices.push_back( n );                                     // normal
         
-        vertices.emplace_back( plVector3( p2.x, p2.y+0.01f, p2.z) ); // position
+        vertices.emplace_back( plVector3( p2.x, p2.y+PL_CAP_OFFEST/2.0f, p2.z) ); // position
         vertices.push_back( n );                                     // normal
 
         indices.push_back(base+0);

@@ -37,7 +37,7 @@ class plGraft : public plRenderable,
         const PLfloat&     length()             const { return _length; }  
         const plVector3&   markDirection()      const { return _markDirection; } 
         const plVector3&   markPositions( PLuint index ) const { return _markPositions[ index ]; } 
-        const plTransform& transform ( PLuint type ) const;
+              plTransform  transform ( PLuint type ) const;
         const plVector3&   surfaceNormal( PLuint type ) const;
         const plPlug&      plug      ( PLuint type ) const;
         const plPlug&      harvest   () const { return _harvest;   }

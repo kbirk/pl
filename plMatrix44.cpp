@@ -10,16 +10,13 @@ plMatrix44::plMatrix44()
 
 // openCV xml input file
 PLbool plMatrix44::importFile( const plString &file )
-{
-    
+{    
     plString xml;   
-    plString values; 
-    
     if ( xml.importFile( file ) )
     {
+        plString values; 
         // find start position
-        plString::size_type startPos = xml.find("<data>");
-
+        plString::size_type startPos = xml.find("<data>");       
         if (startPos != std::string::npos)
         {
             startPos+=6; // start after "<data>".
@@ -30,8 +27,7 @@ PLbool plMatrix44::importFile( const plString &file )
             {
                 values = xml.substr(startPos, endPos - startPos);
             } 
-        }
-                
+        }               
         sscanf(values.c_str(), "%f %f %f %f " 
                                "%f %f %f %f "
                                "%f %f %f %f "
@@ -116,11 +112,12 @@ plMatrix44::plMatrix44(const plMatrix44 &m)
 void plMatrix44::setRow(int row, PLfloat x, PLfloat y, PLfloat z, PLfloat w)  
 {
 	// copy plVector3 into specified row, rows indexed 0-3
-	_data[row]	   = x;
+	_data[row]	  = x;
 	_data[row+4]  = y;
 	_data[row+8]  = z;
 	_data[row+12] = w;
 }
+
 
 void plMatrix44::setColumn(int col, PLfloat x, PLfloat y, PLfloat z, PLfloat w)
 {
@@ -129,6 +126,30 @@ void plMatrix44::setColumn(int col, PLfloat x, PLfloat y, PLfloat z, PLfloat w)
 	_data[(col*4)+1] = y;
 	_data[(col*4)+2] = z;
 	_data[(col*4)+3] = w;
+}
+
+
+void plMatrix44::setRow(int row, const plVector4& vector )
+{
+    setRow( row, vector.x, vector.y, vector.z, vector.w );
+}
+
+
+void plMatrix44::setColumn(int col, const plVector4& vector )
+{
+    setColumn( col, vector.x, vector.y, vector.z, vector.w );
+}
+
+
+plVector3 plMatrix44::getRow( int row )
+{
+    return plVector3( _data[row], _data[row+4], _data[row+8] );
+}
+
+
+plVector3 plMatrix44::getColumn( int col )
+{
+    return plVector3( _data[(col*4)], _data[(col*4)+1], _data[(col*4)+2] );
 }
 
 

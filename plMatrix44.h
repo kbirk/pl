@@ -36,6 +36,11 @@ class plMatrix44
 
 		void setRow(int row, PLfloat x, PLfloat y, PLfloat z, PLfloat w);
 		void setColumn(int col, PLfloat x, PLfloat y, PLfloat z, PLfloat w);
+        void setRow(int row, const plVector4& vector );
+		void setColumn(int col, const plVector4& vector );
+
+        plVector3 getRow( int row );
+		plVector3 getColumn( int col );
 
 		void setZero        ();
 		void setIdentity    ();

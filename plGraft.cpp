@@ -19,13 +19,13 @@ void plGraft::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
         return;
 
     // Draw at harvest location
-    plModelStack::push( _harvest.transform().matrix() );
+    plModelStack::push( _harvest.matrix() );
     plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DONOR );                  
     _extractGraftRenderComponents( renderMap, technique );
     plModelStack::pop();
 
     // Draw at recipient location
-    plModelStack::push( _recipient.transform().matrix() );
+    plModelStack::push( _recipient.matrix() );
     plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
     _extractGraftRenderComponents( renderMap, technique );
     plModelStack::pop();
@@ -117,8 +117,8 @@ void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap, PLuint tech
 void plGraft::_generateCaps()
 {
     // generate cap polygons
-    _cartilageCap.generateCap( ( const plOctreeMesh& )_harvest.mesh(), _harvest.transform(), _radius );
-    _boneCap.generateCap( ( const plOctreeMesh& )_harvest.mesh(), _harvest.transform(), _radius );
+    _cartilageCap.generateCap( ( const plOctreeMesh& )_harvest.mesh(), _harvest.finalTransform(), _radius );
+    _boneCap.generateCap( ( const plOctreeMesh& )_harvest.mesh(), _harvest.finalTransform(), _radius );
 
     // generate vaos 
     _cartilageCap.generateVAO( _radius, _length, _boneCap.perimeter );
@@ -168,17 +168,17 @@ void plGraft::setMark( const plVector3 &direction )
 }
 
 
-const plTransform& plGraft::transform( PLuint type ) const
+plTransform plGraft::transform( PLuint type ) const
 {
     switch (type)
     {
-        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.transform();        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.transform();
+        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.finalTransform();        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.finalTransform();
             
         default:
         
             std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient \n";
-            return _recipient.transform();   
+            return _recipient.finalTransform();   
     } 
 }
 
@@ -187,13 +187,13 @@ const plVector3& plGraft::surfaceNormal( PLuint type ) const
 {
     switch (type)
     {
-        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.surfaceNormal();        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.surfaceNormal();
+        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.transform().x();        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.transform().y();
             
         default:
         
             std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient \n";
-            return _recipient.surfaceNormal();   
+            return _recipient.transform().y();   
     } 
 
 }
