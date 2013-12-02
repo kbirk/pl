@@ -13,7 +13,7 @@
 #include "plArthroCamTechnique.h"
 #include "plTransparencyTechnique.h"
 #include "plMinimalTechnique.h"
-
+#include "plRenderShapes.h"
 
 enum plTechniqueEnums
 {   
@@ -28,11 +28,19 @@ enum plTechniqueEnums
 };
 
 
+typedef std::map< PLuint, std::shared_ptr<plRenderTechnique> >   plTechniqueMap;
+
+
 namespace plRenderer
 {  
     void init(); 
     void queue( const plRenderable& renderable ); 
     void draw();  
+
+    void queueSphere   ( PLuint technique, const plVector3& position, PLfloat radius );
+    void queueCylinder ( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLfloat length );
+    void queueDisk     ( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLbool flip = false );   
+    void queueCone     ( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat topRadius, PLfloat bottomRadius, PLfloat length );    
 }
 
 

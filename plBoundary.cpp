@@ -75,19 +75,14 @@ void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap, PLuint t
         if ( _isSelected && _selectedValue == i )   // is the current point selected?
         {
             // scale larger
-            plRenderer::queue( plSphere( technique, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );   
-            // or          
-            plSphere( _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ).extractRenderComponents( renderMap, technique );
-            
-            // or 
-            
-            plRenderer::queueSphere( technique, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS );
-            
+            //plRenderer::queue( plSphere( technique, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS ) );   
+            plRenderer::queueSphere( technique, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS );         
         }
         else
         {
             // regular size
-            plRenderer::queue( plSphere( technique, _points[i], PL_BOUNDARY_POINT_RADIUS ) ); 
+            //plRenderer::queue( plSphere( technique, _points[i], PL_BOUNDARY_POINT_RADIUS ) );
+            plRenderer::queueSphere( technique, _points[i], PL_BOUNDARY_POINT_RADIUS );  
         }
     } 
 }

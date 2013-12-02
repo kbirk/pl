@@ -311,11 +311,18 @@ void plGraftEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
             plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DONOR );
             plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR ); 
 
-            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, plVector3( HARVEST_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, 
+                                       plVector3( HARVEST_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0), 
+                                       PL_EDITOR_MENU_CIRCLE_RADIUS ) );
              
             if ( _plan->grafts(i)._isSelected && _selectedType == PL_PICKING_INDEX_GRAFT_DONOR )
-                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, plVector3( HARVEST_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
-             
+            {
+                // draw selection outline
+                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, 
+                                           plVector3( HARVEST_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0), 
+                                           PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            } 
+            
             // recipient
             plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );           
             plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR ); 
@@ -323,8 +330,12 @@ void plGraftEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
             plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, plVector3( RECIPIENT_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
 
             if ( _plan->grafts(i)._isSelected && _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
-                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, plVector3( RECIPIENT_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0), PL_EDITOR_MENU_CIRCLE_RADIUS ) );
-
+            {
+                // draw selection outline
+                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, 
+                                           plVector3( RECIPIENT_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0), 
+                                           PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            }
             count++;
         }
         

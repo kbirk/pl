@@ -4,17 +4,19 @@
 namespace plRenderer
 {
 
-    plRenderMap _renderMap;
+    plRenderMap    _renderMap;
+    plTechniqueMap _techniques;
 
-    std::map< PLuint, std::shared_ptr<plRenderTechnique> > _techniques;
 
-    // private function prototypes
-    void _initTechniques();  
-    
-    
     void init()
     {
-        _initTechniques();
+        // create techniques
+        _techniques[ PL_PLAN_TECHNIQUE ]         = std::shared_ptr<plPlanTechnique>( new plPlanTechnique() );
+        _techniques[ PL_OUTLINE_TECHNIQUE ]      = std::shared_ptr<plOutlineTechnique>( new plOutlineTechnique() );
+        _techniques[ PL_SCREEN_QUAD_TECHNIQUE ]  = std::shared_ptr<plScreenQuadTechnique>( new plScreenQuadTechnique() );
+        _techniques[ PL_ARTHRO_CAM_TECHNIQUE ]   = std::shared_ptr<plArthroCamTechnique>( new plArthroCamTechnique() );
+        _techniques[ PL_TRANSPARENCY_TECHNIQUE ] = std::shared_ptr<plTransparencyTechnique>( new plTransparencyTechnique() );
+        _techniques[ PL_MINIMAL_TECHNIQUE ]      = std::shared_ptr<plMinimalTechnique>( new plMinimalTechnique() );
     } 
 
     
@@ -40,16 +42,109 @@ namespace plRenderer
     }
     
 
-    void _initTechniques()
+    void queueSphere( PLuint technique, const plVector3& position, PLfloat radius )
     {
-        // create techniques
-        _techniques[ PL_PLAN_TECHNIQUE ]        = std::shared_ptr<plPlanTechnique>( new plPlanTechnique() );
-        _techniques[ PL_OUTLINE_TECHNIQUE ]     = std::shared_ptr<plOutlineTechnique>( new plOutlineTechnique() );
-        _techniques[ PL_SCREEN_QUAD_TECHNIQUE ] = std::shared_ptr<plScreenQuadTechnique>( new plScreenQuadTechnique() );
-        _techniques[ PL_ARTHRO_CAM_TECHNIQUE ]  = std::shared_ptr<plArthroCamTechnique>( new plArthroCamTechnique() );
-        _techniques[ PL_TRANSPARENCY_TECHNIQUE ] = std::shared_ptr<plTransparencyTechnique>( new plTransparencyTechnique() );
-        _techniques[ PL_MINIMAL_TECHNIQUE ]     = std::shared_ptr<plMinimalTechnique>( new plMinimalTechnique() );
+        static std::shared_ptr< plVAO > vao =  std::make_shared<plVAO>( plRenderShapes::sphereVAO( 1.0f, 20, 20 ) );
+
+        plModelStack::push();
+        plModelStack::translate( position );   // transform
+        plModelStack::scale( radius );         // scale
+
+        plRenderComponent component( vao );
+        
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        
+        _renderMap[ technique ].insert( component );  
+
+        plModelStack::pop();   
     }
-     
+
+
+    void queueCylinder( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLfloat length )
+    {
+        static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( plRenderShapes::cylinderVAO( 1.0f, 1.0f, 1.0f, 30, 1 ) ); 
+
+        plMatrix44 rot; rot.setRotation( plVector3( 0, 0, 1), direction.normalize() );
+
+        plModelStack::push();
+        plModelStack::translate( position );
+        plModelStack::mult( rot ); 
+        plModelStack::scale( radius, radius, length );        
+       
+        plRenderComponent component( vao );
+    
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        
+        _renderMap[ technique ].insert( component );  
+
+        plModelStack::pop();      
+    }
+
+
+    void queueDisk( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLbool flip )
+    {
+        static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( plRenderShapes::diskVAO( 0.0f, 1.0f, 20, 20 ) );
+
+        plMatrix44 rot; rot.setRotation( plVector3( 0, 0, 1), direction.normalize() );
+
+        plModelStack::push();
+        plModelStack::translate( position );
+        plModelStack::mult( rot ); 
+        
+        if ( flip ) 
+            plModelStack::rotate( 180.0f, plVector3( 1,0,0 ) );
+
+        plModelStack::scale( radius );
+
+        // create render component
+        plRenderComponent component( vao );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        // insert into render map
+        _renderMap[ technique ].insert( component );  
+        
+        plModelStack::pop();         
+    }
+    
+
+    void queueCone( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat topRadius, PLfloat bottomRadius, PLfloat length )
+    {
+        // can't use static for cones as normals scale inversely, 
+        std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( plRenderShapes::coneVAO( bottomRadius, topRadius, length, 30, 1 ) ); 
+
+        plMatrix44 rot; rot.setRotation( plVector3( 0, 0, 1 ), direction.normalize() );
+
+        plModelStack::push();
+        plModelStack::translate( position );
+        plModelStack::mult( rot );     
+       
+        plRenderComponent component( vao );
+    
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        
+        _renderMap[ technique ].insert( component );  
+           
+        plModelStack::pop();      
+    }
 
 }
