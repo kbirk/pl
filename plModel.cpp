@@ -1,7 +1,7 @@
 #include "plModel.h"
 
 plModel::plModel( const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth )
-    : _mesh( triangles, octreeDepth ), filename( file )
+    : _mesh( triangles, octreeDepth, true ), filename( file )
 {
     _generateVAO();
 }
@@ -16,7 +16,7 @@ plModel::plModel( const plString &file, PLuint octreeDepth )
     if ( !plSTL::importFile( triangles, filename ) )
         return;
      
-    _mesh = plOctreeMesh( std::move( triangles ), octreeDepth );
+    _mesh = plOctreeMesh( std::move( triangles ), octreeDepth, true );
     
     _generateVAO();
 }

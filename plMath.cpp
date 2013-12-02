@@ -294,21 +294,15 @@ namespace plMath
             // find closest point on ray from triangle centre
             plVector3 closestPointOnLine = plMath::closestPointOnLine( triangle.centroid(), rayOrigin, rayDirection );
                 
-            // find point on sphere closest to point
-            plVector3 closestPointOnSphere = triangle.centroid() + ( closestPointOnLine - triangle.centroid() ).normalize() * triangle.radius();
+            plVector3 closestPointOnTri = triangle.closestPointTo( closestPointOnLine );
             
-            // find distance
-            PLfloat dist = ( closestPointOnSphere - closestPointOnLine ).squaredLength(); 
+            PLfloat dist = ( closestPointOnTri - closestPointOnLine ).squaredLength();
                 
             if ( dist < lowestDist )
-            {
-                // if less than current, find actual closest point on triangle
-                
-                plVector3 closestPointOnTri = triangle.closestPointTo( closestPointOnLine );
-            
-                lowestDist = dist; //( closestPointOnTri - closestPointOnLine ).squaredLength(); ;
+            { 
+                lowestDist = dist;
                 intersection.exists = true;
-                intersection.point  = closestPointOnSphere; //closestPointOnTri;
+                intersection.point  = closestPointOnTri;
                 intersection.normal = triangle.normal();
             }
         }

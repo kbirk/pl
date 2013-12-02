@@ -7,7 +7,7 @@ plSpline::plSpline()
 
 
 plSpline::plSpline( const plMesh &mesh )
-    : plBoundary( PL_PICKING_TYPE_DEFECT_CORNERS, mesh )
+    : plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh )
 {
 }
 
@@ -54,13 +54,12 @@ void plSpline::movePointAndNormal( PLuint index, const plVector3 &point, const p
     {
         _computeHermite();
     }
-
 }
 
 
 void plSpline::removePointAndNormal( PLuint index )
 {
-    plBoundary::removePointAndNormal(index);   
+    plBoundary::removePointAndNormal( index );   
 }
 
 
@@ -226,11 +225,11 @@ void plSpline::_computeHermite()
     // find tangents in the s and t planes
     std::vector<PLfloat> st, tt; _computeTangents( st, tt, p, n );
     
-    const PLfloat   INC      = 0.015f;  // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
+    const PLfloat   INC      = 0.02f;  // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
     const PLuint    NUM_INC  = 1.0f/INC;
     const PLfloat   fNUM_INC = 1.0f/INC;     
-    const PLfloat   MAX_DISTANCE = 2.0f;            // colour map max distance, anything beyond this is dark red   
-    const plVector3 NO_DATA_COLOUR(0.2, 0.2, 0.2);  // default colour if no data available  
+    const PLfloat   MAX_DISTANCE = 1.5f;              // colour map max distance, anything beyond this is dark red   
+    const plVector3 NO_DATA_COLOUR( 0.2, 0.2, 0.2 );  // default colour if no data available  
 
     std::vector<plTriangle> triangles;
     triangles.reserve( NUM_INC*NUM_INC*2 );
@@ -252,7 +251,7 @@ void plSpline::_computeHermite()
         plVector3 p03 = (1.0f-v)*p[0] + v*p[3];
         plVector3 p12 = (1.0f-v)*p[1] + v*p[2];
 
-        for (PLuint i=0; i <= NUM_INC; i++)
+        for ( PLuint i=0; i <= NUM_INC; i++ )
         {
             PLfloat u = i/fNUM_INC;
 
@@ -263,19 +262,18 @@ void plSpline::_computeHermite()
             plVector3 norm = ( (1.0f-u)*n03 + u*n12 ).normalize();           
             plVector3 pos  = (1.0f-u)*p03 + u*p12 + z*norm;          // inflate this point using normal scaled by z value returned by hermite spline
         
-            // intersect cartilage
-            plIntersection intersection = _mesh->rayIntersect( pos+(10.0f*norm), -norm, false, false, true ); 
+            // intersect surface for distance map
+            plIntersection intersection = _mesh->rayIntersect( pos, -norm, false, false, true ); 
         
             PLfloat distance = (intersection.point - pos ).squaredLength() / MAX_DISTANCE;
            
             // get colour value 
             plVector3 colour = ( distance <= MAX_DISTANCE ) ? plColourMap::map( (intersection.point - pos ).squaredLength() / MAX_DISTANCE ) : NO_DATA_COLOUR;
-             
-             
+                        
             points.push_back( pos );
             colours.push_back( colour );
             
-            if (j > 0 && i > 0 )
+            if ( j > 0 && i > 0 )
             {
                 // once past first row, begin triangulating
                 PLuint i0 = (i-1) + (j-1) * (NUM_INC+1);
@@ -320,9 +318,11 @@ void plSpline::_computeHermite()
     _surfaceVAO->attach( eabo );
     // upload to gpu
     _surfaceVAO->upload(); 
-
+    
     // update timer to store time of last update
     _lastUpdate = plTimer::now();
+    
+    
 }
 
 

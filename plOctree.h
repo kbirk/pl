@@ -44,7 +44,7 @@ class plOctree : public plRenderable
 
         PLuint depth() const { return _depth; }
 
-        void build ( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth);  
+        void build ( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth, PLbool verbose = false );  
         void clear ();   
                      
         void extractRenderComponents( plRenderMap& renderMap ) const;          

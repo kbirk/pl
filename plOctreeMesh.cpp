@@ -5,24 +5,24 @@ plOctreeMesh::plOctreeMesh()
 }
 
 
-plOctreeMesh::plOctreeMesh( const std::vector<plTriangle> &triangles, PLuint depth )
+plOctreeMesh::plOctreeMesh( const std::vector<plTriangle> &triangles, PLuint depth, PLbool verbose )
     : plMesh( triangles )
 {
-    _buildOctree( depth );
+    _buildOctree( depth, verbose );
 }
 
 		 
-plOctreeMesh::plOctreeMesh( std::vector<plTriangle>&& triangles, PLuint depth )
+plOctreeMesh::plOctreeMesh( std::vector<plTriangle>&& triangles, PLuint depth, PLbool verbose )
     : plMesh( std::move( triangles ) )
 { 
-    _buildOctree( depth );
+    _buildOctree( depth, verbose );
 } 
 
            
 plOctreeMesh::plOctreeMesh( const plOctreeMesh &mesh )
     : plMesh( mesh._triangles )
 {
-    _buildOctree( mesh.octree().depth() );  // must build a new octree to maintain proper coherency
+    _buildOctree( mesh.octree().depth(), false );  // must build a new octree to maintain proper coherency
 }
 
 
@@ -35,7 +35,7 @@ plOctreeMesh::plOctreeMesh( plOctreeMesh&& mesh )
 plOctreeMesh& plOctreeMesh::operator= ( const plOctreeMesh& mesh ) 
 { 
     _triangles = mesh._triangles;
-    _buildOctree( mesh.octree().depth() ); // must build a new octree to maintain proper coherency
+    _buildOctree( mesh.octree().depth(), false );  // must build a new octree to maintain proper coherency
     return *this;
 }
 
@@ -48,14 +48,14 @@ plOctreeMesh& plOctreeMesh::operator= ( plOctreeMesh&& mesh )
 }
 
 
-void plOctreeMesh::_buildOctree( PLuint depth )
+void plOctreeMesh::_buildOctree( PLuint depth, PLbool verbose )
 {
     // get min and max extents of model
     plVector3 min, max;
-    getMinMax(min,max);
+    getMinMax( min, max );
 
     // build octree
-    _octree.build( min, max, _triangles, depth ); 
+    _octree.build( min, max, _triangles, depth, verbose ); 
 }
 
 
@@ -108,7 +108,7 @@ plIntersection plOctreeMesh::rayIntersect( const plVector3 &rayOrigin, const plV
 
     plIntersection closestIntersection( false );
     PLfloat min = FLT_MAX;
-
+    
     for ( const plTriangle* tri : triangles )
     {  
         // intersect triangle
@@ -131,96 +131,5 @@ plIntersection plOctreeMesh::rayIntersect( const plVector3 &rayOrigin, const plV
     return closestIntersection;  
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-void plOctreeMesh::_copyMesh( const plOctreeMesh &mesh )
-{
-    _vao = mesh._vao;
-}
-
-
-
-void plOctreeMesh::_triangleToInterleaved(const std::vector<plTriangle> &triangles)
-{			
-	// convert to interleaved format
-	std::vector<plVector3> vertices;    vertices.reserve( triangles.size() * 3 * 2 );
-	std::vector<PLuint>    indices;     indices.reserve( triangles.size() * 3);
-	
-    int indexCount = 0;
-    for (PLuint i = 0; i < triangles.size(); i++) 
-    {  
-        // p1
-	    vertices.push_back(triangles[i].point0());    // position
-	    vertices.push_back(triangles[i].normal());    // normal
-	    indices.push_back(indexCount++);
-	    // p2
-	    vertices.push_back(triangles[i].point1());
-	    vertices.push_back(triangles[i].normal());
-	    indices.push_back(indexCount++);
-	    // p3
-	    vertices.push_back(triangles[i].point2());
-	    vertices.push_back(triangles[i].normal());
-	    indices.push_back(indexCount++);	    
-	}
-
-    setBuffers(vertices, indices);
-}
-
-
-void plOctreeMesh::setBuffers( const std::vector<plVector3> &vertices, const std::vector<PLuint> &indices)
-{
-    if ( vertices.size() < 3 || indices.size() < 3 )
-    {
-        std::cerr << "plOctreeMesh::setBuffers() error: not enough vertices or indices " << std::endl;
-    }
-    
-    
-    std::vector<PLuint> attributeTypes;
-    attributeTypes.push_back( PL_POSITION_ATTRIBUTE );
-    attributeTypes.push_back( PL_NORMAL_ATTRIBUTE );
-        
-    _vao.set( std::vector<plVector4>( vertices.begin(), vertices.end() ), attributeTypes, indices );
-}
-
-
-void plOctreeMesh::draw() const
-{	
-	// use current shader and properly set uniforms
-    plShaderStack::use();	
-    // bind and draw elements from AVO
-    _vao.draw(); 
-       
-}
-
-
-void plOctreeMesh::draw(const std::vector<PLuint> &indices) const
-{    
-    // use current shader and properly set uniforms
-    plShaderStack::use();
-    // bind vertex array object
-	glBindVertexArray(_vertexArrayObject);		
-    // buffer new index data
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numIndices * sizeof(PLuint), &indices[0], GL_STREAM_DRAW);        
-	// draw batch
-	glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0); 
-    // unbind VBO
-	glBindVertexArray(0); 
-}
-*/
 
 

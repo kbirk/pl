@@ -57,22 +57,22 @@ plOctree& plOctree::operator= ( plOctree&& octree )
 
 void plOctree::clear()
 {
-    for (PLuint i=0; i < 8; i++)
+    for ( PLuint i=0; i < 8; i++ )
     {       
         if ( _children[i] )  
-        {
-            // recursively delete children's children
-            _children[i]->clear();       
+        {      
             // delete child    
             delete _children[i];
+            _children[i] = NULL;
         }
     }
 }
 
 
-void plOctree::build(  const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth )
+void plOctree::build(  const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth, PLbool verbose )
 {
-    std::cout << "Building octree for " << triangles.size() << " triangles (depth = " << depth << ")...";
+    if ( verbose )
+        std::cout << "Building octree for " << triangles.size() << " triangles (depth = " << depth << ")...";
     
     // centre point of octree
     _centre = 0.5f * (min+max);   
@@ -96,7 +96,8 @@ void plOctree::build(  const plVector3 &min, const plVector3 &max, const std::ve
         _insert( triangle );
     }
     
-    std::cout << "\tComplete.\n";
+    if ( verbose )
+        std::cout << "\tComplete.\n";
 }
 
 
@@ -197,40 +198,6 @@ plVAO plOctree::_generateVAO( PLfloat halfWidth ) const
 
     return vao;
 }
-
-
-/*
-void plOctree::draw() const
-{
-    if ( !_isVisible )
-        return;
-     
-    static plVAO cube( plDraw::generateCubeLineVAO( 1.0f ) );
-
-    PLint count = 0;
-
-    // draw child nodes
-    for (PLuint i=0; i < 8; i++)
-    {
-        if ( _children[i] )
-        {
-            _children[i]->draw();
-            count++;
-        }
-    }
-    
-    // draw current node
-    if ( _contained.size() > 0 || count > 0 )    // only draw if contains objects, or has children that contain
-    {
-        plModelStack::push();
-        plModelStack::translate( _centre );
-        plModelStack::scale( plVector3( _halfWidth, _halfWidth, _halfWidth ) );
-        
-        cube.draw();
-        plModelStack::pop();
-    }
-}
-*/
 
 
 void plOctree::_insert( const plTriangle &tri  )
@@ -426,7 +393,7 @@ void plOctree::_copy( const plOctree& octree )
     _contained = octree._contained;    
 
     // copy children
-    for (PLuint i=0; i < 8; i++)
+    for ( PLuint i=0; i < 8; i++ )
     { 
         if ( octree._children[i] )
         {

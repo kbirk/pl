@@ -23,7 +23,7 @@ class plOrderPair
         float distance;
 
         plOrderPair (int i, float d)
-            : index(i), distance(d)
+            : index( i ), distance( d )
         {
         }
         

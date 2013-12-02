@@ -110,13 +110,16 @@ PLbool plGraftEditor::processJoystickDrag(  PLint x, PLint y )
     }
     
     // get screen plane
-    plVector3 localXAxis = ( plCameraStack::direction() ^ _selectedGraft->transform( _selectedType ).y() ).normalize();
-    plVector3 localZAxis = ( _selectedGraft->transform( _selectedType ).y() ^ localXAxis ).normalize();
+    plVector3 localXAxis = ( plCameraStack::direction() ^ _selectedGraft->surfaceNormal( _selectedType ) ).normalize();
+    plVector3 localZAxis = ( _selectedGraft->surfaceNormal( _selectedType ) ^ localXAxis ).normalize();
     plVector3 localYAxis = ( localXAxis ^ localZAxis ).normalize();
 
     translation = ( translation * localXAxis ) * localXAxis +
                   ( translation * localYAxis ) * localYAxis +
                   ( translation * localZAxis ) * localZAxis;
+
+    // move graft
+    //_selectedGraft->move( _selectedType, intersection.point, intersection.normal );
 
     return true;
 }
@@ -284,12 +287,12 @@ void plGraftEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
     const PLfloat RECIPIENT_HORIZONTAL = (PL_EDITOR_MENU_HORIZONTAL_BUFFER + PL_EDITOR_MENU_CIRCLE_RADIUS + PL_EDITOR_MENU_HORIZONTAL_SPACING );      
     const PLfloat INITIAL_VERTICAL     = plWindow::viewportHeight() - PL_EDITOR_MENU_VERTICAL_BUFFER;
 
-    static plMatrix44 ortho( 0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1 );
+    plMatrix44 ortho( 0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1 );
 
-    static plMatrix44 camera( 1, 0,  0, 0,
-                              0, 1,  0, 0,
-                              0, 0, -1, 0,
-                              0, 0,  0, 1 ); 
+    plMatrix44 camera( 1, 0,  0, 0,
+                       0, 1,  0, 0,
+                       0, 0, -1, 0,
+                       0, 0,  0, 1 ); 
 
     PLfloat count = 0;
     plPickingStack::loadBlue( -1 );

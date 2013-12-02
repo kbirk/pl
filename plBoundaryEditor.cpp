@@ -74,6 +74,15 @@ PLbool plBoundaryEditor::processJoystickDrag ( PLint x, PLint y)
 
 PLbool plBoundaryEditor::processMouseRelease( PLint x, PLint y )
 {
+    if ( !_selectedBoundary ) // no boundary or point is selected
+        return false; 
+
+    // moving spline corners, recast defect site boundary
+    if ( _selectedBoundary->type() == PL_PICKING_TYPE_DEFECT_SPLINE )
+    {
+        _plan->defectSites( _selectedSiteIndex ).recastBoundary();
+    }
+
     _isDraggingMenu = false;
     return true;   
 }
@@ -132,8 +141,19 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection( PLuint x, PLuint y )
 {
     plVector3 rayOrigin, rayDirection;
     plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
+       
+    plIntersection intersection = _selectedBoundary->mesh().rayIntersect( rayOrigin, rayDirection );
     
-    return _selectedBoundary->mesh().rayIntersect( rayOrigin, rayDirection );
+    if ( !intersection.exists ) 
+    {
+        // if no intersection, and is defect boundary point, find closest point on spline
+        if ( _selectedBoundary->type() == PL_PICKING_TYPE_DEFECT_BOUNDARY )
+        {
+            intersection = plMath::getClosestPointToRay( _selectedBoundary->mesh().triangles(), rayOrigin, rayDirection );
+        }
+    }   
+    
+    return intersection;
 }
 
 
@@ -148,7 +168,6 @@ void plBoundaryEditor::moveSelectedPoint( PLuint x, PLuint y )
     {            
         _selectedBoundary->movePointAndNormal( _selectedPointIndex, intersection.point, intersection.normal);
     }
-
 }
 
 
@@ -244,12 +263,12 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
     PLfloat count = 0;
     plPickingStack::loadBlue( -1 );   
        
-    static plMatrix44 ortho( 0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1 );
+    plMatrix44 ortho( 0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1 );
 
-    static plMatrix44 camera( 1, 0,  0, 0,
-                              0, 1,  0, 0,
-                              0, 0, -1, 0,
-                              0, 0,  0, 1 ); 
+    plMatrix44 camera( 1, 0,  0, 0,
+                       0, 1,  0, 0,
+                       0, 0, -1, 0,
+                       0, 0,  0, 1 ); 
 
     plCameraStack::push( camera );
     plProjectionStack::push( ortho );

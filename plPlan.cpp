@@ -238,6 +238,7 @@ void plPlan::importFile( const plString &filename )
             
             PLuint     splineModelID  ( std::stoi( csv.data[++i][1] ) ); 
             plSpline   spline         ( _models[ splineModelID ]->mesh(), csv.data[++i] );
+                        
             _defectSites.push_back( new plDefectSite( spline, csv.data[++i] ) );
 
         }
@@ -381,16 +382,16 @@ void plPlan::exportFile( const plString &filename )
         // grafts
         for (PLuint i=0; i<_grafts.size(); i++) 
         {
-            out << "graft"                   << std::endl
+            out << "graft"                          << std::endl
                 << "    recipient_defect_site_id, " << _getDefectSiteIndex( _grafts[i]->recipient() )   << std::endl
-                << "    recipient_transform,      " << _grafts[i]->recipient().transform() << std::endl
-                << "    recipient_rotation,       " << _grafts[i]->recipient().rotation()  << std::endl
-                << "    harvest_model_id,         " << _getModelIndex( _grafts[i]->harvest() )    << std::endl
-                << "    harvest_transform,        " << _grafts[i]->harvest().transform()   << std::endl
-                << "    harvest_rotation,         " << _grafts[i]->harvest().rotation()    << std::endl
-                << "    radius,                   " << _grafts[i]->radius()                << std::endl
-                << "    length,                   " << _grafts[i]->length()                << std::endl               
-                << "    mark_direction,           " << _grafts[i]->markDirection()         << std::endl
+                << "    recipient_transform,      " << _grafts[i]->recipient().transform()              << std::endl
+                << "    recipient_rotation,       " << _grafts[i]->recipient().rotation()               << std::endl
+                << "    harvest_model_id,         " << _getModelIndex( _grafts[i]->harvest() )          << std::endl
+                << "    harvest_transform,        " << _grafts[i]->harvest().transform()                << std::endl
+                << "    harvest_rotation,         " << _grafts[i]->harvest().rotation()                 << std::endl
+                << "    radius,                   " << _grafts[i]->radius()                             << std::endl
+                << "    length,                   " << _grafts[i]->length()                             << std::endl               
+                << "    mark_direction,           " << _grafts[i]->markDirection()                      << std::endl
                 << std::endl;
         }
          

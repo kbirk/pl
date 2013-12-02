@@ -1,13 +1,12 @@
 
 OPENGL_DRIVER_DIR = /usr/lib/nvidia-331
 
-LIBS = -L$(OPENGL_DRIVER_DIR) -lglut -lGL 
-
+LIBS = -L$(OPENGL_DRIVER_DIR) -lglut -lGL
 INCS = 
 
 CXXFLAGS = -Wfatal-errors -O3 -std=c++0x -DLINUX $(INCS)
 
-CXX = g++ 
+CXX = g++
 
 OBJECTS = $(patsubst %.cpp,objects/%.o,$(SOURCES))
 

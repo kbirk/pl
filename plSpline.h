@@ -33,17 +33,21 @@ class plSpline : public plBoundary
 
     private:
 
-        PLtime        _lastUpdate;
+        PLtime _lastUpdate;
         
         plMesh                   _surfaceMesh;
         std::shared_ptr< plVAO > _surfaceVAO;
 
-        std::vector<plVector3>  _averageCornerNormals() const;
+        std::vector<plVector3> _averageCornerNormals() const;
               
-        void    _computeTangents( std::vector<PLfloat> &st, std::vector<PLfloat> &tt, const std::vector<plVector3> &p, const std::vector<plVector3> &n ) const;
-        void    _computeHermite();
-                
-        PLuint  _timeSinceLastUpdate();  
+        void _computeTangents( std::vector<PLfloat> &st, 
+                               std::vector<PLfloat> &tt, 
+                               const std::vector<plVector3> &p, 
+                               const std::vector<plVector3> &n ) const;
+                               
+        void _computeHermite();
+
+        PLuint _timeSinceLastUpdate();  
 
 };
 
