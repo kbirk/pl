@@ -43,10 +43,32 @@ plArthroscope::plArthroscope(  const plDRBTransform &ToTrackedPoint, const plDRB
 }
 
 
-plArthroscope::~plArthroscope() 
+plArthroscope::plArthroscope( const plArthroscope& arthroscope )
 {
+    _copy( arthroscope );
+}
+      
+       
+plArthroscope& plArthroscope::operator=( const plArthroscope& arthroscope ) const
+{
+    _copy( arthroscope );
+}
+        
+
+void plArthroscope::_destroy()
+{
+    delete _intrinsicsCV;
+    delete _distortion;
     cvReleaseCapture( &_capture );
     cvReleaseImage  ( &_image   );
+    cvReleaseCapture( &_mapx    );
+    cvReleaseImage  ( &_mapy    );
+}
+
+
+plArthroscope::~plArthroscope() 
+{
+    _destroy();
 }
 
 
@@ -278,3 +300,33 @@ void plArthroscope::_callCircle()
     }
 }
 */
+
+
+void _copy( const plArthroscope& arthroscope )
+{
+    _destroy();
+
+    _isCameraView = arthroscope._isCameraView;
+    _texture = arthroscope._texture;
+    _vao = arthroscope._vao;
+
+    _capture = cvCreateCameraCapture(0);   
+    _image = cvCloneImage( arthroscope._image );
+    _frame = cvCloneImage( arthroscope._frame );
+
+    _mapx = cvCloneImage( arthroscope._mapx );
+    _mapy = cvCloneImage( arthroscope._mapy );
+
+    _intrinsicsPL =  arthroscope._intrinsicsPL;
+    _intrinsicsCV = new CvMat( arthroscope._intrinsicsCV );
+    _distortion   = new CvMat( arthroscope._distortion );
+    
+    // Variables for circle tracking and undistortion function
+    _interpolationDeque = arthroscope._interpolationDeque;  
+    _weights = arthroscope._weights;
+    //cv::Mat _frameMatrix;
+    _xCenter = arthroscope._xCenter;
+    _yCenter = arthroscope._xCenter;
+    _radius = arthroscope._radius;
+}       
+

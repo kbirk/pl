@@ -19,6 +19,7 @@
 #define ARTHRO_CAM_RES_X        1280
 #define ARTHRO_CAM_RES_Y        720
 
+
 enum ImageManipulation
 { 
     CAMERA_IMAGE_RAW, 
@@ -33,6 +34,11 @@ class plArthroscope : public plTrackedObject
 
         plArthroscope();
         plArthroscope( const plDRBTransform &ToTrackedPoint, const plDRBTransform &ToTrackedEnd, const plDRBTransform &FemurDRBToFemurSTL );
+        
+        plArthroscope( const plArthroscope& arthroscope );
+       
+        plArthroscope& operator=( const plArthroscope& arthroscope ) const;
+        
         ~plArthroscope();
 
         const PLchar*      image()      const;
@@ -65,8 +71,8 @@ class plArthroscope : public plTrackedObject
         IplImage* _mapy;
 
         //Input camera intrinsics
-        CvMat*     _intrinsicsCV;
         plMatrix44 _intrinsicsPL;
+        CvMat*     _intrinsicsCV;       
         CvMat*     _distortion;
         
         // Variables for circle tracking and undistortion function
@@ -81,6 +87,9 @@ class plArthroscope : public plTrackedObject
         void _generateVAO();
         void _extractCameraRenderComponents( plRenderMap& renderMap ) const;        
         void _extractScopeRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        
+        void _copy( const plArthroscope& arthroscope );
+        void _destroy();
 
 };
 
