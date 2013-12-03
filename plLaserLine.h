@@ -6,7 +6,6 @@
 #include "plVector4.h"
 #include "plRenderable.h"
 #include "plRenderer.h"
-#include "plCylinder.h"
 
 class plLaserLine : public plRenderable
 {

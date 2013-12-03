@@ -14,7 +14,7 @@ plLaserLine::plLaserLine( const plVector3 &position, const plVector3 &direction,
 
 void plLaserLine::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
-    plRenderer::queue( plCylinder( technique, _position, _direction, 0.1f, _length ) );  
+    plRenderer::queueCylinder( technique, _position, _direction, 0.1f, _length );
 }
 
 
