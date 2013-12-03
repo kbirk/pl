@@ -78,12 +78,10 @@ void plTrackedObject::extractRenderComponents( plRenderMap& renderMap, PLuint te
         plColourStack::load(1.0, 0.3, 0.1);
 
     plModelStack::push();
-    {
-        plModelStack::translate( _trackedTip );
-        plModelStack::rotate( _rotationAngle, _rotationAxis );
-        plRenderer::queue( plCone( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 0.0, 1.0f, 4.0f ) );
-        plRenderer::queue( plCone( technique, plVector3( 0, 0, 4 ), plVector3( 0, 0, 1 ), 1.0, 2.5f, 124.0f ) );
-    }
+    plModelStack::translate( _trackedTip );
+    plModelStack::rotate( _rotationAngle, _rotationAxis );
+    plRenderer::queueCone( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 0.0, 1.0f, 4.0f );
+    plRenderer::queueCone( technique, plVector3( 0, 0, 4 ), plVector3( 0, 0, 1 ), 1.0, 2.5f, 124.0f );
     plModelStack::pop();
 }
 
@@ -92,142 +90,5 @@ void plTrackedObject::extractRenderComponents( plRenderMap& renderMap ) const
 {
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
-
-
-/*
-void plTrackedObject::_extractScopeRenderComponents( plRenderMap& renderMap ) const
-{
-    // Draw the TA104 arthroscope
-    //static plVAO c1 = plDraw::generateCylinderVAO( 1.5f, 2.0f, 120.0f, 16, 4 );
-    //static plVAO c2 = plDraw::generateCylinderVAO( 4.0f, 4.0f, 30.0f, 16, 4 );
-    //static plVAO c3 = plDraw::generateCylinderVAO( 8.0f, 8.0f, 60.0f, 16, 4 );
-    //static plVAO c4 = plDraw::generateCylinderVAO( 8.0f, 0.0f, 0.0f, 16, 4  );
-
-    if ( _isVisible )
-        plColourStack::load(0.4, 0.4, 0.4);
-    else
-        plColourStack::load(1.0, 0.25, 0.05);
-
-    plModelStack::push();
-    {
-        plModelStack::translate( _trackedTip );
-        plModelStack::rotate( _rotationAngle, _rotationAxis );
-
-        plRenderer::queue( plCone( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 1.5f, 2.0f, 120.0f ) );
-
-        plModelStack::push();
-        {
-            plModelStack::translate(0, 0, 120);
-            plRenderer::queue( plCylinder( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 4.0, 30.0f ) );
-
-            plModelStack::push();
-            {
-                plModelStack::translate(0,0,30);
-                plRenderer::queue( plCylinder( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 8.0, 60.0f ) );
-
-                plModelStack::translate(0,0,60);
-                plRenderer::queue( plCone( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 8.0, 0.0f, 0.0f ) );
-            }
-            plModelStack::pop();
-        }
-        plModelStack::pop();
-    }
-    plModelStack::pop();
-
-}
-
-
-void plTrackedObject::_extractProbeRenderComponents( plRenderMap& renderMap ) const
-{
-    //static plVAO c1 = plDraw::generateCylinderVAO( 0.0f, 1.0f, 4.0f, 16, 4);
-    //static plVAO c2 = plDraw::generateCylinderVAO( 1.0f, 2.5f, 124.0f, 16, 4);
-
-    // Draw the TA002 probe
-    if ( _isVisible )
-        plColourStack::load(0.6, 0.6, 0.6);
-    else
-        plColourStack::load(1.0, 0.3, 0.1);
-
-    plModelStack::push();
-    {
-        plModelStack::translate( _trackedTip );
-        plModelStack::rotate( _rotationAngle, _rotationAxis );
-        plRenderer::queue( plCone( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 0.0, 1.0f, 4.0f ) );
-        plModelStack::push();
-        {
-            plModelStack::translate(0, 0, 4);
-            plRenderer::queue( plCone( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 1.0, 2.5f, 124.0f ) );
-        }
-        plModelStack::pop();
-    }
-    plModelStack::pop();
-
-}
-*/
-
-/*
-void plTrackedObject::_drawScope() const
-{
-    // Draw the TA104 arthroscope
-    static plVAO c1 = plDraw::generateCylinderVAO( 1.5f, 2.0f, 120.0f, 16, 4 );
-    static plVAO c2 = plDraw::generateCylinderVAO( 4.0f, 4.0f, 30.0f, 16, 4 );
-    static plVAO c3 = plDraw::generateCylinderVAO( 8.0f, 8.0f, 60.0f, 16, 4 );
-    static plVAO c4 = plDraw::generateCylinderVAO( 8.0f, 0.0f, 0.0f, 16, 4  );
-
-    if ( _isVisible )
-        plColourStack::load(0.4, 0.4, 0.4);
-    else
-        plColourStack::load(1.0, 0.25, 0.05);
-
-    plModelStack::push();
-    {
-        plModelStack::translate( _trackedTip );
-        plModelStack::rotate( _rotationAngle, _rotationAxis );
-        c1.draw();
-        plModelStack::push();
-        {
-            plModelStack::translate(0, 0, 120);
-            c2.draw();
-            plModelStack::push();
-            {
-                plModelStack::translate(0,0,30);
-                c3.draw();
-                plModelStack::translate(0,0,60);
-                c4.draw();
-            }
-            plModelStack::pop();
-        }
-        plModelStack::pop();
-    }
-    plModelStack::pop();
-}
-
-void plTrackedObject::_drawProbe() const
-{
-    static plVAO c1 = plDraw::generateCylinderVAO( 0.0f, 1.0f, 4.0f, 16, 4);
-    static plVAO c2 = plDraw::generateCylinderVAO( 1.0f, 2.5f, 124.0f, 16, 4);
-
-    // Draw the TA002 probe
-    if ( _isVisible )
-        plColourStack::load(0.6, 0.6, 0.6);
-    else
-        plColourStack::load(1.0, 0.3, 0.1);
-
-    plModelStack::push();
-    {
-        plModelStack::translate( _trackedTip );
-        plModelStack::rotate( _rotationAngle, _rotationAxis );
-        c1.draw();
-        plModelStack::push();
-        {
-            plModelStack::translate(0, 0, 4);
-            c2.draw();
-        }
-        plModelStack::pop();
-    }
-    plModelStack::pop();
-}
-*/
-
 
 

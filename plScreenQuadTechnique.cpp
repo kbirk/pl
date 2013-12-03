@@ -19,7 +19,7 @@ void plScreenQuadTechnique::render( const std::set< plRenderComponent >& compone
     glClearColor( PL_CLEAR_COLOUR );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     glViewport( plWindow::viewportX(), plWindow::viewportY(), plWindow::viewportWidth(), plWindow::viewportHeight() );   
-    
+
     plRenderComponent component = _generateComponent();
 
     component.draw( *shader ); 

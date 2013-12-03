@@ -93,7 +93,7 @@ namespace plRenderer
 
     void queueDisk( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLbool flip )
     {
-        static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( plRenderShapes::diskVAO( 0.0f, 1.0f, 20, 20 ) );
+        static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( plRenderShapes::diskVAO( 0.0f, 1.0f, 30, 30 ) );
 
         plMatrix44 rot; rot.setRotation( plVector3( 0, 0, 1), direction.normalize() );
 
@@ -146,5 +146,62 @@ namespace plRenderer
            
         plModelStack::pop();      
     }
+    
+
+    void queueArrow( PLuint technique, const plVector3& position, const plVector3 &direction, PLfloat length, PLfloat scale )
+    {      
+        // can't use static for cones as normals scale inversely, 
+        std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( plRenderShapes::coneVAO( PL_HEAD_RADIUS, 0.0f, PL_ARROW_LENGTH, 30, 1 ) ); 
+
+        plMatrix44 rot; rot.setRotation( plVector3(0,0,1), direction.normalize() );
+
+        plModelStack::push(); 
+           
+        plModelStack::translate( position );    
+        plModelStack::mult( rot );
+        plModelStack::scale( scale ); 
+        queueCylinder( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), scale*PL_HANDLE_RADIUS, length/scale );
+        queueDisk( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), scale*PL_HANDLE_RADIUS, true );
+
+        plModelStack::translate( 0, 0, length/scale );
+        
+         // create render component
+        plRenderComponent component( vao );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        // insert into render map
+        _renderMap[ technique ].insert( component ); 
+            
+        queueDisk( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), PL_HEAD_RADIUS, true );
+
+        plModelStack::pop();   
+    }
+    
+    
+    void queueAxis( PLuint technique, const plVector3& position, const plVector3& x, const plVector3& y, const PLfloat scale )
+    {
+        plModelStack::push(); 
+        plModelStack::scale( scale ); 
+
+        // draw x
+        plColourStack::load( PL_X_AXIS_COLOUR );
+        queueArrow( technique, position, x );
+        
+        // draw y
+        plColourStack::load( PL_Y_AXIS_COLOUR);
+        queueArrow( technique, position, y );
+        
+        // draw z
+        plColourStack::load( PL_Z_AXIS_COLOUR );
+        queueArrow( technique, position, x ^ y );
+        
+        plModelStack::pop();
+    }
+    
 
 }

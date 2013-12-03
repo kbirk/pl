@@ -5,14 +5,9 @@
 
 #include "plVector3.h"
 #include "plPlan.h"
-#include "plBoundary.h"
-#include "plDefectSite.h"
-#include "plDonorSite.h"
 #include "plEditor.h"
-#include "plDraw.h"
 #include "plWindow.h"
 #include "plRenderer.h"
-#include "plDisk.h"
 
 class plBoundaryEditor : public plEditor
 {

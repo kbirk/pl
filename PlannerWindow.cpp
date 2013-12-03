@@ -29,6 +29,8 @@ void PlannerWindow::display()
 
     plRenderer::queue( _plan );
 
+    plRenderer::queueAxis( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 1, 0, 0 ), plVector3( 0, 1, 0 ) );
+
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );   
 

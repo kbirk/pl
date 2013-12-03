@@ -9,7 +9,6 @@
 #include "plRenderable.h"
 #include "plTransform.h"
 #include "plVAO.h"
-#include "plDraw.h"
 #include "plRenderer.h"
 
 // children quadrant indices 

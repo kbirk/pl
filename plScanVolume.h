@@ -5,9 +5,8 @@
 #include <cmath>
 #include "plVector3.h"
 #include "plCommon.h"
-#include "plDraw.h"
 #include "plVAO.h"
-//#include "plRenderable.h"
+#include "plRenderable.h"
 
 const float probeRadius   = 1.5;             // 1.5 mm radius
 const float coneHalfAngle = 60.0/180.0*PL_PI; // 60 degree half-angle

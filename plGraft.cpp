@@ -52,7 +52,7 @@ void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap, PLuint tech
         // draw marker   
         plColourStack::load( PL_GRAFT_MARKER_COLOUR );
         plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_MARKER );
-        plRenderer::queue( plSphere( technique, _markPositions[0], 0.5f ) );
+        plRenderer::queueSphere( technique, _markPositions[0], 0.5f );
     }
     else
     {
@@ -64,49 +64,51 @@ void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap, PLuint tech
             PLint id = 101;
             PLfloat SPACING = 7.0f;
             PLfloat LINE_WIDTH = 0.08f;
-            PLfloat LINE_LENGTH = 10.0f;
+            PLfloat LINE_LENGTH = 1.0f;
               
+            //plColourStack::load( plVector4( 1, 1, 1, 1 ) ); 
+  
             // i 
             plPickingStack::loadRed( id++ );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[0], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[0], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             
             // ii
             plModelStack::push();
             plPickingStack::loadRed( id++ );
             plModelStack::rotate( -SPACING/2, plVector3( 0, 1, 0 ) );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
             plPickingStack::loadRed( id++ );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::pop();
             
             // iii
             plModelStack::push();
             plPickingStack::loadRed( id++ );
             plModelStack::rotate( -SPACING, plVector3( 0, 1, 0 ) );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
             plPickingStack::loadRed( id++ );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
             plPickingStack::loadRed( id++ );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::pop();
             
             // iiii
             plModelStack::push();
             plPickingStack::loadRed( id++ );
             plModelStack::rotate( (-3/2)*SPACING, plVector3( 0, 1, 0 ) );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
             plPickingStack::loadRed( id++ );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
             plPickingStack::loadRed( id++ );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
             plPickingStack::loadRed( id++ );
-            plRenderer::queue( plCone( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, 0, LINE_LENGTH ) );
+            plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::pop();
 
         }

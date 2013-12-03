@@ -10,8 +10,6 @@
 #include "plPicking.h"
 #include "plMeshSpecific.h"
 #include "plVAO.h"
-#include "plDraw.h"
-#include "plSphere.h"
 #include "plRenderer.h"
 
 #define PL_SELECTED_BOUNDARY_POINT_RADIUS   1.0f

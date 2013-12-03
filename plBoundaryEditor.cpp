@@ -235,16 +235,6 @@ void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap, PLuint t
         return;
         
     _selectedBoundary->extractRenderComponents( renderMap, technique );   
-    
-
-    /*
-    if ( _selectedPointIndex > 0 )
-    {
-        plPickingStack::loadBlue( _selectedPointIndex );
-        plRenderer::queue( plSphere( PL_PLAN_TECHNIQUE, _selectedBoundary->points( _selectedPointIndex ), PL_SELECTED_BOUNDARY_POINT_RADIUS ) );         
-        plRenderer::queue( plSphere( technique, _selectedBoundary->points( _selectedPointIndex ), PL_SELECTED_BOUNDARY_POINT_RADIUS ) );            
-    }    
-    */
 }
 
 
@@ -282,31 +272,35 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
             // spline menu
             plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_CORNERS );           
             plColourStack::load( PL_BOUNDARY_DEFECT_CORNER_COLOUR );
-            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, 
-                                       plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0 ), 
-                                       PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            plRenderer::queueDisk( PL_MINIMAL_TECHNIQUE, 
+                                   plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0 ), 
+                                   plVector3( 0, 0, 1 ),
+                                   PL_EDITOR_MENU_CIRCLE_RADIUS );
             
             if ( _plan->defectSites(i).spline._isSelected )
             {
                 // draw selection outline
-                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, 
-                                           plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0 ), 
-                                           PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+                plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
+                                       plVector3( CORNER_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0 ), 
+                                       plVector3( 0, 0, 1 ),
+                                       PL_EDITOR_MENU_CIRCLE_RADIUS );
             }
             // boundary menu    
             plPickingStack::loadRed( PL_PICKING_TYPE_DEFECT_BOUNDARY );    
             plColourStack::load( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR ); 
 
-            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, 
-                                       plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
-                                       PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            plRenderer::queueDisk( PL_MINIMAL_TECHNIQUE, 
+                                   plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
+                                   plVector3( 0, 0, 1 ),
+                                   PL_EDITOR_MENU_CIRCLE_RADIUS );
 
             if ( _plan->defectSites(i).boundary._isSelected )
             {
                 // draw selection outline
-                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, 
-                                           plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
-                                           PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+                plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
+                                       plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
+                                       plVector3( 0, 0, 1 ),
+                                       PL_EDITOR_MENU_CIRCLE_RADIUS );
             }            
             count++;
         }
@@ -320,16 +314,18 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
             plPickingStack::loadRed( PL_PICKING_TYPE_DONOR_BOUNDARY );
             plColourStack::load( PL_BOUNDARY_DONOR_COLOUR ); 
 
-            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, 
-                                       plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
-                                       PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            plRenderer::queueDisk( PL_MINIMAL_TECHNIQUE, 
+                                   plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
+                                   plVector3( 0, 0, 1 ),
+                                   PL_EDITOR_MENU_CIRCLE_RADIUS );
             
             if (_plan->donorSites(i).boundary._isSelected)
             {
                 // draw selection outline
-                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, 
-                                   plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
-                                   PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+                plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
+                                       plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
+                                       plVector3( 0, 0, 1 ),
+                                       PL_EDITOR_MENU_CIRCLE_RADIUS );
             }
             count++;
         }
@@ -343,16 +339,18 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
             plPickingStack::loadRed( PL_PICKING_TYPE_IGUIDE_BOUNDARY );
             plColourStack::load( PL_BOUNDARY_IGUIDE_COLOUR ); 
             
-            plRenderer::queue( plDisk( PL_MINIMAL_TECHNIQUE, 
-                                       plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
-                                       PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+            plRenderer::queueDisk( PL_MINIMAL_TECHNIQUE, 
+                                   plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
+                                   plVector3( 0, 0, 1 ),
+                                   PL_EDITOR_MENU_CIRCLE_RADIUS );
             
             if (_plan->iGuideSites(i).boundary._isSelected)  
             {    
                 // draw selection outline        
-                plRenderer::queue( plDisk( PL_OUTLINE_TECHNIQUE, 
-                                           plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
-                                           PL_EDITOR_MENU_CIRCLE_RADIUS ) );
+                plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
+                                       plVector3( BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0), 
+                                       plVector3( 0, 0, 1 ),
+                                       PL_EDITOR_MENU_CIRCLE_RADIUS );
             }
             count++;
         }

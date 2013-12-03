@@ -7,17 +7,14 @@
 #include "plEditable.h"
 #include "plVector3.h"
 #include "plTriangle.h"
-#include "plDraw.h"
 #include "plPicking.h"
 #include "plVAO.h"
 #include "plPlug.h"
 #include "plPolygon.h"
 #include "plUtility.h"
 #include "plRenderer.h"
-#include "plSphere.h"
 #include "plGraftCap.h"
-#include "plCone.h"
-#include "plCylinder.h"
+
 
 class plGraft : public plRenderable,
                 public plEditable,

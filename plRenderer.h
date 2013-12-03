@@ -41,6 +41,9 @@ namespace plRenderer
     void queueCylinder ( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLfloat length );
     void queueDisk     ( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLbool flip = false );   
     void queueCone     ( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat topRadius, PLfloat bottomRadius, PLfloat length );    
+    void queueArrow    ( PLuint technique, const plVector3& position, const plVector3 &direction, PLfloat length = 2.0f, PLfloat scale = 1.0f );
+    void queueAxis     ( PLuint technique, const plVector3& position, const plVector3& x, const plVector3& y, const PLfloat scale = 1.0f );
+    
 }
 
 

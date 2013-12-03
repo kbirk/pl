@@ -6,8 +6,6 @@
 #include "plDRBTransform.h"
 #include "plRenderingPipeline.h"
 #include "plVAO.h"
-#include "plCylinder.h"
-#include "plCone.h"
 #include "plRenderer.h"
 
 class plTrackedObject : public plRenderable

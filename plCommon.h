@@ -108,9 +108,9 @@
 #define PL_HANDLE_SPHERE_RADIUS                  0.75f
 #define PL_HANDLE_RADIUS                         0.3f
 #define PL_HANDLE_LENGTH                         4.0f
-#define PL_ARROW_LENGTH                          2.0f
+#define PL_ARROW_LENGTH                          1.0f
 #define PL_CIRCLE_LENGTH                         1.0f
-#define PL_HEAD_RADIUS                           1.0f
+#define PL_HEAD_RADIUS                           0.7f
 #define PL_SLICE_NUM                             30
 #define PL_STACK_NUM                             1
  

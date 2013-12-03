@@ -184,15 +184,13 @@ void plArthroscope::_extractScopeRenderComponents( plRenderMap& renderMap, PLuin
         plColourStack::load(1.0, 0.25, 0.05);
 
     plModelStack::push();
-    {
-        plModelStack::translate( _trackedTip );
-        plModelStack::rotate( _rotationAngle, _rotationAxis );
+    plModelStack::translate( _trackedTip );
+    plModelStack::rotate( _rotationAngle, _rotationAxis );
 
-        plRenderer::queue( plCone    ( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 1.5f, 2.0f, 120.0f ) );
-        plRenderer::queue( plCylinder( technique, plVector3( 0, 0, 120 ), plVector3( 0, 0, 1 ), 4.0, 30.0f ) );
-        plRenderer::queue( plCylinder( technique, plVector3( 0,0,150 ), plVector3( 0, 0, 1 ), 8.0, 60.0f ) );
-        plRenderer::queue( plCone    ( technique, plVector3( 0,0,210 ), plVector3( 0, 0, 1 ), 8.0, 0.0f, 0.0f ) );
-    }
+    plRenderer::queueCone    ( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 1.5f, 2.0f, 120.0f );
+    plRenderer::queueCylinder( technique, plVector3( 0, 0, 120 ), plVector3( 0, 0, 1 ), 4.0, 30.0f );
+    plRenderer::queueCylinder( technique, plVector3( 0,0,150 ), plVector3( 0, 0, 1 ), 8.0, 60.0f );
+    plRenderer::queueCone    ( technique, plVector3( 0,0,210 ), plVector3( 0, 0, 1 ), 8.0, 0.0f, 0.0f );
     plModelStack::pop();
 } 
 

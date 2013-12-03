@@ -6,14 +6,9 @@
 #include "plVector3.h"
 #include "plTransform.h"
 #include "plPlan.h"
-#include "plGraft.h"
-#include "plDraw.h"
 #include "plWindow.h"
 #include "plMath.h"
 #include "plRenderer.h"
-#include "plCylinder.h"
-#include "plCone.h"
-#include "plDisk.h"
 #include "plEditor.h"
 
 #define PL_ROTATION_SENSITIVITY                  0.10f   // lower is less sensitive
