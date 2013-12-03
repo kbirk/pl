@@ -1,7 +1,13 @@
 #include "plArthroscope.h"
 
 plArthroscope::plArthroscope()
-    :   _texture( ARTHRO_CAM_RES_X, ARTHRO_CAM_RES_Y, GL_RGB, GL_BGR, GL_UNSIGNED_BYTE )
+    :   _intrinsicsCV( nullptr ),
+        _distortion( nullptr ),
+        _capture( nullptr ),
+        _image( nullptr ),
+        _mapx( nullptr ),
+        _mapy( nullptr ),
+        _texture( ARTHRO_CAM_RES_X, ARTHRO_CAM_RES_Y, GL_RGB, GL_BGR, GL_UNSIGNED_BYTE )
 {
 }
 
@@ -18,7 +24,7 @@ plArthroscope::plArthroscope(  const plDRBTransform &ToTrackedPoint, const plDRB
     _capture = cvCreateCameraCapture(0);
     if ( !_capture ) 
     {
-        std::cerr << "Error: Unable to read from camera - aborting" << std::endl;
+        std::cerr << "plArthroscope::plArthroscope() error: Unable to read from camera - aborting" << std::endl;
         exit(1);
     }
 
@@ -44,24 +50,34 @@ plArthroscope::plArthroscope(  const plDRBTransform &ToTrackedPoint, const plDRB
 
 
 plArthroscope::plArthroscope( const plArthroscope& arthroscope )
+    :   _intrinsicsCV( nullptr ),
+        _distortion( nullptr ),
+        _capture( nullptr ),
+        _image( nullptr ),
+        _mapx( nullptr ),
+        _mapy( nullptr ),
+        _texture( ARTHRO_CAM_RES_X, ARTHRO_CAM_RES_Y, GL_RGB, GL_BGR, GL_UNSIGNED_BYTE )
 {
     _copy( arthroscope );
 }
       
        
-plArthroscope& plArthroscope::operator=( const plArthroscope& arthroscope ) const
+plArthroscope& plArthroscope::operator=( const plArthroscope& arthroscope )
 {
     _copy( arthroscope );
+    std::cout << "copy" << std::endl;
+    *this;
 }
         
 
 void plArthroscope::_destroy()
 {
-    delete _intrinsicsCV;
-    delete _distortion;
+    cvReleaseMat( &_intrinsicsCV );
+    cvReleaseMat( &_distortion );
+
     cvReleaseCapture( &_capture );
     cvReleaseImage  ( &_image   );
-    cvReleaseCapture( &_mapx    );
+    cvReleaseImage  ( &_mapx    );
     cvReleaseImage  ( &_mapy    );
 }
 
@@ -221,14 +237,14 @@ void plArthroscope::updateImage( PLuint imageManipulation )
 {
     // setting up the undistort map is really slow, we want to do it only once
     static bool firstTime = true;
-    if (firstTime) 
+    if ( firstTime )
     {
         cvInitUndistortMap( _intrinsicsCV, _distortion, _mapx, _mapy ); // SLOW SLOW SLOW
         firstTime = false;
     }
 
-    _frame = cvQueryFrame( _capture );
-    _image = _frame;
+    IplImage* frame = cvQueryFrame( _capture ); // returned image should never be released or modified by theuser ( specified in API )
+    _image = cvCloneImage( frame );
 
     // undistortion step
     if ( imageManipulation == CAMERA_IMAGE_UNDISTORT )
@@ -302,31 +318,46 @@ void plArthroscope::_callCircle()
 */
 
 
-void _copy( const plArthroscope& arthroscope )
+void plArthroscope::_copy( const plArthroscope& arthroscope )
 {
     _destroy();
 
+    // manually copy plTrackedObject attribute
+    _DRBToTrackedPoint = arthroscope._DRBToTrackedPoint;
+    _DRBToTrackedEnd = arthroscope._DRBToTrackedEnd;
+    _FemurDRBtoSTL = arthroscope._FemurDRBtoSTL;
+
+    _trackedTip = arthroscope._trackedTip;
+    _tipWorldCoords = arthroscope._tipWorldCoords;
+    _rotationAxis  = arthroscope._rotationAxis;
+    _trackedEnd = arthroscope._trackedEnd;
+    _endWorldCoords = arthroscope._endWorldCoords;
+    _xAxis = arthroscope._xAxis;
+    _yAxis = arthroscope._yAxis;
+    _zAxis = arthroscope._zAxis;
+
+    _rotationAngle = arthroscope._rotationAngle;
+    _isArthroscope = arthroscope._isArthroscope;
+
+    // copy plArthroscope attributes
     _isCameraView = arthroscope._isCameraView;
     _texture = arthroscope._texture;
-    _vao = arthroscope._vao;
-
-    _capture = cvCreateCameraCapture(0);   
+    _vao     = arthroscope._vao;
+    _capture = cvCreateCameraCapture( 0 );
     _image = cvCloneImage( arthroscope._image );
-    _frame = cvCloneImage( arthroscope._frame );
-
-    _mapx = cvCloneImage( arthroscope._mapx );
-    _mapy = cvCloneImage( arthroscope._mapy );
+    _mapx  = cvCloneImage( arthroscope._mapx );
+    _mapy  = cvCloneImage( arthroscope._mapy );
 
     _intrinsicsPL =  arthroscope._intrinsicsPL;
-    _intrinsicsCV = new CvMat( arthroscope._intrinsicsCV );
-    _distortion   = new CvMat( arthroscope._distortion );
+    _intrinsicsCV = cvCloneMat( arthroscope._intrinsicsCV );
+    _distortion   = cvCloneMat( arthroscope._distortion );
     
     // Variables for circle tracking and undistortion function
     _interpolationDeque = arthroscope._interpolationDeque;  
     _weights = arthroscope._weights;
     //cv::Mat _frameMatrix;
     _xCenter = arthroscope._xCenter;
-    _yCenter = arthroscope._xCenter;
-    _radius = arthroscope._radius;
+    _yCenter = arthroscope._yCenter;
+    _radius  = arthroscope._radius;
 }       
 

@@ -37,7 +37,7 @@ class plArthroscope : public plTrackedObject
         
         plArthroscope( const plArthroscope& arthroscope );
        
-        plArthroscope& operator=( const plArthroscope& arthroscope ) const;
+        plArthroscope& operator=( const plArthroscope& arthroscope );
         
         ~plArthroscope();
 
@@ -64,7 +64,6 @@ class plArthroscope : public plTrackedObject
     
         CvCapture *_capture;
         IplImage  *_image;
-        IplImage  *_frame;
 
         // for image distortion
         IplImage* _mapx;
