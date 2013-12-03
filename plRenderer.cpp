@@ -51,14 +51,14 @@ namespace plRenderer
         plModelStack::scale( radius );         // scale
 
         plRenderComponent component( vao );
-        
+
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
         component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
-        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) );
         component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
         component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
-        
+
         _renderMap[ technique ].insert( component );  
 
         plModelStack::pop();   

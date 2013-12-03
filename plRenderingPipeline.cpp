@@ -88,7 +88,14 @@ namespace plPickingStack
 	PLint topGreen() { return _greenStack.top(); }
 	PLint topBlue()  { return _blueStack.top(); }
 	
-    plPickingInfo top() { return plPickingInfo( _redStack.top(), _greenStack.top(), _blueStack.top() );  }
+    plPickingInfo top()
+    {
+        PLuint red   = ( _redStack.empty() ) ? -1   : _redStack.top();
+        PLuint green = ( _greenStack.empty() ) ? -1 : _greenStack.top();
+        PLuint blue  = ( _blueStack.empty() ) ? -1  : _blueStack.top();
+
+        return plPickingInfo( red, green, blue );
+    }
 }
 
 

@@ -80,8 +80,8 @@ void plTrackedObject::extractRenderComponents( plRenderMap& renderMap, PLuint te
     plModelStack::push();
     plModelStack::translate( _trackedTip );
     plModelStack::rotate( _rotationAngle, _rotationAxis );
-    plRenderer::queueCone( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 0.0, 1.0f, 4.0f );
-    plRenderer::queueCone( technique, plVector3( 0, 0, 4 ), plVector3( 0, 0, 1 ), 1.0, 2.5f, 124.0f );
+    plRenderer::queueCone( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), 1.0f, 0, 4.0f );
+    plRenderer::queueCone( technique, plVector3( 0, 0, 4 ), plVector3( 0, 0, 1 ), 4.0f, 1.0f, 124.0f );
     plModelStack::pop();
 }
 
