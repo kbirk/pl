@@ -14,14 +14,7 @@
 #define PL_GRAFT_DEFECT_BONE_COLOUR              0.90f, 0.68f, 0.27f  
 #define PL_GRAFT_DEFECT_CARTILAGE_COLOUR         0.80f, 0.48f, 0.07f   
 
-#define PL_GRAFT_DONOR_BONE_COLOUR_DULL          0.90f, 1.00f, 0.90f 
-#define PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL     0.70f, 0.90f, 0.60f           
-#define PL_GRAFT_DEFECT_BONE_COLOUR_DULL         1.00f, 1.00f, 0.70f  
-#define PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL    1.00f, 0.88f, 0.47f 
-
 #define PL_GRAFT_MARKER_COLOUR                   0.80f, 0.20f, 0.80f   
-
-#define PL_GRAFT_HANDLE_OFFSET                   6.0f
 
 #define PL_GRAFT_EDIT_MODE_TRANSLATE             1
 #define PL_GRAFT_EDIT_MODE_ROTATE                2 
@@ -33,7 +26,6 @@
 #define PL_Y_AXIS_COLOUR                         0.2f, 1.0f, 0.2f 
 #define PL_Z_AXIS_COLOUR                         0.2f, 0.2f, 1.0f 
 
-
 // BOUNDARY MACROS
  
 #define PL_BOUNDARY_MESH_HEIGHT                  1.0f
@@ -43,48 +35,11 @@
 #define PL_BOUNDARY_SELECTED_COLOUR              0.20f, 0.90f, 0.70f
 #define PL_BOUNDARY_POINT_SELECTED_COLOUR        0.20f, 0.90f, 0.70f 
  
-#define PL_BOUNDARY_DEFECT_CORNER_COLOUR_DULL    1.00f, 0.50f, 0.50f
-#define PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR_DULL  0.85f, 0.51f, 0.85f
-#define PL_BOUNDARY_DONOR_COLOUR_DULL            0.70f, 0.70f, 1.00f
-#define PL_BOUNDARY_IGUIDE_COLOUR_DULL           0.50f, 0.83f, 0.70f 
- 
 #define PL_BOUNDARY_DEFECT_CORNER_COLOUR         0.90f, 0.20f, 0.20f
 #define PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR       0.55f, 0.21f, 0.55f
 #define PL_BOUNDARY_DONOR_COLOUR                 0.40f, 0.40f, 0.80f
 #define PL_BOUNDARY_IGUIDE_COLOUR                0.20f, 0.53f, 0.45f
 
-// COLOUR PICKING   
-
-// TYPE
-#define PL_PICKING_TYPE_NONE                     0
-#define PL_PICKING_TYPE_BONE                     1
-#define PL_PICKING_TYPE_CARTILAGE                2
-
-// graft editor
-#define PL_PICKING_TYPE_GRAFT_HANDLE_X           3
-#define PL_PICKING_TYPE_GRAFT_HANDLE_Y           4
-#define PL_PICKING_TYPE_GRAFT_HANDLE_Z           5
-#define PL_PICKING_TYPE_GRAFT_HANDLE             6
-#define PL_PICKING_TYPE_GRAFT_MARKER             7
-
-#define PL_PICKING_TYPE_GRAFT                    8
-
-#define PL_PICKING_TYPE_DEFECT_SPLINE            9
-#define PL_PICKING_TYPE_DEFECT_CORNERS           10
-#define PL_PICKING_TYPE_DEFECT_BOUNDARY          11
-
-#define PL_PICKING_TYPE_DEFECT_HANDLE_0          12
-#define PL_PICKING_TYPE_DEFECT_HANDLE_1          13
-#define PL_PICKING_TYPE_DEFECT_HANDLE_2          14
-#define PL_PICKING_TYPE_DEFECT_HANDLE_3          15
-#define PL_PICKING_TYPE_DEFECT_HANDLE_C          16
-
-#define PL_PICKING_TYPE_DONOR_BOUNDARY           17
-#define PL_PICKING_TYPE_IGUIDE_BOUNDARY          18
-
-//INDEX 
-#define PL_PICKING_INDEX_GRAFT_DONOR             1
-#define PL_PICKING_INDEX_GRAFT_DEFECT            2 
 
 // DRAW MACROS
 
@@ -100,7 +55,6 @@
 #define PL_EDITOR_MENU_HORIZONTAL_SPACING        40
 #define PL_EDITOR_MENU_VERTICAL_SPACING          40   
 #define PL_EDITOR_MENU_CIRCLE_RADIUS             14
-
 
 #define PL_COLOUR_MESH_OPAQUE_COLOUR             0, 0, 0, 0
 #define PL_COLOUR_MESH_TRANSPARENT_COLOUR        -1, -1, -1, 0
@@ -141,8 +95,6 @@
 #define PL_MIN_OF_3(a,b,c)                       (a<=b ? (a<=c ? a : c) : (b<=c ? b : c))
 #define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c)) 
 
-
-
 #define PL_NORMAL_SMOOTHING_RADIUS               4.0f
 
 #include <iostream>
@@ -170,7 +122,7 @@
     #define PL_FILE_PREPATH     "../"
     inline float round( float val )
     {    
-        return floor(val + 0.5f);
+        return floor( val + 0.5f );
     }
     #include <GL/glew.h> // include before gl.h
     #include <GL/gl.h>
@@ -210,15 +162,6 @@ typedef unsigned int            PLuint;
 typedef int                     PLint;       
 typedef bool                    PLbool;     
 typedef long long unsigned int  PLtime; 
-
-
-// STD TYPEDEFS
-
-template <typename T>
-class plStack : public std::stack<T> {};
-
-template <typename T>
-class plSet : public std::set<T> {};
 
 
 class plTimer

@@ -31,7 +31,7 @@ class plMatrixStack
 
 	private:
 
-		plStack<plMatrix44> _stack;
+		std::stack<plMatrix44> _stack;
 
 };
 

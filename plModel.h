@@ -58,8 +58,4 @@ class plModel : public plTransparentRenderable,
 
 };
 
-
-std::ostream& operator << ( std::ostream& out, const plModel &m );
-
-
 #endif

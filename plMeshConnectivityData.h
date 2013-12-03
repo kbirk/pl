@@ -80,9 +80,9 @@ class plMeshConnectivityData
  
     public:
     
-        plSet<plMeshConnectivityDataVert> verts;
-        plSet<plMeshConnectivityDataEdge> edges;
-        plSet<plMeshConnectivityDataFace> faces;
+        std::set<plMeshConnectivityDataVert> verts;
+        std::set<plMeshConnectivityDataEdge> edges;
+        std::set<plMeshConnectivityDataFace> faces;
         plMeshConnectivityData() { _epsilon = PL_EPSILON; }
 
         PLfloat epsilon() const               { return _epsilon; }

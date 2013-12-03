@@ -41,7 +41,7 @@ void plGraftCap::generateCap( const plOctreeMesh& mesh, const plTransform& trans
     triangles.clear();
     perimeter.clear();
 
-    plSet<const plTriangle*> potentialTriangles;
+    std::set<const plTriangle*> potentialTriangles;
     mesh.octree().rayIntersect( potentialTriangles, transform.origin(), transform.y(), radius );
     
     // reserve for max number of triangles
@@ -58,7 +58,7 @@ void plGraftCap::generateCap( const plOctreeMesh& mesh, const plTransform& trans
     PLfloat subSquaredRadius = 0.999f * radius * radius;
 
     // find vertices of polygons along perimeter of graft, put in set to ignore duplicates
-    plSet<plPointAndAngle> angles;
+    std::set<plPointAndAngle> angles;
   
     for (PLuint i=0; i<triangles.size(); i++) 
     {
@@ -189,6 +189,7 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles( plVector3 verts[3], 
     return points;
 }
 
+
 std::vector<plVector3> plGraftCap::_pointsInsideTriangles( plVector3 verts[3], PLfloat dist[3], const plTransform& transform, PLfloat radius ) const
 {
     float radiusSquared = radius * radius;
@@ -262,6 +263,7 @@ std::vector<plVector3> plGraftCap::_pointsInsideTriangles( plVector3 verts[3], P
     
     return points;
 }
+
 
 bool plGraftCap::_triangleIntersection( const plTriangle &triangle, const plTransform& transform, PLfloat radius )
 {
@@ -425,7 +427,7 @@ void plCartilageCap::extractRenderComponents( plRenderMap& renderMap, PLuint tec
         renderMap[ PL_OUTLINE_TECHNIQUE ].insert( component );  
         
                
-        plPickingStack::loadRed( 100 ); 
+        plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_PROJECTION ); 
         // create render component
         plRenderComponent component1( _projectionVAO );
         // attached uniforms
@@ -456,14 +458,14 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
         const plVector3 &p2 = triangles[i].point2();
         const plVector3 &n  = triangles[i].normal();
         
-        vertices.push_back( plVector3( p0.x, p0.y+PL_CAP_OFFEST, p0.z) );    // position
-        vertices.push_back( n );                                     // normal
+        vertices.push_back( p0  + PL_CAP_OFFSET );  // position
+        vertices.push_back( n );                    // normal
 
-        vertices.push_back( plVector3( p1.x, p1.y+PL_CAP_OFFEST, p1.z) );    // position
-        vertices.push_back( n );                                     // normal
+        vertices.push_back( p1  + PL_CAP_OFFSET );  // position
+        vertices.push_back( n );                    // normal
         
-        vertices.push_back( plVector3( p2.x, p2.y+PL_CAP_OFFEST, p2.z) );    // position
-        vertices.push_back( n );                                     // normal
+        vertices.push_back( p2  + PL_CAP_OFFSET );  // position
+        vertices.push_back( n );                    // normal
 
         indices.push_back(base+0);
         indices.push_back(base+1); 
@@ -489,8 +491,8 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
             plVector3 n = (perimeter[c].point).normalize();
     
             indices.push_back(vertices.size()/2);
-            vertices.push_back( plVector3( perimeter[c].point.x, perimeter[c].point.y+PL_CAP_OFFEST, perimeter[c].point.z ) );   // position
-            vertices.push_back( n );                    // normal
+            vertices.push_back( perimeter[c].point + PL_CAP_OFFSET );  // position
+            vertices.push_back( n );                                   // normal
             
             indices.push_back(vertices.size()/2);
             vertices.push_back( bonePerimeter[b].point );        // position
@@ -507,8 +509,8 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
                 }
         
                 indices.push_back(vertices.size()/2);
-                vertices.push_back( plVector3( perimeter[c].point.x, perimeter[c].point.y+PL_CAP_OFFEST, perimeter[c].point.z ) );    // position
-                vertices.push_back( n );                     // normal
+                vertices.push_back( perimeter[c].point + PL_CAP_OFFSET ); // position
+                vertices.push_back( n );                                  // normal
             }  
             else 
             {			
@@ -567,14 +569,14 @@ void plCartilageCap::_generateProjectionVAO( PLfloat radius, PLfloat length, con
         const plVector3 &p2 = triangles[i].point2();
         const plVector3 &n  = triangles[i].normal();
         
-        vertices.push_back( plVector3( p0.x, p0.y+PL_CAP_OFFEST, p0.z) );    // position
-        vertices.push_back( n );                                     // normal
+        vertices.push_back( p0 + PL_CAP_OFFSET ); // position
+        vertices.push_back( n );                  // normal
 
-        vertices.push_back( plVector3( p1.x, p1.y+PL_CAP_OFFEST, p1.z) );    // position
-        vertices.push_back( n );                                     // normal
+        vertices.push_back( p1 + PL_CAP_OFFSET ); // position
+        vertices.push_back( n );                  // normal
         
-        vertices.push_back( plVector3( p2.x, p2.y+PL_CAP_OFFEST, p2.z) );    // position
-        vertices.push_back( n );                                     // normal
+        vertices.push_back( p2 + PL_CAP_OFFSET ); // position
+        vertices.push_back( n );                  // normal
 
         indices.push_back(base+0);
         indices.push_back(base+1); 
@@ -713,14 +715,14 @@ void plBoneCap::generateVAO( PLfloat radius, PLfloat length )
         const plVector3 &p2 = triangles[i].point2();
         const plVector3 &n  = triangles[i].normal();
         
-        vertices.emplace_back( plVector3( p0.x, p0.y+PL_CAP_OFFEST/2.0f, p0.z) ); // position
-        vertices.push_back( n );                                     // normal
+        vertices.emplace_back( p0 + ( 0.5f * PL_CAP_OFFSET ) ); // position
+        vertices.push_back( n );                                // normal
 
-        vertices.emplace_back( plVector3( p1.x, p1.y+PL_CAP_OFFEST/2.0f, p1.z) ); // position
-        vertices.push_back( n );                                     // normal
+        vertices.emplace_back( p1 + ( 0.5f * PL_CAP_OFFSET ) ); // position
+        vertices.push_back( n );                                // normal
         
-        vertices.emplace_back( plVector3( p2.x, p2.y+PL_CAP_OFFEST/2.0f, p2.z) ); // position
-        vertices.push_back( n );                                     // normal
+        vertices.emplace_back( p2 + ( 0.5f * PL_CAP_OFFSET ) ); // position
+        vertices.push_back( n );                                // normal
 
         indices.push_back(base+0);
         indices.push_back(base+1); 

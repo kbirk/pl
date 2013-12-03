@@ -96,7 +96,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
             break;                
 
         case 'c':   _camera.up     = plVector3( 0, 1, 0 );  
-                    _camera.lookat = _camera.position + plVector3(0,0,1); 
+                    _camera.lookat = _camera.position + plVector3( 0, 0, 1 ); 
                     break;
                     
         case 'b':   _plan.models(0).toggleVisibility();                         break;            

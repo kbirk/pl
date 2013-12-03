@@ -16,7 +16,7 @@
 #include "plArthroViewable.h"
 
 
-#define PL_CAP_OFFEST       0.025f
+#define PL_CAP_OFFSET       plVector3( 0, 0.025f, 0 )
 
 class plPointAndAngle 
 {

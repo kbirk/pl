@@ -12,6 +12,11 @@
 #include "plVAO.h"
 #include "plRenderer.h"
 
+#define PL_SPLINE_RESOLUTION                65.0f    
+#define PL_SPLINE_COLOUR_MAP_RANGE          1.5f
+#define PL_SPLINE_NO_DATA_COLOUR            plVector3 ( 0.2, 0.2, 0.2 )
+
+
 class plSpline : public plBoundary
 {
     public:

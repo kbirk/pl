@@ -142,11 +142,3 @@ plVector3 plModel::getCentroid() const
 
 
 
-std::ostream& operator << ( std::ostream& out, const plModel &m )
-{
-    out << m.filename;
-    return out;
-}
-
-
-

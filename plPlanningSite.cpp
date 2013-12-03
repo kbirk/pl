@@ -113,7 +113,7 @@ plSSBO plPlanningSite::getSSBO() const
 
 void plPlanningSite::_generateCoarseGridPoints()
 {   
-    plSet<plPointAndNormal> pointsAndNormals;
+    std::set<plPointAndNormal> pointsAndNormals;
     for ( const plTriangle& triangle : triangles )
     {   
         plVector3 smoothNormal0 = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point0(), triangle.normal() );
@@ -136,7 +136,7 @@ void plPlanningSite::_generateFineGridPoints()
 {
     const PLfloat GRID_SPACING = 0.6f;
     
-    plSet<plPointAndNormal> pointsAndNormals;
+    std::set<plPointAndNormal> pointsAndNormals;
     
     // select points in each triangle at approx spacing    
     for (PLuint i=0; i < triangles.size(); i++)

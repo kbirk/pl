@@ -319,7 +319,7 @@ PLbool plOctree::_sphereCheck( const plVector3 &centre, PLfloat radius, PLint ch
 }
 
 
-PLbool plOctree::rayIntersect( plSet<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat rayRadius, PLbool ignoreBehindRay ) const
+PLbool plOctree::rayIntersect( std::set<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat rayRadius, PLbool ignoreBehindRay ) const
 { 
     // box inflation is used to intersect cylinder with box rather than ray, used for grafts
     PLfloat boxExtents = _halfWidth + rayRadius;  

@@ -224,25 +224,19 @@ void plSpline::_computeHermite()
 
     // find tangents in the s and t planes
     std::vector<PLfloat> st, tt; _computeTangents( st, tt, p, n );
-    
-    const PLfloat   INC      = 0.02f;  // must divide 1 an odd whole number of times or indexing algorithm will miss a row/column
-    const PLuint    NUM_INC  = 1.0f/INC;
-    const PLfloat   fNUM_INC = 1.0f/INC;     
-    const PLfloat   MAX_DISTANCE = 1.5f;              // colour map max distance, anything beyond this is dark red   
-    const plVector3 NO_DATA_COLOUR( 0.2, 0.2, 0.2 );  // default colour if no data available  
 
     std::vector<plTriangle> triangles;
-    triangles.reserve( NUM_INC*NUM_INC*2 );
+    triangles.reserve( PL_SPLINE_RESOLUTION*PL_SPLINE_RESOLUTION*2 );
  
-    std::vector<plVector3> points;      points.reserve( (NUM_INC+1)*(NUM_INC+1) );
-    std::vector<plVector3> colours;     colours.reserve( (NUM_INC+1)*(NUM_INC+1) );
+    std::vector<plVector3> points;      points.reserve( (PL_SPLINE_RESOLUTION+1)*(PL_SPLINE_RESOLUTION+1) );
+    std::vector<plVector3> colours;     colours.reserve( (PL_SPLINE_RESOLUTION+1)*(PL_SPLINE_RESOLUTION+1) );
     
-    std::vector<plVector3> vertices;    vertices.reserve( NUM_INC * NUM_INC * 6 * 3 );
-    std::vector<PLuint>    indices;     indices.reserve ( NUM_INC * NUM_INC * 6 );
+    std::vector<plVector3> vertices;    vertices.reserve( PL_SPLINE_RESOLUTION * PL_SPLINE_RESOLUTION * 6 * 3 );
+    std::vector<PLuint>    indices;     indices.reserve ( PL_SPLINE_RESOLUTION * PL_SPLINE_RESOLUTION * 6 );
 
-    for (PLuint j=0; j <= NUM_INC; j++)
+    for (PLuint j=0; j <= PL_SPLINE_RESOLUTION; j++)
     {
-        PLfloat v = j/fNUM_INC;
+        PLfloat v = j/PL_SPLINE_RESOLUTION;
 
         // interpolate spline corner positions and normals for current v coord
         plVector3 n03 = (1.0f-v)*n[0] + v*n[3];
@@ -251,9 +245,9 @@ void plSpline::_computeHermite()
         plVector3 p03 = (1.0f-v)*p[0] + v*p[3];
         plVector3 p12 = (1.0f-v)*p[1] + v*p[2];
 
-        for ( PLuint i=0; i <= NUM_INC; i++ )
+        for ( PLuint i=0; i <= PL_SPLINE_RESOLUTION; i++ )
         {
-            PLfloat u = i/fNUM_INC;
+            PLfloat u = i/PL_SPLINE_RESOLUTION;
 
             // first row, don't triangulate
             PLfloat z = Q( u, v, st, tt );
@@ -265,10 +259,10 @@ void plSpline::_computeHermite()
             // intersect surface for distance map
             plIntersection intersection = _mesh->rayIntersect( pos, -norm, false, false, true ); 
         
-            PLfloat distance = (intersection.point - pos ).squaredLength() / MAX_DISTANCE;
+            PLfloat distance = (intersection.point - pos ).squaredLength() / PL_SPLINE_COLOUR_MAP_RANGE;
            
             // get colour value 
-            plVector3 colour = ( distance <= MAX_DISTANCE ) ? plColourMap::map( (intersection.point - pos ).squaredLength() / MAX_DISTANCE ) : NO_DATA_COLOUR;
+            plVector3 colour = ( distance <= PL_SPLINE_COLOUR_MAP_RANGE ) ? plColourMap::map( distance ) : PL_SPLINE_NO_DATA_COLOUR;
                         
             points.push_back( pos );
             colours.push_back( colour );
@@ -276,9 +270,9 @@ void plSpline::_computeHermite()
             if ( j > 0 && i > 0 )
             {
                 // once past first row, begin triangulating
-                PLuint i0 = (i-1) + (j-1) * (NUM_INC+1);
+                PLuint i0 = (i-1) + (j-1) * (PL_SPLINE_RESOLUTION+1);
                 PLuint i1 = i0 + 1;
-                PLuint i2 = i + j * (NUM_INC+1);  
+                PLuint i2 = i + j * (PL_SPLINE_RESOLUTION+1);  
                 PLuint i3 = i2 - 1;  
                 
                 plVector3 normal = ( ( points[i2] - points[i1]) ^ (points[i0] - points[i1]) ).normalize();
