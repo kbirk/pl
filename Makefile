@@ -309,11 +309,12 @@ objects/plChessBoard.o: plVBO.h plVertexSpecBuffer.h plEABO.h plOpenGLInfo.h
 objects/plChessBoard.o: plRenderingPipeline.h plMatrixStack.h plProjection.h
 objects/plChessBoard.o: plCamera.h plPicking.h plRenderResources.h plShader.h
 objects/plChessBoard.o: plUniform.h plVertexFragmentShader.h plFBO.h
-objects/plChessBoard.o: plTransform.h plDRBTransform.h plRenderer.h
-objects/plChessBoard.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
+objects/plChessBoard.o: plTransform.h plRenderer.h plPlanTechnique.h
+objects/plChessBoard.o: plRenderTechnique.h plWindow.h
 objects/plChessBoard.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plChessBoard.o: plArthroCamTechnique.h plTransparencyTechnique.h
 objects/plChessBoard.o: plMinimalTechnique.h plRenderShapes.h
+objects/plChessBoard.o: plDRBTransform.h
 objects/plColourMap.o: plCommon.h plVector3.h plString.h
 objects/plDRBTransform.o: plCommon.h plMatrix44.h plVector3.h plString.h
 objects/plDRBTransform.o: plVector4.h
@@ -394,33 +395,32 @@ objects/plGraftCap.o: plMatrixStack.h plProjection.h plCamera.h plPicking.h
 objects/plGraftCap.o: plRenderResources.h plShader.h plUniform.h
 objects/plGraftCap.o: plVertexFragmentShader.h plFBO.h plEditable.h
 objects/plGraftCap.o: plTriangle.h plMath.h plPolygon.h plUtility.h
-objects/plGraftCap.o: plTransform.h plOctreeMesh.h plMesh.h plOctree.h
-objects/plGraftCap.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
-objects/plGraftCap.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
-objects/plGraftCap.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraftCap.o: plMinimalTechnique.h plRenderShapes.h
+objects/plGraftCap.o: plTransform.h plRenderer.h plPlanTechnique.h
+objects/plGraftCap.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
+objects/plGraftCap.o: plOutlineTechnique.h plArthroCamTechnique.h
+objects/plGraftCap.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plGraftCap.o: plRenderShapes.h plOctreeMesh.h plMesh.h plOctree.h
 objects/plGraftCap.o: plArthroViewable.h
 objects/plGraftEditor.o: plCommon.h plVector3.h plString.h plTransform.h
-objects/plGraftEditor.o: plMatrix44.h plVector4.h plPlan.h plCSV.h
-objects/plGraftEditor.o: plRenderable.h plRenderComponent.h plTexture2D.h
-objects/plGraftEditor.o: plVAO.h plVBO.h plVertexSpecBuffer.h plEABO.h
-objects/plGraftEditor.o: plOpenGLInfo.h plRenderingPipeline.h plMatrixStack.h
-objects/plGraftEditor.o: plProjection.h plCamera.h plPicking.h
-objects/plGraftEditor.o: plRenderResources.h plShader.h plUniform.h
-objects/plGraftEditor.o: plVertexFragmentShader.h plFBO.h plGraft.h
-objects/plGraftEditor.o: plArthroViewable.h plEditable.h plTriangle.h
-objects/plGraftEditor.o: plMath.h plPlug.h plMeshSpecific.h plMesh.h
-objects/plGraftEditor.o: plBoneAndCartilage.h plModel.h plOctreeMesh.h
-objects/plGraftEditor.o: plOctree.h plRenderer.h plPlanTechnique.h
+objects/plGraftEditor.o: plMatrix44.h plVector4.h plRenderable.h
+objects/plGraftEditor.o: plRenderComponent.h plTexture2D.h plVAO.h plVBO.h
+objects/plGraftEditor.o: plVertexSpecBuffer.h plEABO.h plOpenGLInfo.h
+objects/plGraftEditor.o: plRenderingPipeline.h plMatrixStack.h plProjection.h
+objects/plGraftEditor.o: plCamera.h plPicking.h plRenderResources.h
+objects/plGraftEditor.o: plShader.h plUniform.h plVertexFragmentShader.h
+objects/plGraftEditor.o: plFBO.h plRenderer.h plPlanTechnique.h
 objects/plGraftEditor.o: plRenderTechnique.h plWindow.h
 objects/plGraftEditor.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plGraftEditor.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraftEditor.o: plMinimalTechnique.h plRenderShapes.h
-objects/plGraftEditor.o: plTransparentRenderable.h plPolygon.h plUtility.h
-objects/plGraftEditor.o: plGraftCap.h plDefectSite.h plSpline.h plBoundary.h
-objects/plGraftEditor.o: plColourMap.h plDonorSite.h plIGuideSite.h
-objects/plGraftEditor.o: plMeshCutter.h plMeshExtruder.h plIGuide.h
-objects/plGraftEditor.o: plEditor.h
+objects/plGraftEditor.o: plMinimalTechnique.h plRenderShapes.h plPlan.h
+objects/plGraftEditor.o: plCSV.h plGraft.h plArthroViewable.h plEditable.h
+objects/plGraftEditor.o: plTriangle.h plMath.h plPlug.h plMeshSpecific.h
+objects/plGraftEditor.o: plMesh.h plBoneAndCartilage.h plModel.h
+objects/plGraftEditor.o: plOctreeMesh.h plOctree.h plTransparentRenderable.h
+objects/plGraftEditor.o: plPolygon.h plUtility.h plGraftCap.h plDefectSite.h
+objects/plGraftEditor.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/plGraftEditor.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h
+objects/plGraftEditor.o: plIGuide.h plEditor.h
 objects/plIGuide.o: plCommon.h plMeshSpecific.h plMesh.h plVector3.h
 objects/plIGuide.o: plString.h plTriangle.h plMath.h plVector4.h plBoundary.h
 objects/plIGuide.o: plRenderable.h plRenderComponent.h plMatrix44.h
@@ -851,7 +851,16 @@ objects/plTrackedObject.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plTrackedObject.o: plArthroCamTechnique.h plTransparencyTechnique.h
 objects/plTrackedObject.o: plMinimalTechnique.h plRenderShapes.h
 objects/plTransform.o: plCommon.h plString.h plVector3.h plMatrix44.h
-objects/plTransform.o: plVector4.h
+objects/plTransform.o: plVector4.h plRenderable.h plRenderComponent.h
+objects/plTransform.o: plTexture2D.h plVAO.h plVBO.h plVertexSpecBuffer.h
+objects/plTransform.o: plEABO.h plOpenGLInfo.h plRenderingPipeline.h
+objects/plTransform.o: plMatrixStack.h plProjection.h plCamera.h plPicking.h
+objects/plTransform.o: plRenderResources.h plShader.h plUniform.h
+objects/plTransform.o: plVertexFragmentShader.h plFBO.h plRenderer.h
+objects/plTransform.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
+objects/plTransform.o: plScreenQuadTechnique.h plOutlineTechnique.h
+objects/plTransform.o: plArthroCamTechnique.h plTransparencyTechnique.h
+objects/plTransform.o: plMinimalTechnique.h plRenderShapes.h
 objects/plTransparencyTechnique.o: plCommon.h plRenderTechnique.h
 objects/plTransparencyTechnique.o: plRenderable.h plVector3.h plString.h
 objects/plTransparencyTechnique.o: plRenderComponent.h plVector4.h
@@ -1113,11 +1122,11 @@ objects/plChessBoard.o: plEABO.h plOpenGLInfo.h plRenderingPipeline.h
 objects/plChessBoard.o: plMatrixStack.h plProjection.h plCamera.h plPicking.h
 objects/plChessBoard.o: plRenderResources.h plShader.h plUniform.h
 objects/plChessBoard.o: plVertexFragmentShader.h plFBO.h plTransform.h
-objects/plChessBoard.o: plDRBTransform.h plRenderer.h plPlanTechnique.h
-objects/plChessBoard.o: plRenderTechnique.h plWindow.h
-objects/plChessBoard.o: plScreenQuadTechnique.h plOutlineTechnique.h
-objects/plChessBoard.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plChessBoard.o: plMinimalTechnique.h plRenderShapes.h
+objects/plChessBoard.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
+objects/plChessBoard.o: plWindow.h plScreenQuadTechnique.h
+objects/plChessBoard.o: plOutlineTechnique.h plArthroCamTechnique.h
+objects/plChessBoard.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plChessBoard.o: plRenderShapes.h plDRBTransform.h
 objects/plColourMap.o: plColourMap.h plCommon.h plVector3.h plString.h
 objects/plDRBTransform.o: plDRBTransform.h plCommon.h plMatrix44.h
 objects/plDRBTransform.o: plVector3.h plString.h plVector4.h
@@ -1200,33 +1209,32 @@ objects/plGraftCap.o: plMatrixStack.h plProjection.h plCamera.h plPicking.h
 objects/plGraftCap.o: plRenderResources.h plShader.h plUniform.h
 objects/plGraftCap.o: plVertexFragmentShader.h plFBO.h plEditable.h
 objects/plGraftCap.o: plTriangle.h plMath.h plPolygon.h plUtility.h
-objects/plGraftCap.o: plTransform.h plOctreeMesh.h plMesh.h plOctree.h
-objects/plGraftCap.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
-objects/plGraftCap.o: plWindow.h plScreenQuadTechnique.h plOutlineTechnique.h
-objects/plGraftCap.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraftCap.o: plMinimalTechnique.h plRenderShapes.h
+objects/plGraftCap.o: plTransform.h plRenderer.h plPlanTechnique.h
+objects/plGraftCap.o: plRenderTechnique.h plWindow.h plScreenQuadTechnique.h
+objects/plGraftCap.o: plOutlineTechnique.h plArthroCamTechnique.h
+objects/plGraftCap.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plGraftCap.o: plRenderShapes.h plOctreeMesh.h plMesh.h plOctree.h
 objects/plGraftCap.o: plArthroViewable.h
 objects/plGraftEditor.o: plGraftEditor.h plCommon.h plVector3.h plString.h
-objects/plGraftEditor.o: plTransform.h plMatrix44.h plVector4.h plPlan.h
-objects/plGraftEditor.o: plCSV.h plRenderable.h plRenderComponent.h
-objects/plGraftEditor.o: plTexture2D.h plVAO.h plVBO.h plVertexSpecBuffer.h
-objects/plGraftEditor.o: plEABO.h plOpenGLInfo.h plRenderingPipeline.h
-objects/plGraftEditor.o: plMatrixStack.h plProjection.h plCamera.h
-objects/plGraftEditor.o: plPicking.h plRenderResources.h plShader.h
-objects/plGraftEditor.o: plUniform.h plVertexFragmentShader.h plFBO.h
-objects/plGraftEditor.o: plGraft.h plArthroViewable.h plEditable.h
-objects/plGraftEditor.o: plTriangle.h plMath.h plPlug.h plMeshSpecific.h
-objects/plGraftEditor.o: plMesh.h plBoneAndCartilage.h plModel.h
-objects/plGraftEditor.o: plOctreeMesh.h plOctree.h plRenderer.h
+objects/plGraftEditor.o: plTransform.h plMatrix44.h plVector4.h
+objects/plGraftEditor.o: plRenderable.h plRenderComponent.h plTexture2D.h
+objects/plGraftEditor.o: plVAO.h plVBO.h plVertexSpecBuffer.h plEABO.h
+objects/plGraftEditor.o: plOpenGLInfo.h plRenderingPipeline.h plMatrixStack.h
+objects/plGraftEditor.o: plProjection.h plCamera.h plPicking.h
+objects/plGraftEditor.o: plRenderResources.h plShader.h plUniform.h
+objects/plGraftEditor.o: plVertexFragmentShader.h plFBO.h plRenderer.h
 objects/plGraftEditor.o: plPlanTechnique.h plRenderTechnique.h plWindow.h
 objects/plGraftEditor.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plGraftEditor.o: plArthroCamTechnique.h plTransparencyTechnique.h
-objects/plGraftEditor.o: plMinimalTechnique.h plRenderShapes.h
-objects/plGraftEditor.o: plTransparentRenderable.h plPolygon.h plUtility.h
-objects/plGraftEditor.o: plGraftCap.h plDefectSite.h plSpline.h plBoundary.h
-objects/plGraftEditor.o: plColourMap.h plDonorSite.h plIGuideSite.h
-objects/plGraftEditor.o: plMeshCutter.h plMeshExtruder.h plIGuide.h
-objects/plGraftEditor.o: plEditor.h
+objects/plGraftEditor.o: plMinimalTechnique.h plRenderShapes.h plPlan.h
+objects/plGraftEditor.o: plCSV.h plGraft.h plArthroViewable.h plEditable.h
+objects/plGraftEditor.o: plTriangle.h plMath.h plPlug.h plMeshSpecific.h
+objects/plGraftEditor.o: plMesh.h plBoneAndCartilage.h plModel.h
+objects/plGraftEditor.o: plOctreeMesh.h plOctree.h plTransparentRenderable.h
+objects/plGraftEditor.o: plPolygon.h plUtility.h plGraftCap.h plDefectSite.h
+objects/plGraftEditor.o: plSpline.h plBoundary.h plColourMap.h plDonorSite.h
+objects/plGraftEditor.o: plIGuideSite.h plMeshCutter.h plMeshExtruder.h
+objects/plGraftEditor.o: plIGuide.h plEditor.h
 objects/plIGuide.o: plIGuide.h plCommon.h plMeshSpecific.h plMesh.h
 objects/plIGuide.o: plVector3.h plString.h plTriangle.h plMath.h plVector4.h
 objects/plIGuide.o: plBoundary.h plRenderable.h plRenderComponent.h
@@ -1673,7 +1681,17 @@ objects/plTrackedObject.o: plScreenQuadTechnique.h plOutlineTechnique.h
 objects/plTrackedObject.o: plArthroCamTechnique.h plTransparencyTechnique.h
 objects/plTrackedObject.o: plMinimalTechnique.h plRenderShapes.h
 objects/plTransform.o: plTransform.h plCommon.h plString.h plVector3.h
-objects/plTransform.o: plMatrix44.h plVector4.h
+objects/plTransform.o: plMatrix44.h plVector4.h plRenderable.h
+objects/plTransform.o: plRenderComponent.h plTexture2D.h plVAO.h plVBO.h
+objects/plTransform.o: plVertexSpecBuffer.h plEABO.h plOpenGLInfo.h
+objects/plTransform.o: plRenderingPipeline.h plMatrixStack.h plProjection.h
+objects/plTransform.o: plCamera.h plPicking.h plRenderResources.h plShader.h
+objects/plTransform.o: plUniform.h plVertexFragmentShader.h plFBO.h
+objects/plTransform.o: plRenderer.h plPlanTechnique.h plRenderTechnique.h
+objects/plTransform.o: plWindow.h plScreenQuadTechnique.h
+objects/plTransform.o: plOutlineTechnique.h plArthroCamTechnique.h
+objects/plTransform.o: plTransparencyTechnique.h plMinimalTechnique.h
+objects/plTransform.o: plRenderShapes.h
 objects/plTransparencyTechnique.o: plTransparencyTechnique.h plCommon.h
 objects/plTransparencyTechnique.o: plRenderTechnique.h plRenderable.h
 objects/plTransparencyTechnique.o: plVector3.h plString.h plRenderComponent.h

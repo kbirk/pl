@@ -75,10 +75,12 @@ float calcRMS( in vec3 defectPosition, in vec3 defectNormal, in vec3 defectX, in
 
             vec3 defectIntPoint, donorIntPoint;
             bool i0 = rayIntersectDefect( defectIntPoint, defectCast, defectNormal, defectPosition, graftIndex );
-            bool i1 = rayIntersectDonor ( donorIntPoint,  donorCast,  donorNormal,  donorPosition, siteIndex  );               
+            bool i1 = rayIntersectDonor ( donorIntPoint,  donorCast,  donorNormal,  donorPosition, siteIndex  );   
+            
+            // intersection failures may occur if defect grafts overlap boundaries ( thus missing triangles on cap )                           
             if ( i0 && i1 )
             {    
-                // intersection failures may occur if defect grafts overlap boundaries ( thus missing triangles on cap )
+                // find distance on surface between grafts
                 float distance = dot( defectIntPoint, defectNormal ) - dot( donorIntPoint, donorNormal );               
                 squaredDistanceSum += distance * distance;
                 successfulChecks++;
@@ -129,16 +131,20 @@ void main(void)
         
             // reject any grafts that result in an angular difference > threshold ( 60 degrees )
             if ( angularDifference < PL_STAGE_2_ANGULAR_DISTANCE_THRESHOLD )
-            {        
-                rms = angularDifference + calcRMS( defectGraftPosition, 
-                                                   defectGraftNormal, 
-                                                   defectGraftX, 
-                                                   defectGraftZ, 
-                                                   donorGridPosition, 
-                                                   donorGraftNormal, 
-                                                   donorGraftX, 
-                                                   donorGraftZ, 
-                                                   siteIndex, i ); 
+            {    
+    
+                rms = calcRMS( defectGraftPosition, 
+                               defectGraftNormal, 
+                               defectGraftX, 
+                               defectGraftZ, 
+                               donorGridPosition, 
+                               donorGraftNormal, 
+                               donorGraftX, 
+                               donorGraftZ, 
+                               siteIndex, i ); 
+                
+                rms += rms * 0.5 * ( angularDifference / PL_STAGE_2_ANGULAR_DISTANCE_THRESHOLD );
+                
             } 
         }
         setRMS( rms, i );   

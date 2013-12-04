@@ -49,7 +49,7 @@ void plBoundary::extractRenderComponents( plRenderMap& renderMap, PLuint techniq
         component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
         component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
         component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
-        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) );
         // insert into render map
         renderMap[ technique ].insert( component );            
     }
