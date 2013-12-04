@@ -38,14 +38,10 @@ class plVector3
   
 };
 
-
 // scalar multiplication
 plVector3 operator * ( PLfloat k, const plVector3 &p );
 
-PLfloat distToEdge( const plVector3 &point, const plVector3 &head, const plVector3 &tail );
-
 // I/O operators
-
 std::ostream& operator << ( std::ostream& stream, const plVector3 &p );
 std::istream& operator >> ( std::istream& stream, plVector3 &p );
 

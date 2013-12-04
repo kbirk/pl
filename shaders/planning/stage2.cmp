@@ -118,14 +118,28 @@ void main(void)
         if ( isWithinDonorBoundary( siteIndex, donorGridPosition, donorGraftNormal, defectSolutionGraftRadii( i ) ) )
         {
             // get defect graft tangents
-            vec3 defectGraftX = cross( defectGraftNormal, vec3( 0, 0, 1 ) );
-            vec3 defectGraftZ = cross( defectGraftX, defectGraftNormal );
+            vec3 defectGraftX = normalize( cross( defectGraftNormal, vec3( 0, 0, 1 ) ) );
+            vec3 defectGraftZ = normalize( cross( defectGraftX, defectGraftNormal ) );
             
             // get donor graft tangents
-            vec3 donorGraftX      = normalize( ( rotation * vec4( defectGraftX, 1.0 ) ).xyz );
-            vec3 donorGraftZ      = normalize( ( rotation * vec4( defectGraftZ, 1.0 ) ).xyz );
+            vec3 donorGraftX = normalize( ( rotation * vec4( defectGraftX, 1.0 ) ).xyz );
+            vec3 donorGraftZ = normalize( ( rotation * vec4( defectGraftZ, 1.0 ) ).xyz );
         
-            rms = calcRMS( defectGraftPosition, defectGraftNormal, defectGraftX, defectGraftZ, donorGridPosition, donorGraftNormal, donorGraftX, donorGraftZ, siteIndex, i );  
+            float angularDifference = acos( dot( defectGraftX, donorGraftX ) );
+        
+            // reject any grafts that result in an angular difference > threshold ( 60 degrees )
+            if ( angularDifference < PL_STAGE_2_ANGULAR_DISTANCE_THRESHOLD )
+            {        
+                rms = angularDifference + calcRMS( defectGraftPosition, 
+                                                   defectGraftNormal, 
+                                                   defectGraftX, 
+                                                   defectGraftZ, 
+                                                   donorGridPosition, 
+                                                   donorGraftNormal, 
+                                                   donorGraftX, 
+                                                   donorGraftZ, 
+                                                   siteIndex, i ); 
+            } 
         }
         setRMS( rms, i );   
     } 

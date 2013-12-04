@@ -184,26 +184,12 @@ plVector3 plVector3::perp2() const
 
 
 
-PLfloat distToEdge( const plVector3 &v, const plVector3 &head, const plVector3 &tail )
-{
-    plVector3 toV = v - tail;
-    plVector3 me = head - tail;
-    PLfloat  dot = (toV * me) / (me * me);
-    plVector3 perp = toV - dot * me;
-
-    if (dot < 0.15f || dot > 0.85f)
-        return FLT_MAX;
-    else
-        return perp * perp;
-}
-
-
-// I/O operators
 std::ostream& operator << ( std::ostream& stream, const plVector3 &p )
 {
   stream << p.x << " " << p.y << " " << p.z;
   return stream;
 }
+
 
 std::istream& operator >> ( std::istream& stream, plVector3 & p )
 {

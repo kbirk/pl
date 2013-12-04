@@ -11,12 +11,12 @@ namespace plRenderer
     void init()
     {
         // create techniques
-        _techniques[ PL_PLAN_TECHNIQUE ]         = std::shared_ptr<plPlanTechnique>( new plPlanTechnique() );
-        _techniques[ PL_OUTLINE_TECHNIQUE ]      = std::shared_ptr<plOutlineTechnique>( new plOutlineTechnique() );
-        _techniques[ PL_SCREEN_QUAD_TECHNIQUE ]  = std::shared_ptr<plScreenQuadTechnique>( new plScreenQuadTechnique() );
-        _techniques[ PL_ARTHRO_CAM_TECHNIQUE ]   = std::shared_ptr<plArthroCamTechnique>( new plArthroCamTechnique() );
+        _techniques[ PL_PLAN_TECHNIQUE ]         = std::shared_ptr<plPlanTechnique>        ( new plPlanTechnique()         );
+        _techniques[ PL_OUTLINE_TECHNIQUE ]      = std::shared_ptr<plOutlineTechnique>     ( new plOutlineTechnique()      );
+        _techniques[ PL_SCREEN_QUAD_TECHNIQUE ]  = std::shared_ptr<plScreenQuadTechnique>  ( new plScreenQuadTechnique()   );
+        _techniques[ PL_ARTHRO_CAM_TECHNIQUE ]   = std::shared_ptr<plArthroCamTechnique>   ( new plArthroCamTechnique()    );
         _techniques[ PL_TRANSPARENCY_TECHNIQUE ] = std::shared_ptr<plTransparencyTechnique>( new plTransparencyTechnique() );
-        _techniques[ PL_MINIMAL_TECHNIQUE ]      = std::shared_ptr<plMinimalTechnique>( new plMinimalTechnique() );
+        _techniques[ PL_MINIMAL_TECHNIQUE ]      = std::shared_ptr<plMinimalTechnique>     ( new plMinimalTechnique()      );
     } 
 
     
@@ -179,7 +179,7 @@ namespace plRenderer
             
         queueDisk( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), PL_HEAD_RADIUS, true );
 
-        plModelStack::pop();   
+        plModelStack::pop(); 
     }
     
     

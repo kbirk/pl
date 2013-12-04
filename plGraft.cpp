@@ -29,6 +29,15 @@ void plGraft::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
     plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
     _extractGraftRenderComponents( renderMap, technique );
     plModelStack::pop();
+    
+    if ( !_inArthroView )
+    {
+         // draw axis
+        _harvest.transform().extractRenderComponents( renderMap, technique );
+        _recipient.transform().extractRenderComponents( renderMap, technique );
+        
+        plRenderer::queueAxis( PL_PLAN_TECHNIQUE, _recipient.transform().origin() + _recipient.transform().y()*4,  plVector3( 1, 0 ,0 ), plVector3( 0, 1 ,0 ) );
+    }
 }
 
 

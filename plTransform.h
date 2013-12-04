@@ -5,8 +5,11 @@
 #include "plString.h"
 #include "plVector3.h"
 #include "plMatrix44.h"
+#include "plRenderable.h"
+#include "plRenderer.h"
 
-class plTransform 
+
+class plTransform : public plRenderable
 {
     public:
 
@@ -36,8 +39,9 @@ class plTransform
         PLfloat   squaredDistToAxis  ( const plVector3 &v ) const;
         PLfloat   projectedDistOnAxis( const plVector3 &v ) const;
 
-        friend std::ostream& operator << ( std::ostream& out, const plTransform &t );
-  
+        void extractRenderComponents( plRenderMap& renderMap ) const;
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+
         plTransform operator* ( const plTransform &transform ) const;
         plTransform operator* ( const plMatrix44 &matrix ) const;
   

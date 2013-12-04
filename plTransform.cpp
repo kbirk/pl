@@ -101,6 +101,22 @@ PLfloat plTransform::projectedDistOnAxis( const plVector3 &v ) const
 }
 
 
+void plTransform::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
+{
+    if ( !_isVisible )
+        return;
+
+    // draw axis
+    plRenderer::queueAxis( technique, _origin, _x, _y );
+}
+
+
+void plTransform::extractRenderComponents( plRenderMap& renderMap ) const
+{
+    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+}
+
+
 plTransform plTransform::operator* ( const plTransform &transform ) const
 {
     plMatrix44 m = _transform * transform.matrix();
@@ -123,6 +139,6 @@ plTransform plTransform::operator* ( const plMatrix44 &matrix ) const
 
 std::ostream& operator << ( std::ostream& out, const plTransform &t )
 {
-    out << t._origin << "," << t._x << "," << t._y;  
+    out << t.origin() << "," << t.x() << "," << t.y();  
     return out;
 }
