@@ -12,7 +12,6 @@
 #define PL_COLOUR_UNIFORM_NAME                      "uColour"
 #define PL_LIGHT_POSITION_UNIFORM_NAME              "uLightPosition"
 #define PL_PICKING_UNIFORM_NAME                     "uPickingColour"
-#define PL_OUTLINE_UNIFORM_NAME                     "uOutlineColour"
 #define PL_TEXTURE_UNIT_0_SAMPLER_UNIFORM_NAME      "uTextureUnit0"
 #define PL_TEXTURE_UNIT_1_SAMPLER_UNIFORM_NAME      "uTextureUnit1"
 #define PL_TEXTURE_UNIT_2_SAMPLER_UNIFORM_NAME      "uTextureUnit2"
@@ -27,7 +26,6 @@ enum plUniformTypeEnum
     PL_COLOUR_UNIFORM,
     PL_LIGHT_POSITION_UNIFORM,
     PL_PICKING_UNIFORM,
-    PL_OUTLINE_UNIFORM,
     PL_TEXTURE_UNIT_0_UNIFORM,
     PL_TEXTURE_UNIT_1_UNIFORM,
     PL_TEXTURE_UNIT_2_UNIFORM,
@@ -47,22 +45,20 @@ class plVertexFragmentShader : public plShader
     private:
 	
         // transformations
-        GLuint _modelMatrixUniformID;
-        GLuint _viewMatrixUniformID;
-        GLuint _projectionMatrixUniformID;
+        GLint _modelMatrixUniformID;
+        GLint _viewMatrixUniformID;
+        GLint _projectionMatrixUniformID;
         // colour
-        GLuint _colourUniformID;
+        GLint _colourUniformID;
         // light position
-        GLuint _lightPositionUniformID;
+        GLint _lightPositionUniformID;
         // picking
-        GLuint _pickingUniformID;   
-        // outline
-        GLuint _outlineUniformID;
+        GLint _pickingUniformID;   
         // texturing     
-        GLuint _textureUnit0SamplerID;
-        GLuint _textureUnit1SamplerID;
-        GLuint _textureUnit2SamplerID;
-        GLuint _textureUnit3SamplerID;
+        GLint _textureUnit0SamplerID;
+        GLint _textureUnit1SamplerID;
+        GLint _textureUnit2SamplerID;
+        GLint _textureUnit3SamplerID;
         
         void _getUniformLocations();    
 };
