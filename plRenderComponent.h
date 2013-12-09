@@ -27,12 +27,7 @@ class plRenderComponent
 
         std::shared_ptr< plVAO >  _vao;
         std::vector< plUniform >  _uniforms;
-
-        //const plShader  *_shader;                
-        //const plFBO     *_fbo;      
-                  
-        //void _bindShader()   const;
-        //void _bindFBO()      const;       
+    
         void _bindUniforms( const plShader& shader ) const;
 };
 

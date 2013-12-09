@@ -31,10 +31,8 @@ class plVector3
 
 		plVector3 normalize() const;
 		PLfloat length() const;
-		PLfloat squaredLength() const;
-	  
-		plVector3 perp1() const;
-		plVector3 perp2() const;
+		PLfloat squaredLength() const;  
+	    PLfloat signedAngle( const plVector3 v, const plVector3& planeNormal ) const;
   
 };
 

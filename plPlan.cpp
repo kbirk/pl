@@ -445,6 +445,40 @@ void plPlan::clear()
 }
 
 
+void plPlan::updateGraftMarkerPositions()
+{
+    /*
+    for ( plGraft* graft : _grafts ) 
+    {
+        // calculate seperation vector between grafts
+        plVector3 harvestToRecipient = ( graft->recipient().transform().origin() - graft->harvest().transform().origin() ).normalize();
+
+        // ensure this vector is othrogonal with graft transform
+        plVector3 x = ( graft->harvest().transform().y() ^ harvestToRecipient ).normalize();
+        plVector3 z = ( x ^ graft->harvest().transform().y() ).normalize();
+        
+        // get vector in graft local space
+        plVector3 graftZ = graft->harvest().transform().applyNormalInverse( z );  
+                
+        // calulate this direction for recipient graft in world space
+        plVector3 recipientDirection = ( graft->recipient().transform().applyNormal( graftZ ) ).normalize();        
+
+        //plRenderer::queueArrow( PL_PLAN_TECHNIQUE, graft->harvest().transform().origin(), harvestToRecipient, ( graft->recipient().transform().origin() - graft->harvest().transform().origin() ).length() );
+
+        // calc how far this angle is offset
+        PLfloat recipientAngle = ( -harvestToRecipient ).signedAngle( recipientDirection, graft->recipient().transform().y() );
+
+        // rotate marker by half the offset
+        plMatrix44 rot;   rot.setRotation( -recipientAngle / 2.0f, plVector3( 0, 1, 0 ) );
+                
+        plVector3 newDirection = rot * graft->harvest().transform().applyNormalInverse( z );
+
+        graft->setMark( newDirection.normalize() );
+    }
+    */
+}
+
+
 PLint plPlan::_getModelIndex( const plMeshSpecific& mesh ) const
 {
     for ( PLuint i = 0; i < _models.size(); i++ )

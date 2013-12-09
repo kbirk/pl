@@ -8,7 +8,7 @@ Window::Window( int x, int y, int width, int height, std::string title )
     glutInitWindowSize    ( width, height );
     _windowID = glutCreateWindow( title.c_str() );
     
-    #ifdef WIN32
+#ifdef WIN32
         // init glew AFTER glut (needs rendering context)
         glewExperimental = GL_TRUE;
         GLenum err = glewInit();
@@ -16,7 +16,7 @@ Window::Window( int x, int y, int width, int height, std::string title )
         {
           fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
         }
-    #endif
+#endif
                   
     registerWindow  ( _windowID );
     glutSetWindow   ( _windowID );

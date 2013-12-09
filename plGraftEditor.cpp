@@ -155,7 +155,11 @@ void plGraftEditor::_dragMarker( PLint x, PLint y )
 
     if ( intersection.exists )
     {
-        _selectedGraft->setMark( _selectedGraft->transform( _selectedType ).applyInverse( intersection.point ) );
+        // find angle between wanted direction and actual direction to determine angular offset
+        plVector3 newMarkDir = _selectedGraft->transform( _selectedType ).applyInverse( intersection.point ).normalize();   
+        plVector3 markDir = _selectedGraft->markDirection();
+        
+        _selectedGraft->setMarkOffset( newMarkDir.signedAngle( markDir, graftY ) );
     }
 
 

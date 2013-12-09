@@ -1,5 +1,9 @@
 #include "plFBO.h"
 
+
+static PLint currentBoundFBO = 0;
+
+
 plFBO::plFBO()
     : _id( 0 )
 {
@@ -94,17 +98,22 @@ PLbool plFBO::_checkAttachmentError() const
 }
 
 
-
 void plFBO::bind() const 
-{ 
+{
+    if ( currentBoundFBO == _id )
+        return;
+
     glBindFramebuffer( GL_FRAMEBUFFER, _id );    
     std::vector<GLenum> buffers = drawBuffers();   
     glDrawBuffers( buffers.size(), &buffers[0] );
+
+    currentBoundFBO = _id;
 }
 
 
 void plFBO::unbind() const
 { 
+    currentBoundFBO = 0;
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
 

@@ -34,6 +34,8 @@ class plTransform : public plRenderable
         void set( const plVector3 &x, const plVector3 &y, const plVector3 &origin);   
         void set( const plVector3 &x, const plVector3 &y, const plVector3 &z, const plVector3 &origin );
        
+        plVector3 apply              ( const plVector3 &v ) const;
+        plVector3 applyNormal        ( const plVector3 &v ) const;
         plVector3 applyInverse       ( const plVector3 &v ) const;
         plVector3 applyNormalInverse ( const plVector3 &v ) const;
         PLfloat   squaredDistToAxis  ( const plVector3 &v ) const;

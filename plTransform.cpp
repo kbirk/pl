@@ -72,6 +72,20 @@ void plTransform::set( const plVector3 &x, const plVector3 &y, const plVector3 &
 }
 
 
+plVector3 plTransform::apply( const plVector3 &v ) const
+{
+    return _transform * v;
+}
+
+
+plVector3 plTransform::applyNormal( const plVector3 &v ) const
+{
+    plMatrix44 rot = _transform;
+    rot.setColumn( 3, 0.0f, 0.0f, 0.0f, 1.0f );
+    return rot * v;
+}
+
+
 plVector3 plTransform::applyInverse( const plVector3 &v ) const
 {
     plVector3 p = v-_origin;

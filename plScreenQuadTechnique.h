@@ -17,7 +17,6 @@ class plScreenQuadTechnique : public plRenderTechnique
 
     private:
 
-        void _initState() const;
         virtual plVAO _generateQuad() const;
         virtual plRenderComponent _generateComponent() const;
 };

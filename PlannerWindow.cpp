@@ -188,6 +188,8 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
 			    _camera.translate( _previousMouse.x - x,
 			                       _previousMouse.y - y );
             }
+            // update graft marker positions for viewpoint
+            _plan.updateGraftMarkerPositions();
             break;  
     }
 

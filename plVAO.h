@@ -32,15 +32,12 @@ class plVAO
         void upload();        
         void draw() const;
         void clear();
-        
-        //void draw( const std::vector<PLuint> &indices );
-        
+
         friend class plVertexSpecBuffer;
         
     private:
 
         GLuint _id;
-        PLbool _changeFlag;
         
         std::vector< std::shared_ptr< plVBO > > _vbos;
         std::shared_ptr< plEABO > _eabo;   

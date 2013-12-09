@@ -42,7 +42,6 @@ void plVBO::set( const std::vector<plVector4>& data, PLuint usage )
     _data      = data;
     _numBytes  = sizeof( plVector4 ) * _data.size();
     _usage     = usage;   
-    //_flagChange();
 }
 
 
@@ -55,14 +54,12 @@ void plVBO::set( const std::vector<plVector3>& data, PLuint usage )
 void plVBO::set( const plVertexAttributePointer& attributePointer )
 {
     _attributePointers.push_back( attributePointer );
-    //_flagChange();
 }
 
 
 void plVBO::clear()
 {
     _data.clear();
-    //_flagChange();
 }
 
 
@@ -79,11 +76,6 @@ void plVBO::upload()
         std::cerr << "plVBO::upload() error: vertex attribute pointers unspecified, ignoring command" << std::endl;
         return;        
     }
-    
-    /*
-    if ( !_changeFlag )
-        return; // no need to re-upload
-    */
 
     // if buffer not allocated, generate
 	if ( !_id )
@@ -99,7 +91,6 @@ void plVBO::upload()
 	    glVertexAttribPointer( attributePointer.index, 4, GL_FLOAT, GL_FALSE, _attributePointers.size() * sizeof( plVector4 ), (GLvoid*)( attributePointer.offset ) ); 
     }
     
-    //_changeFlag = false;
     // do not unbind buffer as this will most likely be called from a vao
 }
  
@@ -108,12 +99,6 @@ void plVBO::_copy( const plVBO &vbo )
 {
     set( vbo._data, vbo._usage );
     _attributePointers = vbo._attributePointers;
-       
-    // see if buffer to copy has been uploaded, if it has, upload the copy as well
-    /*
-    if ( !vbo._changeFlag )
-        upload();
-    */
 }
 
 
@@ -124,11 +109,9 @@ void plVBO::_move( plVBO&& vbo )
     _attributePointers = vbo._attributePointers;
     _usage = vbo._usage;
     _data = std::move( vbo._data );
-    //_vao = vbo._vao;
     
     vbo._id = 0;   
     vbo._numBytes = 0;  
     vbo._usage = 0;
-    //vbo._vao = nullptr;
 }
 

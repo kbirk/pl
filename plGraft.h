@@ -30,11 +30,12 @@ class plGraft : public plRenderable,
                  PLfloat length,                
                  const plVector3 &markDirection = plVector3(0,0,1) );
 
-        const PLfloat&     radius()             const { return _radius; } 
-        const PLfloat&     length()             const { return _length; }  
-        const plVector3&   markDirection()      const { return _markDirection; } 
-        const plVector3&   markPositions( PLuint index ) const { return _markPositions[ index ]; } 
-              plTransform  transform ( PLuint type ) const;
+        const PLfloat&   radius()             const { return _radius; } 
+        const PLfloat&   length()             const { return _length; }  
+        const plVector3& markDirection()      const { return _markDirection; } 
+        const plVector3& markPositions( PLuint index ) const { return _markPositions[ index ]; } 
+        plTransform      transform ( PLuint type ) const;
+              
         const plVector3&   surfaceNormal( PLuint type ) const;
         const plPlug&      plug      ( PLuint type ) const;
         const plPlug&      harvest   () const { return _harvest;   }
@@ -42,7 +43,7 @@ class plGraft : public plRenderable,
 
         void move    ( PLuint type, const plVector3& origin, const plVector3& y );
         void rotate  ( PLuint type, const plVector3& y );
-        void setMark ( const plVector3 &direction ); 
+        void setMarkOffset( PLfloat offset );
              
         void toggleArthroView() { plArthroViewable::toggleArthroView(); _cartilageCap.toggleArthroView(); }    
                             
@@ -56,17 +57,20 @@ class plGraft : public plRenderable,
 
         PLfloat    _radius;
         PLfloat    _length;
-
-        plVector3  _markDirection;
-        plVector3  _markPositions[4];
+       
+        plVector3  _markDirection;      // marker direction in graft space
+        PLfloat    _markAngleOffset;    // offset angle for marker direction
+        plVector3  _markPositions[4];   
 
         plBoneCap      _boneCap;
         plCartilageCap _cartilageCap;
                       
         void  _extractGraftRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
-        void  _generateCaps();     
-        void  _updateMarkPosition();
+        void _generateCaps();    
+        void _updateMarker(); 
+        void _updateMarkDirection();
+        void _generateMarkPositions();
 
 
 };

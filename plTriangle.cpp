@@ -258,7 +258,7 @@ namespace plSTL
             while ( !infile.eof() ) 
             {
                 
-                std::getline(infile, line);    
+                std::getline( infile, line );    
                 
                 line.stripPreceedingWhitespace();
                 
@@ -268,7 +268,7 @@ namespace plSTL
                     // normal   
                     sscanf(line.c_str(), "%s %s %f %f %f", filler, filler, &n.x, &n.y, &n.z);
                 } 
-                else if (line.compare("vertex", 6)) 
+                else if ( line.compare("vertex", 6) ) 
                 {
                     // vertex 1
                     sscanf(line.c_str(), "%s %f %f %f", filler, &p0.x, &p0.y, &p0.z);

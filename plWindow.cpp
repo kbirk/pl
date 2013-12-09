@@ -88,8 +88,8 @@ namespace plWindow
         plMatrix44 mvpInverse = mvp.inverse();
         
         // map window coords to range [0 .. 1]       
-        PLfloat nx = ( (PLfloat)(x)-(PLfloat)( _viewportX ) ) / (PLfloat)( _viewportWidth );
-        PLfloat ny = ( (PLfloat)(y)-(PLfloat)( _viewportY   ) ) / (PLfloat)( _viewportHeight );
+        PLfloat nx = ( (PLfloat)(x)-(PLfloat)( _viewportX ) ) / (PLfloat)( _viewportWidth  );
+        PLfloat ny = ( (PLfloat)(y)-(PLfloat)( _viewportY ) ) / (PLfloat)( _viewportHeight );
         PLfloat nz = (PLfloat)(z);
         
         // map to range of [-1 .. 1] 
@@ -131,6 +131,18 @@ namespace plWindow
                           ( projected.y*0.5f + 0.5f)* _viewportHeight + _viewportY,
                           ( 1.0f+projected.z)*0.5f ); 
                           
+    }
+
+
+    plVector3 mouseToWorld( const plVector3& position )
+    {
+        return mouseToWorld( position.x, position.y, position.z );
+    }
+    
+    
+    plVector3 worldToScreen( const plVector3& position )
+    {
+        return worldToScreen( position.x, position.y, position.z );
     }
 
 

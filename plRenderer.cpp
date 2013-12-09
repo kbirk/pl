@@ -10,13 +10,26 @@ namespace plRenderer
 
     void init()
     {
+        // set initial opengl state
+
+        // enable back face culling
+        glEnable( GL_CULL_FACE );
+        glCullFace( GL_BACK );    
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        // set depth testing
+        glEnable( GL_DEPTH_TEST ); 
+        glDepthFunc( GL_LEQUAL );
+        // enable blending
+        glEnable( GL_BLEND ); 
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );   
+
         // create techniques
-        _techniques[ PL_PLAN_TECHNIQUE ]         = std::shared_ptr<plPlanTechnique>        ( new plPlanTechnique()         );
-        _techniques[ PL_OUTLINE_TECHNIQUE ]      = std::shared_ptr<plOutlineTechnique>     ( new plOutlineTechnique()      );
-        _techniques[ PL_SCREEN_QUAD_TECHNIQUE ]  = std::shared_ptr<plScreenQuadTechnique>  ( new plScreenQuadTechnique()   );
-        _techniques[ PL_ARTHRO_CAM_TECHNIQUE ]   = std::shared_ptr<plArthroCamTechnique>   ( new plArthroCamTechnique()    );
-        _techniques[ PL_TRANSPARENCY_TECHNIQUE ] = std::shared_ptr<plTransparencyTechnique>( new plTransparencyTechnique() );
-        _techniques[ PL_MINIMAL_TECHNIQUE ]      = std::shared_ptr<plMinimalTechnique>     ( new plMinimalTechnique()      );
+        _techniques[ PL_PLAN_TECHNIQUE ]         = std::make_shared< plPlanTechnique >        ();
+        _techniques[ PL_OUTLINE_TECHNIQUE ]      = std::make_shared< plOutlineTechnique >     ();
+        _techniques[ PL_SCREEN_QUAD_TECHNIQUE ]  = std::make_shared< plScreenQuadTechnique >  ();
+        _techniques[ PL_ARTHRO_CAM_TECHNIQUE ]   = std::make_shared< plArthroCamTechnique >   ();
+        _techniques[ PL_TRANSPARENCY_TECHNIQUE ] = std::make_shared< plTransparencyTechnique >();
+        _techniques[ PL_MINIMAL_TECHNIQUE ]      = std::make_shared< plMinimalTechnique >     ();
     } 
 
     
@@ -133,15 +146,16 @@ namespace plRenderer
         plModelStack::translate( position );
         plModelStack::mult( rot );     
        
+        // create render component
         plRenderComponent component( vao );
-    
+        // attached uniforms
         component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
         component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
         component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
         component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
         component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
         component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
-        
+        // insert into render map        
         _renderMap[ technique ].insert( component );  
            
         plModelStack::pop();      

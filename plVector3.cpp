@@ -96,6 +96,21 @@ PLfloat plVector3::squaredLength() const
 }
 
 
+PLfloat plVector3::signedAngle( const plVector3 v, const plVector3& planeNormal ) const
+{
+    float angle = acos( *this * v );
+    
+    plVector3 cross = *this ^  v;
+    
+    if ( ( planeNormal * cross ) < 0) 
+    { 
+        // Or > 0
+        angle = -angle;
+    }
+    return angle;
+}
+
+
 plVector3 operator * ( PLfloat k, const plVector3 &p )
 {
     plVector3 q;
@@ -106,82 +121,6 @@ plVector3 operator * ( PLfloat k, const plVector3 &p )
 
     return q;
 }
-
-
-plVector3 plVector3::perp1() const
-{
-    plVector3 result(0,0,0);
-
-    if (x == 0)
-    {
-        if (y == 0 || z == 0)
-            result.x = 1;     /* v = (0 0 z) or (0 y 0) */
-        else
-        {
-            result.y = -z; /* v = (0 y z) */
-            result.z = y;
-        }
-    }
-    else if (y == 0)
-    {
-        if (z == 0)
-            result.z = 1;     /* v = (x 0 0) */
-        else
-        {
-            result.x = -z; /* v = (x 0 z) */
-            result.z = x;
-        }
-    }
-    else
-    {
-        result.x = -y;   /* v = (x y z) or (x y 0) */
-        result.y = x;
-    }
-
-    PLfloat lenRecip = 1.0f / sqrt( result.x*result.x + result.y*result.y + result.z*result.z );
-    result.x *= lenRecip;
-    result.y *= lenRecip;
-    result.z *= lenRecip;
-
-    return result;
-}
-
-
-plVector3 plVector3::perp2() const
-{
-    plVector3 result(0,0,0);
-
-    if (x == 0)
-    {
-        if (y == 0)
-            result.y = 1;
-        else if (z == 0)
-            result.z = 1;
-        else
-        result.x = 1;
-    }
-    else
-    {
-        if (y == 0)
-            result.y = 1;
-        else if (z == 0)
-            result.z = 1;
-        else
-        {
-            result.x = x * z;
-            result.y = y * z;
-            result.z = - x*x - y*y;
-
-            PLfloat lenRecip = 1.0f / sqrt( result.x*result.x + result.y*result.y + result.z*result.z );
-            result.x *= lenRecip;
-            result.y *= lenRecip;
-            result.z *= lenRecip;
-        }
-    }
-
-  return result;
-}
-
 
 
 std::ostream& operator << ( std::ostream& stream, const plVector3 &p )

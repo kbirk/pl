@@ -31,20 +31,20 @@ class plPlan : public plRenderable,
         void exportFile( const plString &filename );
 
         // non-const reference getters          
-        plDefectSite& defectSites( PLuint index )        { return *_defectSites[index]; }
-        plDonorSite&  donorSites ( PLuint index )        { return *_donorSites[index];  }
-        plIGuideSite& iGuideSites( PLuint index )        { return *_iGuideSites[index]; }
-        plIGuide&     iGuides    ( PLuint index )        { return *_iGuides[index];     }
-        plGraft&      grafts     ( PLuint index )        { return *_grafts[index];      }   
-        plModel&      models     ( PLuint index )        { return *_models[index];      }
+        plDefectSite& defectSites( PLuint index ) { return *_defectSites[index]; }
+        plDonorSite&  donorSites ( PLuint index ) { return *_donorSites[index];  }
+        plIGuideSite& iGuideSites( PLuint index ) { return *_iGuideSites[index]; }
+        plIGuide&     iGuides    ( PLuint index ) { return *_iGuides[index];     }
+        plGraft&      grafts     ( PLuint index ) { return *_grafts[index];      }   
+        plModel&      models     ( PLuint index ) { return *_models[index];      }
            
         // const reference getters      
-        const plDefectSite& defectSites( PLuint index ) const  { return *_defectSites[index]; }
-        const plDonorSite&  donorSites ( PLuint index ) const  { return *_donorSites[index];  }
-        const plIGuideSite& iGuideSites( PLuint index ) const  { return *_iGuideSites[index]; }
-        const plIGuide&     iGuides    ( PLuint index ) const  { return *_iGuides[index];     }
-        const plGraft&      grafts     ( PLuint index ) const  { return *_grafts[index];      }     
-        const plModel&      models     ( PLuint index ) const  { return *_models[index];      }
+        const plDefectSite& defectSites( PLuint index ) const { return *_defectSites[index]; }
+        const plDonorSite&  donorSites ( PLuint index ) const { return *_donorSites[index];  }
+        const plIGuideSite& iGuideSites( PLuint index ) const { return *_iGuideSites[index]; }
+        const plIGuide&     iGuides    ( PLuint index ) const { return *_iGuides[index];     }
+        const plGraft&      grafts     ( PLuint index ) const { return *_grafts[index];      }     
+        const plModel&      models     ( PLuint index ) const { return *_models[index];      }
         
         // const array getters (gives access to array without allowing control to add, remove, etc)
         const std::vector<plDefectSite*>& defectSites() const { return _defectSites; }
@@ -65,6 +65,8 @@ class plPlan : public plRenderable,
         void removeGraft     ( PLuint index );
 
         void toggleArthroView();
+            
+        void updateGraftMarkerPositions();    
                 
         void clear();
 

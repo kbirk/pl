@@ -37,8 +37,8 @@ class plTexture2D
         plTexture2D& operator = ( const plTexture2D& texture );
         plTexture2D& operator = ( plTexture2D&& texture );
         
-        void bind  ( PLuint unit ) const;   // bind textures AFTER binding shader AND BEFORE drawing arrays 
-        void unbind( PLuint unit ) const;
+        void bind  () const;   // bind textures AFTER binding shader AND BEFORE drawing arrays 
+        void unbind() const;
 
         PLuint width()  const { return _width;  }
         PLuint height() const { return _height; }

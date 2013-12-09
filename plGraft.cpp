@@ -7,7 +7,7 @@ plGraft::plGraft()
 
 
 plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat length, const plVector3 &markDirection  )
-    :   _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length )
+    :   _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length ), _markAngleOffset( 0 )
 {
     _generateCaps();   
 }
@@ -35,6 +35,9 @@ void plGraft::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
          // draw axis
         _harvest.transform().extractRenderComponents( renderMap, technique );
         _recipient.transform().extractRenderComponents( renderMap, technique );
+        
+        plVector3 direction = ( plCameraStack::position() - _harvest.transform().origin() ).normalize();
+
     }
 }
 
@@ -134,18 +137,61 @@ void plGraft::_generateCaps()
     _boneCap.generateVAO( _radius, _length );
 
     // update values
-    _updateMarkPosition();      
+    _updateMarker();      
 }
 
 
-void plGraft::_updateMarkPosition()
+void plGraft::_updateMarker()
 {
+    _updateMarkDirection();
+    _generateMarkPositions();
+}
+
+
+void plGraft::setMarkOffset( PLfloat offset )
+{
+    _markAngleOffset = offset;
+    _updateMarker();  
+}
+
+
+void plGraft::_updateMarkDirection()
+{
+    // calculate seperation vector between grafts
+    plVector3 harvestToRecipient = ( _recipient.transform().origin() - _harvest.transform().origin() ).normalize();
+
+    // ensure this vector is othrogonal with graft transform
+    plVector3 x = ( _harvest.transform().y() ^ harvestToRecipient ).normalize();
+    plVector3 z = ( x ^ _harvest.transform().y() ).normalize();
+    
+    // get vector in graft local space
+    plVector3 graftZ = _harvest.transform().applyNormalInverse( z );  
+            
+    // calulate this direction for recipient graft in world space
+    plVector3 recipientDirection = ( _recipient.transform().applyNormal( graftZ ) ).normalize();        
+
+    //plRenderer::queueArrow( PL_PLAN_TECHNIQUE, graft->harvest().transform().origin(), harvestToRecipient, ( graft->recipient().transform().origin() - graft->harvest().transform().origin() ).length() );
+
+    // calc how far this angle is offset
+    PLfloat recipientAngle = ( -harvestToRecipient ).signedAngle( recipientDirection, _recipient.transform().y() );
+
+    // rotate marker by half the offset
+    plMatrix44 rot;   rot.setRotation( -recipientAngle / 2.0f , plVector3( 0, 1, 0 ) );
+            
+    _markDirection = ( rot * _harvest.transform().applyNormalInverse( z ) ).normalize();
+}
+
+
+void plGraft::_generateMarkPositions()
+{
+    plMatrix44 offsetRot;   offsetRot.setRotation( _markAngleOffset, plVector3( 0, 1, 0 ) );
+     
     for ( PLuint i=0; i < 4; i++ )
     {
         plMatrix44 rotation;  rotation.setRotationD( i*-90.0f,  plVector3( 0, 1, 0 ) );
     
         // Mark at tool alignment direction on cartilage
-        _markPositions[i] = _radius * ( rotation * _markDirection ).normalize();
+        _markPositions[i] = _radius * ( rotation * offsetRot * _markDirection ).normalize();
 
         // First, find the closest top perimeter point in the mark direction.
         float minDist = FLT_MAX;
@@ -167,13 +213,6 @@ void plGraft::_updateMarkPosition()
         // Draw marker  
         _markPositions[i].y = minY;
     }
-}
-
-
-void plGraft::setMark( const plVector3 &direction )
-{   
-    _markDirection = direction.normalize();    
-    _updateMarkPosition();
 }
 
 
@@ -236,6 +275,7 @@ void plGraft::move( PLuint type, const plVector3& origin, const plVector3& y )
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
             _recipient.move( origin, y );
+            _updateMarker();
             break;
             
         default:
@@ -258,6 +298,7 @@ void plGraft::rotate( PLuint type, const plVector3& y )
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
             _recipient.rotate( y );
+            _updateMarker();
             break;
             
         default:

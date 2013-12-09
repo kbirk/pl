@@ -41,14 +41,14 @@ plTexture2D& plTexture2D::operator= (  plTexture2D&& texture )
 }
 
 
-void plTexture2D::bind( PLuint unit ) const
+void plTexture2D::bind() const
 {
 	// bind textures AFTER binding shader AND BEFORE drawing arrays  
     glBindTexture( GL_TEXTURE_2D, _id );          
 }
 
 
-void plTexture2D::unbind( PLuint unit ) const
+void plTexture2D::unbind() const
 {
 	// unbind textures after drawing
     glBindTexture( GL_TEXTURE_2D, 0 );           

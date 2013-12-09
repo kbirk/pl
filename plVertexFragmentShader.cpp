@@ -99,7 +99,7 @@ void plVertexFragmentShader::setUniform( const plUniform& uniform ) const
             if ( _textureUnit0SamplerID != -1 )    
                 glActiveTexture( GL_TEXTURE0 );   
                 const plTexture2D* tex = *( plTexture2D** )( uniform.data() );
-                tex->bind( 0 );
+                tex->bind();
                 glUniform1i( _textureUnit0SamplerID, 0 );    
                 break;
         }    
@@ -108,7 +108,7 @@ void plVertexFragmentShader::setUniform( const plUniform& uniform ) const
             if ( _textureUnit1SamplerID != -1 )    
                 glActiveTexture( GL_TEXTURE1 );   
                 const plTexture2D* tex = *( plTexture2D** )( uniform.data() );
-                tex->bind( 1 );
+                tex->bind();
                 glUniform1i( _textureUnit1SamplerID, 1 );    
                 break;
         }    
@@ -117,7 +117,7 @@ void plVertexFragmentShader::setUniform( const plUniform& uniform ) const
             if ( _textureUnit2SamplerID != -1 )  
                 glActiveTexture( GL_TEXTURE2 );
                 const plTexture2D* tex = *( plTexture2D** )( uniform.data() );
-                tex->bind( 2 );
+                tex->bind();
                 glUniform1i( _textureUnit2SamplerID, 2 );
                 break;
         }
@@ -126,7 +126,7 @@ void plVertexFragmentShader::setUniform( const plUniform& uniform ) const
             if ( _textureUnit3SamplerID != -1 )  
                 glActiveTexture( GL_TEXTURE3 );
                 const plTexture2D* tex = *( plTexture2D** )( uniform.data() );
-                tex->bind( 3 );
+                tex->bind();
                 glUniform1i( _textureUnit3SamplerID, 3 );
                 break;
         }

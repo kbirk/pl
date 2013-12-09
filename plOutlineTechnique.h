@@ -14,12 +14,6 @@ class plOutlineTechnique : public plRenderTechnique
         plOutlineTechnique();       
 
         void render( const std::set< plRenderComponent >& componentSet ) const;
-
-    private:
-
-        void _initState() const;
-        plVAO _generateQuad() const;
-        plRenderComponent _generateComponent() const;
 };
 
 

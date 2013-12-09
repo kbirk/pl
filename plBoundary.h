@@ -41,8 +41,6 @@ class plBoundary : public plRenderable,
         virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);
         virtual void   removePointAndNormal( PLuint index );
         virtual void   clear();            
-        
-        //PLbool operator< ( const plBoundary& boundary ) const;
 
     protected:
 

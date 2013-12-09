@@ -10,9 +10,6 @@ void plMinimalTechnique::render( const std::set< plRenderComponent >& componentS
     const std::shared_ptr< plFBO >&    fbo    = plRenderResources::fbos( PL_MAIN_FBO );
     const std::shared_ptr< plShader >& shader = plRenderResources::shaders( PL_MINIMAL_SHADER );
 
-    // set initial rendering state
-    _initState(); 
-
     // bind fbo
     fbo->bind(); 
 
@@ -46,20 +43,4 @@ void plMinimalTechnique::render( const std::set< plRenderComponent >& componentS
 
     // unbind fbo
     fbo->unbind(); 
-
-}
-
-
-void plMinimalTechnique::_initState() const
-{
-    // enable back face culling
-    glEnable( GL_CULL_FACE );
-    glCullFace( GL_BACK );    
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    // set depth testing
-    glEnable( GL_DEPTH_TEST ); 
-    glDepthFunc( GL_LEQUAL );
-    // enable blending
-    glEnable( GL_BLEND ); 
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );      
 }
