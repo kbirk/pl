@@ -28,7 +28,6 @@ class Window
         virtual void idle     ()                                                 = 0;
         virtual void reshape  ( int width, int height );
         
-        
     private:
         
         int _windowID;
