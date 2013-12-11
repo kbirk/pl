@@ -34,7 +34,7 @@ void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet 
 
     // draw main render components
     for ( const plRenderComponent& component : componentSet )
-    {        
+    {     
         component.draw( *shader );   
     }
 

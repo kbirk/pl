@@ -61,13 +61,16 @@ void plVAO::clear()
 
 
 void plVAO::draw() const
-{		
-	// bind vertex array object
-	glBindVertexArray( _id );
-	// draw
-	_eabo->drawElements();
-    // unbind vao
-	glBindVertexArray( 0 ); 	
+{	
+    if ( _eabo && !_vbos.empty() )
+	{
+        // bind vertex array object
+	    glBindVertexArray( _id );
+	    // draw
+        _eabo->drawElements();
+        // unbind vao
+	    glBindVertexArray( 0 ); 	
+    }
 }
 
 

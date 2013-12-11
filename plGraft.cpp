@@ -37,7 +37,6 @@ void plGraft::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
         _recipient.transform().extractRenderComponents( renderMap, technique );
         
         plVector3 direction = ( plCameraStack::position() - _harvest.transform().origin() ).normalize();
-
     }
 }
 

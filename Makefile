@@ -83,6 +83,7 @@ SOURCES =   main.cpp \
             plString.cpp \
             plTexture2D.cpp \
             plTexture3D.cpp \
+            plTimer.cpp \
             plTrackedObject.cpp \
             plTransform.cpp \
             plTransparencyTechnique.cpp \

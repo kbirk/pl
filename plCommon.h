@@ -163,7 +163,7 @@ typedef int                     PLint;
 typedef bool                    PLbool;     
 typedef long long unsigned int  PLtime; 
 
-
+/*
 class plTimer
 {
     public:
@@ -179,6 +179,6 @@ class plTimer
     
         plTimer();
 };
-
+*/
 
 #endif

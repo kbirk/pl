@@ -44,6 +44,8 @@ class plModel : public plTransparentRenderable,
                
         const plOctreeMesh& mesh() const { return _mesh; }
 
+        void toggleOctreeVisibility() { _mesh.toggleOctreeVisibility(); }
+
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 

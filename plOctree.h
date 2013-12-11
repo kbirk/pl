@@ -50,7 +50,9 @@ class plOctree : public plRenderable
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
         
         PLbool rayIntersect( std::set<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, PLfloat rayRadius = 0.0f, PLbool ignoreBehindRay = false ) const;
-               
+           
+        void toggleVisibility(); 
+
     private:
                          
         PLuint                            _depth;

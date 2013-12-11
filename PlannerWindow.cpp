@@ -111,6 +111,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
                     _boundaryEditor.toggleSelectedVisibility();                 break;
         case 'g':   _plan.iGuides(0).generateIGuideModels();                    break; // TODO: This is broken at the moment. Need to not have static 0 here
         case 'e':   _plan.iGuides(0).exportIGuideModels("output/");             break;
+        case 'o':   _plan.models(0).toggleOctreeVisibility();                   break;
         case 'O':   _plan.exportFile("plan");                                   break;
 
         case 'D':   _plan.addDonorSite();                                       break;
@@ -188,8 +189,6 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
 			    _camera.translate( _previousMouse.x - x,
 			                       _previousMouse.y - y );
             }
-            // update graft marker positions for viewpoint
-            _plan.updateGraftMarkerPositions();
             break;  
     }
 

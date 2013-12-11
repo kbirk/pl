@@ -4,6 +4,7 @@
 plOctree::plOctree()
     : _children( 8, (plOctree*)(NULL) )
 {
+    _isVisible = false;
 }
 
 
@@ -12,12 +13,14 @@ plOctree::plOctree( const plVector3 &min, const plVector3 &max, const std::vecto
 {
     // build from root
     build( min, max, triangles, depth );
+    _isVisible = false;
 }
 
 
 plOctree::plOctree( const plVector3 &centre, PLfloat halfWidth, PLuint depth )
     : _centre( centre ), _halfWidth( halfWidth ), _depth( depth ), _children( 8, (plOctree*)(NULL) )
 {
+    _isVisible = false;
 }
 
 
@@ -122,6 +125,8 @@ void plOctree::extractRenderComponents( plRenderMap& renderMap, PLuint technique
     // draw current node
     if ( _contained.size() > 0 || count > 0 )    // only draw if contains objects, or has children that contain
     {
+        plColourStack::load( 0.57, 0.17, 0.93 );
+
         plModelStack::push();
         plModelStack::translate( _centre );
         plModelStack::scale( plVector3( _halfWidth, _halfWidth, _halfWidth ) );
@@ -143,7 +148,20 @@ void plOctree::extractRenderComponents( plRenderMap& renderMap, PLuint technique
 
 void plOctree::extractRenderComponents( plRenderMap& renderMap ) const
 {
-    extractRenderComponents( renderMap, PL_DEBUG_TECHNIQUE );
+    extractRenderComponents( renderMap, PL_MINIMAL_TECHNIQUE );
+}
+
+
+void plOctree::toggleVisibility()
+{
+    _isVisible = !_isVisible;
+    for (PLuint i=0; i < 8; i++)
+    {
+        if ( _children[i] )
+        {
+            _children[i]->toggleVisibility();
+        }
+    }
 }
 
 
@@ -378,6 +396,7 @@ void plOctree::_move( plOctree &&octree )
     _centre    = octree._centre;
     _halfWidth = octree._halfWidth;
     _contained = octree._contained; 
+    _isVisible = octree._isVisible;
 }
 
 
@@ -391,6 +410,7 @@ void plOctree::_copy( const plOctree& octree )
     _centre    = octree._centre;
     _halfWidth = octree._halfWidth;
     _contained = octree._contained;    
+    _isVisible = octree._isVisible;
 
     // copy children
     for ( PLuint i=0; i < 8; i++ )

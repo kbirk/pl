@@ -20,7 +20,8 @@ class plOctreeMesh : public plMesh
         plOctreeMesh& operator= ( plOctreeMesh&& mesh ); 
         
         const plOctree& octree() const { return _octree; }
-        
+        void toggleOctreeVisibility() { _octree.toggleVisibility(); }
+
         plVector3 getAverageNormal( PLfloat radius, const plVector3 &origin, const plVector3 &up ) const;
                         
         plIntersection rayIntersect ( const plVector3 &rayOrigin, const plVector3 &rayDirection, 

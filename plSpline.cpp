@@ -2,18 +2,19 @@
 
 
 plSpline::plSpline() 
+    : _lastUpdate( 0 )
 {
 }
 
 
 plSpline::plSpline( const plMesh &mesh )
-    : plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh )
+    :  _lastUpdate( 0 ), plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh )
 {
 }
 
 
 plSpline::plSpline( const plMesh &mesh, const std::vector<plString> &row )
-    : plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh, row )
+    :  _lastUpdate( 0 ), plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh, row )
 {
     // construct spline 
     if (size() == 4)
@@ -27,6 +28,7 @@ void plSpline::clear()
 {
     plBoundary::clear();
     _surfaceMesh = plMesh();
+    _lastUpdate = 0;
 }
 
 
@@ -315,12 +317,10 @@ void plSpline::_computeHermite()
     
     // update timer to store time of last update
     _lastUpdate = plTimer::now();
-    
-    
 }
 
 
-PLuint plSpline::_timeSinceLastUpdate()
+PLtime plSpline::_timeSinceLastUpdate()
 {
     return plTimer::now() - _lastUpdate;
 }

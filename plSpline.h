@@ -11,8 +11,9 @@
 #include "plOctreeMesh.h"
 #include "plVAO.h"
 #include "plRenderer.h"
+#include "plTimer.h"
 
-#define PL_SPLINE_RESOLUTION                70.0f    
+#define PL_SPLINE_RESOLUTION                40.0f //70.0f    
 #define PL_SPLINE_COLOUR_MAP_RANGE          1.5f
 #define PL_SPLINE_NO_DATA_COLOUR            plVector3 ( 0.2, 0.2, 0.2 )
 
@@ -52,7 +53,7 @@ class plSpline : public plBoundary
                                
         void _computeHermite();
 
-        PLuint _timeSinceLastUpdate();  
+        PLtime _timeSinceLastUpdate();  
 
 };
 

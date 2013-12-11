@@ -48,6 +48,7 @@
 #include "plString.h"
 #include "plTexture2D.h"
 #include "plTexture3D.h"
+#include "plTimer.h"
 #include "plTrackedObject.h"
 #include "plTransform.h"
 #include "plTransparentRenderable.h"

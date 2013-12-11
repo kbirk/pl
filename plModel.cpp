@@ -24,9 +24,12 @@ plModel::plModel( const plString &file, PLuint octreeDepth )
 
 void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
+    // render octree
+    _mesh.octree().extractRenderComponents( renderMap );
+
     if ( !_isVisible )
         return;
-       
+
     plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
 
     // create render component
