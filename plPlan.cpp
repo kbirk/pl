@@ -355,8 +355,8 @@ void plPlan::exportFile( const plString &filename )
         {    
             out << "defect_site"  << std::endl
                 << "    spline_model_id,   " << _getModelIndex( _defectSites[i]->spline ) << std::endl
-                << "    spline,            " << _defectSites[i]->spline             << std::endl
-                << "    boundary,          " << _defectSites[i]->boundary           << std::endl   
+                << "    spline,            " << _defectSites[i]->spline                   << std::endl
+                << "    boundary,          " << _defectSites[i]->boundary                 << std::endl   
                 
                 << std::endl;
         }
@@ -366,7 +366,7 @@ void plPlan::exportFile( const plString &filename )
         {
             out << "donor_site"   << std::endl              
                 << "    boundary_model_id, " << _getModelIndex( _donorSites[i]->boundary ) << std::endl 
-                << "    boundary,          " << _donorSites[i]->boundary           << std::endl  
+                << "    boundary,          " << _donorSites[i]->boundary                   << std::endl  
                 << std::endl;
         }
 
@@ -375,7 +375,7 @@ void plPlan::exportFile( const plString &filename )
         {
             out << "iguide_site"  << std::endl
                 << "    boundary_model_id, " << _getModelIndex( _iGuideSites[i]->boundary ) << std::endl 
-                << "    boundary,          " << _iGuideSites[i]->boundary           << std::endl   
+                << "    boundary,          " << _iGuideSites[i]->boundary                   << std::endl   
                 << std::endl;
         }
 
@@ -384,11 +384,11 @@ void plPlan::exportFile( const plString &filename )
         {
             out << "graft"                          << std::endl
                 << "    recipient_defect_site_id, " << _getDefectSiteIndex( _grafts[i]->recipient() )   << std::endl
-                << "    recipient_transform,      " << _grafts[i]->recipient().transform()              << std::endl
-                << "    recipient_rotation,       " << _grafts[i]->recipient().rotation()               << std::endl
+                << "    recipient_transform,      " << _grafts[i]->recipient().surfaceTransform()       << std::endl
+                << "    recipient_rotation,       " << _grafts[i]->recipient().offsetTransform()        << std::endl
                 << "    harvest_model_id,         " << _getModelIndex( _grafts[i]->harvest() )          << std::endl
-                << "    harvest_transform,        " << _grafts[i]->harvest().transform()                << std::endl
-                << "    harvest_rotation,         " << _grafts[i]->harvest().rotation()                 << std::endl
+                << "    harvest_transform,        " << _grafts[i]->harvest().surfaceTransform()         << std::endl
+                << "    harvest_rotation,         " << _grafts[i]->harvest().offsetTransform()          << std::endl
                 << "    radius,                   " << _grafts[i]->radius()                             << std::endl
                 << "    length,                   " << _grafts[i]->length()                             << std::endl               
                 << "    mark_direction,           " << _grafts[i]->markDirection()                      << std::endl
@@ -434,7 +434,7 @@ void plPlan::updateGraftMarkerPositions()
 {
     for ( plGraft* graft : _grafts )
     {
-        graft->updateMarker();
+        graft->snapMarkDirection();
     }
 }
 

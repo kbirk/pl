@@ -203,18 +203,19 @@ namespace plRenderer
 
         // draw x
         plColourStack::load( PL_X_AXIS_COLOUR );
-        queueArrow( technique, position, x, scale, scale );
+        queueArrow( technique, position, x, PL_HANDLE_LENGTH*scale, scale );
         
         // draw y
         plColourStack::load( PL_Y_AXIS_COLOUR);
-        queueArrow( technique, position, y, scale, scale );
+        queueArrow( technique, position, y, PL_HANDLE_LENGTH*scale, scale );
         
         // draw z
         plColourStack::load( PL_Z_AXIS_COLOUR );
-        queueArrow( technique, position, x ^ y,  scale, scale);
+        queueArrow( technique, position, x ^ y,  PL_HANDLE_LENGTH*scale, scale);
         
         plModelStack::pop();
     }
+    
     
     void queuePlane( PLuint technique, const plVector3& position, const plVector3& normal, PLfloat scale )
     {

@@ -126,6 +126,10 @@ namespace plAutomaticPlanner
             }
         }
              
+        // set marker directions
+        plan.updateGraftMarkerPositions();      
+            
+        // set boundaries invisible 
         for ( PLuint i = 0; i < plan.iGuideSites().size(); i++ )
         {
             plan.iGuideSites(i).boundary.setInvisible();

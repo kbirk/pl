@@ -321,8 +321,8 @@ plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const
 
 
 void plMatrix44::setRotationD(PLfloat angle_degree, const plVector3 &axis) 
-{
-    setRotation(angle_degree*(PL_PI/180.f), axis);
+{  
+    setRotation( PL_DEG_TO_RAD( angle_degree ), axis);
 }
 
 

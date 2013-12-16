@@ -110,8 +110,8 @@ PLbool plGraftEditor::processJoystickDrag(  PLint x, PLint y )
     }
     
     // get screen plane
-    plVector3 localXAxis = ( plCameraStack::direction() ^ _selectedGraft->surfaceNormal( _selectedType ) ).normalize();
-    plVector3 localZAxis = ( _selectedGraft->surfaceNormal( _selectedType ) ^ localXAxis ).normalize();
+    plVector3 localXAxis = ( plCameraStack::direction() ^ _selectedGraft->plug( _selectedType ).surfaceTransform().y() ).normalize();
+    plVector3 localZAxis = ( _selectedGraft->plug( _selectedType ).surfaceTransform().y() ^ localXAxis ).normalize();
     plVector3 localYAxis = ( localXAxis ^ localZAxis ).normalize();
 
     translation = ( translation * localXAxis ) * localXAxis +
@@ -147,19 +147,31 @@ void plGraftEditor::_dragMarker( PLint x, PLint y )
     plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
 
     // graft origin and surface normal            
-    plVector3 graftY      = _selectedGraft->transform( _selectedType ).y();
-    plVector3 graftOrigin = _selectedGraft->transform( _selectedType ).origin();
-    
+    plVector3 surfaceNormal = _selectedGraft->plug( _selectedType ).surfaceTransform().y();
+    plVector3 graftOrigin   = _selectedGraft->plug( _selectedType ).finalTransform().origin();
+
     // intersect plane of graft
-    plIntersection intersection = plMath::rayIntersect( rayOrigin, rayDirection, graftOrigin, graftY );
+    plIntersection intersection = plMath::rayIntersect( rayOrigin, rayDirection, graftOrigin, surfaceNormal );
 
     if ( intersection.exists )
     {
-        // find angle between wanted direction and actual direction to determine angular offset
-        plVector3 newMarkDir = _selectedGraft->transform( _selectedType ).applyInverse( intersection.point ).normalize();   
-        plVector3 markDir = _selectedGraft->markDirection();
-        
-        _selectedGraft->setMarkOffset( newMarkDir.signedAngle( markDir, graftY ) );
+        plVector3 newMarkDir = _selectedGraft->plug( _selectedType ).finalTransform().applyInverse( intersection.point ).normalize();        
+            
+        plRenderer::queueSphere( PL_PLAN_TECHNIQUE, intersection.point, 1.0f );     
+            
+        if ( _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
+        {
+            // recipient, rotate around up axis
+            PLfloat angle = _selectedGraft->markDirection().signedAngle( newMarkDir, plVector3( 0, 1, 0 ) );
+            _selectedGraft->rotate( _selectedType, PL_RAD_TO_DEG( angle ) );
+            std::cout << "angle: " << PL_RAD_TO_DEG( angle ) << std::endl;
+        }
+        else
+        {
+            // harvest, move marker
+            // find angle between wanted direction and actual direction to determine angular offset
+            _selectedGraft->setMarkDirection( newMarkDir );
+        }   
     }
 
 
@@ -211,8 +223,8 @@ void plGraftEditor::_dragHandle( PLint x, PLint y )
             plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
 
             // graft origin and surface normal            
-            plVector3 graftSurfaceNormal = _selectedGraft->surfaceNormal( _selectedType );
-            plVector3 graftOrigin        = _selectedGraft->transform( _selectedType ).origin();
+            plVector3 graftSurfaceNormal = _selectedGraft->plug( _selectedType ).surfaceTransform().y();
+            plVector3 graftOrigin        = _selectedGraft->plug( _selectedType ).finalTransform().origin();
             
             // intersect plane of graft
             plIntersection intersection = plMath::rayIntersect( rayOrigin, rayDirection, graftOrigin, graftSurfaceNormal );
@@ -270,13 +282,13 @@ void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint tech
     if ( !_selectedGraft->inArthroView() )
     {   
         // draw axis
-        _selectedGraft->harvest().transform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-        _selectedGraft->recipient().transform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+        _selectedGraft->harvest().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+        _selectedGraft->recipient().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
     }
     
     // draw graft editor 
     plModelStack::push();
-    plModelStack::load( _selectedGraft->transform(_selectedType).matrix() );
+    plModelStack::load( _selectedGraft->plug( _selectedType ).finalTransform().matrix() );
 
     plColourStack::load( PL_AXIS_GREY ); 
     plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_HANDLE );

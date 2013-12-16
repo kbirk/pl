@@ -18,13 +18,14 @@ class plPlug : public plMeshSpecific
         plPlug( PLuint type );
         plPlug( const plMesh& mesh, PLuint type, const plTransform& surfaceTransform, const plTransform& rotationalOffset );
 
-        const plTransform& transform() const; 
-        const plTransform& rotation() const;        
-        plMatrix44         matrix() const;
+        const plTransform& surfaceTransform() const; 
+        const plTransform& offsetTransform() const;        
+        //plMatrix44         matrix() const;
         plTransform        finalTransform() const; 
 
         void move  ( const plVector3& origin, const plVector3& y );
         void rotate( const plVector3& y );
+        void rotate( PLfloat angleDegrees );
         
     private:
         

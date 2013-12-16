@@ -3,13 +3,16 @@
 plGraft::plGraft()
     :   _recipient( PL_PICKING_INDEX_GRAFT_DEFECT ), _harvest( PL_PICKING_INDEX_GRAFT_DONOR )
 {
+    _generateCaps();  
+    snapMarkDirection();    
 }
 
 
 plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat length, const plVector3 &markDirection  )
-    :   _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length ), _markAngleOffset( 0 )
+    :   _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length ) //, _markAngleOffset( 0 )
 {
-    _generateCaps();   
+    _generateCaps();  
+    snapMarkDirection(); 
 }
 
 
@@ -19,25 +22,16 @@ void plGraft::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
         return;
 
     // Draw at harvest location
-    plModelStack::push( _harvest.matrix() );
+    plModelStack::push( _harvest.finalTransform().matrix() );
     plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DONOR );                  
     _extractGraftRenderComponents( renderMap, technique );
     plModelStack::pop();
 
     // Draw at recipient location
-    plModelStack::push( _recipient.matrix() );
+    plModelStack::push( _recipient.finalTransform().matrix() );
     plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
     _extractGraftRenderComponents( renderMap, technique );
     plModelStack::pop();
-    
-    if ( !_inArthroView )
-    {
-         // draw axis
-        _harvest.transform().extractRenderComponents( renderMap, technique );
-        _recipient.transform().extractRenderComponents( renderMap, technique );
-        
-        plVector3 direction = ( plCameraStack::position() - _harvest.transform().origin() ).normalize();
-    }
 }
 
 
@@ -129,214 +123,71 @@ void plGraft::_generateCaps()
 {
     // generate cap polygons
     _cartilageCap.generateCap( ( const plOctreeMesh& )_harvest.mesh(), _harvest.finalTransform(), _radius );
-    _boneCap.generateCap( ( const plOctreeMesh& )_harvest.mesh(), _harvest.finalTransform(), _radius );
+    _boneCap.generateCap     ( ( const plOctreeMesh& )_harvest.mesh(), _harvest.finalTransform(), _radius );
 
     // generate vaos 
     _cartilageCap.generateVAO( _radius, _length, _boneCap.perimeter );
-    _boneCap.generateVAO( _radius, _length );
-
-    // update values
-    updateMarker();      
+    _boneCap.generateVAO( _radius, _length );     
 }
 
 
-void plGraft::updateMarker()
+void plGraft::setMarkDirection( const plVector3& direction )
 {
-    _updateMarkDirection();
+    _markDirection = direction.normalize();
     _generateMarkPositions();
 }
 
 
-void plGraft::setMarkOffset( PLfloat offset )
-{
-    _markAngleOffset = offset;
-    updateMarker();  
-}
-
-
-/*
-
-// calculate seperation vector between grafts
-    plVector3 up = plCameraStack::up(); //( _recipient.transform().origin() - _harvest.transform().origin() ).normalize();
-    plVector3 screenNormal = -plCameraStack::direction();
-
-
-    // ensure this vector is othrogonal with graft transform
-    plVector3 x = ( _harvest.transform().y() ^ up ).normalize();
-    plVector3 z = ( x ^ _harvest.transform().y() ).normalize();
-    
-    // get vector in graft local space
-    plVector3 graftZ = _harvest.transform().applyNormalInverse( z );  
-            
-    // calulate this direction for recipient graft in world space
-    plVector3 recipientDirection = ( _recipient.transform().applyNormal( graftZ ) ).normalize();              
-   
-    // RENDERING JITTER BECAUSE THESE ARE SET USING OLD CAMERA TRANSFORM!!!
-
-    // ray cast up, this gets up vector overlayed onto plane (projected from screen direction, rather than projected by surface normal )
-    plIntersection intersection = plMath::rayIntersect( _harvest.transform().origin() + plCameraStack::up(), 
-                                                        plCameraStack::direction(), 
-                                                        _harvest.transform().origin(), 
-                                                        _harvest.transform().y()  );
-      
-    // draw debug plane
-    plColourStack::load( 0.5, 0.5, 0.5, 1 );
-    //plRenderer::queuePlane( PL_PLAN_TECHNIQUE, _harvest.transform().origin(), _harvest.transform().y(), 5.0f );
-
-    // find the up direction overlayed on plane, not projected
-    plVector3 upGraftProj = ( intersection.point - _harvest.transform().origin() ).normalize();
-    PLfloat graftAngle = ( upGraftProj ).signedAngle( z, _harvest.transform().y() );
-       
-    plVector3 zScreenProj = plMath::projectVectorOnPlane( z, screenNormal ).normalize();
-    PLfloat screenAngle = ( zScreenProj ).signedAngle( plCameraStack::up(), screenNormal );
-    
-    // get rotation in graft space to match screen direction
-    plMatrix44 rot;   rot.setRotation( -graftAngle , _harvest.transform().y()  );    
-    
-    // perfect up sphere RED
-    plColourStack::load( 1.0, 0, 0, 1 );
-    plRenderer::queueSphere( PL_PLAN_TECHNIQUE, _harvest.transform().origin() + upGraftProj * 2.5, 0.2f );
-      
-    // incorrect projected YELLOW  
-    plColourStack::load( 1.0, 1.0, 0, 1 );
-    plRenderer::queueSphere( PL_PLAN_TECHNIQUE, _harvest.transform().origin() + (z * 3.0f), 0.2f );
-
-    // correctly rotated in graft space, GREEN 
-    plColourStack::load( 0.0, 1.0, 0, 1 );
-    plRenderer::queueSphere( PL_PLAN_TECHNIQUE, _harvest.transform().origin() + ( rot * z ) * 3.5f , 0.2f );
-    
-    //_markDirection = ( _harvest.transform().applyNormalInverse( z ) ).normalize(); // projected up
-    _markDirection = ( _harvest.transform().applyNormalInverse( upGraftProj ) ).normalize(); // perfect casted up
-    
-
-*/
-
-
-void plGraft::_updateMarkDirection()
+void plGraft::snapMarkDirection()
 {
     // calculate seperation vector between grafts
-    plVector3 up = plCameraStack::up(); //( _recipient.transform().origin() - _harvest.transform().origin() ).normalize();
+    plVector3 up = plCameraStack::up();
     plVector3 screenNormal = -plCameraStack::direction();
 
-    // ensure this vector is othrogonal with graft transform
-    //plVector3 x = ( _harvest.transform().y() ^ up ).normalize();
-    //plVector3 z = ( x ^ _harvest.transform().y() ).normalize();
-    
-                
-   
-    // RENDERING JITTER BECAUSE THESE ARE SET USING OLD CAMERA TRANSFORM!!!
-
     // ray cast up, this gets up vector overlayed onto plane (projected from screen direction, rather than projected by surface normal )
-    plIntersection harvestIntersection = plMath::rayIntersect( _harvest.transform().origin() + plCameraStack::up(), 
-                                                        plCameraStack::direction(), 
-                                                        _harvest.transform().origin(), 
-                                                        _harvest.transform().y()  );
-      
-    // draw debug plane
-    //plColourStack::load( 0.5, 0.5, 0.5, 1 );
-    //plRenderer::queuePlane( PL_PLAN_TECHNIQUE, _harvest.transform().origin(), _harvest.transform().y(), 5.0f );
+    plIntersection harvestIntersection = plMath::rayIntersect( _harvest.surfaceTransform().origin() + plCameraStack::up(), 
+                                                               plCameraStack::direction(), 
+                                                               _harvest.surfaceTransform().origin(), 
+                                                               _harvest.surfaceTransform().y()  );
 
     // find the up direction overlayed on plane, not projected
-    plVector3 upHarvestProj = ( harvestIntersection.point - _harvest.transform().origin() ).normalize();
-    //PLfloat harvestAngle = ( upHarvestProj ).signedAngle( z, _harvest.transform().y() );
-       
-    //plVector3 zScreenProj = plMath::projectVectorOnPlane( z, screenNormal ).normalize();
-    //PLfloat screenAngle = ( zScreenProj ).signedAngle( plCameraStack::up(), screenNormal );
-    
-    // get rotation in graft space to match screen direction
-    //plMatrix44 rot;   rot.setRotation( -harvestAngle , _harvest.transform().y() );    
-    
-    /*
-    // perfect up sphere RED
-    plColourStack::load( 1.0, 0, 0, 1 );
-    plRenderer::queueSphere( PL_PLAN_TECHNIQUE, _harvest.transform().origin() + upGraftProj * 2.5, 0.2f );
-      
-    // incorrect projected YELLOW  
-    plColourStack::load( 1.0, 1.0, 0, 1 );
-    plRenderer::queueSphere( PL_PLAN_TECHNIQUE, _harvest.transform().origin() + (z * 3.0f), 0.2f );
+    plVector3 upHarvestProj = ( harvestIntersection.point - _harvest.surfaceTransform().origin() ).normalize();
 
-    // correctly rotated in graft space, GREEN 
-    plColourStack::load( 0.0, 1.0, 0, 1 );
-    plRenderer::queueSphere( PL_PLAN_TECHNIQUE, _harvest.transform().origin() + ( rot * z ) * 3.5f , 0.2f );
-    */
-    
-    //_markDirection = ( _harvest.transform().applyNormalInverse( z ) ).normalize(); // projected up
-    
-    
-    //_markDirection = ( _harvest.transform().applyNormalInverse( upGraftProj ) ).normalize(); // perfect casted up
-    
-    // update here!!!!!!!!!!!!!
-    
-    
-    plIntersection recipientIntersection = plMath::rayIntersect( _recipient.transform().origin() + plCameraStack::up(), 
+    // ray cast up, this gets up vector overlayed onto plane (projected from screen direction, rather than projected by surface normal )    
+    plIntersection recipientIntersection = plMath::rayIntersect( _recipient.surfaceTransform().origin() + plCameraStack::up(), 
                                                                  plCameraStack::direction(), 
-                                                                 _recipient.transform().origin(), 
-                                                                 _recipient.transform().y()  );
-    
+                                                                 _recipient.surfaceTransform().origin(), 
+                                                                 _recipient.surfaceTransform().y()  );    
     // get vector in graft local space
-    plVector3 graftZ = _harvest.transform().applyNormalInverse( upHarvestProj );  
+    plVector3 graftZ = _harvest.finalTransform().applyNormalInverse( upHarvestProj );  
             
     // calulate this direction for recipient graft in world space
-    plVector3 recipientDirection = ( _recipient.transform().applyNormal( graftZ ) ).normalize();  
+    plVector3 recipientDirection = ( _recipient.finalTransform().applyNormal( graftZ ) ).normalize();  
 
     // project up onto recipient
-    plVector3 upRecipientProj = ( recipientIntersection.point - _recipient.transform().origin() ).normalize();
+    plVector3 upRecipientProj = ( recipientIntersection.point - _recipient.surfaceTransform().origin() ).normalize();
     
     // find angle between up proj and marker direction
-    PLfloat recipientAngle = ( upRecipientProj ).signedAngle( recipientDirection, _recipient.transform().y() );
+    PLfloat recipientAngle = ( upRecipientProj ).signedAngle( recipientDirection, _recipient.surfaceTransform().y() );
     
+    plMatrix44 rotation;    rotation.setRotation( -recipientAngle/2.0f , plVector3( 0, 1, 0 ) );    
     
-    plMatrix44 rotation;    rotation.setRotation( -recipientAngle/2.0f , _harvest.transform().y() );    
+    _markDirection = rotation * graftZ; //_harvest.finalTransform().applyNormalInverse( rotation * upHarvestProj ).normalize(); // perfect casted up
     
-    _markDirection = ( _harvest.transform().applyNormalInverse( rotation * upHarvestProj ) ).normalize(); // perfect casted up
-    
-    // find angle from recipient to up 
-    
-    plColourStack::load( 1.0, 1.0, 1.0, 1 );
-    plRenderer::queueArrow( PL_PLAN_TECHNIQUE, _harvest.transform().origin(), up, 3.0f );
-    plRenderer::queueArrow( PL_PLAN_TECHNIQUE, _recipient.transform().origin() + screenNormal*2.0f , up, 3.0f );
-
-    //std::cout << "screen angle: " << screenAngle << std::endl;
-    //std::cout << "graft angle: " << harvestAngle << std::endl;
-
-
-    /*
-    // calculate seperation vector between grafts
-    plVector3 harvestToRecipient = ( _recipient.transform().origin() - _harvest.transform().origin() ).normalize();
-
-    // ensure this vector is othrogonal with graft transform
-    plVector3 x = ( _harvest.transform().y() ^ harvestToRecipient ).normalize();
-    plVector3 z = ( x ^ _harvest.transform().y() ).normalize();
-    
-    // get vector in graft local space
-    plVector3 graftZ = _harvest.transform().applyNormalInverse( z );  
-            
-    // calulate this direction for recipient graft in world space
-    plVector3 recipientDirection = ( _recipient.transform().applyNormal( graftZ ) ).normalize();        
-
-    //plRenderer::queueArrow( PL_PLAN_TECHNIQUE, graft->harvest().transform().origin(), harvestToRecipient, ( graft->recipient().transform().origin() - graft->harvest().transform().origin() ).length() );
-
-    // calc how far this angle is offset
-    PLfloat recipientAngle = ( -harvestToRecipient ).signedAngle( recipientDirection, _recipient.transform().y() );
-
-    // rotate marker by half the offset
-    plMatrix44 rot;   rot.setRotation( -recipientAngle / 2.0f , plVector3( 0, 1, 0 ) );
-            
-    _markDirection = ( rot * _harvest.transform().applyNormalInverse( z ) ).normalize();
-    */
+    _generateMarkPositions();
 }
 
 
 void plGraft::_generateMarkPositions()
 {
-    plMatrix44 offsetRot;   offsetRot.setRotation( _markAngleOffset, plVector3( 0, 1, 0 ) );
+    //plMatrix44 offsetRot;   offsetRot.setRotation( _markAngleOffset, plVector3( 0, 1, 0 ) );
      
     for ( PLuint i=0; i < 4; i++ )
     {
         plMatrix44 rotation;  rotation.setRotationD( i*-90.0f,  plVector3( 0, 1, 0 ) );
     
         // Mark at tool alignment direction on cartilage
-        _markPositions[i] = _radius * ( rotation * offsetRot * _markDirection ).normalize();
+        _markPositions[i] = _radius * ( rotation * _markDirection ).normalize();
 
         // First, find the closest top perimeter point in the mark direction.
         float minDist = FLT_MAX;
@@ -358,37 +209,6 @@ void plGraft::_generateMarkPositions()
         // Draw marker  
         _markPositions[i].y = minY;
     }
-}
-
-
-plTransform plGraft::transform( PLuint type ) const
-{
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.finalTransform();        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.finalTransform();
-            
-        default:
-        
-            std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient" << std::endl;
-            return _recipient.finalTransform();   
-    } 
-}
-
-
-const plVector3& plGraft::surfaceNormal( PLuint type ) const
-{
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest.transform().y();        
-        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient.transform().y();
-            
-        default:
-        
-            std::cerr << "plGraft transform()() error: invalid type enumeration provided, defaulting to recipient" << std::endl;
-            return _recipient.transform().y();   
-    } 
-
 }
 
 
@@ -420,7 +240,6 @@ void plGraft::move( PLuint type, const plVector3& origin, const plVector3& y )
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
             _recipient.move( origin, y );
-            updateMarker();
             break;
             
         default:
@@ -428,7 +247,11 @@ void plGraft::move( PLuint type, const plVector3& origin, const plVector3& y )
             std::cerr << "plGraft move() error: invalid type enumeration provided" << std::endl;
             break;    
     } 
+    
+    // update the marker position
+    _generateMarkPositions();
 }
+
 
 void plGraft::rotate( PLuint type, const plVector3& y )
 {
@@ -443,7 +266,6 @@ void plGraft::rotate( PLuint type, const plVector3& y )
         case PL_PICKING_INDEX_GRAFT_DEFECT:
         
             _recipient.rotate( y );
-            updateMarker();
             break;
             
         default:
@@ -451,6 +273,36 @@ void plGraft::rotate( PLuint type, const plVector3& y )
             std::cerr << "plGraft rotate() error: invalid type enumeration provided" << std::endl;
             break;    
     } 
+    
+    // update the marker position
+    _generateMarkPositions();
 }
+
+
+void plGraft::rotate( PLuint type, PLfloat angleDegrees )
+{
+        switch (type)
+    {
+        case PL_PICKING_INDEX_GRAFT_DONOR:
+        
+            _harvest.rotate( angleDegrees );            
+            _generateCaps();
+            break;
+        
+        case PL_PICKING_INDEX_GRAFT_DEFECT:
+        
+            _recipient.rotate( angleDegrees );
+            break;
+            
+        default:
+        
+            std::cerr << "plGraft rotate() error: invalid type enumeration provided" << std::endl;
+            break;    
+    } 
+    
+    // update the marker position
+    _generateMarkPositions();
+}
+
 
 

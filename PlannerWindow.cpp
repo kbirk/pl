@@ -73,15 +73,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case ' ':  // spacebar 
             _cameraMode =  (_cameraMode == CAMERA_ROTATION_MODE) ? CAMERA_TRANSLATION_MODE : CAMERA_ROTATION_MODE;  
             break; 
-            
-        case 'W':   
-            _camera.exportViewParams( ".view" + std::to_string( currentView ) );   
-            break;
-            
-        case 'R':   
-            _camera.importViewParams( ".view" + std::to_string( currentView ) );
-            break;  
-       
+
         case '1':
         case '2':
         case '3':
@@ -94,36 +86,69 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case '0':   // 0-9            
             currentView = (PLint)(key - '0');
             break;                
-
+       
+        case 'a':   _plan.toggleArthroView();                                   break;                    
+        case 'b':   _plan.models(0).toggleVisibility();                         break;            
         case 'c':   _camera.up     = plVector3( 0, 1, 0 );  
                     _camera.lookat = _camera.position + plVector3( 0, 0, 1 ); 
                     break;
-                    
-        case 'b':   _plan.models(0).toggleVisibility();                         break;            
-        case 'a':   _plan.toggleArthroView();                                   break;
-        case 'i':   _plan.iGuides(0).toggleVisibility();                        break;
-        case 'p':   _plan.toggleVisibility();                                   break;    
-        case 'z':   _camera.reset( _plan.models(0).getCentroid() );             break;          
-        case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
-        case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
-        case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 
-        case 'v':   _graftEditor.toggleSelectedVisibility();  
-                    _boundaryEditor.toggleSelectedVisibility();                 break;
-        case 'g':   _plan.iGuides(0).generateIGuideModels();                    break; // TODO: This is broken at the moment. Need to not have static 0 here
+        case 'd':   /* UN-USED */ break;
         case 'e':   _plan.iGuides(0).exportIGuideModels("output/");             break;
-        case 'o':   _plan.models(0).toggleOctreeVisibility();                   break;
-        case 'O':   _plan.exportFile("plan");                                   break;
-
+        case 'f':   /* UN-USED */ break;
+        case 'g':   _plan.iGuides(0).generateIGuideModels();                    break;                 
+        case 'h':   /* UN-USED */ break;
+        case 'i':   _plan.iGuides(0).toggleVisibility();                        break;
+        case 'j':   /* UN-USED */ break;
+        case 'k':   /* UN-USED */ break;
+        case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 
+        case 'm':   _plan.updateGraftMarkerPositions();                         break;
+        case 'n':   /* UN-USED */ break;
+        case 'o':   _plan.models(0).toggleOctreeVisibility();                   break;        
+        case 'p':   _plan.toggleVisibility();                                   break;    
+        case 'q':   /* UN-USED */ break;
+        case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
+        case 's':   /* UN-USED */ break;
+        case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
+        case 'u':   /* UN-USED */ break;
+        case 'v':   _graftEditor.toggleSelectedVisibility(); 
+                    _boundaryEditor.toggleSelectedVisibility();                 break;
+        case 'w':   /* UN-USED */ break;
+        case 'x':   /* UN-USED */ break;
+        case 'y':   /* UN-USED */ break;
+        case 'z':   _camera.reset( _plan.models(0).getCentroid() );             break;          
+                    
+        
+        case 'A':   /* UN-USED */ break;
+        case 'B':   /* UN-USED */ break;
+        case 'C':   /* UN-USED */ break;    
         case 'D':   _plan.addDonorSite();                                       break;
-        case 'S':   _plan.addDefectSite();                                      break;
+        case 'E':   /* UN-USED */ break;
+        case 'F':   /* UN-USED */ break;
         case 'G':   _plan.addIGuideSite();                                      break;
-
-        case 'P':   plAutomaticPlanner::calculate( _plan );                     break;
-
+        case 'H':   /* UN-USED */ break;
+        case 'I':   /* UN-USED */ break;
+        case 'J':   /* UN-USED */ break;
+        case 'K':   /* UN-USED */ break;
+        case 'L':   /* UN-USED */ break;
+        case 'M':   /* UN-USED */ break;
         case 'N':   _plan.clear();  
                     _graftEditor.clearSelection   ();   
                     _boundaryEditor.clearSelection();                                          
-                    break;     
+                    break;  
+        case 'O':   _plan.exportFile("plan");                                   break;
+        case 'P':   plAutomaticPlanner::calculate( _plan );                     break;
+        case 'Q':   /* UN-USED */ break;
+        case 'R':   _camera.importViewParams( ".view" + std::to_string( currentView ) );
+                    break;
+        case 'S':   _plan.addDefectSite();                                      break;
+        case 'T':   /* UN-USED */ break;
+        case 'U':   /* UN-USED */ break;
+        case 'V':   /* UN-USED */ break;
+        case 'W':   _camera.exportViewParams( ".view" + std::to_string( currentView ) );   
+                    break;
+        case 'X':   /* UN-USED */ break;
+        case 'Y':   /* UN-USED */ break;
+        case 'Z':   /* UN-USED */ break;
 
         case 127:	 // delete 
         {   
@@ -139,10 +164,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
 	        }
             break;
         } 
-        
-        case 'H':
-            std::cout << plTimer::now() << "\n";
-            break;
+
     }
     
     glutPostRedisplay();
@@ -189,7 +211,6 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
 			    _camera.translate( _previousMouse.x - x,
 			                       _previousMouse.y - y );
             }
-            _plan.updateGraftMarkerPositions();
             break;  
     }
 

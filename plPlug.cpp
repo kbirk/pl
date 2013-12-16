@@ -16,25 +16,25 @@ plPlug::plPlug( const plMesh& mesh, PLuint type, const plTransform& surfaceTrans
 }
 
 
-const plTransform& plPlug::transform() const 
+const plTransform& plPlug::surfaceTransform() const 
 { 
     return _surfaceTransform;  
 }
 
 
-const plTransform& plPlug::rotation() const 
+const plTransform& plPlug::offsetTransform() const 
 { 
     return _rotationalOffset;   
 }
   
-        
+/*      
 plMatrix44 plPlug::matrix() const
 {
     plMatrix44 m( _rotationalOffset.matrix() * _surfaceTransform.rotation() );
     m.setColumn( 3, _surfaceTransform.origin() );
     return m;
 }        
-
+*/
 
 plTransform plPlug::finalTransform() const 
 { 
@@ -46,8 +46,6 @@ plTransform plPlug::finalTransform() const
 
 void plPlug::move( const plVector3& origin, const plVector3& y )
 {
-    // find new surface normal
-    //plIntersection intersection = _mesh->rayIntersect( origin, -_surfaceTransform.y(), true );
     // get x axis
     plVector3 x = y ^ _surfaceTransform.z();  
     // set transform
@@ -79,4 +77,12 @@ void plPlug::rotate( const plVector3& y )
 
     _rotationalOffset = plTransform( rotation ); 
 }
+
+
+void plPlug::rotate( PLfloat angleDegrees )
+{
+    plMatrix44 rot;     rot.setRotationD( angleDegrees, _surfaceTransform.y() );
+    _rotationalOffset = plTransform( rot * _rotationalOffset.matrix() );
+}
+
 
