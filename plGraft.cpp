@@ -133,7 +133,8 @@ void plGraft::_generateCaps()
 
 void plGraft::setMarkDirection( const plVector3& direction )
 {
-    _markDirection = direction.normalize();
+    // ensure direction is orthogonal       
+    _markDirection = plVector3( direction.x, 0.0f, direction.z ).normalize(); //direction.normalize();
     _generateMarkPositions();
 }
 
@@ -172,9 +173,12 @@ void plGraft::snapMarkDirection()
     
     plMatrix44 rotation;    rotation.setRotation( -recipientAngle/2.0f , plVector3( 0, 1, 0 ) );    
     
-    _markDirection = rotation * graftZ; //_harvest.finalTransform().applyNormalInverse( rotation * upHarvestProj ).normalize(); // perfect casted up
+    setMarkDirection( rotation * graftZ );
     
+    /*
+    _markDirection = rotation * graftZ; //_harvest.finalTransform().applyNormalInverse( rotation * upHarvestProj ).normalize(); // perfect casted up    
     _generateMarkPositions();
+    */
 }
 
 

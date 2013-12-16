@@ -148,15 +148,17 @@ void plGraftEditor::_dragMarker( PLint x, PLint y )
 
     // graft origin and surface normal            
     plVector3 surfaceNormal = _selectedGraft->plug( _selectedType ).surfaceTransform().y();
-    plVector3 graftOrigin   = _selectedGraft->plug( _selectedType ).finalTransform().origin();
+    plVector3 graftOrigin   = _selectedGraft->plug( _selectedType ).surfaceTransform().origin();
 
     // intersect plane of graft
     plIntersection intersection = plMath::rayIntersect( rayOrigin, rayDirection, graftOrigin, surfaceNormal );
 
     if ( intersection.exists )
     {
-        plVector3 newMarkDir = _selectedGraft->plug( _selectedType ).finalTransform().applyInverse( intersection.point ).normalize();        
+        plVector3 newMarkDir = _selectedGraft->plug( _selectedType ).finalTransform().applyInverse( intersection.point );        
             
+        newMarkDir = plVector3( newMarkDir.x, 0.0f, newMarkDir.z ).normalize();
+  
         plRenderer::queueSphere( PL_PLAN_TECHNIQUE, intersection.point, 1.0f );     
             
         if ( _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )

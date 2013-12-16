@@ -42,6 +42,7 @@ namespace plRenderer
     void queueArrow    ( PLuint technique, const plVector3& position, const plVector3 &direction, PLfloat length = 2.0f, PLfloat scale = 1.0f );
     void queueAxis     ( PLuint technique, const plVector3& position, const plVector3& x, const plVector3& y, const PLfloat scale = 1.0f );
     void queuePlane    ( PLuint technique, const plVector3& position, const plVector3& normal, PLfloat scale = 1.0f );
+    void queueLine     ( PLuint technique, const plVector3& p0, const plVector3& p1 ); 
 }
 
 

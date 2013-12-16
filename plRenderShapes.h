@@ -13,6 +13,7 @@ namespace plRenderShapes
     plVAO diskVAO    ( float innerRadius, float outerRadius, int slices, int loops, bool up = true );
     plVAO coneVAO    ( float baseRadius, float topRadius, float height, int slices, int stacks );  
     plVAO quadVAO    ();
+    plVAO lineVAO    ( const plVector3& p0, const plVector3& p1 );
 }
 
 
