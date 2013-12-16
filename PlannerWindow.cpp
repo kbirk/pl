@@ -173,7 +173,7 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
         case GLUT_MIDDLE_BUTTON:    
             
             // zoom camera
-            _camera.zoom( y - _previousMouse.y );                             
+            _camera.zoom( y - _previousMouse.y );                            
             break;
 
         case GLUT_RIGHT_BUTTON:
@@ -189,6 +189,7 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
 			    _camera.translate( _previousMouse.x - x,
 			                       _previousMouse.y - y );
             }
+            _plan.updateGraftMarkerPositions();
             break;  
     }
 

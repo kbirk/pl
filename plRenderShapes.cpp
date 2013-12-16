@@ -341,5 +341,44 @@ namespace plRenderShapes
         return vao;
     }       
     
+    plVAO quadVAO()
+    {
+        std::vector<plVector3> vertices;        vertices.reserve( 8 );
+        std::vector<PLuint>    indices;         indices.reserve( 6 );
+
+        // position                                     // normals       
+        vertices.push_back( plVector3( -1, -1, 0 ) );   vertices.push_back( plVector3( 0,0,1) );   
+        vertices.push_back( plVector3(  1, -1, 0 ) );   vertices.push_back( plVector3( 0,0,1) );   
+        vertices.push_back( plVector3(  1,  1, 0 ) );   vertices.push_back( plVector3( 0,0,1) );    
+        vertices.push_back( plVector3( -1,  1, 0 ) );   vertices.push_back( plVector3( 0,0,1) );
+
+        // indices
+        indices.push_back( 0 );
+        indices.push_back( 1 );
+        indices.push_back( 2 );
+        
+        indices.push_back( 0 );
+        indices.push_back( 2 );
+        indices.push_back( 3 );
+        
+        // set vbo and attach attribute pointers
+        std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
+        vbo->set( vertices );
+        vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
+        vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
+        // set eabo
+        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO >();    
+        eabo->set( indices );
+        // create and attach to vao
+        plVAO vao;
+        vao.attach( vbo );
+        vao.attach( eabo );
+        // upload to gpu
+        vao.upload(); 
+
+        return vao;
+    }       
+    
+    
     
 }

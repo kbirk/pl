@@ -22,7 +22,6 @@ enum plTechniqueEnums
     PL_TRANSPARENCY_TECHNIQUE,
     PL_OUTLINE_TECHNIQUE,
     PL_ARTHRO_CAM_TECHNIQUE,
-    PL_DEBUG_TECHNIQUE,
     PL_SCREEN_QUAD_TECHNIQUE
 };
 
@@ -42,7 +41,7 @@ namespace plRenderer
     void queueCone     ( PLuint technique, const plVector3& position, const plVector3& direction, PLfloat topRadius, PLfloat bottomRadius, PLfloat length );    
     void queueArrow    ( PLuint technique, const plVector3& position, const plVector3 &direction, PLfloat length = 2.0f, PLfloat scale = 1.0f );
     void queueAxis     ( PLuint technique, const plVector3& position, const plVector3& x, const plVector3& y, const PLfloat scale = 1.0f );
-    
+    void queuePlane    ( PLuint technique, const plVector3& position, const plVector3& normal, PLfloat scale = 1.0f );
 }
 
 

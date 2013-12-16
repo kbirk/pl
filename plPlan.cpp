@@ -430,6 +430,15 @@ void plPlan::exportFile( const plString &filename )
 }
 
 
+void plPlan::updateGraftMarkerPositions()
+{
+    for ( plGraft* graft : _grafts )
+    {
+        graft->updateMarker();
+    }
+}
+
+
 void plPlan::clear()
 {
     for ( PLuint i = 0; i < _defectSites.size(); i++ ) delete _defectSites[i];

@@ -12,6 +12,8 @@ class plArthroViewable
     
         plArthroViewable();  
         
+        PLbool inArthroView() const { return _inArthroView; }
+        
         virtual void toggleArthroView();	
         
     protected:     

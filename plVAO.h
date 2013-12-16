@@ -7,8 +7,6 @@
 #include "plRenderingPipeline.h"
 #include "plVertexSpecBuffer.h"
 
-// TODO: remove _vao link from attachees, vao does not need to be redone every time the buffers are updated, only if the attribute pointers change.
-
 
 class plVAO
 {

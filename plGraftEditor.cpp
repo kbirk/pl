@@ -155,7 +155,7 @@ void plGraftEditor::_dragMarker( PLint x, PLint y )
 
     if ( intersection.exists )
     {
-                // find angle between wanted direction and actual direction to determine angular offset
+        // find angle between wanted direction and actual direction to determine angular offset
         plVector3 newMarkDir = _selectedGraft->transform( _selectedType ).applyInverse( intersection.point ).normalize();   
         plVector3 markDir = _selectedGraft->markDirection();
         
@@ -266,10 +266,14 @@ void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint tech
     // select graft  
     _selectedGraft->extractRenderComponents( renderMap, technique );  
          
-    // draw axis
-    _selectedGraft->harvest().transform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-    _selectedGraft->recipient().transform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-
+         
+    if ( !_selectedGraft->inArthroView() )
+    {   
+        // draw axis
+        _selectedGraft->harvest().transform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+        _selectedGraft->recipient().transform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+    }
+    
     // draw graft editor 
     plModelStack::push();
     plModelStack::load( _selectedGraft->transform(_selectedType).matrix() );
@@ -279,7 +283,6 @@ void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint tech
     plRenderer::queueSphere( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), PL_HANDLE_SPHERE_RADIUS );
    
     plModelStack::pop();
-
 }
 
 

@@ -17,7 +17,8 @@ class plShader
 		void bind()   const { glUseProgram( _id );  }	    
 		void unbind() const { glUseProgram( 0 );    }
 		
-		bool good()   const { return _good; }
+		bool   good() const { return _good; }
+        PLuint id()   const { return _id;   }
 
         virtual void setUniform( const plUniform& uniform ) const {};
         

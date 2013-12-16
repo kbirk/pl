@@ -50,6 +50,8 @@ class plGraft : public plRenderable,
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
+        void updateMarker(); 
+
     private:
 
         plPlug     _recipient;
@@ -68,7 +70,7 @@ class plGraft : public plRenderable,
         void  _extractGraftRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
         void _generateCaps();    
-        void _updateMarker(); 
+        
         void _updateMarkDirection();
         void _generateMarkPositions();
 

@@ -3,7 +3,6 @@
 
 #include "plCommon.h"
 
-//class plVAO;    // yay, circular dependencies
 
 class plVertexSpecBuffer
 {
@@ -14,10 +13,10 @@ class plVertexSpecBuffer
 
         virtual ~plVertexSpecBuffer();
 
+        PLuint id() const  { return _id; }
+
         virtual void bind  () const = 0;
         virtual void unbind() const = 0;
-       
-        //friend class plVAO;
 
     protected:
 
@@ -25,10 +24,6 @@ class plVertexSpecBuffer
         GLuint _numBytes;
         GLuint _usage;
 
-        //PLbool _changeFlag;
-        //plVAO *_vao;
-        
-        //virtual void _flagChange();
         virtual void _destroy();
 };
 

@@ -174,8 +174,8 @@ namespace plRenderer
         plModelStack::translate( position );    
         plModelStack::mult( rot );
         plModelStack::scale( scale ); 
-        queueCylinder( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), scale*PL_HANDLE_RADIUS, length/scale );
-        queueDisk( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), scale*PL_HANDLE_RADIUS, true );
+        queueCylinder( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), PL_HANDLE_RADIUS, length/scale );
+        queueDisk( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), PL_HANDLE_RADIUS, true );
 
         plModelStack::translate( 0, 0, length/scale );
         
@@ -193,29 +193,55 @@ namespace plRenderer
             
         queueDisk( technique, plVector3( 0, 0, 0 ), plVector3( 0, 0, 1 ), PL_HEAD_RADIUS, true );
 
-        plModelStack::pop(); 
+        plModelStack::pop();
     }
     
     
     void queueAxis( PLuint technique, const plVector3& position, const plVector3& x, const plVector3& y, const PLfloat scale )
     {
         plModelStack::push(); 
-        plModelStack::scale( scale ); 
 
         // draw x
         plColourStack::load( PL_X_AXIS_COLOUR );
-        queueArrow( technique, position, x );
+        queueArrow( technique, position, x, scale, scale );
         
         // draw y
         plColourStack::load( PL_Y_AXIS_COLOUR);
-        queueArrow( technique, position, y );
+        queueArrow( technique, position, y, scale, scale );
         
         // draw z
         plColourStack::load( PL_Z_AXIS_COLOUR );
-        queueArrow( technique, position, x ^ y );
+        queueArrow( technique, position, x ^ y,  scale, scale);
         
         plModelStack::pop();
     }
+    
+    void queuePlane( PLuint technique, const plVector3& position, const plVector3& normal, PLfloat scale )
+    {
+        static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( plRenderShapes::quadVAO() );
+
+        plMatrix44 rot; rot.setRotation( plVector3( 0, 0, 1), normal.normalize() );
+
+        plModelStack::push();
+        plModelStack::translate( position );
+        plModelStack::mult( rot ); 
+        plModelStack::scale( scale );
+
+        // create render component
+        plRenderComponent component( vao );
+        // attached uniforms
+        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()      ) );
+        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
+        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
+        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) ); 
+        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
+        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) ); 
+        // insert into render map
+        _renderMap[ technique ].insert( component );  
+        
+        plModelStack::pop();
+    }
+    
     
 
 }

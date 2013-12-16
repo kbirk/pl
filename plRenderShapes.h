@@ -11,7 +11,8 @@ namespace plRenderShapes
     plVAO sphereVAO  ( float radius, int slices, int stacks );
     plVAO cylinderVAO( float baseRadius, float topRadius, float height, int slices, int stacks );
     plVAO diskVAO    ( float innerRadius, float outerRadius, int slices, int loops, bool up = true );
-    plVAO coneVAO    ( float baseRadius, float topRadius, float height, int slices, int stacks );   
+    plVAO coneVAO    ( float baseRadius, float topRadius, float height, int slices, int stacks );  
+    plVAO quadVAO    ();
 }
 
 
