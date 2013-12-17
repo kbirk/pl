@@ -4,7 +4,7 @@
 #include "plCommon.h"
 
 #include "plVector3.h"
-
+#include "plTriangle.h"
 
 class plEdge
 {
@@ -31,8 +31,17 @@ class plPolygon
 
     public:
     
+        plPolygon() {}
+        plPolygon( const plTriangle& tri )
+        {
+            points.push_back( tri.point0() );
+            points.push_back( tri.point1() );
+            points.push_back( tri.point2() );
+            normal = tri.normal();
+        }
+    
         std::vector<plVector3> points;
-        plVector3        normal;
+        plVector3              normal;
 
 };
 

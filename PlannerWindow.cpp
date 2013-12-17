@@ -24,18 +24,20 @@ void PlannerWindow::idle()
 
 void PlannerWindow::display()
 {
+    // set camera
     plCameraStack::load( _camera );  
+    // set perspective projection
     plProjectionStack::load( plProjection( PL_FIELD_OF_VIEW , PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE ) );
-
+    // queue plan for drawing
     plRenderer::queue( _plan );
-
+    // queue global coordinate axis
     plRenderer::queueAxis( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 1, 0, 0 ), plVector3( 0, 1, 0 ) );
-
+    // queue editors
     plRenderer::queue( _graftEditor );
     plRenderer::queue( _boundaryEditor );   
-
+    // dispatch draw call
     plRenderer::draw();
-
+    // swap buffers
     glutSwapBuffers();
 }
 
@@ -132,7 +134,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'L':   /* UN-USED */ break;
         case 'M':   /* UN-USED */ break;
         case 'N':   _plan.clear();  
-                    _graftEditor.clearSelection   ();   
+                    _graftEditor.clearSelection();   
                     _boundaryEditor.clearSelection();                                          
                     break;  
         case 'O':   _plan.exportFile("plan");                                   break;
@@ -178,10 +180,10 @@ void PlannerWindow::passiveMouseMotion( int mx, int my )
 
 
 void PlannerWindow::activeMouseMotion( int mx, int my )
-{    
+{   
     // convert from GLUT window coords to OpenGL coords
     PLint x = mx;
-    PLint y = glutGet(GLUT_WINDOW_HEIGHT)-my;
+    PLint y = glutGet( GLUT_WINDOW_HEIGHT ) - my;
 
     switch ( _button )
     {
@@ -189,7 +191,7 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
 
             // process drag movements 
             _graftEditor.processMouseDrag   ( x, y );   
-            _boundaryEditor.processMouseDrag( x, y );  
+            _boundaryEditor.processMouseDrag( x, y );             
             break;       
 
         case GLUT_MIDDLE_BUTTON:    
@@ -202,14 +204,13 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
         
             // previous and current mouse coords will always be very small, as 
             // _previousMouse has already been updated in mouseAction() by this point
-            if (_cameraMode == CAMERA_ROTATION_MODE)
+            if ( _cameraMode == CAMERA_ROTATION_MODE )
             {
                 _camera.rotate( _previousMouse.x, _previousMouse.y, x, y );
             }
             else
 		    {
-			    _camera.translate( _previousMouse.x - x,
-			                       _previousMouse.y - y );
+			    _camera.translate( _previousMouse.x - x, _previousMouse.y - y );
             }
             break;  
     }
@@ -230,25 +231,25 @@ void PlannerWindow::mouseAction( int button, int state, int mx, int my )
     
     // convert from GLUT window coords to OpenGL coords
     PLint x = mx;
-    PLint y = glutGet(GLUT_WINDOW_HEIGHT)-my;
+    PLint y = glutGet( GLUT_WINDOW_HEIGHT ) - my;
         
-    switch (state)
+    switch ( state )
     {
         case GLUT_UP:           
         {
             _graftEditor.processMouseRelease   ( x, y ); 
             _boundaryEditor.processMouseRelease( x, y ); 
-            _button = GLUT_NO_BUTTON;  
+            _button = GLUT_NO_BUTTON;             
             break; 
         }
         case GLUT_DOWN:  _button = button;  break;   // button press
     }
     
-    switch (_button)
+    switch ( _button )
     {   
         case GLUT_LEFT_BUTTON:  
 
-            if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
+            if ( glutGetModifiers() == GLUT_ACTIVE_CTRL ) 
 	        {
                 // add new point
                 _boundaryEditor.addPoint( x, y ); 
@@ -257,7 +258,7 @@ void PlannerWindow::mouseAction( int button, int state, int mx, int my )
             {
                 // process mouse clicks 
                 _graftEditor.processMouseClick   ( x, y );    
-                _boundaryEditor.processMouseClick( x, y ); 
+                _boundaryEditor.processMouseClick( x, y );                 
             }
             break;
     }    
@@ -268,3 +269,5 @@ void PlannerWindow::mouseAction( int button, int state, int mx, int my )
     
     glutPostRedisplay();
 }
+
+

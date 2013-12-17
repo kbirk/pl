@@ -6,6 +6,7 @@
 #include "plVector4.h"
 
 class plTriangle;
+class plMesh;
 
 class plMatrix44 
 {
@@ -74,8 +75,9 @@ class plMatrix44
 		plVector3   operator* ( const plVector3 &v) const;
         plVector4   operator* ( const plVector4 &v) const;
         plTriangle  operator* ( const plTriangle &tri) const;
+        plMesh      operator* ( const plMesh& mesh ) const;
 		plMatrix44  operator* ( const plMatrix44 &m) const;
-        std::vector<plTriangle> operator*(const std::vector<plTriangle> &tris) const;
+        std::vector<plTriangle> operator*( const std::vector<plTriangle> &tris ) const;
 
 	protected:
 

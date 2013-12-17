@@ -11,7 +11,7 @@
 #include "plRenderer.h"
 #include "plEditor.h"
 
-#define PL_ROTATION_SENSITIVITY                  0.10f   // lower is less sensitive
+#define PL_ROTATION_SENSITIVITY                  0.05f   // lower is less sensitive
 
 
 

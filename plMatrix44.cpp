@@ -1,5 +1,6 @@
 #include "plMatrix44.h"
 #include "plTriangle.h"
+#include "plMesh.h"
 
 // identity 
 plMatrix44::plMatrix44() 
@@ -293,6 +294,21 @@ plTriangle plMatrix44::operator*(const plTriangle &tri) const
 
     return plTriangle( normal3, point0, point1, point2 );
 }
+
+// mesh multiplication
+plMesh plMatrix44::operator*( const plMesh& mesh ) const 
+{   
+    const std::vector<plTriangle>& triangles = mesh.triangles();
+    
+    std::vector<plTriangle> outputTris;      outputTris.reserve( mesh.triangles().size() );
+    
+    for (PLuint i = 0; i < triangles.size(); i++)
+    {
+        outputTris.push_back( (*this) * triangles[i] );
+    }
+    return outputTris;
+}
+
 
 std::vector<plTriangle> plMatrix44::operator*(const std::vector<plTriangle> &tris) const
 {

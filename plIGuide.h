@@ -20,14 +20,18 @@ class plPlugInfo
 
     public:
     
-        const plTransform &transform          () const { return *_transform;           }
-        PLfloat            radius             () const { return *_radius;              }
-        PLfloat            length             () const { return *_length;              }
-        PLuint             type               () const { return _type;                 }
-        PLuint             graftID            () const { return _graftID;              }
+        const plTransform &transform() const { return *_transform; }
+        PLfloat            radius   () const { return *_radius;    }
+        PLfloat            length   () const { return *_length;    }
+        PLuint             type     () const { return _type;       }
+        PLuint             graftID  () const { return _graftID;    }
 
         plPlugInfo() {}
-        plPlugInfo( const plTransform *transform, const PLfloat *radius, const PLfloat *length, PLuint type, PLuint id )
+        plPlugInfo( const plTransform *transform, 
+                    const PLfloat *radius, 
+                    const PLfloat *length, 
+                    PLuint type, 
+                    PLuint id )
             : _transform( transform ), _radius( radius ), _length(length), _type( type ), _graftID( id )
         {        
             std::cout << "type: " << type << std::endl;
@@ -88,7 +92,7 @@ class plIGuide : public plRenderable
 
         // core functionality
         PLbool generateIGuideModels ();
-        PLbool exportIGuideModels   ( const plString &directory );
+        PLbool exportIGuideModels   ( const std::string &directory );
         void   clearIGuideModels    ();
 
         // rendering
@@ -101,14 +105,15 @@ class plIGuide : public plRenderable
         
     private:
 
-        plString			_prepareFilenameWithVariables   ( PLint operation, PLchar type, PLint graftIndex, const plString &pieceName );
+        std::string			_prepareFilenameWithVariables   ( PLint operation, PLchar type, PLint graftIndex, const std::string &pieceName );
         std::vector<plTriangle>	_createTemplatePieceTransformed ( const std::vector<plTriangle> &baseTriObject,
                                                               const plMatrix44  &plugTransform,
                                                               const PLfloat     &zOffset,
                                                               const plVector3   &scale,
                                                               const PLfloat     &keyTranslationXAxis,
                                                               const PLfloat     &keyRotationZAxis );
-      
+                                                              
+      std::vector<plTriangle> _translateTriangles( const std::vector< plTriangle >& triangles, const plVector3& translation );
 		
     
 };

@@ -246,7 +246,7 @@ namespace plRenderer
     
     void queueLine( PLuint technique, const plVector3& p0, const plVector3& p1 )
     {
-        static std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( plRenderShapes::lineVAO( p0, p1 ) );
+        std::shared_ptr< plVAO > vao = std::make_shared< plVAO >( plRenderShapes::lineVAO( p0, p1 ) );
 
         // create render component
         plRenderComponent component( vao );

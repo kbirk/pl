@@ -21,18 +21,19 @@ PLbool plIGuide::generateIGuideModels()
     iGuideModelsToAdd.clear();
     iGuideModelsToSubtract.clear();
 
-    if ( site == NULL )
+    if ( !site )
     {
         std::cerr << "Error: No site chosen for iGuide. Aborting." << std::endl;
         return false;
     }
-    if (site->boundary.size() <= 2)
+    
+    if ( site->boundary.size() <= 2 )
     {
         std::cerr << "Error: Boundary does not have enough points. Aborting." << std::endl;
         return false;
     }
 
-    plString anatomyFilename ( _prepareFilenameWithVariables(false,'M',0,"bone") );
+    std::string anatomyFilename = _prepareFilenameWithVariables( false, 'M', 0, "bone" );
     iGuideModelsToSubtract.push_back( new plModel( site->boundary.mesh().triangles(), anatomyFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
 
     // template base TODO: recreate the template base shape ONLY if it needs updating
@@ -41,36 +42,58 @@ PLbool plIGuide::generateIGuideModels()
     if ( site->generateTemplateBase() )
     {
         // if successful
-        plString templateBaseFilename ( _prepareFilenameWithVariables(true ,'M',0,"templateBase") );
-        iGuideModelsToAdd.push_back( new plModel( site->templateBase(), templateBaseFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS) );
+        std::string templateBaseFilename = _prepareFilenameWithVariables( true , 'M', 0, "templateBase" );
+        iGuideModelsToAdd.push_back( new plModel( site->templateBase().triangles(), templateBaseFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS) );
     }
+
 
     // generate base over the defect site
-    PLfloat baseTranslation(1.01f);
-    PLfloat baseThickness  (5.00f);
-    PLfloat interiorTranslation(-10.0f);
-    PLfloat interiorThickness  (11.0f);
-    for (PLuint i = 0; i < splines.size(); i++)
+    PLfloat baseTranslationDistance     = 1.01f;
+    PLfloat baseThickness               = 5.00f;
+    PLfloat interiorTranslationDistance = -10.0f;
+    PLfloat interiorThickness           = 11.0f;
+    
+    std::cout << "000" << std::endl;
+    
+    for ( PLuint i = 0; i < splines.size(); i++ )
     {
-        // get data from splines
-        //std::vector< plTriangle > splineTriangles;
-        //splineTriangles.push_back( splines[i]->triangles() );
-        std::vector< plTriangle > splineTriangles = splines[i]->mesh().triangles();
-
-        plVector3 splineOffsetDirection( splines[i]->getAverageNormal() );
-
+        std::cout << "001" << std::endl;
         // create the base shape over the defect site
-        std::vector<plTriangle> baseOverDefectTriangles;
-        baseOverDefectTriangles = plMeshExtruder::extrudeMesh(splineTriangles,baseThickness,baseTranslation,splineOffsetDirection);
-        plString baseOverDefectFilename ( _prepareFilenameWithVariables(true ,'S',i,"templateBase") );
-        iGuideModelsToAdd.push_back( new plModel(baseOverDefectTriangles,baseOverDefectFilename,PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+        std::string             baseOverDefectFilename  = _prepareFilenameWithVariables(true ,'S',i,"templateBase"); 
+        
+        std::cout << "0011" << std::endl;   
+         
+        plMatrix44 baseTranslation;  
+        baseTranslation.setTranslation( baseTranslationDistance * splines[i]->getAverageNormal() );
 
+
+        plMesh baseOverDefect = plMeshExtruder::extrudeMesh( baseTranslation * splines[i]->mesh(),
+                                                                                       baseThickness, 
+                                                                                       splines[i]->getAverageNormal() );
+          std::cout << "002" << std::endl;      
+        iGuideModelsToAdd.push_back( new plModel( baseOverDefect.triangles(), 
+                                                  baseOverDefectFilename, 
+                                                  PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+        
         // create the defect site volume
-        std::vector<plTriangle> interiorDefectTriangles;
-        interiorDefectTriangles = plMeshExtruder::extrudeMesh(splineTriangles,interiorThickness,interiorTranslation,splineOffsetDirection);
-        plString interiorDefectFilename ( _prepareFilenameWithVariables(false ,'M',i,"defectInterior") );
-        iGuideModelsToSubtract.push_back( new plModel(interiorDefectTriangles,interiorDefectFilename,PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+        std::string             interiorDefectFilename  = _prepareFilenameWithVariables(false ,'M',i,"defectInterior");
+        
+        plMatrix44 interiorTranslation;  
+        interiorTranslation.setTranslation( interiorTranslationDistance * splines[i]->getAverageNormal() );
+
+        
+        plMesh interiorDefect = plMeshExtruder::extrudeMesh( interiorTranslation * splines[i]->mesh(),
+                                                                                       interiorThickness,  
+                                                                                       splines[i]->getAverageNormal() );
+                                                               
+        iGuideModelsToSubtract.push_back( new plModel( interiorDefect.triangles(), 
+                                                       interiorDefectFilename, 
+                                                       PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
+                                                       
+        std::cout << "00" << std::endl;
     }
+
+    std::cout << "0" << std::endl;
 
     // plug pieces
     std::vector<plTriangle> roundCylinder;
@@ -85,12 +108,11 @@ PLbool plIGuide::generateIGuideModels()
     std::vector<plTriangle> keyCube;
     plSTL::importFile( keyCube, "./iGuideElements/Generator_Key_Cube.stl" );
 
-    PLfloat   zero        ( 0.f );
-    plVector3 zeroVector  ( 0.f, 0.f, 0.f );
-    
+    std::cout << "1" << std::endl;
+
     for ( PLuint i = 0; i < plugs.size(); i++ )
     {   
-        plMatrix44 cylinderToPlugTransform( plugs[i].transform().matrix() );
+        plMatrix44 cylinderToPlugTransform = plugs[i].transform().matrix();
         
         //plVector4  plugToCartilageSurfaceTranslation = plVector4( 0.0f, 0.0f, 0.0f, 0.0f );
         //plMatrix44 plugToCartilageSurfaceTransform( plugToCartilageSurfaceTranslation.x, plugToCartilageSurfaceTranslation.y, plugToCartilageSurfaceTranslation.z );
@@ -101,13 +123,13 @@ PLbool plIGuide::generateIGuideModels()
         
         //if ( plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR )
 
-        PLfloat   holeDiameter    = plugs[i].radius();
-        PLfloat   sleeveDiameter  = holeDiameter   + 2.f ;
-        PLfloat   baseDiameter    = sleeveDiameter + 1.f ;
-        PLfloat   holderDiameter  = baseDiameter   + 4.f ;
-        PLfloat   correctDiameter = holderDiameter + 0.1f;
+        PLfloat holeDiameter    = plugs[i].radius();
+        PLfloat sleeveDiameter  = holeDiameter   + 2.f ;
+        PLfloat baseDiameter    = sleeveDiameter + 1.f ;
+        PLfloat holderDiameter  = baseDiameter   + 4.f ;
+        PLfloat correctDiameter = holderDiameter + 0.1f;
 
-        PLfloat   sleeveHeight = toolDepth - plugs[i].length(); // - plugs[i].cartilageThickness();
+        PLfloat sleeveHeight = toolDepth - plugs[i].length(); // - plugs[i].cartilageThickness();
         
         plVector3 holeScale   ( holeDiameter,   36.f, holeDiameter   );
         plVector3 sleeveScale ( sleeveDiameter, sleeveHeight, sleeveDiameter );
@@ -118,25 +140,25 @@ PLbool plIGuide::generateIGuideModels()
 
         //if ( plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR )
             //plVector3 supportScale( 18.f,  4.f, 18.f  );
-        
-        std::vector<plTriangle> holeTriangles    = _createTemplatePieceTransformed(sharpCylinder,   cylinderToPlugTransform, 0.0f, holeScale,    0.0f,           0.0f);
-        std::vector<plTriangle> sleeveTriangles  = _createTemplatePieceTransformed(roundCylinder,   cylinderToPlugTransform, 0.0f, sleeveScale,  0.0f,           0.0f);
-        std::vector<plTriangle> baseTriangles    = _createTemplatePieceTransformed(sharpCylinder,   cylinderToPlugTransform, 0.0f, baseScale,    0.0f,           0.0f);
-        std::vector<plTriangle> holderTriangles  = _createTemplatePieceTransformed(roundCylinder,   cylinderToPlugTransform, 0.0f, holderScale,  0.0f,           0.0f);
-        std::vector<plTriangle> keyTriangles     = _createTemplatePieceTransformed(keyCube,         cylinderToPlugTransform, 0.0f, keyScale,     keyTranslation, 0.0f);
-        std::vector<plTriangle> correctTriangles = _createTemplatePieceTransformed(correctCylinder, cylinderToPlugTransform, 0.0f, correctScale, 0.0f,           0.0f);
+        std::cout << "2" << std::endl;
+        std::vector<plTriangle> holeTriangles    = _createTemplatePieceTransformed( sharpCylinder,   cylinderToPlugTransform, 0.0f, holeScale,    0.0f,           0.0f );
+        std::vector<plTriangle> sleeveTriangles  = _createTemplatePieceTransformed( roundCylinder,   cylinderToPlugTransform, 0.0f, sleeveScale,  0.0f,           0.0f );
+        std::vector<plTriangle> baseTriangles    = _createTemplatePieceTransformed( sharpCylinder,   cylinderToPlugTransform, 0.0f, baseScale,    0.0f,           0.0f );
+        std::vector<plTriangle> holderTriangles  = _createTemplatePieceTransformed( roundCylinder,   cylinderToPlugTransform, 0.0f, holderScale,  0.0f,           0.0f );
+        std::vector<plTriangle> keyTriangles     = _createTemplatePieceTransformed( keyCube,         cylinderToPlugTransform, 0.0f, keyScale,     keyTranslation, 0.0f );
+        std::vector<plTriangle> correctTriangles = _createTemplatePieceTransformed( correctCylinder, cylinderToPlugTransform, 0.0f, correctScale, 0.0f,           0.0f );
 
         //if (plugs[i].type == PL_PICKING_INDEX_GRAFT_DONOR)
             //std::vector<plTriangle> supportTriangles( createTemplatePieceTransformed(sharpCylinder, recipientTransform, cylinderRecipientSupportOffset, supportScale, 0.0f, 0.0f) );
 
-        PLchar typeLetter = (plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR) ? 'H' : 'R';
+        PLchar typeLetter = ( plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR ) ? 'H' : 'R';
             
-        plString holeFilename    ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE   , typeLetter, plugs[i].graftID(), "hole"       ) );
-        plString sleeveFilename  ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "sleeve"     ) );
-        plString baseFilename    ( _prepareFilenameWithVariables(true , typeLetter, plugs[i].graftID(), "base"       ) );
-        plString holderFilename  ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "holder"     ) );
-        plString keyFilename     ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "key"        ) );
-        plString correctFilename ( _prepareFilenameWithVariables(PL_IGUIDE_BOOLEAN_MESH_INTERSECTION , typeLetter, plugs[i].graftID(), "correction" ) );
+        plString holeFilename    = _prepareFilenameWithVariables( PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE   , typeLetter, plugs[i].graftID(), "hole"      );
+        plString sleeveFilename  = _prepareFilenameWithVariables( PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "sleeve"     );
+        plString baseFilename    = _prepareFilenameWithVariables( true , typeLetter, plugs[i].graftID(), "base"      );
+        plString holderFilename  = _prepareFilenameWithVariables( PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "holder"     );
+        plString keyFilename     = _prepareFilenameWithVariables( PL_IGUIDE_BOOLEAN_MESH_UNION        , typeLetter, plugs[i].graftID(), "key"        );
+        plString correctFilename = _prepareFilenameWithVariables( PL_IGUIDE_BOOLEAN_MESH_INTERSECTION , typeLetter, plugs[i].graftID(), "correction" );
 
         iGuideModelsToSubtract.push_back( new plModel( holeTriangles   , holeFilename   , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         iGuideModelsToAdd.push_back     ( new plModel( sleeveTriangles , sleeveFilename , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
@@ -145,15 +167,32 @@ PLbool plIGuide::generateIGuideModels()
         iGuideModelsToAdd.push_back     ( new plModel( keyTriangles    , keyFilename    , PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         //iGuideModelsToSubtract.push_back( new plModel( correctTriangles, correctFilename, PL_OCTREE_DEPTH_IGUIDE_MODELS ) );
         //if (plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR)
+        std::cout << "3" << std::endl;
     }
     
     return true;
 }
 
 
-PLbool plIGuide::exportIGuideModels( const plString &directory ) 
+std::vector<plTriangle> plIGuide::_translateTriangles( const std::vector< plTriangle >& triangles, const plVector3& translation )
 {
-    if ( iGuideModelsToAdd.size() == 0 && iGuideModelsToSubtract.size() == 0 )
+    std::vector<plTriangle> translatedTriangles;
+    
+    for ( const plTriangle& triangle : triangles )
+    {   
+        translatedTriangles.push_back( plTriangle( triangle.normal(), 
+                                                   triangle.point0() + translation, 
+                                                   triangle.point1() + translation, 
+                                                   triangle.point2() + translation ) );
+    }
+    
+    return translatedTriangles;
+}
+
+
+PLbool plIGuide::exportIGuideModels( const std::string &directory ) 
+{
+    if ( iGuideModelsToAdd.empty() && iGuideModelsToSubtract.empty() )
     {
         std::cerr << "Error: No IGuide pieces to export. Did you forget to generate them? Aborting." << std::endl;
         return false;
@@ -172,7 +211,7 @@ PLbool plIGuide::exportIGuideModels( const plString &directory )
 }
 
 
-plString plIGuide::_prepareFilenameWithVariables( PLint operation, PLchar type, PLint graftIndex, const plString &pieceName )
+std::string plIGuide::_prepareFilenameWithVariables( PLint operation, PLchar type, PLint graftIndex, const std::string &pieceName )
 {
     std::stringstream strstream;
     strstream << type << graftIndex;
@@ -194,9 +233,9 @@ plString plIGuide::_prepareFilenameWithVariables( PLint operation, PLchar type, 
 
 
 std::vector<plTriangle> plIGuide::_createTemplatePieceTransformed ( const std::vector<plTriangle>& baseTriObject,
-                                                              const plMatrix44&  plugTransform,
+                                                              const plMatrix44& plugTransform,
                                                               const PLfloat&    zOffset,
-                                                              const plVector3&   scale,
+                                                              const plVector3&  scale,
                                                               const PLfloat&    keyTranslationXAxis,
                                                               const PLfloat&    keyRotationZAxis )
 {

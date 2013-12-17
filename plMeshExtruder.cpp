@@ -186,31 +186,34 @@ namespace plMeshExtruder
         }
     }
 
-    // return an empty std::vector if this fails.
-    std::vector<plTriangle> extrudeMesh( const std::vector<plTriangle>& inputTriangles, const PLfloat magnitude, const plVector3& direction )
+
+    plMesh extrudeMesh( const plMesh& mesh, const PLfloat magnitude, const plVector3& direction )
     {
         // error checking
-        if ( inputTriangles.size()     == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input!\n";     return std::vector<plTriangle>(); }
-        if ( magnitude                 <= 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Magnitude of zero or less!\n"; return std::vector<plTriangle>(); }
+        if ( mesh.triangles().empty() )      { std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input!\n";     return std::vector<plTriangle>(); }
+        if ( magnitude <= 0 )                { std::cerr << "plMeshExtruder::extrudeMesh() error: Magnitude of zero or less!\n"; return std::vector<plTriangle>(); }
         if ( direction.squaredLength() == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Direction of zero!\n";         return std::vector<plTriangle>(); }
 
-        std::vector<plEdgePointers> outsideEdges = _collectOutsideEdges( inputTriangles );
+        std::vector<plEdgePointers> outsideEdges = _collectOutsideEdges( mesh.triangles() );
 
-        if (outsideEdges.size()        == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No surrounding edges found\n"; return std::vector<plTriangle>(); }
+        if ( outsideEdges.empty() )          { std::cerr << "plMeshExtruder::extrudeMesh() error: No surrounding edges found\n"; return std::vector<plTriangle>(); }
 
-        std::vector<plTriangle> outputTriangles;    outputTriangles.reserve( inputTriangles.size() * 2 + outsideEdges.size() * 2 ); // allocate enough memory
+        std::vector<plTriangle> outputTriangles;    outputTriangles.reserve( mesh.triangles().size() * 2 + outsideEdges.size() * 2 ); // allocate enough memory
 
         // we need to extrude a bunch of these triangles in the direction of the average normal
-        plVector3 offset ( magnitude * direction.normalize() );
+        plVector3 offset = magnitude * direction.normalize();
 
-        _prepareTopAndBottomOfExtrusion( inputTriangles, offset, outputTriangles );
+        _prepareTopAndBottomOfExtrusion( mesh.triangles(), offset, outputTriangles );
         _prepareSidesOfExtrusionFlat   ( outsideEdges,   offset, outputTriangles );
 
-        return outputTriangles;
+        return plMesh( outputTriangles );
     }
     
-    // return an empty std::vector if this fails.
-    std::vector<plTriangle> extrudeMesh( const std::vector<plTriangle>& inputTriangles, const PLfloat magnitude, const PLfloat preTranslation, const plVector3& direction )
+    /*
+    std::vector<plTriangle> extrudeMesh( const std::vector<plTriangle>& inputTriangles, 
+                                         const PLfloat magnitude, 
+                                         const PLfloat preTranslation, 
+                                         const plVector3& direction )
     {
         // error checking
         if ( inputTriangles.size()     == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: No triangles in input!\n";     return std::vector<plTriangle>(); }
@@ -218,20 +221,21 @@ namespace plMeshExtruder
         if ( direction.squaredLength() == 0) { std::cerr << "plMeshExtruder::extrudeMesh() error: Direction of zero!\n";         return std::vector<plTriangle>(); }
 
         // apply the translation to the triangles before sending it to be extruded.
-        plVector3  preTranslationVector(preTranslation*direction);
-        plMatrix44 preTranslationMatrix;
-        preTranslationMatrix.setTranslation(preTranslationVector);
+        plVector3  preTranslationVector = preTranslation * direction.normalize();
+        plMatrix44 preTranslationMatrix;    preTranslationMatrix.setTranslation( preTranslationVector );
 
         std::vector<plTriangle> preTranslatedTriangles;
         for (PLuint i = 0; i < inputTriangles.size(); i++)
         {
-            preTranslatedTriangles.push_back(preTranslationMatrix * inputTriangles[i]);
+            preTranslatedTriangles.push_back( preTranslationMatrix * inputTriangles[i] );
         }
 
         // call the normal extrude function now
-        return extrudeMesh(preTranslatedTriangles,magnitude,direction);
+        return extrudeMesh( preTranslatedTriangles, magnitude, direction );
     }
-
+    */
+    
+    
     /*
 
     // helper to collectOutsideEdges

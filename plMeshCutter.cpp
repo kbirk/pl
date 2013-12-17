@@ -11,6 +11,7 @@ plCut::plCut( plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint di
 {
 }
 
+
 namespace plMeshCutter
 {
 
@@ -20,46 +21,42 @@ namespace plMeshCutter
     PLint   _compareEdgeCuts       ( const void* a, const void* b );
     PLint   _compareBoundaryCuts   ( const void* a, const void* b );
 
-    PLbool findInteriorMesh( std::vector<plTriangle> &interiorTriangles, const std::vector<plTriangle> &triangles, const plBoundary &boundary )
+
+    PLbool findInteriorMesh( std::vector<plTriangle> &outputTriangles, const std::vector<plTriangle> &inputTriangles, const plBoundary &boundary )
     {
         // set all the processed flags to false
-        std::vector<int> trianglesProcessedFlag( triangles.size(), false );
-
-        // just in case polygons has stuff in it, it should be emptied
-        interiorTriangles.clear();
+        std::vector<int> trianglesProcessedFlag( inputTriangles.size(), false );
 
         // allocate a worst-case number of interior points
-        std::vector<plVector3> interiorPoints;  interiorPoints.reserve( 3 * triangles.size() );
+        std::vector<plVector3> interiorPoints;  interiorPoints.reserve( 3 * inputTriangles.size() );
 
         // Collect polygons that intersect the boundary
         std::vector<plPolygon> interiorPolygons;
-        for (PLuint i=0; i<triangles.size(); i++) 
+        for ( PLuint i=0; i<inputTriangles.size(); i++ ) 
         {
-            if ( !_triangleCutsBoundary( triangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints ) )
+            if ( !_triangleCutsBoundary( inputTriangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints ) )
             {
                 return false;
             }
         }
 
         // Collect other polygons that contain an interior point.  This is very slow.
-        for (PLuint interiorPointsIndex=0; interiorPointsIndex<interiorPoints.size(); interiorPointsIndex++)
+        // for each interior point
+        for ( PLuint p=0; p<interiorPoints.size(); p++ )
         {
-            for (PLuint trianglesIndex=0; trianglesIndex<triangles.size(); trianglesIndex++)
+            // for each triangle
+            for ( PLuint t=0; t<inputTriangles.size(); t++ )
             {
-                if ( !trianglesProcessedFlag[trianglesIndex] )
+                if ( !trianglesProcessedFlag[t] )
                 {
-                    for (PLuint triangleVerticesIndex=0; triangleVerticesIndex<3; triangleVerticesIndex++)
+                    // for each triangle vertex
+                    for ( PLuint v=0; v<3; v++ )
                     {
-                        if (interiorPoints[interiorPointsIndex] == (triangles[trianglesIndex])[triangleVerticesIndex]) 
+                        if ( interiorPoints[p] == inputTriangles[t][v] ) 
                         {
-                            plPolygon poly;
-                            poly.points.push_back( triangles[trianglesIndex].point0() );
-                            poly.points.push_back( triangles[trianglesIndex].point1() );
-                            poly.points.push_back( triangles[trianglesIndex].point2() );
-                            poly.normal    = triangles[trianglesIndex].normal();
-                            interiorPolygons.push_back( poly );
-                            trianglesProcessedFlag[trianglesIndex] = 1;
-                            _updateInteriorPoints( triangles[trianglesIndex], interiorPoints);
+                            interiorPolygons.push_back( plPolygon( inputTriangles[t] ) );
+                            trianglesProcessedFlag[t] = 1;
+                            _updateInteriorPoints( inputTriangles[t], interiorPoints );
                             break;
                         } 
                     } 
@@ -67,8 +64,9 @@ namespace plMeshCutter
             }
         }
 
-        // convert polygons to triangles for the output
-        plMath::concavePolysToTris( interiorTriangles, interiorPolygons );
+        // convert polygons to triangles for the output       
+        outputTriangles.clear();    // just in case polygons has stuff in it, it should be emptied
+        plMath::concavePolysToTris( outputTriangles, interiorPolygons );
 		
         return true;
     } 

@@ -155,18 +155,14 @@ void plGraftEditor::_dragMarker( PLint x, PLint y )
 
     if ( intersection.exists )
     {
-        plVector3 newMarkDir = _selectedGraft->plug( _selectedType ).finalTransform().applyInverse( intersection.point );        
-            
+        plVector3 newMarkDir = _selectedGraft->plug( _selectedType ).finalTransform().applyInverse( intersection.point );                    
         newMarkDir = plVector3( newMarkDir.x, 0.0f, newMarkDir.z ).normalize();
-  
-        plRenderer::queueSphere( PL_PLAN_TECHNIQUE, intersection.point, 1.0f );     
-            
+
         if ( _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
         {
             // recipient, rotate around up axis
             PLfloat angle = _selectedGraft->markDirection().signedAngle( newMarkDir, plVector3( 0, 1, 0 ) );
-            _selectedGraft->rotate( _selectedType, PL_RAD_TO_DEG( angle ) );
-            std::cout << "angle: " << PL_RAD_TO_DEG( angle ) << std::endl;
+            _selectedGraft->rotate( _selectedType, PL_RAD_TO_DEG( angle ) );           
         }
         else
         {
@@ -176,7 +172,11 @@ void plGraftEditor::_dragMarker( PLint x, PLint y )
         }   
     }
 
-
+    /*
+    plVector3 markerWorld = _selectedGraft->plug( _selectedType ).finalTransform().apply( _selectedGraft->markPositions( 0 ) );
+    plColourStack::load( PL_PURPLE_COLOUR );
+    plRenderer::queueLine( PL_MINIMAL_TECHNIQUE, intersection.point, markerWorld );
+    */
 }
 
 
@@ -238,6 +238,11 @@ void plGraftEditor::_dragHandle( PLint x, PLint y )
 
                 _selectedGraft->rotate( _selectedType, newGraftY );    
             }
+            
+            /*
+            plColourStack::load( PL_PURPLE_COLOUR );
+            plRenderer::queueLine( PL_MINIMAL_TECHNIQUE, intersection.point , graftOrigin );
+            */           
             break;
         }
         
@@ -279,24 +284,38 @@ void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint tech
       
     // select graft  
     _selectedGraft->extractRenderComponents( renderMap, technique );  
-         
-         
+                 
     if ( !_selectedGraft->inArthroView() )
-    {   
-        // draw axis
-        _selectedGraft->harvest().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-        _selectedGraft->recipient().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-    }
+    {    
+        plColourStack::load( PL_AXIS_GREY ); 
+        plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_HANDLE );
     
-    // draw graft editor 
-    plModelStack::push();
-    plModelStack::load( _selectedGraft->plug( _selectedType ).finalTransform().matrix() );
+        plModelStack::push();        
+        plModelStack::translate( _selectedGraft->plug( _selectedType ).surfaceTransform().y() ); 
+        
+        plModelStack::push();
+        plModelStack::mult( _selectedGraft->plug( _selectedType ).finalTransform().matrix() ); 
+        
+        plRenderer::queueSphere( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), PL_HANDLE_SPHERE_RADIUS );    
+        plModelStack::load( _selectedGraft->plug( _selectedType ).finalTransform().matrix() ); 
+        
+        plModelStack::pop();
 
-    plColourStack::load( PL_AXIS_GREY ); 
-    plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_HANDLE );
-    plRenderer::queueSphere( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), PL_HANDLE_SPHERE_RADIUS );
-   
-    plModelStack::pop();
+        if (_editMode == PL_GRAFT_EDIT_MODE_TRANSLATE )
+        {
+            // draw axis
+            _selectedGraft->harvest().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+            _selectedGraft->recipient().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+        }
+        else
+        {
+            // draw axis
+            _selectedGraft->harvest().finalTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+            _selectedGraft->recipient().finalTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+        }
+        
+        plModelStack::pop();
+    }
 }
 
 

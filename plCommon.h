@@ -1,6 +1,10 @@
 #ifndef PL_COMMON_H
 #define PL_COMMON_H
 
+// COLOUR MACROS
+
+#define PL_PURPLE_COLOUR                         0.57, 0.17, 0.93
+
 // MODEL MACROS  
 
 #define PL_MODEL_COLOUR                          0.80f, 0.80f, 0.80f

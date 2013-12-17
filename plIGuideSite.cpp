@@ -31,10 +31,10 @@ void plIGuideSite::extractRenderComponents( plRenderMap& renderMap ) const
 
 PLbool plIGuideSite::generateTemplateBase()
 {
-    _templateBase.clear();
-
     // find the surface for the iGuide
-    if ( !plMeshCutter::findInteriorMesh( _templateBase, boundary.mesh().triangles(), boundary ) ) // find surface
+    
+    std::vector<plTriangle> triangles;
+    if ( !plMeshCutter::findInteriorMesh( triangles, boundary.mesh().triangles(), boundary ) ) // find surface
     {
         std::cerr << "Error in plIGuideSite::generateTemplateBase(): findInteriorMesh() failed. Aborting iGuideSite surface calculation." << std::endl;
         return false;
@@ -42,7 +42,10 @@ PLbool plIGuideSite::generateTemplateBase()
 
     float magnitudeOfOffset      ( 5.10f);
     float preTranslationOfSurface(-0.10f);
-    _templateBase = plMeshExtruder::extrudeMesh( _templateBase, magnitudeOfOffset, preTranslationOfSurface, boundary.getAverageNormal() );
+    
+    plMatrix44 translation; translation.setTranslation( preTranslationOfSurface * boundary.getAverageNormal() );
+    
+    _templateBase = plMeshExtruder::extrudeMesh( translation * plMesh( triangles ), magnitudeOfOffset, boundary.getAverageNormal() );
 
 	return true;
 }

@@ -125,7 +125,7 @@ void plOctree::extractRenderComponents( plRenderMap& renderMap, PLuint technique
     // draw current node
     if ( _contained.size() > 0 || count > 0 )    // only draw if contains objects, or has children that contain
     {
-        plColourStack::load( 0.57, 0.17, 0.93 );
+        plColourStack::load( PL_PURPLE_COLOUR );
 
         plModelStack::push();
         plModelStack::translate( _centre );
