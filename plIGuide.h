@@ -69,10 +69,6 @@ class plIGuide : public plRenderable
 
     public:
 
-        // ATTRIBUTES
-        // geometry data
-        
-
         plIGuideSite *site;
         PLuint        siteID;
         
@@ -82,9 +78,7 @@ class plIGuide : public plRenderable
 
         std::vector<const plSpline*> splines;
         std::vector<PLuint>          defectIDs;
-        
-        // MEMBERS
-        // constructors
+
         plIGuide();
         plIGuide( plIGuideSite *site, 
                   PLuint siteID, 
@@ -94,12 +88,10 @@ class plIGuide : public plRenderable
                   const std::vector<const plSpline*>& splines, 
                   std::vector<PLuint>&                defectIDs );
 
-        // core functionality
         PLbool generateIGuideModels();
         PLbool exportIGuideModels  ( const std::string &directory );
         void   clearIGuideModels   ();
 
-        // rendering
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
         

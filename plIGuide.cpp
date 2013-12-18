@@ -1,9 +1,11 @@
 #include "plIGuide.h"
 
+
 plIGuide::plIGuide() 
     : site( NULL ) 
 {
 }
+
 
 plIGuide::plIGuide( plIGuideSite *site, 
                     PLuint siteID, 
