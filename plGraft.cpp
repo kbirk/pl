@@ -9,7 +9,7 @@ plGraft::plGraft()
 
 
 plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat length, const plVector3 &markDirection  )
-    :   _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length ) //, _markAngleOffset( 0 )
+    :   _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length )
 {
     _generateCaps();  
     snapMarkDirection(); 
@@ -64,53 +64,54 @@ void plGraft::_extractGraftRenderComponents( plRenderMap& renderMap, PLuint tech
             // draw cartilage cap
             _cartilageCap.extractRenderComponents( renderMap, PL_OUTLINE_TECHNIQUE );
 
-            PLint id = 101;
+            PLint id = 0;
             PLfloat SPACING = 7.0f;
             PLfloat LINE_WIDTH = 0.08f;
-            PLfloat LINE_LENGTH = 1.0f;
+            PLfloat LINE_LENGTH = 5.0f;
               
             //plColourStack::load( plVector4( 1, 1, 1, 1 ) ); 
-  
+            plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_ARTHRO_PROJECTION );
+            
             // i 
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[0], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             
             // ii
             plModelStack::push();
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plModelStack::rotate( -SPACING/2, plVector3( 0, 1, 0 ) );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::pop();
             
             // iii
             plModelStack::push();
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plModelStack::rotate( -SPACING, plVector3( 0, 1, 0 ) );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::pop();
             
             // iiii
             plModelStack::push();
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plModelStack::rotate( (-3/2)*SPACING, plVector3( 0, 1, 0 ) );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::rotate( SPACING, plVector3( 0, 1, 0 ) );
-            plPickingStack::loadRed( id++ );
+            plPickingStack::loadBlue( id++ );
             plRenderer::queueCylinder( PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0 ), LINE_WIDTH, LINE_LENGTH );
             plModelStack::pop();
 
@@ -134,7 +135,7 @@ void plGraft::_generateCaps()
 void plGraft::setMarkDirection( const plVector3& direction )
 {
     // ensure direction is orthogonal       
-    _markDirection = plVector3( direction.x, 0.0f, direction.z ).normalize(); //direction.normalize();
+    _markDirection = plVector3( direction.x, 0.0f, direction.z ).normalize();
     _generateMarkPositions();
 }
 

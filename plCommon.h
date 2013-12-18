@@ -87,6 +87,8 @@
 
 // OTHER MACROS
 
+#define PL_MODEL_DEFAULT_OCTREE_DEPTH            6
+
 #define PL_COLOURMAP_SIZE                        512
 #define PL_PI                                    3.1415927f         // specific decimals optimize floating point accuracy. Going higher digits or using double will result in more error
 #define PL_EPSILON                               0.00001f
@@ -167,22 +169,5 @@ typedef int                     PLint;
 typedef bool                    PLbool;     
 typedef long long unsigned int  PLtime; 
 
-/*
-class plTimer
-{
-    public:
-    
-        static PLtime now()
-        {
-            typedef std::chrono::high_resolution_clock         plClock;
-            typedef std::chrono::milliseconds                  plMilliseconds;                
-            return std::chrono::duration_cast<plMilliseconds>( plClock::now().time_since_epoch() ).count();
-        }
-        
-    private:
-    
-        plTimer();
-};
-*/
 
 #endif

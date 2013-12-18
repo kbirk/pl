@@ -12,7 +12,6 @@
 #include "plVAO.h"
 #include "plRenderer.h"
 
-#define PL_MODEL_DEFAULT_OCTREE_DEPTH   6
 
 // used to order triangles for drawing transparent meshes
 class plOrderPair
@@ -39,12 +38,12 @@ class plModel : public plTransparentRenderable,
 
         plString filename;
 
-        plModel( const plString &file, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
-        plModel( const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth = PL_MODEL_DEFAULT_OCTREE_DEPTH );
+        plModel( const plString &file, PLuint octreeDepth = 0 );
+        plModel( const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth = 0 );
                
-        const plOctreeMesh& mesh() const { return _mesh; }
+        const plMesh& mesh() const { return *_mesh; }
 
-        void toggleOctreeVisibility() { _mesh.toggleOctreeVisibility(); }
+        void toggleOctreeVisibility();
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
@@ -52,10 +51,10 @@ class plModel : public plTransparentRenderable,
         plVector3 getCentroid() const; 
 
 	private:
-	
-	    plOctreeMesh             _mesh;
-        std::shared_ptr< plVAO > _vao;
-        
+		
+	    std::shared_ptr< plMesh > _mesh;
+	    std::shared_ptr< plVAO >  _vao;	    
+
         void _generateVAO();
 
 };

@@ -1,8 +1,19 @@
 #include "plModel.h"
 
 plModel::plModel( const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth )
-    : _mesh( triangles, octreeDepth, true ), filename( file )
+    : filename( file )
 {
+    if ( octreeDepth > 1 )
+    { 
+        // use octree mesh
+        _mesh = std::make_shared< plOctreeMesh >( std::move( triangles ), octreeDepth, true );
+    }
+    else
+    {
+        // use non-octree mesh
+        _mesh = std::make_shared< plMesh >( std::move( triangles ) );
+    }
+
     _generateVAO();
 }
 
@@ -15,8 +26,17 @@ plModel::plModel( const plString &file, PLuint octreeDepth )
     // import triangles from STL file
     if ( !plSTL::importFile( triangles, filename ) )
         return;
-     
-    _mesh = plOctreeMesh( std::move( triangles ), octreeDepth, true );
+          
+    if ( octreeDepth > 1 )
+    { 
+        // use octree mesh
+        _mesh = std::make_shared< plOctreeMesh >( std::move( triangles ), octreeDepth, true );
+    }
+    else
+    {
+        // use non-octree mesh
+        _mesh = std::make_shared< plMesh >( std::move( triangles ) );
+    }
     
     _generateVAO();
 }
@@ -24,13 +44,14 @@ plModel::plModel( const plString &file, PLuint octreeDepth )
 
 void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
-    // render octree
-    _mesh.octree().extractRenderComponents( renderMap );
+    // render octree   
+    if ( std::dynamic_pointer_cast<plOctreeMesh>( _mesh ) )
+    {
+        std::dynamic_pointer_cast<plOctreeMesh>( _mesh )->octree().extractRenderComponents( renderMap );
+    }
 
     if ( !_isVisible )
         return;
-
-    //plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
 
     // create render component
     plRenderComponent component( _vao );
@@ -51,22 +72,22 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
         }
         else
         {
-            component.attach( plUniform( PL_COLOUR_UNIFORM, plVector4( plColourStack::top().x, plColourStack::top().y, plColourStack::top().z, 0.7f ) ) ); //plVector4( PL_MODEL_COLOUR, 0.7)  ) ); 
+            component.attach( plUniform( PL_COLOUR_UNIFORM, plVector4( plColourStack::top().x, plColourStack::top().y, plColourStack::top().z, 0.7f ) ) ); 
             // insert into render map   
             renderMap[ PL_TRANSPARENCY_TECHNIQUE ].insert( component );        
             
             // Sort by distance
             plVector3 viewDir = plCameraStack::direction();
 
-            std::vector<plOrderPair> order;     order.reserve( _mesh.triangles().size() );
+            std::vector<plOrderPair> order;     order.reserve( _mesh->triangles().size() );
             PLuint index = 0;
-            for ( const plTriangle& triangle : _mesh.triangles() )
+            for ( const plTriangle& triangle : _mesh->triangles() )
             {
                 order.emplace_back( plOrderPair( index++, triangle.centroid() * viewDir) );
             }
             std::sort( order.begin(), order.end() );
 
-            std::vector<PLuint> indices;    indices.reserve( _mesh.triangles().size()*3 );
+            std::vector<PLuint> indices;    indices.reserve( _mesh->triangles().size()*3 );
             for (PLuint i = 0; i < order.size(); i++)
             {
                 indices.push_back( order[i].index*3 );
@@ -87,21 +108,28 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
 }
         
 
-
 void plModel::extractRenderComponents( plRenderMap& renderMap ) const
 {
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
 
 
+void plModel::toggleOctreeVisibility()
+{
+    if ( std::dynamic_pointer_cast<plOctreeMesh>( _mesh ) )
+    {
+        std::dynamic_pointer_cast<plOctreeMesh>( _mesh )->toggleOctreeVisibility();
+    }
+}
+
 void plModel::_generateVAO()
 {			
 	// convert to interleaved format
-	std::vector<plVector3> vertices;    vertices.reserve( _mesh.triangles().size() * 3 * 2 );
-	std::vector<PLuint>    indices;     indices.reserve ( _mesh.triangles().size() * 3);
+	std::vector<plVector3> vertices;    vertices.reserve( _mesh->triangles().size() * 3 * 2 );
+	std::vector<PLuint>    indices;     indices.reserve ( _mesh->triangles().size() * 3);
 
     int indexCount = 0;
-    for ( const plTriangle& triangle : _mesh.triangles() )
+    for ( const plTriangle& triangle : _mesh->triangles() )
     {  
         // p1
 	    vertices.emplace_back( triangle.point0() );    // position
@@ -138,7 +166,7 @@ plVector3 plModel::getCentroid() const
 {
     plVector3 min, max;
     
-    _mesh.getMinMax( min, max );
+    _mesh->getMinMax( min, max );
 
     return 0.5f * (max + min);    
 }   

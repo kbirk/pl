@@ -18,33 +18,31 @@ plPlan::plPlan( int argc, char **argv )
     if (argc == 1)
     {
         // 0 arguments    
-        std::cerr << "plPlan error: No arguments provided, an empty plan must be provided a bone and cartilage model\n";
+        std::cerr << "plPlan::plPlan() error: No arguments provided" << std::endl;
         exit(1);
     }
-    if (argc == 2)
+    if (argc >= 2)
     {
-        // 1 arguments
-        plString filename(argv[1]);
-        if ( !filename.compare(".csv", filename.size()-4, 4) )
-        {
-            std::cerr << "Unrecognized suffix on filename '" << filename 
-                      << "'. plPlan filenames should have suffix .csv" << std::endl;                
-            exit(1);
+        plString filename( argv[1]) ;
+        
+        if ( filename.compare(".csv", filename.size()-4, 4) )
+        {   
+            // load plan    
+            importFile( filename ); 
         }
-        importFile( filename );
-    }
-    /*
-    else
-    {
-        // load models
-        for (PLint i = 1; i < argc; i++)
+        else if ( filename.compare(".stl", filename.size()-4, 4) )
         {
             // model input order: bone, cartilage, bone, cartilage, etc...
-            _models.push_back( new plModel( argv[i] ) );
+            _models.push_back( new plModel( filename, PL_MODEL_DEFAULT_OCTREE_DEPTH ) );
+        }
+        else
+        {
+            std::cerr << "Unrecognized suffix on filename '" << filename 
+                      << "'. plPlan filenames should have suffix .csv, "
+                      << "plModel filenames should have suffix .stl" << std::endl;                
+            exit(1);
         }
     }
-    */
-
 }
 
 
@@ -233,7 +231,7 @@ void plPlan::importFile( const plString &filename )
               
             plString modelFile ( csv.data[++i][1] );
             
-            _models.push_back( new plModel( modelFile ) );
+            _models.push_back( new plModel( modelFile, PL_MODEL_DEFAULT_OCTREE_DEPTH ) );
         }        
         else if (field.compareCaseInsensitive( "defect_site") )
         {

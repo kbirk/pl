@@ -35,24 +35,21 @@ class plGraft : public plRenderable,
         const plVector3& markDirection()      const { return _markDirection; } 
         const plVector3& markPositions( PLuint index ) const { return _markPositions[ index ]; } 
 
-        const plPlug&      plug      ( PLuint type ) const;
-        const plPlug&      harvest   () const { return _harvest;   }
-        const plPlug&      recipient () const { return _recipient; }
+        const plPlug& plug     ( PLuint type ) const;
+        const plPlug& harvest  () const { return _harvest;   }
+        const plPlug& recipient() const { return _recipient; }
 
-        void move    ( PLuint type, const plVector3& origin, const plVector3& y );
-        void rotate  ( PLuint type, const plVector3& y );
-        void rotate  ( PLuint type, PLfloat angleDegrees );
-        
+        void move  ( PLuint type, const plVector3& origin, const plVector3& y );
+        void rotate( PLuint type, const plVector3& y );
+        void rotate( PLuint type, PLfloat angleDegrees );
 
-        void setMarkDirection( const plVector3& direction );
-         
+        void setMarkDirection( const plVector3& direction );         
         void snapMarkDirection();  
              
         void toggleArthroView() { plArthroViewable::toggleArthroView(); _cartilageCap.toggleArthroView(); }    
                             
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
-
 
     private:
 

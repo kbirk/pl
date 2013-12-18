@@ -20,7 +20,6 @@ class plPlug : public plMeshSpecific
 
         const plTransform& surfaceTransform() const; 
         const plTransform& offsetTransform() const;        
-        //plMatrix44         matrix() const;
         plTransform        finalTransform() const; 
 
         void move  ( const plVector3& origin, const plVector3& y );

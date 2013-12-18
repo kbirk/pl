@@ -27,14 +27,6 @@ const plTransform& plPlug::offsetTransform() const
     return _rotationalOffset;   
 }
   
-/*      
-plMatrix44 plPlug::matrix() const
-{
-    plMatrix44 m( _rotationalOffset.matrix() * _surfaceTransform.rotation() );
-    m.setColumn( 3, _surfaceTransform.origin() );
-    return m;
-}        
-*/
 
 plTransform plPlug::finalTransform() const 
 { 
