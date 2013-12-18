@@ -103,22 +103,19 @@ class plIGuide : public plRenderable
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
         
-        void draw();
-
-        void toggleVisibility();
-        
     private:
 
         std::vector<plModel*> _modelsToAdd;
         std::vector<plModel*> _modelsToSubtract;
 
-        std::string			_prepareFilenameWithVariables   ( PLint operation, PLchar type, PLint graftIndex, const std::string &pieceName );
-        std::vector<plTriangle>	_createTemplatePieceTransformed ( const std::vector<plTriangle> &baseTriObject,
-                                                              const plMatrix44  &plugTransform,
-                                                              const PLfloat     &zOffset,
-                                                              const plVector3   &scale,
-                                                              const PLfloat     &keyTranslationXAxis,
-                                                              const PLfloat     &keyRotationZAxis );
+        std::string	_generateOutputName( PLint operation, PLchar type, PLint graftIndex, const std::string &pieceName );
+        
+        std::vector<plTriangle>	_transformTemplate ( const std::vector<plTriangle> &baseTriObject,
+                                                     const plMatrix44  &plugTransform,
+                                                     const PLfloat     &zOffset,
+                                                     const plVector3   &scale,
+                                                     const PLfloat     &keyTranslationXAxis,
+                                                     const PLfloat     &keyRotationZAxis );
                                                               
         std::vector<plTriangle> _translateTriangles( const std::vector< plTriangle >& triangles, const plVector3& translation );
 		

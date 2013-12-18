@@ -286,15 +286,7 @@ void plPlan::importFile( const plString &filename )
         }        
         else if (field.compareCaseInsensitive( "iguide" ) ) 
         {
-			std::cout << "Loading iGuide... \n";   
-            /*
-            iguide
-                iguide_site_id, 0
-                plugs,          2, 0, 1, 0, 2
-                kwires,         0
-                splines,        1, 0
-            
-            */
+
 			PLuint  siteID    ( std::stoi( csv.data[++i][1] ) );  			                 
             PLuint  plugCount ( std::stoi( csv.data[++i][1] ) );    
                  
@@ -318,11 +310,11 @@ void plPlan::importFile( const plString &filename )
             for (PLuint j=0; j<kWireCount; j++)   
             {  
                 PLuint  kWireID ( std::stoi( csv.data[i][2+j] ) ); 
-                // yadda yadda
+                // **write code to add kwires for iguide here**
                    
             }
 
-            PLuint  defectSiteCount( std::stoi( csv.data[++i][1] ) );
+            PLuint defectSiteCount( std::stoi( csv.data[++i][1] ) );
 
             std::vector<const plSpline*> splines;
             std::vector<PLuint>          defectIDs;
