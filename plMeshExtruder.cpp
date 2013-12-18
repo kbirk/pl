@@ -90,7 +90,7 @@ namespace plMeshExtruder
     }
 
 
-    std::vector<plEdgePointers> _collectOutsideEdges(const std::vector<plTriangle>& triangles)
+    std::vector<plEdgePointers> _collectOutsideEdges( const std::vector<plTriangle>& triangles )
     {
         std::vector<plEdgePointers> edges = _collectOutsideEdgesUnsorted( triangles );
         return _collectOutsideEdgesSort( edges );
@@ -204,7 +204,7 @@ namespace plMeshExtruder
         plVector3 offset = magnitude * direction.normalize();
 
         _prepareTopAndBottomOfExtrusion( mesh.triangles(), offset, outputTriangles );
-        _prepareSidesOfExtrusionFlat   ( outsideEdges,   offset, outputTriangles );
+        _prepareSidesOfExtrusionFlat   ( outsideEdges,     offset, outputTriangles );
 
         return plMesh( outputTriangles );
     }

@@ -30,7 +30,7 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
     if ( !_isVisible )
         return;
 
-    plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
+    //plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
 
     // create render component
     plRenderComponent component( _vao );
@@ -45,13 +45,13 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
     {
         if ( !_isTransparent ) 
         {
-            component.attach( plUniform( PL_COLOUR_UNIFORM,  plVector4( PL_MODEL_COLOUR )  ) ); 
+            component.attach( plUniform( PL_COLOUR_UNIFORM, plColourStack::top() ) ); //plVector4( PL_MODEL_COLOUR )  ) ); 
             // insert into render map   
             renderMap[ technique ].insert( component );        
         }
         else
         {
-            component.attach( plUniform( PL_COLOUR_UNIFORM,  plVector4( PL_MODEL_COLOUR, 0.7)  ) ); 
+            component.attach( plUniform( PL_COLOUR_UNIFORM, plVector4( plColourStack::top().x, plColourStack::top().y, plColourStack::top().z, 0.7f ) ) ); //plVector4( PL_MODEL_COLOUR, 0.7)  ) ); 
             // insert into render map   
             renderMap[ PL_TRANSPARENCY_TECHNIQUE ].insert( component );        
             

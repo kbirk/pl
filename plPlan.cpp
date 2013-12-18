@@ -116,9 +116,11 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap, PLuint technique )
 
         // draw models
         for (PLuint i =0; i < _models.size(); i++)
-        {            
+        {         
+            plPickingStack::loadRed( PL_PICKING_TYPE_BONE );   
             plPickingStack::loadGreen( i );          
             plPickingStack::loadBlue( -1 ); // unused by models    
+            plColourStack::load( PL_MODEL_COLOUR );
             _models[i]->extractRenderComponents( renderMap, technique ); 
         }
     }
@@ -133,7 +135,8 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap, PLuint technique )
 
         // draw models
         for (PLuint i =0; i < _models.size(); i++)
-        {            
+        {     
+            plPickingStack::loadRed( PL_PICKING_TYPE_BONE );        
             plPickingStack::loadGreen( i );          
             plPickingStack::loadBlue( -1 ); // unused by models    
             _models[i]->extractRenderComponents( renderMap, technique ); 
@@ -284,24 +287,32 @@ void plPlan::importFile( const plString &filename )
         else if (field.compareCaseInsensitive( "iguide" ) ) 
         {
 			std::cout << "Loading iGuide... \n";   
-
+            /*
+            iguide
+                iguide_site_id, 0
+                plugs,          2, 0, 1, 0, 2
+                kwires,         0
+                splines,        1, 0
+            
+            */
 			PLuint  siteID    ( std::stoi( csv.data[++i][1] ) );  			                 
             PLuint  plugCount ( std::stoi( csv.data[++i][1] ) );    
-                                 
+                 
+            // get plug info                     
             std::vector<plPlugInfo> plugs;            
             for (PLuint j=0; j<plugCount; j++)   
             {   
                 PLuint  graftID ( std::stoi( csv.data[i][2+(j*2)] ) ); 
                 PLuint  type    ( std::stoi( csv.data[i][3+(j*2)] ) );
-                //const plTransform *transform    ( &( _grafts[ graftID ]->transform( type ) ) );
-                const PLfloat     *radius       ( &( _grafts[ graftID ]->radius() ) );
-                const PLfloat     *length       ( &( _grafts[ graftID ]->length() ) );
-                //plugs.push_back( plPlugInfo( transform, radius, length, type, graftID ) );
-                plugs.push_back( plPlugInfo( NULL, radius, length, type, graftID ) );
+                const plPlug  *plug   = &( _grafts[ graftID ]->plug( type ) );
+                const PLfloat *radius = &( _grafts[ graftID ]->radius() );
+                const PLfloat *length = &( _grafts[ graftID ]->length() );
+                plugs.push_back( plPlugInfo( plug, radius, length, type, graftID ) );
             }
             
             PLuint  kWireCount ( std::stoi( csv.data[++i][1] ) );  
             
+            // get kwire info
             std::vector<plKWire*> kWires;    
             std::vector<PLuint>   kWireIDs;         
             for (PLuint j=0; j<kWireCount; j++)   
@@ -399,8 +410,8 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_iGuides.size(); i++) 
         {
             out << "iguide"      << std::endl
-                << "    site_id, " << _iGuides[i]->siteID  << std::endl
-                << "    plugs,   " << _iGuides[i]->plugs.size();
+                << "    iguide_site_id, " << _iGuides[i]->siteID  << std::endl
+                << "    plugs,          " << _iGuides[i]->plugs.size();
                 
             for (PLuint j=0; j<_iGuides[i]->plugs.size(); j++)
             {  
@@ -408,7 +419,7 @@ void plPlan::exportFile( const plString &filename )
             } 
                
             out << std::endl;
-            out << "    kwires,  " << _iGuides[i]->kWires.size();
+            out << "    kwires,         " << _iGuides[i]->kWires.size();
             
             for (PLuint j=0; j<_iGuides[i]->kWires.size(); j++)
             {  
@@ -416,7 +427,7 @@ void plPlan::exportFile( const plString &filename )
             }
 
             out << std::endl;
-            out << "    splines, " << _iGuides[i]->defectIDs.size();
+            out << "    splines,        " << _iGuides[i]->defectIDs.size();
             for (PLuint j=0; j<_iGuides[i]->defectIDs.size(); j++)
             {
                 out << ", " << _iGuides[i]->defectIDs[j];

@@ -3,7 +3,6 @@
 
 #include "plCommon.h"
 #include "plMeshSpecific.h"
-
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plBoundary.h"
@@ -15,37 +14,41 @@
 #include "plSpline.h"
 
 
+#define PL_TOOL_DEPTH                      43.5f
+#define PL_BASE_TRANSLATION_DISTANCE       1.01f
+#define PL_BASE_THICKNESS                  5.00f
+#define PL_INTERIOR_TRANSLATION_DISTANCE  -10.00
+#define PL_INTERIOR_THICKNESS              11.0f
+
+
 class plPlugInfo
 {
 
     public:
-    
-        const plTransform &transform() const { return *_transform; }
-        PLfloat            radius   () const { return *_radius;    }
-        PLfloat            length   () const { return *_length;    }
-        PLuint             type     () const { return _type;       }
-        PLuint             graftID  () const { return _graftID;    }
+
+        plTransform transform() const { return _plug->finalTransform(); }
+        PLfloat     radius   () const { return *_radius; }
+        PLfloat     length   () const { return *_length; }
+        PLuint      type     () const { return _type;    }
+        PLuint      graftID  () const { return _graftID; }
 
         plPlugInfo() {}
-        plPlugInfo( const plTransform *transform, 
+        plPlugInfo( const plPlug  *plug, 
                     const PLfloat *radius, 
                     const PLfloat *length, 
                     PLuint type, 
                     PLuint id )
-            : _transform( transform ), _radius( radius ), _length(length), _type( type ), _graftID( id )
+            : _plug( plug ), _radius( radius ), _length(length), _type( type ), _graftID( id )
         {        
-            std::cout << "type: " << type << std::endl;
         }
     
     private:
     
-        const plTransform *_transform;
-        const PLfloat     *_radius;
-        const PLfloat     *_length;
-        PLuint             _type;
-        PLuint             _graftID;    
-        
-
+        const plPlug*  _plug;
+        const PLfloat* _radius;
+        const PLfloat* _length;
+        PLuint         _type;
+        PLuint         _graftID;    
 };
 
 
@@ -68,42 +71,46 @@ class plIGuide : public plRenderable
 
         // ATTRIBUTES
         // geometry data
-        PLfloat                 toolDepth;
-        PLfloat                 thickness;
-        PLfloat                 printerOffset;
-
-        std::vector<plModel*>   iGuideModelsToAdd;
-        std::vector<plModel*>   iGuideModelsToSubtract;
-
-        plIGuideSite            *site;
-        PLuint                  siteID;
         
-        std::vector<plPlugInfo>       plugs;
-        std::vector<plKWire*>         kWires;
-        std::vector<PLuint>           kWireIDs;
 
-        std::vector<const plSpline*>  splines;
-        std::vector<PLuint>           defectIDs;
+        plIGuideSite *site;
+        PLuint        siteID;
+        
+        std::vector<plPlugInfo>      plugs;
+        std::vector<plKWire*>        kWires;
+        std::vector<PLuint>          kWireIDs;
+
+        std::vector<const plSpline*> splines;
+        std::vector<PLuint>          defectIDs;
         
         // MEMBERS
         // constructors
         plIGuide();
-        plIGuide( plIGuideSite *s, PLuint sid, const std::vector<plPlugInfo> &p, const std::vector<plKWire*> &k, const std::vector<PLuint> &kids, const std::vector<const plSpline*> splines, std::vector<PLuint> &defectIDs );
+        plIGuide( plIGuideSite *site, 
+                  PLuint siteID, 
+                  const std::vector<plPlugInfo>&      plugs, 
+                  const std::vector<plKWire*>&        kwires, 
+                  const std::vector<PLuint>&          kwireIDs, 
+                  const std::vector<const plSpline*>& splines, 
+                  std::vector<PLuint>&                defectIDs );
 
         // core functionality
-        PLbool generateIGuideModels ();
-        PLbool exportIGuideModels   ( const std::string &directory );
-        void   clearIGuideModels    ();
+        PLbool generateIGuideModels();
+        PLbool exportIGuideModels  ( const std::string &directory );
+        void   clearIGuideModels   ();
 
         // rendering
-        void extractRenderComponents( plRenderMap& renderMap ) const {};
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const {};
+        void extractRenderComponents( plRenderMap& renderMap ) const;
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
         
         void draw();
 
         void toggleVisibility();
         
     private:
+
+        std::vector<plModel*> _modelsToAdd;
+        std::vector<plModel*> _modelsToSubtract;
 
         std::string			_prepareFilenameWithVariables   ( PLint operation, PLchar type, PLint graftIndex, const std::string &pieceName );
         std::vector<plTriangle>	_createTemplatePieceTransformed ( const std::vector<plTriangle> &baseTriObject,
@@ -113,7 +120,7 @@ class plIGuide : public plRenderable
                                                               const PLfloat     &keyTranslationXAxis,
                                                               const PLfloat     &keyRotationZAxis );
                                                               
-      std::vector<plTriangle> _translateTriangles( const std::vector< plTriangle >& triangles, const plVector3& translation );
+        std::vector<plTriangle> _translateTriangles( const std::vector< plTriangle >& triangles, const plVector3& translation );
 		
     
 };
