@@ -227,45 +227,45 @@ void plPlan::importFile( const plString &filename )
 
         if (field.compareCaseInsensitive( "model") )     
         {
-            std::cout << "Loading model files... \n";
-              
             plString modelFile ( csv.data[++i][1] );
             
             _models.push_back( new plModel( modelFile, PL_MODEL_DEFAULT_OCTREE_DEPTH ) );
         }        
         else if (field.compareCaseInsensitive( "defect_site") )
         {
-            std::cout << "Loading defect site... \n";  
+            std::cout << "Loading defect site...";  
             
             PLuint     splineModelID  ( std::stoi( csv.data[++i][1] ) ); 
             plSpline   spline         ( _models[ splineModelID ]->mesh(), csv.data[++i] );
                         
             _defectSites.push_back( new plDefectSite( spline, csv.data[++i] ) );
+            std::cout << "\t\t\t\t\tComplete." << std::endl;
 
         }
         else if (field.compareCaseInsensitive( "donor_site") )
         {
-            std::cout << "Loading donor site... \n";
+            std::cout << "Loading donor site...";
             
             PLuint     boundaryModelID( std::stoi( csv.data[++i][1] ) );        
             plBoundary boundary       ( PL_PICKING_TYPE_DONOR_BOUNDARY, _models[ boundaryModelID ]->mesh(), csv.data[++i] );
             
             _donorSites.push_back( new plDonorSite( boundary ) );
+            std::cout << "\t\t\t\t\tComplete." << std::endl;
     
         }  
         else if (field.compareCaseInsensitive( "iGuide_site") )
         {
-            std::cout << "Loading iGuide site... \n";  
+            std::cout << "Loading iGuide site...";  
             
             PLuint     boundaryModelID( std::stoi( csv.data[++i][1] ) );    
             plBoundary boundary       ( PL_PICKING_TYPE_IGUIDE_BOUNDARY, _models[ boundaryModelID ]->mesh(), csv.data[++i] );
             
             _iGuideSites.push_back( new plIGuideSite( boundary ) );
-    
+            std::cout << "\t\t\t\t\tComplete." << std::endl;   
         }      
         else if (field.compareCaseInsensitive( "graft" ) ) 
         {       
-            std::cout << "Loading graft... \n";       
+            std::cout << "Loading graft...";       
             
             PLuint      recipientSiteID    ( std::stoi( csv.data[++i][1] ) );     
             plTransform recipientTransform (            csv.data[++i]      );
@@ -281,6 +281,7 @@ void plPlan::importFile( const plString &filename )
             plPlug harvestPlug   ( _models[ harvestModelID ]->mesh(),                     PL_PICKING_INDEX_GRAFT_DONOR,  harvestTransform,   harvestRotation );
 
             _grafts.push_back( new plGraft( harvestPlug, recipientPlug, radius, length, markDirection ) );
+            std::cout << "\t\t\t\t\tComplete." << std::endl;
         }        
         else if (field.compareCaseInsensitive( "iguide" ) ) 
         {

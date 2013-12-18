@@ -87,7 +87,7 @@ std::ostream& operator << ( std::ostream &stream, const plTriangle &p );
 
 namespace plSTL
 {
-    PLbool importFile      ( std::vector<plTriangle> &triangles, const plString &filename );
+    PLbool importFile      ( std::vector<plTriangle> &triangles, const plString &filename, PLbool verbose = false );
     PLbool exportFileBinary( const std::vector<plTriangle> &triangles , const plString &filename );
     PLbool exportFileASCII ( const std::vector<plTriangle> &triangles , const plString &filename );
 }

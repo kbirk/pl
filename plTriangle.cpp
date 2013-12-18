@@ -222,7 +222,7 @@ namespace plSTL
 {
     PLbool _plCheckTypeSizes();
     
-    PLbool importFile( std::vector<plTriangle> &triangles, const plString &filename)
+    PLbool importFile( std::vector<plTriangle> &triangles, const plString &filename, PLbool verbose )
     {
         if ( !filename.compare( ".stl", filename.length()-4, 4) )
         {
@@ -231,7 +231,8 @@ namespace plSTL
             return false;
         }  
     
-        std::cout << "Importing " << filename << "...";
+        if ( verbose )
+            std::cout << "Importing " << filename << "...";
 
         // just in case, clear seq
         triangles.clear();
@@ -324,8 +325,8 @@ namespace plSTL
             binfile.close();
         }
         
-        
-        std::cout << "\t\t\tComplete.\n";
+        if ( verbose )
+            std::cout << "\t\t\tComplete.\n";
         return true;
     }
 

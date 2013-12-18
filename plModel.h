@@ -52,8 +52,8 @@ class plModel : public plTransparentRenderable,
 
 	private:
 		
-	    std::shared_ptr< plMesh > _mesh;
-	    std::shared_ptr< plVAO >  _vao;	    
+		std::shared_ptr< plMesh > _mesh;
+	    std::shared_ptr< plVAO >  _vao;
 
         void _generateVAO();
 

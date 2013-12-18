@@ -21,6 +21,8 @@ plIGuide::plIGuide( plIGuideSite *site,
 
 PLbool plIGuide::generateIGuideModels()
 {
+    std::cout << "Generating iGuide..." << std::endl;
+
     _modelsToAdd.clear();
     _modelsToSubtract.clear();
 
@@ -36,24 +38,31 @@ PLbool plIGuide::generateIGuideModels()
         return false;
     }
 
+    std::cout << "\tExtracting iGuideSite mesh...";
     _modelsToSubtract.push_back( new plModel( site->boundary.mesh().triangles(), 
                                               _generateOutputName( false, 'M', 0, "bone" ) ) );
-
+    std::cout << "\t\t\tComplete." << std::endl;
+    
     // generate template base
+    std::cout << "\tGenerating iGuideSite template base...";
     if ( site->generateTemplateBase() )
     {
-        // if successful
-        std::string templateBaseFilename = _generateOutputName( true , 'M', 0, "templateBase" );
-        _modelsToAdd.push_back( new plModel( site->templateBase().triangles(), templateBaseFilename ) );
+        _modelsToAdd.push_back( new plModel( site->templateBase().triangles(), 
+                                             _generateOutputName( true , 'M', 0, "templateBase" ) ) );
     }
-
+    std::cout << "\t\tComplete." << std::endl;
+    
+    std::cout << "\tGenerating defect base...";
     // generate base over the defect site
     for ( PLuint i = 0; i < splines.size(); i++ )
     {
+        
         // create the base shape over the defect site
         plMatrix44 baseTranslation;  
         baseTranslation.setTranslation( PL_BASE_TRANSLATION_DISTANCE * splines[i]->getAverageNormal() );
 
+        
+    
         plMesh baseOverDefect = plMeshExtruder::extrudeMesh( baseTranslation * splines[i]->surfaceMesh(),
                                                              PL_BASE_THICKNESS, 
                                                              splines[i]->getAverageNormal() );
@@ -72,22 +81,26 @@ PLbool plIGuide::generateIGuideModels()
         _modelsToSubtract.push_back( new plModel( interiorDefect.triangles(), 
                                                   _generateOutputName( false, 'M', i, "defectInterior" ) ) );
     }
-
+    std::cout << "\t\t\tComplete." << std::endl;
+    
     // plug pieces
     std::vector<plTriangle> roundCylinder;
-    plSTL::importFile( roundCylinder, PL_FILE_PREPATH"iGuideElements/Generator_Cylinder_Round.stl" );
+    plSTL::importFile( roundCylinder, PL_FILE_PREPATH"iGuideElements/Generator_Cylinder_Round.stl", false );
 
     std::vector<plTriangle> sharpCylinder;
-    plSTL::importFile( sharpCylinder, PL_FILE_PREPATH"iGuideElements/Generator_Cylinder_Sharp.stl" );
+    plSTL::importFile( sharpCylinder, PL_FILE_PREPATH"iGuideElements/Generator_Cylinder_Sharp.stl", false );
 
     std::vector<plTriangle> correctCylinder;
-    plSTL::importFile( correctCylinder, PL_FILE_PREPATH"iGuideElements/Generator_Cylinder_Correction.stl" );
+    plSTL::importFile( correctCylinder, PL_FILE_PREPATH"iGuideElements/Generator_Cylinder_Correction.stl", false );
 
     std::vector<plTriangle> keyCube;
-    plSTL::importFile( keyCube, PL_FILE_PREPATH"iGuideElements/Generator_Key_Cube.stl" );
+    plSTL::importFile( keyCube, PL_FILE_PREPATH"iGuideElements/Generator_Key_Cube.stl", false );
 
+    std::cout << "\tGenerating template for plugs: ";       
     for ( PLuint i = 0; i < plugs.size(); i++ )
     {   
+        std::cout << plugs[i].graftID() << " ";
+        
         plMatrix44 cylinderToPlug = plugs[i].transform().matrix();
 
         PLfloat keyTranslation = 6.0f;
@@ -137,7 +150,7 @@ PLbool plIGuide::generateIGuideModels()
         //_modelsToSubtract.push_back( new plModel( correctTriangles, correctFilename ) );
         //if (plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR)
     }
-    
+    std::cout << "\t\tComplete." << std::endl;
     return true;
 }
 

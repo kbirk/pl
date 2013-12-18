@@ -24,7 +24,7 @@ plModel::plModel( const plString &file, PLuint octreeDepth )
     std::vector< plTriangle > triangles;
     
     // import triangles from STL file
-    if ( !plSTL::importFile( triangles, filename ) )
+    if ( !plSTL::importFile( triangles, filename, true ) )
         return;
           
     if ( octreeDepth > 1 )

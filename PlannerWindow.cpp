@@ -97,7 +97,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'd':   /* UN-USED */ break;
         case 'e':   _plan.iGuides(0).exportIGuideModels("output/");             break;
         case 'f':   /* UN-USED */ break;
-        case 'g':   _plan.iGuides(0).generateIGuideModels();                    break;                 
+        case 'g':   /* UN-USED */ break;                 
         case 'h':   /* UN-USED */ break;
         case 'i':   _plan.iGuides(0).toggleVisibility();                        break;
         case 'j':   /* UN-USED */ break;
@@ -118,17 +118,16 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'x':   /* UN-USED */ break;
         case 'y':   /* UN-USED */ break;
         case 'z':   _camera.reset( _plan.models(0).getCentroid() );             break;          
-                    
-        
+                           
         case 'A':   /* UN-USED */ break;
         case 'B':   /* UN-USED */ break;
         case 'C':   /* UN-USED */ break;    
         case 'D':   _plan.addDonorSite();                                       break;
         case 'E':   /* UN-USED */ break;
         case 'F':   /* UN-USED */ break;
-        case 'G':   _plan.addIGuideSite();                                      break;
+        case 'G':   _plan.iGuides(0).generateIGuideModels();                    break;
         case 'H':   /* UN-USED */ break;
-        case 'I':   /* UN-USED */ break;
+        case 'I':   _plan.addIGuideSite();                                      break;
         case 'J':   /* UN-USED */ break;
         case 'K':   /* UN-USED */ break;
         case 'L':   /* UN-USED */ break;
