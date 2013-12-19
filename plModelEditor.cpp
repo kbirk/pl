@@ -10,9 +10,9 @@ plModelEditor::plModelEditor()
 void plModelEditor::clearSelection()
 {
     _selectedModel = NULL; 
-    for ( plGraft* graft : _plan->grafts() )
+    for ( plModel* model : _plan->models() )
     {
-        graft->_clearSelection();      
+        model->_clearSelection();      
     }  
 }
 
@@ -110,55 +110,14 @@ void plModelEditor::_dragModel( PLint x, PLint y )
         case PL_MODEL_EDIT_MODE_TRANSLATE:
         {      
             // translation
-            /*      
-            // get ray from camera to mouse              
-            plVector3 rayOrigin, rayDirection;
-            plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
-            
-            // intersect bound mesh
-            plIntersection intersection = _selectedModel->plug( _selectedType ).mesh().rayIntersect( rayOrigin, rayDirection, true ); // smooth normal
-            
-            if ( intersection.exists )
-            {
-                // if intersection exists, move graft to new position
-                _selectedModel->move( _selectedType, intersection.point, intersection.normal );
-            }
-            else
-            {
-                // if no intersection, and is defect graft, move to closest point on spline
-                if ( _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
-                {
-                    intersection = plMath::getClosestPointToRay( _selectedModel->plug( _selectedType ).mesh().triangles(), rayOrigin, rayDirection );
-                    _selectedModel->move( _selectedType, intersection.point, intersection.normal );
-                }
-            }   
-            */         
+      
             break;            
         }
         
         case PL_MODEL_EDIT_MODE_ROTATE:
         {
             // rotation
-            /*
-            // get ray from mouse
-            plVector3 rayOrigin, rayDirection;
-            plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
-
-            // graft origin and surface normal            
-            plVector3 graftSurfaceNormal = _selectedModel->plug( _selectedType ).surfaceTransform().y();
-            plVector3 graftOrigin        = _selectedModel->plug( _selectedType ).finalTransform().origin();
-            
-            // intersect plane of graft
-            plIntersection intersection = plMath::rayIntersect( rayOrigin, rayDirection, graftOrigin, graftSurfaceNormal );
-            
-            if ( intersection.exists )
-            {
-                // get vector from graft origin to intersection, scale up by graft surface normal to scale rotation by distance
-                plVector3 newGraftY = ( PL_ROTATION_SENSITIVITY * (intersection.point - graftOrigin) + graftSurfaceNormal ).normalize();
-
-                _selectedModel->rotate( _selectedType, newGraftY );    
-            }
-            */        
+      
             break;
         }
 
@@ -171,7 +130,8 @@ void plModelEditor::toggleSelectedVisibility()
     if (_selectedModel == NULL)
         return;
         
-    plPickingStack::loadRed( PL_PICKING_TYPE_BONE );                 
+    plPickingStack::loadRed( PL_PICKING_TYPE_BONE );       
+    plPickingStack::loadGreen( selectedModelID() );         
     plPickingStack::loadBlue( -1 ); // unused by models       
     _selectedModel->toggleVisibility();
 }
@@ -179,12 +139,13 @@ void plModelEditor::toggleSelectedVisibility()
 
 void plModelEditor::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
+    _extractMenuRenderComponents( renderMap );
+
     if ( _selectedModel == NULL || !_selectedModel->isVisible() )    
         return;                 // no graft selected
       
     // select model  
     _selectedModel->extractRenderComponents( renderMap, technique );  
-
 }
 
 
@@ -205,4 +166,57 @@ PLint plModelEditor::selectedModelID() const
     }
     return -1;
 }
+
+
+void plModelEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
+{ 
+    const PLfloat HORIZONTAL       = PL_EDITOR_MENU_HORIZONTAL_BUFFER;
+    const PLfloat INITIAL_VERTICAL = PL_EDITOR_MENU_VERTICAL_BUFFER + _plan->models().size()*PL_EDITOR_MENU_VERTICAL_BUFFER;
+
+    plMatrix44 ortho( 0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1 );
+
+    plMatrix44 camera( 1, 0,  0, 0,
+                       0, 1,  0, 0,
+                       0, 0, -1, 0,
+                       0, 0,  0, 1 ); 
+
+    PLfloat count = 0;
+    plPickingStack::loadBlue( -1 );
+
+    plCameraStack::push( camera );
+    plProjectionStack::push( ortho );       
+    plModelStack::push( plMatrix44() ); // load identity
+    {      
+        // model       
+        for (PLuint i=0; i<_plan->models().size(); i++)
+        {
+            plPickingStack::loadRed( PL_PICKING_TYPE_BONE );
+            plPickingStack::loadGreen( i );          
+            plPickingStack::loadBlue( -1 );
+            plColourStack::load( PL_MODEL_COLOUR ); 
+
+            plRenderer::queueDisk( PL_MINIMAL_TECHNIQUE, 
+                                   plVector3( HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0), 
+                                   plVector3( 0, 0, 1 ),
+                                   PL_EDITOR_MENU_CIRCLE_RADIUS );
+             
+            if ( _plan->models(i)._isSelected )
+            {
+                // draw selection outline
+                plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
+                                       plVector3( HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0), 
+                                       plVector3( 0, 0, 1 ),
+                                       PL_EDITOR_MENU_CIRCLE_RADIUS );
+            } 
+
+            count++;
+        }
+
+
+    }
+    plModelStack::pop();
+    plCameraStack::pop();
+    plProjectionStack::pop();  
+}
+
 

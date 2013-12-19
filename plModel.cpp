@@ -66,16 +66,12 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
     {
         if ( !_isTransparent ) 
         {
-            component.attach( plUniform( PL_COLOUR_UNIFORM, plColourStack::top() ) ); //plVector4( PL_MODEL_COLOUR )  ) ); 
+            component.attach( plUniform( PL_COLOUR_UNIFORM, plColourStack::top() ) );
             // insert into render map   
             renderMap[ technique ].insert( component );        
         }
         else
         {
-            component.attach( plUniform( PL_COLOUR_UNIFORM, plVector4( plColourStack::top().x, plColourStack::top().y, plColourStack::top().z, 0.7f ) ) ); 
-            // insert into render map   
-            renderMap[ PL_TRANSPARENCY_TECHNIQUE ].insert( component );        
-            
             // Sort by distance
             plVector3 viewDir = plCameraStack::direction();
 
@@ -98,6 +94,19 @@ void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique 
             // dirty const_cast          
             const_cast< std::shared_ptr< plVAO >& >( _vao )->eabo()->set( indices );
             const_cast< std::shared_ptr< plVAO >& >( _vao )->upload();
+                
+            component.attach( plUniform( PL_COLOUR_UNIFORM, plVector4( plColourStack::top().x, plColourStack::top().y, plColourStack::top().z, 0.7f ) ) ); 
+            
+            // insert into render map  
+            if ( technique == PL_PLAN_TECHNIQUE )
+            {
+                // if originally meant to be rendered using plan technique  
+                renderMap[ PL_TRANSPARENCY_TECHNIQUE ].insert( component );  
+            }   
+            else
+            {
+                renderMap[ technique ].insert( component ); 
+            }   
         }  
     }  
     else

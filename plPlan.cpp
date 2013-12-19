@@ -84,7 +84,7 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap, PLuint technique )
             _defectSites[i]->extractRenderComponents( renderMap, technique );
         }
          
-        // Draw harvest boundaries   
+        // Draw donor boundaries   
         for ( PLuint i = 0; i < _donorSites.size(); i++)
         {
             plPickingStack::loadGreen( i );      

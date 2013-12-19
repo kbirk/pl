@@ -19,7 +19,7 @@ void plTransparencyTechnique::render( const std::set< plRenderComponent >& compo
     drawBuffers.push_back( GL_NONE );
     drawBuffers.push_back( GL_NONE );
     drawBuffers.push_back( GL_NONE );
-    drawBuffers.push_back( GL_NONE );   // no picking output
+    drawBuffers.push_back( GL_COLOR_ATTACHMENT4 );   // no picking output
     fbo->setDrawBuffers( drawBuffers );
 
     // bind shader

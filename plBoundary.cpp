@@ -256,31 +256,6 @@ void plBoundary::_generateVAO()
 
     plVector3 n = getAverageNormal();
 
-    /*
-    std::vector< plVector3 > incrementalPoints;
-    const float INCREMENT_LENGTH = 0.25f;
-    for (PLuint i = 0; i < _points.size(); i++)
-    {        
-        int j = (i+1) % _points.size();            // next index
-
-        incrementalPoints.push_back( _points[i] );
-
-        plVector3 edge = _points[j] - _points[i];
-        PLfloat sqrLength = edge.squaredLength();
-        edge = edge.normalize();
-        
-        while ( sqrLength > INCREMENT_LENGTH )
-        {
-            plIntersection intersection = _model->combined.mesh().rayIntersect( incrementalPoints.back() + edge * INCREMENT_LENGTH, -n );
-            
-            if ( intersection.exists )
-                incrementalPoints.push_back( intersection.point );
-
-            sqrLength -= INCREMENT_LENGTH;
-        }
-    }
-    */
-
     std::vector<plVector3> vertices;    vertices.reserve( _points.size() * 10 );
     std::vector<PLuint>    indices;     indices.reserve ( _points.size() * 6 * 4 );
 

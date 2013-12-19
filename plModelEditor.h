@@ -29,7 +29,7 @@ class plModelEditor : public plEditor
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
         
         PLbool isModelSelected() const { return ( _selectedModel != NULL ); }    
-        PLint selectedModelID() const;
+        PLint  selectedModelID() const;
 
         PLbool processMouseClick   ( PLint x, PLint y );
         PLbool processMouseDrag    ( PLint x, PLint y );
@@ -44,7 +44,7 @@ class plModelEditor : public plEditor
         plModel *_selectedModel;  
         
         void _dragModel( PLint x, PLint y );    
-       
+        void _extractMenuRenderComponents( plRenderMap& renderMap ) const;
 };
 
 #endif

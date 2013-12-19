@@ -97,12 +97,13 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'a':   _plan.toggleArthroView();                                   break;                  
         case 'b':   
         
+            /*
             if ( _modelEditor.isModelSelected() )
             {
                 _plan.models( _modelEditor.selectedModelID() ).toggleVisibility();    
             }                     
             break; 
-                       
+            */         
         case 'c':  
          
             _camera.up     = plVector3( 0, 1, 0 );  
@@ -134,8 +135,13 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 's':   /* UN-USED */ break;
         case 't':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_TRANSLATE );   break; 
         case 'u':   /* UN-USED */ break;
-        case 'v':   _graftEditor.toggleSelectedVisibility(); 
-                    _boundaryEditor.toggleSelectedVisibility();                 break;
+        case 'v': 
+          
+            _graftEditor.toggleSelectedVisibility(); 
+            _boundaryEditor.toggleSelectedVisibility();                 
+            _modelEditor.toggleSelectedVisibility();                
+            break;
+            
         case 'w':   /* UN-USED */ break;
         case 'x':   /* UN-USED */ break;
         case 'y':   /* UN-USED */ break;
