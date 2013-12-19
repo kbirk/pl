@@ -22,7 +22,7 @@ plPlanningSite::plPlanningSite( const std::vector<plTriangle> &tris, const plBou
     _calcNormal();   
        
     std::cout << "\t\t" <<  triangles.size()  << " triangles calculated \n";
-    std::cout << " \t\t" <<  gridPoints.size() << " grid points calculated \n";       
+    std::cout << "\t\t" <<  gridPoints.size() << " grid points calculated \n";       
 }
 
 

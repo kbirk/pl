@@ -74,7 +74,7 @@ bool getBestMatchForGraft( inout float lowestRMS, in uint shuffledGraftIndices[ 
     vec3  lowestDonorPosition = vec3( -1.0, -1.0, -1.0 );
     vec3  lowestDonorNormal   = vec3( -1.0, -1.0, -1.0 );
     vec3  lowestDonorXAxis    = vec3( -1.0, -1.0, -1.0 );
-    uint  lowestDonorSiteIndex = 1234;
+    uint  lowestDonorSiteIndex = -1;
     
     // for each grid point
     for ( uint i=0; i < uDonorTotalGridPointCount; i++ )

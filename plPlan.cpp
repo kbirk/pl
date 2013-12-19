@@ -350,7 +350,7 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_defectSites.size(); i++) 
         {    
             out << "defect_site"  << std::endl
-                << "    spline_model_id,   " << _getModelIndex( _defectSites[i]->spline ) << std::endl
+                << "    spline_model_id,   " << getModelIndex( _defectSites[i]->spline ) << std::endl
                 << "    spline,            " << _defectSites[i]->spline                   << std::endl
                 << "    boundary,          " << _defectSites[i]->boundary                 << std::endl   
                 
@@ -361,7 +361,7 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_donorSites.size(); i++) 
         {
             out << "donor_site"   << std::endl              
-                << "    boundary_model_id, " << _getModelIndex( _donorSites[i]->boundary ) << std::endl 
+                << "    boundary_model_id, " << getModelIndex( _donorSites[i]->boundary ) << std::endl 
                 << "    boundary,          " << _donorSites[i]->boundary                   << std::endl  
                 << std::endl;
         }
@@ -370,7 +370,7 @@ void plPlan::exportFile( const plString &filename )
         for (PLuint i=0; i<_iGuideSites.size(); i++) 
         {
             out << "iguide_site"  << std::endl
-                << "    boundary_model_id, " << _getModelIndex( _iGuideSites[i]->boundary ) << std::endl 
+                << "    boundary_model_id, " << getModelIndex( _iGuideSites[i]->boundary ) << std::endl 
                 << "    boundary,          " << _iGuideSites[i]->boundary                   << std::endl   
                 << std::endl;
         }
@@ -382,7 +382,7 @@ void plPlan::exportFile( const plString &filename )
                 << "    recipient_defect_site_id, " << _getDefectSiteIndex( _grafts[i]->recipient() )   << std::endl
                 << "    recipient_transform,      " << _grafts[i]->recipient().surfaceTransform()       << std::endl
                 << "    recipient_rotation,       " << _grafts[i]->recipient().offsetTransform()        << std::endl
-                << "    harvest_model_id,         " << _getModelIndex( _grafts[i]->harvest() )          << std::endl
+                << "    harvest_model_id,         " << getModelIndex( _grafts[i]->harvest() )          << std::endl
                 << "    harvest_transform,        " << _grafts[i]->harvest().surfaceTransform()         << std::endl
                 << "    harvest_rotation,         " << _grafts[i]->harvest().offsetTransform()          << std::endl
                 << "    radius,                   " << _grafts[i]->radius()                             << std::endl
@@ -450,7 +450,7 @@ void plPlan::clear()
 }
 
 
-PLint plPlan::_getModelIndex( const plMeshSpecific& mesh ) const
+PLint plPlan::getModelIndex( const plMeshSpecific& mesh ) const
 {
     for ( PLuint i = 0; i < _models.size(); i++ )
     {

@@ -70,6 +70,8 @@ class plPlan : public plRenderable,
                 
         void clear();
 
+        PLint getModelIndex( const plMeshSpecific& mesh ) const;
+
     private: 
 
         std::vector<plDefectSite*> _defectSites;
@@ -80,7 +82,7 @@ class plPlan : public plRenderable,
         std::vector<plGraft*>      _grafts;
         std::vector<plModel*>      _models;
         
-        PLint _getModelIndex     ( const plMeshSpecific& mesh ) const;
+        
         PLint _getDefectSiteIndex( const plMeshSpecific& mesh ) const;
         
         PLbool _modelIndexErrorCheck( const std::string& callingFunction, PLint modelIndex ) const;

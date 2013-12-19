@@ -12,7 +12,7 @@
 
 namespace plAutomaticPlanner
 {
-    void calculate( plPlan &plan );                    
+    void calculate( plPlan &plan, PLuint defectSiteIndex );                    
 }
 
 

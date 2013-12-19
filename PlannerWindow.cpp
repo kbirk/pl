@@ -169,7 +169,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
             break;  
             
         case 'O':   _plan.exportFile("plan");                                   break;
-        case 'P':   plAutomaticPlanner::calculate( _plan );                     break;
+        case 'P':   plAutomaticPlanner::calculate( _plan, 0 );                  break;
         case 'Q':   /* UN-USED */ break;
         case 'R':  
          
@@ -191,7 +191,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
 
         case 127:	 // delete 
         {   
-            if (glutGetModifiers() == GLUT_ACTIVE_CTRL) 
+            if ( glutGetModifiers() == GLUT_ACTIVE_CTRL ) 
 	        {
                 // delete boundary 
 	            _boundaryEditor.clearSelectedBoundary();

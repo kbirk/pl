@@ -1,6 +1,9 @@
 model
     filename,      ./patient1/boneandcart.stl
 
+model
+    filename,      ./patient1/femur_bone_cartilage_manifold.stl
+
 defect_site
     spline_model_id,   0
     spline,            77.3163 -78.4405 -78.8008,0.226972 -0.818016 -0.528519,102.475 -69.1394 -70.8459,0.687476 -0.407812 -0.600887,97.4625 -78.6566 -56.575,0.553498 -0.82704 0.098207,75.4968 -83.7708 -61.76,0.108897 -0.988948 0.100612

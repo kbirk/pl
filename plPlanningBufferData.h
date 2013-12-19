@@ -15,10 +15,11 @@ class plPlanningBufferData
 {
     public:
     
-        plPlanningSite          defectSite;
-        plSSBO                  defectSiteSSBO;               
+        plPlanningSite defectSite;
+        plSSBO         defectSiteSSBO;  
+                     
         std::vector< plPlanningSite > donorSites;
-        plSSBO                  donorSitesSSBO;
+        plSSBO                        donorSitesSSBO;
 
         plPlanningBufferData( const plDefectSite& defect, const std::vector<plDonorSite*>& donors );        
 

@@ -4,16 +4,16 @@
 namespace plAutomaticPlanner
 {
     // private function prototypes             
-    void _dispatch          ( plPlan &plan, const plPlanningBufferData &planningData );      
+    void _dispatch          ( plPlan &plan, const plPlanningBufferData &planningData, PLuint defectSiteIndex );      
     void _clearPreviousPlan ( plPlan &plan );
 
-    void calculate( plPlan &plan )
+    void calculate( plPlan &plan, PLuint defectSiteIndex )
     {   
         // error checking
         if ( plan.defectSites().size() == 0 )          { std::cerr << "plAutomaticPlanner::calculate() error: No defect sites specified\n";   return; }
         if ( plan.donorSites().size()  == 0 )          { std::cerr << "plAutomaticPlanner::calculate() error: No donor sites specified\n";    return; }
-        if ( plan.defectSites(0).spline.size() < 4 )   { std::cerr << "plAutomaticPlanner::calculate() error: No defect spline specified\n";  return; } 
-        if ( plan.defectSites(0).boundary.size() < 3 ) { std::cerr << "plAutomaticPlanner::calculate() error: No recipient area specified\n"; return; }
+        if ( plan.defectSites( defectSiteIndex ).spline.size() < 4 )   { std::cerr << "plAutomaticPlanner::calculate() error: No defect spline specified\n";  return; } 
+        if ( plan.defectSites( defectSiteIndex ).boundary.size() < 3 ) { std::cerr << "plAutomaticPlanner::calculate() error: No recipient area specified\n"; return; }
 
         std::cout << "Assembling planning data structures ... \n";
         plPlanningBufferData planningData( plan.defectSites( 0 ), plan.donorSites() );
@@ -30,7 +30,7 @@ namespace plAutomaticPlanner
 
         // proceed with plan
         std::cout << std::endl << std::endl << std::endl << std::endl;
-        _dispatch( plan, planningData );
+        _dispatch( plan, planningData, defectSiteIndex );
     } 
 
 
@@ -45,7 +45,7 @@ namespace plAutomaticPlanner
     }
 
 
-    void _dispatch(  plPlan &plan, const plPlanningBufferData &planningData )
+    void _dispatch(  plPlan &plan, const plPlanningBufferData &planningData, PLuint defectSiteIndex )
     {    
         PLtime t0, t1;
         
@@ -102,6 +102,7 @@ namespace plAutomaticPlanner
                 plTransform harvestSurfaceOrientation( harvestSurfaceX, harvestSurfaceY, harvestOrigin );
                 plTransform harvestRotationalOffset( harvestRotation.inverse() );
 
+                // recipient transforms
                 plVector3 recipientOrigin( defectSolution.graftPositions[i] );
                 plVector3 recipientY     ( defectSolution.graftNormals[i]   );        
                 plVector3 recipientX     ( (recipientY ^ plVector3( 0, 0, 1 ) ).normalize() ); 
@@ -116,11 +117,18 @@ namespace plAutomaticPlanner
                 plTransform recipientSurfaceOrientation( recipientSurfaceX, recipientSurfaceY, recipientOrigin );
                 plTransform recipientRotationalOffset( recipientRotation.inverse() );
 
-                // calculate how thick the cartilage is ( the distance from the cartilage point to bone point )
-                PLfloat cartilageThickness = 0.0f; // this is to be removed
-                
-                plPlug harvest  ( plan.models(0).mesh(),                    PL_PICKING_INDEX_GRAFT_DONOR,  harvestSurfaceOrientation,   harvestRotationalOffset   );
-                plPlug recipient( plan.defectSites(0).spline.surfaceMesh(), PL_PICKING_INDEX_GRAFT_DEFECT, recipientSurfaceOrientation, recipientRotationalOffset );
+                // get the model id from the graft site index
+                PLuint modelID = plan.getModelIndex( plan.donorSites( donorSolution.graftSiteIndices[i] ).boundary );
+
+                plPlug harvest  ( plan.models( modelID ).mesh(), 
+                                  PL_PICKING_INDEX_GRAFT_DONOR,  
+                                  harvestSurfaceOrientation, 
+                                  harvestRotationalOffset );
+                                  
+                plPlug recipient( plan.defectSites( defectSiteIndex ).spline.surfaceMesh(), 
+                                  PL_PICKING_INDEX_GRAFT_DEFECT, 
+                                  recipientSurfaceOrientation, 
+                                  recipientRotationalOffset );
                 
                 plan.addGraft( harvest, recipient, defectSolution.graftRadii[i] );
             }
