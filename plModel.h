@@ -11,7 +11,7 @@
 #include "plRenderingPipeline.h"
 #include "plVAO.h"
 #include "plRenderer.h"
-
+#include "plEditable.h"
 
 // used to order triangles for drawing transparent meshes
 class plOrderPair
@@ -32,7 +32,8 @@ class plOrderPair
 
 
 class plModel : public plTransparentRenderable,
-                public plArthroViewable
+                public plArthroViewable,
+                public plEditable
 {
     public:
 

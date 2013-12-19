@@ -13,6 +13,7 @@ PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string t
 
     _graftEditor.attach( _plan );
     _boundaryEditor.attach( _plan );
+    _modelEditor.attach( _plan );    
 }
 
 
@@ -34,7 +35,8 @@ void PlannerWindow::display()
     plRenderer::queueAxis( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), plVector3( 1, 0, 0 ), plVector3( 0, 1, 0 ) );
     // queue editors
     plRenderer::queue( _graftEditor );
-    plRenderer::queue( _boundaryEditor );   
+    plRenderer::queue( _boundaryEditor );
+    plRenderer::queue( _modelEditor );  
     // dispatch draw call
     plRenderer::draw();
     // swap buffers
@@ -69,10 +71,12 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
 
     switch (key) 
     {
-        case 27:    // esc  
+        case 27:    // esc 
+         
              exit(0);   
                                         
         case ' ':  // spacebar 
+        
             _cameraMode =  (_cameraMode == CAMERA_ROTATION_MODE) ? CAMERA_TRANSLATION_MODE : CAMERA_ROTATION_MODE;  
             break; 
 
@@ -85,15 +89,26 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case '7':
         case '8':
         case '9':
-        case '0':   // 0-9            
+        case '0':   // 0-9  
+                  
             currentView = (PLint)(key - '0');
             break;                
        
-        case 'a':   _plan.toggleArthroView();                                   break;                    
-        case 'b':   _plan.models(0).toggleVisibility();                         break;            
-        case 'c':   _camera.up     = plVector3( 0, 1, 0 );  
-                    _camera.lookat = _camera.position + plVector3( 0, 0, 1 ); 
-                    break;
+        case 'a':   _plan.toggleArthroView();                                   break;                  
+        case 'b':   
+        
+            if ( _modelEditor.isModelSelected() )
+            {
+                _plan.models( _modelEditor.selectedModelID() ).toggleVisibility();    
+            }                     
+            break; 
+                       
+        case 'c':  
+         
+            _camera.up     = plVector3( 0, 1, 0 );  
+            _camera.lookat = _camera.position + plVector3( 0, 0, 1 ); 
+            break;
+            
         case 'd':   /* UN-USED */ break;
         case 'e':   _plan.iGuides(0).exportIGuideModels("output/");             break;
         case 'f':   /* UN-USED */ break;
@@ -105,7 +120,14 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 
         case 'm':   _plan.updateGraftMarkerPositions();                         break;
         case 'n':   /* UN-USED */ break;
-        case 'o':   _plan.models(0).toggleOctreeVisibility();                   break;        
+        case 'o': 
+          
+            if ( _modelEditor.isModelSelected() )
+            {
+                _plan.models( _modelEditor.selectedModelID() ).toggleOctreeVisibility();  
+            }
+            break;   
+                 
         case 'p':   _plan.toggleVisibility();                                   break;    
         case 'q':   /* UN-USED */ break;
         case 'r':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_ROTATE );      break;     
@@ -117,36 +139,52 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'w':   /* UN-USED */ break;
         case 'x':   /* UN-USED */ break;
         case 'y':   /* UN-USED */ break;
-        case 'z':   _camera.reset( _plan.models(0).getCentroid() );             break;          
+        case 'z':   
+        
+            if ( _modelEditor.isModelSelected() )
+            {
+                _camera.reset( _plan.models( _modelEditor.selectedModelID() ).getCentroid() );
+            }                         
+            break;          
                            
         case 'A':   /* UN-USED */ break;
         case 'B':   /* UN-USED */ break;
         case 'C':   /* UN-USED */ break;    
-        case 'D':   _plan.addDonorSite();                                       break;
+        case 'D':   _plan.addDonorSite( _modelEditor.selectedModelID() );       break;
         case 'E':   /* UN-USED */ break;
         case 'F':   /* UN-USED */ break;
         case 'G':   _plan.iGuides(0).generateIGuideModels();                    break;
         case 'H':   /* UN-USED */ break;
-        case 'I':   _plan.addIGuideSite();                                      break;
+        case 'I':   _plan.addIGuideSite( _modelEditor.selectedModelID() );      break;
         case 'J':   /* UN-USED */ break;
         case 'K':   /* UN-USED */ break;
         case 'L':   /* UN-USED */ break;
         case 'M':   /* UN-USED */ break;
-        case 'N':   _plan.clear();  
-                    _graftEditor.clearSelection();   
-                    _boundaryEditor.clearSelection();                                          
-                    break;  
+        case 'N':   
+        
+            _plan.clear();  
+            _graftEditor.clearSelection();   
+            _boundaryEditor.clearSelection();  
+            _modelEditor.clearSelection();                                        
+            break;  
+            
         case 'O':   _plan.exportFile("plan");                                   break;
         case 'P':   plAutomaticPlanner::calculate( _plan );                     break;
         case 'Q':   /* UN-USED */ break;
-        case 'R':   _camera.importViewParams( ".view" + std::to_string( currentView ) );
-                    break;
-        case 'S':   _plan.addDefectSite();                                      break;
+        case 'R':  
+         
+            _camera.importViewParams( ".view" + std::to_string( currentView ) );
+            break;
+            
+        case 'S':   _plan.addDefectSite( _modelEditor.selectedModelID() );      break;
         case 'T':   /* UN-USED */ break;
         case 'U':   /* UN-USED */ break;
         case 'V':   /* UN-USED */ break;
-        case 'W':   _camera.exportViewParams( ".view" + std::to_string( currentView ) );   
-                    break;
+        case 'W':  
+         
+            _camera.exportViewParams( ".view" + std::to_string( currentView ) );   
+            break;
+            
         case 'X':   /* UN-USED */ break;
         case 'Y':   /* UN-USED */ break;
         case 'Z':   /* UN-USED */ break;
@@ -190,7 +228,8 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
 
             // process drag movements 
             _graftEditor.processMouseDrag   ( x, y );   
-            _boundaryEditor.processMouseDrag( x, y );             
+            _boundaryEditor.processMouseDrag( x, y );
+            _modelEditor.processMouseDrag( x, y );         
             break;       
 
         case GLUT_MIDDLE_BUTTON:    
@@ -214,7 +253,7 @@ void PlannerWindow::activeMouseMotion( int mx, int my )
             break;  
     }
 
-    // update mouse position on drag    
+    // update mouse position on drag
     _previousMouse.x = x;
     _previousMouse.y = y;
 
@@ -238,6 +277,7 @@ void PlannerWindow::mouseAction( int button, int state, int mx, int my )
         {
             _graftEditor.processMouseRelease   ( x, y ); 
             _boundaryEditor.processMouseRelease( x, y ); 
+            _modelEditor.processMouseRelease( x, y );
             _button = GLUT_NO_BUTTON;             
             break; 
         }
@@ -257,7 +297,8 @@ void PlannerWindow::mouseAction( int button, int state, int mx, int my )
             {
                 // process mouse clicks 
                 _graftEditor.processMouseClick   ( x, y );    
-                _boundaryEditor.processMouseClick( x, y );                 
+                _boundaryEditor.processMouseClick( x, y ); 
+                _modelEditor.processMouseClick( x, y );                 
             }
             break;
     }    

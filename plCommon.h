@@ -11,6 +11,9 @@
 #define PL_MODEL_BONE_COLOUR                     0.80f, 0.80f, 0.80f
 #define PL_MODEL_CARTILAGE_COLOUR                0.50f, 0.20f, 0.20f      
 
+#define PL_MODEL_EDIT_MODE_TRANSLATE             1
+#define PL_MODEL_EDIT_MODE_ROTATE                2 
+
 // GRAFT MACROS
 
 #define PL_GRAFT_DONOR_BONE_COLOUR               0.60f, 0.90f, 0.52f 

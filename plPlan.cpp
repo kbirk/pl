@@ -152,34 +152,28 @@ void plPlan::extractRenderComponents( plRenderMap& renderMap ) const
 
 void plPlan::addDefectSite( PLuint modelIndex )
 {
-    if ( _models.size() < modelIndex+1 )
-    {
-        std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
+    if ( _modelIndexErrorCheck( "addDefectSite", modelIndex ) )
         return;
-    }
-    _defectSites.push_back( new plDefectSite( _models[modelIndex]->mesh() ) );
+    
+    _defectSites.push_back( new plDefectSite( _models[ modelIndex ]->mesh() ) );
 }
 
 
 void plPlan::addDonorSite( PLuint modelIndex )
 {
-    if ( _models.size() < modelIndex+1 )
-    {
-        std::cerr << " plPlan addDonorSite() error: model ID does not exist\n";
+    if ( _modelIndexErrorCheck( "addDonorSite", modelIndex ) )
         return;
-    }
-    _donorSites.push_back( new plDonorSite(_models[modelIndex]->mesh() ) );
+        
+    _donorSites.push_back( new plDonorSite(_models[ modelIndex ]->mesh() ) );
 }
 
 
 void plPlan::addIGuideSite( PLuint modelIndex )
 {
-    if ( _models.size() < modelIndex+1 )
-    {
-        std::cerr << " plPlan addIGuide() error: model ID does not exist\n";
+    if ( _modelIndexErrorCheck( "addIGuideSite", modelIndex ) )
         return;
-    }
-    _iGuideSites.push_back( new plIGuideSite( _models[modelIndex]->mesh() ) );
+        
+    _iGuideSites.push_back( new plIGuideSite( _models[ modelIndex ]->mesh() ) );
 }
 
 
@@ -427,7 +421,7 @@ void plPlan::exportFile( const plString &filename )
             out << std::endl << std::endl;
         }
     
-        std::cout << "Saved plan in CSV format in '" << filename << "'." << std::endl;
+        std::cout << "Exported plan to file: '" << filename << ".csv'." << std::endl;
     }
 }
 
@@ -478,4 +472,18 @@ PLint plPlan::_getDefectSiteIndex( const plMeshSpecific& mesh ) const
 }
 
 
+PLbool plPlan::_modelIndexErrorCheck( const std::string& callingFunction, PLint modelIndex ) const
+{
+    if ( modelIndex == -1 )
+    {
+        std::cerr << "plPlan::" << callingFunction << " error: model has not been selected" << std::endl;
+        return true;
+    }
 
+    if ( _models.size() < modelIndex+1 )
+    {
+        std::cerr << "plPlan::" << callingFunction << " error: model ID does not exist" << std::endl;
+        return true;
+    }
+    return false;
+}

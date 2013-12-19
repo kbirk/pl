@@ -13,7 +13,8 @@ class plEditable
         // only editors can see the private variables
         friend class plGraftEditor;
         friend class plBoundaryEditor;
-
+        friend class plModelEditor;
+        
     protected:     
            
         PLuint _selectedValue;

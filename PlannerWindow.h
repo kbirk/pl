@@ -31,7 +31,8 @@ class PlannerWindow : public Window
         // editing
         plGraftEditor    _graftEditor; 
         plBoundaryEditor _boundaryEditor;
-
+        plModelEditor    _modelEditor;
+        
         // camera  
 		PLuint	         _cameraMode;     // rotation or translation mode
 		plCamera         _camera;		

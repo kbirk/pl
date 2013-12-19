@@ -83,6 +83,8 @@ class plPlan : public plRenderable,
         PLint _getModelIndex     ( const plMeshSpecific& mesh ) const;
         PLint _getDefectSiteIndex( const plMeshSpecific& mesh ) const;
         
+        PLbool _modelIndexErrorCheck( const std::string& callingFunction, PLint modelIndex ) const;
+        
 };
 
 #endif

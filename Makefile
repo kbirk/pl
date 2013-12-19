@@ -48,6 +48,7 @@ SOURCES =   main.cpp \
             plMeshSpecific.cpp \
             plMinimalTechnique.cpp \
             plModel.cpp \
+            plModelEditor.cpp \
             plOctree.cpp \
             plOctreeMesh.cpp \
             plOpenGLInfo.cpp \
