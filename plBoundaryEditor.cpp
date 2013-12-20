@@ -372,5 +372,37 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
 }
 
 
+void plBoundaryEditor::removeSelectedSite()
+{
+    for ( PLuint i=0; i < _plan->defectSites().size(); i++ )
+    {
+        if ( _selectedBoundary == &_plan->defectSites(i).boundary )
+        {
+            _plan->removeDefectSite( i );
+        }
+        if ( _selectedBoundary == &_plan->defectSites(i).spline )
+        {
+            _plan->removeDefectSite( i );
+        }
+    }
+    
+    for ( PLuint i=0; i < _plan->donorSites().size(); i++ )
+    {
+        if ( _selectedBoundary == &_plan->donorSites(i).boundary )
+        {
+            _plan->removeDonorSite( i );
+        }
+    }
+    
+    for ( PLuint i=0; i < _plan->iGuideSites().size(); i++ )
+    {
+        if ( _selectedBoundary == &_plan->iGuideSites(i).boundary )
+        {
+            _plan->removeIGuideSite( i );
+        }
+    }
+    clearSelection();
+}
+
 
 

@@ -36,6 +36,7 @@ class plBoundary : public plRenderable,
         const plVector3& normals( PLuint index ) const { return _normals[index]; }
 
         plVector3 getAverageNormal() const;
+        plVector3 getCentroid() const; 
 
         virtual PLuint addPointAndNormal   ( const plVector3 &point, const plVector3 &normal);
         virtual void   movePointAndNormal  ( PLuint index, const plVector3 &point, const plVector3 &normal);

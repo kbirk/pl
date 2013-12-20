@@ -4,7 +4,6 @@ plPlanTechnique::plPlanTechnique()
 {
 }      
 
-
 void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet ) const
 {
     const std::shared_ptr< plFBO >&    fbo    = plRenderResources::fbos( PL_MAIN_FBO );
@@ -32,11 +31,20 @@ void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet 
 
     glDisable( GL_CULL_FACE );
 
+    // set stencil testing to write 1's whereever is rendered, this is later used in transparency shader to ensure proper picking in transparent areas
+    glEnable( GL_STENCIL_TEST) ;
+    glStencilFunc( GL_ALWAYS, 1, 0xFF);
+    glStencilMask( 0xFF );
+    glStencilOp( GL_REPLACE, GL_REPLACE, GL_REPLACE );
+ 
     // draw main render components
     for ( const plRenderComponent& component : componentSet )
     {     
         component.draw( *shader );   
     }
+
+
+    glDisable( GL_STENCIL_TEST );
 
     glEnable( GL_CULL_FACE );
 

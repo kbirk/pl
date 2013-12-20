@@ -18,7 +18,7 @@ class plBoundaryEditor : public plEditor
         void clearSelection();                     
         void selectBoundary(PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex ); 
 
-        PLbool  isBoundarySelected() const { return (_selectedBoundary != NULL); }
+        PLbool isBoundarySelected() const { return (_selectedBoundary != NULL); }
 
         PLbool processMouseClick   ( PLint x, PLint y );
         PLbool processMouseDrag    ( PLint x, PLint y );
@@ -31,7 +31,7 @@ class plBoundaryEditor : public plEditor
         void clearSelectedBoundary   ();
         void removeSelectedSite      ();
         void toggleSelectedVisibility();
-
+        
         void extractRenderComponents( plRenderMap& renderMap ) const; 
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 

@@ -22,7 +22,12 @@ plPlanningSite::plPlanningSite( const std::vector<plTriangle> &tris, const plBou
     _calcNormal();   
        
     std::cout << "\t\t" <<  triangles.size()  << " triangles calculated \n";
-    std::cout << "\t\t" <<  gridPoints.size() << " grid points calculated \n";       
+    std::cout << "\t\t" <<  gridPoints.size() << " grid points calculated \n";    
+    
+    if ( triangles.size() == 0 || gridPoints.size() == 0 )
+    {
+        std::cerr << "plPlanningSite::plPlanningSite() error: planning data buffer empty, please REMOVE all empty boundaries before proceeding with planner" << std::endl;
+    }
 }
 
 

@@ -13,13 +13,13 @@ void plTransparencyTechnique::render( const std::set< plRenderComponent >& compo
     // bind fbo
     fbo->bind(); 
     
-    // set draw buffers
+    // set draw buffers to only write to colour output
     std::vector<GLenum> drawBuffers;
     drawBuffers.push_back( GL_COLOR_ATTACHMENT0 );
     drawBuffers.push_back( GL_NONE );
     drawBuffers.push_back( GL_NONE );
     drawBuffers.push_back( GL_NONE );
-    drawBuffers.push_back( GL_COLOR_ATTACHMENT4 );   // no picking output
+    drawBuffers.push_back( GL_NONE );   // no picking output
     fbo->setDrawBuffers( drawBuffers );
 
     // bind shader
@@ -29,16 +29,37 @@ void plTransparencyTechnique::render( const std::set< plRenderComponent >& compo
     glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() );      
 
     glDepthMask( false );
-    //glDisable( GL_CULL_FACE );
 
-    // draw main render components
+    // draw render components to colour buffer
     for ( const plRenderComponent& component : componentSet )
     { 
         component.draw( *shader );   
     }
 
+    // set stencil testing for picking buffer
+    glEnable( GL_STENCIL_TEST) ;
+    glStencilFunc( GL_NOTEQUAL, 1, 0xFF);
+    glStencilMask( 0xFF );
+    glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
+    
+    // set draw buffers to only write to picking buffer
+    drawBuffers.clear();
+    drawBuffers.push_back( GL_NONE ); // no colour output
+    drawBuffers.push_back( GL_NONE );
+    drawBuffers.push_back( GL_NONE );
+    drawBuffers.push_back( GL_NONE );
+    drawBuffers.push_back( GL_COLOR_ATTACHMENT4 );   
+    fbo->setDrawBuffers( drawBuffers );
+    
+    // draw render components to picking buffer
+    for ( const plRenderComponent& component : componentSet )
+    { 
+        component.draw( *shader );   
+    }
+
+    glDisable( GL_STENCIL_TEST );
+
     glDepthMask( true );
-    //glEnable( GL_CULL_FACE );
 
     // unbind shader
     shader->unbind();

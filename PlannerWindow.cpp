@@ -150,7 +150,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
             if ( _modelEditor.isModelSelected() )
             {
                 _camera.reset( _plan.models( _modelEditor.selectedModelID() ).getCentroid() );
-            }                         
+            }                      
             break;          
                            
         case 'A':   /* UN-USED */ break;
@@ -200,7 +200,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
             if ( glutGetModifiers() == GLUT_ACTIVE_CTRL ) 
 	        {
                 // delete boundary 
-	            _boundaryEditor.clearSelectedBoundary();
+	            _boundaryEditor.removeSelectedSite();
             }
             else
             {

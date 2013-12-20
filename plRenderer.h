@@ -15,7 +15,8 @@
 #include "plMinimalTechnique.h"
 #include "plRenderShapes.h"
 
-enum plTechniqueEnums
+
+enum plTechniqueEnums       // ORDER MATTERS!
 {   
     PL_PLAN_TECHNIQUE = 1,  
     PL_MINIMAL_TECHNIQUE,

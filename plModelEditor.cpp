@@ -155,19 +155,6 @@ void plModelEditor::extractRenderComponents( plRenderMap& renderMap ) const
 }
 
 
-PLint plModelEditor::selectedModelID() const
-{
-    for ( PLuint i=0; i< _plan->models().size(); i++ )
-    {
-        if ( _selectedModel == &_plan->models(i) )
-        {
-            return i;
-        }
-    }
-    return -1;
-}
-
-
 void plModelEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
 { 
     const PLfloat HORIZONTAL       = PL_EDITOR_MENU_HORIZONTAL_BUFFER;
@@ -217,6 +204,19 @@ void plModelEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
     plModelStack::pop();
     plCameraStack::pop();
     plProjectionStack::pop();  
+}
+
+
+PLint plModelEditor::selectedModelID() const
+{
+    for ( PLuint i=0; i< _plan->models().size(); i++ )
+    {
+        if ( _selectedModel == &_plan->models(i) )
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 
 

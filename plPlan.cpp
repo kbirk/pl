@@ -200,7 +200,8 @@ void plPlan::removeDonorSite( PLuint index)
 void plPlan::removeIGuideSite( PLuint index)
 {
     delete _iGuideSites[index];
-    _iGuideSites.erase( _iGuideSites.begin()+index );
+    _iGuideSites.erase( _iGuideSites.begin()+index );   
+    // TODO: add any code to ensure that iGuides remain coherent after removing iguidesites
 }
 
 

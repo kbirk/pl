@@ -97,6 +97,17 @@ plVector3 plBoundary::getAverageNormal() const
 }
 
 
+plVector3 plBoundary::getCentroid() const
+{
+    plVector3 p(0,0,0);
+    for (PLuint i=0; i < _points.size(); i++)
+    {
+        p = p + _points[i];        
+    }
+    return p * ( 1.0f/(PLfloat)_points.size() );
+}
+
+
 PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
 {
     if (_points.size() < 2) 
