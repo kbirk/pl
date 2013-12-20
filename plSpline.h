@@ -13,7 +13,9 @@
 #include "plRenderer.h"
 #include "plTimer.h"
 
-#define PL_SPLINE_RESOLUTION                40.0f //70.0f    
+#define PL_SPLINE_RESOLUTION                60.0f // higher number results in worse performance, but 
+                                                  // higher accuracy in automated planning surface area 
+                                                  // coverage results
 #define PL_SPLINE_COLOUR_MAP_RANGE          1.5f
 #define PL_SPLINE_NO_DATA_COLOUR            plVector3 ( 0.2, 0.2, 0.2 )
 

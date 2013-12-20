@@ -153,13 +153,15 @@ namespace plPlannerStage0
         // simulated annealing                
         while ( temperature > PL_STAGE_0_STOPPING_TEMPERATURE )
         {
+            // group iteration
             stage0Shader.setLocalLoadUniform  ( 0 );         
             stage0Shader.setTemperatureUniform( temperature ); 
 
             PLuint its = PLuint( PL_STAGE_0_ITERATIONS * temperature ) + 1;
-
+           
             for ( PLint i=its; i>=0; i-- )
             {       
+                // local iteration
                 // call compute shader with 1D workgrouping
 #ifndef SKIP_COMPUTE_SHADER
                 glDispatchCompute( PL_STAGE_0_NUM_GROUPS, 1, 1 );

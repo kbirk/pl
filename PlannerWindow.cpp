@@ -95,15 +95,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
             break;                
        
         case 'a':   _plan.toggleArthroView();                                   break;                  
-        case 'b':   
-        
-            /*
-            if ( _modelEditor.isModelSelected() )
-            {
-                _plan.models( _modelEditor.selectedModelID() ).toggleVisibility();    
-            }                     
-            break; 
-            */         
+        case 'b':   /* UN-USED */ break;       
         case 'c':  
          
             _camera.up     = plVector3( 0, 1, 0 );  
