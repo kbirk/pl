@@ -21,7 +21,6 @@ class plBufferObject
 
         GLuint _id;
         GLuint _numBytes;
-        PLbool _changeFlag;
         
         virtual void _destroy();
 };

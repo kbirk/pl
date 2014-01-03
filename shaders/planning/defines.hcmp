@@ -5,7 +5,7 @@
 
 
 #define PL_PI                             3.1415927
-#define PL_FLT_MAX                        9999999.0;
+#define PL_FLT_MAX                        9999999.0
 #define PL_MAX_GRAFTS_PER_SOLUTION        16
 #define PL_MAX_DONOR_SITES                5
 #define PL_MAX_CAP_TRIANGLES              2048
@@ -25,7 +25,7 @@
 #define PL_STAGE_0_WORKGROUP_SIZE              64
 #define PL_STAGE_0_SITE_OVERLAP_THRESHOLD      0.8
 #define PL_STAGE_0_GRAFT_INTERSECTION_PENALTY  3.0
-#define PL_STAGE_0_GRAFT_COUNT_PENALTY         5.0
+#define PL_STAGE_0_GRAFT_COUNT_PENALTY         5
 #define PL_STAGE_0_MIN_PERTURBATION_FACTOR     0.05
 
 

@@ -1,0 +1,106 @@
+﻿Build started 03/01/2014 1:57:04 AM.
+     1>Project "C:\Kevin\Dropbox\work\pl\vs2012\vs2012.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Ox /Oi /Ot /Oy- /GL /D _CRT_SECURE_NO_WARNINGS /D WIN32 /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\plBoundary.cpp ..\plBoundaryEditor.cpp
+         plBoundary.cpp
+         plBoundaryEditor.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Kevin\Dropbox\work\pl\vs2012\Release\vs2012.exe" /NOLOGO glew32.lib glut32.lib opengl32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Kevin\Dropbox\work\pl\vs2012\Release\vs2012.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Kevin\Dropbox\work\pl\vs2012\Release\vs2012.lib" /MACHINE:X86 /SAFESEH Release\main.obj
+         Release\pl.obj
+         Release\PlannerWindow.obj
+         Release\plArthroCamTechnique.obj
+         Release\plArthroViewable.obj
+         Release\plAutomaticPlanner.obj
+         Release\plBoneAndCartilage.obj
+         Release\plBoundary.obj
+         Release\plBoundaryEditor.obj
+         Release\plBufferObject.obj
+         Release\plCamera.obj
+         Release\plChessBoard.obj
+         Release\plColourMap.obj
+         Release\plCSV.obj
+         Release\plDefectSite.obj
+         Release\plDonorSite.obj
+         Release\plDRBTransform.obj
+         Release\plEABO.obj
+         Release\plEditable.obj
+         Release\plEditor.obj
+         Release\plFBO.obj
+         Release\plGraft.obj
+         Release\plGraftCap.obj
+         Release\plGraftEditor.obj
+         Release\plIGuide.obj
+         Release\plIGuideSite.obj
+         Release\plLaserLine.obj
+         Release\plMath.obj
+         Release\plMatrix44.obj
+         Release\plMatrixStack.obj
+         Release\plMesh.obj
+         Release\plMeshAlgorithm.obj
+         Release\plMeshConnectivityData.obj
+         Release\plMeshCutter.obj
+         Release\plMeshExtruder.obj
+         Release\plMeshIntersector.obj
+         Release\plMeshSpecific.obj
+         Release\plMinimalTechnique.obj
+         Release\plModel.obj
+         Release\plModelEditor.obj
+         Release\plOctree.obj
+         Release\plOctreeMesh.obj
+         Release\plOpenGLInfo.obj
+         Release\plOutlineTechnique.obj
+         Release\plPicking.obj
+         Release\plPlan.obj
+         Release\plPlannerShader.obj
+         Release\plPlannerStage0.obj
+         Release\plPlannerStage1.obj
+         Release\plPlannerStage2.obj
+         Release\plPlannerStage3.obj
+         Release\plPlannerStructs.obj
+         Release\plPlanningBufferData.obj
+         Release\plPlanningSite.obj
+         Release\plPlanTechnique.obj
+         Release\plPlug.obj
+         Release\plPolygon.obj
+         Release\plProjection.obj
+         Release\plRenderable.obj
+         Release\plRenderComponent.obj
+         Release\plRenderer.obj
+         Release\plRenderingPipeline.obj
+         Release\plRenderResources.obj
+         Release\plRenderShapes.obj
+         Release\plRenderTechnique.obj
+         Release\plScan.obj
+         Release\plScanPoint.obj
+         Release\plScanVolume.obj
+         Release\plScreenQuadTechnique.obj
+         Release\plShader.obj
+         Release\plSpline.obj
+         Release\plSSBO.obj
+         Release\plString.obj
+         Release\plTexture2D.obj
+         Release\plTexture3D.obj
+         Release\plTimer.obj
+         Release\plTrackedObject.obj
+         Release\plTransform.obj
+         Release\plTransparentRenderable.obj
+         Release\plTransparencyTechnique.obj
+         Release\plTriangle.obj
+         Release\plUniform.obj
+         Release\plUtility.obj
+         Release\plVAO.obj
+         Release\plVBO.obj
+         Release\plVector3.obj
+         Release\plVector4.obj
+         Release\plVertexFragmentShader.obj
+         Release\plVertexSpecBuffer.obj
+         Release\plWindow.obj
+         Release\Window.obj
+         Generating code
+         Finished generating code
+         vs2012.vcxproj -> C:\Kevin\Dropbox\work\pl\vs2012\Release\vs2012.exe
+     1>Done Building Project "C:\Kevin\Dropbox\work\pl\vs2012\vs2012.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.80

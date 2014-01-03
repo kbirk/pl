@@ -9,8 +9,7 @@ float energy( in state s )
          // calculate cap returns area from the cap, and also flags any overlapped triangles
          calculateCapAreaCoverage( s.positions[i], s.normals[i], s.radii[i] ); 
     }
-
-    return uncoveredArea( s ) + graftOverlap( s ) * PL_STAGE_0_GRAFT_INTERSECTION_PENALTY + s.graftCount * PL_STAGE_0_GRAFT_COUNT_PENALTY;
+    return uncoveredArea( s ) + ( graftOverlap( s ) * PL_STAGE_0_GRAFT_INTERSECTION_PENALTY ) + ( s.graftCount * PL_STAGE_0_GRAFT_COUNT_PENALTY );
 }
 
 

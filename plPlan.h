@@ -14,6 +14,10 @@
 #include "plIGuideSite.h"
 #include "plIGuide.h"
 
+
+#define PL_MODEL_DEFAULT_OCTREE_DEPTH            6
+
+
 class plPlan : public plRenderable,
                public plArthroViewable
 {
@@ -67,7 +71,8 @@ class plPlan : public plRenderable,
         void toggleArthroView();
             
         void updateGraftMarkerPositions();    
-                
+        void generateIGuides();   
+        void exportIGuides() const;
         void clear();
 
         PLint getModelIndex( const plMeshSpecific& mesh ) const;

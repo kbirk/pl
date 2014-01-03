@@ -1,7 +1,6 @@
 #ifndef PLANNER_WINDOW_H
 #define PLANNER_WINDOW_H
 
-// PLANNER
 #include "Window.h"
 
 #define GLUT_NO_BUTTON             -1

@@ -75,7 +75,7 @@ void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap, PLuint t
         if ( _isSelected && _selectedValue == i )   // is the current point selected?
         {
             // scale larger  
-            plRenderer::queueSphere( technique, _points[i], PL_SELECTED_BOUNDARY_POINT_RADIUS );         
+            plRenderer::queueSphere( technique, _points[i], PL_BOUNDARY_SELECTED_POINT_RADIUS );         
         }
         else
         {
@@ -400,8 +400,8 @@ void plBoundary::_generateVAO()
     // set vbo and attach attribute pointers
     std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
-    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
-    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) ); // FOUR COMPONENT FLOATING POINT OFFSET
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 32, 0  ) );
+    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   32, 16 ) ); // FOUR COMPONENT FLOATING POINT OFFSET
     // set eabo
     std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices );

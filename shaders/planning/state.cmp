@@ -421,4 +421,3 @@ void updateGroupStates( inout uint seed )
     } 
 }
 
-

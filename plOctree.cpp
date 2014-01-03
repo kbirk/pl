@@ -203,7 +203,7 @@ plVAO plOctree::_generateVAO( PLfloat halfWidth ) const
     // set vbo and attach attribute pointers
     std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
-    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0 ) );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 16, 0 ) );
     // set eabo
     std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices, GL_LINES );

@@ -12,7 +12,7 @@ void plModelEditor::clearSelection()
     _selectedModel = NULL; 
     for ( plModel* model : _plan->models() )
     {
-        model->_clearSelection();      
+        _clearEditable( *model );      
     }  
 }
 
@@ -84,7 +84,7 @@ PLbool plModelEditor::processJoystickDrag(  PLint x, PLint y )
     if (_selectedModel == NULL)    
         return false;                 // no graft selected
 
-    processMouseDrag( x, y );
+    return processMouseDrag( x, y );
 }
 
 
@@ -93,8 +93,7 @@ void plModelEditor::selectModel( PLuint index )
     // clear any previous selections
     clearSelection(); 
 
-    _plan->models( index )._selectedValue = -1;
-    _plan->models( index )._isSelected    = true;
+    _selectEditable( _plan->models( index ) );
     _selectedModel = &_plan->models( index );    
 }
 
@@ -187,7 +186,7 @@ void plModelEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
                                    plVector3( 0, 0, 1 ),
                                    PL_EDITOR_MENU_CIRCLE_RADIUS );
              
-            if ( _plan->models(i)._isSelected )
+            if ( _plan->models(i).isSelected() )
             {
                 // draw selection outline
                 plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
@@ -198,8 +197,6 @@ void plModelEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
 
             count++;
         }
-
-
     }
     plModelStack::pop();
     plCameraStack::pop();

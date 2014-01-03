@@ -14,3 +14,16 @@ void plEditor::attach( plPlan& plan )
     }
     _plan = &plan;
 }
+
+
+void plEditor::_clearEditable( plEditable& editable ) const
+{
+    editable._clearSelection();
+}
+
+
+void plEditor::_selectEditable( plEditable& editable, PLuint value ) const
+{
+    editable._isSelected = true;
+    editable._selectedValue = value;
+}

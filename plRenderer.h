@@ -16,7 +16,7 @@
 #include "plRenderShapes.h"
 
 
-enum plTechniqueEnums       // ORDER MATTERS!
+enum plTechniqueEnums       // ORDER MATTERS! std::map iterators are sorted by key value
 {   
     PL_PLAN_TECHNIQUE = 1,  
     PL_MINIMAL_TECHNIQUE,

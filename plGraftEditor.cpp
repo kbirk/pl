@@ -14,7 +14,7 @@ void plGraftEditor::clearSelection()
     _selectedType  = -1;
     for ( plGraft* graft : _plan->grafts() )
     {
-        graft->_clearSelection();      
+        _clearEditable( *graft );      
     }  
 }
 
@@ -102,6 +102,9 @@ PLbool plGraftEditor::processJoystickDrag(  PLint x, PLint y )
     if (_selectedGraft == NULL)    
         return false;                 // no graft selected
 
+    return processMouseDrag( x, y );
+
+    /* old joystick code
     plVector3 translation( -y, 0.0f, x);
     
     if ( translation.squaredLength() > 1.0 )
@@ -119,9 +122,10 @@ PLbool plGraftEditor::processJoystickDrag(  PLint x, PLint y )
                   ( translation * localZAxis ) * localZAxis;
 
     // move graft
-    //_selectedGraft->move( _selectedType, intersection.point, intersection.normal );
+    _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
 
     return true;
+    */
 }
 
 
@@ -130,8 +134,7 @@ void plGraftEditor::selectGraft(  PLuint index, PLuint type )
     // clear any previous selections
     clearSelection(); 
 
-    _plan->grafts( index )._selectedValue = type;
-    _plan->grafts( index )._isSelected    = true;
+    _selectEditable( _plan->grafts( index ), type );
     _selectedType  = type;
     _selectedGraft = &_plan->grafts( index );    
 }
@@ -171,12 +174,6 @@ void plGraftEditor::_dragMarker( PLint x, PLint y )
             _selectedGraft->setMarkDirection( newMarkDir );
         }   
     }
-
-    /*
-    plVector3 markerWorld = _selectedGraft->plug( _selectedType ).finalTransform().apply( _selectedGraft->markPositions( 0 ) );
-    plColourStack::load( PL_PURPLE_COLOUR );
-    plRenderer::queueLine( PL_MINIMAL_TECHNIQUE, intersection.point, markerWorld );
-    */
 }
 
 
@@ -184,7 +181,6 @@ void plGraftEditor::_dragHandle( PLint x, PLint y )
 {
     if ( _selectedGraft == NULL )    
         return;                 // no graft selected
-
 
     switch ( _editMode )
     {
@@ -234,24 +230,17 @@ void plGraftEditor::_dragHandle( PLint x, PLint y )
             if ( intersection.exists )
             {
                 // get vector from graft origin to intersection, scale up by graft surface normal to scale rotation by distance
-                plVector3 newGraftY = ( PL_ROTATION_SENSITIVITY * (intersection.point - graftOrigin) + graftSurfaceNormal ).normalize();
+                plVector3 newGraftY = ( PL_GRAFT_EDIT_ROTATION_SENSITIVITY * (intersection.point - graftOrigin) + graftSurfaceNormal ).normalize();
 
                 _selectedGraft->rotate( _selectedType, newGraftY );    
             }
-            
-            /*
-            plColourStack::load( PL_PURPLE_COLOUR );
-            plRenderer::queueLine( PL_MINIMAL_TECHNIQUE, intersection.point , graftOrigin );
-            */           
+                   
             break;
         }
         
         case PL_GRAFT_EDIT_MODE_LENGTH:
         {
             // length
-            
-            //PLfloat distOnAxis = screenDragVector * _screenEditAxis; 
-            //_selectedGraft->adjustLength(-distOnAxis * PL_DRAG_SENSITIVITY) ;                            
             
             break;
         }
@@ -282,7 +271,7 @@ void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint tech
     if ( _selectedGraft == NULL || !_selectedGraft->isVisible() )    
         return;                 // no graft selected
       
-    // select graft  
+    // graft outline
     _selectedGraft->extractRenderComponents( renderMap, technique );  
                  
     if ( !_selectedGraft->inArthroView() )
@@ -360,7 +349,7 @@ void plGraftEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
                                    plVector3( 0, 0, 1 ),
                                    PL_EDITOR_MENU_CIRCLE_RADIUS );
              
-            if ( _plan->grafts(i)._isSelected && _selectedType == PL_PICKING_INDEX_GRAFT_DONOR )
+            if ( _plan->grafts(i).isSelected() && _selectedType == PL_PICKING_INDEX_GRAFT_DONOR )
             {
                 // draw selection outline
                 plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
@@ -378,7 +367,7 @@ void plGraftEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
                                    plVector3( 0, 0, 1 ),
                                    PL_EDITOR_MENU_CIRCLE_RADIUS );
 
-            if ( _plan->grafts(i)._isSelected && _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
+            if ( _plan->grafts(i).isSelected() && _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
             {
                 // draw selection outline
                 plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 

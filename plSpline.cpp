@@ -88,7 +88,7 @@ void plSpline::extractRenderComponents( plRenderMap& renderMap, PLuint technique
         plPickingStack::loadBlue( -1 );  // unused  
         
         // set colour flag to use vertex attribute colours
-        plColourStack::push( PL_COLOUR_MESH_OPAQUE_COLOUR );        
+        plColourStack::push( PL_USE_ATTRIBUTE_COLOUR_OPAQUE );        
         
         // create render component
         plRenderComponent component( _surfaceVAO );
@@ -302,9 +302,9 @@ void plSpline::_computeHermite()
     // set vbo and attach attribute pointers
     std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
     vbo->set( vertices );
-    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 0  ) );
-    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   16 ) );
-    vbo->set( plVertexAttributePointer( PL_COLOUR_ATTRIBUTE,   32 ) );
+    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 48, 0  ) );
+    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   48, 16 ) );
+    vbo->set( plVertexAttributePointer( PL_COLOUR_ATTRIBUTE,   48, 32 ) );
     // set eabo
     std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
     eabo->set( indices );

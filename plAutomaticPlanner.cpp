@@ -10,8 +10,8 @@ namespace plAutomaticPlanner
     void calculate( plPlan &plan, PLuint defectSiteIndex )
     {   
         // error checking
-        if ( plan.defectSites().size() == 0 )          { std::cerr << "plAutomaticPlanner::calculate() error: No defect sites specified\n";   return; }
-        if ( plan.donorSites().size()  == 0 )          { std::cerr << "plAutomaticPlanner::calculate() error: No donor sites specified\n";    return; }
+        if ( plan.defectSites().size() == 0 )                          { std::cerr << "plAutomaticPlanner::calculate() error: No defect sites specified\n";   return; }
+        if ( plan.donorSites().size()  == 0 )                          { std::cerr << "plAutomaticPlanner::calculate() error: No donor sites specified\n";    return; }
         if ( plan.defectSites( defectSiteIndex ).spline.size() < 4 )   { std::cerr << "plAutomaticPlanner::calculate() error: No defect spline specified\n";  return; } 
         if ( plan.defectSites( defectSiteIndex ).boundary.size() < 3 ) { std::cerr << "plAutomaticPlanner::calculate() error: No recipient area specified\n"; return; }
 
@@ -86,7 +86,7 @@ namespace plAutomaticPlanner
         {
             for ( PLuint i=0; i < defectSolution.graftCount; i++ )
             {    
-                // harvest transforms
+                // harvest transform
                 plVector3 harvestOrigin( donorSolution.graftPositions[i] );
                 plVector3 harvestX     ( donorSolution.graftXAxes[i]     );  
                 plVector3 harvestY     ( donorSolution.graftNormals[i]   );                     
@@ -102,7 +102,7 @@ namespace plAutomaticPlanner
                 plTransform harvestSurfaceOrientation( harvestSurfaceX, harvestSurfaceY, harvestOrigin );
                 plTransform harvestRotationalOffset( harvestRotation.inverse() );
 
-                // recipient transforms
+                // recipient transform
                 plVector3 recipientOrigin( defectSolution.graftPositions[i] );
                 plVector3 recipientY     ( defectSolution.graftNormals[i]   );        
                 plVector3 recipientX     ( (recipientY ^ plVector3( 0, 0, 1 ) ).normalize() ); 

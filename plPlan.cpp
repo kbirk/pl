@@ -436,6 +436,24 @@ void plPlan::updateGraftMarkerPositions()
 }
 
 
+void plPlan::generateIGuides()
+{
+    for ( plIGuide* iGuide : _iGuides )
+    {
+        iGuide->generateIGuideModels();
+    }
+}
+
+
+void plPlan::exportIGuides() const
+{
+    for ( plIGuide* iGuide : _iGuides )
+    {
+        iGuide->exportIGuideModels( PL_FILE_PREPATH"output/" );
+    }
+}
+
+       
 void plPlan::clear()
 {
     for ( PLuint i = 0; i < _defectSites.size(); i++ ) delete _defectSites[i];

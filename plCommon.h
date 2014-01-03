@@ -4,76 +4,20 @@
 // COLOUR MACROS
 
 #define PL_PURPLE_COLOUR                         0.57, 0.17, 0.93
-
-// MODEL MACROS  
-
-#define PL_MODEL_COLOUR                          0.80f, 0.80f, 0.80f
-#define PL_MODEL_BONE_COLOUR                     0.80f, 0.80f, 0.80f
-#define PL_MODEL_CARTILAGE_COLOUR                0.50f, 0.20f, 0.20f      
-
-#define PL_MODEL_EDIT_MODE_TRANSLATE             1
-#define PL_MODEL_EDIT_MODE_ROTATE                2 
-
-// GRAFT MACROS
-
-#define PL_GRAFT_DONOR_BONE_COLOUR               0.60f, 0.90f, 0.52f 
-#define PL_GRAFT_DONOR_CARTILAGE_COLOUR          0.30f, 0.66f, 0.22f           
-#define PL_GRAFT_DEFECT_BONE_COLOUR              0.90f, 0.68f, 0.27f  
-#define PL_GRAFT_DEFECT_CARTILAGE_COLOUR         0.80f, 0.48f, 0.07f   
-
-#define PL_GRAFT_MARKER_COLOUR                   0.80f, 0.20f, 0.80f   
-
-#define PL_GRAFT_EDIT_MODE_TRANSLATE             1
-#define PL_GRAFT_EDIT_MODE_ROTATE                2 
-#define PL_GRAFT_EDIT_MODE_LENGTH                3
-#define PL_GRAFT_EDIT_MODE_RADIUS                4
-
 #define PL_AXIS_GREY                             0.2f, 0.2f, 0.2f 
 #define PL_X_AXIS_COLOUR                         1.0f, 0.2f, 0.2f
 #define PL_Y_AXIS_COLOUR                         0.2f, 1.0f, 0.2f 
 #define PL_Z_AXIS_COLOUR                         0.2f, 0.2f, 1.0f 
-
-// BOUNDARY MACROS
- 
-#define PL_BOUNDARY_MESH_HEIGHT                  1.0f
-#define PL_BOUNDARY_MESH_WIDTH_HALF              0.4f
-#define PL_BOUNDARY_MESH_CURVE_HEIGHT            0.2f 
- 
-#define PL_BOUNDARY_SELECTED_COLOUR              0.20f, 0.90f, 0.70f
-#define PL_BOUNDARY_POINT_SELECTED_COLOUR        0.20f, 0.90f, 0.70f 
- 
-#define PL_BOUNDARY_DEFECT_CORNER_COLOUR         0.90f, 0.20f, 0.20f
-#define PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR       0.55f, 0.21f, 0.55f
-#define PL_BOUNDARY_DONOR_COLOUR                 0.40f, 0.40f, 0.80f
-#define PL_BOUNDARY_IGUIDE_COLOUR                0.20f, 0.53f, 0.45f
-
-
-// DRAW MACROS
-
-#define PL_ASPECT_RATIO                          ( 1280.0f / 720.0f ) 
-#define PL_NEAR_PLANE                            10.0f
-#define PL_FAR_PLANE                             15000.0f
-#define PL_FIELD_OF_VIEW                         7.0f
-
-#define PL_LIGHT_POSITION                        10, 10, 15
 #define PL_CLEAR_COLOUR                          0.137f, 0.137f, 0.137f, 1.0f
-#define PL_EDITOR_MENU_HORIZONTAL_BUFFER         50
-#define PL_EDITOR_MENU_VERTICAL_BUFFER           50
-#define PL_EDITOR_MENU_HORIZONTAL_SPACING        40
-#define PL_EDITOR_MENU_VERTICAL_SPACING          40   
-#define PL_EDITOR_MENU_CIRCLE_RADIUS             14
 
-#define PL_COLOUR_MESH_OPAQUE_COLOUR             0, 0, 0, 0
-#define PL_COLOUR_MESH_TRANSPARENT_COLOUR        -1, -1, -1, 0
+// some renderables use different colours per vertex. When the colour 
+// uniforms are set to these value, it tells the shader to use the attribute
+// colour instead
+#define PL_USE_ATTRIBUTE_COLOUR_OPAQUE           0, 0, 0, 0         
+#define PL_USE_ATTRIBUTE_COLOUR_TRANSPARENT      -1, -1, -1, 0  
 
-#define PL_HANDLE_SPHERE_RADIUS                  0.75f
-#define PL_HANDLE_RADIUS                         0.3f
-#define PL_HANDLE_LENGTH                         2.0f
-#define PL_ARROW_LENGTH                          1.0f
-#define PL_CIRCLE_LENGTH                         1.0f
-#define PL_HEAD_RADIUS                           0.7f
-#define PL_SLICE_NUM                             30
-#define PL_STACK_NUM                             1
+// global light position used throughout planner
+#define PL_LIGHT_POSITION                        10, 10, 15  
  
 // IGUIDE BOOLEAN MESH OPERATIONS
 
@@ -90,9 +34,6 @@
 
 // OTHER MACROS
 
-#define PL_MODEL_DEFAULT_OCTREE_DEPTH            6
-
-#define PL_COLOURMAP_SIZE                        512
 #define PL_PI                                    3.1415927f         // specific decimals optimize floating point accuracy. Going higher digits or using double will result in more error
 #define PL_EPSILON                               0.00001f
 

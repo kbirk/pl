@@ -27,7 +27,6 @@ class plGreedyGroup
         void update();
         void getSolution( plDonorSolution &solution, const plPlanningBufferData &planningData );
         
-
     private:
             
         PLfloat                _lowestRMS;

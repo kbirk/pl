@@ -16,7 +16,12 @@
 #include "plArthroViewable.h"
 
 
-#define PL_CAP_OFFSET       plVector3( 0, 0.025f, 0 )
+#define PL_CAP_OFFSET                            plVector3( 0, 0.025f, 0 )
+#define PL_GRAFT_DONOR_BONE_COLOUR               0.60f, 0.90f, 0.52f 
+#define PL_GRAFT_DONOR_CARTILAGE_COLOUR          0.30f, 0.66f, 0.22f           
+#define PL_GRAFT_DEFECT_BONE_COLOUR              0.90f, 0.68f, 0.27f  
+#define PL_GRAFT_DEFECT_CARTILAGE_COLOUR         0.80f, 0.48f, 0.07f   
+#define PL_GRAFT_MARKER_COLOUR                   0.80f, 0.20f, 0.80f   
 
 class plPointAndAngle 
 {

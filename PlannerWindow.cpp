@@ -103,11 +103,11 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
             break;
             
         case 'd':   /* UN-USED */ break;
-        case 'e':   _plan.iGuides(0).exportIGuideModels("output/");             break;
+        case 'e':   _plan.exportIGuides();                                      break;
         case 'f':   /* UN-USED */ break;
         case 'g':   /* UN-USED */ break;                 
         case 'h':   /* UN-USED */ break;
-        case 'i':   _plan.iGuides(0).toggleVisibility();                        break;
+        case 'i':   /* UN-USED */ break;
         case 'j':   /* UN-USED */ break;
         case 'k':   /* UN-USED */ break;
         case 'l':   _graftEditor.setEditMode( PL_GRAFT_EDIT_MODE_LENGTH );      break; 
@@ -151,8 +151,7 @@ void PlannerWindow::keyAction( unsigned char key, int mx, int my )
         case 'D':   _plan.addDonorSite( _modelEditor.selectedModelID() );       break;
         case 'E':   /* UN-USED */ break;
         case 'F':   /* UN-USED */ break;
-        case 'G':   _plan.iGuides(0).generateIGuideModels();                    break;
-        case 'H':   /* UN-USED */ break;
+        case 'G':   _plan.generateIGuides();                                    break;
         case 'I':   _plan.addIGuideSite( _modelEditor.selectedModelID() );      break;
         case 'J':   /* UN-USED */ break;
         case 'K':   /* UN-USED */ break;

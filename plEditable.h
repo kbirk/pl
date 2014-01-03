@@ -10,18 +10,19 @@ class plEditable
 
         plEditable();  
         
+        PLbool isSelected() const { return _isSelected; }
+
         // only editors can see the private variables
-        friend class plGraftEditor;
-        friend class plBoundaryEditor;
-        friend class plModelEditor;
-        
+        friend class plEditor;
+
     protected:     
            
         PLuint _selectedValue;
         PLbool _isSelected;
-        
+                      
         virtual void _clearSelection();
 };
+
 
 
 #endif 

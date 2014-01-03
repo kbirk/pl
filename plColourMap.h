@@ -4,6 +4,8 @@
 #include "plCommon.h"
 #include "plVector3.h"
 
+#define PL_COLOURMAP_SIZE                        512
+
 namespace plColourMap
 {
 

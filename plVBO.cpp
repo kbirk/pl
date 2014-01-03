@@ -88,7 +88,7 @@ void plVBO::upload()
     {   
         // set position pointer, offset and stride
 	    glEnableVertexAttribArray( attributePointer.index );
-	    glVertexAttribPointer( attributePointer.index, 4, GL_FLOAT, GL_FALSE, _attributePointers.size() * sizeof( plVector4 ), (GLvoid*)( attributePointer.offset ) ); 
+	    glVertexAttribPointer( attributePointer.index, 4, GL_FLOAT, GL_FALSE, attributePointer.stride, (GLvoid*)( attributePointer.offset ) ); 
     }
     
     // do not unbind buffer as this will most likely be called from a vao

@@ -1,5 +1,7 @@
-#ifndef __PL_API_H__
-#define __PL_API_H__
+#ifndef PL_API_H
+#define PL_API_H
+
+// this header file is to include all classes / namespaces that are to be accessable from outside the planner library
 
 #include "plCommon.h"
 

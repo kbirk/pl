@@ -20,14 +20,14 @@ class plVertexAttributePointer
 {
     public:
 
-        plVertexAttributePointer( GLuint index, GLuint offset = 0 )
-            : index( index ), offset( offset )
+        plVertexAttributePointer( GLuint index, GLuint stride, GLuint offset )// = 0 )
+            : index( index ), stride( stride ), offset( offset )
         {
         }
         
         GLuint index;
+        GLuint stride;
         GLuint offset;
-
 };
 
 

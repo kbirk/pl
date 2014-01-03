@@ -51,7 +51,7 @@ PLbool plBoundaryEditor::processMouseDrag ( PLint x, PLint y )
         case PL_PICKING_TYPE_DEFECT_CORNERS:
         
             _isDraggingMenu = ( _selectedPointIndex < 0 ); // drag menu if a point isn't selected
-            // no break here, it should continue to process moveSelectedPoint()
+            // no break here, let it continue to process moveSelectedPoint()
                 
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
@@ -93,31 +93,30 @@ void plBoundaryEditor::_clearSiteBoundaries()
     // defect sites
     for ( plDefectSite* defectSite : _plan->defectSites() )
     {
-        defectSite->spline._clearSelection();     
-        defectSite->boundary._clearSelection(); 
+        _clearEditable( defectSite->spline );     
+        _clearEditable( defectSite->boundary ); 
     }  
 
     // donor sites
     for ( plDonorSite* donorSite : _plan->donorSites() )
     {  
-        donorSite->boundary._clearSelection(); 
+        _clearEditable( donorSite->boundary ); 
     }  
 
     // iguide sites
     for ( plIGuideSite* iguideSite : _plan->iGuideSites() )
     {  
-        iguideSite->boundary._clearSelection(); 
+        _clearEditable( iguideSite->boundary ); 
     }  
 }
 
 
 void plBoundaryEditor::_selectBoundary( plBoundary &boundary, PLuint boundaryIndex, PLuint pointIndex)
 {
-    boundary._selectedValue = pointIndex;        
-    boundary._isSelected    = true;
-    _selectedSiteIndex      = boundaryIndex;
-    _selectedPointIndex     = pointIndex;
-    _selectedBoundary       = &boundary;            
+    _selectEditable( boundary, pointIndex );
+    _selectedSiteIndex  = boundaryIndex;
+    _selectedPointIndex = pointIndex;
+    _selectedBoundary   = &boundary;            
 }
 
 
@@ -184,7 +183,7 @@ void plBoundaryEditor::addPoint( PLuint x, PLuint y, PLbool selectNewPoint )
         
         if ( selectNewPoint && newIndex >= 0 )
         {
-            _selectedBoundary->_selectedValue = newIndex;
+            _selectEditable( *_selectedBoundary, newIndex );
             _selectedPointIndex = newIndex;
         }       
     }
@@ -197,8 +196,8 @@ void plBoundaryEditor::removeSelectedPoint()
     if ( _selectedBoundary == NULL || _selectedPointIndex < 0 ) // no boundary or point is selected
         return;  
 
-    _selectedBoundary->removePointAndNormal(_selectedPointIndex);   
-    _selectedBoundary->_selectedValue = -1;
+    _selectedBoundary->removePointAndNormal( _selectedPointIndex );   
+    _selectEditable( *_selectedBoundary );
     _selectedPointIndex = -1;    
 }
 
@@ -231,10 +230,10 @@ void plBoundaryEditor::extractRenderComponents( plRenderMap& renderMap, PLuint t
 {
     _extractMenuRenderComponents( renderMap );
 
-    if (_selectedBoundary == NULL)
+    if ( _selectedBoundary == NULL )
         return;
         
-    _selectedBoundary->extractRenderComponents( renderMap, technique );   
+    _selectedBoundary->extractRenderComponents( renderMap, technique );  
 }
 
 
@@ -277,7 +276,7 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
                                    plVector3( 0, 0, 1 ),
                                    PL_EDITOR_MENU_CIRCLE_RADIUS );
             
-            if ( _plan->defectSites(i).spline._isSelected )
+            if ( _plan->defectSites(i).spline.isSelected() )
             {
                 // draw selection outline
                 plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
@@ -294,7 +293,7 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
                                    plVector3( 0, 0, 1 ),
                                    PL_EDITOR_MENU_CIRCLE_RADIUS );
 
-            if ( _plan->defectSites(i).boundary._isSelected )
+            if ( _plan->defectSites(i).boundary.isSelected() )
             {
                 // draw selection outline
                 plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
@@ -319,7 +318,7 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
                                    plVector3( 0, 0, 1 ),
                                    PL_EDITOR_MENU_CIRCLE_RADIUS );
             
-            if (_plan->donorSites(i).boundary._isSelected)
+            if ( _plan->donorSites(i).boundary.isSelected() )
             {
                 // draw selection outline
                 plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
@@ -344,7 +343,7 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
                                    plVector3( 0, 0, 1 ),
                                    PL_EDITOR_MENU_CIRCLE_RADIUS );
             
-            if (_plan->iGuideSites(i).boundary._isSelected)  
+            if ( _plan->iGuideSites(i).boundary.isSelected() )  
             {    
                 // draw selection outline        
                 plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE, 
@@ -374,6 +373,7 @@ void plBoundaryEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) co
 
 void plBoundaryEditor::removeSelectedSite()
 {
+    // does not have access to the site that contains the boundary, so search and find which one it is
     for ( PLuint i=0; i < _plan->defectSites().size(); i++ )
     {
         if ( _selectedBoundary == &_plan->defectSites(i).boundary )

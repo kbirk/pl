@@ -1,0 +1,105 @@
+﻿Build started 05/11/2013 9:22:06 PM.
+     1>Project "C:\Kevin\Dropbox\work\pl\vs2012\vs2012.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Ox /Oi /Ot /Oy- /GL /D _CRT_SECURE_NO_WARNINGS /D WIN32 /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\PlannerWindow.cpp ..\Window.cpp ..\main.cpp ..\pl.cpp ..\plAutomaticPlanner.cpp ..\plPlannerStage0.cpp ..\plPlannerStage1.cpp ..\plPlannerStage2.cpp ..\plPlannerStage3.cpp ..\plRenderer.cpp
+         PlannerWindow.cpp
+         Window.cpp
+         main.cpp
+         pl.cpp
+         plAutomaticPlanner.cpp
+         plPlannerStage0.cpp
+         plPlannerStage1.cpp
+         plPlannerStage2.cpp
+         plPlannerStage3.cpp
+         plRenderer.cpp
+     1>..\plRenderer.cpp(347): warning C4018: '<' : signed/unsigned mismatch
+     1>..\plRenderer.cpp(355): warning C4018: '<' : signed/unsigned mismatch
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Kevin\Dropbox\work\pl\vs2012\Release\vs2012.exe" /NOLOGO glew32.lib glut32.lib opengl32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Kevin\Dropbox\work\pl\vs2012\Release\vs2012.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Kevin\Dropbox\work\pl\vs2012\Release\vs2012.lib" /MACHINE:X86 /SAFESEH Release\main.obj
+         Release\pl.obj
+         Release\PlannerWindow.obj
+         Release\plAutomaticPlanner.obj
+         Release\plBoneAndCartilage.obj
+         Release\plBoundary.obj
+         Release\plBoundaryEditor.obj
+         Release\plCamera.obj
+         Release\plChessBoard.obj
+         Release\plColourMap.obj
+         Release\plColourMesh.obj
+         Release\plCSV.obj
+         Release\plDebugSphere.obj
+         Release\plDebugTransform.obj
+         Release\plDefectSite.obj
+         Release\plDonorSite.obj
+         Release\plDraw.obj
+         Release\plDRBTransform.obj
+         Release\plEditable.obj
+         Release\plGraft.obj
+         Release\plGraftEditor.obj
+         Release\plIGuide.obj
+         Release\plIGuideSite.obj
+         Release\plLineMesh.obj
+         Release\plMath.obj
+         Release\plMatrix44.obj
+         Release\plMatrixStack.obj
+         Release\plMesh.obj
+         Release\plMeshAlgorithm.obj
+         Release\plMeshConnectivityData.obj
+         Release\plMeshCutter.obj
+         Release\plMeshExtruder.obj
+         Release\plMeshIntersector.obj
+         Release\plMinimalShader.obj
+         Release\plModel.obj
+         Release\plModelSpecific.obj
+         Release\plOctree.obj
+         Release\plPhongShader.obj
+         Release\plPickingShader.obj
+         Release\plPickingTexture.obj
+         Release\plPlan.obj
+         Release\plPlannerStage0.obj
+         Release\plPlannerStage0Shader.obj
+         Release\plPlannerStage1.obj
+         Release\plPlannerStage1Shader.obj
+         Release\plPlannerStage2.obj
+         Release\plPlannerStage2Shader.obj
+         Release\plPlannerStage3.obj
+         Release\plPlannerStage3Shader.obj
+         Release\plPlanningBufferData.obj
+         Release\plPlanningSite.obj
+         Release\plPlug.obj
+         Release\plPolygon.obj
+         Release\plProjection.obj
+         Release\plRenderable.obj
+         Release\plRenderer.obj
+         Release\plRenderingPipeline.obj
+         Release\plScan.obj
+         Release\plScanPoint.obj
+         Release\plScanVolume.obj
+         Release\plShader.obj
+         Release\plShapeMesh.obj
+         Release\plSpline.obj
+         Release\plSSBO.obj
+         Release\plString.obj
+         Release\plTexture2D.obj
+         Release\plTexture2DMesh.obj
+         Release\plTexture2DShader.obj
+         Release\plTexture3D.obj
+         Release\plTexture3DMesh.obj
+         Release\plTexture3DShader.obj
+         Release\plTrackedObject.obj
+         Release\plTransform.obj
+         Release\plTransparentRenderable.obj
+         Release\plTriangle.obj
+         Release\plUtility.obj
+         Release\plVector3.obj
+         Release\plVector4.obj
+         Release\plWindow.obj
+         Release\Window.obj
+         Generating code
+         Finished generating code
+         vs2012.vcxproj -> C:\Kevin\Dropbox\work\pl\vs2012\Release\vs2012.exe
+     1>Done Building Project "C:\Kevin\Dropbox\work\pl\vs2012\vs2012.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:11.39

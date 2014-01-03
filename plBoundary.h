@@ -12,9 +12,19 @@
 #include "plVAO.h"
 #include "plRenderer.h"
 
-#define PL_SELECTED_BOUNDARY_POINT_RADIUS   1.0f
-#define PL_BOUNDARY_POINT_RADIUS            0.75f
-
+#define PL_BOUNDARY_SELECTED_POINT_RADIUS        1.0f
+#define PL_BOUNDARY_POINT_RADIUS                 0.75f
+#define PL_BOUNDARY_MESH_HEIGHT                  1.0f
+#define PL_BOUNDARY_MESH_WIDTH_HALF              0.4f
+#define PL_BOUNDARY_MESH_CURVE_HEIGHT            0.2f 
+ 
+#define PL_BOUNDARY_SELECTED_COLOUR              0.20f, 0.90f, 0.70f
+#define PL_BOUNDARY_POINT_SELECTED_COLOUR        0.20f, 0.90f, 0.70f 
+ 
+#define PL_BOUNDARY_DEFECT_CORNER_COLOUR         0.90f, 0.20f, 0.20f
+#define PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR       0.55f, 0.21f, 0.55f
+#define PL_BOUNDARY_DONOR_COLOUR                 0.40f, 0.40f, 0.80f
+#define PL_BOUNDARY_IGUIDE_COLOUR                0.20f, 0.53f, 0.45f
 
 class plBoundary : public plRenderable,
                    public plEditable,

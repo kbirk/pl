@@ -9,17 +9,17 @@
 
 enum plFBOEnums
 {
-    PL_MAIN_FBO = 1,
+    PL_MAIN_FBO = 1,            // the main fbo that holds all the render buffers
 };
 
 
 enum plShaderEnums
 {
-    PL_MINIMAL_SHADER = 1,
-    PL_PHONG_SHADER,
-    PL_OUTLINE_SHADER,
-    PL_ARTHRO_CAM_SHADER,
-    PL_FBO_SHADER,
+    PL_MINIMAL_SHADER = 1,      // no lighting calculations
+    PL_PHONG_SHADER,            // phong lighting
+    PL_OUTLINE_SHADER,          // draws to outline shader
+    PL_ARTHRO_CAM_SHADER,       // texturing shader for arthro cam feed
+    PL_FBO_SHADER,              // shader for final rendering pass, draws colour buffer to screen and applies outline effect
 };
 
 

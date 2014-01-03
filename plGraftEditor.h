@@ -11,8 +11,11 @@
 #include "plRenderer.h"
 #include "plEditor.h"
 
-#define PL_ROTATION_SENSITIVITY                  0.05f   // lower is less sensitive
-
+#define PL_GRAFT_EDIT_ROTATION_SENSITIVITY       0.05f   // lower is less sensitive
+#define PL_GRAFT_EDIT_MODE_TRANSLATE             1
+#define PL_GRAFT_EDIT_MODE_ROTATE                2 
+#define PL_GRAFT_EDIT_MODE_LENGTH                3
+#define PL_GRAFT_EDIT_MODE_RADIUS                4
 
 
 class plGraftEditor : public plEditor

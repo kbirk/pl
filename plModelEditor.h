@@ -11,8 +11,8 @@
 #include "plRenderer.h"
 #include "plEditor.h"
 
-#define PL_ROTATION_SENSITIVITY                  0.05f   // lower is less sensitive
-
+#define PL_MODEL_EDIT_MODE_TRANSLATE             1
+#define PL_MODEL_EDIT_MODE_ROTATE                2 
 
 class plModelEditor : public plEditor
 {

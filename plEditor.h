@@ -5,6 +5,14 @@
 #include "plRenderable.h"
 #include "plPlan.h"
 
+
+#define PL_EDITOR_MENU_HORIZONTAL_BUFFER         50
+#define PL_EDITOR_MENU_VERTICAL_BUFFER           50
+#define PL_EDITOR_MENU_HORIZONTAL_SPACING        40
+#define PL_EDITOR_MENU_VERTICAL_SPACING          40   
+#define PL_EDITOR_MENU_CIRCLE_RADIUS             14
+
+
 class plEditor : public plRenderable
 {
     public:
@@ -27,9 +35,12 @@ class plEditor : public plRenderable
 
     protected: 
     
-        PLbool _isDraggingMenu;
-
         plPlan *_plan;
+        PLbool  _isDraggingMenu;
+        
+        // used to prevent anything other than a pl*Editor from changing a plEditable selection state
+        void _clearEditable( plEditable& editable ) const;
+        void _selectEditable( plEditable& editable, PLuint value = -1 ) const;
 
 };
 
