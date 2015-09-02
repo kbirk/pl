@@ -4,5 +4,5 @@ planner
 .gitignore
 *.txt
 *~
-vs2012/Release/*
-vs2012/Debug/*
+vs2012/*
+.DS_Store
