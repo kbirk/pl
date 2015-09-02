@@ -293,14 +293,14 @@ void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint tech
         if (_editMode == PL_GRAFT_EDIT_MODE_TRANSLATE )
         {
             // draw axis
-            _selectedGraft->harvest().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-            _selectedGraft->recipient().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+            _selectedGraft->plug( _selectedType ).surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+            //_selectedGraft->recipient().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
         }
         else
         {
             // draw axis
-            _selectedGraft->harvest().finalTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-            _selectedGraft->recipient().finalTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+            _selectedGraft->plug( _selectedType ).finalTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+            //_selectedGraft->recipient().finalTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
         }
         
         plModelStack::pop();
