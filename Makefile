@@ -2,7 +2,7 @@
 OPENGL_DRIVER_DIR = /usr/lib/nvidia-331
 
 LIBS = -L$(OPENGL_DRIVER_DIR) -lglut -lGL
-INCS = 
+INCS =
 
 CXXFLAGS = -Wfatal-errors -O3 -std=c++0x -DLINUX $(INCS)
 
@@ -100,11 +100,11 @@ SOURCES =   main.cpp \
             plVertexSpecBuffer.cpp \
             plWindow.cpp \
             Window.cpp
-       
+
 EXE  = planner
 
 Window:	$(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJECTS) $(LIBS) 
+	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJECTS) $(LIBS)
 
 objects:
 	@mkdir -p $@
@@ -115,7 +115,7 @@ objects/%.o: %.cpp
 clean:
 	rm -f objects/*.o *~ core $(EXE) Makefile.bak
 
-depend:	
+depend:
 	makedepend -Y -pobjects/ *.h *.cpp
 
 # DO NOT DELETE
@@ -822,7 +822,6 @@ objects/plScreenQuadTechnique.o: plRenderingPipeline.h plMatrixStack.h
 objects/plScreenQuadTechnique.o: plProjection.h plCamera.h plPicking.h
 objects/plScreenQuadTechnique.o: plRenderResources.h plShader.h plUniform.h
 objects/plScreenQuadTechnique.o: plVertexFragmentShader.h plFBO.h plWindow.h
-objects/plSeq.o: plCommon.h
 objects/plShader.o: plCommon.h plString.h plOpenGLInfo.h plUniform.h
 objects/plSpline.o: plCommon.h plVector3.h plString.h plVector4.h
 objects/plSpline.o: plBoundary.h plMath.h plRenderable.h plRenderComponent.h
