@@ -1,7 +1,12 @@
 
 OPENGL_DRIVER_DIR = /usr/lib/nvidia-331
 
-LIBS = -L$(OPENGL_DRIVER_DIR) -lglut -lGL
+# LINUX
+#LIBS = -L$(OPENGL_DRIVER_DIR) -lglut -lGL
+
+# OSX
+LIBS = -framework GLUT -framework OpenGL -framework Cocoa
+
 INCS =
 
 CXXFLAGS = -Wfatal-errors -O3 -std=c++0x -DLINUX $(INCS)

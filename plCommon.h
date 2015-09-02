@@ -4,21 +4,21 @@
 // COLOUR MACROS
 
 #define PL_PURPLE_COLOUR                         0.57, 0.17, 0.93
-#define PL_AXIS_GREY                             0.2f, 0.2f, 0.2f 
+#define PL_AXIS_GREY                             0.2f, 0.2f, 0.2f
 #define PL_X_AXIS_COLOUR                         1.0f, 0.2f, 0.2f
-#define PL_Y_AXIS_COLOUR                         0.2f, 1.0f, 0.2f 
-#define PL_Z_AXIS_COLOUR                         0.2f, 0.2f, 1.0f 
+#define PL_Y_AXIS_COLOUR                         0.2f, 1.0f, 0.2f
+#define PL_Z_AXIS_COLOUR                         0.2f, 0.2f, 1.0f
 #define PL_CLEAR_COLOUR                          0.137f, 0.137f, 0.137f, 1.0f
 
-// some renderables use different colours per vertex. When the colour 
+// some renderables use different colours per vertex. When the colour
 // uniforms are set to these value, it tells the shader to use the attribute
 // colour instead
-#define PL_USE_ATTRIBUTE_COLOUR_OPAQUE           0, 0, 0, 0         
-#define PL_USE_ATTRIBUTE_COLOUR_TRANSPARENT      -1, -1, -1, 0  
+#define PL_USE_ATTRIBUTE_COLOUR_OPAQUE           0, 0, 0, 0
+#define PL_USE_ATTRIBUTE_COLOUR_TRANSPARENT      -1, -1, -1, 0
 
 // global light position used throughout planner
-#define PL_LIGHT_POSITION                        10, 10, 15  
- 
+#define PL_LIGHT_POSITION                        10, 10, 15
+
 // IGUIDE BOOLEAN MESH OPERATIONS
 
 #define PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE        0
@@ -41,9 +41,9 @@
 #define PL_DEG_TO_RAD(a)                         ( a * ( PL_PI / 180.0f ) )
 
 #define PL_MIN_OF_2(a,b)                         (a<=b ? a : b)
-#define PL_MAX_OF_2(a,b)                         (a>=b ? a : b)     
+#define PL_MAX_OF_2(a,b)                         (a>=b ? a : b)
 #define PL_MIN_OF_3(a,b,c)                       (a<=b ? (a<=c ? a : c) : (b<=c ? b : c))
-#define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c)) 
+#define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c))
 
 #define PL_NORMAL_SMOOTHING_RADIUS               4.0f
 
@@ -68,10 +68,10 @@
 
 #ifdef WIN32
 
-    #include <windows.h>  
+    #include <windows.h>
     #define PL_FILE_PREPATH     "../"
     inline float round( float val )
-    {    
+    {
         return floor( val + 0.5f );
     }
     #include <GL/glew.h> // include before gl.h
@@ -80,21 +80,20 @@
 
 #else
 
-    #define PL_FILE_PREPATH     "./"    
+    #define PL_FILE_PREPATH     "./"
     #define GL_GLEXT_PROTOTYPES
-    
-    #ifdef __APPLE_CC__
-        // APPLE
 
-        #include <OpenGL/gl.h>
+    #ifdef __APPLE__
+
+        #include <OpenGL/gl3.h>
         #include <GLUT/glut.h>
-        
+
     #else
-    
+
         #include <GL/glut.h>
         #include <GL/glcorearb.h>
         #include <GL/glext.h>
-        
+
     #endif
 
 #endif
@@ -102,16 +101,16 @@
 
 // PRIMITIVE TYPEDEFS
 
-typedef unsigned char           PLbyte;      
-typedef char                    PLchar;      
-typedef float                   PLfloat;     
-typedef double                  PLdouble;    
-typedef short unsigned int      PLushort;	
-typedef short int               PLshort;		
-typedef unsigned int            PLuint;     
-typedef int                     PLint;       
-typedef bool                    PLbool;     
-typedef long long unsigned int  PLtime; 
+typedef unsigned char           PLbyte;
+typedef char                    PLchar;
+typedef float                   PLfloat;
+typedef double                  PLdouble;
+typedef short unsigned int      PLushort;
+typedef short int               PLshort;
+typedef unsigned int            PLuint;
+typedef int                     PLint;
+typedef bool                    PLbool;
+typedef long long unsigned int  PLtime;
 
 
 #endif
