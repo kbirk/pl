@@ -3,11 +3,11 @@
 
 #include "plCommon.h"
 
-namespace plOpenGLInfo 
+namespace plOpenGLInfo
 {
 
     void init();
-    void print(); 
+    void print();
     PLuint sizeOfType( PLuint enumType );
     void reportError( const std::string &str );
 
@@ -19,11 +19,11 @@ namespace plOpenGLInfo
                   maxComputeAtomicCounters,
                   maxComputeAtomicCounterBuffers,
                   maxCombinedComputeUniformComponents,
-                  maxComputeWorkGroupInvocations; 
-                   
+                  maxComputeWorkGroupInvocations;
+
     extern GLint maxComputeWorkGroupCount[3];
     extern GLint maxComputeWorkGroupSize[3];
-    
+
     extern GLint maxDebugGroupStackDepth,
                   majorVersion,
                   max3DTextureSize,
@@ -68,9 +68,9 @@ namespace plOpenGLInfo
                   maxRectangleTextureSize,
                   maxRenderbufferSize,
                   maxSampleMaskWords;
-          
+
     extern GLint64 maxServerWaitTimeout;
-    
+
     extern GLint maxShaderStorageBufferBindings,
                   maxTessControlAtomicCounters,
                   maxTessEvaluationAtomicCounters,
@@ -94,13 +94,13 @@ namespace plOpenGLInfo
                   maxVertexUniformVectors,
                   maxVertexOutputComponents,
                   maxVertexUniformBlocks;
-          
+
     extern GLint maxViewportDims[2];
     extern GLint maxViewports,
-              minorVersion, 
+              minorVersion,
               numCompressedTextureFormats,
-              numExtensions, 
-              numProgramBinaryFormats, 
+              numExtensions,
+              numProgramBinaryFormats,
               numShaderBinaryFormats,
               maxVertexAttribRelativeOffset,
               maxVertexAttribBindings,

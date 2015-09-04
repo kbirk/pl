@@ -6,31 +6,31 @@ plCamera::plCamera()
 }
 
 plCamera::plCamera( plString filename)
-{   
+{
 	// read view parameters from file
 	importViewParams( filename );
 }
-  
+
 void plCamera::_defaultInit()
 {
 	// set default position
-	position = plVector3(0,0,50);    
+	position = plVector3(0,0,50);
 	lookat   = plVector3(0,0,0);
 	up       = plVector3(0,1,0);
-}  
-    
-plMatrix44 plCamera::getMatrix() const 
-{			 
+}
+
+plMatrix44 plCamera::getMatrix() const
+{
     plVector3 x, y, z;
 
-    // Make rotation plMatrix44 
+    // Make rotation plMatrix44
     z = (position - lookat).normalize();
     y = up.normalize();
 
-    // X plVector3 = Y cross Z 
+    // X plVector3 = Y cross Z
     x = (y ^ z).normalize();
 
-    // Recompute Y = Z cross X 
+    // Recompute Y = Z cross X
     y = (z ^ x).normalize();
 
     plMatrix44 rot;
@@ -39,19 +39,19 @@ plMatrix44 plCamera::getMatrix() const
     rot(2,0) = z.x;   rot(2,1) = z.y;   rot(2,2) = z.z;   rot(2,3) = 0.0;
     rot(3,0) = 0.0;   rot(3,1) = 0.0;   rot(3,2) = 0.0;   rot(3,3) = 1.0;
 
-    // Translate Eye to Origin 
+    // Translate Eye to Origin
     plMatrix44 trans( -position.x, -position.y, -position.z );
-   
+
     return rot * trans;
 }
 
 void plCamera::reset( const plVector3 &point )
 {
-    plVector3 focus_centre = point;     
-    plVector3 separation = position - focus_centre;    
-    plVector3 camera_direction = (lookat-position).normalize();     
+    plVector3 focus_centre = point;
+    plVector3 separation = position - focus_centre;
+    plVector3 camera_direction = (lookat-position).normalize();
     PLfloat projection = separation * camera_direction;
-     
+
     position = focus_centre + (projection * camera_direction);
     lookat = focus_centre;
 }
@@ -61,11 +61,11 @@ void plCamera::exportViewParams( const std::string &filename )
 {
     std::ofstream out( filename.c_str() );
 
-    if (!out) 
+    if (!out)
     {
         std::cerr << "plCamera outputViewParams error: Failed to open the output file\n";
     }
-    else 
+    else
     {
         out << position << std::endl;
         out << lookat << std::endl;
@@ -78,12 +78,12 @@ void plCamera::importViewParams( const std::string &filename  )
 {
     std::ifstream in( filename.c_str() );
 
-    if (!in) 
+    if (!in)
     {
         std::cerr << "plCamera readViewParams error: Failed to open the input file\n";
         _defaultInit();
     }
-    else 
+    else
     {
         in >> position;
         in >> lookat;
@@ -93,9 +93,9 @@ void plCamera::importViewParams( const std::string &filename  )
 
 
 void plCamera::zoom( PLfloat z )
-{     
+{
     const PLfloat ZOOM_SENSITIVITY = 0.005f;
- 
+
     position = (position + (z*ZOOM_SENSITIVITY)*(lookat - position));
 
 }
@@ -103,19 +103,19 @@ void plCamera::zoom( PLfloat z )
 void plCamera::translate(PLint x, PLint y)
 {
     const PLfloat TRANSLATION_SENSITIVITY = 0.1f;
-    
+
     plVector3 ydir = up.normalize();
     plVector3 zdir = (position - lookat).normalize();
     plVector3 xdir = (ydir ^ zdir).normalize();
-    
+
     lookat   = lookat   + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);
-    position = position + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);  
-   
+    position = position + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);
+
 }
 
 void plCamera::rotate( PLint x0, PLint y0, PLint x1, PLint y1 )
 {
-    // create quaternion  
+    // create quaternion
     plVector4 quat = calc_quat( x0, y0, x1, y1 );
     // get the rotation matrix from quaternion
     plMatrix44 qm;  qm.setRotation( quat );
@@ -126,7 +126,7 @@ void plCamera::rotate( PLint x0, PLint y0, PLint x1, PLint y1 )
     m(1,3) = 0.0f;
     m(2,3) = 0.0f;
     m(3,3) = 1.0f;
-    
+
     // make transform t = m^-1 qm^-1
     plMatrix44 t = m.inverse() * qm.inverse();
 
@@ -155,24 +155,24 @@ void plCamera::rotate( PLint x0, PLint y0, PLint x1, PLint y1 )
 void calc_p(PLint x, PLint y, PLfloat p[])
 {
     PLfloat r,s;
-    
+
     // normally use plWindow:: for these, however this would cause a circular dependancy, so it is done manually
     GLint viewport[4];
     glGetIntegerv( GL_VIEWPORT, viewport );
     PLint width  = viewport[2] + viewport[0]*2;
     PLint height = viewport[3] + viewport[1]*2;
-    
+
     p[0] =  2.0f * ( x - 0.5f*width ) / width;
     p[1] = -2.0f * ( -(y-height) - 0.5f*height ) / height;
     r = p[0]*p[0] + p[1]*p[1];
-    if (r > 1.0f) 
+    if (r > 1.0f)
     {
         s = 1.0f/sqrt(r);
         p[0] *= s;
         p[1] *= s;
         p[2] = 0.0f;
-    } 
-    else 
+    }
+    else
     {
         p[2] = sqrt(1.0f - r);
     }
@@ -185,21 +185,15 @@ plVector4 calc_quat(PLint x0, PLint y0, PLint x1, PLint y1)
 
     calc_p(x0,y0,p0);
     calc_p(x1,y1,p1);
-    
+
     plVector4 q;
     q.x = p0[1]*p1[2] - p1[1]*p0[2];
     q.y = p1[0]*p0[2] - p0[0]*p1[2];
     q.z = p0[0]*p1[1] - p1[0]*p0[1];
     q.w = (p0[0]*p1[0] + p0[1]*p1[1] + p0[2]*p1[2]);
-    
-    if (q.w < -1.0f) 
+
+    if (q.w < -1.0f)
         q.w = -1.0f;
-        
+
     return q;
 }
-
-
-
-
-
-

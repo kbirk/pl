@@ -14,9 +14,8 @@
 
 namespace plPlannerStage1
 {
-    void run( plCapIndices &capData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution );     
+    void run( plCapIndices &capData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution );
 }
 
 
 #endif
-

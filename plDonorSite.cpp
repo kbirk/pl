@@ -1,6 +1,6 @@
 #include "plDonorSite.h" 
 
-plDonorSite::plDonorSite() 
+plDonorSite::plDonorSite()
 {
 }
 
@@ -21,9 +21,9 @@ void plDonorSite::extractRenderComponents( plRenderMap& renderMap, PLuint techni
 {
     if ( !_isVisible )
         return;
-      
-    // draw spline boundary 
-    boundary.extractRenderComponents( renderMap ); 
+
+    // draw spline boundary
+    boundary.extractRenderComponents( renderMap );
 }
 
 
@@ -31,13 +31,3 @@ void plDonorSite::extractRenderComponents( plRenderMap& renderMap ) const
 {
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
-
-
-
-
-
-
-
-
-
-

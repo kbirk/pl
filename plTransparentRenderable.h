@@ -7,25 +7,25 @@
 
 class plTransparentRenderable : public plRenderable
 {
-    
+
     public:
-    
-        plTransparentRenderable();  
-               
-        virtual void toggleVisibility();	
+
+        plTransparentRenderable();
+
+        virtual void toggleVisibility();
         virtual void setVisible();
 		virtual void setTransparent();
 		virtual void setInvisible();
-		
+
 		PLbool isTransparent() const;
 
         virtual void extractRenderComponents( plRenderMap& renderMap ) const = 0;
 
-    protected:     
-           
+    protected:
+
         PLbool _isTransparent;
-    
+
 };
 
 
-#endif 
+#endif

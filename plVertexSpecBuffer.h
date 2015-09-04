@@ -7,9 +7,9 @@
 class plVertexSpecBuffer
 {
 
-    public:                    
-          
-        plVertexSpecBuffer();   
+    public:
+
+        plVertexSpecBuffer();
 
         virtual ~plVertexSpecBuffer();
 

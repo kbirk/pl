@@ -9,15 +9,15 @@
 class plDefectSolution
 {
     public:
-  
-        PLuint                  graftCount;  
+
+        PLuint                  graftCount;
         std::vector<plVector4>  graftPositions;
         std::vector<plVector4>  graftNormals;         // normal / direction of graft
         std::vector<plVector4>  graftSurfaceNormals;  // actual normal of the surface
         std::vector<PLfloat>    graftRadii;
-    
+
         plDefectSolution() {};
-}; 
+};
 
 
 class plCapIndices
@@ -26,26 +26,26 @@ class plCapIndices
 
         plSSBO defectCapIndexSSBO;
         plSSBO donorCapIndexSSBO;
-        
-        plCapIndices() {};        
+
+        plCapIndices() {};
 };
 
 
 class plRmsData
 {
     public:
-    
+
         plSSBO rmsSSBO;
         plSSBO rotationSSBO;
 
-        plRmsData() {}  
+        plRmsData() {}
 };
 
 
 class plDonorSolution
 {
     public:
-     
+
         std::vector<plVector4>  graftPositions;
         std::vector<plVector4>  graftNormals;
         std::vector<plVector4>  graftSurfaceNormals;
@@ -59,4 +59,3 @@ class plDonorSolution
 
 
 #endif
-

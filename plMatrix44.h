@@ -8,29 +8,29 @@
 class plTriangle;
 class plMesh;
 
-class plMatrix44 
+class plMatrix44
 {
 	public:
-		
+
 		// 4x4 matrix - column major
 		//	0	4	8	12
 		//	1	5	9	13
 		//	2	6	10	14
-		//	3	7	11	15		
+		//	3	7	11	15
 
-		plMatrix44();                                     // identity 		
-		plMatrix44( PLfloat scale );                      // scale 		 
+		plMatrix44();                                     // identity
+		plMatrix44( PLfloat scale );                      // scale
 		plMatrix44( PLfloat x, PLfloat y, PLfloat z );    // translation
-		plMatrix44( const plVector3 &translation );       // translation		 
-		plMatrix44( PLfloat angle, const plVector3 &axis );                                               // rotation		
-		plMatrix44( const plVector3 &x, const plVector3 &y, const plVector3 &z, const plVector3 &t );     // affine transformation 		
-		plMatrix44( PLfloat xMin, PLfloat xMax, PLfloat yMin, PLfloat yMax, PLfloat zMin, PLfloat zMax ); // orthographic projection matrix		
-		plMatrix44( PLfloat fov, PLfloat aspectRatio, PLfloat zMin, PLfloat zMax );                       // perspective projection matrix		
-		plMatrix44( PLfloat c1r1, PLfloat c2r1, PLfloat c3r1, PLfloat c4r1, 
-                    PLfloat c1r2, PLfloat c2r2, PLfloat c3r2, PLfloat c4r2, 
-			        PLfloat c1r3, PLfloat c2r3, PLfloat c3r3, PLfloat c4r3, 
+		plMatrix44( const plVector3 &translation );       // translation
+		plMatrix44( PLfloat angle, const plVector3 &axis );                                               // rotation
+		plMatrix44( const plVector3 &x, const plVector3 &y, const plVector3 &z, const plVector3 &t );     // affine transformation
+		plMatrix44( PLfloat xMin, PLfloat xMax, PLfloat yMin, PLfloat yMax, PLfloat zMin, PLfloat zMax ); // orthographic projection matrix
+		plMatrix44( PLfloat fov, PLfloat aspectRatio, PLfloat zMin, PLfloat zMax );                       // perspective projection matrix
+		plMatrix44( PLfloat c1r1, PLfloat c2r1, PLfloat c3r1, PLfloat c4r1,
+                    PLfloat c1r2, PLfloat c2r2, PLfloat c3r2, PLfloat c4r2,
+			        PLfloat c1r3, PLfloat c2r3, PLfloat c3r3, PLfloat c4r3,
 			        PLfloat c1r4, PLfloat c2r4, PLfloat c3r4, PLfloat c4r4 );
-			       
+
 		plMatrix44(const plMatrix44 &m);            // copy constructor
 
         PLbool importFile( const plString &file );  // openCV xml input file
@@ -55,13 +55,13 @@ class plMatrix44
         void setRotation ( const plVector4 &quat );
         void setRotationD( PLfloat angle_degree, const plVector3 &axis);
         void setRotation ( const plVector3 &from, const plVector3 &to);
-        
+
         void setOrthographic( PLfloat xMin, PLfloat xMax, PLfloat yMin, PLfloat yMax, PLfloat zMin, PLfloat zMax);
         void setPerspective ( PLfloat fov, PLfloat aspect, PLfloat nearPlane, PLfloat farPlane);
 
 		plMatrix44 inverse() const;
 
-		plMatrix44 &operator= ( const plMatrix44 &m); 
+		plMatrix44 &operator= ( const plMatrix44 &m);
 		PLfloat&    operator[]( int index)			   { return _data[index]; }
 		PLfloat     operator[]( int index) const	       { return _data[index]; }
 		PLfloat&    operator()( int row, int col)	   { return _data[(col*4) + row]; }

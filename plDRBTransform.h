@@ -23,18 +23,18 @@
 #include "plMatrix44.h"
 
 // This enum is used to indicate how much information is in a transformation file
-enum MarkerType 
-{ 
-    TRANSLATION , 
-    TRANSLATION_ROTATION, 
-    TRANSLATION_ROTATION_SCALE 
+enum MarkerType
+{
+    TRANSLATION ,
+    TRANSLATION_ROTATION,
+    TRANSLATION_ROTATION_SCALE
 };
 
-class plDRBTransform 
+class plDRBTransform
 {
- 
+
     public:
-    
+
         // Values to store the original information, provided by the file or the DRB.
         // Storing these isn't strictly necessary, though could be useful if ever
         // we wanted to get the original axis-angle representation values
@@ -42,16 +42,16 @@ class plDRBTransform
         PLfloat calibangle,  calibaxisx,  calibaxisy, calibaxisz;
         PLfloat calibscalex, calibscaley, calibscalez; // generally these will all be the same value
 
-        plDRBTransform();       
+        plDRBTransform();
         plDRBTransform( const plMatrix44 );
         plDRBTransform( const plVector3&, const plVector3&, double ); // DRB Transformation
         plDRBTransform( const std::string&, MarkerType = TRANSLATION ); // File Transformation - string is the file, MarkerType specifies how much to read
-              
+
         void           initializeTransforms(); // Sets up the matrices
-        
+
         plDRBTransform clone()        const;
         plMatrix44     getTransform() const;
-        
+
         plVector3      applyTransform       ( const plVector3& ) const; // forward transformation, returns resulting vector
         plVector3      applyInverseTransform( const plVector3& ) const; // reverse transformation, returns resulting vector
 

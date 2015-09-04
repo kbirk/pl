@@ -11,7 +11,7 @@ class plScreenQuadTechnique : public plRenderTechnique
 
     public:
 
-        plScreenQuadTechnique();       
+        plScreenQuadTechnique();
 
         void render( const std::set< plRenderComponent >& componentSet ) const;
 
@@ -22,4 +22,4 @@ class plScreenQuadTechnique : public plRenderTechnique
 };
 
 
-#endif 
+#endif

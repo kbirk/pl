@@ -5,24 +5,24 @@
 #include "plRenderComponent.h"
 
 class plEditable
-{   
+{
     public:
 
-        plEditable();  
-        
+        plEditable();
+
         PLbool isSelected() const { return _isSelected; }
 
         // only editors can see the private variables
         friend class plEditor;
 
-    protected:     
-           
+    protected:
+
         PLuint _selectedValue;
         PLbool _isSelected;
-                      
+
         virtual void _clearSelection();
 };
 
 
 
-#endif 
+#endif

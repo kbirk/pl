@@ -18,7 +18,7 @@ class plMeshAlgorithm
     PLbool exportTriSeq(       std::vector<plTriangle>& tris, PLuint verbose, PLuint depth=0 );
 
   protected:
-  
+
     PLfloat _epsilon;
 
     // the connectivity data
@@ -46,7 +46,7 @@ class plMeshAlgorithm
 template< class Type1, class Type2 >
 PLbool plMeshAlgorithm::_addressExists( const std::vector<Type1> &vector, const Type2 *t )
 {
-    return std::find( vector.begin(), vector.end(), t ) != vector.end();      
+    return std::find( vector.begin(), vector.end(), t ) != vector.end();
 }
 
 #endif // PLMESHCONNECTIVITY_H

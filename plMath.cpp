@@ -9,12 +9,12 @@ namespace plMath
 {
 
     void _concavePolysToTrisHelper( std::vector<plTriangle> &triangles, PLfloat &minSurfaceArea, const plPolygon &polygon );
-   
+
 
     plVector3 projectVectorOnPlane( const plVector3 &vector, const plVector3 &plane_normal)
     {
         PLfloat dist = vector * plane_normal;
-        
+
         return vector - (dist * plane_normal);
     }
 
@@ -40,14 +40,14 @@ namespace plMath
         // Compute projected position from the clamped t
         return lineOrigin + t * lineDirection;
     }
-   
 
-    PLbool closestPointsBetweenSegments( const plVector3 &edge1Point1, 
-                                         const plVector3 &edge1Point2, 
-                                         const plVector3 &edge2Point1, 
-                                         const plVector3 &edge2Point2, 
+
+    PLbool closestPointsBetweenSegments( const plVector3 &edge1Point1,
+                                         const plVector3 &edge1Point2,
+                                         const plVector3 &edge2Point1,
+                                         const plVector3 &edge2Point2,
                                          plVector3& closestPointEdge1,
-                                         plVector3& closestPointEdge2, 
+                                         plVector3& closestPointEdge2,
                                          PLfloat& distanceBetweenLines)
     {
         plVector3 edge1Direction = edge1Point2 - edge1Point1;
@@ -71,7 +71,7 @@ namespace plMath
 
         return true;
     }
-    
+
 
     PLfloat clamp( PLfloat val, PLfloat min, PLfloat max)
     {
@@ -83,9 +83,9 @@ namespace plMath
 
     PLfloat fsqrt( PLfloat x )
     {
-        #define SQRT_MAGIC_F 0x5f3759df   
+        #define SQRT_MAGIC_F 0x5f3759df
         const PLfloat xhalf = 0.5f*x;
-     
+
         union // get bits for floating value
         {
             PLfloat x;
@@ -93,8 +93,8 @@ namespace plMath
         } u;
         u.x = x;
         u.i = SQRT_MAGIC_F - (u.i >> 1);        // gives initial guess y0
-        return x*u.x*(1.5f - xhalf*u.x*u.x);    // Newton step, repeating increases accuracy 
-    }  
+        return x*u.x*(1.5f - xhalf*u.x*u.x);    // Newton step, repeating increases accuracy
+    }
 
 
     plVector3 closestPointOnPlane(const plVector3 &lineDirection, const plVector3 &linePoint, const plVector3 &planeNormal, const plVector3 &planePoint)
@@ -103,7 +103,7 @@ namespace plMath
         return (t * lineDirection) + linePoint;
     }
 
-    
+
     PLbool solveMatrix22Equation(PLfloat a11, PLfloat a12, PLfloat a21, PLfloat a22, PLfloat b1, PLfloat b2, PLfloat &x, PLfloat &y)
     {
         // solve for x and y in this thing:
@@ -128,12 +128,12 @@ namespace plMath
         y = d21 * b1 + d22 * b2;
 
         return true;
-    } 
+    }
 
 
     PLbool intersectTwoLines(const plVector3 &edge1Point, const plVector3 &edge2Point, const plVector3 &edge1Direction, const plVector3 &edge2Direction, PLfloat &edge1Param, PLfloat &edge2Param)
     {
-        // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect   
+        // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
         edge1Param = 0.f;
         edge2Param = 0.f;
         plVector3 crossProductRightSideEdge1 ((edge2Point-edge1Point)^edge2Direction);
@@ -203,42 +203,42 @@ namespace plMath
 
 
 
-    plIntersection rayIntersect( const std::vector<plTriangle>& triangles, 
-                                 const plVector3 &rayOrigin, 
+    plIntersection rayIntersect( const std::vector<plTriangle>& triangles,
+                                 const plVector3 &rayOrigin,
                                  const plVector3 &rayDirection,
-                                 PLbool smoothNormal, 
-                                 PLbool ignoreBehindRay, 
+                                 PLbool smoothNormal,
+                                 PLbool ignoreBehindRay,
                                  PLbool backFaceCull )
     {
         PLfloat min = FLT_MAX;
         plIntersection closestIntersection( false );
 
         for ( const plTriangle& triangle : triangles )
-        {  
-            plIntersection intersection = triangle.rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );           
+        {
+            plIntersection intersection = triangle.rayIntersect( rayOrigin, rayDirection, ignoreBehindRay, backFaceCull );
             if ( intersection.exists )
             {
                 PLfloat tAbs = fabs(intersection.t);
-                if ( tAbs < min) 
+                if ( tAbs < min)
                 {
                     min = tAbs;
                     closestIntersection = intersection;
                 }
             }
-        }        
+        }
 
         if ( smoothNormal )
             closestIntersection.normal = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, closestIntersection.point, closestIntersection.normal );
 
         return closestIntersection;
-    } 
+    }
 
 
     plIntersection rayIntersect( const plVector3 &rayOrigin, const plVector3 &rayDirection, const plVector3& planePoint, const plVector3& planeNormal )
     {
         if ( planeNormal * rayDirection == 0 )
             return plIntersection( false );
-            
+
         // Compute the t value for the directed line ab intersecting the plane
         PLfloat t = ( (planePoint * planeNormal) - (planeNormal * rayOrigin) ) / ( planeNormal * rayDirection );
         plVector3 intPoint = rayOrigin + t * rayDirection;
@@ -251,33 +251,33 @@ namespace plMath
         plVector3 avgNormal( 0, 0, 0 );
         PLint count = 0;
         float radiusSquared = radius * radius;
-    
+
         // Find polygons on top of graft
         for ( const plTriangle& triangle : triangles )
         {
             if ( triangle.normal() * normal > 0.001)
-            {        
+            {
                 PLfloat dist1 = ( triangle.point0() - origin ).squaredLength();
                 PLfloat dist2 = ( triangle.point1() - origin ).squaredLength();
                 PLfloat dist3 = ( triangle.point2() - origin ).squaredLength();
-           
+
                 // if any point of triangle is withing radial sphere, accept
                 float minDist = PL_MIN_OF_3( dist1, dist2, dist3 );
 
                 if ( minDist <= radiusSquared )
-                {        
+                {
                     avgNormal = avgNormal + triangle.normal();
                     count++;
                 }
             }
-        } 
+        }
 
         if ( count == 0 )
         {
             // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
             //std::cout << "plMath::getAverageNormal() warning: No normal found" << std::endl;
             return normal;
-        }    
+        }
 
         return ( 1.0f/(PLfloat)(count) * avgNormal ).normalize();
     }
@@ -286,27 +286,27 @@ namespace plMath
     plIntersection getClosestPointToRay( const std::vector<plTriangle>& triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection )
     {
         plIntersection intersection( false );
-    
+
         PLfloat lowestDist = FLT_MAX;
-               
+
         for ( const plTriangle& triangle : triangles )
         {
             // find closest point on ray from triangle centre
             plVector3 closestPointOnLine = plMath::closestPointOnLine( triangle.centroid(), rayOrigin, rayDirection );
-                
+
             plVector3 closestPointOnTri = triangle.closestPointTo( closestPointOnLine );
-            
+
             PLfloat dist = ( closestPointOnTri - closestPointOnLine ).squaredLength();
-                
+
             if ( dist < lowestDist )
-            { 
+            {
                 lowestDist = dist;
                 intersection.exists = true;
                 intersection.point  = closestPointOnTri;
                 intersection.normal = triangle.normal();
             }
         }
-        
+
         return intersection;
     }
 
@@ -375,13 +375,13 @@ namespace plMath
         {
             minSurfaceArea = FLT_MAX/2.f;
             return;
-        } 
+        }
 
         // try all permutations of triangles involving the edge between points[0] and points[1]
         for (PLuint i = 2; i < polygon.points.size(); i++)
         {
             plTriangle bisectingTriangle( polygon.points[0], polygon.points[1], polygon.points[i] );
-            PLfloat    bisectingTriangleArea = bisectingTriangle.getArea(); 
+            PLfloat    bisectingTriangleArea = bisectingTriangle.getArea();
 
             if (bisectingTriangleArea <= epsilon)
                 continue; // bad triangle
@@ -430,7 +430,3 @@ namespace plMath
     }
 
 }
-
-
-
-

@@ -20,7 +20,7 @@ class plScanVolume //: public plRenderable
         enum plScanVoxelType { EMPTY = 0x0, SURFACE = 0x1, UNKNOWN = 0x3 }; // Note that AND of two types yields the correct type
         //enum plRenderMethod { DISK, CUBE, TRIANGLES, VALUES }; // Method to render a voxel
 
-        class plScanVoxel 
+        class plScanVoxel
         {
             public:
 
@@ -28,7 +28,7 @@ class plScanVolume //: public plRenderable
                 std::vector<plVector3> point;  // all surface points at this voxel
                 plScanVoxelType  type;   // EMPTY, SURFACE, or UNKNOWN
 
-                plScanVoxel() 
+                plScanVoxel()
                 {
                     type = UNKNOWN;
                 }
@@ -96,7 +96,7 @@ class plScanMask : public plScanVolume
 class plScanField : public plScanVolume
 {
     public:
-    
+
         // attributes
         std::vector<plScanMask*> masks;          // masks to AND with volume when carving out a sphere
 

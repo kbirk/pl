@@ -32,7 +32,7 @@ namespace plMeshCutter
 
         // Collect polygons that intersect the boundary
         std::vector<plPolygon> interiorPolygons;
-        for ( PLuint i=0; i<inputTriangles.size(); i++ ) 
+        for ( PLuint i=0; i<inputTriangles.size(); i++ )
         {
             if ( !_triangleCutsBoundary( inputTriangles[i], trianglesProcessedFlag[i], boundary, interiorPolygons, interiorPoints ) )
             {
@@ -52,24 +52,24 @@ namespace plMeshCutter
                     // for each triangle vertex
                     for ( PLuint v=0; v<3; v++ )
                     {
-                        if ( interiorPoints[p] == inputTriangles[t][v] ) 
+                        if ( interiorPoints[p] == inputTriangles[t][v] )
                         {
                             interiorPolygons.push_back( plPolygon( inputTriangles[t] ) );
                             trianglesProcessedFlag[t] = 1;
                             _updateInteriorPoints( inputTriangles[t], interiorPoints );
                             break;
-                        } 
-                    } 
+                        }
+                    }
                 }
             }
         }
 
-        // convert polygons to triangles for the output       
+        // convert polygons to triangles for the output
         outputTriangles.clear();    // just in case polygons has stuff in it, it should be emptied
         plMath::concavePolysToTris( outputTriangles, interiorPolygons );
-		
+
         return true;
-    } 
+    }
 
 
     void _updateInteriorPoints( const plTriangle &triangle , std::vector<plVector3> &interiorPoints )
@@ -94,7 +94,7 @@ namespace plMeshCutter
     {
         std::vector<plCut> edgeCuts;
 
-        for (PLuint boundaryPointIndex=0; boundaryPointIndex<boundary.size(); boundaryPointIndex++) 
+        for (PLuint boundaryPointIndex=0; boundaryPointIndex<boundary.size(); boundaryPointIndex++)
         {
 
             // For each triangle edge, see if it crosses the line starting at boundary.points(index)
@@ -107,19 +107,19 @@ namespace plMeshCutter
             {
                 for (PLint edgeIndex=0; edgeIndex<3; edgeIndex++)
                 {
-                    if (_edgeCutsBoundary( triangle[edgeIndex], 
-                                           triangle[(edgeIndex+1)%3], 
-                                           boundary, 
-                                           boundaryPointIndex, 
-                                           intersectionPoint, 
-                                           edgeParameter, 
-                                           boundaryParameter, 
+                    if (_edgeCutsBoundary( triangle[edgeIndex],
+                                           triangle[(edgeIndex+1)%3],
+                                           boundary,
+                                           boundaryPointIndex,
+                                           intersectionPoint,
+                                           edgeParameter,
+                                           boundaryParameter,
                                            intersectionDirection ))
-                    {                      
+                    {
                         edgeCuts.push_back( plCut( intersectionPoint, edgeIndex, edgeParameter, boundaryPointIndex, boundaryParameter, intersectionDirection ) );
                     }
                 }
-            } 
+            }
         }
 
         // Build the polygons that remain inside the boundary
@@ -156,7 +156,7 @@ namespace plMeshCutter
                     break;
             }
 
-            if (edgeCutIndex == edgeCuts.size()) 
+            if (edgeCutIndex == edgeCuts.size())
             {
                 std::cerr << "Error: Couldn't find an initial outgoing triangle edge cut." << std::endl;
                 return false;
@@ -219,20 +219,20 @@ namespace plMeshCutter
                 {
                     std::cerr << "Error: Expected to have an incoming triangle edge but an outgoing edge was found." << std::endl;
                     return false;
-                } 
+                }
 
                 // Add this int point
 
                 poly.points.push_back( edgeCuts[ edgeCutIndex ].point );
                 edgeCuts[ edgeCutIndex ].processed = true;
                 numCutsLeft--;
-        
+
                 // Move along the triangle edges from this intersection point to the next.
 
                 PLint thisEdgeIndex = edgeCuts[ edgeCutIndex ].edgeIndex;
                 PLint nextEdgeIndex = edgeCuts[ (edgeCutIndex+1)%edgeCuts.size() ].edgeIndex;
 
-                while (thisEdgeIndex != nextEdgeIndex) 
+                while (thisEdgeIndex != nextEdgeIndex)
                 {
 
                     // We're not intersecting the next boundary wall on the same triangle
@@ -272,7 +272,7 @@ namespace plMeshCutter
         // resulting in exactly the same intersection point.
         bool reverseEdge = (edgeVertex0.x > edgeVertex1.x || (edgeVertex0.x == edgeVertex1.x &&
                                                              (edgeVertex0.y > edgeVertex1.y || (edgeVertex0.y == edgeVertex1.y && edgeVertex0.z > edgeVertex1.z) ) ) );
-        if (reverseEdge) 
+        if (reverseEdge)
         {
             plVector3 temp = edgeVertex0;
             edgeVertex0 = edgeVertex1;
@@ -292,13 +292,13 @@ namespace plMeshCutter
 
         PLfloat denom = dot1 - dot0;
 
-        if (fabs(denom) > 1e-6) 
-        {	
+        if (fabs(denom) > 1e-6)
+        {
             // edge is not parallel to boundary wall
             PLfloat t = (d - dot0) / denom;
 
-            if (0 <= t && t <= 1) 
-            {	
+            if (0 <= t && t <= 1)
+            {
                 // edge endpoints are on opposite sides of boundary wall
 
                 // Project intersection point onto line in boundary between points
@@ -306,19 +306,19 @@ namespace plMeshCutter
 
                 PLfloat s = ((x-point0) * (point1-point0)) / ((point1-point0)*(point1-point0));
 
-                if (0 <= s && s <= 1) 
+                if (0 <= s && s <= 1)
                 {
                     plVector3 y = point0 + s * (point1-point0);
 
-                    if ((x-y).length() < 0.5*(point1-point0).length()) 
+                    if ((x-y).length() < 0.5*(point1-point0).length())
                     {
                         intPoint = x;
                         intDir = (denom > 0 ? +1 : -1);
                         edgeParam = t;
                         boundaryParam = s;	// We're assuming that the projections are monotonically increasing
                                             // as we walk across the mesh from one boundary wall extreme to the other.
-                        if (reverseEdge) 
-                        {    
+                        if (reverseEdge)
+                        {
                             // undo the reverse (since edgeVertex0 & edgeVertex1 are passed by reference)
                             plVector3 temp = edgeVertex0;
                             edgeVertex0 = edgeVertex1;
@@ -335,8 +335,8 @@ namespace plMeshCutter
             }
         }
 
-        if (reverseEdge) 
-        {    
+        if (reverseEdge)
+        {
             // undo the reverse (since edgeVertex0 & edgeVertex1 are passed by reference)
             plVector3 temp = edgeVertex0;
             edgeVertex0 = edgeVertex1;
@@ -383,7 +383,3 @@ namespace plMeshCutter
     }
 
 }
-
-
-
-

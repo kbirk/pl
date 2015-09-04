@@ -12,16 +12,15 @@ class plDonorSite : public plRenderable
 {
     public:
 
-        plBoundary boundary; 
-                
+        plBoundary boundary;
+
         plDonorSite();
         plDonorSite( const plMesh& mesh );
         plDonorSite( const plBoundary &boundary );
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;  
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;   
+        void extractRenderComponents( plRenderMap& renderMap ) const;
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 };
 
 
 #endif
-

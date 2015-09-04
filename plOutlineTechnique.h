@@ -11,10 +11,10 @@ class plOutlineTechnique : public plRenderTechnique
 
     public:
 
-        plOutlineTechnique();       
+        plOutlineTechnique();
 
         void render( const std::set< plRenderComponent >& componentSet ) const;
 };
 
 
-#endif 
+#endif

@@ -27,7 +27,7 @@ class plRenderComponent
 
         std::shared_ptr< plVAO >  _vao;
         std::vector< plUniform >  _uniforms;
-    
+
         void _bindUniforms( const plShader& shader ) const;
 };
 
@@ -35,4 +35,4 @@ class plRenderComponent
 typedef std::map< PLuint, std::set< plRenderComponent > >  plRenderMap;
 
 
-#endif 
+#endif

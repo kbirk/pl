@@ -26,11 +26,11 @@ class plEdge
 };
 
 
-class plPolygon 
+class plPolygon
 {
 
     public:
-    
+
         plPolygon() {}
         plPolygon( const plTriangle& tri )
         {
@@ -39,7 +39,7 @@ class plPolygon
             points.push_back( tri.point2() );
             normal = tri.normal();
         }
-    
+
         std::vector<plVector3> points;
         plVector3              normal;
 

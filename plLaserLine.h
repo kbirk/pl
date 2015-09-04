@@ -11,16 +11,16 @@ class plLaserLine : public plRenderable
 {
 
     public:
-    
+
         plLaserLine();
         plLaserLine( const plVector3 &position, const plVector3 &direction, PLfloat length = 10 );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
-        
-    private:  
-    
-        PLuint      _techniqueEnum; 
+
+    private:
+
+        PLuint      _techniqueEnum;
         PLfloat     _length;
         plVector3   _position;
         plVector3   _direction;

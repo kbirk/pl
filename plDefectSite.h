@@ -14,22 +14,21 @@ class plDefectSite : public plRenderable
     public:
 
         plSpline    spline;
-        plBoundary  boundary; 
-                    
+        plBoundary  boundary;
+
         plDefectSite();
         plDefectSite( const plMesh& mesh );
         plDefectSite( const plSpline& spline, const std::vector<plString> &row );
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;  
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;  
-        
+        void extractRenderComponents( plRenderMap& renderMap ) const;
+        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+
         void recastBoundary();
-        
+
     private:
-    
-                 
+
+
 };
 
 
 #endif
-

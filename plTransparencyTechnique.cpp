@@ -2,7 +2,7 @@
 
 plTransparencyTechnique::plTransparencyTechnique()
 {
-}      
+}
 
 
 void plTransparencyTechnique::render( const std::set< plRenderComponent >& componentSet ) const
@@ -11,8 +11,8 @@ void plTransparencyTechnique::render( const std::set< plRenderComponent >& compo
     const std::shared_ptr< plShader >& shader = plRenderResources::shaders( PL_PHONG_SHADER );
 
     // bind fbo
-    fbo->bind(); 
-    
+    fbo->bind();
+
     // set draw buffers to only write to colour output
     std::vector<GLenum> drawBuffers;
     drawBuffers.push_back( GL_COLOR_ATTACHMENT0 );
@@ -25,15 +25,15 @@ void plTransparencyTechnique::render( const std::set< plRenderComponent >& compo
     // bind shader
     shader->bind();
 
-    // set viewport        
-    glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() );      
+    // set viewport
+    glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() );
 
     glDepthMask( false );
 
     // draw render components to colour buffer
     for ( const plRenderComponent& component : componentSet )
-    { 
-        component.draw( *shader );   
+    {
+        component.draw( *shader );
     }
 
     // set stencil testing for picking buffer
@@ -41,20 +41,20 @@ void plTransparencyTechnique::render( const std::set< plRenderComponent >& compo
     glStencilFunc( GL_NOTEQUAL, 1, 0xFF);
     glStencilMask( 0xFF );
     glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-    
+
     // set draw buffers to only write to picking buffer
     drawBuffers.clear();
     drawBuffers.push_back( GL_NONE ); // no colour output
     drawBuffers.push_back( GL_NONE );
     drawBuffers.push_back( GL_NONE );
     drawBuffers.push_back( GL_NONE );
-    drawBuffers.push_back( GL_COLOR_ATTACHMENT4 );   
+    drawBuffers.push_back( GL_COLOR_ATTACHMENT4 );
     fbo->setDrawBuffers( drawBuffers );
-    
+
     // draw render components to picking buffer
     for ( const plRenderComponent& component : componentSet )
-    { 
-        component.draw( *shader );   
+    {
+        component.draw( *shader );
     }
 
     glDisable( GL_STENCIL_TEST );
@@ -64,6 +64,6 @@ void plTransparencyTechnique::render( const std::set< plRenderComponent >& compo
     // unbind shader
     shader->unbind();
     // unbind fbo
-    fbo->unbind();      
+    fbo->unbind();
 
 }

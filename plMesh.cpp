@@ -1,6 +1,6 @@
 #include "plMesh.h"
 
-plMesh::plMesh() 
+plMesh::plMesh()
 {
 }
 
@@ -10,13 +10,13 @@ plMesh::plMesh(const std::vector<plTriangle> &triangles)
 {
 }
 
-		 
+
 plMesh::plMesh( std::vector<plTriangle>&& triangles )
     : _triangles( std::move( triangles ) )
-{    
-} 
+{
+}
 
-           
+
 plMesh::plMesh( const plMesh &mesh )
     : _triangles( mesh._triangles )
 {
@@ -26,23 +26,23 @@ plMesh::plMesh( const plMesh &mesh )
 plMesh::plMesh( plMesh&& mesh )
     : _triangles( std::move( mesh._triangles ) )
 {
-}      
-        
+}
+
 
 plMesh::~plMesh()
 {
 }
 
 
-plMesh& plMesh::operator= ( const plMesh& mesh ) 
-{ 
+plMesh& plMesh::operator= ( const plMesh& mesh )
+{
     _triangles = mesh._triangles;
     return *this;
 }
 
 
-plMesh& plMesh::operator= ( plMesh&& mesh ) 
-{ 
+plMesh& plMesh::operator= ( plMesh&& mesh )
+{
     _triangles = std::move( mesh._triangles );
     return *this;
 }
@@ -53,8 +53,8 @@ void plMesh::getMinMax(plVector3 &min, plVector3 &max) const
     min = plVector3( FLT_MAX, FLT_MAX, FLT_MAX );
     max = -1 * min;
 
-    for ( const plTriangle& triangle : _triangles ) 
-    {  
+    for ( const plTriangle& triangle : _triangles )
+    {
         const plVector3 &v = triangle.centroid();
 
         if (v.x < min.x) min.x = v.x;

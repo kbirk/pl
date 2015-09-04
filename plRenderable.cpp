@@ -2,7 +2,7 @@
 
 plRenderable::plRenderable()
     : _isVisible( true )
-{ 
+{
 }
 
 
@@ -28,4 +28,3 @@ PLbool plRenderable::isVisible() const
 {
     return _isVisible;
 }
-

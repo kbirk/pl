@@ -1,6 +1,6 @@
 #include "plMeshSpecific.h" 
 
-plMeshSpecific::plMeshSpecific() 
+plMeshSpecific::plMeshSpecific()
     : _mesh( nullptr )
 {
 }

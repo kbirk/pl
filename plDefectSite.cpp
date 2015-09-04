@@ -1,6 +1,6 @@
 #include "plDefectSite.h" 
 
-plDefectSite::plDefectSite() 
+plDefectSite::plDefectSite()
 {
 }
 
@@ -23,10 +23,10 @@ void plDefectSite::extractRenderComponents( plRenderMap& renderMap, PLuint techn
 {
     if ( !_isVisible )
         return;
-      
-    // draw spline boundary 
-    boundary.extractRenderComponents( renderMap, technique );   
-     
+
+    // draw spline boundary
+    boundary.extractRenderComponents( renderMap, technique );
+
     // draw spline corners
     spline.extractRenderComponents( renderMap, technique );
 }
@@ -43,7 +43,7 @@ void plDefectSite::recastBoundary()
     for ( PLint i=boundary.size()-1; i>=0; i-- )
     {
         plIntersection intersection = spline.surfaceMesh().rayIntersect( boundary.points(i), boundary.normals(i) );
-        
+
         if ( intersection.exists )
         {
             boundary.movePointAndNormal( i, intersection.point, intersection.normal );
@@ -54,4 +54,3 @@ void plDefectSite::recastBoundary()
         }
     }
 }
-

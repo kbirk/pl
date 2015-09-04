@@ -5,11 +5,11 @@
 
 #include "plString.h"
 
-class plCSV 
+class plCSV
 {
     public:
 
-        std::vector< std::vector<plString> > data;       
+        std::vector< std::vector<plString> > data;
         plString                 filename;
 
         plCSV( plString fn );
@@ -18,7 +18,7 @@ class plCSV
 
         void _readFile( plString filename, PLbool verbose = false );
 
-};  
+};
 
 
 #endif

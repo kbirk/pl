@@ -97,13 +97,13 @@ void plScanVolume::updateBoundingBox()
     vbo->set( vertices );
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, sizeof( plVector4 ), sizeof( plVector4 ) ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();
     eabo->set( indices, GL_LINES );
     // attach to vao
     boundingBoxVAO.attach( vbo );
     boundingBoxVAO.attach( eabo );
     // upload to gpu
-    boundingBoxVAO.upload(); 
+    boundingBoxVAO.upload();
 }
 
 PLbool plScanVolume::enlargeVolume(const plVector3 &originTranslationW, const plVector3 &dimensionExpansionW)
@@ -478,7 +478,7 @@ void Volume::carveSphere( vector centre, vector dir )
 
   // First time through: Create voxel array and mask
 
-  if (voxels == NULL) 
+  if (voxels == NULL)
   {
 
     // Create voxel array
@@ -501,7 +501,7 @@ void Volume::carveSphere( vector centre, vector dir )
     int nEmpty = 0;
     int nUnknown = 0;
 
-    
+
     for (int z=-radiusMaskVoxels; z<=radiusMaskVoxels; z++)
       for (int y=-radiusMaskVoxels; y<=radiusMaskVoxels; y++)
         for (int x=-radiusMaskVoxels; x<=radiusMaskVoxels; x++) {
@@ -519,18 +519,18 @@ void Volume::carveSphere( vector centre, vector dir )
 	  // Fill in data for this mask voxel
 
 	  mask[i].dir = vector(x,y,z).normalize();
-	  
+
 	  if (maxDist < probeRadius) { // this voxel is inside the probe
 	    mask[i].type = EMPTY;
 	    nEmpty++;
 	  } else if (probeRadius < minDist) { // this voxel is outside the probe
 	    mask[i].type = UNKNOWN;
 	    nUnknown++;
-	  } else { // this voxel intersects the probe surface 
+	  } else { // this voxel intersects the probe surface
 	    mask[i].type = SURFACE;
 	    surfacePoints.push_back( MaskSurfacePoint( mask[i].dir, i ) ); // record this as a surface point (for quick lookup later)
 	  }
-	  
+
 	  i++;
 	}
 
@@ -548,7 +548,7 @@ void Volume::carveSphere( vector centre, vector dir )
   for (int i=0; i<surfacePoints.size(); i++) {
 
     // Find angle between this surface point and the cone axis
-    
+
     float sine   = (surfacePoints[i].dir ^ dir).length();
     float cosine = surfacePoints[i].dir * dir;
     float angle  = atan2( sine, cosine );
@@ -635,9 +635,9 @@ void Volume::maskVoxel( Voxel *voxelP, VoxelType type, vector point, vector dir 
 {
 
   VoxelType prevType = voxelP->type;
-	  
+
   voxelP->type = (VoxelType) (voxelP->type & type);
-	  
+
   if (voxelP->type == SURFACE) {
 
     if (prevType != SURFACE) { // first point
@@ -656,7 +656,7 @@ void Volume::maskVoxel( Voxel *voxelP, VoxelType type, vector point, vector dir 
 
 	voxelP->normal = dir;
 	voxelP->point  = point;
-		  
+
       } else if (newIsOutsideOld && oldIsOutsideNew || !newIsOutsideOld && !oldIsOutsideNew) {
 
 	voxelP->normal = (voxelP->normal + dir).normalize();
@@ -664,7 +664,7 @@ void Volume::maskVoxel( Voxel *voxelP, VoxelType type, vector point, vector dir 
       }
     }
   }
-}   
+}
 
 
 // Draw the volume
@@ -689,7 +689,7 @@ void Volume::draw()
   for (int z=0; z<dims.z; z++)
     for (int y=0; y<dims.y; y++)
       for (int x=0; x<dims.x; x++) {
-	
+
 	if (voxelP->type == SURFACE) {
 
 	  vector pos;
@@ -697,7 +697,7 @@ void Volume::draw()
 	  if (useVoxelCentre)
 	    pos = origin + VOXEL_SIZE * vector(x,y,z); // point is at centre of voxel
 	  else
-	    pos = voxelP->point; // point is average surface point inside this voxel 
+	    pos = voxelP->point; // point is average surface point inside this voxel
 
 	  vector norm = -1 * voxelP->normal;
 
@@ -707,7 +707,7 @@ void Volume::draw()
 	    gluSphere( quadric, VOXEL_SIZE * 0.1, 10, 10 );
 	    glPopMatrix();
 	  }
-	  
+
 	  glColor4f( 0.2, 0.7, 0.4, 1.0 );
 
 	  switch (renderMethod) {
@@ -736,7 +736,7 @@ void Volume::draw()
 	    for (int i=-1; i<1; i++)
 	      for (int j=-1; j<1; j++)
 		for (int k=-1; k<1; k++) {
-		  
+
 		  FieldPoint *corner = valueP + (int) (i + dims.x * (j + dims.y * k));
 
 		  float dist = fabs(corner->value) / (2*VOXEL_SIZE);
@@ -787,7 +787,7 @@ void Volume::draw()
 	} else if (voxelP->type == EMPTY)
 
 	  nEmpty++;
-	  
+
 	voxelP++;
 	valueP++;
       }
@@ -795,4 +795,3 @@ void Volume::draw()
   // cout << "\r" << nSurface << " surface voxels,  " << nEmpty << " empty voxels"; cout.flush();
 }
 #endif
-

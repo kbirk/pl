@@ -17,25 +17,25 @@
 class plGreedyGroup
 {
     public:
-            
-        plGreedyGroup();        
-       
+
+        plGreedyGroup();
+
         void bind();
         void unbind();
 
         float lowestRMS() const { return _lowestRMS; }
         void update();
         void getSolution( plDonorSolution &solution, const plPlanningBufferData &planningData );
-        
+
     private:
-            
+
         PLfloat                _lowestRMS;
         std::vector<plVector4> _lowestPositions;
         std::vector<plVector4> _lowestNormals;
         std::vector<plVector4> _lowestXAxes;
         std::vector<PLuint>    _lowestSiteIndices;
-        
-        plSSBO _donorSolutionPositionsSSBO; 
+
+        plSSBO _donorSolutionPositionsSSBO;
         plSSBO _donorSolutionNormalsSSBO;
         plSSBO _donorSolutionXAxesSSBO;
         plSSBO _donorSolutionSiteIndicesSSBO;
@@ -50,4 +50,3 @@ namespace plPlannerStage3
 
 
 #endif
-

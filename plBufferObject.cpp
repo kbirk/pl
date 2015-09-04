@@ -1,7 +1,7 @@
 #include "plBufferObject.h"
 
-plBufferObject::plBufferObject()  
-    :   _id( 0 ), _numBytes( 0 ) 
+plBufferObject::plBufferObject()
+    :   _id( 0 ), _numBytes( 0 )
 {
 }
 
@@ -18,4 +18,3 @@ void plBufferObject::_destroy()
     _numBytes = 0;
     _id = 0;
 }
-

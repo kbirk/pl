@@ -29,11 +29,11 @@ plTransform::plTransform( const plMatrix44& matrix )
 
 
 
-void plTransform::_compute() 
+void plTransform::_compute()
 {
     _z = ( _x ^ _y ).normalize(); // re-compute z to ensure it is orthogonal to x and y
 
-    if (fabs( _x * _y ) > 0.001) 
+    if (fabs( _x * _y ) > 0.001)
     {
         std::cerr << "x and y are not perpendicular (dot product = " << _x*_y << std::endl;
     }
@@ -90,7 +90,7 @@ plVector3 plTransform::applyInverse( const plVector3 &v ) const
 {
     plVector3 p = v-_origin;
     return plVector3( p*_x, p*_y, p*_z );
-} 
+}
 
 
 plVector3 plTransform::applyNormalInverse( const plVector3 &v ) const
@@ -99,17 +99,17 @@ plVector3 plTransform::applyNormalInverse( const plVector3 &v ) const
 }
 
 
-PLfloat plTransform::squaredDistToAxis( const plVector3 &v ) const    
+PLfloat plTransform::squaredDistToAxis( const plVector3 &v ) const
 {
-    // v is already in the *local* coordinate system of the graft        
+    // v is already in the *local* coordinate system of the graft
     static plVector3 axis(0,1,0);
     return (v - (v*axis)*axis).squaredLength();
 }
 
 
-PLfloat plTransform::projectedDistOnAxis( const plVector3 &v ) const  
+PLfloat plTransform::projectedDistOnAxis( const plVector3 &v ) const
 {
-    // v is already in the *local* coordinate system of the graft 
+    // v is already in the *local* coordinate system of the graft
     static plVector3 axis(0,1,0);
     return v*axis;
 }
@@ -153,6 +153,6 @@ plTransform plTransform::operator* ( const plMatrix44 &matrix ) const
 
 std::ostream& operator << ( std::ostream& out, const plTransform &t )
 {
-    out << t.origin() << "," << t.x() << "," << t.y();  
+    out << t.origin() << "," << t.x() << "," << t.y();
     return out;
 }

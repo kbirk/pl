@@ -8,23 +8,23 @@ plBoneAndCartilage::plBoneAndCartilage( const plString &boneFile, const plString
 
 
 void plBoneAndCartilage::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
-{   
+{
 
     // draw combined
     plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
     plColourStack::load( PL_MODEL_BONE_COLOUR );
-    combined.extractRenderComponents( renderMap, technique );  
+    combined.extractRenderComponents( renderMap, technique );
 
     /*
     // draw cartilage
     plPickingStack::loadRed( PL_PICKING_TYPE_CARTILAGE );
     plColourStack::load( PL_MODEL_CARTILAGE_COLOUR );
-    cartilage.extractRenderComponents( renderMap, technique ); 
-    
+    cartilage.extractRenderComponents( renderMap, technique );
+
     // draw bone
     plPickingStack::loadRed( PL_PICKING_TYPE_BONE );
-    plColourStack::load( PL_MODEL_BONE_COLOUR );       
-    bone.extractRenderComponents( renderMap, technique );  
+    plColourStack::load( PL_MODEL_BONE_COLOUR );
+    bone.extractRenderComponents( renderMap, technique );
     */
 }
 
@@ -47,11 +47,8 @@ void plBoneAndCartilage::toggleArthroView()
 plVector3 plBoneAndCartilage::getCentroid() const
 {
     plVector3 min, max;
-    
+
     combined.mesh().getMinMax( min, max );
 
-    return 0.5f * (max + min);    
-}   
-
-
-
+    return 0.5f * (max + min);
+}

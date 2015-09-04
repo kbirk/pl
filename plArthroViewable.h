@@ -7,20 +7,20 @@
 
 class plArthroViewable
 {
-    
+
     public:
-    
-        plArthroViewable();  
-        
+
+        plArthroViewable();
+
         PLbool inArthroView() const { return _inArthroView; }
-        
-        virtual void toggleArthroView();	
-        
-    protected:     
-           
+
+        virtual void toggleArthroView();
+
+    protected:
+
         PLbool _inArthroView;
-    
+
 };
 
 
-#endif 
+#endif

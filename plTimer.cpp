@@ -12,7 +12,7 @@ PLtime plTimer::now()
     return PLtime( ( WIN32StopTime.QuadPart / double( WIN32Frequency.QuadPart ) ) * 1000.0 );
 #else
     typedef std::chrono::high_resolution_clock         plClock;
-    typedef std::chrono::milliseconds                  plMilliseconds;                
+    typedef std::chrono::milliseconds                  plMilliseconds;
     return std::chrono::duration_cast<plMilliseconds>( plClock::now().time_since_epoch() ).count();
 #endif
 }

@@ -3,17 +3,17 @@
 
 #include "plCommon.h"
 
-class plBufferObject 
+class plBufferObject
 {
 
-    public:                    
-          
-        plBufferObject();   
+    public:
+
+        plBufferObject();
 
         virtual ~plBufferObject();
 
         PLuint numBytes() const { return _numBytes; }
-        
+
         virtual void bind  ( PLuint location ) const = 0;
         virtual void unbind( PLuint location ) const = 0;
 
@@ -21,7 +21,7 @@ class plBufferObject
 
         GLuint _id;
         GLuint _numBytes;
-        
+
         virtual void _destroy();
 };
 

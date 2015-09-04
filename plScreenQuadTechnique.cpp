@@ -2,7 +2,7 @@
 
 plScreenQuadTechnique::plScreenQuadTechnique()
 {
-}      
+}
 
 
 void plScreenQuadTechnique::render( const std::set< plRenderComponent >& componentSet ) const
@@ -15,11 +15,11 @@ void plScreenQuadTechnique::render( const std::set< plRenderComponent >& compone
     // clear back buffer
     glClearColor( PL_CLEAR_COLOUR );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-    glViewport( plWindow::viewportX(), plWindow::viewportY(), plWindow::viewportWidth(), plWindow::viewportHeight() );   
+    glViewport( plWindow::viewportX(), plWindow::viewportY(), plWindow::viewportWidth(), plWindow::viewportHeight() );
 
     plRenderComponent component = _generateComponent();
 
-    component.draw( *shader ); 
+    component.draw( *shader );
 }
 
 
@@ -28,12 +28,12 @@ plVAO plScreenQuadTechnique::_generateQuad() const
     std::vector<plVector3> vertices;        vertices.reserve( 8 );
     std::vector<PLuint>    indices;         indices.reserve( 6 );
 
-    // position                                     // texture coord       
-    vertices.push_back( plVector3( -1, -1, 0 ) );   vertices.push_back( plVector3( 0,0,0) );   
-    vertices.push_back( plVector3(  1, -1, 0 ) );   vertices.push_back( plVector3( 1,0,0) );   
-    vertices.push_back( plVector3(  1,  1, 0 ) );   vertices.push_back( plVector3( 1,1,0) );    
+    // position                                     // texture coord
+    vertices.push_back( plVector3( -1, -1, 0 ) );   vertices.push_back( plVector3( 0,0,0) );
+    vertices.push_back( plVector3(  1, -1, 0 ) );   vertices.push_back( plVector3( 1,0,0) );
+    vertices.push_back( plVector3(  1,  1, 0 ) );   vertices.push_back( plVector3( 1,1,0) );
     vertices.push_back( plVector3( -1,  1, 0 ) );   vertices.push_back( plVector3( 0,1,0) );
-    
+
     indices.push_back( 0 );   indices.push_back( 1 );   indices.push_back( 2 );
     indices.push_back( 0 );   indices.push_back( 2 );   indices.push_back( 3 );
 
@@ -43,7 +43,7 @@ plVAO plScreenQuadTechnique::_generateQuad() const
     vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 32, 0  ) );
     vbo->set( plVertexAttributePointer( PL_TEXCOORD_ATTRIBUTE, 32, 16 ) );
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();    
+    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();
     eabo->set( indices );
 
     plVAO vao;
@@ -51,7 +51,7 @@ plVAO plScreenQuadTechnique::_generateQuad() const
     vao.attach( vbo );
     vao.attach( eabo );
     // upload to gpu
-    vao.upload(); 
+    vao.upload();
 
     return vao;
 }
@@ -64,7 +64,7 @@ plRenderComponent plScreenQuadTechnique::_generateComponent() const
     static plMatrix44 camera( 1, 0,  0, 0,
                               0, 1,  0, 0,
                               0, 0, -1, 0,
-                              0, 0,  0, 1 ); 
+                              0, 0,  0, 1 );
 
     static std::shared_ptr< plVAO > screenQuadVAO = std::make_shared<plVAO>( _generateQuad() );
 
@@ -83,4 +83,3 @@ plRenderComponent plScreenQuadTechnique::_generateComponent() const
 
     return component;
 }
-

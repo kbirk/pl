@@ -634,4 +634,3 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataFa
         stream << "\n" << face.edges[i];
     return stream;
 }
-

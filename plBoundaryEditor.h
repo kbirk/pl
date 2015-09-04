@@ -14,9 +14,9 @@ class plBoundaryEditor : public plEditor
     public:
 
         plBoundaryEditor();
-        
-        void clearSelection();                     
-        void selectBoundary(PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex ); 
+
+        void clearSelection();
+        void selectBoundary(PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex );
 
         PLbool isBoundarySelected() const { return (_selectedBoundary != NULL); }
 
@@ -31,16 +31,16 @@ class plBoundaryEditor : public plEditor
         void clearSelectedBoundary   ();
         void removeSelectedSite      ();
         void toggleSelectedVisibility();
-        
-        void extractRenderComponents( plRenderMap& renderMap ) const; 
+
+        void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
-    private: 
-    
-        PLint       _selectedSiteIndex;    // use this and above to determine which pl*Site 
+    private:
+
+        PLint       _selectedSiteIndex;    // use this and above to determine which pl*Site
         plBoundary *_selectedBoundary;
         PLint       _selectedPointIndex;
-         
+
         void _clearSiteBoundaries();
 
         void _selectBoundary( plBoundary &boundary, PLuint boundaryIndex, PLuint pointIndex );
@@ -49,12 +49,11 @@ class plBoundaryEditor : public plEditor
         void _selectDefectSiteBoundary   ( PLuint boundaryIndex, PLuint pointIndex );
         void _selectDonorSiteBoundary    ( PLuint boundaryIndex, PLuint pointIndex );
         void _selectIGuideBoundary       ( PLuint boundaryIndex, PLuint pointIndex );
-       
+
         plIntersection _getBoundaryIntersection( PLuint x, PLuint y );
 
-        void _extractMenuRenderComponents( plRenderMap& renderMap ) const; 
+        void _extractMenuRenderComponents( plRenderMap& renderMap ) const;
 
 };
 
 #endif
-

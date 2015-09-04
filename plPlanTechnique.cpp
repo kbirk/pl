@@ -2,7 +2,7 @@
 
 plPlanTechnique::plPlanTechnique()
 {
-}      
+}
 
 void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet ) const
 {
@@ -10,12 +10,12 @@ void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet 
     const std::shared_ptr< plShader >& shader = plRenderResources::shaders( PL_PHONG_SHADER );
 
     // bind fbo
-    fbo->bind(); 
+    fbo->bind();
 
     // clear fbo before individual draw buffers are set
-    glClearColor( 0, 0, 0, 0 );          
+    glClearColor( 0, 0, 0, 0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-    glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() ); 
+    glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() );
 
     // set draw buffers
     std::vector<GLenum> drawBuffers;
@@ -36,11 +36,11 @@ void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet 
     glStencilFunc( GL_ALWAYS, 1, 0xFF);
     glStencilMask( 0xFF );
     glStencilOp( GL_REPLACE, GL_REPLACE, GL_REPLACE );
- 
+
     // draw main render components
     for ( const plRenderComponent& component : componentSet )
-    {     
-        component.draw( *shader );   
+    {
+        component.draw( *shader );
     }
 
 
@@ -52,6 +52,5 @@ void plPlanTechnique::render( const std::set< plRenderComponent >& componentSet 
     shader->unbind();
 
     // unbind fbo
-    fbo->unbind();  
+    fbo->unbind();
 }
-

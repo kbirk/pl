@@ -12,11 +12,11 @@ class plTrackedObject : public plRenderable
 {
 
     public:
-           
-        plTrackedObject ();                                                                           //  empty Constructor, allows for declaration of trackedObjects in headers        
+
+        plTrackedObject ();                                                                           //  empty Constructor, allows for declaration of trackedObjects in headers
         plTrackedObject ( const plDRBTransform &ToTrackedPoint, const plDRBTransform &ToTrackedEnd,   //  real constructor requiring three DRB transforms (and an arthro flag)
                           const plDRBTransform &FemurDRBToFemurSTL, bool isArthro = false );
-                            
+
         void            updatePosition( const plDRBTransform &DRBToWorld, const plDRBTransform &FemurToWorld );
 
         // Single line accessors
@@ -38,7 +38,7 @@ class plTrackedObject : public plRenderable
         //void draw() const;
 
     protected:
-    
+
         plDRBTransform   _DRBToTrackedPoint;
         plDRBTransform   _DRBToTrackedEnd;
         plDRBTransform   _FemurDRBtoSTL;
@@ -49,7 +49,7 @@ class plTrackedObject : public plRenderable
 
         PLfloat         _rotationAngle;
         PLbool          _isArthroscope;
-        
+
 };
 
 #endif

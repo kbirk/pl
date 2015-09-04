@@ -106,7 +106,7 @@ SOURCES =   main.cpp \
             plWindow.cpp \
             Window.cpp
 
-EXE  = planner
+EXE = planner
 
 Window:	$(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJECTS) $(LIBS)

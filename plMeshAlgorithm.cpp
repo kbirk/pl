@@ -361,9 +361,9 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
         indices.clear();
         for (PLuint j = 0; j < fit->edges.size(); j++)
         {
-            //if (indices.findIndex(fit->edges[j]) > -1)           
+            //if (indices.findIndex(fit->edges[j]) > -1)
             // check if exists in indices
-            if ( plUtility::exists( indices, fit->edges[j] ) )      
+            if ( plUtility::exists( indices, fit->edges[j] ) )
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -391,7 +391,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < vit->edges.size(); j++)
         {
             //if (vit->edges[j]->verts.findIndex(&(*vit)) == -1)
-            if ( plUtility::exists( vit->edges[j]->verts, &(*vit) ) ) 
+            if ( plUtility::exists( vit->edges[j]->verts, &(*vit) ) )
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -406,7 +406,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < vit->faces.size(); j++)
         {
             //if (vit->faces[j]->verts.findIndex(&(*vit)) == -1)
-            if ( plUtility::exists( vit->faces[j]->verts, &(*vit) ) ) 
+            if ( plUtility::exists( vit->faces[j]->verts, &(*vit) ) )
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -424,7 +424,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < eit->verts.size(); j++)
         {
             //if (eit->verts[j]->edges.findIndex(&(*eit)) == -1)
-            if ( plUtility::exists( eit->verts[j]->edges, &(*eit) ) ) 
+            if ( plUtility::exists( eit->verts[j]->edges, &(*eit) ) )
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -439,7 +439,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < eit->faces.size(); j++)
         {
             //if (eit->faces[j]->edges.findIndex(&(*eit)) == -1)
-            if ( plUtility::exists( eit->faces[j]->edges, &(*eit) ) ) 
+            if ( plUtility::exists( eit->faces[j]->edges, &(*eit) ) )
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -457,7 +457,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < fit->verts.size(); j++)
         {
             //if (fit->verts[j]->faces.findIndex(&(*fit)) == -1)
-            if ( plUtility::exists( fit->verts[j]->faces, &(*fit) ) ) 
+            if ( plUtility::exists( fit->verts[j]->faces, &(*fit) ) )
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -472,7 +472,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < fit->edges.size(); j++)
         {
             //if (fit->edges[j]->faces.findIndex(&(*fit)) == -1)
-            if ( plUtility::exists( fit->edges[j]->faces, &(*fit) ) ) 
+            if ( plUtility::exists( fit->edges[j]->faces, &(*fit) ) )
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";

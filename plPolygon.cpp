@@ -23,7 +23,7 @@ plVector3 plEdge::otherPt(const plVector3 &point, const PLfloat &epsilon) const
         return pt2;
     else if ((pt2 - point).length() <= epsilon)
         return pt1;
-        
+
     // shouldn't proceed past here if one of this edge's points are used, but this basically just says that no match was found
     std::cout << "Warning in plEdge::otherPt() - point " << point << " was not found! returning vector of zeros!" << std::endl;
     return plVector3(0,0,0);
@@ -59,15 +59,12 @@ std::ostream& operator << ( std::ostream &stream, const plEdge &e )
     return stream;
 }
 
-std::ostream& operator << ( std::ostream &stream, const plPolygon &p ) 
+std::ostream& operator << ( std::ostream &stream, const plPolygon &p )
 {
     stream << "Normal    = " << p.normal << "\n";
     for (PLuint i = 0; i < p.points.size(); i++)
     {
         stream << "Vertex " << i << " = " << p.points[i] << "\n";
-    } 
+    }
     return stream;
-} 
-
-
-
+}

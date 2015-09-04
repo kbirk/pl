@@ -11,11 +11,11 @@ namespace plOpenGLInfo
           maxComputeAtomicCounters,
           maxComputeAtomicCounterBuffers,
           maxCombinedComputeUniformComponents,
-          maxComputeWorkGroupInvocations; 
-                   
+          maxComputeWorkGroupInvocations;
+
     GLint maxComputeWorkGroupCount[3];
     GLint maxComputeWorkGroupSize[3];
-    
+
     GLint maxDebugGroupStackDepth,
           majorVersion,
           max3DTextureSize,
@@ -60,9 +60,9 @@ namespace plOpenGLInfo
           maxRectangleTextureSize,
           maxRenderbufferSize,
           maxSampleMaskWords;
-          
+
     GLint64 maxServerWaitTimeout;
-    
+
     GLint maxShaderStorageBufferBindings,
           maxTessControlAtomicCounters,
           maxTessEvaluationAtomicCounters,
@@ -86,13 +86,13 @@ namespace plOpenGLInfo
           maxVertexUniformVectors,
           maxVertexOutputComponents,
           maxVertexUniformBlocks;
-          
+
     GLint maxViewportDims[2];
     GLint maxViewports,
-          minorVersion, 
+          minorVersion,
           numCompressedTextureFormats,
-          numExtensions, 
-          numProgramBinaryFormats, 
+          numExtensions,
+          numProgramBinaryFormats,
           numShaderBinaryFormats,
           maxVertexAttribRelativeOffset,
           maxVertexAttribBindings,
@@ -138,8 +138,8 @@ namespace plOpenGLInfo
 	    glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &max3DTextureSize); //1
 	    glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxArrayTextureLayers); //1
 	    glGetIntegerv(GL_MAX_CLIP_DISTANCES, &maxClipDistances); //1
-	    glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, &maxColorTextureSamples); //1	
-	    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments); //1	
+	    glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, &maxColorTextureSamples); //1
+	    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments); //1
 	    glGetIntegerv(GL_MAX_COMBINED_ATOMIC_COUNTERS, &maxCombinedAtomicCounters); //1
 	    glGetIntegerv(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS,
 			    &maxCombinedFragmentUniformComponents); //1
@@ -376,8 +376,8 @@ namespace plOpenGLInfo
     {
         switch ( errorCode )
         {
-            case GL_NO_ERROR:                       return "No error has been recorded.";            
-            case GL_INVALID_ENUM:                   return "GL_INVALID_ENUM Error: An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.";                  
+            case GL_NO_ERROR:                       return "No error has been recorded.";
+            case GL_INVALID_ENUM:                   return "GL_INVALID_ENUM Error: An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.";
             case GL_INVALID_VALUE:                  return "GL_INVALID_VALUE Error: A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.";
             case GL_INVALID_OPERATION:              return "GL_INVALID_OPERATION Error: The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.";
             case GL_INVALID_FRAMEBUFFER_OPERATION:  return "GL_INVALID_FRAMEBUFFER_OPERATION Error: The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.";
@@ -389,10 +389,10 @@ namespace plOpenGLInfo
     }
 
 
-    void reportError( const std::string &str ) 
+    void reportError( const std::string &str )
     {
         GLuint errnum;
-        while ( errnum = glGetError() ) 
+        while ( errnum = glGetError() )
         {
             std::cout << str << " " << _errorToString( errnum ) << std::endl;
         }

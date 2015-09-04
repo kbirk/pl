@@ -1,22 +1,22 @@
 #include "plTransparentRenderable.h"
 
 plTransparentRenderable::plTransparentRenderable()
-{  
-    _isTransparent = false; 
+{
+    _isTransparent = false;
 }
 
 
 void plTransparentRenderable::toggleVisibility()
 {
-    if (_isTransparent) 
+    if (_isTransparent)
     {
         setInvisible();
-    } 
-    else if (!_isVisible) 
+    }
+    else if (!_isVisible)
     {
         setVisible();
-    } 
-    else 
+    }
+    else
     {
         setTransparent();
     }
@@ -45,9 +45,7 @@ void plTransparentRenderable::setInvisible()
 
 
 
-PLbool plTransparentRenderable::isTransparent() const 
-{ 
-    return _isTransparent; 
+PLbool plTransparentRenderable::isTransparent() const
+{
+    return _isTransparent;
 }
-
-

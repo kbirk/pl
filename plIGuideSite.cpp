@@ -1,6 +1,6 @@
 #include "plIGuideSite.h" 
 
-plIGuideSite::plIGuideSite() 
+plIGuideSite::plIGuideSite()
 {
 }
 
@@ -20,19 +20,19 @@ plIGuideSite::plIGuideSite( const plBoundary& boundary )
 void plIGuideSite::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     boundary.extractRenderComponents( renderMap, technique );
-}  
+}
 
 
 void plIGuideSite::extractRenderComponents( plRenderMap& renderMap ) const
 {
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-}  
+}
 
 
 PLbool plIGuideSite::generateTemplateBase()
 {
     // find the surface for the iGuide
-    
+
     std::vector<plTriangle> triangles;
     if ( !plMeshCutter::findInteriorMesh( triangles, boundary.mesh().triangles(), boundary ) ) // find surface
     {
@@ -42,11 +42,10 @@ PLbool plIGuideSite::generateTemplateBase()
 
     float magnitudeOfOffset      ( 5.10f);
     float preTranslationOfSurface(-0.10f);
-    
+
     plMatrix44 translation; translation.setTranslation( preTranslationOfSurface * boundary.getAverageNormal() );
-    
+
     _templateBase = plMeshExtruder::extrudeMesh( translation * plMesh( triangles ), magnitudeOfOffset, boundary.getAverageNormal() );
 
 	return true;
 }
-

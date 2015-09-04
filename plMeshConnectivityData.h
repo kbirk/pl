@@ -77,9 +77,9 @@ typedef std::set<plMeshConnectivityDataFace>::iterator plMeshConnectivityDataFac
 
 class plMeshConnectivityData
 {
- 
+
     public:
-    
+
         std::set<plMeshConnectivityDataVert> verts;
         std::set<plMeshConnectivityDataEdge> edges;
         std::set<plMeshConnectivityDataFace> faces;
@@ -103,7 +103,7 @@ class plMeshConnectivityData
 
 
     protected:
-    
+
         PLfloat _epsilon;
 
 

@@ -11,13 +11,13 @@ plThreadPool::plThreadPool( size_t threads )
                 while(true)
                 {
                     std::unique_lock< std::mutex > lock( this->queue_mutex );
-                    
+
                     while( !this->stop && this->jobs.empty() )
                         this->condition.wait( lock );
-                        
+
                     if( this->stop && this->jobs.empty() )
                         return;
-                        
+
                     std::function< void() > task( this->jobs.front() );
                     this->jobs.pop();
                     lock.unlock();
@@ -40,6 +40,3 @@ plThreadPool::~plThreadPool()
     for(size_t i = 0; i<workers.size(); ++i)
         workers[i].join();
 }
-
-	
-

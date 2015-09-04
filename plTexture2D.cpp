@@ -1,6 +1,6 @@
 #include "plTexture2D.h"
 
-plTexture2D::plTexture2D( PLuint width, PLuint height, PLuint internalFormat, PLuint format, PLuint type, GLvoid* image ) 
+plTexture2D::plTexture2D( PLuint width, PLuint height, PLuint internalFormat, PLuint format, PLuint type, GLvoid* image )
     : _id( 0 )
 {
     set( width, height, internalFormat, format, type, image );
@@ -43,15 +43,15 @@ plTexture2D& plTexture2D::operator= (  plTexture2D&& texture )
 
 void plTexture2D::bind() const
 {
-	// bind textures AFTER binding shader AND BEFORE drawing arrays  
-    glBindTexture( GL_TEXTURE_2D, _id );          
+	// bind textures AFTER binding shader AND BEFORE drawing arrays
+    glBindTexture( GL_TEXTURE_2D, _id );
 }
 
 
 void plTexture2D::unbind() const
 {
 	// unbind textures after drawing
-    glBindTexture( GL_TEXTURE_2D, 0 );           
+    glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
 
@@ -61,7 +61,7 @@ void plTexture2D::set( PLuint width, PLuint height, GLvoid* image)
 }
 
 
-void plTexture2D::set( PLuint width, PLuint height, PLuint internalFormat, PLuint format, PLuint type, GLvoid* image )  
+void plTexture2D::set( PLuint width, PLuint height, PLuint internalFormat, PLuint format, PLuint type, GLvoid* image )
 {
     _width  = width;
     _height = height;
@@ -71,29 +71,29 @@ void plTexture2D::set( PLuint width, PLuint height, PLuint internalFormat, PLuin
 
     if ( !_id )
         glGenTextures( 1, &_id );
-                  
+
     glBindTexture( GL_TEXTURE_2D, _id );
 
     // THIS IS OPENCV TYPE: glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_BGR, GL_UNSIGNED_BYTE, image );
     glTexImage2D( GL_TEXTURE_2D, 0, _internalFormat, _width, _height, 0, _format, _type, image );
-    
+
     // default linear interpolate
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR ); 
-    
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
     // default repeat wrap
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    
-    glBindTexture( GL_TEXTURE_2D, 0 );  
+
+    glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
 
 void plTexture2D::setParameter( PLuint pname, PLuint param )
 {
     glBindTexture( GL_TEXTURE_2D, _id );
-    glTexParameteri( GL_TEXTURE_2D, pname, param );   
-    glBindTexture( GL_TEXTURE_2D, 0 ); 
+    glTexParameteri( GL_TEXTURE_2D, pname, param );
+    glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
 
@@ -105,14 +105,14 @@ void plTexture2D::_destroy()
 
 
 void plTexture2D::_copy( const plTexture2D &texture )
-{    
+{
     PLchar *buffer = new PLchar[ texture._width * texture._height * texture._getFormatSize() ];
 
     // copy vertex data
-    glBindTexture( GL_TEXTURE_2D, texture._id );    
-    glGetTexImage( GL_TEXTURE_2D, 0, texture._format, texture._type, buffer );   
+    glBindTexture( GL_TEXTURE_2D, texture._id );
+    glGetTexImage( GL_TEXTURE_2D, 0, texture._format, texture._type, buffer );
     glBindTexture( GL_TEXTURE_2D, 0 );
-    
+
     // set texture
     set( texture._width, texture._height, texture._internalFormat, texture._format, texture._type, buffer );
 
@@ -121,7 +121,7 @@ void plTexture2D::_copy( const plTexture2D &texture )
 
 
 PLuint plTexture2D::_getFormatSize() const
-{   
+{
     PLuint multiplier;
 
     switch ( _format )
@@ -142,11 +142,11 @@ PLuint plTexture2D::_getFormatSize() const
         case GL_DEPTH_COMPONENT:    multiplier = 3;     break;  // not 100% sure this is correct
         case GL_DEPTH_STENCIL:      multiplier = 4;     break;
     }
-    
+
     PLuint size;
-    
+
     switch ( _type )
-    {   
+    {
         case GL_UNSIGNED_BYTE:      size = sizeof( GLubyte );     break;
         case GL_BYTE:               size = sizeof( GLbyte );      break;
         case GL_UNSIGNED_SHORT:     size = sizeof( GLushort );    break;
@@ -155,24 +155,24 @@ PLuint plTexture2D::_getFormatSize() const
         case GL_INT:                size = sizeof( GLint );       break;
         case GL_FLOAT:              size = sizeof( GLfloat );     break;
         case GL_DOUBLE:             size = sizeof( GLdouble );    break;
-        
+
         // not 100% sure about these
         case GL_UNSIGNED_BYTE_3_3_2:
         case GL_UNSIGNED_BYTE_2_3_3_REV:            return 1;     break;
-        
+
         case GL_UNSIGNED_SHORT_5_6_5:
         case GL_UNSIGNED_SHORT_5_6_5_REV:
         case GL_UNSIGNED_SHORT_4_4_4_4:
-        case GL_UNSIGNED_SHORT_4_4_4_4_REV:   
-        case GL_UNSIGNED_SHORT_5_5_5_1:       
+        case GL_UNSIGNED_SHORT_4_4_4_4_REV:
+        case GL_UNSIGNED_SHORT_5_5_5_1:
         case GL_UNSIGNED_SHORT_1_5_5_5_REV:         return 2;     break;
-        
-        case GL_UNSIGNED_INT_8_8_8_8:        
-        case GL_UNSIGNED_INT_8_8_8_8_REV:    
-        case GL_UNSIGNED_INT_10_10_10_2:      
-        case GL_UNSIGNED_INT_2_10_10_10_REV:        return 4;     break;        
-    } 
-    
+
+        case GL_UNSIGNED_INT_8_8_8_8:
+        case GL_UNSIGNED_INT_8_8_8_8_REV:
+        case GL_UNSIGNED_INT_10_10_10_2:
+        case GL_UNSIGNED_INT_2_10_10_10_REV:        return 4;     break;
+    }
+
     return multiplier * size;
 }
 
@@ -185,7 +185,6 @@ void plTexture2D::_move( plTexture2D&& texture )
     _internalFormat = texture._internalFormat;
     _format = texture._format;
     _type = texture._type;
-    
-    texture._id = 0;
-} 
 
+    texture._id = 0;
+}

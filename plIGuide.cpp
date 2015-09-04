@@ -1,18 +1,18 @@
 #include "plIGuide.h"
 
 
-plIGuide::plIGuide() 
-    : site( NULL ) 
+plIGuide::plIGuide()
+    : site( NULL )
 {
 }
 
 
-plIGuide::plIGuide( plIGuideSite *site, 
-                    PLuint siteID, 
-                    const std::vector<plPlugInfo>&      plugs, 
-                    const std::vector<plKWire*>&        kwires, 
-                    const std::vector<PLuint>&          kwireIDs, 
-                    const std::vector<const plSpline*>& splines, 
+plIGuide::plIGuide( plIGuideSite *site,
+                    PLuint siteID,
+                    const std::vector<plPlugInfo>&      plugs,
+                    const std::vector<plKWire*>&        kwires,
+                    const std::vector<PLuint>&          kwireIDs,
+                    const std::vector<const plSpline*>& splines,
                     std::vector<PLuint>&                defectIDs )
     : site( site ), siteID( siteID ), plugs( plugs ), kWires( kwires ), kWireIDs( kwireIDs ), splines( splines ), defectIDs( defectIDs )
 {
@@ -31,7 +31,7 @@ PLbool plIGuide::generateIGuideModels()
         std::cerr << "Error: No site chosen for iGuide. Aborting." << std::endl;
         return false;
     }
-    
+
     if ( site->boundary.size() <= 2 )
     {
         std::cerr << "Error: Boundary does not have enough points. Aborting." << std::endl;
@@ -39,50 +39,50 @@ PLbool plIGuide::generateIGuideModels()
     }
 
     std::cout << "\tExtracting iGuideSite mesh...";
-    _modelsToSubtract.push_back( new plModel( site->boundary.mesh().triangles(), 
+    _modelsToSubtract.push_back( new plModel( site->boundary.mesh().triangles(),
                                               _generateOutputName( false, 'M', 0, "bone" ) ) );
     std::cout << "\t\t\tComplete." << std::endl;
-    
+
     // generate template base
     std::cout << "\tGenerating iGuideSite template base...";
     if ( site->generateTemplateBase() )
     {
-        _modelsToAdd.push_back( new plModel( site->templateBase().triangles(), 
+        _modelsToAdd.push_back( new plModel( site->templateBase().triangles(),
                                              _generateOutputName( true , 'M', 0, "templateBase" ) ) );
     }
     std::cout << "\t\tComplete." << std::endl;
-    
+
     std::cout << "\tGenerating defect base...";
     // generate base over the defect site
     for ( PLuint i = 0; i < splines.size(); i++ )
     {
-        
+
         // create the base shape over the defect site
-        plMatrix44 baseTranslation;  
+        plMatrix44 baseTranslation;
         baseTranslation.setTranslation( PL_BASE_TRANSLATION_DISTANCE * splines[i]->getAverageNormal() );
 
-        
-    
+
+
         plMesh baseOverDefect = plMeshExtruder::extrudeMesh( baseTranslation * splines[i]->surfaceMesh(),
-                                                             PL_BASE_THICKNESS, 
+                                                             PL_BASE_THICKNESS,
                                                              splines[i]->getAverageNormal() );
-                                                                  
-        _modelsToAdd.push_back( new plModel( baseOverDefect.triangles(), 
+
+        _modelsToAdd.push_back( new plModel( baseOverDefect.triangles(),
                                              _generateOutputName( true, 'S', i, "templateBase" ) ) );
-        
+
         // create the defect site volume
-        plMatrix44 interiorTranslation;  
+        plMatrix44 interiorTranslation;
         interiorTranslation.setTranslation( PL_INTERIOR_TRANSLATION_DISTANCE * splines[i]->getAverageNormal() );
-       
+
         plMesh interiorDefect = plMeshExtruder::extrudeMesh( interiorTranslation * splines[i]->surfaceMesh(),
-                                                             PL_INTERIOR_THICKNESS,  
+                                                             PL_INTERIOR_THICKNESS,
                                                              splines[i]->getAverageNormal() );
-                                                               
-        _modelsToSubtract.push_back( new plModel( interiorDefect.triangles(), 
+
+        _modelsToSubtract.push_back( new plModel( interiorDefect.triangles(),
                                                   _generateOutputName( false, 'M', i, "defectInterior" ) ) );
     }
     std::cout << "\t\t\tComplete." << std::endl;
-    
+
     // plug pieces
     std::vector<plTriangle> roundCylinder;
     plSTL::importFile( roundCylinder, PL_FILE_PREPATH"iGuideElements/Generator_Cylinder_Round.stl", false );
@@ -96,11 +96,11 @@ PLbool plIGuide::generateIGuideModels()
     std::vector<plTriangle> keyCube;
     plSTL::importFile( keyCube, PL_FILE_PREPATH"iGuideElements/Generator_Key_Cube.stl", false );
 
-    std::cout << "\tGenerating template for plugs: ";       
+    std::cout << "\tGenerating template for plugs: ";
     for ( PLuint i = 0; i < plugs.size(); i++ )
-    {   
+    {
         std::cout << plugs[i].graftID() << " ";
-        
+
         plMatrix44 cylinderToPlug = plugs[i].transform().matrix();
 
         PLfloat keyTranslation = 6.0f;
@@ -112,7 +112,7 @@ PLbool plIGuide::generateIGuideModels()
         PLfloat correctDiameter = holderDiameter + 0.1f;
 
         PLfloat sleeveHeight = PL_TOOL_DEPTH - plugs[i].length();
-        
+
         plVector3 holeScale   ( holeDiameter,   36.f, holeDiameter   );
         plVector3 sleeveScale ( sleeveDiameter, sleeveHeight, sleeveDiameter );
         plVector3 baseScale   ( baseDiameter,   20.f, baseDiameter   );
@@ -134,7 +134,7 @@ PLbool plIGuide::generateIGuideModels()
             //std::vector<plTriangle> supportTriangles( createTemplatePieceTransformed(sharpCylinder, recipientTransform, cylinderRecipientSupportOffset, supportScale, 0.0f, 0.0f) );
 
         PLchar typeLetter = ( plugs[i].type() == PL_PICKING_INDEX_GRAFT_DONOR ) ? 'H' : 'R';
-            
+
         plString holeFilename    = _generateOutputName( PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE, typeLetter,   plugs[i].graftID(), "hole"          );
         plString sleeveFilename  = _generateOutputName( PL_IGUIDE_BOOLEAN_MESH_UNION     , typeLetter,   plugs[i].graftID(), "sleeve"        );
         plString baseFilename    = _generateOutputName( true                             , typeLetter,   plugs[i].graftID(), "base"          );
@@ -158,20 +158,20 @@ PLbool plIGuide::generateIGuideModels()
 std::vector<plTriangle> plIGuide::_translateTriangles( const std::vector< plTriangle >& triangles, const plVector3& translation )
 {
     std::vector<plTriangle> translatedTriangles;
-    
+
     for ( const plTriangle& triangle : triangles )
-    {   
-        translatedTriangles.push_back( plTriangle( triangle.normal(), 
-                                                   triangle.point0() + translation, 
-                                                   triangle.point1() + translation, 
+    {
+        translatedTriangles.push_back( plTriangle( triangle.normal(),
+                                                   triangle.point0() + translation,
+                                                   triangle.point1() + translation,
                                                    triangle.point2() + translation ) );
     }
-    
+
     return translatedTriangles;
 }
 
 
-PLbool plIGuide::exportIGuideModels( const std::string &directory ) 
+PLbool plIGuide::exportIGuideModels( const std::string &directory )
 {
     if ( _modelsToAdd.empty() && _modelsToSubtract.empty() )
     {
@@ -182,12 +182,12 @@ PLbool plIGuide::exportIGuideModels( const std::string &directory )
 
     for ( PLuint i = 0; i < _modelsToAdd.size(); i++ )
     {
-        plSTL::exportFileBinary( _modelsToAdd[i]->mesh().triangles(), 
+        plSTL::exportFileBinary( _modelsToAdd[i]->mesh().triangles(),
                                  directory + _modelsToAdd[i]->filename );
     }
     for ( PLuint i = 0; i < _modelsToSubtract.size(); i++ )
     {
-        plSTL::exportFileBinary( _modelsToSubtract[i]->mesh().triangles(), 
+        plSTL::exportFileBinary( _modelsToSubtract[i]->mesh().triangles(),
                                  directory + _modelsToSubtract[i]->filename );
     }
     return true;
@@ -266,7 +266,7 @@ void plIGuide::extractRenderComponents( plRenderMap& renderMap, PLuint technique
     {
         plRenderer::queue( *_modelsToAdd[i] );
     }
-    
+
     plColourStack::load( plVector3( 1.0f,0.75f,0.75f ) );
     for ( PLuint i = 0; i < _modelsToSubtract.size(); i++ )
     {
@@ -279,4 +279,3 @@ void plIGuide::extractRenderComponents( plRenderMap& renderMap ) const
 {
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
-

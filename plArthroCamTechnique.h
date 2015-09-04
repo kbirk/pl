@@ -10,11 +10,11 @@ class plArthroCamTechnique : public plRenderTechnique
 
     public:
 
-        plArthroCamTechnique();       
+        plArthroCamTechnique();
 
         void render( const std::set< plRenderComponent >& componentSet ) const;
 
 };
 
 
-#endif 
+#endif

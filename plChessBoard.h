@@ -13,28 +13,28 @@ class plChessBoard : public plTransparentRenderable
 {
 
     public:
-    
+
         plChessBoard();
-        
+
         void updateTransform( const plDRBTransform &currentFemurDRBToWorld, const plDRBTransform &femurDRBToFemurSTL );
-        
+
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
-        
+
     private:
 
         std::shared_ptr< plVAO > _vao;
         plTransform  _transform;
-        
-        plVector3   _calibOrigin, 
-                    _calibXAxisPoint, 
+
+        plVector3   _calibOrigin,
+                    _calibXAxisPoint,
                     _calibYAxisPoint;
         PLfloat     _blockSize;
-        
+
         bool _readChessBoardCalib();
         void _generateVAO();
 
-};  
+};
 
 
 

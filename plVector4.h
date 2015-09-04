@@ -5,7 +5,7 @@
 #include "plString.h"
 #include "plVector3.h"
 
-class plVector4 
+class plVector4
 {
 	public:
 
@@ -14,7 +14,7 @@ class plVector4
 		plVector4();
 		plVector4( const plVector3 &v, PLfloat ww = 1.0f );
 		plVector4( PLfloat xx, PLfloat yy, PLfloat zz, PLfloat ww = 1.0f );
-		plVector4( PLchar *string );  
+		plVector4( PLchar *string );
 		plVector4( const plString &str );
 
 		PLbool 	  operator == (const plVector4 &p) const;
@@ -22,13 +22,13 @@ class plVector4
 		plVector4 operator +  (const plVector4 &p) const;
 		plVector4 operator -  (const plVector4 &p) const;
 		PLfloat   operator *  (const plVector4 &p) const;
-        
+
 		plVector4 operator-() const;
-		
+
 		plVector4 normalize() const;
 		PLfloat length() const;
 		PLfloat squaredLength() const;
-  
+
 };
 
 

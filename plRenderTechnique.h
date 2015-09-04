@@ -11,7 +11,7 @@ class plRenderTechnique
 
     public:
 
-        plRenderTechnique();       
+        plRenderTechnique();
 
         virtual ~plRenderTechnique();
 
@@ -21,4 +21,4 @@ class plRenderTechnique
 };
 
 
-#endif 
+#endif

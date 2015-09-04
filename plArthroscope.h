@@ -21,9 +21,9 @@
 
 
 enum ImageManipulation
-{ 
-    CAMERA_IMAGE_RAW, 
-    CAMERA_IMAGE_UNDISTORT 
+{
+    CAMERA_IMAGE_RAW,
+    CAMERA_IMAGE_UNDISTORT
 };
 
 
@@ -34,11 +34,11 @@ class plArthroscope : public plTrackedObject
 
         plArthroscope();
         plArthroscope( const plDRBTransform &ToTrackedPoint, const plDRBTransform &ToTrackedEnd, const plDRBTransform &FemurDRBToFemurSTL );
-        
+
         plArthroscope( const plArthroscope& arthroscope );
-       
+
         plArthroscope& operator=( const plArthroscope& arthroscope );
-        
+
         ~plArthroscope();
 
         const PLchar*      image()      const;
@@ -47,21 +47,21 @@ class plArthroscope : public plTrackedObject
         PLuint             height()     const;
         plMatrix44         getProjectionMatrix() const;
         plMatrix44         getCameraMatrix() const;
-        
+
         void updateImage( PLuint imageManipulation );
-         
+
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
         void toggleCameraView() { _isCameraView = !_isCameraView; }
         PLbool isCameraView()   { return _isCameraView;           }
-         
+
     private:
-    
+
         PLbool      _isCameraView;
         plTexture2D _texture;
         std::shared_ptr< plVAO > _vao;
-    
+
         CvCapture *_capture;
         IplImage  *_image;
 
@@ -71,22 +71,22 @@ class plArthroscope : public plTrackedObject
 
         //Input camera intrinsics
         plMatrix44 _intrinsicsPL;
-        CvMat*     _intrinsicsCV;       
+        CvMat*     _intrinsicsCV;
         CvMat*     _distortion;
-        
+
         // Variables for circle tracking and undistortion function
         std::deque<cv::Point> _interpolationDeque;
         std::vector<PLfloat>  _weights;
 //        cv::Mat _frameMatrix;
         PLfloat _xCenter, _yCenter;
         PLuint _radius;
-        
+
         void _callCircle();
-        
+
         void _generateVAO();
-        void _extractCameraRenderComponents( plRenderMap& renderMap ) const;        
+        void _extractCameraRenderComponents( plRenderMap& renderMap ) const;
         void _extractScopeRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
-        
+
         void _copy( const plArthroscope& arthroscope );
         void _destroy();
 

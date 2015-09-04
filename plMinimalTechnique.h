@@ -11,15 +11,15 @@ class plMinimalTechnique : public plRenderTechnique
 
     public:
 
-        plMinimalTechnique();       
+        plMinimalTechnique();
 
         void render( const std::set< plRenderComponent >& componentSet ) const;
 
     private:
 
         void _initState() const;
-       
+
 };
 
 
-#endif 
+#endif

@@ -2,10 +2,9 @@
 
 plRenderTechnique::plRenderTechnique()
 {
-}      
-     
+}
+
 
 plRenderTechnique::~plRenderTechnique()
 {
 }
-

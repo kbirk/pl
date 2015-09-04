@@ -24,7 +24,7 @@ class plVertexAttributePointer
             : index( index ), stride( stride ), offset( offset )
         {
         }
-        
+
         GLuint index;
         GLuint stride;
         GLuint offset;
@@ -34,18 +34,18 @@ class plVertexAttributePointer
 class plVBO : public plVertexSpecBuffer
 {
 
-    public:                    
-          
-        plVBO();    
+    public:
+
+        plVBO();
         plVBO( const std::vector<plVector4>& data, PLuint usage = GL_STATIC_DRAW );
-        plVBO( const plVBO& vbo );        
+        plVBO( const plVBO& vbo );
         plVBO( plVBO&& vbo );
 
-        plVBO& operator= ( const plVBO& vbo ); 
-        plVBO& operator= ( plVBO&& vbo ); 
-        
+        plVBO& operator= ( const plVBO& vbo );
+        plVBO& operator= ( plVBO&& vbo );
+
         void set( const std::vector<plVector3>& data, PLuint usage = GL_STATIC_DRAW );
-        void set( const std::vector<plVector4>& data, PLuint usage = GL_STATIC_DRAW );        
+        void set( const std::vector<plVector4>& data, PLuint usage = GL_STATIC_DRAW );
         void set( const plVertexAttributePointer& attributePointer );
 
         void clear();

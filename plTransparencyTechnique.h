@@ -11,11 +11,11 @@ class plTransparencyTechnique : public plRenderTechnique
 
     public:
 
-        plTransparencyTechnique();       
+        plTransparencyTechnique();
 
         void render( const std::set< plRenderComponent >& componentSet ) const;
-       
+
 };
 
 
-#endif 
+#endif

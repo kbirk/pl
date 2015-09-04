@@ -2,37 +2,37 @@
 #include "plTriangle.h"
 #include "plMesh.h"
 
-// identity 
-plMatrix44::plMatrix44() 
+// identity
+plMatrix44::plMatrix44()
 {
-	// default to identity  
+	// default to identity
 	setIdentity();
 }
 
 // openCV xml input file
 PLbool plMatrix44::importFile( const plString &file )
-{    
-    plString xml;   
+{
+    plString xml;
     if ( xml.importFile( file ) )
     {
-        plString values; 
+        plString values;
         // find start position
-        plString::size_type startPos = xml.find("<data>");       
+        plString::size_type startPos = xml.find("<data>");
         if (startPos != std::string::npos)
         {
             startPos+=6; // start after "<data>".
-          
+
             // find end position;
             plString::size_type endPos = xml.find("</data>");
             if ( endPos != std::string::npos )
             {
                 values = xml.substr(startPos, endPos - startPos);
-            } 
-        }               
-        sscanf(values.c_str(), "%f %f %f %f " 
+            }
+        }
+        sscanf(values.c_str(), "%f %f %f %f "
                                "%f %f %f %f "
                                "%f %f %f %f "
-                               "%f %f %f %f", 
+                               "%f %f %f %f",
                                &_data[0], &_data[4], &_data[8],  &_data[12],
                                &_data[1], &_data[5], &_data[9],  &_data[13],
                                &_data[2], &_data[6], &_data[10], &_data[14],
@@ -45,13 +45,13 @@ PLbool plMatrix44::importFile( const plString &file )
     return true;
 }
 
-// scale 
+// scale
 plMatrix44::plMatrix44(PLfloat scale)
 {
 	setScale(scale);
 }
 
-// translation 
+// translation
 plMatrix44::plMatrix44(PLfloat x, PLfloat y, PLfloat z)
 {
 	setTranslation(x, y, z);
@@ -63,13 +63,13 @@ plMatrix44::plMatrix44(const plVector3 &translation)
 	setTranslation(translation);
 }
 
-// rotation 
+// rotation
 plMatrix44::plMatrix44(PLfloat angle, const plVector3 &axis)
 {
 	setRotation(angle, axis);
 }
 
-// affine transformation 
+// affine transformation
 plMatrix44::plMatrix44(const plVector3 &x, const plVector3 &y, const plVector3 &z, const plVector3 &t)
 {
 	_data[0] = x.x;	_data[4] = y.x;	_data[8]  = z.x;	_data[12] = t.x;
@@ -91,10 +91,10 @@ plMatrix44::plMatrix44(PLfloat fov, PLfloat aspectRatio, PLfloat zMin, PLfloat z
 }
 
 // element wise
-plMatrix44::plMatrix44(PLfloat c1r1, PLfloat c2r1, PLfloat c3r1, PLfloat c4r1, 
-                       PLfloat c1r2, PLfloat c2r2, PLfloat c3r2, PLfloat c4r2, 
-	                   PLfloat c1r3, PLfloat c2r3, PLfloat c3r3, PLfloat c4r3, 
-	                   PLfloat c1r4, PLfloat c2r4, PLfloat c3r4, PLfloat c4r4) 
+plMatrix44::plMatrix44(PLfloat c1r1, PLfloat c2r1, PLfloat c3r1, PLfloat c4r1,
+                       PLfloat c1r2, PLfloat c2r2, PLfloat c3r2, PLfloat c4r2,
+	                   PLfloat c1r3, PLfloat c2r3, PLfloat c3r3, PLfloat c4r3,
+	                   PLfloat c1r4, PLfloat c2r4, PLfloat c3r4, PLfloat c4r4)
 {
 	_data[0] = c1r1;	_data[4] = c2r1;	_data[8]  = c3r1;	_data[12] = c4r1;
 	_data[1] = c1r2;	_data[5] = c2r2;	_data[9]  = c3r2;	_data[13] = c4r2;
@@ -104,13 +104,13 @@ plMatrix44::plMatrix44(PLfloat c1r1, PLfloat c2r1, PLfloat c3r1, PLfloat c4r1,
 
 
 // copy constructor
-plMatrix44::plMatrix44(const plMatrix44 &m) 
-{			
+plMatrix44::plMatrix44(const plMatrix44 &m)
+{
 	memcpy(_data, m._data, sizeof(PLfloat)*16);
 }
 
 
-void plMatrix44::setRow(int row, PLfloat x, PLfloat y, PLfloat z, PLfloat w)  
+void plMatrix44::setRow(int row, PLfloat x, PLfloat y, PLfloat z, PLfloat w)
 {
 	// copy plVector3 into specified row, rows indexed 0-3
 	_data[row]	  = x;
@@ -155,12 +155,12 @@ plVector3 plMatrix44::getColumn( int col )
 
 
 void plMatrix44::setZero()
-{ 
+{
 	memset(_data, 0, sizeof(PLfloat)*16);
 }
 
 
-void plMatrix44::setIdentity() 
+void plMatrix44::setIdentity()
 {
 	// set to identity plMatrix44
 	setZero();
@@ -214,25 +214,25 @@ void plMatrix44::setScale(const plVector3 s)
 
 
 // assignment
-plMatrix44 &plMatrix44::operator=(const plMatrix44 &m) 
-{ 
+plMatrix44 &plMatrix44::operator=(const plMatrix44 &m)
+{
 	// copy data
 	memcpy(_data, m._data, sizeof(PLfloat)*16);
 	return *this;
-} 
+}
 
 
 // negation
-plMatrix44 plMatrix44::operator-() const 
+plMatrix44 plMatrix44::operator-() const
 {
 	return plMatrix44(-_data[0], -_data[1], -_data[2], -_data[3],
 					  -_data[4], -_data[5], -_data[6], -_data[7],
 					  -_data[8], -_data[9], -_data[10], -_data[11],
 					  -_data[12], -_data[13], -_data[14], -_data[15]);
-} 
+}
 
-// addition 
-plMatrix44 plMatrix44::operator+(const plMatrix44 &m) const 
+// addition
+plMatrix44 plMatrix44::operator+(const plMatrix44 &m) const
 {
 	return plMatrix44(_data[0] + m._data[0], _data[1] + m._data[1], _data[2] + m._data[2], _data[3] + m._data[3],
 					  _data[4] + m._data[4], _data[5] + m._data[5], _data[6] + m._data[6], _data[7] + m._data[7],
@@ -240,7 +240,7 @@ plMatrix44 plMatrix44::operator+(const plMatrix44 &m) const
 					  _data[12] + m._data[12], _data[13] + m._data[13], _data[14] + m._data[14], _data[15] + m._data[15]);
 }
 // subtraction
-plMatrix44 plMatrix44::operator-(const plMatrix44 &m) const 
+plMatrix44 plMatrix44::operator-(const plMatrix44 &m) const
 {
 	return plMatrix44(_data[0] - m._data[0],   _data[1] - m._data[1],   _data[2] - m._data[2],   _data[3] - m._data[3],
 					  _data[4] - m._data[4],   _data[5] - m._data[5],   _data[6] - m._data[6],   _data[7] - m._data[7],
@@ -248,7 +248,7 @@ plMatrix44 plMatrix44::operator-(const plMatrix44 &m) const
 					  _data[12] - m._data[12], _data[13] - m._data[13], _data[14] - m._data[14], _data[15] - m._data[15]);
 }
 // scalar multiplication
-plMatrix44 plMatrix44::operator*(PLfloat s) const 
+plMatrix44 plMatrix44::operator*(PLfloat s) const
 {
 	return plMatrix44(_data[0]  * s,  _data[1]  * s,  _data[2]  * s,  _data[3]  * s,
 					  _data[4]  * s,  _data[5]  * s,  _data[6]  * s,  _data[7]  * s,
@@ -256,24 +256,24 @@ plMatrix44 plMatrix44::operator*(PLfloat s) const
 					  _data[12] * s, _data[13] * s, _data[14] * s, _data[15] * s);
 
 }
-plMatrix44 &plMatrix44::operator*=(PLfloat s)  
+plMatrix44 &plMatrix44::operator*=(PLfloat s)
 {
-	_data[0] *= s;	_data[4] *= s;	_data[8]  *= s;	_data[12] *= s;	
-	_data[1] *= s;	_data[5] *= s;	_data[9]  *= s;	_data[13] *= s;		
-	_data[2] *= s;	_data[6] *= s;	_data[10] *= s; _data[14] *= s;		
-	_data[3] *= s;	_data[7] *= s;	_data[11] *= s; _data[15] *= s;		
+	_data[0] *= s;	_data[4] *= s;	_data[8]  *= s;	_data[12] *= s;
+	_data[1] *= s;	_data[5] *= s;	_data[9]  *= s;	_data[13] *= s;
+	_data[2] *= s;	_data[6] *= s;	_data[10] *= s; _data[14] *= s;
+	_data[3] *= s;	_data[7] *= s;	_data[11] *= s; _data[15] *= s;
 	return *this;
 }
 
 // vector multiplication
-plVector3 plMatrix44::operator*(const plVector3 &v) const 
+plVector3 plMatrix44::operator*(const plVector3 &v) const
 {
 	return plVector3((_data[0] * v.x) + (_data[4] * v.y) + (_data[8]  * v.z) + _data[12],
 				     (_data[1] * v.x) + (_data[5] * v.y) + (_data[9]  * v.z) + _data[13],
 				     (_data[2] * v.x) + (_data[6] * v.y) + (_data[10] * v.z) + _data[14]);
 }
 
-plVector4 plMatrix44::operator*(const plVector4 &v) const 
+plVector4 plMatrix44::operator*(const plVector4 &v) const
 {
 	return plVector4((_data[0] * v.x) + (_data[4] * v.y) + (_data[8]  * v.z) + (_data[12] * v.w),
 				     (_data[1] * v.x) + (_data[5] * v.y) + (_data[9]  * v.z) + (_data[13] * v.w),
@@ -296,12 +296,12 @@ plTriangle plMatrix44::operator*(const plTriangle &tri) const
 }
 
 // mesh multiplication
-plMesh plMatrix44::operator*( const plMesh& mesh ) const 
-{   
+plMesh plMatrix44::operator*( const plMesh& mesh ) const
+{
     const std::vector<plTriangle>& triangles = mesh.triangles();
-    
+
     std::vector<plTriangle> outputTris;      outputTris.reserve( mesh.triangles().size() );
-    
+
     for (PLuint i = 0; i < triangles.size(); i++)
     {
         outputTris.push_back( (*this) * triangles[i] );
@@ -322,10 +322,10 @@ std::vector<plTriangle> plMatrix44::operator*(const std::vector<plTriangle> &tri
 
 
 // matrix multiplication
-plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const 
+plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const
 {
     plMatrix44 result;
-    for (int i = 0; i < 4; i++) 
+    for (int i = 0; i < 4; i++)
     {
         result._data[i]    = _data[i] * m._data[0] + _data[i+4] * m._data[1] + _data[i+8] * m._data[2] + _data[i+12] * m._data[3];
         result._data[i+4]  = _data[i] * m._data[4] + _data[i+4] * m._data[5] + _data[i+8] * m._data[6]+ _data[i+12] * m._data[7];
@@ -336,13 +336,13 @@ plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const
 }
 
 
-void plMatrix44::setRotationD(PLfloat angle_degree, const plVector3 &axis) 
-{  
+void plMatrix44::setRotationD(PLfloat angle_degree, const plVector3 &axis)
+{
     setRotation( PL_DEG_TO_RAD( angle_degree ), axis);
 }
 
 
-void plMatrix44::setRotation(PLfloat angle, const plVector3 &axis) 
+void plMatrix44::setRotation(PLfloat angle, const plVector3 &axis)
 {
     PLfloat x = axis.x;
     PLfloat y = axis.y;
@@ -355,7 +355,7 @@ void plMatrix44::setRotation(PLfloat angle, const plVector3 &axis)
     const PLfloat mag = sqrt(x*x + y*y + z*z);
 
     // zero vector, return identity
-    if (mag == 0.0f) 
+    if (mag == 0.0f)
     {
         setIdentity();
         return;
@@ -412,13 +412,13 @@ void plMatrix44::setRotation( const plVector4 &quat )
     z = quat.z;
 
     /*
-    if (w <= -0.999) 
+    if (w <= -0.999)
     {
         setIdentity();
         return;
     }
     */
-    
+
     xs = x + x;
     ys = y + y;
     zs = z + z;
@@ -431,30 +431,30 @@ void plMatrix44::setRotation( const plVector4 &quat )
     xy = x*ys;
     yz = y*zs;
     xz = x*zs;
-    
+
     _data[0] = 1.0f - (yy+zz);
     _data[4] = xy-wz;
     _data[8] = xz+wy;
     _data[12] = 0.0f;
-    
+
     _data[1] = xy + wz;
     _data[5] = 1.0f - (xx+zz);
     _data[9] = yz - wx;
     _data[13] = 0.0f;
-    
+
     _data[2] = xz-wy;
     _data[6] = yz + wx;
     _data[10] = 1.0f - (xx+yy);
     _data[14] = 0.0f;
-    
+
     _data[3] = 0.0f;
     _data[7] = 0.0f;
     _data[11] = 0.0f;
     _data[15] = 1.0f;
 }
- 
-     
-void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_vector) 
+
+
+void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_vector)
 {
     /*Builds the rotation matrix that rotates one vector into another.
 
@@ -471,10 +471,10 @@ void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_v
     plVector3 to   = to_vector.normalize();
 
     PLfloat EPSILON = 0.000001f;
-    PLfloat e = from * to; 
+    PLfloat e = from * to;
     PLfloat f = fabs(e);
 
-    if (f > (1.0-EPSILON)) 
+    if (f > (1.0-EPSILON))
     {   // "from" and "to" almost parallel
         // nearly orthogonal
         PLfloat fx = fabs(from.x);
@@ -490,22 +490,22 @@ void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_v
                 x.x = 1.0f;
                 x.y = 0.0f;
                 x.z = 0.0f;
-            } 
-            else 
+            }
+            else
             {
                 x.x = 0.0f;
                 x.y = 0.0f;
                 x.z = 1.0f;
             }
-        } 
-        else 
+        }
+        else
         {
-            if (fy < fz) 
+            if (fy < fz)
             {
                 x.x = 0.0f;
                 x.y = 1.0f;
                 x.z = 0.0f;
-            } 
+            }
             else
             {
                 x.x = 0.0f;
@@ -519,26 +519,26 @@ void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_v
         PLfloat c1 = 2.0f / (u * u);
         PLfloat c2 = 2.0f / (v * v);
         PLfloat c3 = c1*c2 * (u * v);
-                
+
         // set matrix entries
         _data[0] =  - c1*u.x*u.x - c2*v.x*v.x + c3*v.x*u.x;
         _data[4] =  - c1*u.x*u.y - c2*v.x*v.y + c3*v.x*u.y;
         _data[8] =  - c1*u.x*u.z - c2*v.x*v.z + c3*v.x*u.z;
-                
+
         _data[1] =  - c1*u.y*u.x - c2*v.y*v.x + c3*v.y*u.x;
         _data[5] =  - c1*u.y*u.y - c2*v.y*v.y + c3*v.y*u.y;
         _data[9] =  - c1*u.y*u.z - c2*v.y*v.z + c3*v.y*u.z;
-                
+
         _data[2]  =  - c1*u.z*u.x - c2*v.z*v.x + c3*v.z*u.x;
         _data[6]  =  - c1*u.z*u.y - c2*v.z*v.y + c3*v.z*u.y;
         _data[10]  =  - c1*u.z*u.z - c2*v.z*v.z + c3*v.z*u.z;
-        
+
         _data[0]  += 1.0;
         _data[5]  += 1.0;
-        _data[10] += 1.0;      
-    } 
-    else 
-    {	
+        _data[10] += 1.0;
+    }
+    else
+    {
         // the most common case, unless "from"="to", or "to"=-"from"
         plVector3 v = from ^ to;
         PLfloat h = 1.0f / (1.0f + e);    // optimization by Gottfried Chen
@@ -547,7 +547,7 @@ void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_v
         PLfloat hvxy = hvx * v.y;
         PLfloat hvxz = hvx * v.z;
         PLfloat hvyz = hvz * v.y;
-                    
+
         _data[0] = e + hvx * v.x;
         _data[4] = hvxy - v.z;
         _data[8] = hvxz + v.y;
@@ -558,7 +558,7 @@ void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_v
 
         _data[2] = hvxz - v.y;
         _data[6] = hvyz + v.x;
-        _data[10] = e + hvz * v.z;      
+        _data[10] = e + hvz * v.z;
     }
 
     // fill in remaining entries
@@ -571,8 +571,8 @@ void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_v
     _data[11] = 0.0f;
 
 }
-  
-        
+
+
 void plMatrix44::setOrthographic(PLfloat xMin, PLfloat xMax, PLfloat yMin, PLfloat yMax, PLfloat zMin, PLfloat zMax)
 {
     setIdentity();
@@ -588,14 +588,14 @@ void plMatrix44::setOrthographic(PLfloat xMin, PLfloat xMax, PLfloat yMin, PLflo
 
 
 void plMatrix44::setPerspective(PLfloat fov, PLfloat aspect, PLfloat nearPlane, PLfloat farPlane)
-{	
+{
     setIdentity(); // Fastest way to get most valid values already in place
 
     const PLfloat PI = 3.14159265358979323846f;
-    const PLfloat yMax = nearPlane * tan(fov * PI / 360.0f); 
+    const PLfloat yMax = nearPlane * tan(fov * PI / 360.0f);
     const PLfloat yMin = -yMax;
     const PLfloat xMin = yMin * aspect;
-    const PLfloat xMax = -xMin;    
+    const PLfloat xMax = -xMin;
 
     _data[0] = (2.0f * nearPlane) / (xMax - xMin);
     _data[5] = (2.0f * nearPlane) / (yMax - yMin);
@@ -609,8 +609,8 @@ void plMatrix44::setPerspective(PLfloat fov, PLfloat aspect, PLfloat nearPlane, 
 }
 
 
-plMatrix44 plMatrix44::inverse() const 
-{		
+plMatrix44 plMatrix44::inverse() const
+{
     plMatrix44 inv;
     // compute inverse
     // row 1
@@ -635,7 +635,7 @@ plMatrix44 plMatrix44::inverse() const
     inv._data[15] =  _data[0]*_data[5]*_data[10] - _data[0]*_data[6]*_data[9]  - _data[4]*_data[1]*_data[10] + _data[4]*_data[2]*_data[9]  + _data[8]*_data[1]*_data[6] - _data[8]*_data[2]*_data[5];
     // calculate determinant
     PLfloat det = _data[0]*inv._data[0] + _data[1]*inv._data[4] + _data[2]*inv._data[8] + _data[3]*inv._data[12];
-    inv *= 1.0f/det; 
+    inv *= 1.0f/det;
     // return
     return inv;
 }
@@ -657,7 +657,7 @@ plVector4 operator * ( const plVector4 &v, const plMatrix44 &m )
     PLfloat y = v.x * m(0,1) + v.y * m(1,1) + v.z * m(2,1) + v.w * m(3,1);
     PLfloat z = v.x * m(0,2) + v.y * m(1,2) + v.z * m(2,2) + v.w * m(3,2);
     PLfloat w = v.x * m(0,3) + v.y * m(1,3) + v.z * m(2,3) + v.w * m(3,3);
-    
+
     return plVector4(x,y,z,w);
 }
 
@@ -667,7 +667,6 @@ plVector3 operator * ( const plVector3 &v, const plMatrix44 &m )
     PLfloat y = v.x * m(0,1) + v.y * m(1,1) + v.z * m(2,1) + m(3,1);
     PLfloat z = v.x * m(0,2) + v.y * m(1,2) + v.z * m(2,2) + m(3,2);
     PLfloat w = v.x * m(0,3) + v.y * m(1,3) + v.z * m(2,3) + m(3,3);
-    
+
     return plVector3(x,y,z);
 }
-

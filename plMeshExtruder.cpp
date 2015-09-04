@@ -10,15 +10,15 @@ namespace plMeshExtruder
         // any edge that occurs twice must be between two faces, and is therefore not on the border
 
         std::vector<plEdgePointers> unsortedEdges;  unsortedEdges.reserve( triangles.size() ); // set to max size of triangles, this std::vector is discarded later anyway
-        
+
         // for each triangle
         for (PLuint i = 0; i < triangles.size(); i++)
         {
             // for each edge
             for (PLuint j = 0; j < 3; j++)
-            {    
-                // next point index on triangle            
-                PLuint k = (j+1) % 3;   
+            {
+                // next point index on triangle
+                PLuint k = (j+1) % 3;
 
                 // try to find the edge in question
                 PLuint e;
@@ -31,12 +31,12 @@ namespace plMeshExtruder
                     }
                 }
 
-                if ( e == unsortedEdges.size() )                 
+                if ( e == unsortedEdges.size() )
                 {
                     // if the edge does not already exist, add it to the list
                     unsortedEdges.push_back( plEdgePointers( &triangles[i][j], &triangles[i][k] ) );
                 }
-                else 
+                else
                 {
                     // if the edge DOES exist, it must be between two faces and therefore can't be on the border... so remove it
                     unsortedEdges.erase( unsortedEdges.begin()+e );
@@ -78,7 +78,7 @@ namespace plMeshExtruder
             else
             {
                 // update the current vertex
-                currentVertex = *unsortedEdges[ i ].p1; 
+                currentVertex = *unsortedEdges[ i ].p1;
 
                 // move this entry into the sorted list
                 sortedEdges.push_back( unsortedEdges[i] );
@@ -208,11 +208,11 @@ namespace plMeshExtruder
 
         return plMesh( outputTriangles );
     }
-    
+
     /*
-    std::vector<plTriangle> extrudeMesh( const std::vector<plTriangle>& inputTriangles, 
-                                         const PLfloat magnitude, 
-                                         const PLfloat preTranslation, 
+    std::vector<plTriangle> extrudeMesh( const std::vector<plTriangle>& inputTriangles,
+                                         const PLfloat magnitude,
+                                         const PLfloat preTranslation,
                                          const plVector3& direction )
     {
         // error checking
@@ -234,8 +234,8 @@ namespace plMeshExtruder
         return extrudeMesh( preTranslatedTriangles, magnitude, direction );
     }
     */
-    
-    
+
+
     /*
 
     // helper to collectOutsideEdges

@@ -30,7 +30,7 @@ class plScan
         std::vector<plScanPointData> _points;
         plScanField*           _field;
 
-    
+
 };
 
 #endif // PLSCAN_H

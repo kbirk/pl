@@ -11,15 +11,15 @@ class plPlanTechnique : public plRenderTechnique
 
     public:
 
-        plPlanTechnique();       
+        plPlanTechnique();
 
         void render( const std::set< plRenderComponent >& componentSet ) const;
 
     private:
 
         void _initState() const;
-       
+
 };
 
 
-#endif 
+#endif

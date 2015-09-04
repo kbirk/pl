@@ -14,22 +14,22 @@
 class plPlanningBufferData
 {
     public:
-    
+
         plPlanningSite defectSite;
-        plSSBO         defectSiteSSBO;  
-                     
+        plSSBO         defectSiteSSBO;
+
         std::vector< plPlanningSite > donorSites;
         plSSBO                        donorSitesSSBO;
 
-        plPlanningBufferData( const plDefectSite& defect, const std::vector<plDonorSite*>& donors );        
+        plPlanningBufferData( const plDefectSite& defect, const std::vector<plDonorSite*>& donors );
 
         PLbool good() const;
 
         PLuint totalDonorGridPoints() const;
 
     private:
-        
-        plSSBO _getGroupSSBO(); 
+
+        plSSBO _getGroupSSBO();
 };
 
 

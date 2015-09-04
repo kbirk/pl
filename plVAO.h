@@ -11,35 +11,35 @@
 class plVAO
 {
 
-    public:                    
-          
-        plVAO();               
-        plVAO( const plVAO& vao );        
+    public:
+
+        plVAO();
+        plVAO( const plVAO& vao );
         plVAO( plVAO&& vao );
 
-        plVAO& operator= ( const plVAO& vao ); 
-        plVAO& operator= ( plVAO&& vao ); 
+        plVAO& operator= ( const plVAO& vao );
+        plVAO& operator= ( plVAO&& vao );
 
         ~plVAO();
-        
+
         std::shared_ptr< plVBO >&  vbos( PLuint index ) { return _vbos[ index ]; }
         std::shared_ptr< plEABO >& eabo()               { return _eabo; }
 
         void attach( const std::shared_ptr< plVBO >&  vbo  );
-        void attach( const std::shared_ptr< plEABO >& eabo );        
-        void upload();        
+        void attach( const std::shared_ptr< plEABO >& eabo );
+        void upload();
         void draw() const;
         void clear();
 
         friend class plVertexSpecBuffer;
-        
+
     private:
 
         GLuint _id;
-        
+
         std::vector< std::shared_ptr< plVBO > > _vbos;
-        std::shared_ptr< plEABO > _eabo;   
-        
+        std::shared_ptr< plEABO > _eabo;
+
         void _copy( const plVAO& vao );
         void _move( plVAO&& vao );
         void _destroy();

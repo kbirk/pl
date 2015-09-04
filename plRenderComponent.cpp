@@ -1,17 +1,17 @@
 #include "plRenderComponent.h"
 
-       
+
 plRenderComponent::plRenderComponent( const std::shared_ptr<plVAO>& vao )
     :   _vao ( vao )
-{ 
+{
 }
 
 
 
 PLbool plRenderComponent::operator< ( const plRenderComponent& rc ) const
-{   
-    // currently sorts by address   
-    return this < &rc;    
+{
+    // currently sorts by address
+    return this < &rc;
 }
 
 
@@ -37,5 +37,3 @@ void plRenderComponent::_bindUniforms( const plShader& shader ) const
         shader.setUniform( uniform );
     }
 }
-
-

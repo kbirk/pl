@@ -1,7 +1,7 @@
 #include "plVertexSpecBuffer.h"
 #include "plVAO.h"
 
-plVertexSpecBuffer::plVertexSpecBuffer()  
+plVertexSpecBuffer::plVertexSpecBuffer()
     :   _id( 0 ), _numBytes( 0 )
 {
 }
@@ -19,4 +19,3 @@ void plVertexSpecBuffer::_destroy()
     _numBytes = 0;
     _id = 0;
 }
-

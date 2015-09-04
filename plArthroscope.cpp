@@ -17,12 +17,12 @@ plArthroscope::plArthroscope(  const plDRBTransform &ToTrackedPoint, const plDRB
         _interpolationDeque( INTERPOLATION_LIMIT ),
         _isCameraView( false ),
         _texture( ARTHRO_CAM_RES_X, ARTHRO_CAM_RES_Y, GL_RGB, GL_BGR, GL_UNSIGNED_BYTE )
-{ 
+{
 
     //_weights = { INTERPOLATION_WEIGHTS };
 
     _capture = cvCreateCameraCapture(0);
-    if ( !_capture ) 
+    if ( !_capture )
     {
         std::cerr << "plArthroscope::plArthroscope() error: Unable to read from camera - aborting" << std::endl;
         exit(1);
@@ -60,15 +60,15 @@ plArthroscope::plArthroscope( const plArthroscope& arthroscope )
 {
     _copy( arthroscope );
 }
-      
-       
+
+
 plArthroscope& plArthroscope::operator=( const plArthroscope& arthroscope )
 {
     _copy( arthroscope );
     std::cout << "copy" << std::endl;
     *this;
 }
-        
+
 
 void plArthroscope::_destroy()
 {
@@ -82,7 +82,7 @@ void plArthroscope::_destroy()
 }
 
 
-plArthroscope::~plArthroscope() 
+plArthroscope::~plArthroscope()
 {
     _destroy();
 }
@@ -132,11 +132,11 @@ plMatrix44 plArthroscope::getCameraMatrix() const
 {
     // calculate vector down along the probe.
     plCamera scopeCamera;
-    
+
     scopeCamera.position = getPoint();  // calculate vector down along the probe.
     scopeCamera.up       = -getAxisY();
     scopeCamera.lookat   = scopeCamera.position + getAxisZ();  // lookat position, scope tip + unit vector down along the probe
-    
+
     return scopeCamera.getMatrix();
 }
 
@@ -150,7 +150,7 @@ void plArthroscope::extractRenderComponents( plRenderMap& renderMap, PLuint tech
     else
     {
         _extractScopeRenderComponents( renderMap, technique );
-    }    
+    }
 }
 
 
@@ -199,7 +199,7 @@ void plArthroscope::_extractCameraRenderComponents( plRenderMap& renderMap ) con
     static plMatrix44 camera( 1, 0,  0, 0,
                               0, 1,  0, 0,
                               0, 0, -1, 0,
-                              0, 0,  0, 1 ); 
+                              0, 0,  0, 1 );
 
     // draw walls
     // create render component
@@ -208,12 +208,12 @@ void plArthroscope::_extractCameraRenderComponents( plRenderMap& renderMap ) con
     component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44() ) );
     component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       camera       ) );
     component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, ortho        ) );
-    component.attach( plUniform( PL_TEXTURE_UNIT_0_UNIFORM,    &_texture    ) ); 
+    component.attach( plUniform( PL_TEXTURE_UNIT_0_UNIFORM,    &_texture    ) );
     // insert into render map
     renderMap[ PL_ARTHRO_CAM_TECHNIQUE ].insert( component );
-}  
+}
 
-     
+
 void plArthroscope::_extractScopeRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {
     if ( _isVisible )
@@ -230,7 +230,7 @@ void plArthroscope::_extractScopeRenderComponents( plRenderMap& renderMap, PLuin
     plRenderer::queueCylinder( technique, plVector3( 0,0,150 ), plVector3( 0, 0, 1 ), 8.0, 60.0f );
     plRenderer::queueCone    ( technique, plVector3( 0,0,210 ), plVector3( 0, 0, 1 ), 8.0, 0.0f, 0.0f );
     plModelStack::pop();
-} 
+}
 
 
 void plArthroscope::updateImage( PLuint imageManipulation )
@@ -255,7 +255,7 @@ void plArthroscope::updateImage( PLuint imageManipulation )
             IplImage *t = cvCloneImage( _image );
             cvRemap( t, _image, _mapx, _mapy ); // undistort image
             cvReleaseImage( &t );
-            
+
             /*
             cv::Point center( _xCenter, _yCenter);
             cv::Mat dst;
@@ -275,15 +275,15 @@ void plArthroscope::updateImage( PLuint imageManipulation )
 
 /*
 void plArthroscope::_callCircle()
-{       
+{
     _frameMatrix = _image;
-    
+
     // convert to grayscale
     cv::Mat grayScale;
     cvtColor( _frameMatrix, grayScale, CV_BGR2GRAY );
 
     // Reduce the noise so we avoid false circle detection
-    cv::GaussianBlur( grayScale, grayScale, cv::Size(9, 9), 2, 2 );  
+    cv::GaussianBlur( grayScale, grayScale, cv::Size(9, 9), 2, 2 );
 
     // Apply the Hough Transform to find the circles
     std::vector<cv::Vec3f> circles;
@@ -298,10 +298,10 @@ void plArthroscope::_callCircle()
         {
             interpolationDeque.pop_back();        // pop off back if at limit
         }
-            
-        // add newest point  
+
+        // add newest point
         interpolationDeque.push_front( center );
-            
+
         PLfloat finalX = 0;
         PLfloat finalY = 0;
         for( PLuint i = 0; i<interpolationDeque.size(); i++ )
@@ -351,13 +351,12 @@ void plArthroscope::_copy( const plArthroscope& arthroscope )
     _intrinsicsPL =  arthroscope._intrinsicsPL;
     _intrinsicsCV = cvCloneMat( arthroscope._intrinsicsCV );
     _distortion   = cvCloneMat( arthroscope._distortion );
-    
+
     // Variables for circle tracking and undistortion function
-    _interpolationDeque = arthroscope._interpolationDeque;  
+    _interpolationDeque = arthroscope._interpolationDeque;
     _weights = arthroscope._weights;
     //cv::Mat _frameMatrix;
     _xCenter = arthroscope._xCenter;
     _yCenter = arthroscope._yCenter;
     _radius  = arthroscope._radius;
-}       
-
+}

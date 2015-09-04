@@ -36,14 +36,14 @@ enum plUniformTypeEnum
 class plVertexFragmentShader : public plShader
 {
 
-    public:                    
-             
+    public:
+
         plVertexFragmentShader( const char *vertexFile, const char *fragmentFile );
-                 
+
         void setUniform( const plUniform& uniform ) const;
-        
+
     private:
-	
+
         // transformations
         GLint _modelMatrixUniformID;
         GLint _viewMatrixUniformID;
@@ -53,14 +53,14 @@ class plVertexFragmentShader : public plShader
         // light position
         GLint _lightPositionUniformID;
         // picking
-        GLint _pickingUniformID;   
-        // texturing     
+        GLint _pickingUniformID;
+        // texturing
         GLint _textureUnit0SamplerID;
         GLint _textureUnit1SamplerID;
         GLint _textureUnit2SamplerID;
         GLint _textureUnit3SamplerID;
-        
-        void _getUniformLocations();    
+
+        void _getUniformLocations();
 };
 
 #endif

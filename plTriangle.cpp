@@ -7,14 +7,14 @@ plTriangle::plTriangle()
 }
 
 
-plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) 
+plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 )
     :   _centroid( 0.333333f * (p0 + p1 + p2) )
-{        
+{
     _points.push_back( p0 );
     _points.push_back( p1 );
     _points.push_back( p2 );
-    
-    if (n.x == 0.0f && n.y == 0.0f && n.z == 0.0f) 
+
+    if (n.x == 0.0f && n.y == 0.0f && n.z == 0.0f)
     {
         _normal = ((p1-p0)^(p2-p0)).normalize();
     }
@@ -26,8 +26,8 @@ plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 
 }
 
 
-plTriangle::plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 ) 
-    :   _normal(((p1 - p0) ^ (p2 - p0)).normalize()),  
+plTriangle::plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 )
+    :   _normal(((p1 - p0) ^ (p2 - p0)).normalize()),
         _centroid(0.333333f * (p0 + p1 + p2))
 {
     _points.push_back( p0 );
@@ -41,21 +41,21 @@ void plTriangle::point0( const plVector3 &point )
 {
     _points[0] = point;
     _recalculate();
-} 
+}
 
-                  
+
 void plTriangle::point1( const plVector3 &point )
 {
     _points[1] = point;
-    _recalculate(); 
-} 
+    _recalculate();
+}
 
 
 void plTriangle::point2( const plVector3 &point )
 {
     _points[2] = point;
     _recalculate();
-} 
+}
 
 
 void plTriangle::swapVertices0And1()
@@ -70,9 +70,9 @@ void plTriangle::swapVertices0And1()
 void plTriangle::_recalculate()
 {
    _normal = ((_points[1] - _points[0]) ^ (_points[2] - _points[0])).normalize();
-   _centroid = 0.333333f * (_points[0] + _points[1] + _points[2]);  
+   _centroid = 0.333333f * (_points[0] + _points[1] + _points[2]);
    _calcRadius();
-} 
+}
 
 
 void plTriangle::_calcRadius()
@@ -92,9 +92,9 @@ bool plTriangle::isInside( const plVector3 &point ) const
 
     // Reject if outside triangle
     if (u < 0 || v < 0 || u + v > 1)
-        return false; 
-        
-    return true;     
+        return false;
+
+    return true;
 }
 
 
@@ -104,21 +104,21 @@ plIntersection plTriangle::rayIntersect( const plVector3 &rayStart, const plVect
     PLfloat dn = rayDir * _normal;
 
     if ( dn == 0 || (backFaceCull && dn > 0) )
-        return plIntersection(false);   // ray is parallel to plane, or coming from behind    
+        return plIntersection(false);   // ray is parallel to plane, or coming from behind
 
     //PLfloat dist = _points[0] * _normal;
 
     PLfloat t = ( (_points[0]-rayStart) * _normal ) / dn;
 
-    if (ignoreBehindRay && t < 0) 
+    if (ignoreBehindRay && t < 0)
         return plIntersection(false);   // plane is behind ray
 
     plVector3 intPoint = rayStart + t * rayDir;
 
-    // check if point is inside the triangle  
+    // check if point is inside the triangle
     if ( !isInside( intPoint ) )
     {
-       return plIntersection(false);     
+       return plIntersection(false);
     }
     return plIntersection( intPoint, _normal, t );
 }
@@ -145,7 +145,7 @@ plVector3 plTriangle::barycentricCoords( const plVector3 &testPoint ) const
 }
 
 
-PLbool plTriangle::contains( const plVector3& pt, const PLfloat& epsilon ) const 
+PLbool plTriangle::contains( const plVector3& pt, const PLfloat& epsilon ) const
 {
     if (epsilon)
         for ( PLuint i = 0; i < _points.size(); i++ )
@@ -161,7 +161,7 @@ PLbool plTriangle::contains( const plVector3& pt, const PLfloat& epsilon ) const
 
 PLfloat plTriangle::getArea() const
 {
-    return 0.5f * ( (_points[1] - _points[0]) ^ (_points[2] - _points[0]) ).length(); 
+    return 0.5f * ( (_points[1] - _points[0]) ^ (_points[2] - _points[0]) ).length();
 }
 
 
@@ -179,11 +179,11 @@ plVector3 plTriangle::closestPointTo( const plVector3& point ) const
     plVector3 e0 = closestPointOnEdge( 0, point );
     plVector3 e1 = closestPointOnEdge( 1, point );
     plVector3 e2 = closestPointOnEdge( 2, point );
-    
+
     PLfloat d0 = ( e0 - point ).squaredLength();
     PLfloat d1 = ( e1 - point ).squaredLength();
     PLfloat d2 = ( e2 - point ).squaredLength();
-       
+
     if ( d0 < d1 )
     {
         if ( d0 < d2 )
@@ -221,7 +221,7 @@ std::ostream& operator << ( std::ostream& stream, const plTriangle &p )
 namespace plSTL
 {
     PLbool _plCheckTypeSizes();
-    
+
     PLbool importFile( std::vector<plTriangle> &triangles, const plString &filename, PLbool verbose )
     {
         if ( !filename.compare( ".stl", filename.length()-4, 4) )
@@ -229,8 +229,8 @@ namespace plSTL
             std::cout << "plSTL::importFile() error: Unrecognized suffix on filename '" << filename
                       << "'. STL filenames should have suffix .stl" << std::endl;
             return false;
-        }  
-    
+        }
+
         if ( verbose )
             std::cout << "Importing " << filename << "...";
 
@@ -243,33 +243,33 @@ namespace plSTL
             std::cerr << "plSTL::importFile() error: STL file could not be opened" << std::endl;
             return false;
         }
-        
+
         plVector3 n, p0, p1, p2;
-        
+
         // First line: ASCII or RAW?
         plString line;
         std::getline(infile, line);
         bool isAscii = line.compareCaseInsensitive( "solid", 5);
 
-        if (isAscii) 
-        {      
+        if (isAscii)
+        {
             PLchar filler[1024];	// for reading filler text
 
             // Read ASCII STL
-            while ( !infile.eof() ) 
+            while ( !infile.eof() )
             {
-                
-                std::getline( infile, line );    
-                
+
+                std::getline( infile, line );
+
                 line.stripPreceedingWhitespace();
-                
-           
-                if (line.compare("facet", 5)) 
-                {   
-                    // normal   
+
+
+                if (line.compare("facet", 5))
+                {
+                    // normal
                     sscanf(line.c_str(), "%s %s %f %f %f", filler, filler, &n.x, &n.y, &n.z);
-                } 
-                else if ( line.compare("vertex", 6) ) 
+                }
+                else if ( line.compare("vertex", 6) )
                 {
                     // vertex 1
                     sscanf(line.c_str(), "%s %f %f %f", filler, &p0.x, &p0.y, &p0.z);
@@ -279,40 +279,40 @@ namespace plSTL
                     // vertex 3
                     std::getline(infile, line); // read next vertex line
                     sscanf(line.c_str(), "%s %f %f %f", filler, &p2.x, &p2.y, &p2.z);
-                } 
+                }
                 else if (line.compare("endfacet", 8))
                 {
                     // end of face, build triangle
-                    triangles.push_back( plTriangle(n,p0,p1,p2) );                
+                    triangles.push_back( plTriangle(n,p0,p1,p2) );
                 }
             }
             infile.close();
-        } 
-        else 
+        }
+        else
         {
             if ( !_plCheckTypeSizes() )
                 return false;
-              
+
             // close previous binary file
             infile.close();
 
             // open new stream, binary format
             std::ifstream binfile( filename.c_str(), std::ifstream::binary );
 
-            // Skip 80-byte header       
+            // Skip 80-byte header
             PLchar first80[80]; // create a buffer
             binfile.read( &first80[0], sizeof(PLchar)*80 ); // read to buffer
-            
+
             // get number of faces
             PLuint numTriangles;
             binfile.read( reinterpret_cast<PLchar*>( &numTriangles ), sizeof(PLuint) );
             triangles.reserve( numTriangles );
 
             // Read the triangles
-            for (PLuint i=0; i<numTriangles; i++) 
+            for (PLuint i=0; i<numTriangles; i++)
             {
                 PLushort nAttr;
-                
+
                 binfile.read( reinterpret_cast<PLchar*>( &n.x ),   sizeof(PLfloat)*3 );
                 binfile.read( reinterpret_cast<PLchar*>( &p0.x ),  sizeof(PLfloat)*3 );
                 binfile.read( reinterpret_cast<PLchar*>( &p1.x ),  sizeof(PLfloat)*3 );
@@ -321,10 +321,10 @@ namespace plSTL
 
                 triangles.push_back( plTriangle( n, p0, p1, p2 ) );
             }
-            
+
             binfile.close();
         }
-        
+
         if ( verbose )
             std::cout << "\t\t\tComplete.\n";
         return true;
@@ -342,7 +342,7 @@ namespace plSTL
 
         outfile << "solid\n";
 
-        for (PLuint i=0; i<triangles.size(); i++) 
+        for (PLuint i=0; i<triangles.size(); i++)
         {
             outfile << "  facet normal " << triangles[i].normal().x << " " << triangles[i].normal().y << " " << triangles[i].normal().z << "\n" <<
                        "    outer loop\n" <<
@@ -374,7 +374,7 @@ namespace plSTL
 
         // 80 byte header
         PLchar header[80];
-        for (PLuint i=0; i<80; i++) 
+        for (PLuint i=0; i<80; i++)
         {
             header[i] = (PLchar)(0);
         }
@@ -386,7 +386,7 @@ namespace plSTL
 
         // for each facet, 50 bytes
         PLushort zeroShort(0); // at the end of every facet
-        for (PLuint i=0; i<triangles.size(); i++) 
+        for (PLuint i=0; i<triangles.size(); i++)
         {
             outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].normal().x) , sizeof(PLfloat)*3 );
             outfile.write( reinterpret_cast<const PLchar*>( &triangles[i].point0().x) , sizeof(PLfloat)*3 );
@@ -425,5 +425,3 @@ namespace plSTL
     }
 
 }
-
-

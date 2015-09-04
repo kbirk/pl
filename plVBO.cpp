@@ -13,18 +13,18 @@ plVBO::plVBO( const std::vector<plVector4>& data, PLuint usage )
 
 plVBO::plVBO( const plVBO& vbo )
 {
-    _copy( vbo ); 
-}  
+    _copy( vbo );
+}
 
-     
+
 plVBO::plVBO( plVBO&& vbo )
 {
     _move( std::move( vbo ) );
 }
 
 
-plVBO& plVBO::operator = ( const plVBO &vbo ) 
-{ 
+plVBO& plVBO::operator = ( const plVBO &vbo )
+{
     _copy( vbo );
     return *this;
 }
@@ -41,7 +41,7 @@ void plVBO::set( const std::vector<plVector4>& data, PLuint usage )
 {
     _data      = data;
     _numBytes  = sizeof( plVector4 ) * _data.size();
-    _usage     = usage;   
+    _usage     = usage;
 }
 
 
@@ -70,30 +70,30 @@ void plVBO::upload()
         std::cerr << "plVBO::upload() error: data buffer empty, ignoring command" << std::endl;
         return;
     }
-      
+
     if ( _attributePointers.empty() )
     {
         std::cerr << "plVBO::upload() error: vertex attribute pointers unspecified, ignoring command" << std::endl;
-        return;        
+        return;
     }
 
     // if buffer not allocated, generate
 	if ( !_id )
 	    glGenBuffers( 1, &_id );
-    
-    glBindBuffer( GL_ARRAY_BUFFER, _id ); 
-    glBufferData( GL_ARRAY_BUFFER, _numBytes, &_data[0], _usage );    
+
+    glBindBuffer( GL_ARRAY_BUFFER, _id );
+    glBufferData( GL_ARRAY_BUFFER, _numBytes, &_data[0], _usage );
 
     for ( const plVertexAttributePointer& attributePointer : _attributePointers )
-    {   
+    {
         // set position pointer, offset and stride
 	    glEnableVertexAttribArray( attributePointer.index );
-	    glVertexAttribPointer( attributePointer.index, 4, GL_FLOAT, GL_FALSE, attributePointer.stride, (GLvoid*)( attributePointer.offset ) ); 
+	    glVertexAttribPointer( attributePointer.index, 4, GL_FLOAT, GL_FALSE, attributePointer.stride, (GLvoid*)( attributePointer.offset ) );
     }
-    
+
     // do not unbind buffer as this will most likely be called from a vao
 }
- 
+
 
 void plVBO::_copy( const plVBO &vbo )
 {
@@ -109,9 +109,8 @@ void plVBO::_move( plVBO&& vbo )
     _attributePointers = vbo._attributePointers;
     _usage = vbo._usage;
     _data = std::move( vbo._data );
-    
-    vbo._id = 0;   
-    vbo._numBytes = 0;  
+
+    vbo._id = 0;
+    vbo._numBytes = 0;
     vbo._usage = 0;
 }
-

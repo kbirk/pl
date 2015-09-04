@@ -5,7 +5,7 @@ plEditor::plEditor()
 {
 
 }
-        
+
 void plEditor::attach( plPlan& plan )
 {
     if ( _plan )

@@ -25,26 +25,26 @@ enum plPickingRedEnums
 
 
 enum plPickingBlueEnums
-{    
+{
     PL_PICKING_INDEX_GRAFT_DONOR = 1,
     PL_PICKING_INDEX_GRAFT_DEFECT
 };
 
 
-class plPickingInfo 
+class plPickingInfo
 {
     public:
 
 	    PLint r;
 	    PLint g;
 	    PLint b;
-	
+
 	    plPickingInfo()
 	        : r(-1), g(-1), b(-1)
 	    {
 	    }
-	    
-	    plPickingInfo( PLint red, PLint green, PLint blue) 
+
+	    plPickingInfo( PLint red, PLint green, PLint blue)
 	        : r( red ), g( green ), b( blue )
 	    {
 	    }
@@ -58,4 +58,3 @@ namespace plPicking
 }
 
 #endif
-

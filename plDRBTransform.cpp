@@ -1,42 +1,42 @@
 #include "plDRBTransform.h"
 
-plDRBTransform::plDRBTransform() 
-{ 
+plDRBTransform::plDRBTransform()
+{
     // default transform - this will do nothing
     calibpointx=calibpointy=calibpointz=calibangle=calibaxisy=calibaxisx=0;
     calibscalex=calibscaley=calibscalez=calibaxisz=1;
     initializeTransforms();
 }
 
-plDRBTransform::plDRBTransform( const std::string& inputFile, MarkerType t ) 
+plDRBTransform::plDRBTransform( const std::string& inputFile, MarkerType t )
 {
     std::ifstream calibFile;
     calibFile.open(inputFile.c_str());
-    
+
     // Different files (calibration/registration/etc...) have different levels of detail provided
-    if (calibFile.good() && t >= TRANSLATION) 
+    if (calibFile.good() && t >= TRANSLATION)
     {
         calibFile >> calibpointx >> calibpointy >> calibpointz;
-        if (t >= TRANSLATION_ROTATION) 
+        if (t >= TRANSLATION_ROTATION)
         {
             calibFile >> calibaxisx >> calibaxisy >> calibaxisz >> calibangle;
-            if (t >= TRANSLATION_ROTATION_SCALE) 
+            if (t >= TRANSLATION_ROTATION_SCALE)
             {
                 calibFile >> calibscalex;
                 calibscaley = calibscalez = calibscalex;
-            } 
+            }
             else
              {
                 calibscaley = calibscalez = calibscalex = 1;
             }
-        } 
-        else 
+        }
+        else
         {
             calibaxisx = calibaxisy = calibangle = 0; calibaxisz = 1;
             calibscaley = calibscalez = calibscalex = 1;
         }
-    } 
-    else 
+    }
+    else
     {
         std::cout << "Error opening file " << inputFile << " - using default values of 0" << std::endl;
         calibpointx = calibpointy = calibpointz = calibaxisx = calibaxisy = calibangle = 0;
@@ -46,7 +46,7 @@ plDRBTransform::plDRBTransform( const std::string& inputFile, MarkerType t )
     initializeTransforms();
 }
 
-plDRBTransform::plDRBTransform( const plVector3& pos, const plVector3& ori, double ang) 
+plDRBTransform::plDRBTransform( const plVector3& pos, const plVector3& ori, double ang)
 {
     calibpointx = pos.x;
     calibpointy = pos.y;
@@ -60,7 +60,7 @@ plDRBTransform::plDRBTransform( const plVector3& pos, const plVector3& ori, doub
     initializeTransforms();
 }
 
-plDRBTransform::plDRBTransform(plMatrix44 A) 
+plDRBTransform::plDRBTransform(plMatrix44 A)
 {
     for (int i=0; i<4; i++){
         for (int j=0; j<4; j++){
@@ -95,7 +95,7 @@ plDRBTransform plDRBTransform::clone() const
     return temp;
 }
 
-plVector3 plDRBTransform::applyTransform(const plVector3& pos) const 
+plVector3 plDRBTransform::applyTransform(const plVector3& pos) const
 {
     // Forward transform is carried out in the order:
     // Scale -> Rotation -> Translation
@@ -108,7 +108,7 @@ plVector3 plDRBTransform::applyTransform(const plVector3& pos) const
     return plVector3(returnVal.x, returnVal.y, returnVal.z);
 }
 
-plMatrix44 plDRBTransform::getTransform() const 
+plMatrix44 plDRBTransform::getTransform() const
 {
     return fwdTransform;
 }

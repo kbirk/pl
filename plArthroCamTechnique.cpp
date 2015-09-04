@@ -2,7 +2,7 @@
 
 plArthroCamTechnique::plArthroCamTechnique()
 {
-}      
+}
 
 
 void plArthroCamTechnique::render( const std::set< plRenderComponent >& componentSet ) const
@@ -35,7 +35,7 @@ void plArthroCamTechnique::render( const std::set< plRenderComponent >& componen
     {
         component.draw( *shader );
     }
-    
+
     glEnable( GL_DEPTH_TEST );
     glDepthMask( true );
 

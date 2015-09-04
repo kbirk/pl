@@ -6,7 +6,7 @@
 
 class plVector4;    // forward delcaration to allow plVector4 -> plVector3 casting
 
-class plVector3 
+class plVector3
 {
 	public:
 
@@ -15,7 +15,7 @@ class plVector3
 		plVector3();
 		plVector3( PLfloat xx, PLfloat yy, PLfloat zz );
 		plVector3( const plVector4& v );
-		plVector3( PLchar *string );  
+		plVector3( PLchar *string );
 		plVector3( const plString &str );
 
         PLbool 	   operator == (const plVector3 &p) const;
@@ -26,14 +26,14 @@ class plVector3
         plVector3  operator ^  (const plVector3 &p) const;
 
         plVector3& operator =  (const plVector3 &p);
-        
-		plVector3 operator-() const;		
+
+		plVector3 operator-() const;
 
 		plVector3 normalize() const;
 		PLfloat length() const;
-		PLfloat squaredLength() const;  
+		PLfloat squaredLength() const;
 	    PLfloat signedAngle( const plVector3 v, const plVector3& planeNormal ) const;
-  
+
 };
 
 // scalar multiplication

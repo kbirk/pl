@@ -12,9 +12,8 @@
 
 namespace plAutomaticPlanner
 {
-    void calculate( plPlan &plan, PLuint defectSiteIndex );                    
+    void calculate( plPlan &plan, PLuint defectSiteIndex );
 }
 
 
 #endif
-

@@ -9,10 +9,10 @@
 class plPlannerShader : public plShader
 {
 
-    public:                    
-          
-        plPlannerShader( const std::vector< std::string > &sourceFiles ); 
-		
+    public:
+
+        plPlannerShader( const std::vector< std::string > &sourceFiles );
+
         // global uniform setters
         void setDefectSiteUniforms     ( const plPlanningSite &defectSite ) const;
         void setDonorSiteUniforms      ( const std::vector<plPlanningSite> &donorSites ) const;
@@ -20,7 +20,7 @@ class plPlannerShader : public plShader
         void setSeedUniform() const;
 
         // stage0 uniform setters
-        void setTemperatureUniform ( PLfloat temperature ) const;        
+        void setTemperatureUniform ( PLfloat temperature ) const;
         void setLocalLoadUniform   ( PLuint loadLocal ) const;
 
         // stage2-3 uniform setters
@@ -35,30 +35,30 @@ class plPlannerShader : public plShader
         PLuint _defectSiteTriangleCountID;
         PLuint _defectSiteAreaID;
         PLuint _defectSiteAvgNormalID;
-         
-        PLuint _donorSiteCountID;         
+
+        PLuint _donorSiteCountID;
         PLuint _donorSiteTotalGridPointsID;
         PLuint _donorSiteTriangleCountsID;
         PLuint _donorSiteGridPointCountsID;
         PLuint _donorSiteBoundaryPointCountsID;
         PLuint _donorSiteDataOffsetsID;
-          
+
         PLuint _defectSolutionGraftCountID;
         PLuint _defectSolutionGraftPositionsID;
         PLuint _defectSolutionGraftNormalsID;
         PLuint _defectSolutionGraftRadiiID;
-        PLuint _defectSolutionSurfaceNormalsID;         
-        
+        PLuint _defectSolutionSurfaceNormalsID;
+
         PLuint _seedID;
 
         // stage 0 uniforms
         PLuint _temperatureID;
         PLuint _loadLocalID;
-        
+
         // stage 2-3 uniforms
         PLuint _rotationIndexID;
-        PLuint _rotationAnglesID; 
-      
+        PLuint _rotationAnglesID;
+
 		void _getUniformLocations();
 };
 

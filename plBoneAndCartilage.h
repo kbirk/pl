@@ -8,7 +8,7 @@ class plBoneAndCartilage : public plRenderable,
                            public plArthroViewable
 {
     public:
-    
+
         plModel bone;
         plModel cartilage;
         plModel combined;
@@ -18,10 +18,10 @@ class plBoneAndCartilage : public plRenderable,
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 
-        plVector3 getCentroid() const; 
+        plVector3 getCentroid() const;
 
         void toggleArthroView();
-            
+
 };
 
 

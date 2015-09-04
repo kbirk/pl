@@ -24,7 +24,7 @@ plTrackedObject::plTrackedObject( const plDRBTransform &ToTrackedPoint,
 }
 
 
-void plTrackedObject::updatePosition( const plDRBTransform &DRBToWorld, const plDRBTransform &FemurToWorld) 
+void plTrackedObject::updatePosition( const plDRBTransform &DRBToWorld, const plDRBTransform &FemurToWorld)
 {
     _tipWorldCoords = _DRBToTrackedPoint.applyTransform( plVector3(0, 0, 0) );
     _tipWorldCoords = DRBToWorld.applyTransform(_tipWorldCoords);
@@ -50,11 +50,11 @@ void plTrackedObject::updatePosition( const plDRBTransform &DRBToWorld, const pl
     _zAxis          = _FemurDRBtoSTL.applyTransform(_zAxis);
     _zAxis          = (_zAxis - _trackedTip).normalize();
 
-    if (!_isArthroscope) 
+    if (!_isArthroscope)
     {
         _endWorldCoords = _DRBToTrackedEnd.applyTransform( plVector3(0, 0, 0) );
     }
-    else 
+    else
     {
         // arthroscope end is rotated by 30 degrees from camera view direction
         // and must be handled differently
@@ -90,5 +90,3 @@ void plTrackedObject::extractRenderComponents( plRenderMap& renderMap ) const
 {
     extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
 }
-
-

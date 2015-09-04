@@ -2,7 +2,7 @@
 
 plMinimalTechnique::plMinimalTechnique()
 {
-}      
+}
 
 
 void plMinimalTechnique::render( const std::set< plRenderComponent >& componentSet ) const
@@ -11,10 +11,10 @@ void plMinimalTechnique::render( const std::set< plRenderComponent >& componentS
     const std::shared_ptr< plShader >& shader = plRenderResources::shaders( PL_MINIMAL_SHADER );
 
     // bind fbo
-    fbo->bind(); 
+    fbo->bind();
 
     // set viewport
-    glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() ); 
+    glViewport( 0, 0, plWindow::viewportWidth(), plWindow::viewportHeight() );
 
     // set draw buffers
     std::vector<GLenum> drawBuffers;
@@ -33,8 +33,8 @@ void plMinimalTechnique::render( const std::set< plRenderComponent >& componentS
 
     // draw main render components
     for ( const plRenderComponent& component : componentSet )
-    { 
-        component.draw( *shader );   
+    {
+        component.draw( *shader );
     }
 
     glDepthFunc( GL_LEQUAL );
@@ -44,5 +44,5 @@ void plMinimalTechnique::render( const std::set< plRenderComponent >& componentS
     shader->unbind();
 
     // unbind fbo
-    fbo->unbind(); 
+    fbo->unbind();
 }

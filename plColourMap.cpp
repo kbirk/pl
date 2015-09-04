@@ -2,8 +2,8 @@
 
 namespace plColourMap
 {
-    
-    PLuint _colourMap[PL_COLOURMAP_SIZE][4] = 
+
+    PLuint _colourMap[PL_COLOURMAP_SIZE][4] =
     {
       { 0, 0, 188, 128 },
       { 0, 0, 189, 128 },
@@ -530,4 +530,3 @@ namespace plColourMap
     }
 
 }
-

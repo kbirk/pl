@@ -12,23 +12,23 @@
 #include "plEditor.h"
 
 #define PL_MODEL_EDIT_MODE_TRANSLATE             1
-#define PL_MODEL_EDIT_MODE_ROTATE                2 
+#define PL_MODEL_EDIT_MODE_ROTATE                2
 
 class plModelEditor : public plEditor
 {
     public:
 
         plModelEditor();
-               
+
         void clearSelection();
         void selectModel( PLuint index );
-        
+
         void setEditMode( PLuint editMode );
 
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
-        
-        PLbool isModelSelected() const { return ( _selectedModel != NULL ); }    
+
+        PLbool isModelSelected() const { return ( _selectedModel != NULL ); }
         PLint  selectedModelID() const;
 
         PLbool processMouseClick   ( PLint x, PLint y );
@@ -38,14 +38,13 @@ class plModelEditor : public plEditor
 
         void toggleSelectedVisibility();
 
-    private: 
-    
+    private:
+
         PLint    _editMode;
-        plModel *_selectedModel;  
-        
-        void _dragModel( PLint x, PLint y );    
+        plModel *_selectedModel;
+
+        void _dragModel( PLint x, PLint y );
         void _extractMenuRenderComponents( plRenderMap& renderMap ) const;
 };
 
 #endif
-

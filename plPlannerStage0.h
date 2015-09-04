@@ -30,9 +30,9 @@
 class plAnnealingGroup
 {
     public:
-            
-        plAnnealingGroup( PLfloat initialEnergy );        
-       
+
+        plAnnealingGroup( PLfloat initialEnergy );
+
         void bind();
         void unbind();
 
@@ -40,7 +40,7 @@ class plAnnealingGroup
         void getLowestGroupInfo( PLuint &index, PLfloat &energy );
 
     private:
-            
+
         plSSBO _invoEnergiesSSBO;
         plSSBO _invoGraftPositionsSSBO;
         plSSBO _invoGraftNormalsSSBO;
@@ -52,7 +52,7 @@ class plAnnealingGroup
         plSSBO _groupGraftNormalsSSBO;
         plSSBO _groupGraftRadiiSSBO;
         plSSBO _groupGraftCountsSSBO;
-      
+
 };
 
 
@@ -67,4 +67,3 @@ namespace plPlannerStage0
 
 
 #endif
-

@@ -3,7 +3,7 @@
 
 plArthroViewable::plArthroViewable()
     :   _inArthroView( false )
-{  
+{
 }
 
 
