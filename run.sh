@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./planner ./patient1/plan.csv
+./planner ./data/patient1/plan.csv
