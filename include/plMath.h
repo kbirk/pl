@@ -44,6 +44,6 @@ namespace plMath
     plIntersection getClosestPointToRay( const std::vector<plTriangle>& triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection );
 
 
-};
+}
 
 #endif

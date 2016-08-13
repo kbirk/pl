@@ -1,13 +1,15 @@
 #include "PlannerWindow.h"
 
 PlannerWindow::PlannerWindow( int x, int y, int width, int height, std::string title, int argc, char **argv )
-    : _button( GLUT_NO_BUTTON ),
-      _camera( ".view0" ),
-      _cameraMode( CAMERA_ROTATION_MODE ),
+    : Window( x, y, width, height, title ),
+      _plan( argc, argv ),
       _graftEditor(),
       _boundaryEditor(),
-      _plan( argc, argv ),
-      Window( x, y, width, height, title )
+      _modelEditor(),
+      _cameraMode( CAMERA_ROTATION_MODE ),
+      _camera( ".view0" ),
+      _previousMouse(),
+      _button( GLUT_NO_BUTTON )
 {
     plInit();
 

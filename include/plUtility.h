@@ -3,7 +3,6 @@
 
 #include "plCommon.h"
 
-
 namespace plUtility
 {
 
@@ -50,9 +49,6 @@ namespace plUtility
 
     void printProgressBar( float percent, PLuint length = 50 );
 
-};
-
-
-
+}
 
 #endif

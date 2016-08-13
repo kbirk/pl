@@ -69,7 +69,7 @@
 #ifdef WIN32
 
     #include <windows.h>
-    #define PL_FILE_PREPATH     "../data/"
+    #define PL_FILE_PREPATH     "../resources/"
     inline float round( float val )
     {
         return floor( val + 0.5f );
@@ -80,7 +80,7 @@
 
 #else
 
-    #define PL_FILE_PREPATH     "./data/"
+    #define PL_FILE_PREPATH     "./resources/"
     #define GL_GLEXT_PROTOTYPES
 
     #ifdef __APPLE__
