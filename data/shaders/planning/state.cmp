@@ -167,19 +167,19 @@ void translateGraft( inout vec4 graftPosition, in vec4 graftNormal, in float gra
     // get random translation
     float tx = rand( seed );
     float ty = rand( seed );
-    float tz = rand( seed ); 
+    float tz = rand( seed );
 
     // project translation so that it is perpendicular to the site normal, normalize for a direction
-    vec3 planeDir = normalize( projectOntoPlane( vec3( tx, ty, tz ), uDefectSiteAvgNormal.xyz ) );        
-    // scale translation between [-uTemperature .. uTemperature]   
+    vec3 planeDir = normalize( projectOntoPlane( vec3( tx, ty, tz ), uDefectSiteAvgNormal.xyz ) );
+    // scale translation between [-uTemperature .. uTemperature]
     vec3 trans = planeDir * ( rand( seed, -1.0, 1.0 ) * uTemperature );
     // get new position
     vec3 newPosition = graftPosition.xyz + trans;
-    
+
     // check if new position is valid
-    if ( isWithinDefectBoundaryThreshold( newPosition, graftNormal.xyz, graftRadius*PL_STAGE_0_SITE_OVERLAP_THRESHOLD ) )    
+    if ( isWithinDefectBoundaryThreshold( newPosition, graftNormal.xyz, graftRadius*PL_STAGE_0_SITE_OVERLAP_THRESHOLD ) )
     {
-        graftPosition = vec4( newPosition, 1.0 );        
+        graftPosition = vec4( newPosition, 1.0 );
     }
 
 }
@@ -187,32 +187,32 @@ void translateGraft( inout vec4 graftPosition, in vec4 graftNormal, in float gra
 
 void rotateGraft( inout vec4 graftNormal, inout uint seed )
 {
-    // get random rotation        
+    // get random rotation
     float angle = rand( seed, -1.0, 1.0 ) * (uTemperature+0.05) * 5.0;
     float ax = rand( seed );
     float ay = rand( seed );
-    float az = rand( seed );    
+    float az = rand( seed );
     vec3 axis = normalize( vec3( ax, ay, az ) );
     mat4 rot;   getRotation( rot, angle, axis );
 
     // rotate new normal
-    vec3 newNormal = normalize( vec3( rot * vec4( graftNormal.xyz, 0.0 ) ) );   
-            
+    vec3 newNormal = normalize( vec3( rot * vec4( graftNormal.xyz, 0.0 ) ) );
+
     // check that normal is within rotation threshold
     if ( isWithinDefectRotationThreshold( newNormal, PL_MAX_GRAFT_ROTATION ) )
     {
         graftNormal = vec4( newNormal, 1.0 );
-    }  
+    }
 }
 
 
 void perturbState( inout state s, inout uint seed )
 {
     for (uint i=0; i<s.graftCount; i++)
-    {       
+    {
         // translate graft
         translateGraft( s.positions[i], s.normals[i], s.radii[i], seed );
-        
+
         // rotate graft
         rotateGraft( s.normals[i], seed );
     }
@@ -220,39 +220,39 @@ void perturbState( inout state s, inout uint seed )
 
 
 void addCap( inout state s, inout uint seed )
-{   
-    float radius = uint( rand( seed ) * (PL_MAX_GRAFT_RADIUS-PL_MIN_GRAFT_RADIUS+1) + PL_MIN_GRAFT_RADIUS); 
+{
+    float radius = uint( rand( seed ) * (PL_MAX_GRAFT_RADIUS-PL_MIN_GRAFT_RADIUS+1) + PL_MIN_GRAFT_RADIUS);
     uint  index  = uint( uDefectSiteGridPointCount*rand( seed ) );
-    
+
     if ( isWithinDefectBoundaryThreshold( vec3( defectSitePositions( index ) ), vec3( defectSiteNormals( index ) ), radius*PL_STAGE_0_SITE_OVERLAP_THRESHOLD ) )
-    {    
+    {
         s.positions[s.graftCount] = defectSitePositions( index );
         s.normals  [s.graftCount] = defectSiteNormals  ( index );
-        s.radii    [s.graftCount] = radius;   
-        s.graftCount++;  
+        s.radii    [s.graftCount] = radius;
+        s.graftCount++;
     }
 }
 
 
 void removeCap( inout state s, inout uint seed )
-{ 
+{
     uint index = uint( s.graftCount*rand( seed ) );
-    
+
     // shift all other elements down
     for (uint i=index; i<s.graftCount; i++)
     {
         if (i+1 == PL_MAX_GRAFTS_PER_SOLUTION)  // max sure doesnt go out of bounds
             break;
-        /*    
+        /*
         {
             s.positions[i] = vec4(-1, -1, -1, -1);
             s.normals  [i] = vec4(-1, -1, -1, -1);
-            s.radii    [i] = -1.0; 
-        }  
-        */        
+            s.radii    [i] = -1.0;
+        }
+        */
         s.positions[i] = s.positions[i+1];
         s.normals  [i] = s.normals  [i+1];
-        s.radii    [i] = s.radii    [i+1];                              
+        s.radii    [i] = s.radii    [i+1];
     }
     s.graftCount--;
 }
@@ -261,38 +261,38 @@ void removeCap( inout state s, inout uint seed )
 void copyGroupState( inout state s )
 {
     s.graftCount = getGroupGraftCounts();
-    
+
     for (int i=0; i<s.graftCount; i++)
-    {       
+    {
         s.positions[i] = getGroupGraftPositions( i );
         s.normals  [i] = getGroupGraftNormals  ( i );
         s.radii    [i] = getGroupGraftRadii    ( i );
-    } 
+    }
 }
 
 
 void copyLocalState( inout state s )
 {
     s.graftCount = getInvoGraftCounts();
-    
+
     for (int i=0; i<s.graftCount; i++)
-    {       
+    {
         s.positions[i] = getInvoGraftPositions( i );
         s.normals  [i] = getInvoGraftNormals  ( i );
         s.radii    [i] = getInvoGraftRadii    ( i );
-    }    
+    }
 }
 
 
 void copyPreviousState( inout state s )
 {
-    if ( uLoadLocal > 0 )  
-    {       
+    if ( uLoadLocal > 0 )
+    {
         copyLocalState( s );
     }
-    else   
+    else
     {
-        copyGroupState( s );         
+        copyGroupState( s );
     }
 }
 
@@ -302,20 +302,20 @@ void storeState( in state s, inout uint seed )
     // store state graft count
     setInvoGraftCounts( s.graftCount );
 
-    // store state positions, normals, and radii   
+    // store state positions, normals, and radii
     for (uint i=0; i<s.graftCount; i++)
     {
         setInvoGraftPositions( i, s.positions[i] );
         setInvoGraftNormals  ( i, s.normals  [i] );
         setInvoGraftRadii    ( i, s.radii    [i] );
-    } 
+    }
 
     if ( uLoadLocal == 1 )
     {
         // calc and store state energy on last local iteration
-        setInvoEnergies( energy( s ) );             
-    }   
-    
+        setInvoEnergies( energy( s ) );
+    }
+
     memoryBarrier();
 }
 
@@ -324,7 +324,7 @@ void progressState( inout state s, inout uint seed )
 {
     // determine which case
     uint changeCase = uint( rand( seed ) * 20 );
-        
+
     if ( s.graftCount == 0 || changeCase == 0 )
     {
         // add random
@@ -348,7 +348,7 @@ void storeLocalToGroup( in uint localIndex )
 {
     // transfer data from a invo state to a group state
     setGroupEnergies   ( getInvoEnergies   ( localIndex ) );
-    setGroupGraftCounts( getInvoGraftCounts( localIndex ) );  
+    setGroupGraftCounts( getInvoGraftCounts( localIndex ) );
 
     uint graftCount = getInvoGraftCounts( localIndex );
 
@@ -357,16 +357,16 @@ void storeLocalToGroup( in uint localIndex )
         setGroupGraftPositions( i, getInvoGraftPositions( localIndex, i ) );
         setGroupGraftNormals  ( i, getInvoGraftNormals  ( localIndex, i ) );
         setGroupGraftRadii    ( i, getInvoGraftRadii    ( localIndex, i ) );
-    } 
-    
+    }
+
     memoryBarrier();
 }
 
 
 void getShuffledIndexArray( inout uint array[ PL_STAGE_0_WORKGROUP_SIZE ], inout uint seed )
-{   
+{
     // generate indices in proper bounds
-    uint invoOffset = gl_WorkGroupID.x * PL_STAGE_0_WORKGROUP_SIZE; 
+    uint invoOffset = gl_WorkGroupID.x * PL_STAGE_0_WORKGROUP_SIZE;
 
     // fill array with incremental indices
     for (uint i=0; i < PL_STAGE_0_WORKGROUP_SIZE; i++)
@@ -375,21 +375,21 @@ void getShuffledIndexArray( inout uint array[ PL_STAGE_0_WORKGROUP_SIZE ], inout
     }
 
     // randomize orders
-    for (uint i = 0; i < PL_STAGE_0_WORKGROUP_SIZE; i++) 
+    for (uint i = 0; i < PL_STAGE_0_WORKGROUP_SIZE; i++)
     {
         uint j = uint( rand( seed ) * float( PL_STAGE_0_WORKGROUP_SIZE ) );
         uint t = array[j];
         array[j] = array[i];
         array[i] = t;
-    }    
+    }
 }
 
 
 void updateGroupStates( inout uint seed )
-{    
+{
     // only have first local index do work
     if ( gl_LocalInvocationID.x == 0 )
-    {   
+    {
         // generate shuffled indices from correct workgroup section of SSBO
         uint shuffledIndices[ PL_STAGE_0_WORKGROUP_SIZE ];
         getShuffledIndexArray( shuffledIndices, seed );
@@ -400,24 +400,23 @@ void updateGroupStates( inout uint seed )
         int bestIndex = -1;
 
         for ( uint i=0; i < PL_STAGE_0_WORKGROUP_SIZE; i++ )
-        {              
-            // get a shuffled index to prevent bias       
+        {
+            // get a shuffled index to prevent bias
             uint j = shuffledIndices[i];
             // get the energy
             float newEnergy = getInvoEnergies( j );
 
             if ( acceptanceProbability( currentGroupEnergy, newEnergy ) > rand( seed ) )
-            {    
+            {
                 // better local state found
                 currentGroupEnergy = newEnergy;
                 bestIndex = int(j);
             }
         }
-    
+
         if ( bestIndex >= 0 )
         {
             storeLocalToGroup( uint( bestIndex ) );
-        }          
-    } 
+        }
+    }
 }
-

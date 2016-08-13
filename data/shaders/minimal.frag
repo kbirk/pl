@@ -12,5 +12,5 @@ uniform ivec3 uPickingColour;
 void main()
 {
     colourOutput  = uColour;
-    pickingOutput = uPickingColour;   
+    pickingOutput = uPickingColour;
 }

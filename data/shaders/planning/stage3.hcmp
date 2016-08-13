@@ -13,4 +13,3 @@ layout (std430,  binding = 5) buffer donorXAxisBlock       { vec4  donorSolution
 layout (std430,  binding = 6) buffer donorSiteIndexBlock   { uint  donorSolutionSiteIndices[]; };
 
 layout (std430,  binding = 7) buffer totalRmsBlock         { float totalRmsOutput[];         };
-

@@ -35,10 +35,9 @@ vec3 defectSolutionSurfaceNormals( in uint i )
 void defectToDonorRotation( inout mat4 rotation, in vec3 defectSurfaceNormal, in vec3 donorSurfaceNormal, in float rotationAngle )
 {
     // get rotational transform from defect space to donor space
-    mat4 graftRot;     getRotationFromTo( graftRot, defectSurfaceNormal, donorSurfaceNormal );      
+    mat4 graftRot;     getRotationFromTo( graftRot, defectSurfaceNormal, donorSurfaceNormal );
     // get rotation around defect surface normal
     mat4 rotationRot;  getRotation( rotationRot, rotationAngle, defectSurfaceNormal );
     // concat rotations, rotate graft, then transform it into donor site
     rotation = graftRot * rotationRot;
 }
-

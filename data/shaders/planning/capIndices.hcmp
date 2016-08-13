@@ -12,5 +12,3 @@ uint getDonorCapCount();
 
 triangle getDefectCapTriangles( in uint graftIndex, in vec3 graftPosition, in uint index );
 triangle getDonorCapTriangles( in uint site, in vec3 gridPosition, in uint index );
-    
-

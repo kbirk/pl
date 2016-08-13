@@ -7,5 +7,5 @@ uniform ivec3 uPickingColour;
 
 void main()
 {
-    outlineOutput = ivec4( uPickingColour, 1 ); 
+    outlineOutput = ivec4( uPickingColour, 1 );
 }

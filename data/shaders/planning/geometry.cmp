@@ -22,14 +22,14 @@ struct edge
 
 vec3 projectOntoPlane( in vec3 point, in vec3 plane_normal )
 {
-    float dist = dot( point, plane_normal);    
+    float dist = dot( point, plane_normal);
     return point - (dist * plane_normal);
 }
 
 
-float distToAxis( in vec3 axis, in vec3 v )    
+float distToAxis( in vec3 axis, in vec3 v )
 {
-    // v is already in the *local* coordinate system of the graft        
+    // v is already in the *local* coordinate system of the graft
     return distance( v, dot(v, axis)*axis );
 }
 
@@ -73,34 +73,34 @@ void closestPointsOnTwoSegments( inout vec3 c0, inout vec3 c1, in vec3 position0
     float e = dot( d1, d1 ); // Squared length of segment S1, always nonnegative
     float f = dot( d1, r );
     float c = dot( d0, r );
-    
+
     // The general non-degenerate case starts here, no degenerate cases considered ( no grafts are 0 length )
     float b = dot(d0, d1);
     float denom = a*e-b*b; // Always nonnegative
     // If segments not parallel, compute closest point on L1 to L2 and
     // clamp to segment S1. Else pick arbitrary s (here 0)
     float s, t;
-    
-    if (denom != 0.0) 
+
+    if (denom != 0.0)
     {
         s = clamp( (b*f - c*e) / denom, 0.0, 1.0 );
-    } 
+    }
     else
-    { 
+    {
         s = 0.0;
-    }  
+    }
     // Compute point on L2 closest to S1(s) using
     // t = Dot((P1 + D1*s) - P2,D2) / Dot(D2,D2) = (b*s + f) / e
     t = (b*s + f) / e;
     // If t in [0,1] done. Else clamp t, recompute s for the new value
     // of t using s = Dot((P2 + D2*t) - P1,D1) / Dot(D1,D1)= (t*b - c) / a
     // and clamp s to [0, 1]
-    if( t < 0.0 ) 
+    if( t < 0.0 )
     {
         t = 0.0;
         s = clamp(-c / a, 0.0, 1.0);
-    } 
-    else if ( t > 1.0 ) 
+    }
+    else if ( t > 1.0 )
     {
         t = 1.0;
         s = clamp((b - c) / a, 0.0, 1.0);
@@ -151,42 +151,42 @@ bool rayIntersectTriangle( inout vec3 point, inout float t, in vec3 rayStart, in
     float dn = dot( rayDir, tri.n );
 
     if ( dn != 0.0 )
-    {      
+    {
         t = dot( tri.p0 - rayStart, tri.n ) / dn;
-         
+
         point = rayStart + t * rayDir;
 
         // Compute barycentric coords
         float totalAreaDiv = 1.0 / dot( cross( tri.p1-tri.p0, tri.p2-tri.p0 ), tri.n);
         float u = dot( cross( tri.p2-tri.p1, point-tri.p1 ), tri.n) * totalAreaDiv;
         float v = dot( cross( tri.p0-tri.p2, point-tri.p2 ), tri.n) * totalAreaDiv;
-        
-        // Reject if outside triangle        
+
+        // Reject if outside triangle
         result = !(u < -0.0001 || v < -0.0001 || u + v > 1.0001 );
 
     }
     else
     {
-        // ray is parallel to plane 
-        result = false;        
+        // ray is parallel to plane
+        result = false;
     }
 
     return result;
 }
 
 
-void getRotationFromTo( inout mat4 rot, in vec3 from, in vec3 to ) 
+void getRotationFromTo( inout mat4 rot, in vec3 from, in vec3 to )
 {
     vec3 fromN = normalize( from );
-    vec3 toN   = normalize( to ); 
+    vec3 toN   = normalize( to );
 
     float epsilon = 0.000001;
-    float e = dot( fromN, toN ); 
+    float e = dot( fromN, toN );
     float f = abs( e );
 
     rot = mat4( 1.0 );
 
-    if ( f > ( 1.0-epsilon ) ) 
+    if ( f > ( 1.0-epsilon ) )
     {   // "from" and "to" almost parallel
         // nearly orthogonal
         float fx = abs(fromN.x);
@@ -200,18 +200,18 @@ void getRotationFromTo( inout mat4 rot, in vec3 from, in vec3 to )
             if (fx<fz)
             {
                 x = vec3( 1.0, 0.0, 0.0 );
-            } 
-            else 
+            }
+            else
             {
                 x = vec3( 0.0, 0.0, 1.0 );
             }
-        } 
-        else 
+        }
+        else
         {
-            if (fy < fz) 
+            if (fy < fz)
             {
                 x = vec3( 0.0, 1.0, 0.0 );
-            } 
+            }
             else
             {
                 x = vec3( 0.0, 0.0, 1.0 );
@@ -223,23 +223,23 @@ void getRotationFromTo( inout mat4 rot, in vec3 from, in vec3 to )
         float c1 = 2.0f / dot(u, u);
         float c2 = 2.0f / dot(v, v);
         float c3 = c1*c2 * dot(u, v);
-                
+
         // set matrix entries
         rot[0][0] = - c1*u.x*u.x - c2*v.x*v.x + c3*v.x*u.x;
         rot[1][0] = - c1*u.x*u.y - c2*v.x*v.y + c3*v.x*u.y;
         rot[2][0] = - c1*u.x*u.z - c2*v.x*v.z + c3*v.x*u.z;
-                
+
         rot[1][1] = - c1*u.y*u.x - c2*v.y*v.x + c3*v.y*u.x;
         rot[2][1] = - c1*u.y*u.y - c2*v.y*v.y + c3*v.y*u.y;
         rot[3][1] = - c1*u.y*u.z - c2*v.y*v.z + c3*v.y*u.z;
-                
+
         rot[0][2] = - c1*u.z*u.x - c2*v.z*v.x + c3*v.z*u.x;
         rot[1][2] = - c1*u.z*u.y - c2*v.z*v.y + c3*v.z*u.y;
         rot[2][2] = - c1*u.z*u.z - c2*v.z*v.z + c3*v.z*u.z;
-        
+
         rot[0][0] += 1.0;
         rot[1][1] += 1.0;
-        rot[2][2] += 1.0; 
+        rot[2][2] += 1.0;
     }
     else
     {
@@ -251,7 +251,7 @@ void getRotationFromTo( inout mat4 rot, in vec3 from, in vec3 to )
         float hvxy = hvx * v.y;
         float hvxz = hvx * v.z;
         float hvyz = hvz * v.y;
-                    
+
         rot[0][0] = e + hvx * v.x;
         rot[1][0] = hvxy - v.z;
         rot[2][0] = hvxz + v.y;
@@ -262,13 +262,13 @@ void getRotationFromTo( inout mat4 rot, in vec3 from, in vec3 to )
 
         rot[0][2] = hvxz - v.y;
         rot[1][2] = hvyz + v.x;
-        rot[2][2] = e + hvz * v.z;      
+        rot[2][2] = e + hvz * v.z;
     }
 
 }
 
 
-void getRotation( inout mat4 mat, in float angleDegree, in vec3 axis ) 
+void getRotation( inout mat4 mat, in float angleDegree, in vec3 axis )
 {
     float x = axis.x;
     float y = axis.y;
@@ -278,10 +278,10 @@ void getRotation( inout mat4 mat, in float angleDegree, in vec3 axis )
     float s = sin( angleDegree*0.017453292 );
     float c = cos( angleDegree*0.017453292 );
 
-    float mag = length( axis ); 
+    float mag = length( axis );
 
     // zero vector, return identity
-    if (mag == 0.0) 
+    if (mag == 0.0)
     {
         mat = mat4(1.0);
         return;
@@ -305,7 +305,7 @@ void getRotation( inout mat4 mat, in float angleDegree, in vec3 axis )
     one_c = 1.0f - c;
 
     mat = mat4(1.0);
-    
+
     mat[0][0] = (one_c * xx) + c;
     mat[1][0] = (one_c * xy) - zs;
     mat[2][0] = (one_c * zx) + ys;
@@ -313,9 +313,8 @@ void getRotation( inout mat4 mat, in float angleDegree, in vec3 axis )
     mat[0][1] = (one_c * xy) + zs;
     mat[1][1] = (one_c * yy) + c;
     mat[2][1] = (one_c * yz) - xs;
-    
+
     mat[0][2] = (one_c * zx) - ys;
     mat[1][2] = (one_c * yz) + xs;
     mat[2][2] = (one_c * zz) + c;
 }
-

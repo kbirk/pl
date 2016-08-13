@@ -8,4 +8,4 @@ float uncoveredArea( in state s );
 float graftOverlap( in state s );
 void setCapOverlap( in uint index, in float value );
 float getCapOverlap( in uint index );
-float acceptanceProbability( in float energy, in float newEnergy ); 
+float acceptanceProbability( in float energy, in float newEnergy );

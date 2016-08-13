@@ -11,9 +11,9 @@ out vec2 texCoordOut;
 
 void main()
 {
-	// project position into projection space	
+	// project position into projection space
 	gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4( vPosition, 1.0 );
 
-    // pass texture coordinate 
+    // pass texture coordinate
 	texCoordOut = vTexCoord;
 }

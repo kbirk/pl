@@ -16,7 +16,7 @@ vec4 defectSiteNormals( in uint i )
 
 triangle defectSiteTriangles( in uint i )
 {
-    uint j = uDefectSiteGridPointCount*2 + i*4;    
+    uint j = uDefectSiteGridPointCount*2 + i*4;
     triangle t;
     t.p0 = defectSiteData[j+0].xyz;
     t.p1 = defectSiteData[j+1].xyz;
@@ -31,11 +31,11 @@ edge defectSiteEdge( in uint i )
     uint offset = uDefectSiteGridPointCount*2 + uDefectSiteTriangleCount*4;
     uint j = offset + i;
     uint k = offset + ( (i+1) % uDefectSiteBoundaryPointCount );
-    
+
     edge e;
     e.p0 = defectSiteData[ j ].xyz;
-    e.p1 = defectSiteData[ k ].xyz;  
-    e.n  = defectSiteData[ j+uDefectSiteBoundaryPointCount ].xyz;   // tangent pointing out 
+    e.p1 = defectSiteData[ k ].xyz;
+    e.n  = defectSiteData[ j+uDefectSiteBoundaryPointCount ].xyz;   // tangent pointing out
     return e;
 }
 
@@ -46,23 +46,23 @@ bool isWithinDefectBoundaryThreshold( in vec3 position, in vec3 normal, in float
     bool inside = true;
     for (int i=0; i<uDefectSiteBoundaryPointCount; i++)
     {
-        edge e = defectSiteEdge( i );     
-        
-        /* check if outside boundary   
+        edge e = defectSiteEdge( i );
+
+        /* check if outside boundary
         if ( dot( position-e.p0, e.n ) > 0.0 )
             inside = false;
         */
-        
-        vec3 closestPoint = closestPointOnSegment( position, e.p0, e.p1 ) - position;    // get closest point in graft coords    
-        
-        // check if within threshold distance       
-        if ( distToAxis( normal, closestPoint ) < threshold ) 
+
+        vec3 closestPoint = closestPointOnSegment( position, e.p0, e.p1 ) - position;    // get closest point in graft coords
+
+        // check if within threshold distance
+        if ( distToAxis( normal, closestPoint ) < threshold )
         {
             inside = false;
             break;
-        }  
-   
-    }    
+        }
+
+    }
     return inside;
 }
 
@@ -71,5 +71,3 @@ bool isWithinDefectRotationThreshold( in vec3 normal, in float threshold )
 {
     return acos( dot( normal, vec3( uDefectSiteAvgNormal ) ) ) < threshold*0.01745329;
 }
-
-
