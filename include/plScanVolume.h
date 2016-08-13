@@ -1,6 +1,4 @@
-// volume.h
-#ifndef PL_SCAN_VOLUME_H
-#define PL_SCAN_VOLUME_H
+#pragma once
 
 #include <cmath>
 #include "plVector3.h"
@@ -11,14 +9,12 @@
 const float probeRadius   = 1.5;             // 1.5 mm radius
 const float coneHalfAngle = 60.0/180.0*PL_PI; // 60 degree half-angle
 
-class plScanVolume //: public plRenderable
+class plScanVolume
 {
-    //plMinimalShader* _minimalShader;
 
     public:
 
         enum plScanVoxelType { EMPTY = 0x0, SURFACE = 0x1, UNKNOWN = 0x3 }; // Note that AND of two types yields the correct type
-        //enum plRenderMethod { DISK, CUBE, TRIANGLES, VALUES }; // Method to render a voxel
 
         class plScanVoxel
         {
@@ -33,7 +29,7 @@ class plScanVolume //: public plRenderable
                     type = UNKNOWN;
                 }
 
-                //PLbool draw( const plVector3& coordV ) const;
+                //PLbool draw(const plVector3& coordV) const;
 
         };
 
@@ -50,8 +46,6 @@ class plScanVolume //: public plRenderable
 
         plVAO             boundingBoxVAO;
 
-        //plRenderMethod renderMethod;    // how voxels are rendered
-
         // methods
         plScanVolume();
         plScanVolume(const plScanVolume&);
@@ -61,15 +55,12 @@ class plScanVolume //: public plRenderable
         void      initializeVolume(const plVector3& originW, const plVector3& dimensionsW, PLfloat resolutionW);
         void      updateBoundingBox();
         PLbool    enlargeVolume   (const plVector3& originTranslationW, const plVector3& dimensionExpansionW);
-        //PLuint    coordinatesWtoI(const plVector3& coordsW);
         PLuint    coordinatesVtoI(const plVector3& coordsV)      const;
         plVector3 coordinatesItoW(PLuint index)                  const;
         plVector3 coordinatesVtoW(const plVector3& coordinatesV) const;
         plVector3 coordinatesItoV(PLuint index)                  const;
         plVector3 coordinatesWtoV(const plVector3& coordsW)      const;
         PLfloat   distanceWusingI(PLuint index1, PLuint index2)  const;
-
-        //PLbool    draw() const;
 
         plScanVolume& operator=(const plScanVolume&);
 };
@@ -105,11 +96,9 @@ class plScanField : public plScanVolume
         plScanField(const plVector3& originW, const plVector3& dimensionsW, PLfloat resolutionW);
         ~plScanField();
 
-        PLbool carveSphere( const plVector3& centreW, PLfloat radiusW );
-        PLbool maskVoxel( PLuint fieldVoxelIndex, PLuint maskVoxelIndex, const plScanMask* mask, const plVector3& pointW );
+        PLbool carveSphere(const plVector3& centreW, PLfloat radiusW);
+        PLbool maskVoxel(PLuint fieldVoxelIndex, PLuint maskVoxelIndex, const plScanMask* mask, const plVector3& pointW);
 };
 
-std::ostream& operator << ( std::ostream &stream, const plScanVolume &v );
-std::ostream& operator << ( std::ostream &stream, const plScanVolume::plScanVoxel &v );
-
-#endif
+std::ostream& operator << (std::ostream &stream, const plScanVolume &v);
+std::ostream& operator << (std::ostream &stream, const plScanVolume::plScanVoxel &v);

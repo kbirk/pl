@@ -1,5 +1,4 @@
-#ifndef PL_MESH_SPECIFIC_H
-#define PL_MESH_SPECIFIC_H
+#pragma once
 
 #include "plCommon.h"
 #include "plMesh.h"
@@ -10,7 +9,7 @@ class plMeshSpecific
     public:
 
         plMeshSpecific();
-        plMeshSpecific( const plMesh& mesh );
+        plMeshSpecific(const plMesh& mesh);
 
         virtual const plMesh& mesh() const { return *_mesh; }
 
@@ -18,6 +17,3 @@ class plMeshSpecific
 
         const plMesh* _mesh;
 };
-
-
-#endif

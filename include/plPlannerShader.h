@@ -1,5 +1,4 @@
-#ifndef PL_PLANNER_SHADER_H
-#define PL_PLANNER_SHADER_H
+#pragma once
 
 #include "plCommon.h"
 #include "plShader.h"
@@ -11,21 +10,21 @@ class plPlannerShader : public plShader
 
     public:
 
-        plPlannerShader( const std::vector< std::string > &sourceFiles );
+        plPlannerShader(const std::vector<std::string > &sourceFiles);
 
         // global uniform setters
-        void setDefectSiteUniforms     ( const plPlanningSite &defectSite ) const;
-        void setDonorSiteUniforms      ( const std::vector<plPlanningSite> &donorSites ) const;
-        void setDefectSolutionUniforms ( const plDefectSolution &solution ) const;
+        void setDefectSiteUniforms     (const plPlanningSite &defectSite) const;
+        void setDonorSiteUniforms      (const std::vector<plPlanningSite> &donorSites) const;
+        void setDefectSolutionUniforms (const plDefectSolution &solution) const;
         void setSeedUniform() const;
 
         // stage0 uniform setters
-        void setTemperatureUniform ( PLfloat temperature ) const;
-        void setLocalLoadUniform   ( PLuint loadLocal ) const;
+        void setTemperatureUniform (PLfloat temperature) const;
+        void setLocalLoadUniform   (PLuint loadLocal) const;
 
         // stage2-3 uniform setters
-        void setRotationAngleUniforms ( PLuint numDirections ) const;
-        void setRotationIndexUniform  ( PLuint rotationIndex ) const;
+        void setRotationAngleUniforms (PLuint numDirections) const;
+        void setRotationIndexUniform  (PLuint rotationIndex) const;
 
     protected:
 
@@ -59,8 +58,5 @@ class plPlannerShader : public plShader
         PLuint _rotationIndexID;
         PLuint _rotationAnglesID;
 
-		void _getUniformLocations();
+        void _getUniformLocations();
 };
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef PL_CSV_H
-#define PL_CSV_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -9,16 +8,13 @@ class plCSV
 {
     public:
 
-        std::vector< std::vector<plString> > data;
+        std::vector<std::vector<plString> > data;
         plString                 filename;
 
-        plCSV( plString fn );
+        plCSV(plString fn);
 
     private:
 
-        void _readFile( plString filename, PLbool verbose = false );
+        void _readFile(plString filename, PLbool verbose = false);
 
 };
-
-
-#endif

@@ -7,22 +7,22 @@ void main(void)
 
     // acquire previous state (whether global or local)  
     state nS;  
-    copyPreviousState( nS );
+    copyPreviousState(nS);
 
     // progress state
-    progressState( nS, seed );
+    progressState(nS, seed);
 
     // peturb state
-    perturbState( nS, seed );
+    perturbState(nS, seed);
 
     // store state
-    storeState( nS, seed );
+    storeState(nS, seed);
     
     barrier();
 
-    if ( uLoadLocal == 1 )
+    if (uLoadLocal == 1)
     {
         // update group states
-        updateGroupStates( seed );
+        updateGroupStates(seed);
     }
 }

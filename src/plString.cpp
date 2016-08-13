@@ -8,20 +8,20 @@ plString::plString()
 
 
 plString::plString (const std::string &str)
-    : std::string( str )
+    : std::string(str)
 {
 
 }
 
 
 plString::plString (const char* s)
-    : std::string( s )
+    : std::string(s)
 {
 
 }
 
 
-bool plString::importFile( const std::string &filename)
+bool plString::importFile(const std::string &filename)
 {
     std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
     if (in)
@@ -46,7 +46,7 @@ void plString::toLower()
 }
 
 
-bool plString::compare( const plString &str ) const
+bool plString::compare(const plString &str) const
 {
     if (length() != str.length())
     {
@@ -55,7 +55,7 @@ bool plString::compare( const plString &str ) const
 
     for (PLuint i = 0; i < length(); i++)
     {
-        if ( (*this)[i] != str[i] )
+        if ((*this)[i] != str[i])
         {
             return false;
         }
@@ -65,7 +65,7 @@ bool plString::compare( const plString &str ) const
 }
 
 
-bool plString::compare( const plString &str, PLuint num  ) const
+bool plString::compare(const plString &str, PLuint num) const
 {
     if (num > this->length() || num > str.length())
     {
@@ -74,7 +74,7 @@ bool plString::compare( const plString &str, PLuint num  ) const
 
     for (PLuint i = 0; i < num; i++)
     {
-        if ( (*this)[i] != str[i] )
+        if ((*this)[i] != str[i])
         {
             return false;
         }
@@ -84,16 +84,16 @@ bool plString::compare( const plString &str, PLuint num  ) const
 }
 
 
-bool plString::compare( const plString &str, PLuint index, PLuint num ) const
+bool plString::compare(const plString &str, PLuint index, PLuint num) const
 {
-    if ( (index+num) > this->length() || num > str.length() )
+    if ((index+num) > this->length() || num > str.length())
     {
         return false;
     }
 
     for (PLuint i = 0; i < num; i++)
     {
-        if ( (*this)[i+index] != str[i] )
+        if ((*this)[i+index] != str[i])
         {
             return false;
         }
@@ -103,7 +103,7 @@ bool plString::compare( const plString &str, PLuint index, PLuint num ) const
 
 }
 
-bool plString::compareCaseInsensitive( const plString &str, PLuint num) const
+bool plString::compareCaseInsensitive(const plString &str, PLuint num) const
 {
     if (num > this->length() || num > str.length())
     {
@@ -122,7 +122,7 @@ bool plString::compareCaseInsensitive( const plString &str, PLuint num) const
 }
 
 
-bool plString::compareCaseInsensitive( const plString &str) const
+bool plString::compareCaseInsensitive(const plString &str) const
 {
     if (length() != str.length())
     {
@@ -141,7 +141,7 @@ bool plString::compareCaseInsensitive( const plString &str) const
 }
 
 /*
-plString plString::operator + ( const plString &s ) const
+plString plString::operator + (const plString &s) const
 {
     std::stringstream str;
     str << *this << s << "\0";
@@ -149,9 +149,9 @@ plString plString::operator + ( const plString &s ) const
 }
 */
 
-void plString::stripCharacter( char c)
+void plString::stripCharacter(char c)
 {
-    erase( std::remove( begin(), end(), c), end() );
+    erase(std::remove(begin(), end(), c), end());
 }
 
 
@@ -159,7 +159,7 @@ void plString::stripPreceedingWhitespace()
 {
     size_t startpos = find_first_not_of("     ");
     if (startpos < length())
-        *this = substr( startpos );
+        *this = substr(startpos);
 }
 
 
@@ -167,7 +167,7 @@ plString plString::withoutFilepath() const
 {
     size_t startpos = find_last_of("/") + 1;
     if (startpos < length())
-        return substr( startpos );
+        return substr(startpos);
     else
         return *this;
 }

@@ -4,7 +4,7 @@
 // ============================================================ VOLUME ===================================================================
 
 plScanVolume::plScanVolume() {
-    voxels = NULL;
+    voxels = nullptr;
 }
 
 plScanVolume::plScanVolume(const plVector3& originW, const plVector3& dimensionsW, PLfloat resolutionW) {
@@ -32,7 +32,7 @@ plScanVolume& plScanVolume::operator=(const plScanVolume& other)
 
 plScanVolume::~plScanVolume()
 {
-    if (voxels != NULL)
+    if (voxels != nullptr)
         delete[] voxels;
     //delete _minimalShader;
 }
@@ -51,14 +51,14 @@ void plScanVolume::initializeVolume(const plVector3& originW, const plVector3& d
     {
         this->dimsW   = dimensionsW;
     }
-    this->dimsV       = plVector3( PLfloat( ceil(dimsW.x/resolutionW)+1 ),
-                                   PLfloat( ceil(dimsW.y/resolutionW)+1 ),
-                                   PLfloat( ceil(dimsW.z/resolutionW)+1 ) );
+    this->dimsV       = plVector3(PLfloat(ceil(dimsW.x/resolutionW)+1),
+                                   PLfloat(ceil(dimsW.y/resolutionW)+1),
+                                   PLfloat(ceil(dimsW.z/resolutionW)+1));
     this->arraySizeI  = dimsV.x*dimsV.y*dimsV.z;
     this->voxels      = new plScanVoxel[arraySizeI];
 
     // rendering stuff
-    //this->_minimalShader = new plMinimalShader( PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag");
+    //this->_minimalShader = new plMinimalShader(PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag");
 
     this->updateBoundingBox();
 
@@ -67,41 +67,41 @@ void plScanVolume::initializeVolume(const plVector3& originW, const plVector3& d
 
 void plScanVolume::updateBoundingBox()
 {
-    std::vector<plVector3> vertices;    vertices.reserve( 8  );
-    std::vector<PLuint>    indices;     indices.reserve ( 8*3 );
+    std::vector<plVector3> vertices;    vertices.reserve(8);
+    std::vector<PLuint>    indices;     indices.reserve (8*3);
 
-    vertices.push_back( plVector3( 0.f     , 0.f     , dimsV.z ) );
-    vertices.push_back( plVector3( dimsV.x , 0.f     , dimsV.z ) );
-    vertices.push_back( plVector3( dimsV.x , dimsV.y , dimsV.z ) );
-    vertices.push_back( plVector3( 0.f     , dimsV.y , dimsV.z ) );
-    vertices.push_back( plVector3( 0.f     , 0.f     , 0.f     ) );
-    vertices.push_back( plVector3( dimsV.x , 0.f     , 0.f     ) );
-    vertices.push_back( plVector3( dimsV.x , dimsV.y , 0.f     ) );
-    vertices.push_back( plVector3( 0.f     , dimsV.y , 0.f     ) );
+    vertices.push_back(plVector3(0.f     , 0.f     , dimsV.z));
+    vertices.push_back(plVector3(dimsV.x , 0.f     , dimsV.z));
+    vertices.push_back(plVector3(dimsV.x , dimsV.y , dimsV.z));
+    vertices.push_back(plVector3(0.f     , dimsV.y , dimsV.z));
+    vertices.push_back(plVector3(0.f     , 0.f     , 0.f));
+    vertices.push_back(plVector3(dimsV.x , 0.f     , 0.f));
+    vertices.push_back(plVector3(dimsV.x , dimsV.y , 0.f));
+    vertices.push_back(plVector3(0.f     , dimsV.y , 0.f));
 
-    indices.push_back( 0 );   indices.push_back( 1 );
-    indices.push_back( 1 );   indices.push_back( 2 );
-    indices.push_back( 2 );   indices.push_back( 3 );
-    indices.push_back( 3 );   indices.push_back( 0 );
-    indices.push_back( 0 );   indices.push_back( 4 );
-    indices.push_back( 1 );   indices.push_back( 5 );
-    indices.push_back( 2 );   indices.push_back( 6 );
-    indices.push_back( 3 );   indices.push_back( 7 );
-    indices.push_back( 4 );   indices.push_back( 5 );
-    indices.push_back( 5 );   indices.push_back( 6 );
-    indices.push_back( 6 );   indices.push_back( 7 );
-    indices.push_back( 7 );   indices.push_back( 4 );
+    indices.push_back(0);   indices.push_back(1);
+    indices.push_back(1);   indices.push_back(2);
+    indices.push_back(2);   indices.push_back(3);
+    indices.push_back(3);   indices.push_back(0);
+    indices.push_back(0);   indices.push_back(4);
+    indices.push_back(1);   indices.push_back(5);
+    indices.push_back(2);   indices.push_back(6);
+    indices.push_back(3);   indices.push_back(7);
+    indices.push_back(4);   indices.push_back(5);
+    indices.push_back(5);   indices.push_back(6);
+    indices.push_back(6);   indices.push_back(7);
+    indices.push_back(7);   indices.push_back(4);
 
     // set vbo and attach attribute pointers
-    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
-    vbo->set( vertices );
-    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, sizeof( plVector4 ), sizeof( plVector4 ) ) );
+    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    vbo->set(vertices);
+    vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, sizeof(plVector4), sizeof(plVector4)));
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();
-    eabo->set( indices, GL_LINES );
+    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    eabo->set(indices, GL_LINES);
     // attach to vao
-    boundingBoxVAO.attach( vbo );
-    boundingBoxVAO.attach( eabo );
+    boundingBoxVAO.attach(vbo);
+    boundingBoxVAO.attach(eabo);
     // upload to gpu
     boundingBoxVAO.upload();
 }
@@ -119,12 +119,12 @@ PLbool plScanVolume::enlargeVolume(const plVector3 &originTranslationW, const pl
         std::cerr << "Error in plScanVolume::resizeVolume(): the dimension expansion is not zero or positive in all directions. Aborting task" << std::endl;
         return false;
     }
-    if ( fmod(originTranslationW.x,resolutionW) != 0.f || fmod(originTranslationW.y,resolutionW) != 0.f || fmod(originTranslationW.z,resolutionW) != 0.f)
+    if (fmod(originTranslationW.x,resolutionW) != 0.f || fmod(originTranslationW.y,resolutionW) != 0.f || fmod(originTranslationW.z,resolutionW) != 0.f)
     {
         std::cerr << "Error in plScanVolume::resizeVolume(): the origin translation is not a multiple of the resolution. Aborting task." << std::endl;
         return false;
     }
-    if ( fmod(dimensionExpansionW.x,resolutionW) != 0.f || fmod(dimensionExpansionW.y,resolutionW) != 0.f || fmod(dimensionExpansionW.z,resolutionW) != 0.f)
+    if (fmod(dimensionExpansionW.x,resolutionW) != 0.f || fmod(dimensionExpansionW.y,resolutionW) != 0.f || fmod(dimensionExpansionW.z,resolutionW) != 0.f)
     {
         std::cerr << "Error in plScanVolume::resizeVolume(): the origin translation is not a multiple of the resolution. Aborting task." << std::endl;
         return false;
@@ -171,14 +171,14 @@ PLbool plScanVolume::enlargeVolume(const plVector3 &originTranslationW, const pl
 
 PLuint plScanVolume::coordinatesVtoI(const plVector3& coordsV) const // ASSUMES INTEGER COORDINATES!
 {
-    return (coordsV.x + dimsV.x * ( coordsV.y + dimsV.y * coordsV.z) );
+    return (coordsV.x + dimsV.x * (coordsV.y + dimsV.y * coordsV.z));
 }
 
 plVector3 plScanVolume::coordinatesWtoV(const plVector3& coordsW) const
 {
-    PLint xV = round( (coordsW.x - originW.x)/resolutionW );
-    PLint yV = round( (coordsW.y - originW.y)/resolutionW );
-    PLint zV = round( (coordsW.z - originW.z)/resolutionW );
+    PLint xV = round((coordsW.x - originW.x)/resolutionW);
+    PLint yV = round((coordsW.y - originW.y)/resolutionW);
+    PLint zV = round((coordsW.z - originW.z)/resolutionW);
     return plVector3(xV,yV,zV);
 }
 
@@ -205,44 +205,11 @@ PLfloat plScanVolume::distanceWusingI(PLuint index1, PLuint index2) const
     return (coordinatesItoW(index1) - coordinatesItoW(index2)).length();
 }
 
-/*
-PLbool plScanVolume::draw() const
-{
-    //plShaderStack::push( _minimalShader );
-    plColourStack::load( 1.0, 1.0, 1.0, 1.0);
-    boundingBoxVAO.draw();
-    plShaderStack::pop();
-
-    plDraw::cube(plVector3(0,0,0),0.1f);
-    for (PLuint x(0); x <= dimsV.x; x++)
-        for (PLuint y(0); y <= dimsV.y; y++)
-            for (PLuint z(0); z <= dimsV.z; z++)
-            {
-                plVector3 coordsV = plVector3(x,y,z);
-                PLuint indexOfVoxel = coordinatesVtoI(coordsV);
-                voxels[indexOfVoxel].draw(coordsV);
-            }
-    return true;
-}
-
-
-// ============================================================= VOXEL ===================================================================
-
-PLbool plScanVolume::plScanVoxel::draw( const plVector3& coordV ) const
-{
-    if (type == SURFACE)
-    {
-        plColourStack::load( 1.0, 0.0, 0.0, 1.0);
-        plDraw::cube(coordV,0.5f);
-    }
-    return true;
-}
-*/
 // ============================================================= MASK ====================================================================
 
 plScanMask::plScanMask()
 {
-    voxels = NULL;
+    voxels = nullptr;
 }
 
 plScanMask::plScanMask(PLfloat radiusW, PLfloat resolutionW)
@@ -251,8 +218,8 @@ plScanMask::plScanMask(PLfloat radiusW, PLfloat resolutionW)
     this->radiusW     = radiusW;
     this->radiusV     = PLuint(ceil(radiusW/resolutionW));
 
-    plVector3 originW = plVector3(-PLfloat(radiusV)*resolutionW  ,-PLfloat(radiusV)*resolutionW  ,-PLfloat(radiusV)*resolutionW  );
-    plVector3 dimsW   = plVector3( PLfloat(radiusV)*resolutionW*2, PLfloat(radiusV)*resolutionW*2, PLfloat(radiusV)*resolutionW*2);
+    plVector3 originW = plVector3(-PLfloat(radiusV)*resolutionW  ,-PLfloat(radiusV)*resolutionW  ,-PLfloat(radiusV)*resolutionW);
+    plVector3 dimsW   = plVector3(PLfloat(radiusV)*resolutionW*2, PLfloat(radiusV)*resolutionW*2, PLfloat(radiusV)*resolutionW*2);
 
     initializeVolume(originW,dimsW,resolutionW);
 
@@ -261,7 +228,7 @@ plScanMask::plScanMask(PLfloat radiusW, PLfloat resolutionW)
 
 void plScanMask::_assignMask()
 {
-    if (voxels == NULL)
+    if (voxels == nullptr)
     {
         std::cerr << "Error in plScanMask::_assignMask(), voxels have not been assigned yet. This is indicative of a big problem. Aborting." << std::endl;
         return;
@@ -279,7 +246,7 @@ void plScanMask::_assignMask()
         PLfloat maxDist = 0;
         PLfloat minDist = 9999;
         for (int j=0; j<8; j++) {
-            PLfloat dist = ( (coordinatesItoW(i) + offsets[j]) - middleVoxelCoordinatesW ).length();
+            PLfloat dist = ((coordinatesItoW(i) + offsets[j]) - middleVoxelCoordinatesW).length();
             if (dist < minDist) minDist = dist;
             if (dist > maxDist) maxDist = dist;
         }
@@ -301,16 +268,16 @@ void plScanMask::_assignMask()
 plScanField::plScanField()
     : plScanVolume()
 {
-    voxels = NULL;
+    voxels = nullptr;
 }
 
 plScanField::plScanField(const plVector3& originW, const plVector3& dimensionsW, PLfloat resolutionW)
-    : plScanVolume (originW, dimensionsW, resolutionW ) {}
+    : plScanVolume (originW, dimensionsW, resolutionW) {}
 
 plScanField::~plScanField()
 {
     for (PLuint i = 0; i < masks.size(); i++)
-        if (masks[i] != NULL)
+        if (masks[i] != nullptr)
             delete masks[i];
 }
 
@@ -318,7 +285,7 @@ PLbool plScanField::carveSphere(const plVector3& centreW, PLfloat radiusW)
 {
     // first find or create the applicable mask
     PLuint maskIndex;
-    for (maskIndex = 0; maskIndex < masks.size(); maskIndex++ )
+    for (maskIndex = 0; maskIndex < masks.size(); maskIndex++)
     {
         if (masks[maskIndex]->radiusW == radiusW)
             break;
@@ -387,7 +354,7 @@ PLbool plScanField::carveSphere(const plVector3& centreW, PLfloat radiusW)
                                                               z-PLint(masks[maskIndex]->radiusV)) + coordinatesV;
                 PLuint indexOfVoxelField = coordinatesVtoI(coordinateOfVoxelVField);
                 PLuint indexOfVoxelMask  = masks[maskIndex]->coordinatesVtoI(plVector3(x,y,z));
-                if (!maskVoxel( indexOfVoxelField, indexOfVoxelMask, masks[maskIndex], centreW))
+                if (!maskVoxel(indexOfVoxelField, indexOfVoxelMask, masks[maskIndex], centreW))
                     return false; // error detected
             }
         }
@@ -400,7 +367,7 @@ PLbool plScanField::carveSphere(const plVector3& centreW, PLfloat radiusW)
 //
 // For surfaces, store the surface point that is farthest through the
 // voxel (i.e.  that contains most of the voxel to its interior).
-PLbool plScanField::maskVoxel( PLuint fieldVoxelIndex, PLuint maskVoxelIndex, const plScanMask* mask, const plVector3& pointW )
+PLbool plScanField::maskVoxel(PLuint fieldVoxelIndex, PLuint maskVoxelIndex, const plScanMask* mask, const plVector3& pointW)
 {
     voxels[fieldVoxelIndex].type = plScanVoxelType(voxels[fieldVoxelIndex].type & mask->voxels[maskVoxelIndex].type);
 
@@ -413,7 +380,7 @@ PLbool plScanField::maskVoxel( PLuint fieldVoxelIndex, PLuint maskVoxelIndex, co
 
 // ============================================================= OTHER ===================================================================
 
-std::ostream& operator << ( std::ostream &stream, const plScanVolume &v )
+std::ostream& operator << (std::ostream &stream, const plScanVolume &v)
 {
     PLuint i(0);
     for (PLuint z = 0; z < v.dimsV.z; z++)
@@ -432,7 +399,7 @@ std::ostream& operator << ( std::ostream &stream, const plScanVolume &v )
     return stream;
 }
 
-std::ostream& operator << ( std::ostream &stream, const plScanVolume::plScanVoxel &v )
+std::ostream& operator << (std::ostream &stream, const plScanVolume::plScanVoxel &v)
 {
     switch (v.type)
     {
@@ -451,347 +418,3 @@ std::ostream& operator << ( std::ostream &stream, const plScanVolume::plScanVoxe
     }
     return stream;
 }
-
-#if 0
-// Carve a sphere out of the volume
-
-void Volume::carveSphere( vector centre, vector dir )
-
-{
-  const int nVoxelsPerDim = VOLUME_DIM / VOXEL_SIZE;
-  const int memForVolume = rint( nVoxelsPerDim * nVoxelsPerDim * nVoxelsPerDim * sizeof(Voxel) / 1024.0 / 1024.0 );
-
-  const int radiusMaskVoxels  = (int) ceil( probeRadius / VOXEL_SIZE ); // number of MaskVoxels on radius of mask
-  const int nMaskVoxelsPerDim = radiusMaskVoxels * 2 + 1; // 2 radii, 1 for centre
-  const int nMaskVoxels       = nMaskVoxelsPerDim * nMaskVoxelsPerDim * nMaskVoxelsPerDim; // memory required for mask
-
-  const vector offsets[8] = {   // offsets to the corners of a voxel
-    vector(-0.5,-0.5,-0.5), vector(-0.5,-0.5,+0.5), vector(-0.5,+0.5,-0.5), vector(-0.5,+0.5,+0.5),
-    vector(+0.5,-0.5,-0.5), vector(+0.5,-0.5,+0.5), vector(+0.5,+0.5,-0.5), vector(+0.5,+0.5,+0.5)
-  };
-
-  // Store previous point (for building cylinders between subsequent points)
-
-  bool havePreviousPoint = (voxels != NULL);
-  static vector previousPoint;
-  static vector previousDir;
-
-  // First time through: Create voxel array and mask
-
-  if (voxels == NULL)
-  {
-
-    // Create voxel array
-
-    if (memForVolume > 512)     // warn if volume is > 0.5 GB
-      cout << memForVolume << " MB of voxels" << endl;
-
-    voxels = new Voxel[ nVoxelsPerDim * nVoxelsPerDim * nVoxelsPerDim ];
-    dims   = (VOLUME_DIM/VOXEL_SIZE) * vector(1,1,1);
-    origin = centre - (0.5 * VOLUME_DIM) * vector(1,1,1);
-
-    // Create mask
-
-    mask = new MaskVoxel[ nMaskVoxels ];
-
-    // Fill mask with UNKNOWN / SURFACE / EMPTY tags
-
-    int i = 0;
-
-    int nEmpty = 0;
-    int nUnknown = 0;
-
-
-    for (int z=-radiusMaskVoxels; z<=radiusMaskVoxels; z++)
-      for (int y=-radiusMaskVoxels; y<=radiusMaskVoxels; y++)
-        for (int x=-radiusMaskVoxels; x<=radiusMaskVoxels; x++) {
-
-	  // Find the min and max distances to points in this voxel (check only the corners)
-
-	  float maxDist = 0;
-	  float minDist = 9999;
-	  for (int j=0; j<8; j++) {
-	    float dist = VOXEL_SIZE * ( vector(x,y,z) + offsets[j] ).length();
-	    if (dist < minDist) minDist = dist;
-	    if (dist > maxDist) maxDist = dist;
-	  }
-
-	  // Fill in data for this mask voxel
-
-	  mask[i].dir = vector(x,y,z).normalize();
-
-	  if (maxDist < probeRadius) { // this voxel is inside the probe
-	    mask[i].type = EMPTY;
-	    nEmpty++;
-	  } else if (probeRadius < minDist) { // this voxel is outside the probe
-	    mask[i].type = UNKNOWN;
-	    nUnknown++;
-	  } else { // this voxel intersects the probe surface
-	    mask[i].type = SURFACE;
-	    surfacePoints.push_back( MaskSurfacePoint( mask[i].dir, i ) ); // record this as a surface point (for quick lookup later)
-	  }
-
-	  i++;
-	}
-
-    // cout << "Mask has " << surfacePoints.size() << " surface, " << nEmpty << " empty, and " << nUnknown << " unknown voxels." << endl;
-  }
-
-
-  // Carve out the sphere from the voxel array
-
-
-  // FIRST: Change the mask SURFACE points to EMPTY points inside the cone
-
-  int nEmpty = 0;
-
-  for (int i=0; i<surfacePoints.size(); i++) {
-
-    // Find angle between this surface point and the cone axis
-
-    float sine   = (surfacePoints[i].dir ^ dir).length();
-    float cosine = surfacePoints[i].dir * dir;
-    float angle  = atan2( sine, cosine );
-
-    // If this surface point is inside, change it to EMPTY
-
-    if (angle < coneHalfAngle) {
-      surfacePoints[i].inCone = true;
-      mask[ surfacePoints[i].index ].type = EMPTY;
-      nEmpty++;
-    }
-  }
-
-  // cout << nEmpty << " of " << surfacePoints.size() << " surface points are empty" << endl;
-
-  // SECOND: Mask the volume
-
-  // Find the location in the volume of mask[0][0][0]
-
-  vector roundedCentre( rint((centre.x - origin.x)/VOXEL_SIZE)*VOXEL_SIZE+origin.x,
-			rint((centre.y - origin.y)/VOXEL_SIZE)*VOXEL_SIZE+origin.y,
-			rint((centre.z - origin.z)/VOXEL_SIZE)*VOXEL_SIZE+origin.z );
-
-  vector zeroPos = roundedCentre - (radiusMaskVoxels * VOXEL_SIZE) * vector(1,1,1); // spatial location of mask[0][0][0] (rounded to a voxel centre)
-  vector offset  = (1.0 / VOXEL_SIZE) * (zeroPos - origin); // volume[offset.x][offset.y][offset.z] is mask[0][0][0]
-
-  int ox = (int) rint( offset.x );
-  int oy = (int) rint( offset.y );
-  int oz = (int) rint( offset.z );
-
-  if (ox >= 0 && ox+nMaskVoxelsPerDim <= dims.x && // only consider masks that fall completely inside the volume
-      oy >= 0 && oy+nMaskVoxelsPerDim <= dims.y &&
-      oz >= 0 && oz+nMaskVoxelsPerDim <= dims.z) {
-
-    // Mask the volume
-
-    int index = ox + dims.x * (oy + dims.y * oz);
-
-    Voxel *voxelP = &voxels[index];
-    MaskVoxel *maskP = &mask[0];
-
-    for (int z=0; z<nMaskVoxelsPerDim; z++) {
-      for (int y=0; y<nMaskVoxelsPerDim; y++) {
-	for (int x=0; x<nMaskVoxelsPerDim; x++) {
-	  maskVoxel( voxelP, maskP->type, roundedCentre + probeRadius * maskP->dir, maskP->dir );
-	  voxelP++;
-	  maskP++;
-	}
-	voxelP += (int) (dims.x - nMaskVoxelsPerDim);
-      }
-      voxelP += (int) (dims.x * (dims.y - nMaskVoxelsPerDim));
-    }
-  }
-
-  // THIRD: Restore the mask EMPTY points to SURFACE points
-
-  for (int i=0; i<surfacePoints.size(); i++)
-    if (surfacePoints[i].inCone) {
-      surfacePoints[i].inCone = false;
-      mask[ surfacePoints[i].index ].type = SURFACE;
-    }
-
-  // FOURTH: Fill in the cylinder between this and the previous point
-
-  if (havePreviousPoint)
-    coverWithCylinder( previousPoint, roundedCentre, previousDir, dir );
-
-  previousPoint = roundedCentre;
-  previousDir = dir;
-
-  // Flag that the data has changed so that we later recompute the surface
-
-  mustComputeTriangles = true;
-}
-
-
-// Mask one voxel
-//
-// For surfaces, store the surface point that is farthest through the
-// voxel (i.e.  that contains most of the voxel to its interior).
-
-void Volume::maskVoxel( Voxel *voxelP, VoxelType type, vector point, vector dir )
-
-{
-
-  VoxelType prevType = voxelP->type;
-
-  voxelP->type = (VoxelType) (voxelP->type & type);
-
-  if (voxelP->type == SURFACE) {
-
-    if (prevType != SURFACE) { // first point
-
-      voxelP->normal = dir;
-      voxelP->point  = point;
-
-    } else {		// additional point
-
-      // test whether each point is to the outside of the tangent plane of the other point
-
-      bool newIsOutsideOld = ((point - voxelP->point) * voxelP->normal > 0);
-      bool oldIsOutsideNew = ((voxelP->point - point) * dir > 0);
-
-      if (newIsOutsideOld && !oldIsOutsideNew) {
-
-	voxelP->normal = dir;
-	voxelP->point  = point;
-
-      } else if (newIsOutsideOld && oldIsOutsideNew || !newIsOutsideOld && !oldIsOutsideNew) {
-
-	voxelP->normal = (voxelP->normal + dir).normalize();
-	voxelP->point  = 0.5 * (voxelP->point + point);
-      }
-    }
-  }
-}
-
-
-// Draw the volume
-
-void Volume::draw()
-
-{
-  if (mustComputeTriangles)
-    computeTriangles();
-
-  Voxel *voxelP = voxels;
-  FieldPoint *valueP = values;
-
-  GLUquadricObj *quadric = gluNewQuadric();
-
-  int nSurface = 0;
-  int nEmpty = 0;
-
-  if (renderMethod == TRIANGLES && mustComputeTriangles)
-    computeTriangles();
-
-  for (int z=0; z<dims.z; z++)
-    for (int y=0; y<dims.y; y++)
-      for (int x=0; x<dims.x; x++) {
-
-	if (voxelP->type == SURFACE) {
-
-	  vector pos;
-
-	  if (useVoxelCentre)
-	    pos = origin + VOXEL_SIZE * vector(x,y,z); // point is at centre of voxel
-	  else
-	    pos = voxelP->point; // point is average surface point inside this voxel
-
-	  vector norm = -1 * voxelP->normal;
-
-	  if (voxelP->selected) {
-	    glPushMatrix();
-	    glTranslatef( pos.x, pos.y, pos.z );
-	    gluSphere( quadric, VOXEL_SIZE * 0.1, 10, 10 );
-	    glPopMatrix();
-	  }
-
-	  glColor4f( 0.2, 0.7, 0.4, 1.0 );
-
-	  switch (renderMethod) {
-
-	  case DISK:		// Render a surface voxel as a disk
-	    {
-	      vector xAxis = diskSize * VOXEL_SIZE * norm.perp1();
-	      vector yAxis = diskSize * VOXEL_SIZE * norm.perp2();
-
-	      glBegin( GL_TRIANGLE_FAN );
-
-	      glNormal3fv( &norm.x );
-	      glVertex3fv( &pos.x );
-
-	      for (float theta=0; theta<=2*M_PI; theta+=M_PI/180.0*30) {
-		vector p = pos + cos(theta) * xAxis + sin(theta) * yAxis;
-		glVertex3fv( &p.x );
-	      }
-
-	      glEnd();
-	    }
-	    break;
-
-	  case VALUES:
-
-	    for (int i=-1; i<1; i++)
-	      for (int j=-1; j<1; j++)
-		for (int k=-1; k<1; k++) {
-
-		  FieldPoint *corner = valueP + (int) (i + dims.x * (j + dims.y * k));
-
-		  float dist = fabs(corner->value) / (2*VOXEL_SIZE);
-		  if (dist > 1) dist = 1;
-
-		  if (fabs(corner->value) < 0.005)
-		    glColor3f( 0.1, 0.1, 0.7 );
-		  else if (corner->value < 0)
-		    glColor3f( dist, 1, dist );
-		  else
-		    glColor3f( 1, dist, dist );
-
-		  glPushMatrix();
-		  glTranslatef( corner->pos.x, corner->pos.y, corner->pos.z );
-		  gluSphere( quadric, VOXEL_SIZE * 0.1, 10, 10 );
-		  glPopMatrix();
-		}
-	    break;
-
-	  case CUBE:		// Render as a cube
-
-	    if (voxelP->triangles != NULL && voxelP->triangles->size() > 0) {
-	      glPushMatrix();
-	      glTranslatef( pos.x, pos.y, pos.z );
-	      glutSolidCube( diskSize * VOXEL_SIZE );
-	      glPopMatrix();
-	    }
-	    break;
-
-	  case TRIANGLES:
-
-	    if (voxelP->triangles != NULL) {
-	      glBegin( GL_TRIANGLES );
-	      for (int i=0; i<voxelP->triangles->size(); i++) {
-		Triangle &tri = (*(voxelP->triangles))[i];
-		glNormal3fv( &tri.n.x );
-		glVertex3fv( &tri.v0.x );
-		glVertex3fv( &tri.v1.x );
-		glVertex3fv( &tri.v2.x );
-	      }
-	      glEnd();
-	    }
-	    break;
-	  }
-
-	  nSurface++;
-
-	} else if (voxelP->type == EMPTY)
-
-	  nEmpty++;
-
-	voxelP++;
-	valueP++;
-      }
-
-  // cout << "\r" << nSurface << " surface voxels,  " << nEmpty << " empty voxels"; cout.flush();
-}
-#endif

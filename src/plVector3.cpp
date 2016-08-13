@@ -6,26 +6,26 @@ plVector3::plVector3()
     x = y = z = 0;
 }
 
-plVector3::plVector3( PLfloat xx, PLfloat yy, PLfloat zz )
+plVector3::plVector3(PLfloat xx, PLfloat yy, PLfloat zz)
 {
     x = xx; y = yy; z = zz;
 }
 
-plVector3::plVector3( const plVector4& v )
+plVector3::plVector3(const plVector4& v)
 {
     x = v.x;
     y = v.y;
     z = v.z;
 }
 
-plVector3::plVector3( PLchar *string )
+plVector3::plVector3(PLchar *string)
 {
-    sscanf( string, "%f %f %f", &x, &y, &z );
+    sscanf(string, "%f %f %f", &x, &y, &z);
 }
 
-plVector3::plVector3( const plString &str )
+plVector3::plVector3(const plString &str)
 {
-    sscanf( str.c_str(), "%f %f %f", &x, &y, &z );
+    sscanf(str.c_str(), "%f %f %f", &x, &y, &z);
 }
 
 PLbool plVector3::operator == (const plVector3 &p) const
@@ -40,12 +40,12 @@ PLbool plVector3::operator != (const plVector3 &p) const
 
 plVector3 plVector3::operator + (const plVector3 &p) const
 {
-    return plVector3( x+p.x, y+p.y, z+p.z );
+    return plVector3(x+p.x, y+p.y, z+p.z);
 }
 
 plVector3 plVector3::operator - (const plVector3 &p) const
 {
-    return plVector3( x-p.x, y-p.y, z-p.z );
+    return plVector3(x-p.x, y-p.y, z-p.z);
 }
 
 PLfloat plVector3::operator * (const plVector3 &p) const     /* dot product */
@@ -55,7 +55,7 @@ PLfloat plVector3::operator * (const plVector3 &p) const     /* dot product */
 
 plVector3 plVector3::operator ^ (const plVector3 &p) const    /* cross product */
 {
-    return plVector3( y*p.z-p.y*z, -(x*p.z-p.x*z), x*p.y-p.x*y );
+    return plVector3(y*p.z-p.y*z, -(x*p.z-p.x*z), x*p.y-p.x*y);
 }
 
 plVector3 plVector3::operator-() const
@@ -64,7 +64,7 @@ plVector3 plVector3::operator-() const
     return plVector3(-x, -y, -z);
 }
 
-plVector3& plVector3::operator=( const plVector3& other )
+plVector3& plVector3::operator=(const plVector3& other)
 {
     x = other.x;
     y = other.y;
@@ -75,19 +75,19 @@ plVector3& plVector3::operator=( const plVector3& other )
 plVector3 plVector3::normalize() const
 {
     PLfloat len;
-    len = sqrt( x*x + y*y + z*z );
+    len = sqrt(x*x + y*y + z*z);
     if (len == 0)
     {
         //std::cerr << "normalize error: length is 0\n";
         return plVector3(0,0,0);
     }
     else
-        return plVector3( x/len, y/len, z/len );
+        return plVector3(x/len, y/len, z/len);
 }
 
 PLfloat plVector3::length() const
 {
-    return sqrt( x*x + y*y + z*z );
+    return sqrt(x*x + y*y + z*z);
 }
 
 PLfloat plVector3::squaredLength() const
@@ -96,13 +96,13 @@ PLfloat plVector3::squaredLength() const
 }
 
 
-PLfloat plVector3::signedAngle( const plVector3 v, const plVector3& planeNormal ) const
+PLfloat plVector3::signedAngle(const plVector3 v, const plVector3& planeNormal) const
 {
-    float angle = acos( *this * v );
+    float angle = acos(*this * v);
 
     plVector3 cross = *this ^  v;
 
-    if ( ( planeNormal * cross ) < 0)
+    if ((planeNormal * cross) < 0)
     {
         // Or > 0
         angle = -angle;
@@ -111,7 +111,7 @@ PLfloat plVector3::signedAngle( const plVector3 v, const plVector3& planeNormal 
 }
 
 
-plVector3 operator * ( PLfloat k, const plVector3 &p )
+plVector3 operator * (PLfloat k, const plVector3 &p)
 {
     plVector3 q;
 
@@ -123,14 +123,14 @@ plVector3 operator * ( PLfloat k, const plVector3 &p )
 }
 
 
-std::ostream& operator << ( std::ostream& stream, const plVector3 &p )
+std::ostream& operator << (std::ostream& stream, const plVector3 &p)
 {
   stream << p.x << " " << p.y << " " << p.z;
   return stream;
 }
 
 
-std::istream& operator >> ( std::istream& stream, plVector3 & p )
+std::istream& operator >> (std::istream& stream, plVector3 & p)
 {
   stream >> p.x >> p.y >> p.z;
   return stream;

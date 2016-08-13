@@ -1,5 +1,4 @@
-#ifndef PL_I_GUIDE_SITE_H
-#define PL_I_GUIDE_SITE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVector3.h"
@@ -19,13 +18,13 @@ class plIGuideSite : public plRenderable
         plBoundary boundary;
 
         plIGuideSite();
-        plIGuideSite( const plMesh& mesh );
-        plIGuideSite( const plBoundary& boundary );
+        plIGuideSite(const plMesh& mesh);
+        plIGuideSite(const plBoundary& boundary);
 
         virtual ~plIGuideSite();
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void extractRenderComponents(plRenderMap& renderMap) const;
+        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
         const plMesh& templateBase() const { return _templateBase; }
 
@@ -38,5 +37,3 @@ class plIGuideSite : public plRenderable
        // std::vector<plTriangle>  _templateBase;    // for use in generating iGuides
 
 };
-
-#endif

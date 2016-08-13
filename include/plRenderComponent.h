@@ -1,5 +1,4 @@
-#ifndef PL_RENDER_COMPONENT_H
-#define PL_RENDER_COMPONENT_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVector3.h"
@@ -15,24 +14,20 @@ class plRenderComponent
 
     public:
 
-        plRenderComponent( const std::shared_ptr<plVAO>& vao );
+        plRenderComponent(const std::shared_ptr<plVAO>& vao);
 
-        PLbool operator< ( const plRenderComponent& rc ) const;
+        PLbool operator< (const plRenderComponent& rc) const;
 
-        void attach( const plUniform& uniform );
+        void attach(const plUniform& uniform);
 
-        void draw( const plShader& shader ) const;
+        void draw(const plShader& shader) const;
 
     private:
 
-        std::shared_ptr< plVAO >  _vao;
-        std::vector< plUniform >  _uniforms;
+        std::shared_ptr<plVAO >  _vao;
+        std::vector<plUniform >  _uniforms;
 
-        void _bindUniforms( const plShader& shader ) const;
+        void _bindUniforms(const plShader& shader) const;
 };
 
-
-typedef std::map< PLuint, std::set< plRenderComponent > >  plRenderMap;
-
-
-#endif
+typedef std::map<PLuint, std::set<plRenderComponent > >  plRenderMap;

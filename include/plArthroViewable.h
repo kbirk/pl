@@ -1,5 +1,4 @@
-#ifndef PL_ARTHRO_VIEWABLE_H
-#define PL_ARTHRO_VIEWABLE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVector3.h"
@@ -21,6 +20,3 @@ class plArthroViewable
         PLbool _inArthroView;
 
 };
-
-
-#endif

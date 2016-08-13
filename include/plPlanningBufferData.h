@@ -1,5 +1,4 @@
-#ifndef PL_PLANNING_BUFFER_DATA_H
-#define PL_PLANNING_BUFFER_DATA_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -18,10 +17,10 @@ class plPlanningBufferData
         plPlanningSite defectSite;
         plSSBO         defectSiteSSBO;
 
-        std::vector< plPlanningSite > donorSites;
+        std::vector<plPlanningSite > donorSites;
         plSSBO                        donorSitesSSBO;
 
-        plPlanningBufferData( const plDefectSite& defect, const std::vector<plDonorSite*>& donors );
+        plPlanningBufferData(const plDefectSite& defect, const std::vector<plDonorSite*>& donors);
 
         PLbool good() const;
 
@@ -31,10 +30,3 @@ class plPlanningBufferData
 
         plSSBO _getGroupSSBO();
 };
-
-
-
-
-
-
-#endif

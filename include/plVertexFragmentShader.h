@@ -1,5 +1,4 @@
-#ifndef PL_VERTEX_FRAGMENT_SHADER_H
-#define PL_VERTEX_FRAGMENT_SHADER_H
+#pragma once
 
 #include "plCommon.h"
 #include "plShader.h"
@@ -38,9 +37,9 @@ class plVertexFragmentShader : public plShader
 
     public:
 
-        plVertexFragmentShader( const char *vertexFile, const char *fragmentFile );
+        plVertexFragmentShader(const char *vertexFile, const char *fragmentFile);
 
-        void setUniform( const plUniform& uniform ) const;
+        void setUniform(const plUniform& uniform) const;
 
     private:
 
@@ -62,5 +61,3 @@ class plVertexFragmentShader : public plShader
 
         void _getUniformLocations();
 };
-
-#endif

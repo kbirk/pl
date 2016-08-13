@@ -1,5 +1,6 @@
-# balthazar
+# pl
 
+> Mosaic Arthroplasty Surgical Planner
 
 ## Dependencies
 
@@ -39,13 +40,13 @@ brew install libepoxy
 Clone the repo:
 
 ```bash
-git clone git@github.com:kbirk/balthazar.git
+git clone git@github.com:kbirk/pl.git
 ```
 
 Build the makefiles:
 
 ```bash
-cd balthazar
+cd pl
 mkdir build
 cd build
 cmake ../
@@ -59,8 +60,8 @@ make
 
 ## Usage
 
-Run the executable:
+Run the executable with a patient file:
 
 ```bash
-./balthazar
+./planner ./resources/patient1/plan.csv
 ```

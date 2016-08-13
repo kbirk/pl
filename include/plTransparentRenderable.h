@@ -1,5 +1,4 @@
-#ifndef PL_TRANSPARENT_RENDERABLE_H
-#define PL_TRANSPARENT_RENDERABLE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderable.h"
@@ -14,18 +13,15 @@ class plTransparentRenderable : public plRenderable
 
         virtual void toggleVisibility();
         virtual void setVisible();
-		virtual void setTransparent();
-		virtual void setInvisible();
+        virtual void setTransparent();
+        virtual void setInvisible();
 
-		PLbool isTransparent() const;
+        PLbool isTransparent() const;
 
-        virtual void extractRenderComponents( plRenderMap& renderMap ) const = 0;
+        virtual void extractRenderComponents(plRenderMap& renderMap) const = 0;
 
     protected:
 
         PLbool _isTransparent;
 
 };
-
-
-#endif

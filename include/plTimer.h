@@ -1,5 +1,4 @@
-#ifndef PL_TIMER_H
-#define PL_TIMER_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -16,4 +15,3 @@ class plTimer
         plTimer();
 
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef PL_MODEL_H
-#define PL_MODEL_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -22,11 +21,11 @@ class plOrderPair
         float distance;
 
         plOrderPair (int i, float d)
-            : index( i ), distance( d )
+            : index(i), distance(d)
         {
         }
 
-        PLbool operator< ( const plOrderPair& orderPair ) const { return distance > orderPair.distance; } // greater distance is considered "less"
+        PLbool operator< (const plOrderPair& orderPair) const { return distance > orderPair.distance; } // greater distance is considered "less"
 
 };
 
@@ -44,8 +43,8 @@ class plModel : public plTransparentRenderable,
 
         plString filename;
 
-        plModel( const plString &file, PLuint octreeDepth = 0 );
-        plModel( const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth = 0 );
+        plModel(const plString &file, PLuint octreeDepth = 0);
+        plModel(const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth = 0);
 
         virtual ~plModel();
 
@@ -53,18 +52,16 @@ class plModel : public plTransparentRenderable,
 
         void toggleOctreeVisibility();
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void extractRenderComponents(plRenderMap& renderMap) const;
+        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
         plVector3 getCentroid() const;
 
-	private:
+    private:
 
-		std::shared_ptr< plMesh > _mesh;
-	    std::shared_ptr< plVAO >  _vao;
+        std::shared_ptr<plMesh> _mesh;
+        std::shared_ptr<plVAO >  _vao;
 
         void _generateVAO();
 
 };
-
-#endif

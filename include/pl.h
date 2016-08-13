@@ -1,5 +1,4 @@
-#ifndef PL_API_H
-#define PL_API_H
+#pragma once
 
 // this header file is to include all classes / namespaces that are to be accessable from outside the planner library
 
@@ -8,9 +7,7 @@
 #include "plAutomaticPlanner.h"
 #include "plBoundaryEditor.h"
 #include "plCamera.h"
-#include "plChessBoard.h"
 #include "plCSV.h"
-#include "plDRBTransform.h"
 #include "plGraftEditor.h"
 #include "plIGuide.h"
 #include "plIGuideSite.h"
@@ -31,7 +28,6 @@
 #include "plString.h"
 #include "plTexture2D.h"
 #include "plTimer.h"
-#include "plTrackedObject.h"
 #include "plTriangle.h"
 #include "plUtility.h"
 #include "plVector3.h"
@@ -39,5 +35,3 @@
 #include "plWindow.h"
 
 void plInit();
-
-#endif

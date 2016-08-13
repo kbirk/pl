@@ -1,5 +1,4 @@
-#ifndef PL_DEFECT_SITE_H
-#define PL_DEFECT_SITE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVector3.h"
@@ -17,20 +16,13 @@ class plDefectSite : public plRenderable
         plBoundary  boundary;
 
         plDefectSite();
-        plDefectSite( const plMesh& mesh );
-        plDefectSite( const plSpline& spline, const std::vector<plString> &row );
+        plDefectSite(const plMesh& mesh);
+        plDefectSite(const plSpline& spline, const std::vector<plString> &row);
 
         virtual ~plDefectSite();
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void extractRenderComponents(plRenderMap& renderMap) const;
+        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
         void recastBoundary();
-
-    private:
-
-
 };
-
-
-#endif

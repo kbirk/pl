@@ -1,5 +1,4 @@
-#ifndef PL_UNIFORM_H
-#define PL_UNIFORM_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -9,13 +8,13 @@ class plUniform
     public:
 
         template< typename T >
-        plUniform( PLuint type, const T& t );
+        plUniform(PLuint type, const T& t);
 
-        plUniform( plUniform&& uniform );
-        plUniform( const plUniform& uniform );
+        plUniform(plUniform&& uniform);
+        plUniform(const plUniform& uniform);
 
-        plUniform& operator= ( plUniform&& uniform );
-        plUniform& operator= ( const plUniform& uniform );
+        plUniform& operator= (plUniform&& uniform);
+        plUniform& operator= (const plUniform& uniform);
 
         ~plUniform();
 
@@ -29,21 +28,18 @@ class plUniform
         PLuint  _numBytes;
         PLchar* _data;
 
-        void _copy( const plUniform& uniform );
-        void _move( plUniform&& uniform );
+        void _copy(const plUniform& uniform);
+        void _move(plUniform&& uniform);
 
 };
 
 
 template< typename T >
-plUniform::plUniform( PLuint type, const T& t )
-    : _type( type ),
-      _numBytes( sizeof( T ) )
+plUniform::plUniform(PLuint type, const T& t)
+    : _type(type),
+      _numBytes(sizeof(T))
 {
-    _numBytes = sizeof( T );
+    _numBytes = sizeof(T);
     _data = new PLchar[ _numBytes ];
-    memcpy( _data, reinterpret_cast<const PLchar*>( &t ), _numBytes );
+    memcpy(_data, reinterpret_cast<const PLchar*>(&t), _numBytes);
 }
-
-
-#endif

@@ -1,7 +1,7 @@
 #include "plRenderable.h"
 
 plRenderable::plRenderable()
-    : _isVisible( true )
+    : _isVisible(true)
 {
 }
 

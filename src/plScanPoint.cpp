@@ -16,7 +16,7 @@ PLbool plScanPointData::draw() const
 
 std::vector<plScanPointData> plScanPointReader::readPoints(const plString& filename)
 {
-    std::ifstream inFileStream( filename.c_str(), std::ios::in );
+    std::ifstream inFileStream(filename.c_str(), std::ios::in);
     std::vector<plScanPointData> output;
 
     if (!inFileStream) {
@@ -35,12 +35,12 @@ std::vector<plScanPointData> plScanPointReader::readPoints(const plString& filen
         plVector3 point (px,py,pz);
         plVector3 normal = plVector3(-nx,-ny,-nz).normalize();
 
-        output.push_back( plScanPointData( point, normal, r ) ); // ignore radius in g
+        output.push_back(plScanPointData(point, normal, r)); // ignore radius in g
     }
     return output;
 }
 
-std::ostream& operator << ( std::ostream &stream, const plScanPointData &p )
+std::ostream& operator << (std::ostream &stream, const plScanPointData &p)
 {
     stream << p.point << " " << p.normal << " " << p.radius;
     return stream;

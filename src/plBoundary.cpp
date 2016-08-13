@@ -1,86 +1,86 @@
 #include "plBoundary.h"
 
 plBoundary::plBoundary()
-    : _type( -1 )
+    : _type(-1)
 {
 }
 
 
-plBoundary::plBoundary( PLuint type, const plMesh& mesh )
-    : plMeshSpecific( mesh ),
-    _type( type )
+plBoundary::plBoundary(PLuint type, const plMesh& mesh)
+    : plMeshSpecific(mesh),
+    _type(type)
 {
 }
 
 
-plBoundary::plBoundary( PLuint type, const plMesh& mesh, const std::vector<plString> &row )
-    : plMeshSpecific( mesh ),
-    _type( type )
+plBoundary::plBoundary(PLuint type, const plMesh& mesh, const std::vector<plString> &row)
+    : plMeshSpecific(mesh),
+    _type(type)
 {
     // assumes points are counter-clockwise
-    for ( PLuint j = 1; j < row.size(); j+=2)
+    for (PLuint j = 1; j < row.size(); j+=2)
     {
-        _points.push_back ( plVector3( row[j]   ) );
-        _normals.push_back( plVector3( row[j+1] ) );
+        _points.push_back (plVector3(row[j]));
+        _normals.push_back(plVector3(row[j+1]));
     }
     // construct mesh
     _generateVAO();
 }
 
 
-void plBoundary::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
+void plBoundary::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
 {
-    if ( !_isVisible )
+    if (!_isVisible)
         return;
 
-    plPickingStack::loadRed( _type );
-    plColourStack::load( _getColour() );
+    plPickingStack::loadRed(_type);
+    plColourStack::load(_getColour());
 
     // draw walls
-    if ( _points.size() > 1 )
+    if (_points.size() > 1)
     {
-        plPickingStack::loadBlue( -1 ); // draw walls with index of -1
+        plPickingStack::loadBlue(-1); // draw walls with index of -1
 
         // create render component
-        plRenderComponent component( _vao );
+        plRenderComponent component(_vao);
         // attached uniforms
-        component.attach( plUniform( PL_MODEL_MATRIX_UNIFORM,      plMatrix44()             ) );
-        component.attach( plUniform( PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()     ) );
-        component.attach( plUniform( PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top() ) );
-        component.attach( plUniform( PL_COLOUR_UNIFORM,            plColourStack::top()     ) );
-        component.attach( plUniform( PL_PICKING_UNIFORM,           plPickingStack::top()    ) );
-        component.attach( plUniform( PL_LIGHT_POSITION_UNIFORM,    plVector3( PL_LIGHT_POSITION ) ) );
+        component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plMatrix44()));
+        component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
+        component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
+        component.attach(plUniform(PL_COLOUR_UNIFORM,            plColourStack::top()));
+        component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
+        component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        renderMap[ technique ].insert( component );
+        renderMap[ technique ].insert(component);
     }
 
     // draw points
-    _extractPointRenderComponents( renderMap, technique );
+    _extractPointRenderComponents(renderMap, technique);
 }
 
 
-void plBoundary::extractRenderComponents( plRenderMap& renderMap ) const
+void plBoundary::extractRenderComponents(plRenderMap& renderMap) const
 {
-    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+    extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
 }
 
 
-void plBoundary::_extractPointRenderComponents( plRenderMap& renderMap, PLuint technique ) const
+void plBoundary::_extractPointRenderComponents(plRenderMap& renderMap, PLuint technique) const
 {
     // draw points
     for (PLuint i=0; i<_points.size(); i++)
     {
-        plPickingStack::loadBlue( i );
+        plPickingStack::loadBlue(i);
 
-        if ( _isSelected && _selectedValue == i )   // is the current point selected?
+        if (_isSelected && _selectedValue == i)   // is the current point selected?
         {
             // scale larger
-            plRenderer::queueSphere( technique, _points[i], PL_BOUNDARY_SELECTED_POINT_RADIUS );
+            plRenderer::queueSphere(technique, _points[i], PL_BOUNDARY_SELECTED_POINT_RADIUS);
         }
         else
         {
             // regular size
-            plRenderer::queueSphere( technique, _points[i], PL_BOUNDARY_POINT_RADIUS );
+            plRenderer::queueSphere(technique, _points[i], PL_BOUNDARY_POINT_RADIUS);
         }
     }
 }
@@ -104,7 +104,7 @@ plVector3 plBoundary::getCentroid() const
     {
         p = p + _points[i];
     }
-    return p * ( 1.0f/(PLfloat)_points.size() );
+    return p * (1.0f/(PLfloat)_points.size());
 }
 
 
@@ -113,8 +113,8 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
     if (_points.size() < 2)
     {
         // 0 or 1 _points, doesnt matter, just add
-        _points.push_back( point );
-        _normals.push_back( normal );
+        _points.push_back(point);
+        _normals.push_back(normal);
         _generateVAO();
         return _points.size()-1;
     }
@@ -123,11 +123,11 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         // 2 _points, ensure third is counter clockwise
         plVector3 n = 0.5f * (_normals[1] + _normals[0]);
 
-        if ( ((_points[1] - _points[0]) ^ (point - _points[0])) * n > 0)
+        if (((_points[1] - _points[0]) ^ (point - _points[0])) * n > 0)
         {
             // already counter clockwise
-            _points.push_back( point );
-            _normals.push_back( normal );
+            _points.push_back(point);
+            _normals.push_back(normal);
 
             _generateVAO();
             return 2;
@@ -135,8 +135,8 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
         else
         {
             // clock-wise, add new point between existing two
-            _points.insert ( _points.begin()+1, point );
-            _normals.insert( _normals.begin()+1, normal );
+            _points.insert (_points.begin()+1, point);
+            _normals.insert(_normals.begin()+1, normal);
 
             _generateVAO();
             return 1;
@@ -159,7 +159,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
             PLfloat distSquared = (closest - point).squaredLength();
 
             // check if same point as previous edge, occurs when edges are at acute angles, making a pointy "v"
-            if ( fabs(distSquared - minDist) < EPSILON )
+            if (fabs(distSquared - minDist) < EPSILON)
             {
                 // same point as previous edge,
                 int h = (i == 0) ? _points.size()-1 : i-1; // previous index
@@ -170,10 +170,10 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
                 plVector3 current_tangent  = current_segment ^ (0.5f * (_normals[j] + _normals[i]));
 
                 // check if current "v" shape is pointing inwards or outwards
-                if ( (current_segment ^ previous_segment) * _normals[i] < 0)
+                if ((current_segment ^ previous_segment) * _normals[i] < 0)
                 {
                     // outward pointing "v"
-                    if ((point - closest) * current_tangent  > 0 )
+                    if ((point - closest) * current_tangent  > 0)
                     {
                         // not behind previous edge
                         minDist = distSquared;
@@ -183,7 +183,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
                 else
                 {
                     // inward pointing "v"
-                    if ((point - closest) * current_tangent  < 0 )
+                    if ((point - closest) * current_tangent  < 0)
                     {
                         // in front of current edge
                         minDist = distSquared;
@@ -199,8 +199,8 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
             }
         }
 
-        _points.insert ( _points.begin()+shift_i, point );
-        _normals.insert( _normals.begin()+shift_i, normal );
+        _points.insert (_points.begin()+shift_i, point);
+        _normals.insert(_normals.begin()+shift_i, normal);
 
         _generateVAO();
         return shift_i;
@@ -208,7 +208,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
 }
 
 
-void plBoundary::movePointAndNormal( PLuint index, const plVector3 &point, const plVector3 &normal)
+void plBoundary::movePointAndNormal(PLuint index, const plVector3 &point, const plVector3 &normal)
 {
     _points[index] = point;
     _normals[index] = normal;
@@ -216,11 +216,11 @@ void plBoundary::movePointAndNormal( PLuint index, const plVector3 &point, const
 }
 
 
-void plBoundary::removePointAndNormal( PLuint index )
+void plBoundary::removePointAndNormal(PLuint index)
 {
 
-    _points.erase ( _points.begin()+index );
-    _normals.erase( _normals.begin()+index );
+    _points.erase (_points.begin()+index);
+    _normals.erase(_normals.begin()+index);
     _generateVAO();
 }
 
@@ -236,25 +236,25 @@ void plBoundary::clear()
 plVector4 plBoundary::_getColour() const
 {
     // not selected
-    switch ( _type )
+    switch (_type)
     {
         case PL_PICKING_TYPE_DEFECT_CORNERS:
         case PL_PICKING_TYPE_DEFECT_SPLINE:
             // defect spline / corners
-            return plVector4( PL_BOUNDARY_DEFECT_CORNER_COLOUR );
+            return plVector4(PL_BOUNDARY_DEFECT_CORNER_COLOUR);
 
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
             // defect boundary
-            return plVector4( PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR );
+            return plVector4(PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR);
 
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
             // donor boundary
-            return plVector4( PL_BOUNDARY_DONOR_COLOUR );
+            return plVector4(PL_BOUNDARY_DONOR_COLOUR);
 
         case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
         default:
             // iguide boundary
-            return plVector4( PL_BOUNDARY_IGUIDE_COLOUR );
+            return plVector4(PL_BOUNDARY_IGUIDE_COLOUR);
     }
 
 }
@@ -267,8 +267,8 @@ void plBoundary::_generateVAO()
 
     plVector3 n = getAverageNormal();
 
-    std::vector<plVector3> vertices;    vertices.reserve( _points.size() * 10 );
-    std::vector<PLuint>    indices;     indices.reserve ( _points.size() * 6 * 4 );
+    std::vector<plVector3> vertices;    vertices.reserve(_points.size() * 10);
+    std::vector<PLuint>    indices;     indices.reserve (_points.size() * 6 * 4);
 
     for (PLuint i = 0; i < _points.size(); i++)
     {
@@ -353,7 +353,7 @@ void plBoundary::_generateVAO()
         indices.push_back(base+7);    indices.push_back(base+6);    indices.push_back(base+9);
         indices.push_back(base+7);    indices.push_back(base+9);    indices.push_back(base+8);
 
-        if (_points.size() == 2 && i == 0 )
+        if (_points.size() == 2 && i == 0)
         {
             // only 2 points, add faces on ends
             plVector3 backNormal = (_points[i] - _points[l]).normalize();
@@ -398,23 +398,23 @@ void plBoundary::_generateVAO()
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
-    vbo->set( vertices );
-    vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 32, 0  ) );
-    vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   32, 16 ) ); // FOUR COMPONENT FLOATING POINT OFFSET
+    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    vbo->set(vertices);
+    vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
+    vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16)); // FOUR COMPONENT FLOATING POINT OFFSET
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();
-    eabo->set( indices );
+    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    eabo->set(indices);
     // attach to vao
-    _vao = std::make_shared< plVAO >();
-    _vao->attach( vbo );
-    _vao->attach( eabo );
+    _vao = std::make_shared<plVAO>();
+    _vao->attach(vbo);
+    _vao->attach(eabo);
     // upload to gpu
     _vao->upload();
 }
 
 
-std::ostream& operator << ( std::ostream& out, const plBoundary &b )
+std::ostream& operator << (std::ostream& out, const plBoundary &b)
 {
     for (PLuint j=0; j<b.size(); j++)
     {

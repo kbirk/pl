@@ -1,5 +1,4 @@
-#ifndef PL_GRAFT_EDITOR_H
-#define PL_GRAFT_EDITOR_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -25,19 +24,19 @@ class plGraftEditor : public plEditor
         plGraftEditor();
 
         void clearSelection();
-        void selectGraft   ( PLuint index, PLuint type );
+        void selectGraft   (PLuint index, PLuint type);
 
-        void setEditMode( PLuint editMode );
+        void setEditMode(PLuint editMode);
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void extractRenderComponents(plRenderMap& renderMap) const;
+        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
-        PLbool isGraftSelected() const { return ( _selectedGraft != NULL ); }
+        PLbool isGraftSelected() const { return (_selectedGraft != nullptr); }
 
-        PLbool processMouseClick   ( PLint x, PLint y );
-        PLbool processMouseDrag    ( PLint x, PLint y );
-        PLbool processMouseRelease ( PLint x, PLint y );
-        PLbool processJoystickDrag ( PLint x, PLint y );
+        PLbool processMouseClick   (PLint x, PLint y);
+        PLbool processMouseDrag    (PLint x, PLint y);
+        PLbool processMouseRelease (PLint x, PLint y);
+        PLbool processJoystickDrag (PLint x, PLint y);
 
         void toggleSelectedVisibility();
 
@@ -47,10 +46,8 @@ class plGraftEditor : public plEditor
         PLint    _selectedType;
         plGraft *_selectedGraft;
 
-        void _dragHandle( PLint x, PLint y );
-        void _dragMarker( PLint x, PLint y );
+        void _dragHandle(PLint x, PLint y);
+        void _dragMarker(PLint x, PLint y);
 
-        void _extractMenuRenderComponents( plRenderMap& renderMap ) const;
+        void _extractMenuRenderComponents(plRenderMap& renderMap) const;
 };
-
-#endif

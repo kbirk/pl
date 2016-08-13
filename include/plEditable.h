@@ -1,5 +1,4 @@
-#ifndef PL_EDITABLE_H
-#define PL_EDITABLE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderComponent.h"
@@ -22,7 +21,3 @@ class plEditable
 
         virtual void _clearSelection();
 };
-
-
-
-#endif

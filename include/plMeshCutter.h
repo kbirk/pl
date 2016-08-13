@@ -1,5 +1,4 @@
-#ifndef PL_MESH_CUTTER_H
-#define PL_MESH_CUTTER_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVector3.h"
@@ -14,7 +13,7 @@ class plCut
     public:
 
         plCut() {}
-        plCut( plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint dir );
+        plCut(plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint dir);
 
         plVector3 point;           // int point
         PLint     edgeIndex;       // index of edge (0,1,2)
@@ -28,8 +27,5 @@ class plCut
 
 namespace plMeshCutter
 {
-    PLbool findInteriorMesh( std::vector<plTriangle> &outputTriangles, const std::vector<plTriangle> &inputTriangles, const plBoundary &boundary );
+    PLbool findInteriorMesh(std::vector<plTriangle> &outputTriangles, const std::vector<plTriangle> &inputTriangles, const plBoundary &boundary);
 }
-
-
-#endif

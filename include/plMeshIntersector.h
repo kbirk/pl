@@ -1,5 +1,4 @@
-#ifndef PL_MESH_INTERSECTOR_H
-#define PL_MESH_INTERSECTOR_H
+#pragma once
 
 #include "plMeshAlgorithm.h"
 #include "plMath.h"
@@ -25,5 +24,3 @@ class plMeshIntersector : public plMeshAlgorithm
     PLbool _findAndFixEdgeFaceIntersections(PLuint start, PLuint end, PLuint verbose, PLuint depth=0);
 
 };
-
-#endif // PLMESHINTERSECTOR_H

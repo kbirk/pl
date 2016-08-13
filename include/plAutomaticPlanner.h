@@ -1,5 +1,4 @@
-#ifndef PL_AUTOMATIC_PLANNER_H
-#define PL_AUTOMATIC_PLANNER_H
+#pragma once
 
 #include "plCommon.h"
 #include "plTimer.h"
@@ -12,8 +11,5 @@
 
 namespace plAutomaticPlanner
 {
-    void calculate( plPlan &plan, PLuint defectSiteIndex );
+    void calculate(plPlan &plan, PLuint defectSiteIndex);
 }
-
-
-#endif

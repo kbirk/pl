@@ -1,5 +1,4 @@
-#ifndef PL_MODEL_EDITOR_H
-#define PL_MODEL_EDITOR_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -21,20 +20,20 @@ class plModelEditor : public plEditor
         plModelEditor();
 
         void clearSelection();
-        void selectModel( PLuint index );
+        void selectModel(PLuint index);
 
-        void setEditMode( PLuint editMode );
+        void setEditMode(PLuint editMode);
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void extractRenderComponents(plRenderMap& renderMap) const;
+        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
-        PLbool isModelSelected() const { return ( _selectedModel != NULL ); }
+        PLbool isModelSelected() const { return (_selectedModel != nullptr); }
         PLint  selectedModelID() const;
 
-        PLbool processMouseClick   ( PLint x, PLint y );
-        PLbool processMouseDrag    ( PLint x, PLint y );
-        PLbool processMouseRelease ( PLint x, PLint y );
-        PLbool processJoystickDrag ( PLint x, PLint y );
+        PLbool processMouseClick   (PLint x, PLint y);
+        PLbool processMouseDrag    (PLint x, PLint y);
+        PLbool processMouseRelease (PLint x, PLint y);
+        PLbool processJoystickDrag (PLint x, PLint y);
 
         void toggleSelectedVisibility();
 
@@ -43,8 +42,6 @@ class plModelEditor : public plEditor
         PLint    _editMode;
         plModel *_selectedModel;
 
-        void _dragModel( PLint x, PLint y );
-        void _extractMenuRenderComponents( plRenderMap& renderMap ) const;
+        void _dragModel(PLint x, PLint y);
+        void _extractMenuRenderComponents(plRenderMap& renderMap) const;
 };
-
-#endif

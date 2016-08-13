@@ -1,5 +1,4 @@
-#ifndef PL_VERTEX_ARRAY_OBJECT_H
-#define PL_VERTEX_ARRAY_OBJECT_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVBO.h"
@@ -14,19 +13,19 @@ class plVAO
     public:
 
         plVAO();
-        plVAO( const plVAO& vao );
-        plVAO( plVAO&& vao );
+        plVAO(const plVAO& vao);
+        plVAO(plVAO&& vao);
 
-        plVAO& operator= ( const plVAO& vao );
-        plVAO& operator= ( plVAO&& vao );
+        plVAO& operator= (const plVAO& vao);
+        plVAO& operator= (plVAO&& vao);
 
         ~plVAO();
 
-        std::shared_ptr< plVBO >&  vbos( PLuint index ) { return _vbos[ index ]; }
-        std::shared_ptr< plEABO >& eabo()               { return _eabo; }
+        std::shared_ptr<plVBO >&  vbos(PLuint index) { return _vbos[ index ]; }
+        std::shared_ptr<plEABO >& eabo()               { return _eabo; }
 
-        void attach( const std::shared_ptr< plVBO >&  vbo  );
-        void attach( const std::shared_ptr< plEABO >& eabo );
+        void attach(const std::shared_ptr<plVBO >&  vbo);
+        void attach(const std::shared_ptr<plEABO >& eabo);
         void upload();
         void draw() const;
         void clear();
@@ -37,13 +36,10 @@ class plVAO
 
         GLuint _id;
 
-        std::vector< std::shared_ptr< plVBO > > _vbos;
-        std::shared_ptr< plEABO > _eabo;
+        std::vector<std::shared_ptr<plVBO >> _vbos;
+        std::shared_ptr<plEABO> _eabo;
 
-        void _copy( const plVAO& vao );
-        void _move( plVAO&& vao );
+        void _copy(const plVAO& vao);
+        void _move(plVAO&& vao);
         void _destroy();
 };
-
-
-#endif

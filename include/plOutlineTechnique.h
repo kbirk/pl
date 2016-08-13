@@ -1,5 +1,4 @@
-#ifndef PL_OUTLINE_TECHNIQUE_H
-#define PL_OUTLINE_TECHNIQUE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderTechnique.h"
@@ -13,8 +12,5 @@ class plOutlineTechnique : public plRenderTechnique
 
         plOutlineTechnique();
 
-        void render( const std::set< plRenderComponent >& componentSet ) const;
+        void render(const std::set<plRenderComponent >& componentSet) const;
 };
-
-
-#endif

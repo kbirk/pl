@@ -31,15 +31,15 @@ plVector3 plEdge::otherPt(const plVector3 &point, const PLfloat &epsilon) const
 
 PLbool plEdge::equals(const plEdge &e2, const PLfloat &epsilon) const
 {
-    if ( ( (e2.pt1 - pt1).length() <= epsilon && (e2.pt2 - pt2).length() <= epsilon ) ||
-         ( (e2.pt2 - pt1).length() <= epsilon && (e2.pt1 - pt2).length() <= epsilon ) )
+    if (((e2.pt1 - pt1).length() <= epsilon && (e2.pt2 - pt2).length() <= epsilon) ||
+         ((e2.pt2 - pt1).length() <= epsilon && (e2.pt1 - pt2).length() <= epsilon))
         return true;
     return false;
 }
 
 PLbool plEdge::operator==(const plEdge &e2) const
 {
-    if ( ( e2.pt1 == pt1 && e2.pt2 == pt2 ) || ( e2.pt2 == pt1 && e2.pt1 == pt2 ) )
+    if ((e2.pt1 == pt1 && e2.pt2 == pt2) || (e2.pt2 == pt1 && e2.pt1 == pt2))
     {
         return true;
     }
@@ -53,13 +53,13 @@ plEdge& plEdge::operator =(const plEdge& other)
     return *this;
 }
 
-std::ostream& operator << ( std::ostream &stream, const plEdge &e )
+std::ostream& operator << (std::ostream &stream, const plEdge &e)
 {
     stream << e.pt1 << " " << e.pt2 << "\n";
     return stream;
 }
 
-std::ostream& operator << ( std::ostream &stream, const plPolygon &p )
+std::ostream& operator << (std::ostream &stream, const plPolygon &p)
 {
     stream << "Normal    = " << p.normal << "\n";
     for (PLuint i = 0; i < p.points.size(); i++)

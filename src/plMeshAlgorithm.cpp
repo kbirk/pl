@@ -5,7 +5,7 @@ plMeshAlgorithm::plMeshAlgorithm()
     _epsilon = PL_EPSILON;
 }
 
-PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edgeAB, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_splitEdgeOnVect(const plMeshConnectivityDataEdge* edgeAB, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth)
 {
     // split the current edge into two pieces
 
@@ -39,7 +39,7 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
         const plMeshConnectivityDataFace* faceABC = facesToSplit[i];
 
         // TODO: Consider adding a check to make sure that the face doesn't contain one of the edges we're adding...
-        const plMeshConnectivityDataVert* vertC(NULL);
+        const plMeshConnectivityDataVert* vertC(nullptr);
         for (PLuint j = 0; j < 3; j++)
         {
             if (faceABC->verts[j] != vertA && faceABC->verts[j] != vertB)
@@ -48,7 +48,7 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
                 break;
             }
         }
-        if (vertC == NULL)
+        if (vertC == nullptr)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "    ";
@@ -77,8 +77,8 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             continue;
         }
 
-        const plMeshConnectivityDataEdge* edgeAC = NULL;
-        const plMeshConnectivityDataEdge* edgeBC = NULL;
+        const plMeshConnectivityDataEdge* edgeAC = nullptr;
+        const plMeshConnectivityDataEdge* edgeBC = nullptr;
 
         for (PLuint j = 0; j < 3; j++)
         {
@@ -88,14 +88,14 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
             else if (currentEdge->edge == plEdge(vertB->vert,vertC->vert))
                 edgeBC = &(*currentEdge);
         }
-        if (edgeAC == NULL)
+        if (edgeAC == nullptr)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "    ";
             std::cout << "Error in plMeshIntersectorConnectivityData::_splitEdgeOnVect(): Could not find the AC edge. Aborting operation." << std::endl;
             return false;
         }
-        if (edgeBC == NULL)
+        if (edgeBC == nullptr)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "    ";
@@ -134,7 +134,7 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
         PLbool faceOrientationABC(false); // either ABC or CBA
         if ((faceABC->verts[0] == vertA && faceABC->verts[0] == vertB) ||
             (faceABC->verts[1] == vertA && faceABC->verts[1] == vertB) ||
-            (faceABC->verts[2] == vertA && faceABC->verts[2] == vertB ) )
+            (faceABC->verts[2] == vertA && faceABC->verts[2] == vertB))
             faceOrientationABC = true; // otherwise false, as already been set
 
         // create the new cells
@@ -161,29 +161,29 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
 }
 
 // add a vertex somewhere in the middle of the triangle, then divide the triangle into three smaller triangles.
-PLbool plMeshAlgorithm::_splitFaceOnVect( const plMeshConnectivityDataFace* face012, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_splitFaceOnVect(const plMeshConnectivityDataFace* face012, const plMeshConnectivityDataVert* vertN, PLuint verbose, PLuint depth)
 {
     const plMeshConnectivityDataVert* vert0 = face012->verts[0];
     const plMeshConnectivityDataVert* vert1 = face012->verts[1];
     const plMeshConnectivityDataVert* vert2 = face012->verts[2];
 
-    const plMeshConnectivityDataEdge* edge01(NULL);
-    const plMeshConnectivityDataEdge* edge12(NULL);
-    const plMeshConnectivityDataEdge* edge20(NULL);
+    const plMeshConnectivityDataEdge* edge01(nullptr);
+    const plMeshConnectivityDataEdge* edge12(nullptr);
+    const plMeshConnectivityDataEdge* edge20(nullptr);
 
     for (PLuint i = 0; i < face012->edges.size(); i++)
     {
         if (face012->edges[i]->edge.contains(vert0->vert, _epsilon) &&
-            face012->edges[i]->edge.contains(vert1->vert, _epsilon) )
+            face012->edges[i]->edge.contains(vert1->vert, _epsilon))
             edge01 = face012->edges[i];
         if (face012->edges[i]->edge.contains(vert1->vert, _epsilon) &&
-            face012->edges[i]->edge.contains(vert2->vert, _epsilon) )
+            face012->edges[i]->edge.contains(vert2->vert, _epsilon))
             edge12 = face012->edges[i];
         if (face012->edges[i]->edge.contains(vert2->vert, _epsilon) &&
-            face012->edges[i]->edge.contains(vert0->vert, _epsilon) )
+            face012->edges[i]->edge.contains(vert0->vert, _epsilon))
             edge20 = face012->edges[i];
     }
-    if (edge01 == NULL || edge12 == NULL || edge20 == NULL)
+    if (edge01 == nullptr || edge12 == nullptr || edge20 == nullptr)
     {
         for (PLuint i=0;i<depth;i++)
             std::cout << "    ";
@@ -205,7 +205,7 @@ PLbool plMeshAlgorithm::_splitFaceOnVect( const plMeshConnectivityDataFace* face
     return true;
 }
 
-PLbool plMeshAlgorithm::_checkArraySizes( PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_checkArraySizes(PLuint verbose, PLuint depth)
 {
     bool good(true);
     for (plMeshConnectivityDataEdgeIterator eit = _data.edges.begin(); eit != _data.edges.end(); eit++)
@@ -249,7 +249,7 @@ PLbool plMeshAlgorithm::_checkArraySizes( PLuint verbose, PLuint depth )
     return good;
 }
 
-PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_checkNoDuplicates(PLuint verbose, PLuint depth)
 {
     bool good(true);
     std::vector<const void*> indices; // untyped, since we're only checking for duplicate memory addresses.
@@ -259,9 +259,9 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
         indices.clear();
         for (PLuint j = 0; j < vit->edges.size(); j++)
         {
-            //if (indices.findIndex( vit->edges[j] ) > -1)
+            //if (indices.findIndex(vit->edges[j]) > -1)
             // check if exists in indices
-            if ( plUtility::exists( indices, vit->edges[j] ) )
+            if (plUtility::exists(indices, vit->edges[j]))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -279,7 +279,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < vit->faces.size(); j++)
         {
             // check if exists in indices
-            if ( plUtility::exists( indices, vit->faces[j] ) )
+            if (plUtility::exists(indices, vit->faces[j]))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -299,9 +299,9 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
         indices.clear();
         for (PLuint j = 0; j < eit->verts.size(); j++)
         {
-            //if (indices.findIndex( eit->verts[j] ) > -1)
+            //if (indices.findIndex(eit->verts[j]) > -1)
             // check if exists in indices
-            if ( plUtility::exists( indices, eit->verts[j] ) )
+            if (plUtility::exists(indices, eit->verts[j]))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -320,7 +320,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
         {
             //if (indices.findIndex(eit->faces[j]) > -1)
             // check if exists in indices
-            if ( plUtility::exists( indices, eit->faces[j] ) )
+            if (plUtility::exists(indices, eit->faces[j]))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -342,7 +342,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
         {
             //if (indices.findIndex(fit->verts[j]) > -1)
             // check if exists in indices
-            if ( plUtility::exists( indices, fit->verts[j] ) )
+            if (plUtility::exists(indices, fit->verts[j]))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -361,7 +361,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
         {
             //if (indices.findIndex(fit->edges[j]) > -1)
             // check if exists in indices
-            if ( plUtility::exists( indices, fit->edges[j] ) )
+            if (plUtility::exists(indices, fit->edges[j]))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -378,7 +378,7 @@ PLbool plMeshAlgorithm::_checkNoDuplicates( PLuint verbose, PLuint depth )
     return good;
 }
 
-PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_checkBidirectional(PLuint verbose, PLuint depth)
 {
     bool good(true);
     std::vector<PLuint> indices;
@@ -389,7 +389,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < vit->edges.size(); j++)
         {
             //if (vit->edges[j]->verts.findIndex(&(*vit)) == -1)
-            if ( plUtility::exists( vit->edges[j]->verts, &(*vit) ) )
+            if (plUtility::exists(vit->edges[j]->verts, &(*vit)))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -404,7 +404,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < vit->faces.size(); j++)
         {
             //if (vit->faces[j]->verts.findIndex(&(*vit)) == -1)
-            if ( plUtility::exists( vit->faces[j]->verts, &(*vit) ) )
+            if (plUtility::exists(vit->faces[j]->verts, &(*vit)))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -422,7 +422,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < eit->verts.size(); j++)
         {
             //if (eit->verts[j]->edges.findIndex(&(*eit)) == -1)
-            if ( plUtility::exists( eit->verts[j]->edges, &(*eit) ) )
+            if (plUtility::exists(eit->verts[j]->edges, &(*eit)))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -437,7 +437,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < eit->faces.size(); j++)
         {
             //if (eit->faces[j]->edges.findIndex(&(*eit)) == -1)
-            if ( plUtility::exists( eit->faces[j]->edges, &(*eit) ) )
+            if (plUtility::exists(eit->faces[j]->edges, &(*eit)))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -455,7 +455,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < fit->verts.size(); j++)
         {
             //if (fit->verts[j]->faces.findIndex(&(*fit)) == -1)
-            if ( plUtility::exists( fit->verts[j]->faces, &(*fit) ) )
+            if (plUtility::exists(fit->verts[j]->faces, &(*fit)))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -470,7 +470,7 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
         for (PLuint j = 0; j < fit->edges.size(); j++)
         {
             //if (fit->edges[j]->faces.findIndex(&(*fit)) == -1)
-            if ( plUtility::exists( fit->edges[j]->faces, &(*fit) ) )
+            if (plUtility::exists(fit->edges[j]->faces, &(*fit)))
             {
                 for (PLuint i=0;i<depth;i++)
                     std::cout << "    ";
@@ -484,13 +484,13 @@ PLbool plMeshAlgorithm::_checkBidirectional( PLuint verbose, PLuint depth )
     return good;
 }
 
-PLbool plMeshAlgorithm::_checkNoSliverTriangles( PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_checkNoSliverTriangles(PLuint verbose, PLuint depth)
 {
     PLbool good(true);
     for (plMeshConnectivityDataFaceIterator fit = _data.faces.begin(); fit != _data.faces.end(); fit++)
     {
-        if (( ((fit->face.point1())-(fit->face.point0())).normalize() ^
-              ((fit->face.point2())-(fit->face.point0())).normalize()).length() == 0.f )
+        if ((((fit->face.point1())-(fit->face.point0())).normalize() ^
+              ((fit->face.point2())-(fit->face.point0())).normalize()).length() == 0.f)
         {
             for (PLuint i=0;i<depth;i++)
                 std::cout << "    ";
@@ -502,7 +502,7 @@ PLbool plMeshAlgorithm::_checkNoSliverTriangles( PLuint verbose, PLuint depth )
     return good;
 }
 
-PLbool plMeshAlgorithm::_checkForAllErrors( PLuint verbose, PLuint depth )
+PLbool plMeshAlgorithm::_checkForAllErrors(PLuint verbose, PLuint depth)
 {
     return _checkNoDuplicates      (verbose,depth+1) &&
            _checkArraySizes        (verbose,depth+1) &&

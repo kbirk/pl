@@ -1,32 +1,28 @@
-#ifndef PL_SCAN_POINT_READER_H
-#define PL_SCAN_POINT_READER_H
+#pragma once
 
+#include "plCommon.h"
 #include "plVector3.h"
-
 #include "plString.h"
-#include <fstream>
-//#include "plRenderable.h"
 
-class plScanPointData //: public plRenderable
+class plScanPointData
 {
-public:
-  // attributes
-    plVector3 point;
-    plVector3 normal;
-    PLfloat   radius;
+    public:
+        // attributes
 
-  // members
-    plScanPointData();
-    plScanPointData(const plVector3&, const plVector3&, PLfloat);
+        // members
+        plScanPointData();
+        plScanPointData(const plVector3&, const plVector3&, PLfloat);
 
-    PLbool draw() const;
+        PLbool draw() const;
+
+        plVector3 point;
+        plVector3 normal;
+        PLfloat   radius;
 };
 
-std::ostream& operator << ( std::ostream &stream, const plScanPointData &p );
+std::ostream& operator << (std::ostream &stream, const plScanPointData &p);
 
 namespace plScanPointReader
 {
     std::vector<plScanPointData> readPoints(const plString&);
 }
-
-#endif // PLSCANPOINTREADER_H

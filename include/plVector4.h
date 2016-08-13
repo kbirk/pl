@@ -1,5 +1,4 @@
-#ifndef PL_VECTOR4_H
-#define PL_VECTOR4_H
+#pragma once
 
 #include "plCommon.h"
 #include "plString.h"
@@ -7,39 +6,36 @@
 
 class plVector4
 {
-	public:
+    public:
 
-		PLfloat x, y, z, w;
+        PLfloat x, y, z, w;
 
-		plVector4();
-		plVector4( const plVector3 &v, PLfloat ww = 1.0f );
-		plVector4( PLfloat xx, PLfloat yy, PLfloat zz, PLfloat ww = 1.0f );
-		plVector4( PLchar *string );
-		plVector4( const plString &str );
+        plVector4();
+        plVector4(const plVector3 &v, PLfloat ww = 1.0f);
+        plVector4(PLfloat xx, PLfloat yy, PLfloat zz, PLfloat ww = 1.0f);
+        plVector4(PLchar *string);
+        plVector4(const plString &str);
 
-		PLbool 	  operator == (const plVector4 &p) const;
-		PLbool 	  operator != (const plVector4 &p) const;
-		plVector4 operator +  (const plVector4 &p) const;
-		plVector4 operator -  (const plVector4 &p) const;
-		PLfloat   operator *  (const plVector4 &p) const;
+        PLbool       operator == (const plVector4 &p) const;
+        PLbool       operator != (const plVector4 &p) const;
+        plVector4 operator +  (const plVector4 &p) const;
+        plVector4 operator -  (const plVector4 &p) const;
+        PLfloat   operator *  (const plVector4 &p) const;
 
-		plVector4 operator-() const;
+        plVector4 operator-() const;
 
-		plVector4 normalize() const;
-		PLfloat length() const;
-		PLfloat squaredLength() const;
+        plVector4 normalize() const;
+        PLfloat length() const;
+        PLfloat squaredLength() const;
 
 };
 
 
 // Scalar/Vector multiplication
 
-plVector4 operator * ( PLfloat k, const plVector4 &p );
+plVector4 operator * (PLfloat k, const plVector4 &p);
 
 // I/O operators
 
-std::ostream& operator << ( std::ostream& stream, const plVector4 &p );
-std::istream& operator >> ( std::istream& stream, plVector4 &p );
-
-
-#endif
+std::ostream& operator << (std::ostream& stream, const plVector4 &p);
+std::istream& operator >> (std::istream& stream, plVector4 &p);

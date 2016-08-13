@@ -5,11 +5,11 @@ plPlanningSite::plPlanningSite()
 }
 
 
-plPlanningSite::plPlanningSite( const std::vector<plTriangle> &tris, const plBoundary &boundary, PLbool fineGrain )
+plPlanningSite::plPlanningSite(const std::vector<plTriangle> &tris, const plBoundary &boundary, PLbool fineGrain)
 {
     // generate interior triangles
-    plMeshCutter::findInteriorMesh( triangles, tris, boundary );
-    if ( fineGrain )
+    plMeshCutter::findInteriorMesh(triangles, tris, boundary);
+    if (fineGrain)
     {
         _generateFineGridPoints();
     }
@@ -17,39 +17,39 @@ plPlanningSite::plPlanningSite( const std::vector<plTriangle> &tris, const plBou
     {
         _generateCoarseGridPoints();
     }
-    _generateBoundaryPoints( boundary );
+    _generateBoundaryPoints(boundary);
     _calcArea();
     _calcNormal();
 
     std::cout << "\t\t" <<  triangles.size()  << " triangles calculated \n";
     std::cout << "\t\t" <<  gridPoints.size() << " grid points calculated \n";
 
-    if ( triangles.size() == 0 || gridPoints.size() == 0 )
+    if (triangles.size() == 0 || gridPoints.size() == 0)
     {
         std::cerr << "plPlanningSite::plPlanningSite() error: planning data buffer empty, please REMOVE all empty boundaries before proceeding with planner" << std::endl;
     }
 }
 
 
-plPlanningSite::plPlanningSite( plPlanningSite&& site )
-    : triangles      ( std::move( site.triangles ) ),
-      gridPoints     ( std::move( site.gridPoints ) ),
-      gridNormals    ( std::move( site.gridNormals ) ),
-      boundaryPoints ( std::move( site.boundaryPoints ) ),
-      boundaryNormals( std::move( site.boundaryNormals ) ),
-      area           ( site.area ),
-      avgNormal      ( site.avgNormal )
+plPlanningSite::plPlanningSite(plPlanningSite&& site)
+    : triangles      (std::move(site.triangles)),
+      gridPoints     (std::move(site.gridPoints)),
+      gridNormals    (std::move(site.gridNormals)),
+      boundaryPoints (std::move(site.boundaryPoints)),
+      boundaryNormals(std::move(site.boundaryNormals)),
+      area           (site.area),
+      avgNormal      (site.avgNormal)
 {
 }
 
 
-plPlanningSite& plPlanningSite::operator= ( plPlanningSite&& site )
+plPlanningSite& plPlanningSite::operator= (plPlanningSite&& site)
 {
-    triangles       = std::move( site.triangles );
-    gridPoints      = std::move( site.gridPoints );
-    gridNormals     = std::move( site.gridNormals );
-    boundaryPoints  = std::move( site.boundaryPoints );
-    boundaryNormals = std::move( site.boundaryNormals );
+    triangles       = std::move(site.triangles);
+    gridPoints      = std::move(site.gridPoints);
+    gridNormals     = std::move(site.gridNormals);
+    boundaryPoints  = std::move(site.boundaryPoints);
+    boundaryNormals = std::move(site.boundaryNormals);
     area            = site.area;
     avgNormal       = site.avgNormal;
     return *this;
@@ -58,81 +58,81 @@ plPlanningSite& plPlanningSite::operator= ( plPlanningSite&& site )
 
 PLbool plPlanningSite::good() const
 {
-    return !( gridPoints.size() == 0  ||
+    return !(gridPoints.size() == 0  ||
               gridNormals.size() == 0 ||
               triangles.size() == 0   ||
               boundaryPoints.size() == 0 ||
               boundaryNormals.size() == 0 ||
               area == 0.0f ||
-              avgNormal.length() == 0.0f );
+              avgNormal.length() == 0.0f);
 }
 
 
-void plPlanningSite::_bufferGridData( std::vector<plVector4> &data ) const
+void plPlanningSite::_bufferGridData(std::vector<plVector4> &data) const
 {
-    for ( PLuint i=0; i < gridPoints.size(); i++ )
-        data.push_back( gridPoints[i] );
+    for (PLuint i=0; i < gridPoints.size(); i++)
+        data.push_back(gridPoints[i]);
 
-    for ( PLuint i=0; i < gridNormals.size(); i++ )
-        data.push_back( gridNormals[i] );
+    for (PLuint i=0; i < gridNormals.size(); i++)
+        data.push_back(gridNormals[i]);
 }
 
 
-void plPlanningSite::_bufferMeshData( std::vector<plVector4> &data ) const
+void plPlanningSite::_bufferMeshData(std::vector<plVector4> &data) const
 {
-    for ( PLuint i=0; i < triangles.size(); i++ )
+    for (PLuint i=0; i < triangles.size(); i++)
     {
-        data.push_back( plVector4( triangles[i].point0(), 1.0 ) );
-        data.push_back( plVector4( triangles[i].point1(), 1.0 ) );
-        data.push_back( plVector4( triangles[i].point2(), 1.0 ) );
-        data.push_back( plVector4( triangles[i].normal(), 1.0 ) );
+        data.push_back(plVector4(triangles[i].point0(), 1.0));
+        data.push_back(plVector4(triangles[i].point1(), 1.0));
+        data.push_back(plVector4(triangles[i].point2(), 1.0));
+        data.push_back(plVector4(triangles[i].normal(), 1.0));
     }
 }
 
 
-void plPlanningSite::_bufferBoundaryData( std::vector<plVector4> &data ) const
+void plPlanningSite::_bufferBoundaryData(std::vector<plVector4> &data) const
 {
-    for ( PLuint i=0; i < boundaryPoints.size(); i++ )
-        data.push_back( boundaryPoints[i] );
+    for (PLuint i=0; i < boundaryPoints.size(); i++)
+        data.push_back(boundaryPoints[i]);
 
-    for ( PLuint i=0; i < boundaryNormals.size(); i++ )
-        data.push_back( boundaryNormals[i] );
+    for (PLuint i=0; i < boundaryNormals.size(); i++)
+        data.push_back(boundaryNormals[i]);
 }
 
 
 plSSBO plPlanningSite::getSSBO() const
 {
-    std::vector<plVector4> data;    data.reserve( totalSize() );
+    std::vector<plVector4> data;    data.reserve(totalSize());
 
-    _bufferGridData( data );
-    _bufferMeshData( data );
-    _bufferBoundaryData( data );
+    _bufferGridData(data);
+    _bufferMeshData(data);
+    _bufferBoundaryData(data);
 
-    PLuint numBytes = totalSize() * sizeof( plVector4 );
+    PLuint numBytes = totalSize() * sizeof(plVector4);
 
     std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;
 
-    return plSSBO( numBytes, (void*)(&data[0]) );
+    return plSSBO(numBytes, (void*)(&data[0]));
 }
 
 
 void plPlanningSite::_generateCoarseGridPoints()
 {
     std::set<plPointAndNormal> pointsAndNormals;
-    for ( const plTriangle& triangle : triangles )
+    for (const plTriangle& triangle : triangles)
     {
-        plVector3 smoothNormal0 = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point0(), triangle.normal() );
-        plVector3 smoothNormal1 = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point1(), triangle.normal() );
-        plVector3 smoothNormal2 = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point2(), triangle.normal() );
-        pointsAndNormals.insert( plPointAndNormal( triangle.point0(), smoothNormal0 ) );
-        pointsAndNormals.insert( plPointAndNormal( triangle.point1(), smoothNormal1 ) );
-        pointsAndNormals.insert( plPointAndNormal( triangle.point2(), smoothNormal2 ) );
+        plVector3 smoothNormal0 = plMath::getAverageNormal(triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point0(), triangle.normal());
+        plVector3 smoothNormal1 = plMath::getAverageNormal(triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point1(), triangle.normal());
+        plVector3 smoothNormal2 = plMath::getAverageNormal(triangles, PL_NORMAL_SMOOTHING_RADIUS, triangle.point2(), triangle.normal());
+        pointsAndNormals.insert(plPointAndNormal(triangle.point0(), smoothNormal0));
+        pointsAndNormals.insert(plPointAndNormal(triangle.point1(), smoothNormal1));
+        pointsAndNormals.insert(plPointAndNormal(triangle.point2(), smoothNormal2));
     }
 
-    for ( const plPointAndNormal& pointNormal : pointsAndNormals )
+    for (const plPointAndNormal& pointNormal : pointsAndNormals)
     {
-        gridPoints.push_back( plVector4( pointNormal.point,  1) );
-        gridNormals.push_back( plVector4( pointNormal.normal, 1) );
+        gridPoints.push_back(plVector4(pointNormal.point,  1));
+        gridNormals.push_back(plVector4(pointNormal.normal, 1));
     }
 }
 
@@ -154,14 +154,14 @@ void plPlanningSite::_generateFineGridPoints()
         PLfloat eLength12 = e12.squaredLength();
         PLfloat eLength20 = e20.squaredLength();
 
-        PLfloat longest = PL_MAX_OF_3( eLength01, eLength12, eLength20 );
+        PLfloat longest = PL_MAX_OF_3(eLength01, eLength12, eLength20);
 
         plVector3 u, v, origin;
         PLfloat uMax, vMax = 0;
 
         if (longest == eLength01)
         {
-            plVector3 tangent = ( e01 ^ triangles[i].normal() ).normalize();
+            plVector3 tangent = (e01 ^ triangles[i].normal()).normalize();
             origin = triangles[i].point0();
             v = e01.normalize();
             vMax = e01.length();
@@ -170,7 +170,7 @@ void plPlanningSite::_generateFineGridPoints()
         }
         else if (longest == eLength12)
         {
-            plVector3 tangent = ( e12 ^ triangles[i].normal() ).normalize();
+            plVector3 tangent = (e12 ^ triangles[i].normal()).normalize();
             origin = triangles[i].point1();
             v = e12.normalize();
             vMax = e12.length();
@@ -179,7 +179,7 @@ void plPlanningSite::_generateFineGridPoints()
         }
         else // if (longest == eLength20)
         {
-            plVector3 tangent = ( e20 ^ triangles[i].normal() ).normalize();
+            plVector3 tangent = (e20 ^ triangles[i].normal()).normalize();
             origin = triangles[i].point2();
             v = e20.normalize();
             vMax = e20.length();
@@ -193,42 +193,42 @@ void plPlanningSite::_generateFineGridPoints()
             for (PLfloat k=0; k<uMax; k+= GRID_SPACING)
             {
                 plVector3 point = origin + k*-u + j*v;
-                plVector3 bCoord = triangles[i].barycentricCoords( point );
+                plVector3 bCoord = triangles[i].barycentricCoords(point);
 
-                if ( bCoord.x < -0.001 || bCoord.y < -0.001 || bCoord.z < -0.001 )
+                if (bCoord.x < -0.001 || bCoord.y < -0.001 || bCoord.z < -0.001)
                 {
                     break;  // outside of triangle edge, go to next row
                 }
-                plVector3 smoothNormal = plMath::getAverageNormal( triangles, PL_NORMAL_SMOOTHING_RADIUS, point, triangles[i].normal() );
-                pointsAndNormals.insert( plPointAndNormal( point, smoothNormal ) );
+                plVector3 smoothNormal = plMath::getAverageNormal(triangles, PL_NORMAL_SMOOTHING_RADIUS, point, triangles[i].normal());
+                pointsAndNormals.insert(plPointAndNormal(point, smoothNormal));
             }
         }
 
     }
 
-    for ( const plPointAndNormal& pointNormal : pointsAndNormals )
+    for (const plPointAndNormal& pointNormal : pointsAndNormals)
     {
-        gridPoints.push_back( plVector4( pointNormal.point,  1) );
-        gridNormals.push_back( plVector4( pointNormal.normal, 1) );
+        gridPoints.push_back(plVector4(pointNormal.point,  1));
+        gridNormals.push_back(plVector4(pointNormal.normal, 1));
     }
 
 }
 
 
-void plPlanningSite::_generateBoundaryPoints( const plBoundary &boundary )
+void plPlanningSite::_generateBoundaryPoints(const plBoundary &boundary)
 {
     PLuint size = boundary.size();
 
     for (PLuint i=0; i < size; i++)
     {
-        boundaryPoints.push_back( plVector4( boundary.points(i), 1) );
+        boundaryPoints.push_back(plVector4(boundary.points(i), 1));
     }
 
     for (PLuint i=0; i < size; i++)
     {
         plVector3 d = boundary.points((i+1)%size) - boundary.points(i);
         plVector3 n = 0.5f * (boundary.normals((i+1)%size) + boundary.normals(i));
-        boundaryNormals.push_back( plVector4( (d ^ n).normalize(), 1.0f ) );
+        boundaryNormals.push_back(plVector4((d ^ n).normalize(), 1.0f));
     }
 }
 

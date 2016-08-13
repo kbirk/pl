@@ -1,5 +1,4 @@
-#ifndef PL_OPEN_GL_INFO_H
-#define PL_OPEN_GL_INFO_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -8,8 +7,8 @@ namespace plOpenGLInfo
 
     void init();
     void print();
-    PLuint sizeOfType( PLuint enumType );
-    void reportError( const std::string &str );
+    PLuint sizeOfType(PLuint enumType);
+    void reportError(const std::string &str);
 
     extern GLint maxComputeShaderStorageBlocks,
                   maxCombinedShaderStorageBlocks,
@@ -107,5 +106,3 @@ namespace plOpenGLInfo
               maxElementIndex;
 
 }
-
-#endif

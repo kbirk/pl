@@ -1,5 +1,4 @@
-#ifndef PL_EDITOR_H
-#define PL_EDITOR_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderable.h"
@@ -19,19 +18,19 @@ class plEditor : public plRenderable
 
         plEditor();
 
-        virtual void attach( plPlan& plan );
+        virtual void attach(plPlan& plan);
 
         virtual void clearSelection() = 0;
 
-        virtual PLbool processMouseClick   ( PLint x, PLint y ) = 0;
-        virtual PLbool processMouseDrag    ( PLint x, PLint y ) = 0;
-        virtual PLbool processMouseRelease ( PLint x, PLint y ) = 0;
-        virtual PLbool processJoystickDrag ( PLint x, PLint y ) = 0;
+        virtual PLbool processMouseClick   (PLint x, PLint y) = 0;
+        virtual PLbool processMouseDrag    (PLint x, PLint y) = 0;
+        virtual PLbool processMouseRelease (PLint x, PLint y) = 0;
+        virtual PLbool processJoystickDrag (PLint x, PLint y) = 0;
 
         virtual void toggleSelectedVisibility() = 0;
 
-        void extractRenderComponents( plRenderMap& renderMap ) const = 0;
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const = 0;
+        void extractRenderComponents(plRenderMap& renderMap) const = 0;
+        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const = 0;
 
     protected:
 
@@ -39,9 +38,7 @@ class plEditor : public plRenderable
         PLbool  _isDraggingMenu;
 
         // used to prevent anything other than a pl*Editor from changing a plEditable selection state
-        void _clearEditable( plEditable& editable ) const;
-        void _selectEditable( plEditable& editable, PLuint value = -1 ) const;
+        void _clearEditable(plEditable& editable) const;
+        void _selectEditable(plEditable& editable, PLuint value = -1) const;
 
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef PL_MODEL_TECHNIQUE_H
-#define PL_MODEL_TECHNIQUE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderTechnique.h"
@@ -13,9 +12,6 @@ class plTransparencyTechnique : public plRenderTechnique
 
         plTransparencyTechnique();
 
-        void render( const std::set< plRenderComponent >& componentSet ) const;
+        void render(const std::set<plRenderComponent >& componentSet) const;
 
 };
-
-
-#endif

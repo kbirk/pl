@@ -1,26 +1,26 @@
 #include "plGraftEditor.h"
 
 plGraftEditor::plGraftEditor()
-    : _editMode( PL_GRAFT_EDIT_MODE_TRANSLATE ),
-      _selectedType( -1 ),
-      _selectedGraft( nullptr )
+    : _editMode(PL_GRAFT_EDIT_MODE_TRANSLATE),
+      _selectedType(-1),
+      _selectedGraft(nullptr)
 {
 }
 
 void plGraftEditor::clearSelection()
 {
-    _selectedGraft = NULL;
+    _selectedGraft = nullptr;
     _selectedType  = -1;
-    for ( plGraft* graft : _plan->grafts() )
+    for (plGraft* graft : _plan->grafts())
     {
-        _clearEditable( *graft );
+        _clearEditable(*graft);
     }
 }
 
 
-void plGraftEditor::setEditMode( PLuint editMode )
+void plGraftEditor::setEditMode(PLuint editMode)
 {
-    switch ( editMode )
+    switch (editMode)
     {
         case PL_GRAFT_EDIT_MODE_TRANSLATE:
         case PL_GRAFT_EDIT_MODE_ROTATE:
@@ -37,16 +37,16 @@ void plGraftEditor::setEditMode( PLuint editMode )
 }
 
 
-PLbool plGraftEditor::processMouseClick( PLint x, PLint y )
+PLbool plGraftEditor::processMouseClick(PLint x, PLint y)
 {
-    plPickingInfo pick = plPicking::pickPixel( x, y );
+    plPickingInfo pick = plPicking::pickPixel(x, y);
 
-    switch ( pick.r )
+    switch (pick.r)
     {
         case PL_PICKING_TYPE_GRAFT:
         case PL_PICKING_TYPE_GRAFT_MARKER:
 
-            selectGraft( pick.g, pick.b );
+            selectGraft(pick.g, pick.b);
             return true;
 
         case PL_PICKING_TYPE_GRAFT_HANDLE:
@@ -63,20 +63,20 @@ PLbool plGraftEditor::processMouseClick( PLint x, PLint y )
 }
 
 
-PLbool plGraftEditor::processMouseDrag(  PLint x, PLint y )
+PLbool plGraftEditor::processMouseDrag(PLint x, PLint y)
 {
     plPickingInfo pick = plPicking::previousPick();  // read pick from last click, not what is currently under mouse
 
-    switch ( pick.r )
+    switch (pick.r)
     {
         case PL_PICKING_TYPE_GRAFT_HANDLE:
 
-            _dragHandle( x, y );
+            _dragHandle(x, y);
             return true;
 
         case PL_PICKING_TYPE_GRAFT_MARKER:
 
-            _dragMarker( x, y );
+            _dragMarker(x, y);
             return true;
 
         case PL_PICKING_TYPE_GRAFT:
@@ -89,99 +89,99 @@ PLbool plGraftEditor::processMouseDrag(  PLint x, PLint y )
 }
 
 
-PLbool plGraftEditor::processMouseRelease(  PLint x, PLint y )
+PLbool plGraftEditor::processMouseRelease(PLint x, PLint y)
 {
     _isDraggingMenu = false;
     return true;
 }
 
 
-PLbool plGraftEditor::processJoystickDrag(  PLint x, PLint y )
+PLbool plGraftEditor::processJoystickDrag(PLint x, PLint y)
 {
-    if (_selectedGraft == NULL)
+    if (_selectedGraft == nullptr)
         return false;                 // no graft selected
 
-    return processMouseDrag( x, y );
+    return processMouseDrag(x, y);
 
     /* old joystick code
-    plVector3 translation( -y, 0.0f, x);
+    plVector3 translation(-y, 0.0f, x);
 
-    if ( translation.squaredLength() > 1.0 )
+    if (translation.squaredLength() > 1.0)
     {
         translation = translation.normalize();
     }
 
     // get screen plane
-    plVector3 localXAxis = ( plCameraStack::direction() ^ _selectedGraft->plug( _selectedType ).surfaceTransform().y() ).normalize();
-    plVector3 localZAxis = ( _selectedGraft->plug( _selectedType ).surfaceTransform().y() ^ localXAxis ).normalize();
-    plVector3 localYAxis = ( localXAxis ^ localZAxis ).normalize();
+    plVector3 localXAxis = (plCameraStack::direction() ^ _selectedGraft->plug(_selectedType).surfaceTransform().y()).normalize();
+    plVector3 localZAxis = (_selectedGraft->plug(_selectedType).surfaceTransform().y() ^ localXAxis).normalize();
+    plVector3 localYAxis = (localXAxis ^ localZAxis).normalize();
 
-    translation = ( translation * localXAxis ) * localXAxis +
-                  ( translation * localYAxis ) * localYAxis +
-                  ( translation * localZAxis ) * localZAxis;
+    translation = (translation * localXAxis) * localXAxis +
+                  (translation * localYAxis) * localYAxis +
+                  (translation * localZAxis) * localZAxis;
 
     // move graft
-    _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
+    _selectedGraft->move(_selectedType, intersection.point, intersection.normal);
 
     return true;
     */
 }
 
 
-void plGraftEditor::selectGraft(  PLuint index, PLuint type )
+void plGraftEditor::selectGraft(PLuint index, PLuint type)
 {
     // clear any previous selections
     clearSelection();
 
-    _selectEditable( _plan->grafts( index ), type );
+    _selectEditable(_plan->grafts(index), type);
     _selectedType  = type;
-    _selectedGraft = &_plan->grafts( index );
+    _selectedGraft = &_plan->grafts(index);
 }
 
 
-void plGraftEditor::_dragMarker( PLint x, PLint y )
+void plGraftEditor::_dragMarker(PLint x, PLint y)
 {
-    if ( _selectedGraft == NULL )
+    if (_selectedGraft == nullptr)
         return;                 // no graft selected
 
     // get ray from mouse
     plVector3 rayOrigin, rayDirection;
-    plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
+    plWindow::cameraToMouseRay(rayOrigin, rayDirection, x, y);
 
     // graft origin and surface normal
-    plVector3 surfaceNormal = _selectedGraft->plug( _selectedType ).surfaceTransform().y();
-    plVector3 graftOrigin   = _selectedGraft->plug( _selectedType ).surfaceTransform().origin();
+    plVector3 surfaceNormal = _selectedGraft->plug(_selectedType).surfaceTransform().y();
+    plVector3 graftOrigin   = _selectedGraft->plug(_selectedType).surfaceTransform().origin();
 
     // intersect plane of graft
-    plIntersection intersection = plMath::rayIntersect( rayOrigin, rayDirection, graftOrigin, surfaceNormal );
+    plIntersection intersection = plMath::rayIntersect(rayOrigin, rayDirection, graftOrigin, surfaceNormal);
 
-    if ( intersection.exists )
+    if (intersection.exists)
     {
-        plVector3 newMarkDir = _selectedGraft->plug( _selectedType ).finalTransform().applyInverse( intersection.point );
-        newMarkDir = plVector3( newMarkDir.x, 0.0f, newMarkDir.z ).normalize();
+        plVector3 newMarkDir = _selectedGraft->plug(_selectedType).finalTransform().applyInverse(intersection.point);
+        newMarkDir = plVector3(newMarkDir.x, 0.0f, newMarkDir.z).normalize();
 
-        if ( _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
+        if (_selectedType == PL_PICKING_INDEX_GRAFT_DEFECT)
         {
             // recipient, rotate around up axis
-            PLfloat angle = _selectedGraft->markDirection().signedAngle( newMarkDir, plVector3( 0, 1, 0 ) );
-            _selectedGraft->rotate( _selectedType, PL_RAD_TO_DEG( angle ) );
+            PLfloat angle = _selectedGraft->markDirection().signedAngle(newMarkDir, plVector3(0, 1, 0));
+            _selectedGraft->rotate(_selectedType, PL_RAD_TO_DEG(angle));
         }
         else
         {
             // harvest, move marker
             // find angle between wanted direction and actual direction to determine angular offset
-            _selectedGraft->setMarkDirection( newMarkDir );
+            _selectedGraft->setMarkDirection(newMarkDir);
         }
     }
 }
 
 
-void plGraftEditor::_dragHandle( PLint x, PLint y )
+void plGraftEditor::_dragHandle(PLint x, PLint y)
 {
-    if ( _selectedGraft == NULL )
+    if (_selectedGraft == nullptr)
         return;                 // no graft selected
 
-    switch ( _editMode )
+    switch (_editMode)
     {
         case PL_GRAFT_EDIT_MODE_TRANSLATE:
         {
@@ -189,23 +189,23 @@ void plGraftEditor::_dragHandle( PLint x, PLint y )
 
             // get ray from camera to mouse
             plVector3 rayOrigin, rayDirection;
-            plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
+            plWindow::cameraToMouseRay(rayOrigin, rayDirection, x, y);
 
             // intersect bound mesh
-            plIntersection intersection = _selectedGraft->plug( _selectedType ).mesh().rayIntersect( rayOrigin, rayDirection, true ); // smooth normal
+            plIntersection intersection = _selectedGraft->plug(_selectedType).mesh().rayIntersect(rayOrigin, rayDirection, true); // smooth normal
 
-            if ( intersection.exists )
+            if (intersection.exists)
             {
                 // if intersection exists, move graft to new position
-                _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
+                _selectedGraft->move(_selectedType, intersection.point, intersection.normal);
             }
             else
             {
                 // if no intersection, and is defect graft, move to closest point on spline
-                if ( _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
+                if (_selectedType == PL_PICKING_INDEX_GRAFT_DEFECT)
                 {
-                    intersection = plMath::getClosestPointToRay( _selectedGraft->plug( _selectedType ).mesh().triangles(), rayOrigin, rayDirection );
-                    _selectedGraft->move( _selectedType, intersection.point, intersection.normal );
+                    intersection = plMath::getClosestPointToRay(_selectedGraft->plug(_selectedType).mesh().triangles(), rayOrigin, rayDirection);
+                    _selectedGraft->move(_selectedType, intersection.point, intersection.normal);
                 }
             }
             break;
@@ -217,21 +217,21 @@ void plGraftEditor::_dragHandle( PLint x, PLint y )
 
             // get ray from mouse
             plVector3 rayOrigin, rayDirection;
-            plWindow::cameraToMouseRay( rayOrigin, rayDirection, x, y );
+            plWindow::cameraToMouseRay(rayOrigin, rayDirection, x, y);
 
             // graft origin and surface normal
-            plVector3 graftSurfaceNormal = _selectedGraft->plug( _selectedType ).surfaceTransform().y();
-            plVector3 graftOrigin        = _selectedGraft->plug( _selectedType ).finalTransform().origin();
+            plVector3 graftSurfaceNormal = _selectedGraft->plug(_selectedType).surfaceTransform().y();
+            plVector3 graftOrigin        = _selectedGraft->plug(_selectedType).finalTransform().origin();
 
             // intersect plane of graft
-            plIntersection intersection = plMath::rayIntersect( rayOrigin, rayDirection, graftOrigin, graftSurfaceNormal );
+            plIntersection intersection = plMath::rayIntersect(rayOrigin, rayDirection, graftOrigin, graftSurfaceNormal);
 
-            if ( intersection.exists )
+            if (intersection.exists)
             {
                 // get vector from graft origin to intersection, scale up by graft surface normal to scale rotation by distance
-                plVector3 newGraftY = ( PL_GRAFT_EDIT_ROTATION_SENSITIVITY * (intersection.point - graftOrigin) + graftSurfaceNormal ).normalize();
+                plVector3 newGraftY = (PL_GRAFT_EDIT_ROTATION_SENSITIVITY * (intersection.point - graftOrigin) + graftSurfaceNormal).normalize();
 
-                _selectedGraft->rotate( _selectedType, newGraftY );
+                _selectedGraft->rotate(_selectedType, newGraftY);
             }
 
             break;
@@ -256,50 +256,50 @@ void plGraftEditor::_dragHandle( PLint x, PLint y )
 
 void plGraftEditor::toggleSelectedVisibility()
 {
-    if (_selectedGraft == NULL)
+    if (_selectedGraft == nullptr)
         return;
 
     _selectedGraft->toggleVisibility();
 }
 
 
-void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
+void plGraftEditor::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
 {
-    _extractMenuRenderComponents( renderMap );
+    _extractMenuRenderComponents(renderMap);
 
-    if ( _selectedGraft == NULL || !_selectedGraft->isVisible() )
+    if (_selectedGraft == nullptr || !_selectedGraft->isVisible())
         return;                 // no graft selected
 
     // graft outline
-    _selectedGraft->extractRenderComponents( renderMap, technique );
+    _selectedGraft->extractRenderComponents(renderMap, technique);
 
-    if ( !_selectedGraft->inArthroView() )
+    if (!_selectedGraft->inArthroView())
     {
-        plColourStack::load( PL_AXIS_GREY );
-        plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT_HANDLE );
+        plColourStack::load(PL_AXIS_GREY);
+        plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT_HANDLE);
 
         plModelStack::push();
-        plModelStack::translate( _selectedGraft->plug( _selectedType ).surfaceTransform().y() );
+        plModelStack::translate(_selectedGraft->plug(_selectedType).surfaceTransform().y());
 
         plModelStack::push();
-        plModelStack::mult( _selectedGraft->plug( _selectedType ).finalTransform().matrix() );
+        plModelStack::mult(_selectedGraft->plug(_selectedType).finalTransform().matrix());
 
-        plRenderer::queueSphere( PL_PLAN_TECHNIQUE, plVector3( 0, 0, 0 ), PL_HANDLE_SPHERE_RADIUS );
-        plModelStack::load( _selectedGraft->plug( _selectedType ).finalTransform().matrix() );
+        plRenderer::queueSphere(PL_PLAN_TECHNIQUE, plVector3(0, 0, 0), PL_HANDLE_SPHERE_RADIUS);
+        plModelStack::load(_selectedGraft->plug(_selectedType).finalTransform().matrix());
 
         plModelStack::pop();
 
-        if (_editMode == PL_GRAFT_EDIT_MODE_TRANSLATE )
+        if (_editMode == PL_GRAFT_EDIT_MODE_TRANSLATE)
         {
             // draw axis
-            _selectedGraft->plug( _selectedType ).surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-            //_selectedGraft->recipient().surfaceTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+            _selectedGraft->plug(_selectedType).surfaceTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
+            //_selectedGraft->recipient().surfaceTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
         }
         else
         {
             // draw axis
-            _selectedGraft->plug( _selectedType ).finalTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
-            //_selectedGraft->recipient().finalTransform().extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+            _selectedGraft->plug(_selectedType).finalTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
+            //_selectedGraft->recipient().finalTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
         }
 
         plModelStack::pop();
@@ -307,89 +307,89 @@ void plGraftEditor::extractRenderComponents( plRenderMap& renderMap, PLuint tech
 }
 
 
-void plGraftEditor::extractRenderComponents( plRenderMap& renderMap ) const
+void plGraftEditor::extractRenderComponents(plRenderMap& renderMap) const
 {
-    extractRenderComponents( renderMap, PL_OUTLINE_TECHNIQUE );
+    extractRenderComponents(renderMap, PL_OUTLINE_TECHNIQUE);
 }
 
 
-void plGraftEditor::_extractMenuRenderComponents( plRenderMap& renderMap ) const
+void plGraftEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
 {
     const PLfloat HARVEST_HORIZONTAL   = PL_EDITOR_MENU_HORIZONTAL_BUFFER;
-    const PLfloat RECIPIENT_HORIZONTAL = (PL_EDITOR_MENU_HORIZONTAL_BUFFER + PL_EDITOR_MENU_CIRCLE_RADIUS + PL_EDITOR_MENU_HORIZONTAL_SPACING );
+    const PLfloat RECIPIENT_HORIZONTAL = (PL_EDITOR_MENU_HORIZONTAL_BUFFER + PL_EDITOR_MENU_CIRCLE_RADIUS + PL_EDITOR_MENU_HORIZONTAL_SPACING);
     const PLfloat INITIAL_VERTICAL     = plWindow::viewportHeight() - PL_EDITOR_MENU_VERTICAL_BUFFER;
 
-    plMatrix44 ortho( 0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1 );
+    plMatrix44 ortho(0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1);
 
-    plMatrix44 camera( 1, 0,  0, 0,
+    plMatrix44 camera(1, 0,  0, 0,
                        0, 1,  0, 0,
                        0, 0, -1, 0,
-                       0, 0,  0, 1 );
+                       0, 0,  0, 1);
 
     PLfloat count = 0;
-    plPickingStack::loadBlue( -1 );
+    plPickingStack::loadBlue(-1);
 
-    plCameraStack::push( camera );
-    plProjectionStack::push( ortho );
-    plModelStack::push( plMatrix44() ); // load identity
+    plCameraStack::push(camera);
+    plProjectionStack::push(ortho);
+    plModelStack::push(plMatrix44()); // load identity
     {
         // grafts
         for (PLuint i=0; i<_plan->grafts().size(); i++)
         {
-            plPickingStack::loadRed( PL_PICKING_TYPE_GRAFT );
-            plPickingStack::loadGreen( i );
+            plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT);
+            plPickingStack::loadGreen(i);
 
             // harvest
-            plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DONOR );
-            plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR );
+            plPickingStack::loadBlue(PL_PICKING_INDEX_GRAFT_DONOR);
+            plColourStack::load(PL_GRAFT_DONOR_CARTILAGE_COLOUR);
 
-            plRenderer::queueDisk( PL_MINIMAL_TECHNIQUE,
-                                   plVector3( HARVEST_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0),
-                                   plVector3( 0, 0, 1 ),
-                                   PL_EDITOR_MENU_CIRCLE_RADIUS );
+            plRenderer::queueDisk(PL_MINIMAL_TECHNIQUE,
+                                   plVector3(HARVEST_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0),
+                                   plVector3(0, 0, 1),
+                                   PL_EDITOR_MENU_CIRCLE_RADIUS);
 
-            if ( _plan->grafts(i).isSelected() && _selectedType == PL_PICKING_INDEX_GRAFT_DONOR )
+            if (_plan->grafts(i).isSelected() && _selectedType == PL_PICKING_INDEX_GRAFT_DONOR)
             {
                 // draw selection outline
-                plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE,
-                                       plVector3( HARVEST_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0),
-                                       plVector3( 0, 0, 1 ),
-                                       PL_EDITOR_MENU_CIRCLE_RADIUS );
+                plRenderer::queueDisk(PL_OUTLINE_TECHNIQUE,
+                                       plVector3(HARVEST_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0),
+                                       plVector3(0, 0, 1),
+                                       PL_EDITOR_MENU_CIRCLE_RADIUS);
             }
 
             // recipient
-            plPickingStack::loadBlue( PL_PICKING_INDEX_GRAFT_DEFECT );
-            plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR );
+            plPickingStack::loadBlue(PL_PICKING_INDEX_GRAFT_DEFECT);
+            plColourStack::load(PL_GRAFT_DEFECT_CARTILAGE_COLOUR);
 
-            plRenderer::queueDisk( PL_MINIMAL_TECHNIQUE,
-                                   plVector3( RECIPIENT_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0),
-                                   plVector3( 0, 0, 1 ),
-                                   PL_EDITOR_MENU_CIRCLE_RADIUS );
+            plRenderer::queueDisk(PL_MINIMAL_TECHNIQUE,
+                                   plVector3(RECIPIENT_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0),
+                                   plVector3(0, 0, 1),
+                                   PL_EDITOR_MENU_CIRCLE_RADIUS);
 
-            if ( _plan->grafts(i).isSelected() && _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT )
+            if (_plan->grafts(i).isSelected() && _selectedType == PL_PICKING_INDEX_GRAFT_DEFECT)
             {
                 // draw selection outline
-                plRenderer::queueDisk( PL_OUTLINE_TECHNIQUE,
-                                       plVector3( RECIPIENT_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0),
-                                       plVector3( 0, 0, 1 ),
-                                       PL_EDITOR_MENU_CIRCLE_RADIUS );
+                plRenderer::queueDisk(PL_OUTLINE_TECHNIQUE,
+                                       plVector3(RECIPIENT_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_BUFFER, 0),
+                                       plVector3(0, 0, 1),
+                                       PL_EDITOR_MENU_CIRCLE_RADIUS);
             }
             count++;
         }
 
         /*
         // dragged menu item
-        if ( _isDraggingMenu )
+        if (_isDraggingMenu)
         {
-            if ( _selectedType == PL_PICKING_INDEX_GRAFT_DONOR )
+            if (_selectedType == PL_PICKING_INDEX_GRAFT_DONOR)
             {
-                plColourStack::load( PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL );
+                plColourStack::load(PL_GRAFT_DONOR_CARTILAGE_COLOUR_DULL);
             }
             else
             {
-                plColourStack::load( PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL );
+                plColourStack::load(PL_GRAFT_DEFECT_CARTILAGE_COLOUR_DULL);
             }
-            plDraw::disk( plVector3( plWindow::windowToViewportX( x ), plWindow::windowToViewportY( y ), 0.0f), PL_EDITOR_MENU_CIRCLE_RADIUS );
+            plDraw::disk(plVector3(plWindow::windowToViewportX(x), plWindow::windowToViewportY(y), 0.0f), PL_EDITOR_MENU_CIRCLE_RADIUS);
         }
         */
 

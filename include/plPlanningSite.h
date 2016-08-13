@@ -1,5 +1,4 @@
-#ifndef PL_PLANNING_SITE_H
-#define PL_PLANNING_SITE_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -17,15 +16,15 @@ class plPointAndNormal
         plVector3 point;
         plVector3 normal;
 
-        plPointAndNormal( const plVector3 &p, const plVector3 &n)
+        plPointAndNormal(const plVector3 &p, const plVector3 &n)
             : point(p), normal(n)
         {}
 
         PLbool operator < (const plPointAndNormal &pn) const
         {
-            if ( point.x == pn.point.x )
+            if (point.x == pn.point.x)
             {
-                if ( point.y == pn.point.y )
+                if (point.y == pn.point.y)
                 {
                     return point.z < pn.point.z;
                 }
@@ -51,31 +50,28 @@ class plPlanningSite
         plVector3               avgNormal;
 
         plPlanningSite();
-        plPlanningSite( const std::vector<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain = false );
-        plPlanningSite( plPlanningSite&& site );
+        plPlanningSite(const std::vector<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain = false);
+        plPlanningSite(plPlanningSite&& site);
 
-        plPlanningSite& operator= ( plPlanningSite&& site );
+        plPlanningSite& operator= (plPlanningSite&& site);
 
         PLuint totalSize() const { return gridPoints.size() + gridNormals.size() + triangles.size()*4 + boundaryPoints.size() + boundaryNormals.size(); }
 
-        void   getData( std::vector<plVector4> &data ) const { _bufferGridData( data ); _bufferMeshData( data ); _bufferBoundaryData( data ); }
+        void   getData(std::vector<plVector4> &data) const { _bufferGridData(data); _bufferMeshData(data); _bufferBoundaryData(data); }
         plSSBO getSSBO() const;
 
         PLbool good() const;
 
     private:
 
-        void _bufferGridData     ( std::vector<plVector4> &data ) const;
-        void _bufferMeshData     ( std::vector<plVector4> &data ) const;
-        void _bufferBoundaryData ( std::vector<plVector4> &data ) const;
+        void _bufferGridData     (std::vector<plVector4> &data) const;
+        void _bufferMeshData     (std::vector<plVector4> &data) const;
+        void _bufferBoundaryData (std::vector<plVector4> &data) const;
 
         void _generateCoarseGridPoints ();
         void _generateFineGridPoints   ();
-        void _generateBoundaryPoints   ( const plBoundary &boundary );
+        void _generateBoundaryPoints   (const plBoundary &boundary);
         void _calcArea   ();
         void _calcNormal ();
 
 };
-
-
-#endif

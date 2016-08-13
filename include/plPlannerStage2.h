@@ -1,5 +1,4 @@
-#ifndef PL_STAGE_2_STATE_H
-#define PL_STAGE_2_STATE_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -13,8 +12,5 @@
 
 namespace plPlannerStage2
 {
-    void run( plRmsData &rmsData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plCapIndices &capIndices );
+    void run(plRmsData &rmsData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plCapIndices &capIndices);
 }
-
-
-#endif

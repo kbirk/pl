@@ -1,5 +1,4 @@
-#ifndef PL_SCREEN_QUAD_TECHNIQUE_H
-#define PL_SCREEN_QUAD_TECHNIQUE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderTechnique.h"
@@ -13,13 +12,10 @@ class plScreenQuadTechnique : public plRenderTechnique
 
         plScreenQuadTechnique();
 
-        void render( const std::set< plRenderComponent >& componentSet ) const;
+        void render(const std::set<plRenderComponent >& componentSet) const;
 
     private:
 
         virtual plVAO _generateQuad() const;
         virtual plRenderComponent _generateComponent() const;
 };
-
-
-#endif

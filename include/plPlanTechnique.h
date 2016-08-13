@@ -1,5 +1,4 @@
-#ifndef PL_PLANNER_TECHNIQUE_H
-#define PL_PLANNER_TECHNIQUE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderTechnique.h"
@@ -13,13 +12,10 @@ class plPlanTechnique : public plRenderTechnique
 
         plPlanTechnique();
 
-        void render( const std::set< plRenderComponent >& componentSet ) const;
+        void render(const std::set<plRenderComponent >& componentSet) const;
 
     private:
 
         void _initState() const;
 
 };
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef PL_SCAN_H
-#define PL_SCAN_H
+#pragma once
 
 #include "plScanPoint.h"
 #include "plScanVolume.h"
@@ -11,13 +10,13 @@ class plScan
         // methods
         // constructors
         plScan();
-        plScan( const plScanPointData& point, const PLfloat& resolutionW );
-        plScan( const plString& filename    , const PLfloat& resolutionW );
+        plScan(const plScanPointData& point, const PLfloat& resolutionW);
+        plScan(const plString& filename, const PLfloat& resolutionW);
         ~plScan();
 
         // controlling the volume and points
-        PLbool addPoint( const plScanPointData& );
-        PLbool initializeVolume( const plVector3& centerW, PLfloat radiusW, PLfloat resolutionW );
+        PLbool addPoint(const plScanPointData&);
+        PLbool initializeVolume(const plVector3& centerW, PLfloat radiusW, PLfloat resolutionW);
         PLbool clearAll();
 
         // output/visualization
@@ -32,5 +31,3 @@ class plScan
 
 
 };
-
-#endif // PLSCAN_H

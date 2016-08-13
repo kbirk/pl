@@ -1,5 +1,4 @@
-#ifndef PL_GRAFT_H
-#define PL_GRAFT_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderable.h"
@@ -22,34 +21,34 @@ class plGraft : public plRenderable, public plEditable, public plArthroViewable
     public:
 
         plGraft();
-        plGraft( const plPlug &harvest,
+        plGraft(const plPlug &harvest,
                  const plPlug &recipient,
                  PLfloat radius,
                  PLfloat length,
-                 const plVector3 &markDirection = plVector3(0,0,1) );
+                 const plVector3 &markDirection = plVector3(0,0,1));
 
         virtual ~plGraft();
 
         const PLfloat&   radius()             const { return _radius; }
         const PLfloat&   length()             const { return _length; }
         const plVector3& markDirection()      const { return _markDirection; }
-        const plVector3& markPositions( PLuint index ) const { return _markPositions[ index ]; }
+        const plVector3& markPositions(PLuint index) const { return _markPositions[ index ]; }
 
-        const plPlug& plug     ( PLuint type ) const;
+        const plPlug& plug     (PLuint type) const;
         const plPlug& harvest  () const { return _harvest;   }
         const plPlug& recipient() const { return _recipient; }
 
-        void move  ( PLuint type, const plVector3& origin, const plVector3& y );
-        void rotate( PLuint type, const plVector3& y );
-        void rotate( PLuint type, PLfloat angleDegrees );
+        void move  (PLuint type, const plVector3& origin, const plVector3& y);
+        void rotate(PLuint type, const plVector3& y);
+        void rotate(PLuint type, PLfloat angleDegrees);
 
-        void setMarkDirection( const plVector3& direction );
+        void setMarkDirection(const plVector3& direction);
         void snapMarkDirection();
 
         void toggleArthroView() { plArthroViewable::toggleArthroView(); _cartilageCap.toggleArthroView(); }
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void extractRenderComponents(plRenderMap& renderMap) const;
+        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
     private:
 
@@ -65,13 +64,9 @@ class plGraft : public plRenderable, public plEditable, public plArthroViewable
         plBoneCap      _boneCap;
         plCartilageCap _cartilageCap;
 
-        void _extractGraftRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void _extractGraftRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
         void _generateCaps();
         void _generateMarkPositions();
 
-
 };
-
-
-#endif

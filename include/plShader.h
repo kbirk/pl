@@ -1,5 +1,4 @@
-#ifndef PL_SHADER_H
-#define PL_SHADER_H
+#pragma once
 
 #include "plCommon.h"
 #include "plString.h"
@@ -12,33 +11,30 @@ class plShader
     public:
 
         plShader();
-		~plShader();
+        ~plShader();
 
-		void bind()   const { glUseProgram( _id );  }
-		void unbind() const { glUseProgram( 0 );    }
+        void bind()   const { glUseProgram(_id);  }
+        void unbind() const { glUseProgram(0);    }
 
-		bool   good() const { return _good; }
+        bool   good() const { return _good; }
         PLuint id()   const { return _id;   }
 
-        virtual void setUniform( const plUniform& uniform ) const {};
+        virtual void setUniform(const plUniform& uniform) const {};
 
     protected:
 
         GLuint _id;
         bool   _good;
 
-        char*  _readShaderFile( const std::string &filename );
-        GLuint _createShader( const std::string &shaderFile, GLenum shaderType );
-        GLuint _createShader( const std::vector<std::string> &shaderFiles, GLenum shaderType );
-        PLbool _compileShader( GLuint shader );
-        GLuint _createAndCompileShader( const std::string &shaderFile, GLenum shaderType );
-        GLuint _createAndCompileShader( const std::vector<std::string> &shaderFiles, GLenum shaderType );
-        void   _printCompileError( GLuint shader );
+        char*  _readShaderFile(const std::string &filename);
+        GLuint _createShader(const std::string &shaderFile, GLenum shaderType);
+        GLuint _createShader(const std::vector<std::string> &shaderFiles, GLenum shaderType);
+        PLbool _compileShader(GLuint shader);
+        GLuint _createAndCompileShader(const std::string &shaderFile, GLenum shaderType);
+        GLuint _createAndCompileShader(const std::vector<std::string> &shaderFiles, GLenum shaderType);
+        void   _printCompileError(GLuint shader);
         PLbool _linkProgram();
         void   _printLinkError();
 
         virtual void _getUniformLocations() = 0;
 };
-
-
-#endif

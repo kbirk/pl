@@ -1,10 +1,9 @@
 #include "plRenderShapes.h"
 
-
 namespace plRenderShapes
 {
 
-    plVAO sphereVAO( float radius, int slices, int stacks )
+    plVAO sphereVAO(float radius, int slices, int stacks)
     {
         float rho, theta;
         float x, y, z;
@@ -18,8 +17,8 @@ namespace plRenderShapes
 
         // draw +Z end as a triangle fan
         // centre of triangle fan
-        vertices.push_back( plVector3(0.0f, 0.0f, radius));   // position
-        vertices.push_back( plVector3(0.0f, 0.0f, 1.0f));     // normal
+        vertices.push_back(plVector3(0.0f, 0.0f, radius));   // position
+        vertices.push_back(plVector3(0.0f, 0.0f, 1.0f));     // normal
         for (int j = 0; j <= slices; j++)
         {
             theta = (j == slices) ? 0.0f : j * dtheta;
@@ -27,8 +26,8 @@ namespace plRenderShapes
             y = cos(theta) * sin(drho);
             z = cos(drho);
 
-            vertices.push_back( plVector3(x * radius, y * radius, z * radius)); // position
-            vertices.push_back( plVector3(x, y, z) );                           // normal
+            vertices.push_back(plVector3(x * radius, y * radius, z * radius)); // position
+            vertices.push_back(plVector3(x, y, z));                           // normal
         }
 
         for (int j = 1; j <= slices; j++)
@@ -56,15 +55,15 @@ namespace plRenderShapes
                 y = cos(theta) * sin(rho);
                 z = cos(rho);
 
-                vertices.push_back( plVector3(x * radius, y * radius, z * radius)); // position
-                vertices.push_back( plVector3(x, y, z));                            // normal
+                vertices.push_back(plVector3(x * radius, y * radius, z * radius)); // position
+                vertices.push_back(plVector3(x, y, z));                            // normal
 
                 x = -sin(theta) * sin(rho + drho);
                 y = cos(theta) * sin(rho + drho);
                 z = cos(rho + drho);
 
-                vertices.push_back( plVector3(x * radius, y * radius, z * radius)); // position
-                vertices.push_back( plVector3(x, y, z));                            // normal
+                vertices.push_back(plVector3(x * radius, y * radius, z * radius)); // position
+                vertices.push_back(plVector3(x, y, z));                            // normal
             }
 
             for (int j = 0; j < slices*2; j+=2)
@@ -82,8 +81,8 @@ namespace plRenderShapes
         // draw -Z end as a triangle fan
         base = vertices.size()/2;
 
-        vertices.push_back( plVector3(0.0f, 0.0f, -radius));   // position
-        vertices.push_back( plVector3(0.0f, 0.0f, -1.0f));     // normal
+        vertices.push_back(plVector3(0.0f, 0.0f, -radius));   // position
+        vertices.push_back(plVector3(0.0f, 0.0f, -1.0f));     // normal
 
         rho = PL_PI - drho;
 
@@ -94,8 +93,8 @@ namespace plRenderShapes
             y = cos(theta) * sin(rho);
             z = cos(rho);
 
-            vertices.push_back( plVector3(x * radius, y * radius, z * radius)); // position
-            vertices.push_back( plVector3(x, y, z));                            // normal
+            vertices.push_back(plVector3(x * radius, y * radius, z * radius)); // position
+            vertices.push_back(plVector3(x, y, z));                            // normal
         }
 
         for (int j = 1; j <= slices; j++)
@@ -106,17 +105,17 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
-        vbo->set( vertices );
-        vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 32, 0  ) );
-        vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   32, 16 ) );
+        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        vbo->set(vertices);
+        vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
+        vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();
-        eabo->set( indices );
+        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        eabo->set(indices);
         // create and attach to vao
         plVAO vao;
-        vao.attach( vbo );
-        vao.attach( eabo );
+        vao.attach(vbo);
+        vao.attach(eabo);
         // upload to gpu
         vao.upload();
 
@@ -124,7 +123,7 @@ namespace plRenderShapes
     }
 
 
-    plVAO cylinderVAO( float baseRadius, float topRadius, float height, int slices, int stacks )
+    plVAO cylinderVAO(float baseRadius, float topRadius, float height, int slices, int stacks)
     {
         float da = 2.0f * PL_PI / slices;
         float dr = (topRadius - baseRadius) / stacks;
@@ -149,11 +148,11 @@ namespace plRenderShapes
                 sa = sin(a);
                 ca = cos(a);
 
-                vertices.push_back( plVector3( sa * r, ca * r, z) );  // position
-                vertices.push_back( plVector3( sa, ca, nz) );         // normal
+                vertices.push_back(plVector3(sa * r, ca * r, z));  // position
+                vertices.push_back(plVector3(sa, ca, nz));         // normal
 
-                vertices.push_back( plVector3( sa * (r + dr), ca * (r + dr), z + dz) );  // position
-                vertices.push_back( plVector3( sa, ca, nz) );                             // normal
+                vertices.push_back(plVector3(sa * (r + dr), ca * (r + dr), z + dz));  // position
+                vertices.push_back(plVector3(sa, ca, nz));                             // normal
             }
 
             for (int i = 0; i < slices*2; i+=2)
@@ -172,17 +171,17 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
-        vbo->set( vertices );
-        vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 32, 0  ) );
-        vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   32, 16 ) );
+        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        vbo->set(vertices);
+        vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
+        vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO >();
-        eabo->set( indices );
+        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        eabo->set(indices);
         // create and attach to vao
         plVAO vao;
-        vao.attach( vbo );
-        vao.attach( eabo );
+        vao.attach(vbo);
+        vao.attach(eabo);
         // upload to gpu
         vao.upload();
 
@@ -190,9 +189,9 @@ namespace plRenderShapes
     }
 
 
-    plVAO diskVAO( float innerRadius, float outerRadius, int slices, int loops, bool up )
+    plVAO diskVAO(float innerRadius, float outerRadius, int slices, int loops, bool up)
     {
-        plVector3 normal = ( up ) ? plVector3( 0.0f, 0.0f, 1.0f ) : plVector3( 0.0f, 0.0f, -1.0f );
+        plVector3 normal = (up) ? plVector3(0.0f, 0.0f, 1.0f) : plVector3(0.0f, 0.0f, -1.0f);
 
         float da = 2.0f * PL_PI / slices;
         float dr = (outerRadius - innerRadius) /  loops;
@@ -218,11 +217,11 @@ namespace plRenderShapes
                     sa = sin(a);
                     ca = cos(a);
 
-                    vertices.push_back( plVector3(r2 * sa, r2 * ca, 0.0f) );  // position
-                    vertices.push_back( normal );                             // normal
+                    vertices.push_back(plVector3(r2 * sa, r2 * ca, 0.0f));  // position
+                    vertices.push_back(normal);                             // normal
 
-                    vertices.push_back( plVector3(r1 * sa, r1 * ca, 0.0f) );  // position
-                    vertices.push_back( normal );                             // normal
+                    vertices.push_back(plVector3(r1 * sa, r1 * ca, 0.0f));  // position
+                    vertices.push_back(normal);                             // normal
                 }
             }
             else
@@ -234,11 +233,11 @@ namespace plRenderShapes
                     sa = sin(a);
                     ca = cos(a);
 
-                    vertices.push_back( plVector3(r2 * sa, r2 * ca, 0.0f) );  // position
-                    vertices.push_back( normal );                             // normal
+                    vertices.push_back(plVector3(r2 * sa, r2 * ca, 0.0f));  // position
+                    vertices.push_back(normal);                             // normal
 
-                    vertices.push_back( plVector3(r1 * sa, r1 * ca, 0.0f) );  // position
-                    vertices.push_back( normal );                             // normal
+                    vertices.push_back(plVector3(r1 * sa, r1 * ca, 0.0f));  // position
+                    vertices.push_back(normal);                             // normal
                 }
             }
 
@@ -258,17 +257,17 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
-        vbo->set( vertices );
-        vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 32, 0  ) );
-        vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   32, 16 ) );
+        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        vbo->set(vertices);
+        vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
+        vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();
-        eabo->set( indices );
+        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        eabo->set(indices);
         // create and attach to vao
         plVAO vao;
-        vao.attach( vbo );
-        vao.attach( eabo );
+        vao.attach(vbo);
+        vao.attach(eabo);
         // upload to gpu
         vao.upload();
 
@@ -276,7 +275,7 @@ namespace plRenderShapes
     }
 
 
-    plVAO coneVAO( float baseRadius, float topRadius, float height, int slices, int stacks )
+    plVAO coneVAO(float baseRadius, float topRadius, float height, int slices, int stacks)
     {
         float da = 2.0f * PL_PI / slices;
         float dr = (topRadius - baseRadius) / stacks;
@@ -301,11 +300,11 @@ namespace plRenderShapes
                 sa = sin(a);
                 ca = cos(a);
 
-                vertices.push_back( plVector3( sa * r, ca * r, z) );  // position
-                vertices.push_back( plVector3( sa, ca, nz) );         // normal
+                vertices.push_back(plVector3(sa * r, ca * r, z));  // position
+                vertices.push_back(plVector3(sa, ca, nz));         // normal
 
-                vertices.push_back( plVector3( sa * (r + dr), ca * (r + dr), z + dz) );  // position
-                vertices.push_back( plVector3( sa, ca, nz) );                             // normal
+                vertices.push_back(plVector3(sa * (r + dr), ca * (r + dr), z + dz));  // position
+                vertices.push_back(plVector3(sa, ca, nz));                             // normal
             }
 
             for (int i = 0; i < slices*2; i+=2)
@@ -324,17 +323,17 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
-        vbo->set( vertices );
-        vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 32, 0  ) );
-        vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   32, 16 ) );
+        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        vbo->set(vertices);
+        vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
+        vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO >();
-        eabo->set( indices );
+        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        eabo->set(indices);
         // create and attach to vao
         plVAO vao;
-        vao.attach( vbo );
-        vao.attach( eabo );
+        vao.attach(vbo);
+        vao.attach(eabo);
         // upload to gpu
         vao.upload();
 
@@ -343,66 +342,66 @@ namespace plRenderShapes
 
     plVAO quadVAO()
     {
-        std::vector<plVector3> vertices;        vertices.reserve( 8 );
-        std::vector<PLuint>    indices;         indices.reserve( 6 );
+        std::vector<plVector3> vertices;        vertices.reserve(8);
+        std::vector<PLuint>    indices;         indices.reserve(6);
 
         // position                                     // normals
-        vertices.push_back( plVector3( -1, -1, 0 ) );   vertices.push_back( plVector3( 0,0,1) );
-        vertices.push_back( plVector3(  1, -1, 0 ) );   vertices.push_back( plVector3( 0,0,1) );
-        vertices.push_back( plVector3(  1,  1, 0 ) );   vertices.push_back( plVector3( 0,0,1) );
-        vertices.push_back( plVector3( -1,  1, 0 ) );   vertices.push_back( plVector3( 0,0,1) );
+        vertices.push_back(plVector3(-1, -1, 0));   vertices.push_back(plVector3(0,0,1));
+        vertices.push_back(plVector3(1, -1, 0));   vertices.push_back(plVector3(0,0,1));
+        vertices.push_back(plVector3(1,  1, 0));   vertices.push_back(plVector3(0,0,1));
+        vertices.push_back(plVector3(-1,  1, 0));   vertices.push_back(plVector3(0,0,1));
 
         // indices
-        indices.push_back( 0 );
-        indices.push_back( 1 );
-        indices.push_back( 2 );
+        indices.push_back(0);
+        indices.push_back(1);
+        indices.push_back(2);
 
-        indices.push_back( 0 );
-        indices.push_back( 2 );
-        indices.push_back( 3 );
+        indices.push_back(0);
+        indices.push_back(2);
+        indices.push_back(3);
 
         // set vbo and attach attribute pointers
-        std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
-        vbo->set( vertices );
-        vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 32, 0  ) );
-        vbo->set( plVertexAttributePointer( PL_NORMAL_ATTRIBUTE,   32, 16 ) );
+        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        vbo->set(vertices);
+        vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
+        vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO >();
-        eabo->set( indices );
+        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        eabo->set(indices);
         // create and attach to vao
         plVAO vao;
-        vao.attach( vbo );
-        vao.attach( eabo );
+        vao.attach(vbo);
+        vao.attach(eabo);
         // upload to gpu
         vao.upload();
 
         return vao;
     }
 
-    plVAO lineVAO( const plVector3& p0, const plVector3& p1 )
+    plVAO lineVAO(const plVector3& p0, const plVector3& p1)
     {
-        std::vector<plVector3> vertices;        vertices.reserve( 2 );
-        std::vector<PLuint>    indices;         indices.reserve( 2 );
+        std::vector<plVector3> vertices;        vertices.reserve(2);
+        std::vector<PLuint>    indices;         indices.reserve(2);
 
         // position
-        vertices.push_back( p0 );
-        vertices.push_back( p1 );
+        vertices.push_back(p0);
+        vertices.push_back(p1);
 
         // indices
-        indices.push_back( 0 );
-        indices.push_back( 1 );
+        indices.push_back(0);
+        indices.push_back(1);
 
         // set vbo and attach attribute pointers
-        std::shared_ptr< plVBO > vbo = std::make_shared< plVBO >();
-        vbo->set( vertices );
-        vbo->set( plVertexAttributePointer( PL_POSITION_ATTRIBUTE, 16, 0 ) );
+        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        vbo->set(vertices);
+        vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 16, 0));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared< plEABO >();
-        eabo->set( indices, GL_LINES );
+        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        eabo->set(indices, GL_LINES);
         // create and attach to vao
         plVAO vao;
-        vao.attach( vbo );
-        vao.attach( eabo );
+        vao.attach(vbo);
+        vao.attach(eabo);
         // upload to gpu
         vao.upload();
 

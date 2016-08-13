@@ -1,5 +1,4 @@
-#ifndef __PL_POLYGON_H__
-#define __PL_POLYGON_H__
+#pragma once
 
 #include "plCommon.h"
 
@@ -32,11 +31,11 @@ class plPolygon
     public:
 
         plPolygon() {}
-        plPolygon( const plTriangle& tri )
+        plPolygon(const plTriangle& tri)
         {
-            points.push_back( tri.point0() );
-            points.push_back( tri.point1() );
-            points.push_back( tri.point2() );
+            points.push_back(tri.point0());
+            points.push_back(tri.point1());
+            points.push_back(tri.point2());
             normal = tri.normal();
         }
 
@@ -45,7 +44,5 @@ class plPolygon
 
 };
 
-std::ostream& operator << ( std::ostream &stream, const plEdge &e );
-std::ostream& operator << ( std::ostream &stream, const plPolygon &p );
-
-#endif
+std::ostream& operator << (std::ostream &stream, const plEdge &e);
+std::ostream& operator << (std::ostream &stream, const plPolygon &p);

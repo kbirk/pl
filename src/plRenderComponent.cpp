@@ -1,39 +1,37 @@
 #include "plRenderComponent.h"
 
-
-plRenderComponent::plRenderComponent( const std::shared_ptr<plVAO>& vao )
-    :   _vao ( vao )
+plRenderComponent::plRenderComponent(const std::shared_ptr<plVAO>& vao)
+    :   _vao (vao)
 {
 }
 
 
-
-PLbool plRenderComponent::operator< ( const plRenderComponent& rc ) const
+PLbool plRenderComponent::operator< (const plRenderComponent& rc) const
 {
     // currently sorts by address
     return this < &rc;
 }
 
 
-void plRenderComponent::attach( const plUniform& uniform )
+void plRenderComponent::attach(const plUniform& uniform)
 {
-    _uniforms.push_back( uniform );
+    _uniforms.push_back(uniform);
 }
 
 
-void plRenderComponent::draw( const plShader& shader ) const
+void plRenderComponent::draw(const plShader& shader) const
 {
 
-    _bindUniforms( shader );
+    _bindUniforms(shader);
     _vao->draw();
 }
 
 
-void plRenderComponent::_bindUniforms( const plShader& shader ) const
+void plRenderComponent::_bindUniforms(const plShader& shader) const
 {
     // set all uniforms
-    for ( const plUniform& uniform : _uniforms )
+    for (const plUniform& uniform : _uniforms)
     {
-        shader.setUniform( uniform );
+        shader.setUniform(uniform);
     }
 }

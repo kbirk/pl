@@ -1,15 +1,15 @@
 
 // functions
 
-void setRMS( in float rms, in uint graftIndex )
+void setRMS(in float rms, in uint graftIndex)
 {
-    rmsBuffer[ ( uRotationIndex * uDonorTotalGridPointCount * PL_MAX_GRAFTS_PER_SOLUTION ) + ( gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION ) + graftIndex ] = rms;
+    rmsBuffer[ (uRotationIndex * uDonorTotalGridPointCount * PL_MAX_GRAFTS_PER_SOLUTION) + (gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION) + graftIndex ] = rms;
 }
 
 
-float getRMS( in uint rotationIndex, in uint gridPointIndex, in uint graftIndex )
+float getRMS(in uint rotationIndex, in uint gridPointIndex, in uint graftIndex)
 {
-    return rmsBuffer[ ( rotationIndex * uDonorTotalGridPointCount * PL_MAX_GRAFTS_PER_SOLUTION ) + ( gridPointIndex * PL_MAX_GRAFTS_PER_SOLUTION ) + graftIndex ];
+    return rmsBuffer[ (rotationIndex * uDonorTotalGridPointCount * PL_MAX_GRAFTS_PER_SOLUTION) + (gridPointIndex * PL_MAX_GRAFTS_PER_SOLUTION) + graftIndex ];
 }
 
 
@@ -19,7 +19,7 @@ float getRotationAngle()
 }
 
 
-float getRotationAngle( in uint rotationIndex )
+float getRotationAngle(in uint rotationIndex)
 {
     return uRotationAngles[ rotationIndex ];
 }

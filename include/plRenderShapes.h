@@ -1,5 +1,4 @@
-#ifndef PL_RENDER_SHAPES_H
-#define PL_RENDER_SHAPES_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVector3.h"
@@ -19,13 +18,10 @@
 
 namespace plRenderShapes
 {
-    plVAO sphereVAO  ( float radius, int slices, int stacks );
-    plVAO cylinderVAO( float baseRadius, float topRadius, float height, int slices, int stacks );
-    plVAO diskVAO    ( float innerRadius, float outerRadius, int slices, int loops, bool up = true );
-    plVAO coneVAO    ( float baseRadius, float topRadius, float height, int slices, int stacks );
+    plVAO sphereVAO  (float radius, int slices, int stacks);
+    plVAO cylinderVAO(float baseRadius, float topRadius, float height, int slices, int stacks);
+    plVAO diskVAO    (float innerRadius, float outerRadius, int slices, int loops, bool up = true);
+    plVAO coneVAO    (float baseRadius, float topRadius, float height, int slices, int stacks);
     plVAO quadVAO    ();
-    plVAO lineVAO    ( const plVector3& p0, const plVector3& p1 );
+    plVAO lineVAO    (const plVector3& p0, const plVector3& p1);
 }
-
-
-#endif

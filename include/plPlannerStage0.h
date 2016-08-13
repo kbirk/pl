@@ -1,5 +1,4 @@
-#ifndef PL_STAGE_0_STATE_H
-#define PL_STAGE_0_STATE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plUtility.h"
@@ -31,13 +30,13 @@ class plAnnealingGroup
 {
     public:
 
-        plAnnealingGroup( PLfloat initialEnergy );
+        plAnnealingGroup(PLfloat initialEnergy);
 
         void bind();
         void unbind();
 
-        void getSolution( plDefectSolution &solution, const plPlanningBufferData &planningData );
-        void getLowestGroupInfo( PLuint &index, PLfloat &energy );
+        void getSolution(plDefectSolution &solution, const plPlanningBufferData &planningData);
+        void getLowestGroupInfo(PLuint &index, PLfloat &energy);
 
     private:
 
@@ -59,11 +58,6 @@ class plAnnealingGroup
 namespace plPlannerStage0
 {
 
-    void run( plDefectSolution &state, const plPlanningBufferData &planningData, plPlan& plan );
+    void run(plDefectSolution &state, const plPlanningBufferData &planningData, plPlan& plan);
 
 }
-
-
-
-
-#endif

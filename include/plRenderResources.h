@@ -1,5 +1,4 @@
-#ifndef PL_RENDER_RESOURCES_H
-#define PL_RENDER_RESOURCES_H
+#pragma once
 
 #include "plCommon.h"
 #include "plShader.h"
@@ -26,16 +25,8 @@ enum plShaderEnums
 namespace plRenderResources
 {
     void init();
-    void reshape( PLuint width, PLuint height );
+    void reshape(PLuint width, PLuint height);
 
-    const std::shared_ptr< plFBO >&    fbos   ( PLuint id );
-    const std::shared_ptr< plShader >& shaders( PLuint id );
+    const std::shared_ptr<plFBO >&    fbos   (PLuint id);
+    const std::shared_ptr<plShader >& shaders(PLuint id);
 }
-
-
-
-
-
-
-
-#endif

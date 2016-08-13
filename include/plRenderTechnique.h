@@ -1,5 +1,4 @@
-#ifndef PL_RENDER_TECHNIQUE_H
-#define PL_RENDER_TECHNIQUE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderable.h"
@@ -15,10 +14,7 @@ class plRenderTechnique
 
         virtual ~plRenderTechnique();
 
-        virtual void render( const std::set< plRenderComponent >& componentSet ) const = 0;
+        virtual void render(const std::set<plRenderComponent >& componentSet) const = 0;
 
 
 };
-
-
-#endif

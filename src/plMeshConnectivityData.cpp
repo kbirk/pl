@@ -1,16 +1,16 @@
 #include "plMeshConnectivityData.h"
 
-plMeshConnectivityDataVert::plMeshConnectivityDataVert( const plMeshConnectivityDataVert &other )
+plMeshConnectivityDataVert::plMeshConnectivityDataVert(const plMeshConnectivityDataVert &other)
 {
     *this = other;
 }
 
-plMeshConnectivityDataEdge::plMeshConnectivityDataEdge( const plMeshConnectivityDataEdge &other )
+plMeshConnectivityDataEdge::plMeshConnectivityDataEdge(const plMeshConnectivityDataEdge &other)
 {
     *this = other;
 }
 
-plMeshConnectivityDataFace::plMeshConnectivityDataFace( const plMeshConnectivityDataFace &other )
+plMeshConnectivityDataFace::plMeshConnectivityDataFace(const plMeshConnectivityDataFace &other)
 {
     *this = other;
 }
@@ -93,16 +93,16 @@ PLbool plMeshConnectivityDataEdge::operator<(const plMeshConnectivityDataEdge& o
     if (originatingMesh > other.originatingMesh)
         return false;
 
-    const plMeshConnectivityDataVert* orderedVertsThis [2] = { NULL, NULL };
-    const plMeshConnectivityDataVert* orderedVertsOther[2] = { NULL, NULL };
+    const plMeshConnectivityDataVert* orderedVertsThis [2] = { nullptr, nullptr };
+    const plMeshConnectivityDataVert* orderedVertsOther[2] = { nullptr, nullptr };
 
     // now detect which vertex is least
-    if ( *(verts[0]) < *(verts[1]) )
+    if (*(verts[0]) < *(verts[1]))
     {
         orderedVertsThis[0] = verts[0];
         orderedVertsThis[1] = verts[1];
     }
-    else if ( *(verts[1]) < *(verts[0]) )
+    else if (*(verts[1]) < *(verts[0]))
     {
         orderedVertsThis[0] = verts[1];
         orderedVertsThis[1] = verts[0];
@@ -110,12 +110,12 @@ PLbool plMeshConnectivityDataEdge::operator<(const plMeshConnectivityDataEdge& o
     else // shouldn't happen
         return false;
 
-    if ( *(other.verts[0]) < *(other.verts[1]) )
+    if (*(other.verts[0]) < *(other.verts[1]))
     {
         orderedVertsOther[0] = other.verts[0];
         orderedVertsOther[1] = other.verts[1];
     }
-    else if ( *(other.verts[1]) < *(other.verts[0]) )
+    else if (*(other.verts[1]) < *(other.verts[0]))
     {
         orderedVertsOther[0] = other.verts[1];
         orderedVertsOther[1] = other.verts[0];
@@ -124,12 +124,12 @@ PLbool plMeshConnectivityDataEdge::operator<(const plMeshConnectivityDataEdge& o
         return false;
 
     // compare least to least, if undecided, then try greater to greater
-    if ( *(orderedVertsThis[0]) < *(orderedVertsOther[0]) )
+    if (*(orderedVertsThis[0]) < *(orderedVertsOther[0]))
         return true;
-    else if ( *(orderedVertsOther[0]) < *(orderedVertsThis[0]) )
+    else if (*(orderedVertsOther[0]) < *(orderedVertsThis[0]))
         return false;
 
-    if ( *(orderedVertsThis[1]) < *(orderedVertsOther[1]) )
+    if (*(orderedVertsThis[1]) < *(orderedVertsOther[1]))
         return true;
     // other case for > is implied
 
@@ -143,52 +143,52 @@ PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& o
     if (originatingMesh > other.originatingMesh)
         return false;
 
-    const plMeshConnectivityDataVert* orderedVertsThis [3] = { NULL, NULL, NULL };
-    const plMeshConnectivityDataVert* orderedVertsOther[3] = { NULL, NULL, NULL };
+    const plMeshConnectivityDataVert* orderedVertsThis [3] = { nullptr, nullptr, nullptr };
+    const plMeshConnectivityDataVert* orderedVertsOther[3] = { nullptr, nullptr, nullptr };
 
     // now detect which vertex is least
-    if ( *(verts[0]) < *(verts[1]) )
+    if (*(verts[0]) < *(verts[1]))
     {
-        if ( *(verts[0]) < *(verts[2]) )
+        if (*(verts[0]) < *(verts[2]))
         {
-            if ( *(verts[1]) < *(verts[2]) )
+            if (*(verts[1]) < *(verts[2]))
             {
                 orderedVertsThis[0] = verts[0];
                 orderedVertsThis[1] = verts[1];
                 orderedVertsThis[2] = verts[2];
             }
-            else if ( *(verts[2]) < *(verts[1]) )
+            else if (*(verts[2]) < *(verts[1]))
             {
                 orderedVertsThis[0] = verts[0];
                 orderedVertsThis[1] = verts[2];
                 orderedVertsThis[2] = verts[1];
             }
         }
-        else if ( *(verts[2]) < *(verts[0]) )
+        else if (*(verts[2]) < *(verts[0]))
         {
             orderedVertsThis[0] = verts[2];
             orderedVertsThis[1] = verts[0];
             orderedVertsThis[2] = verts[1];
         }
     }
-    else if ( *(verts[1]) < *(verts[0]) )
+    else if (*(verts[1]) < *(verts[0]))
     {
-        if ( *(verts[2]) < *(verts[0]) )
+        if (*(verts[2]) < *(verts[0]))
         {
-            if ( *(verts[1]) < *(verts[2]) )
+            if (*(verts[1]) < *(verts[2]))
             {
                 orderedVertsThis[0] = verts[1];
                 orderedVertsThis[1] = verts[2];
                 orderedVertsThis[2] = verts[0];
             }
-            else if ( *(verts[2]) < *(verts[1]) )
+            else if (*(verts[2]) < *(verts[1]))
             {
                 orderedVertsThis[0] = verts[2];
                 orderedVertsThis[1] = verts[1];
                 orderedVertsThis[2] = verts[0];
             }
         }
-        else if ( *(verts[0]) < *(verts[2]) )
+        else if (*(verts[0]) < *(verts[2]))
         {
             orderedVertsThis[0] = verts[1];
             orderedVertsThis[1] = verts[0];
@@ -196,48 +196,48 @@ PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& o
         }
     }
 
-    if ( *(other.verts[0]) < *(other.verts[1]) )
+    if (*(other.verts[0]) < *(other.verts[1]))
     {
-        if ( *(other.verts[0]) < *(other.verts[2]) )
+        if (*(other.verts[0]) < *(other.verts[2]))
         {
-            if ( *(other.verts[1]) < *(other.verts[2]) )
+            if (*(other.verts[1]) < *(other.verts[2]))
             {
                 orderedVertsOther[0] = other.verts[0];
                 orderedVertsOther[1] = other.verts[1];
                 orderedVertsOther[2] = other.verts[2];
             }
-            else if ( *(other.verts[2]) < *(other.verts[1]) )
+            else if (*(other.verts[2]) < *(other.verts[1]))
             {
                 orderedVertsOther[0] = other.verts[0];
                 orderedVertsOther[1] = other.verts[2];
                 orderedVertsOther[2] = other.verts[1];
             }
         }
-        else if ( *(other.verts[2]) < *(other.verts[0]) )
+        else if (*(other.verts[2]) < *(other.verts[0]))
         {
             orderedVertsOther[0] = other.verts[2];
             orderedVertsOther[1] = other.verts[0];
             orderedVertsOther[2] = other.verts[1];
         }
     }
-    else if ( *(other.verts[1]) < *(other.verts[0]) )
+    else if (*(other.verts[1]) < *(other.verts[0]))
     {
-        if ( *(other.verts[2]) < *(other.verts[0]) )
+        if (*(other.verts[2]) < *(other.verts[0]))
         {
-            if ( *(other.verts[1]) < *(other.verts[2]) )
+            if (*(other.verts[1]) < *(other.verts[2]))
             {
                 orderedVertsOther[0] = other.verts[1];
                 orderedVertsOther[1] = other.verts[2];
                 orderedVertsOther[2] = other.verts[0];
             }
-            else if ( *(other.verts[2]) < *(other.verts[1]) )
+            else if (*(other.verts[2]) < *(other.verts[1]))
             {
                 orderedVertsOther[0] = other.verts[2];
                 orderedVertsOther[1] = other.verts[1];
                 orderedVertsOther[2] = other.verts[0];
             }
         }
-        else if ( *(other.verts[0]) < *(other.verts[2]) )
+        else if (*(other.verts[0]) < *(other.verts[2]))
         {
             orderedVertsOther[0] = other.verts[1];
             orderedVertsOther[1] = other.verts[0];
@@ -246,19 +246,19 @@ PLbool plMeshConnectivityDataFace::operator<(const plMeshConnectivityDataFace& o
     }
 
     // compare least to least, if undecided, then try greater to greater
-    if ( *(orderedVertsThis[0]) < *(orderedVertsOther[0]) )
+    if (*(orderedVertsThis[0]) < *(orderedVertsOther[0]))
         return true;
-    else if ( *(orderedVertsThis[0]) > *(orderedVertsOther[0]) )
+    else if (*(orderedVertsThis[0]) > *(orderedVertsOther[0]))
         return false;
 
-    if ( *(orderedVertsThis[1]) < *(orderedVertsOther[1]) )
+    if (*(orderedVertsThis[1]) < *(orderedVertsOther[1]))
         return true;
-    else if ( *(orderedVertsThis[1]) > *(orderedVertsOther[1]) )
+    else if (*(orderedVertsThis[1]) > *(orderedVertsOther[1]))
         return false;
 
-    if ( *(orderedVertsThis[2]) < *(orderedVertsOther[2]) )
+    if (*(orderedVertsThis[2]) < *(orderedVertsOther[2]))
         return true;
-    else if ( *(orderedVertsThis[2]) > *(orderedVertsOther[2]) )
+    else if (*(orderedVertsThis[2]) > *(orderedVertsOther[2]))
         return false;
 
     // if it really gets this far, then we have to use normals... :-(
@@ -322,18 +322,18 @@ plMeshConnectivityDataFace& plMeshConnectivityDataFace::operator=(const plMeshCo
     return *this;
 }
 
-const plMeshConnectivityDataVert* plMeshConnectivityData::addVert( const plVector3 &vert , PLuint originatingMesh , PLuint verbose )
+const plMeshConnectivityDataVert* plMeshConnectivityData::addVert(const plVector3 &vert , PLuint originatingMesh , PLuint verbose)
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshConnectivityData::addVert()" << std::endl;
     plMeshConnectivityDataVert vertToAdd;
     vertToAdd.vert = vert;
     vertToAdd.originatingMesh = originatingMesh;
     vertToAdd.dataset = this;
-    const plMeshConnectivityDataVert* vertPtr (NULL);
+    const plMeshConnectivityDataVert* vertPtr (nullptr);
     if (verts.find(vertToAdd) == verts.end()) // first check for the same vertex
     {
         findVertWithinEpsilon(vert,vertPtr); // now search for something close within epsilon
-        if (vertPtr == NULL)
+        if (vertPtr == nullptr)
         {
             verts.insert(vertToAdd);
             vertPtr = &(*(verts.find(vertToAdd)));
@@ -351,21 +351,21 @@ const plMeshConnectivityDataEdge* plMeshConnectivityData::addEdge(const plMeshCo
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshConnectivityData::addEdge()" << std::endl;
     // sort the vertices. They should be in sorted order such that pt1 < pt2
-    const plMeshConnectivityDataVert* orderedVerts[2] = { NULL, NULL };
-    if ( *vert0 < *vert1 )
+    const plMeshConnectivityDataVert* orderedVerts[2] = { nullptr, nullptr };
+    if (*vert0 < *vert1)
     {
         orderedVerts[0] = vert0;
         orderedVerts[1] = vert1;
     }
-    else if ( *vert1 < *vert0 )
+    else if (*vert1 < *vert0)
     {
         orderedVerts[0] = vert1;
         orderedVerts[1] = vert0;
     }
     else // shouldn't happen
     {
-        if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::addEdge(): vert0 and vert1 appear to be the same. Returning NULL." << std::endl;
-        return NULL;
+        if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::addEdge(): vert0 and vert1 appear to be the same. Returning nullptr." << std::endl;
+        return nullptr;
     }
 
     // now set up the new element
@@ -398,9 +398,9 @@ const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshCo
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshConnectivityData::addFace()" << std::endl;
     // sort the vertices, they should be sorted in order such that point0 < point1 and point0 < point2
     // points should maintain the same counter-clockwise orientation
-    const plMeshConnectivityDataVert* orderedVerts[3] = { NULL, NULL, NULL };
-    const plMeshConnectivityDataEdge* orderedEdges[3] = { NULL, NULL, NULL };
-    if ( *vert0 < *vert1 && *vert0 < *vert2 )
+    const plMeshConnectivityDataVert* orderedVerts[3] = { nullptr, nullptr, nullptr };
+    const plMeshConnectivityDataEdge* orderedEdges[3] = { nullptr, nullptr, nullptr };
+    if (*vert0 < *vert1 && *vert0 < *vert2)
     {
         orderedVerts[0] = vert0;
         orderedVerts[1] = vert1;
@@ -409,7 +409,7 @@ const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshCo
         orderedEdges[1] = edge12;
         orderedEdges[2] = edge20;
     }
-    else if ( *vert1 < *vert0 && *vert1 < *vert2 )
+    else if (*vert1 < *vert0 && *vert1 < *vert2)
     {
         orderedVerts[0] = vert1;
         orderedVerts[1] = vert2;
@@ -418,7 +418,7 @@ const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshCo
         orderedEdges[1] = edge20;
         orderedEdges[2] = edge01;
     }
-    else if ( *vert2 < *vert0 && *vert2 < *vert1 )
+    else if (*vert2 < *vert0 && *vert2 < *vert1)
     {
         orderedVerts[0] = vert2;
         orderedVerts[1] = vert0;
@@ -429,8 +429,8 @@ const plMeshConnectivityDataFace* plMeshConnectivityData::addFace(const plMeshCo
     }
     else // shouldn't happen
     {
-        if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::addFace(): the two 'smallest' verts appear to be the same. Returning NULL." << std::endl;
-        return NULL;
+        if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::addFace(): the two 'smallest' verts appear to be the same. Returning nullptr." << std::endl;
+        return nullptr;
     }
 
     // now set up the new element
@@ -471,13 +471,13 @@ void plMeshConnectivityData::removeVert(const plMeshConnectivityDataVert* vert)
     // iterate through edges, remove references to this vert
     for (PLuint i = 0; i < vert->edges.size(); i++)
     {
-        if ( !plUtility::removeIfExists( vert->edges[i]->verts, vert ) )
+        if (!plUtility::removeIfExists(vert->edges[i]->verts, vert))
             std::cout << "Warning in plMeshConnectivityData::removeVert(): Could not find the vert provided as input " << vert << " in edge " << vert->edges[i] << ". Ignoring " << std::endl;
     }
     // iterate through faces, remove references to this vert
     for (PLuint i = 0; i < vert->faces.size(); i++)
     {
-        if ( !plUtility::removeIfExists( vert->faces[i]->verts, vert ) )
+        if (!plUtility::removeIfExists(vert->faces[i]->verts, vert))
             std::cout << "Warning in plMeshConnectivityData::removeVert(): Could not find the vert provided as input " << vert << " in face " << vert->faces[i] << ". Ignoring " << std::endl;
     }
     // remove this vert
@@ -489,13 +489,13 @@ void plMeshConnectivityData::removeEdge(const plMeshConnectivityDataEdge* edge)
     // iterate through verts, remove references to this edge
     for (PLuint i = 0; i < edge->verts.size(); i++)
     {
-        if ( !plUtility::removeIfExists( edge->verts[i]->edges, edge ) )
+        if (!plUtility::removeIfExists(edge->verts[i]->edges, edge))
             std::cout << "Warning in plMeshConnectivityData::removeEdge(): Could not find the edge provided as input " << edge << " in vert " << edge->verts[i] << ". Ignoring " << std::endl;
     }
     // iterate through faces, remove references to this edge
     for (PLuint i = 0; i < edge->faces.size(); i++)
     {
-        if ( !plUtility::removeIfExists( edge->faces[i]->edges, edge ) )
+        if (!plUtility::removeIfExists(edge->faces[i]->edges, edge))
             std::cout << "Warning in plMeshConnectivityData::removeEdge(): Could not find the edge provided as input " << edge << " in face " << edge->faces[i] << ". Ignoring " << std::endl;
     }
     // remove this edge
@@ -507,32 +507,32 @@ void plMeshConnectivityData::removeFace(const plMeshConnectivityDataFace* face)
     // iterate through verts, remove references to this face
     for (PLuint i = 0; i < face->verts.size(); i++)
     {
-        if ( !plUtility::removeIfExists( face->verts[i]->faces, face ) )
+        if (!plUtility::removeIfExists(face->verts[i]->faces, face))
             std::cout << "Warning in plMeshConnectivityData::removeFace(): Could not find the face provided as input " << face << " in vert " << face->verts[i] << ". Ignoring " << std::endl;
     }
     // iterate through edge, remove references to this face
     for (PLuint i = 0; i < face->edges.size(); i++)
     {
-        if ( !plUtility::removeIfExists( face->edges[i]->faces, face ) )
+        if (!plUtility::removeIfExists(face->edges[i]->faces, face))
             std::cout << "Warning in plMeshConnectivityData::removeFace(): Could not find the face provided as input " << face << " in vert " << face->edges[i] << ". Ignoring " << std::endl;
     }
     // remove this face
     faces.erase(*face);
 }
 
-PLbool plMeshConnectivityData::findVertWithinEpsilon( const plVector3& vertex, const plMeshConnectivityDataVert*& vertPointer )
+PLbool plMeshConnectivityData::findVertWithinEpsilon(const plVector3& vertex, const plMeshConnectivityDataVert*& vertPointer)
 {
-    vertPointer = (NULL);
+    vertPointer = (nullptr);
     for (plMeshConnectivityDataVertIterator vit = verts.begin(); vit != verts.end(); vit++)
     {
-        if (( (*vit).vert - vertex).length() <= _epsilon)
+        if (((*vit).vert - vertex).length() <= _epsilon)
         {
-            if (vertPointer == NULL)
+            if (vertPointer == nullptr)
                 vertPointer = &(*vit);
             else
             {
-                std::cout << "Error in plMeshIntersectorConnectivityData::_findVert(): More than one candidate for vertex " << vertex << ". This could mean that epsilon is set too large. Setting pointer to NULL and aborting operation." << std::endl;
-                vertPointer = NULL;
+                std::cout << "Error in plMeshIntersectorConnectivityData::_findVert(): More than one candidate for vertex " << vertex << ". This could mean that epsilon is set too large. Setting pointer to nullptr and aborting operation." << std::endl;
+                vertPointer = nullptr;
                 return false;
             }
         }
@@ -541,7 +541,7 @@ PLbool plMeshConnectivityData::findVertWithinEpsilon( const plVector3& vertex, c
     return true;
 }
 
-PLbool plMeshConnectivityData::importTriSeq(const std::vector<plTriangle> &tris, PLuint originatingMesh, PLuint verbose )
+PLbool plMeshConnectivityData::importTriSeq(const std::vector<plTriangle> &tris, PLuint originatingMesh, PLuint verbose)
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_importTriSeq()" << std::endl;
     for (PLuint i = 0; i < tris.size(); i++)
@@ -551,30 +551,30 @@ PLbool plMeshConnectivityData::importTriSeq(const std::vector<plTriangle> &tris,
         const plMeshConnectivityDataVert* vert0 = addVert(currentTriangle.point0(),0,PL_LOGGER_LEVEL_ERROR); // we ignore non-error output, since during the import stage we expect for there to be (for example) duplicate vertices, which are actually already handled appropriately by the function.
         const plMeshConnectivityDataVert* vert1 = addVert(currentTriangle.point1(),0,PL_LOGGER_LEVEL_ERROR);
         const plMeshConnectivityDataVert* vert2 = addVert(currentTriangle.point2(),0,PL_LOGGER_LEVEL_ERROR);
-        if (vert0 == NULL || vert1 == NULL || vert2 == NULL)
+        if (vert0 == nullptr || vert1 == nullptr || vert2 == nullptr)
         {
-            if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::importTriSeq(): A vert is a null pointer. This indicates a major problem with the mesh. There should be more details in a previous error message. Aborting input." << std::endl;
+            if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::importTriSeq(): A vert is a nullptr pointer. This indicates a major problem with the mesh. There should be more details in a previous error message. Aborting input." << std::endl;
             return false;
         }
         const plMeshConnectivityDataEdge* edge01 = addEdge(vert0,vert1,originatingMesh,PL_LOGGER_LEVEL_ERROR);
         const plMeshConnectivityDataEdge* edge12 = addEdge(vert1,vert2,originatingMesh,PL_LOGGER_LEVEL_ERROR);
         const plMeshConnectivityDataEdge* edge20 = addEdge(vert2,vert0,originatingMesh,PL_LOGGER_LEVEL_ERROR);
-        if (edge01 == NULL || edge12 == NULL || edge20 == NULL)
+        if (edge01 == nullptr || edge12 == nullptr || edge20 == nullptr)
         {
-            if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::importTriSeq(): An edge is a null pointer. This indicates a major problem with the mesh. There should be more details in a previous error message. Aborting input." << std::endl;
+            if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::importTriSeq(): An edge is a nullptr pointer. This indicates a major problem with the mesh. There should be more details in a previous error message. Aborting input." << std::endl;
             return false;
         }
         const plMeshConnectivityDataFace* face012 = addFace(vert0,vert1,vert2,edge01,edge12,edge20,originatingMesh,PL_LOGGER_LEVEL_ERROR);
-        if (face012 == NULL)
+        if (face012 == nullptr)
         {
-            if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::importTriSeq(): A face is a null pointer. This indicates a major problem with the mesh. There should be more details in a previous error message. Aborting input." << std::endl;
+            if (verbose >= PL_LOGGER_LEVEL_ERROR) std::cout << "Error in plMeshConnectivityData::importTriSeq(): A face is a nullptr pointer. This indicates a major problem with the mesh. There should be more details in a previous error message. Aborting input." << std::endl;
             return false;
         }
     }
     return true;
 }
 
-PLbool plMeshConnectivityData::exportTriSeq(std::vector<plTriangle> &tris, PLuint verbose )
+PLbool plMeshConnectivityData::exportTriSeq(std::vector<plTriangle> &tris, PLuint verbose)
 {
     if (verbose >= PL_LOGGER_LEVEL_DEBUG) std::cout << "Debug: Entering plMeshIntersectorConnectivityData::_exportTriSeq()" << std::endl;
 
@@ -599,7 +599,7 @@ void plMeshConnectivityData::reportSizes()
     std::cout << "Size of faces: " << faces.size() << "\n";
 }
 
-std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVert &vert )
+std::ostream& operator << (std::ostream &stream, const plMeshConnectivityDataVert &vert)
 {
     stream << vert.vert << "\n";
     stream << "Edge Indices:";
@@ -611,7 +611,7 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataVe
     return stream;
 }
 
-std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataEdge &edge )
+std::ostream& operator << (std::ostream &stream, const plMeshConnectivityDataEdge &edge)
 {
     stream << edge.edge.pt1 << " - " << edge.edge.pt2 << "\n";
     stream << "Vert Indices:";
@@ -623,7 +623,7 @@ std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataEd
     return stream;
 }
 
-std::ostream& operator << ( std::ostream &stream, const plMeshConnectivityDataFace &face )
+std::ostream& operator << (std::ostream &stream, const plMeshConnectivityDataFace &face)
 {
     stream << face.face;
     stream << "Vert Indices:";

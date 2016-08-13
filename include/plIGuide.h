@@ -1,5 +1,4 @@
-#ifndef PL_I_GUIDE_H
-#define PL_I_GUIDE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plMeshSpecific.h"
@@ -33,12 +32,12 @@ class plPlugInfo
         PLuint      graftID  () const { return _graftID; }
 
         plPlugInfo() {}
-        plPlugInfo( const plPlug  *plug,
+        plPlugInfo(const plPlug  *plug,
                     const PLfloat *radius,
                     const PLfloat *length,
                     PLuint type,
-                    PLuint id )
-            : _plug( plug ), _radius( radius ), _length(length), _type( type ), _graftID( id )
+                    PLuint id)
+            : _plug(plug), _radius(radius), _length(length), _type(type), _graftID(id)
         {
         }
 
@@ -80,41 +79,38 @@ class plIGuide : public plRenderable
         std::vector<PLuint>          defectIDs;
 
         plIGuide();
-        plIGuide( plIGuideSite *site,
+        plIGuide(plIGuideSite *site,
                   PLuint siteID,
                   const std::vector<plPlugInfo>&      plugs,
                   const std::vector<plKWire*>&        kwires,
                   const std::vector<PLuint>&          kwireIDs,
                   const std::vector<const plSpline*>& splines,
-                  std::vector<PLuint>&                defectIDs );
+                  std::vector<PLuint>&                defectIDs);
 
         virtual ~plIGuide();
 
         PLbool generateIGuideModels();
-        PLbool exportIGuideModels  ( const std::string &directory );
+        PLbool exportIGuideModels  (const std::string &directory);
         void   clearIGuideModels   ();
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void extractRenderComponents(plRenderMap& renderMap) const;
+        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
     private:
 
         std::vector<plModel*> _modelsToAdd;
         std::vector<plModel*> _modelsToSubtract;
 
-        std::string	_generateOutputName( PLint operation, PLchar type, PLint graftIndex, const std::string &pieceName );
+        std::string    _generateOutputName(PLint operation, PLchar type, PLint graftIndex, const std::string &pieceName);
 
-        std::vector<plTriangle>	_transformTemplate ( const std::vector<plTriangle> &baseTriObject,
+        std::vector<plTriangle>    _transformTemplate (const std::vector<plTriangle> &baseTriObject,
                                                      const plMatrix44  &plugTransform,
                                                      const PLfloat     &zOffset,
                                                      const plVector3   &scale,
                                                      const PLfloat     &keyTranslationXAxis,
-                                                     const PLfloat     &keyRotationZAxis );
+                                                     const PLfloat     &keyRotationZAxis);
 
-        std::vector<plTriangle> _translateTriangles( const std::vector< plTriangle >& triangles, const plVector3& translation );
+        std::vector<plTriangle> _translateTriangles(const std::vector<plTriangle >& triangles, const plVector3& translation);
 
 
 };
-
-
-#endif

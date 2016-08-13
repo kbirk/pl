@@ -1,5 +1,4 @@
-#ifndef PL_CAMERA_H
-#define PL_CAMERA_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -17,18 +16,18 @@ class plCamera
         plVector3 up;
 
         plCamera();
-        plCamera( plString filename );
+        plCamera(plString filename);
 
         plVector3  getDirection() const  { return (lookat - position).normalize(); }
         plMatrix44 getMatrix   () const;
 
-        void importViewParams( const std::string &filename );
-        void exportViewParams( const std::string &filename );
+        void importViewParams(const std::string &filename);
+        void exportViewParams(const std::string &filename);
 
-		void translate( PLint x, PLint y );
-        void rotate   ( PLint x0, PLint y0, PLint x1, PLint y1 );
-        void zoom     ( PLfloat z );
-        void reset    ( const plVector3 &point );
+        void translate(PLint x, PLint y);
+        void rotate   (PLint x0, PLint y0, PLint x1, PLint y1);
+        void zoom     (PLfloat z);
+        void reset    (const plVector3 &point);
 
     private:
 
@@ -37,7 +36,5 @@ class plCamera
 };
 
 // Michiel's arcball code
-void      calc_p   ( PLint x, PLint y, PLfloat p[]);
-plVector4 calc_quat( PLint x0, PLint y0, PLint x1, PLint y1);
-
-#endif
+void      calc_p   (PLint x, PLint y, PLfloat p[]);
+plVector4 calc_quat(PLint x0, PLint y0, PLint x1, PLint y1);

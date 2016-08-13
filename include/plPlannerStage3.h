@@ -1,5 +1,4 @@
-#ifndef PL_STAGE_3_STATE_H
-#define PL_STAGE_3_STATE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVector4.h"
@@ -25,7 +24,7 @@ class plGreedyGroup
 
         float lowestRMS() const { return _lowestRMS; }
         void update();
-        void getSolution( plDonorSolution &solution, const plPlanningBufferData &planningData );
+        void getSolution(plDonorSolution &solution, const plPlanningBufferData &planningData);
 
     private:
 
@@ -45,8 +44,5 @@ class plGreedyGroup
 
 namespace plPlannerStage3
 {
-    void run( plDonorSolution &donorSolution, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plRmsData &rmsInput );
+    void run(plDonorSolution &donorSolution, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plRmsData &rmsInput);
 }
-
-
-#endif

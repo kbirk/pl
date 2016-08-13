@@ -1,15 +1,15 @@
 #include "plCSV.h"
 
-plCSV::plCSV( plString fn )
+plCSV::plCSV(plString fn)
 {
     filename = fn;
-    _readFile( fn );
+    _readFile(fn);
 }
 
 
-void plCSV::_readFile( plString filename, PLbool verbose )
+void plCSV::_readFile(plString filename, PLbool verbose)
 {
-    std::ifstream infile( filename.c_str() );
+    std::ifstream infile(filename.c_str());
 
     // make sure import file opens correctly
     if (!infile.good())
@@ -19,27 +19,27 @@ void plCSV::_readFile( plString filename, PLbool verbose )
     }
 
     // parse each line
-    while ( !infile.eof() )
+    while (!infile.eof())
     {
         std::vector<plString> lineData;
         plString line, entry;
 
-        std::getline( infile, line );
-        std::stringstream lineStream( line );
+        std::getline(infile, line);
+        std::stringstream lineStream(line);
 
         // parse each comma seperated value
-        while( std::getline( lineStream, entry, ',' ) )
+        while(std::getline(lineStream, entry, ','))
         {
-            entry.stripCharacter( '\r' );        // remove any carrage returns
+            entry.stripCharacter('\r');        // remove any carrage returns
 
-            if ( !entry.isOnlyWhitespace() )     // ignore any lines consisting of only whitespace
+            if (!entry.isOnlyWhitespace())     // ignore any lines consisting of only whitespace
             {
                 entry.stripPreceedingWhitespace();
-                lineData.push_back( entry );
+                lineData.push_back(entry);
             }
         }
 
-        if ( lineData.size() > 0 )                    // ignore any empty rows
+        if (lineData.size() > 0)                    // ignore any empty rows
         {
             data.push_back(lineData);
         }

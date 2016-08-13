@@ -1,5 +1,4 @@
-#ifndef PL_VERTEX_SPEC_BUFFER_H
-#define PL_VERTEX_SPEC_BUFFER_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -26,6 +25,3 @@ class plVertexSpecBuffer
 
         virtual void _destroy();
 };
-
-
-#endif

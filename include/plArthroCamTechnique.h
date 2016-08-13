@@ -1,9 +1,7 @@
-#ifndef PL_ARTHRO_CAM_TECHNIQUE_H
-#define PL_ARTHRO_CAM_TECHNIQUE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderTechnique.h"
-
 
 class plArthroCamTechnique : public plRenderTechnique
 {
@@ -12,9 +10,6 @@ class plArthroCamTechnique : public plRenderTechnique
 
         plArthroCamTechnique();
 
-        void render( const std::set< plRenderComponent >& componentSet ) const;
+        void render(const std::set<plRenderComponent >& componentSet) const;
 
 };
-
-
-#endif

@@ -1,22 +1,22 @@
 
 
-bool rayIntersectDefect( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in vec3 graftPosition, in uint graftIndex )
+bool rayIntersectDefect(inout vec3 point, in vec3 rayStart, in vec3 rayDir, in vec3 graftPosition, in uint graftIndex)
 {
     bool result = false;
     float minT = PL_FLT_MAX;
     
-    uint count = getDefectCapCount( graftIndex );
+    uint count = getDefectCapCount(graftIndex);
     for (uint i=0; i< count; i++)
     {
-        triangle tri = getDefectCapTriangles( graftIndex, graftPosition, i );
+        triangle tri = getDefectCapTriangles(graftIndex, graftPosition, i);
         vec3  p;
         float t;
-        if ( rayIntersectTriangle( p, t, rayStart, rayDir, tri ) )
+        if (rayIntersectTriangle(p, t, rayStart, rayDir, tri))
         {             
             result = true;
-            if ( abs( t ) < minT )
+            if (abs(t) < minT)
             {
-                minT = abs( t );
+                minT = abs(t);
                 point = p;
             }
             
@@ -26,7 +26,7 @@ bool rayIntersectDefect( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in 
 }
 
 
-bool rayIntersectDonor( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in vec3 gridPosition, in uint siteIndex )
+bool rayIntersectDonor(inout vec3 point, in vec3 rayStart, in vec3 rayDir, in vec3 gridPosition, in uint siteIndex)
 {
     bool result = false;
     float minT = PL_FLT_MAX;
@@ -34,15 +34,15 @@ bool rayIntersectDonor( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in v
     uint count = getDonorCapCount();
     for (uint i=0; i<count; i++)
     {
-        triangle tri = getDonorCapTriangles( siteIndex, gridPosition, i );
+        triangle tri = getDonorCapTriangles(siteIndex, gridPosition, i);
         vec3  p;
         float t;
-        if ( rayIntersectTriangle( p, t, rayStart, rayDir, tri ) )
+        if (rayIntersectTriangle(p, t, rayStart, rayDir, tri))
         {           
             result = true;
-            if ( abs( t ) < minT )
+            if (abs(t) < minT)
             {
-                minT = abs( t );
+                minT = abs(t);
                 point = p;                
             }
             
@@ -52,14 +52,14 @@ bool rayIntersectDonor( inout vec3 point, in vec3 rayStart, in vec3 rayDir, in v
 }
 
 
-float calcRMS( in vec3 defectPosition, in vec3 defectNormal, in vec3 defectX, in vec3 defectZ, in vec3 donorPosition, in vec3 donorNormal, in vec3 donorX, in vec3 donorZ, in uint siteIndex, in uint graftIndex )
+float calcRMS(in vec3 defectPosition, in vec3 defectNormal, in vec3 defectX, in vec3 defectZ, in vec3 donorPosition, in vec3 donorNormal, in vec3 donorX, in vec3 donorZ, in uint siteIndex, in uint graftIndex)
 {
     // ray intersect at certain points, and calc distance
 
     uint  successfulChecks   = 0;
     float squaredDistanceSum = 0.0;
     
-    float dr = PL_STAGE_2_RADIUS_INCREMENT( defectSolutionGraftRadii( graftIndex ) );
+    float dr = PL_STAGE_2_RADIUS_INCREMENT(defectSolutionGraftRadii(graftIndex));
 
     for (uint i=1; i<=PL_STAGE_2_NUM_COMPARISON_RADII; i++)
     { 
@@ -67,21 +67,21 @@ float calcRMS( in vec3 defectPosition, in vec3 defectNormal, in vec3 defectX, in
         {     
             float theta = j * PL_STAGE_2_SLICE_ANGLE_INCREMENT;
 
-            float sa = sin( theta );
-            float ca = cos( theta );
+            float sa = sin(theta);
+            float ca = cos(theta);
     
-            vec3 defectCast = normalize( defectX * sa + defectZ * ca ) * (dr * i);
-            vec3 donorCast  = normalize( donorX  * sa + donorZ  * ca ) * (dr * i);
+            vec3 defectCast = normalize(defectX * sa + defectZ * ca) * (dr * i);
+            vec3 donorCast  = normalize(donorX  * sa + donorZ  * ca) * (dr * i);
 
             vec3 defectIntPoint, donorIntPoint;
-            bool i0 = rayIntersectDefect( defectIntPoint, defectCast, defectNormal, defectPosition, graftIndex );
-            bool i1 = rayIntersectDonor ( donorIntPoint,  donorCast,  donorNormal,  donorPosition, siteIndex  );   
+            bool i0 = rayIntersectDefect(defectIntPoint, defectCast, defectNormal, defectPosition, graftIndex);
+            bool i1 = rayIntersectDonor (donorIntPoint,  donorCast,  donorNormal,  donorPosition, siteIndex);   
             
-            // intersection failures may occur if defect grafts overlap boundaries ( thus missing triangles on cap )                           
-            if ( i0 && i1 )
+            // intersection failures may occur if defect grafts overlap boundaries (thus missing triangles on cap)                           
+            if (i0 && i1)
             {    
                 // find distance on surface between grafts
-                float distance = dot( defectIntPoint, defectNormal ) - dot( donorIntPoint, donorNormal );               
+                float distance = dot(defectIntPoint, defectNormal) - dot(donorIntPoint, donorNormal);               
                 squaredDistanceSum += distance * distance;
                 successfulChecks++;
             }
@@ -89,7 +89,7 @@ float calcRMS( in vec3 defectPosition, in vec3 defectNormal, in vec3 defectX, in
         }       
     }
 
-    return sqrt( squaredDistanceSum / float( successfulChecks ) ); 
+    return sqrt(squaredDistanceSum / float(successfulChecks)); 
 }
 
 
@@ -97,43 +97,43 @@ void main(void)
 { 
     // get specific defect site and local index of grid point
     uint siteIndex, localIndex;
-    getDonorSiteAndIndex( siteIndex, localIndex );
+    getDonorSiteAndIndex(siteIndex, localIndex);
     
     // get grid point
-    vec3 donorGridPosition  = donorSitePositions( siteIndex, localIndex ).xyz;
-    vec3 donorSurfaceNormal = donorSiteNormals  ( siteIndex, localIndex ).xyz;
+    vec3 donorGridPosition  = donorSitePositions(siteIndex, localIndex).xyz;
+    vec3 donorSurfaceNormal = donorSiteNormals  (siteIndex, localIndex).xyz;
           
     // for each graft in solution
     for (uint i=0; i<uDefectSolutionGraftCount; i++)
     {       
-        vec3 defectGraftPosition = defectSolutionGraftPositions( i );
-        vec3 defectGraftNormal   = defectSolutionGraftNormals  ( i );
-        vec3 defectSurfaceNormal = defectSolutionSurfaceNormals( i );
+        vec3 defectGraftPosition = defectSolutionGraftPositions(i);
+        vec3 defectGraftNormal   = defectSolutionGraftNormals  (i);
+        vec3 defectSurfaceNormal = defectSolutionSurfaceNormals(i);
 
         // get rotational transform from donor to defect orientation relative to surface
-        mat4 rotation;   defectToDonorRotation( rotation, defectSurfaceNormal, donorSurfaceNormal, getRotationAngle() );
+        mat4 rotation;   defectToDonorRotation(rotation, defectSurfaceNormal, donorSurfaceNormal, getRotationAngle());
 
         // rottate defect graft into donor graft space
-        vec3 donorGraftNormal = normalize( ( rotation * vec4( defectGraftNormal, 1.0 ) ).xyz );
+        vec3 donorGraftNormal = normalize((rotation * vec4(defectGraftNormal, 1.0)).xyz);
         
         float rms = -1.0;       
-        if ( isWithinDonorBoundary( siteIndex, donorGridPosition, donorGraftNormal, defectSolutionGraftRadii( i ) ) )
+        if (isWithinDonorBoundary(siteIndex, donorGridPosition, donorGraftNormal, defectSolutionGraftRadii(i)))
         {
             // get defect graft tangents
-            vec3 defectGraftX = normalize( cross( defectGraftNormal, vec3( 0, 0, 1 ) ) );
-            vec3 defectGraftZ = normalize( cross( defectGraftX, defectGraftNormal ) );
+            vec3 defectGraftX = normalize(cross(defectGraftNormal, vec3(0, 0, 1)));
+            vec3 defectGraftZ = normalize(cross(defectGraftX, defectGraftNormal));
             
             // get donor graft tangents
-            vec3 donorGraftX = normalize( ( rotation * vec4( defectGraftX, 1.0 ) ).xyz );
-            vec3 donorGraftZ = normalize( ( rotation * vec4( defectGraftZ, 1.0 ) ).xyz );
+            vec3 donorGraftX = normalize((rotation * vec4(defectGraftX, 1.0)).xyz);
+            vec3 donorGraftZ = normalize((rotation * vec4(defectGraftZ, 1.0)).xyz);
         
-            float angularDifference = acos( dot( defectGraftX, donorGraftX ) );
+            float angularDifference = acos(dot(defectGraftX, donorGraftX));
         
-            // reject any grafts that result in an angular difference > threshold ( 60 degrees )
-            if ( angularDifference < PL_STAGE_2_ANGULAR_DISTANCE_THRESHOLD )
+            // reject any grafts that result in an angular difference > threshold (60 degrees)
+            if (angularDifference < PL_STAGE_2_ANGULAR_DISTANCE_THRESHOLD)
             {    
     
-                rms = calcRMS( defectGraftPosition, 
+                rms = calcRMS(defectGraftPosition, 
                                defectGraftNormal, 
                                defectGraftX, 
                                defectGraftZ, 
@@ -141,13 +141,13 @@ void main(void)
                                donorGraftNormal, 
                                donorGraftX, 
                                donorGraftZ, 
-                               siteIndex, i ); 
+                               siteIndex, i); 
                 
-                rms += rms * 0.5 * ( angularDifference / PL_STAGE_2_ANGULAR_DISTANCE_THRESHOLD );
+                rms += rms * 0.5 * (angularDifference / PL_STAGE_2_ANGULAR_DISTANCE_THRESHOLD);
                 
             } 
         }
-        setRMS( rms, i );   
+        setRMS(rms, i);   
     } 
 
 }

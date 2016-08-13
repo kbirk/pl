@@ -1,5 +1,4 @@
-#ifndef PL_COMMON_H
-#define PL_COMMON_H
+#pragma once
 
 // COLOUR MACROS
 
@@ -34,11 +33,11 @@
 
 // OTHER MACROS
 
-#define PL_PI                                    3.1415927f         // specific decimals optimize floating point accuracy. Going higher digits or using double will result in more error
+#define PL_PI                                    3.1415927f         // specific decimals optimize floating point accuracy. Going higher digits will result in more error
 #define PL_EPSILON                               0.00001f
 
-#define PL_RAD_TO_DEG(a)                         ( a * ( 180.0f / PL_PI ) )
-#define PL_DEG_TO_RAD(a)                         ( a * ( PL_PI / 180.0f ) )
+#define PL_RAD_TO_DEG(a)                         (a * (180.0f / PL_PI))
+#define PL_DEG_TO_RAD(a)                         (a * (PL_PI / 180.0f))
 
 #define PL_MIN_OF_2(a,b)                         (a<=b ? a : b)
 #define PL_MAX_OF_2(a,b)                         (a>=b ? a : b)
@@ -46,6 +45,8 @@
 #define PL_MAX_OF_3(a,b,c)                       (a>=b ? (a>=c ? a : c) : (b>=c ? b : c))
 
 #define PL_NORMAL_SMOOTHING_RADIUS               4.0f
+
+#define PL_FILE_PREPATH                          "./resources/"
 
 #include <iostream>
 #include <fstream>
@@ -65,39 +66,8 @@
 #include <memory>
 #include <map>
 
-
-#ifdef WIN32
-
-    #include <windows.h>
-    #define PL_FILE_PREPATH     "../resources/"
-    inline float round( float val )
-    {
-        return floor( val + 0.5f );
-    }
-    #include <GL/glew.h> // include before gl.h
-    #include <GL/gl.h>
-    #include <GL/glut.h>
-
-#else
-
-    #define PL_FILE_PREPATH     "./resources/"
-    #define GL_GLEXT_PROTOTYPES
-
-    #ifdef __APPLE__
-
-        #include <OpenGL/gl3.h>
-        #include <GLUT/glut.h>
-
-    #else
-
-        #include <GL/glut.h>
-        #include <GL/glcorearb.h>
-        #include <GL/glext.h>
-
-    #endif
-
-#endif
-
+#include <epoxy/gl.h>
+#include <GL/glut.h>
 
 // PRIMITIVE TYPEDEFS
 
@@ -111,6 +81,3 @@ typedef unsigned int            PLuint;
 typedef int                     PLint;
 typedef bool                    PLbool;
 typedef long long unsigned int  PLtime;
-
-
-#endif

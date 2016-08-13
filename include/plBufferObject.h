@@ -1,5 +1,4 @@
-#ifndef PL_BUFFER_OBJECT_H
-#define PL_BUFFER_OBJECT_H
+#pragma once
 
 #include "plCommon.h"
 
@@ -14,8 +13,8 @@ class plBufferObject
 
         PLuint numBytes() const { return _numBytes; }
 
-        virtual void bind  ( PLuint location ) const = 0;
-        virtual void unbind( PLuint location ) const = 0;
+        virtual void bind  (PLuint location) const = 0;
+        virtual void unbind(PLuint location) const = 0;
 
     protected:
 
@@ -24,6 +23,3 @@ class plBufferObject
 
         virtual void _destroy();
 };
-
-
-#endif

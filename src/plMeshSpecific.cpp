@@ -1,12 +1,12 @@
 #include "plMeshSpecific.h" 
 
 plMeshSpecific::plMeshSpecific()
-    : _mesh( nullptr )
+    : _mesh(nullptr)
 {
 }
 
 
-plMeshSpecific::plMeshSpecific( const plMesh& mesh )
-    : _mesh( &mesh )
+plMeshSpecific::plMeshSpecific(const plMesh& mesh)
+    : _mesh(&mesh)
 {
 }

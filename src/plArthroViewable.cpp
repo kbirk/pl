@@ -1,8 +1,7 @@
 #include "plArthroViewable.h"
 
-
 plArthroViewable::plArthroViewable()
-    :   _inArthroView( false )
+    :   _inArthroView(false)
 {
 }
 

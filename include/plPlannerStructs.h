@@ -1,5 +1,4 @@
-#ifndef PL_PLANNER_STRUCTS
-#define PL_PLANNER_STRUCTS
+#pragma once
 
 #include "plCommon.h"
 #include "plUtility.h"
@@ -56,6 +55,3 @@ class plDonorSolution
         plDonorSolution() {};
 
 };
-
-
-#endif

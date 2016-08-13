@@ -5,14 +5,14 @@ plDonorSite::plDonorSite()
 }
 
 
-plDonorSite::plDonorSite( const plMesh& mesh )
-    : boundary( PL_PICKING_TYPE_DONOR_BOUNDARY, mesh )
+plDonorSite::plDonorSite(const plMesh& mesh)
+    : boundary(PL_PICKING_TYPE_DONOR_BOUNDARY, mesh)
 {
 }
 
 
-plDonorSite::plDonorSite( const plBoundary& boundary  )
-    : boundary( boundary )
+plDonorSite::plDonorSite(const plBoundary& boundary)
+    : boundary(boundary)
 {
 }
 
@@ -22,17 +22,17 @@ plDonorSite::~plDonorSite()
 }
 
 
-void plDonorSite::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
+void plDonorSite::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
 {
-    if ( !_isVisible )
+    if (!_isVisible)
         return;
 
     // draw spline boundary
-    boundary.extractRenderComponents( renderMap );
+    boundary.extractRenderComponents(renderMap);
 }
 
 
-void plDonorSite::extractRenderComponents( plRenderMap& renderMap ) const
+void plDonorSite::extractRenderComponents(plRenderMap& renderMap) const
 {
-    extractRenderComponents( renderMap, PL_PLAN_TECHNIQUE );
+    extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
 }

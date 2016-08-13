@@ -1,5 +1,4 @@
-#ifndef PL_DONOR_SITE_H
-#define PL_DONOR_SITE_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVector3.h"
@@ -15,14 +14,11 @@ class plDonorSite : public plRenderable
         plBoundary boundary;
 
         plDonorSite();
-        plDonorSite( const plMesh& mesh );
-        plDonorSite( const plBoundary &boundary );
+        plDonorSite(const plMesh& mesh);
+        plDonorSite(const plBoundary &boundary);
 
         virtual ~plDonorSite();
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;
-        void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void extractRenderComponents(plRenderMap& renderMap) const;
+        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 };
-
-
-#endif

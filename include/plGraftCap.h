@@ -1,5 +1,4 @@
-#ifndef PL_GRAFT_CAP_H
-#define PL_GRAFT_CAP_H
+#pragma once
 
 #include "plCommon.h"
 #include "plRenderable.h"
@@ -16,7 +15,7 @@
 #include "plArthroViewable.h"
 
 
-#define PL_CAP_OFFSET                            plVector3( 0, 0.025f, 0 )
+#define PL_CAP_OFFSET                            plVector3(0, 0.025f, 0)
 #define PL_GRAFT_DONOR_BONE_COLOUR               0.60f, 0.90f, 0.52f
 #define PL_GRAFT_DONOR_CARTILAGE_COLOUR          0.30f, 0.66f, 0.22f
 #define PL_GRAFT_DEFECT_BONE_COLOUR              0.90f, 0.68f, 0.27f
@@ -31,8 +30,8 @@ class plPointAndAngle
         plVector3 point;
 
         plPointAndAngle() {}
-        plPointAndAngle( const PLfloat &angle, const plVector3 &point )
-            : angle( angle ), point( point )
+        plPointAndAngle(const PLfloat &angle, const plVector3 &point)
+            : angle(angle), point(point)
         {
         }
 
@@ -55,23 +54,23 @@ class plGraftCap : public plRenderable,
 
         plGraftCap();
 
-        void extractRenderComponents( plRenderMap& renderMap ) const;
-        virtual void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        void extractRenderComponents(plRenderMap& renderMap) const;
+        virtual void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
-        void generateCap( const plOctreeMesh& mesh, const plTransform& transform, PLfloat radius );
+        void generateCap(const plOctreeMesh& mesh, const plTransform& transform, PLfloat radius);
 
     protected:
 
-        std::shared_ptr< plVAO > _vao;
+        std::shared_ptr<plVAO> _vao;
 
         virtual plVector4 _getColour() const = 0;
 
-        std::vector<plVector3> _pointsOutsideTriangles( plVector3 verts[3], const plTransform& transform, PLfloat radius ) const;
-        std::vector<plVector3> _pointsInsideTriangles ( plVector3 verts[3], PLfloat dist[3], const plTransform& transform, PLfloat radius ) const;
+        std::vector<plVector3> _pointsOutsideTriangles(plVector3 verts[3], const plTransform& transform, PLfloat radius) const;
+        std::vector<plVector3> _pointsInsideTriangles (plVector3 verts[3], PLfloat dist[3], const plTransform& transform, PLfloat radius) const;
 
-        bool      _triangleIntersection ( const plTriangle &triangle, const plTransform& transform, PLfloat radius );
-        plVector3 _pointOnCircumference ( const plVector3 &a, const plVector3 &b, PLfloat radius ) const;
-        bool      _isBeyondHeightThresholds( const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform ) const;
+        bool      _triangleIntersection (const plTriangle &triangle, const plTransform& transform, PLfloat radius);
+        plVector3 _pointOnCircumference (const plVector3 &a, const plVector3 &b, PLfloat radius) const;
+        bool      _isBeyondHeightThresholds(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform) const;
 
 };
 
@@ -83,17 +82,17 @@ class plCartilageCap : public plGraftCap
 
         plCartilageCap();
 
-        void generateVAO( PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter );
+        void generateVAO(PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter);
 
-        virtual void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
+        virtual void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
 
     private:
 
-        std::shared_ptr< plVAO > _capVAO;
-        std::shared_ptr< plVAO > _projectionVAO;
+        std::shared_ptr<plVAO> _capVAO;
+        std::shared_ptr<plVAO> _projectionVAO;
 
         plVector4 _getColour() const;
-        void _generateProjectionVAO( PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter );
+        void _generateProjectionVAO(PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter);
 
 };
 
@@ -105,13 +104,10 @@ class plBoneCap : public plGraftCap
 
         plBoneCap();
 
-        void generateVAO( PLfloat radius, PLfloat length );
+        void generateVAO(PLfloat radius, PLfloat length);
 
     private:
 
         plVector4 _getColour() const;
 
 };
-
-
-#endif

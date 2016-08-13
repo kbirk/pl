@@ -1,5 +1,4 @@
-#ifndef PL_VERTEX_BUFFER_OBJECT_H
-#define PL_VERTEX_BUFFER_OBJECT_H
+#pragma once
 
 #include "plCommon.h"
 #include "plVertexSpecBuffer.h"
@@ -20,8 +19,8 @@ class plVertexAttributePointer
 {
     public:
 
-        plVertexAttributePointer( GLuint index, GLuint stride, GLuint offset )// = 0 )
-            : index( index ), stride( stride ), offset( offset )
+        plVertexAttributePointer(GLuint index, GLuint stride, GLuint offset)// = 0)
+            : index(index), stride(stride), offset(offset)
         {
         }
 
@@ -37,21 +36,21 @@ class plVBO : public plVertexSpecBuffer
     public:
 
         plVBO();
-        plVBO( const std::vector<plVector4>& data, PLuint usage = GL_STATIC_DRAW );
-        plVBO( const plVBO& vbo );
-        plVBO( plVBO&& vbo );
+        plVBO(const std::vector<plVector4>& data, PLuint usage = GL_STATIC_DRAW);
+        plVBO(const plVBO& vbo);
+        plVBO(plVBO&& vbo);
 
-        plVBO& operator= ( const plVBO& vbo );
-        plVBO& operator= ( plVBO&& vbo );
+        plVBO& operator= (const plVBO& vbo);
+        plVBO& operator= (plVBO&& vbo);
 
-        void set( const std::vector<plVector3>& data, PLuint usage = GL_STATIC_DRAW );
-        void set( const std::vector<plVector4>& data, PLuint usage = GL_STATIC_DRAW );
-        void set( const plVertexAttributePointer& attributePointer );
+        void set(const std::vector<plVector3>& data, PLuint usage = GL_STATIC_DRAW);
+        void set(const std::vector<plVector4>& data, PLuint usage = GL_STATIC_DRAW);
+        void set(const plVertexAttributePointer& attributePointer);
 
         void clear();
 
-        void bind  () const { glBindBuffer( GL_ARRAY_BUFFER, _id ); }
-        void unbind() const { glBindBuffer( GL_ARRAY_BUFFER, 0   ); }
+        void bind  () const { glBindBuffer(GL_ARRAY_BUFFER, _id); }
+        void unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
         void upload();
 
@@ -62,9 +61,6 @@ class plVBO : public plVertexSpecBuffer
         std::vector<plVector4> _data;
         std::vector<plVertexAttributePointer> _attributePointers;
 
-        void _copy( const plVBO& vbo );
-        void _move( plVBO&& vbo );
+        void _copy(const plVBO& vbo);
+        void _move(plVBO&& vbo);
 };
-
-
-#endif
