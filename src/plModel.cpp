@@ -1,6 +1,6 @@
 #include "plModel.h"
 
-plModel::plModel(const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth)
+plModel::plModel(const std::vector<plTriangle> &triangles, const plString &file, uint32_t octreeDepth)
     : filename(file)
 {
     if (octreeDepth > 1)
@@ -18,7 +18,7 @@ plModel::plModel(const std::vector<plTriangle> &triangles, const plString &file,
 }
 
 
-plModel::plModel(const plString &file, PLuint octreeDepth)
+plModel::plModel(const plString &file, uint32_t octreeDepth)
     : filename(file)
 {
     std::vector<plTriangle > triangles;
@@ -41,11 +41,11 @@ plModel::plModel(const plString &file, PLuint octreeDepth)
     _generateVAO();
 }
 
-plModel::~plModel() 
+plModel::~plModel()
 {
 }
 
-void plModel::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     // render octree
     if (std::dynamic_pointer_cast<plOctreeMesh>(_mesh))
@@ -65,58 +65,51 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, PLuint technique) 
     component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM, plVector3(PL_LIGHT_POSITION)));
     component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
 
-    if (!_inArthroView)
+    if (!_isTransparent)
     {
-        if (!_isTransparent)
-        {
-            component.attach(plUniform(PL_COLOUR_UNIFORM, plColourStack::top()));
-            // insert into render map
-            renderMap[ technique ].insert(component);
-        }
-        else
-        {
-            // Sort by distance
-            plVector3 viewDir = plCameraStack::direction();
-
-            std::vector<plOrderPair> order;     order.reserve(_mesh->triangles().size());
-            PLuint index = 0;
-            for (const plTriangle& triangle : _mesh->triangles())
-            {
-                order.emplace_back(plOrderPair(index++, triangle.centroid() * viewDir));
-            }
-            std::sort(order.begin(), order.end());
-
-            std::vector<PLuint> indices;    indices.reserve(_mesh->triangles().size()*3);
-            for (PLuint i = 0; i < order.size(); i++)
-            {
-                indices.push_back(order[i].index*3);
-                indices.push_back(order[i].index*3+1);
-                indices.push_back(order[i].index*3+2);
-            }
-
-            // dirty const_cast
-            const_cast< std::shared_ptr<plVAO >&>(_vao)->eabo()->set(indices);
-            const_cast< std::shared_ptr<plVAO >&>(_vao)->upload();
-
-            component.attach(plUniform(PL_COLOUR_UNIFORM, plVector4(plColourStack::top().x, plColourStack::top().y, plColourStack::top().z, 0.7f)));
-
-            // insert into render map
-            if (technique == PL_PLAN_TECHNIQUE)
-            {
-                // if originally meant to be rendered using plan technique
-                renderMap[ PL_TRANSPARENCY_TECHNIQUE ].insert(component);
-            }
-            else
-            {
-                renderMap[ technique ].insert(component);
-            }
-        }
+        component.attach(plUniform(PL_COLOUR_UNIFORM, plColourStack::top()));
+        // insert into render map
+        renderMap[technique].insert(component);
     }
     else
     {
-        // in arthro camera view
-        renderMap[ PL_OUTLINE_TECHNIQUE ].insert(component);
+        // Sort by distance
+        plVector3 viewDir = plCameraStack::direction();
+
+        std::vector<plOrderPair> order;     order.reserve(_mesh->triangles().size());
+        uint32_t index = 0;
+        for (const plTriangle& triangle : _mesh->triangles())
+        {
+            order.emplace_back(plOrderPair(index++, triangle.centroid() * viewDir));
+        }
+        std::sort(order.begin(), order.end());
+
+        std::vector<uint32_t> indices;    indices.reserve(_mesh->triangles().size()*3);
+        for (uint32_t i = 0; i < order.size(); i++)
+        {
+            indices.push_back(order[i].index*3);
+            indices.push_back(order[i].index*3+1);
+            indices.push_back(order[i].index*3+2);
+        }
+
+        // dirty const_cast
+        const_cast< std::shared_ptr<plVAO >&>(_vao)->eabo()->set(indices);
+        const_cast< std::shared_ptr<plVAO >&>(_vao)->upload();
+
+        component.attach(plUniform(PL_COLOUR_UNIFORM, plVector4(plColourStack::top().x, plColourStack::top().y, plColourStack::top().z, 0.7f)));
+
+        // insert into render map
+        if (technique == PL_PLAN_TECHNIQUE)
+        {
+            // if originally meant to be rendered using plan technique
+            renderMap[PL_TRANSPARENCY_TECHNIQUE].insert(component);
+        }
+        else
+        {
+            renderMap[technique].insert(component);
+        }
     }
+
 }
 
 
@@ -138,9 +131,9 @@ void plModel::_generateVAO()
 {
     // convert to interleaved format
     std::vector<plVector3> vertices;    vertices.reserve(_mesh->triangles().size() * 3 * 2);
-    std::vector<PLuint>    indices;     indices.reserve (_mesh->triangles().size() * 3);
+    std::vector<uint32_t>    indices;     indices.reserve (_mesh->triangles().size() * 3);
 
-    int indexCount = 0;
+    int32_t indexCount = 0;
     for (const plTriangle& triangle : _mesh->triangles())
     {
         // p1

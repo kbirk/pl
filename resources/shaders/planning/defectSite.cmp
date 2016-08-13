@@ -10,7 +10,7 @@ vec4 defectSitePositions(in uint i)
 
 vec4 defectSiteNormals(in uint i)
 {
-    return defectSiteData[ uDefectSiteGridPointCount+i ];
+    return defectSiteData[uDefectSiteGridPointCount+i];
 }
 
 
@@ -33,18 +33,18 @@ edge defectSiteEdge(in uint i)
     uint k = offset + ((i+1) % uDefectSiteBoundaryPointCount);
 
     edge e;
-    e.p0 = defectSiteData[ j ].xyz;
-    e.p1 = defectSiteData[ k ].xyz;
-    e.n  = defectSiteData[ j+uDefectSiteBoundaryPointCount ].xyz;   // tangent pointing out
+    e.p0 = defectSiteData[j].xyz;
+    e.p1 = defectSiteData[k].xyz;
+    e.n  = defectSiteData[j+uDefectSiteBoundaryPointCount].xyz;   // tangent pointing out
     return e;
 }
 
 
-bool isWithinDefectBoundaryThreshold(in vec3 position, in vec3 normal, in float threshold)
+bool isWithinDefectBoundaryThreshold(in vec3 position, in vec3 normal, in float32_t threshold)
 {
     // checks if closest point on all edges is within radius distance to the grafts central axis
     bool inside = true;
-    for (int i=0; i<uDefectSiteBoundaryPointCount; i++)
+    for (int32_t i=0; i<uDefectSiteBoundaryPointCount; i++)
     {
         edge e = defectSiteEdge(i);
 
@@ -67,7 +67,7 @@ bool isWithinDefectBoundaryThreshold(in vec3 position, in vec3 normal, in float 
 }
 
 
-bool isWithinDefectRotationThreshold(in vec3 normal, in float threshold)
+bool isWithinDefectRotationThreshold(in vec3 normal, in float32_t threshold)
 {
     return acos(dot(normal, vec3(uDefectSiteAvgNormal))) < threshold*0.01745329;
 }

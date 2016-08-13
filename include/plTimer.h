@@ -2,13 +2,11 @@
 
 #include "plCommon.h"
 
-typedef long long unsigned int  PLtime;
-
 class plTimer
 {
     public:
 
-        static PLtime now();
+        static std::time_t now();
 
     private:
 

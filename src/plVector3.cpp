@@ -6,7 +6,7 @@ plVector3::plVector3()
     x = y = z = 0;
 }
 
-plVector3::plVector3(PLfloat xx, PLfloat yy, PLfloat zz)
+plVector3::plVector3(float32_t xx, float32_t yy, float32_t zz)
 {
     x = xx; y = yy; z = zz;
 }
@@ -18,7 +18,7 @@ plVector3::plVector3(const plVector4& v)
     z = v.z;
 }
 
-plVector3::plVector3(PLchar *string)
+plVector3::plVector3(char *string)
 {
     sscanf(string, "%f %f %f", &x, &y, &z);
 }
@@ -28,12 +28,12 @@ plVector3::plVector3(const plString &str)
     sscanf(str.c_str(), "%f %f %f", &x, &y, &z);
 }
 
-PLbool plVector3::operator == (const plVector3 &p) const
+bool plVector3::operator == (const plVector3 &p) const
 {
     return x == p.x && y == p.y && z == p.z;
 }
 
-PLbool plVector3::operator != (const plVector3 &p) const
+bool plVector3::operator != (const plVector3 &p) const
 {
     return x != p.x || y != p.y || z != p.z;
 }
@@ -48,7 +48,7 @@ plVector3 plVector3::operator - (const plVector3 &p) const
     return plVector3(x-p.x, y-p.y, z-p.z);
 }
 
-PLfloat plVector3::operator * (const plVector3 &p) const     /* dot product */
+float32_t plVector3::operator * (const plVector3 &p) const     /* dot product */
 {
     return x * p.x + y * p.y + z * p.z;
 }
@@ -74,7 +74,7 @@ plVector3& plVector3::operator=(const plVector3& other)
 
 plVector3 plVector3::normalize() const
 {
-    PLfloat len;
+    float32_t len;
     len = sqrt(x*x + y*y + z*z);
     if (len == 0)
     {
@@ -85,20 +85,20 @@ plVector3 plVector3::normalize() const
         return plVector3(x/len, y/len, z/len);
 }
 
-PLfloat plVector3::length() const
+float32_t plVector3::length() const
 {
     return sqrt(x*x + y*y + z*z);
 }
 
-PLfloat plVector3::squaredLength() const
+float32_t plVector3::squaredLength() const
 {
     return x*x + y*y + z*z;
 }
 
 
-PLfloat plVector3::signedAngle(const plVector3 v, const plVector3& planeNormal) const
+float32_t plVector3::signedAngle(const plVector3 v, const plVector3& planeNormal) const
 {
-    float angle = acos(*this * v);
+    float32_t angle = acos(*this * v);
 
     plVector3 cross = *this ^  v;
 
@@ -111,7 +111,7 @@ PLfloat plVector3::signedAngle(const plVector3 v, const plVector3& planeNormal) 
 }
 
 
-plVector3 operator * (PLfloat k, const plVector3 &p)
+plVector3 operator * (float32_t k, const plVector3 &p)
 {
     plVector3 q;
 

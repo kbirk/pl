@@ -4,13 +4,13 @@ namespace plColourStack
 {
     std::stack<plVector4>  _stack;
 
-    void push(PLfloat r, PLfloat g, PLfloat b, PLfloat a) {  _stack.push(plVector4(r,g,b,a));  }
+    void push(float32_t r, float32_t g, float32_t b, float32_t a) {  _stack.push(plVector4(r,g,b,a));  }
     void push(const plVector4 &colour) { _stack.push(colour); }
     void pop () { if (!_stack.empty()) _stack.pop(); }
 
     const plVector4& top()    { return _stack.top(); }
 
-    void load(PLfloat r, PLfloat g, PLfloat b, PLfloat a)
+    void load(float32_t r, float32_t g, float32_t b, float32_t a)
     {
         if (_stack.size() > 0)
         {
@@ -32,15 +32,15 @@ namespace plColourStack
 
 namespace plPickingStack
 {
-    std::stack<PLuint>  _redStack;
-    std::stack<PLuint>  _greenStack;
-    std::stack<PLuint>  _blueStack;
+    std::stack<uint32_t>  _redStack;
+    std::stack<uint32_t>  _greenStack;
+    std::stack<uint32_t>  _blueStack;
 
-    void pushRed   (PLint r) { _redStack.push(r);   }
-    void pushGreen (PLint g) { _greenStack.push(g); }
-    void pushBlue  (PLint b) { _blueStack.push(b);  }
+    void pushRed   (int32_t r) { _redStack.push(r);   }
+    void pushGreen (int32_t g) { _greenStack.push(g); }
+    void pushBlue  (int32_t b) { _blueStack.push(b);  }
 
-    void loadRed   (PLint r)
+    void loadRed   (int32_t r)
     {
         if (_redStack.size() > 0)
         {
@@ -53,7 +53,7 @@ namespace plPickingStack
     }
 
 
-    void loadGreen (PLint g)
+    void loadGreen (int32_t g)
     {
         if (_greenStack.size() > 0)
         {
@@ -66,7 +66,7 @@ namespace plPickingStack
     }
 
 
-    void loadBlue  (PLint b)
+    void loadBlue  (int32_t b)
     {
         if (_blueStack.size() > 0)
         {
@@ -83,15 +83,15 @@ namespace plPickingStack
     void popGreen () { if (!_greenStack.empty()) _greenStack.pop(); }
     void popBlue  () { if (!_blueStack.empty()) _blueStack.pop();  }
 
-    PLint topRed()   { return _redStack.top(); }
-    PLint topGreen() { return _greenStack.top(); }
-    PLint topBlue()  { return _blueStack.top(); }
+    int32_t topRed()   { return _redStack.top(); }
+    int32_t topGreen() { return _greenStack.top(); }
+    int32_t topBlue()  { return _blueStack.top(); }
 
     plPickingInfo top()
     {
-        PLuint red   = (_redStack.empty()) ? -1   : _redStack.top();
-        PLuint green = (_greenStack.empty()) ? -1 : _greenStack.top();
-        PLuint blue  = (_blueStack.empty()) ? -1  : _blueStack.top();
+        uint32_t red   = (_redStack.empty()) ? -1   : _redStack.top();
+        uint32_t green = (_greenStack.empty()) ? -1 : _greenStack.top();
+        uint32_t blue  = (_blueStack.empty()) ? -1  : _blueStack.top();
 
         return plPickingInfo(red, green, blue);
     }
@@ -116,7 +116,7 @@ namespace plModelStack
 
     void scale    (const plVector3 &v)                             { _stack.scale(v);         }
     void translate(const plVector3 &v)                             { _stack.translate(v);     }
-    void rotate   (float angle, const plVector3 &v)                 { _stack.rotate(angle, v); }
+    void rotate   (float32_t angle, const plVector3 &v)                 { _stack.rotate(angle, v); }
 
     const plMatrix44& top()             { return _stack.top();            }
 }

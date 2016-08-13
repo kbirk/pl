@@ -10,10 +10,10 @@ plPlanningBufferData::plPlanningBufferData(const plDefectSite& defect, const std
     defectSiteSSBO = defectSite.getSSBO();
 
     // ensure number of sites remains within maximum
-    PLuint donorSiteCount = (donors.size() < PL_MAX_DONOR_SITES) ? donors.size()  : PL_MAX_DONOR_SITES;
+    uint32_t donorSiteCount = (donors.size() < PL_MAX_DONOR_SITES) ? donors.size()  : PL_MAX_DONOR_SITES;
 
     // generate donor sites and buffer
-    for (PLuint i=0; i<donorSiteCount; i++)
+    for (uint32_t i=0; i<donorSiteCount; i++)
     {
         std::cout << "    Generating donor site planning data " << i << " planning data " << std::endl;
         donorSites.push_back(plPlanningSite(donors[i]->boundary.mesh().triangles(),
@@ -25,10 +25,10 @@ plPlanningBufferData::plPlanningBufferData(const plDefectSite& defect, const std
 }
 
 
-PLbool plPlanningBufferData::good() const
+bool plPlanningBufferData::good() const
 {
-    PLbool isGood = true;
-    for (PLuint i=0; i < donorSites.size(); i++)
+    bool isGood = true;
+    for (uint32_t i=0; i < donorSites.size(); i++)
     {
         isGood &= donorSites[i].good();
     }
@@ -37,9 +37,9 @@ PLbool plPlanningBufferData::good() const
 }
 
 
-PLuint plPlanningBufferData::totalDonorGridPoints() const
+uint32_t plPlanningBufferData::totalDonorGridPoints() const
 {
-    PLuint totalGridPoints = 0;
+    uint32_t totalGridPoints = 0;
     for (const plPlanningSite& donorSite : donorSites)
     {
         totalGridPoints +=  donorSite.gridPoints.size();
@@ -51,8 +51,8 @@ PLuint plPlanningBufferData::totalDonorGridPoints() const
 plSSBO plPlanningBufferData::_getGroupSSBO()
 {
     // find total data size
-    PLuint dataSize = 0;
-    for (PLuint i=0; i < donorSites.size(); i++)
+    uint32_t dataSize = 0;
+    for (uint32_t i=0; i < donorSites.size(); i++)
     {
         dataSize += donorSites[i].totalSize();
     }
@@ -60,12 +60,12 @@ plSSBO plPlanningBufferData::_getGroupSSBO()
     // buffer all data
     std::vector<plVector4> data;    data.reserve(dataSize);
 
-    for (PLuint i=0; i < donorSites.size(); i++)
+    for (uint32_t i=0; i < donorSites.size(); i++)
     {
         donorSites[i].getData(data);
     }
 
-    PLuint numBytes = dataSize * sizeof(plVector4);
+    uint32_t numBytes = dataSize * sizeof(plVector4);
 
     std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;
 

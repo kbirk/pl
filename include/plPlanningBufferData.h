@@ -22,9 +22,9 @@ class plPlanningBufferData
 
         plPlanningBufferData(const plDefectSite& defect, const std::vector<plDonorSite*>& donors);
 
-        PLbool good() const;
+        bool good() const;
 
-        PLuint totalDonorGridPoints() const;
+        uint32_t totalDonorGridPoints() const;
 
     private:
 

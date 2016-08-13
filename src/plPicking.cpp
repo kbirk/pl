@@ -6,15 +6,15 @@ namespace plPicking
     plPickingInfo _previousPick;
 
 
-    const plPickingInfo& pickPixel(PLuint x, PLuint y)
+    const plPickingInfo& pickPixel(uint32_t x, uint32_t y)
     {
         // transform window coords to viewport / fbo texture coords
         GLint viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
-        PLuint viewportX = x - viewport[0];
-        PLuint viewportY = y - viewport[1];
+        uint32_t viewportX = x - viewport[0];
+        uint32_t viewportY = y - viewport[1];
 
-        plPixel<PLint> pick = plRenderResources::fbos(PL_MAIN_FBO)->readPixel<PLint>(GL_COLOR_ATTACHMENT4, viewportX, viewportY);
+        plPixel<int32_t> pick = plRenderResources::fbos(PL_MAIN_FBO)->readPixel<int32_t>(GL_COLOR_ATTACHMENT4, viewportX, viewportY);
 
         _previousPick = plPickingInfo(pick.r, pick.g, pick.b);
 

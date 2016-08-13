@@ -22,12 +22,12 @@ struct edge
 
 vec3 projectOntoPlane(in vec3 point, in vec3 plane_normal)
 {
-    float dist = dot(point, plane_normal);
+    float32_t dist = dot(point, plane_normal);
     return point - (dist * plane_normal);
 }
 
 
-float distToAxis(in vec3 axis, in vec3 v)
+float32_t distToAxis(in vec3 axis, in vec3 v)
 {
     // v is already in the *local* coordinate system of the graft
     return distance(v, dot(v, axis)*axis);
@@ -37,7 +37,7 @@ float distToAxis(in vec3 axis, in vec3 v)
 vec3 closestPointOnSegment(in vec3 p, in vec3 a, in vec3 b)
 {
     vec3 ab = b - a;
-    float t = dot((p - a), ab) / dot(ab, ab);
+    float32_t t = dot((p - a), ab) / dot(ab, ab);
     // If outside segment, clamp t (and therefore d) to the closest endpoint
     t = clamp(t, 0.0, 1.0);
     // Compute projected position from the clamped t
@@ -45,7 +45,7 @@ vec3 closestPointOnSegment(in vec3 p, in vec3 a, in vec3 b)
 }
 
 
-float cylinderOverlap(in vec3 position0, in vec3 normal0, in float radius0, in vec3 position1, in vec3 normal1, in float radius1)
+float32_t cylinderOverlap(in vec3 position0, in vec3 normal0, in float32_t radius0, in vec3 position1, in vec3 normal1, in float32_t radius1)
 {
     // get closest points on each graft to eachother
     vec3 closest0, closest1;
@@ -55,10 +55,10 @@ float cylinderOverlap(in vec3 position0, in vec3 normal0, in float radius0, in v
 }
 
 
-float sphereIntersectionDistance(in vec3 position0, in float radius0, in vec3 position1, in float radius1)
+float32_t sphereIntersectionDistance(in vec3 position0, in float32_t radius0, in vec3 position1, in float32_t radius1)
 {
 
-    float intersectionDistance = (radius0+radius1) - distance(position0, position1);
+    float32_t intersectionDistance = (radius0+radius1) - distance(position0, position1);
     // return itnersection distance
     return (intersectionDistance > 0.0) ? intersectionDistance : 0.0;
 }
@@ -69,17 +69,17 @@ void closestPointsOnTwoSegments(inout vec3 c0, inout vec3 c1, in vec3 position0,
     vec3 d0 = -normal0*PL_GRAFT_LENGTH; // Direction vector of segment S0
     vec3 d1 = -normal1*PL_GRAFT_LENGTH; // Direction vector of segment S1
     vec3 r = position0 - position1;
-    float a = dot(d0, d0); // Squared length of segment S0, always nonnegative
-    float e = dot(d1, d1); // Squared length of segment S1, always nonnegative
-    float f = dot(d1, r);
-    float c = dot(d0, r);
+    float32_t a = dot(d0, d0); // Squared length of segment S0, always nonnegative
+    float32_t e = dot(d1, d1); // Squared length of segment S1, always nonnegative
+    float32_t f = dot(d1, r);
+    float32_t c = dot(d0, r);
 
     // The general non-degenerate case starts here, no degenerate cases considered (no grafts are 0 length)
-    float b = dot(d0, d1);
-    float denom = a*e-b*b; // Always nonnegative
+    float32_t b = dot(d0, d1);
+    float32_t denom = a*e-b*b; // Always nonnegative
     // If segments not parallel, compute closest point on L1 to L2 and
     // clamp to segment S1. Else pick arbitrary s (here 0)
-    float s, t;
+    float32_t s, t;
 
     if (denom != 0.0)
     {
@@ -111,13 +111,13 @@ void closestPointsOnTwoSegments(inout vec3 c0, inout vec3 c1, in vec3 position0,
 }
 
 
-float area(in triangle t)
+float32_t area(in triangle t)
 {
     return 0.5 * length(cross((t.p1 - t.p0),  (t.p2 - t.p0)));
 }
 
 
-bool graftIntersectTriangle(in vec3 position, in vec3 normal, in triangle t, in float radius)     // does not check edges, use for very small triangles
+bool graftIntersectTriangle(in vec3 position, in vec3 normal, in triangle t, in float32_t radius)     // does not check edges, use for very small triangles
 {
     if (dot(t.n, normal) < 0.0)
         return false;
@@ -129,7 +129,7 @@ bool graftIntersectTriangle(in vec3 position, in vec3 normal, in triangle t, in 
 }
 
 
-bool graftIntersectTriangleFull(in vec3 position, in vec3 normal, in triangle t, in float radius)     // this version checks edges of triangle, incase they cross triangle, but no point lies within
+bool graftIntersectTriangleFull(in vec3 position, in vec3 normal, in triangle t, in float32_t radius)     // this version checks edges of triangle, incase they cross triangle, but no point lies within
 {
     if (dot(t.n, normal) < 0)
         return false;
@@ -144,11 +144,11 @@ bool graftIntersectTriangleFull(in vec3 position, in vec3 normal, in triangle t,
 }
 
 
-bool rayIntersectTriangle(inout vec3 point, inout float t, in vec3 rayStart, in vec3 rayDir, in triangle tri)
+bool rayIntersectTriangle(inout vec3 point, inout float32_t t, in vec3 rayStart, in vec3 rayDir, in triangle tri)
 {
     bool result = false;
 
-    float dn = dot(rayDir, tri.n);
+    float32_t dn = dot(rayDir, tri.n);
 
     if (dn != 0.0)
     {
@@ -157,9 +157,9 @@ bool rayIntersectTriangle(inout vec3 point, inout float t, in vec3 rayStart, in 
         point = rayStart + t * rayDir;
 
         // Compute barycentric coords
-        float totalAreaDiv = 1.0 / dot(cross(tri.p1-tri.p0, tri.p2-tri.p0), tri.n);
-        float u = dot(cross(tri.p2-tri.p1, point-tri.p1), tri.n) * totalAreaDiv;
-        float v = dot(cross(tri.p0-tri.p2, point-tri.p2), tri.n) * totalAreaDiv;
+        float32_t totalAreaDiv = 1.0 / dot(cross(tri.p1-tri.p0, tri.p2-tri.p0), tri.n);
+        float32_t u = dot(cross(tri.p2-tri.p1, point-tri.p1), tri.n) * totalAreaDiv;
+        float32_t v = dot(cross(tri.p0-tri.p2, point-tri.p2), tri.n) * totalAreaDiv;
 
         // Reject if outside triangle
         result = !(u < -0.0001 || v < -0.0001 || u + v > 1.0001);
@@ -180,18 +180,18 @@ void getRotationFromTo(inout mat4 rot, in vec3 from, in vec3 to)
     vec3 fromN = normalize(from);
     vec3 toN   = normalize(to);
 
-    float epsilon = 0.000001;
-    float e = dot(fromN, toN);
-    float f = abs(e);
+    float32_t epsilon = 0.000001;
+    float32_t e = dot(fromN, toN);
+    float32_t f = abs(e);
 
     rot = mat4(1.0);
 
     if (f > (1.0-epsilon))
     {   // "from" and "to" almost parallel
         // nearly orthogonal
-        float fx = abs(fromN.x);
-        float fy = abs(fromN.y);
-        float fz = abs(fromN.z);
+        float32_t fx = abs(fromN.x);
+        float32_t fy = abs(fromN.y);
+        float32_t fz = abs(fromN.z);
 
         vec3 x;
 
@@ -220,9 +220,9 @@ void getRotationFromTo(inout mat4 rot, in vec3 from, in vec3 to)
         vec3 u = x - fromN;
         vec3 v = x - toN;
 
-        float c1 = 2.0f / dot(u, u);
-        float c2 = 2.0f / dot(v, v);
-        float c3 = c1*c2 * dot(u, v);
+        float32_t c1 = 2.0f / dot(u, u);
+        float32_t c2 = 2.0f / dot(v, v);
+        float32_t c3 = c1*c2 * dot(u, v);
 
         // set matrix entries
         rot[0][0] = - c1*u.x*u.x - c2*v.x*v.x + c3*v.x*u.x;
@@ -245,12 +245,12 @@ void getRotationFromTo(inout mat4 rot, in vec3 from, in vec3 to)
     {
         // the most common case, unless "from"="to", or "to"=-"from"
         vec3 v = cross(fromN, toN);
-        float h = 1.0f / (1.0f + e);    // optimization by Gottfried Chen
-        float hvx = h * v.x;
-        float hvz = h * v.z;
-        float hvxy = hvx * v.y;
-        float hvxz = hvx * v.z;
-        float hvyz = hvz * v.y;
+        float32_t h = 1.0f / (1.0f + e);    // optimization by Gottfried Chen
+        float32_t hvx = h * v.x;
+        float32_t hvz = h * v.z;
+        float32_t hvxy = hvx * v.y;
+        float32_t hvxz = hvx * v.z;
+        float32_t hvyz = hvz * v.y;
 
         rot[0][0] = e + hvx * v.x;
         rot[1][0] = hvxy - v.z;
@@ -268,17 +268,17 @@ void getRotationFromTo(inout mat4 rot, in vec3 from, in vec3 to)
 }
 
 
-void getRotation(inout mat4 mat, in float angleDegree, in vec3 axis)
+void getRotation(inout mat4 mat, in float32_t angleDegree, in vec3 axis)
 {
-    float x = axis.x;
-    float y = axis.y;
-    float z = axis.z;
+    float32_t x = axis.x;
+    float32_t y = axis.y;
+    float32_t z = axis.z;
 
     // convert all angles to radians
-    float s = sin(angleDegree*0.017453292);
-    float c = cos(angleDegree*0.017453292);
+    float32_t s = sin(angleDegree*0.017453292);
+    float32_t c = cos(angleDegree*0.017453292);
 
-    float mag = length(axis);
+    float32_t mag = length(axis);
 
     // zero vector, return identity
     if (mag == 0.0)
@@ -292,7 +292,7 @@ void getRotation(inout mat4 mat, in float angleDegree, in vec3 axis)
     y /= mag;
     z /= mag;
 
-    float xx, yy, zz, xy, yz, zx, xs, ys, zs, one_c;
+    float32_t xx, yy, zz, xy, yz, zx, xs, ys, zs, one_c;
     xx = x * x;
     yy = y * y;
     zz = z * z;

@@ -39,7 +39,7 @@ bool plString::importFile(const std::string &filename)
 
 void plString::toLower()
 {
-    for (PLuint i = 0; i < length(); i++)
+    for (uint32_t i = 0; i < length(); i++)
     {
         (*this)[i] = tolower((*this)[i]);
     }
@@ -53,7 +53,7 @@ bool plString::compare(const plString &str) const
         return false;
     }
 
-    for (PLuint i = 0; i < length(); i++)
+    for (uint32_t i = 0; i < length(); i++)
     {
         if ((*this)[i] != str[i])
         {
@@ -65,14 +65,14 @@ bool plString::compare(const plString &str) const
 }
 
 
-bool plString::compare(const plString &str, PLuint num) const
+bool plString::compare(const plString &str, uint32_t num) const
 {
     if (num > this->length() || num > str.length())
     {
         return false;
     }
 
-    for (PLuint i = 0; i < num; i++)
+    for (uint32_t i = 0; i < num; i++)
     {
         if ((*this)[i] != str[i])
         {
@@ -84,14 +84,14 @@ bool plString::compare(const plString &str, PLuint num) const
 }
 
 
-bool plString::compare(const plString &str, PLuint index, PLuint num) const
+bool plString::compare(const plString &str, uint32_t index, uint32_t num) const
 {
     if ((index+num) > this->length() || num > str.length())
     {
         return false;
     }
 
-    for (PLuint i = 0; i < num; i++)
+    for (uint32_t i = 0; i < num; i++)
     {
         if ((*this)[i+index] != str[i])
         {
@@ -103,14 +103,14 @@ bool plString::compare(const plString &str, PLuint index, PLuint num) const
 
 }
 
-bool plString::compareCaseInsensitive(const plString &str, PLuint num) const
+bool plString::compareCaseInsensitive(const plString &str, uint32_t num) const
 {
     if (num > this->length() || num > str.length())
     {
         return false;
     }
 
-    for (PLuint i = 0; i < num; i++)
+    for (uint32_t i = 0; i < num; i++)
     {
         if (tolower((*this)[i]) != tolower(str[i]))
         {
@@ -129,7 +129,7 @@ bool plString::compareCaseInsensitive(const plString &str) const
         return false;
     }
 
-    for (PLuint i = 0; i < length(); i++)
+    for (uint32_t i = 0; i < length(); i++)
     {
         if (tolower((*this)[i]) != tolower(str[i]))
         {

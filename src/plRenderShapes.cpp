@@ -3,23 +3,23 @@
 namespace plRenderShapes
 {
 
-    plVAO sphereVAO(float radius, int slices, int stacks)
+    plVAO sphereVAO(float32_t radius, int32_t slices, int32_t stacks)
     {
-        float rho, theta;
-        float x, y, z;
-        PLint base;
+        float32_t rho, theta;
+        float32_t x, y, z;
+        int32_t base;
 
-        float drho = PL_PI / stacks;
-        float dtheta = 2.0f * PL_PI / slices;
+        float32_t drho = PL_PI / stacks;
+        float32_t dtheta = 2.0f * PL_PI / slices;
 
         std::vector<plVector3> vertices;
-        std::vector<PLuint>    indices;
+        std::vector<uint32_t>    indices;
 
         // draw +Z end as a triangle fan
         // centre of triangle fan
         vertices.push_back(plVector3(0.0f, 0.0f, radius));   // position
         vertices.push_back(plVector3(0.0f, 0.0f, 1.0f));     // normal
-        for (int j = 0; j <= slices; j++)
+        for (int32_t j = 0; j <= slices; j++)
         {
             theta = (j == slices) ? 0.0f : j * dtheta;
             x = -sin(theta) * sin(drho);
@@ -30,24 +30,24 @@ namespace plRenderShapes
             vertices.push_back(plVector3(x, y, z));                           // normal
         }
 
-        for (int j = 1; j <= slices; j++)
+        for (int32_t j = 1; j <= slices; j++)
         {
             indices.push_back(0);
             indices.push_back(j);
             indices.push_back(j+1);
         }
 
-        int imin = 1;
-        int imax = stacks - 1;
+        int32_t imin = 1;
+        int32_t imax = stacks - 1;
 
         // draw intermediate stacks as quad strips
-        for (int i = imin; i < imax; i++)
+        for (int32_t i = imin; i < imax; i++)
         {
             base = vertices.size()/2;
 
             rho = i * drho;
 
-            for (int j = 0; j <= slices; j++)
+            for (int32_t j = 0; j <= slices; j++)
             {
                 theta = (j == slices) ? 0.0f : j * dtheta;
 
@@ -66,7 +66,7 @@ namespace plRenderShapes
                 vertices.push_back(plVector3(x, y, z));                            // normal
             }
 
-            for (int j = 0; j < slices*2; j+=2)
+            for (int32_t j = 0; j < slices*2; j+=2)
             {
                 indices.push_back(base+j);
                 indices.push_back(base+j+1);
@@ -86,7 +86,7 @@ namespace plRenderShapes
 
         rho = PL_PI - drho;
 
-        for (int j = slices; j >= 0; j--)
+        for (int32_t j = slices; j >= 0; j--)
         {
             theta = (j == slices) ? 0.0f : j * dtheta;
             x = -sin(theta) * sin(rho);
@@ -97,7 +97,7 @@ namespace plRenderShapes
             vertices.push_back(plVector3(x, y, z));                            // normal
         }
 
-        for (int j = 1; j <= slices; j++)
+        for (int32_t j = 1; j <= slices; j++)
         {
             indices.push_back(base+0);
             indices.push_back(base+j);
@@ -123,27 +123,27 @@ namespace plRenderShapes
     }
 
 
-    plVAO cylinderVAO(float baseRadius, float topRadius, float height, int slices, int stacks)
+    plVAO cylinderVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks)
     {
-        float da = 2.0f * PL_PI / slices;
-        float dr = (topRadius - baseRadius) / stacks;
-        float dz = height / stacks;
-        float nz = (baseRadius - topRadius) / height;
+        float32_t da = 2.0f * PL_PI / slices;
+        float32_t dr = (topRadius - baseRadius) / stacks;
+        float32_t dz = height / stacks;
+        float32_t nz = (baseRadius - topRadius) / height;
 
-        float sa, ca;
-        float z = 0.0f;
-        float r = baseRadius;
+        float32_t sa, ca;
+        float32_t z = 0.0f;
+        float32_t r = baseRadius;
 
         std::vector<plVector3> vertices;
-        std::vector<PLuint>    indices;
+        std::vector<uint32_t>    indices;
 
-        for (int j = 0; j < stacks; j++)
+        for (int32_t j = 0; j < stacks; j++)
         {
-            PLint base = vertices.size()/2;
+            int32_t base = vertices.size()/2;
 
-            for (int i = 0; i <= slices; i++)
+            for (int32_t i = 0; i <= slices; i++)
             {
-                float a = (i == slices) ? 0.0f : i * da;
+                float32_t a = (i == slices) ? 0.0f : i * da;
 
                 sa = sin(a);
                 ca = cos(a);
@@ -155,7 +155,7 @@ namespace plRenderShapes
                 vertices.push_back(plVector3(sa, ca, nz));                             // normal
             }
 
-            for (int i = 0; i < slices*2; i+=2)
+            for (int32_t i = 0; i < slices*2; i+=2)
             {
                 indices.push_back(base+i);
                 indices.push_back(base+i+1);
@@ -189,30 +189,30 @@ namespace plRenderShapes
     }
 
 
-    plVAO diskVAO(float innerRadius, float outerRadius, int slices, int loops, bool up)
+    plVAO diskVAO(float32_t innerRadius, float32_t outerRadius, int32_t slices, int32_t loops, bool up)
     {
         plVector3 normal = (up) ? plVector3(0.0f, 0.0f, 1.0f) : plVector3(0.0f, 0.0f, -1.0f);
 
-        float da = 2.0f * PL_PI / slices;
-        float dr = (outerRadius - innerRadius) /  loops;
+        float32_t da = 2.0f * PL_PI / slices;
+        float32_t dr = (outerRadius - innerRadius) /  loops;
 
-        float sa, ca;
-        float r1 = innerRadius;
+        float32_t sa, ca;
+        float32_t r1 = innerRadius;
 
         std::vector<plVector3> vertices;
-        std::vector<PLuint>    indices;
+        std::vector<uint32_t>    indices;
 
-        for (int l = 0; l < loops; l++)
+        for (int32_t l = 0; l < loops; l++)
         {
-            float r2 = r1 + dr;
+            float32_t r2 = r1 + dr;
 
-            PLint base = vertices.size()/2;
+            int32_t base = vertices.size()/2;
 
             if (up)
             {
-                for (int s = 0; s <= slices; s++)
+                for (int32_t s = 0; s <= slices; s++)
                 {
-                    float a = (s == slices) ? 0.0f : s * da;
+                    float32_t a = (s == slices) ? 0.0f : s * da;
 
                     sa = sin(a);
                     ca = cos(a);
@@ -226,9 +226,9 @@ namespace plRenderShapes
             }
             else
             {
-                for (int s = slices; s >= 0; s--)
+                for (int32_t s = slices; s >= 0; s--)
                 {
-                    float a = (s == slices) ? 0.0f : s * da;
+                    float32_t a = (s == slices) ? 0.0f : s * da;
 
                     sa = sin(a);
                     ca = cos(a);
@@ -243,7 +243,7 @@ namespace plRenderShapes
 
             r1 = r2;
 
-            for (int i = 0; i < slices*2; i+=2)
+            for (int32_t i = 0; i < slices*2; i+=2)
             {
                 indices.push_back(base+i);
                 indices.push_back(base+i+1);
@@ -275,27 +275,27 @@ namespace plRenderShapes
     }
 
 
-    plVAO coneVAO(float baseRadius, float topRadius, float height, int slices, int stacks)
+    plVAO coneVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks)
     {
-        float da = 2.0f * PL_PI / slices;
-        float dr = (topRadius - baseRadius) / stacks;
-        float dz = height / stacks;
-        float nz = (baseRadius - topRadius) / height;
+        float32_t da = 2.0f * PL_PI / slices;
+        float32_t dr = (topRadius - baseRadius) / stacks;
+        float32_t dz = height / stacks;
+        float32_t nz = (baseRadius - topRadius) / height;
 
-        float sa, ca;
-        float z = 0.0f;
-        float r = baseRadius;
+        float32_t sa, ca;
+        float32_t z = 0.0f;
+        float32_t r = baseRadius;
 
         std::vector<plVector3> vertices;
-        std::vector<PLuint>    indices;
+        std::vector<uint32_t>    indices;
 
-        for (int j = 0; j < stacks; j++)
+        for (int32_t j = 0; j < stacks; j++)
         {
-            PLint base = vertices.size()/2;
+            int32_t base = vertices.size()/2;
 
-            for (int i = 0; i <= slices; i++)
+            for (int32_t i = 0; i <= slices; i++)
             {
-                float a = (i == slices) ? 0.0f : i * da;
+                float32_t a = (i == slices) ? 0.0f : i * da;
 
                 sa = sin(a);
                 ca = cos(a);
@@ -307,7 +307,7 @@ namespace plRenderShapes
                 vertices.push_back(plVector3(sa, ca, nz));                             // normal
             }
 
-            for (int i = 0; i < slices*2; i+=2)
+            for (int32_t i = 0; i < slices*2; i+=2)
             {
                 indices.push_back(base+i);
                 indices.push_back(base+i+1);
@@ -343,7 +343,7 @@ namespace plRenderShapes
     plVAO quadVAO()
     {
         std::vector<plVector3> vertices;        vertices.reserve(8);
-        std::vector<PLuint>    indices;         indices.reserve(6);
+        std::vector<uint32_t>    indices;         indices.reserve(6);
 
         // position                                     // normals
         vertices.push_back(plVector3(-1, -1, 0));   vertices.push_back(plVector3(0,0,1));
@@ -381,7 +381,7 @@ namespace plRenderShapes
     plVAO lineVAO(const plVector3& p0, const plVector3& p1)
     {
         std::vector<plVector3> vertices;        vertices.reserve(2);
-        std::vector<PLuint>    indices;         indices.reserve(2);
+        std::vector<uint32_t>    indices;         indices.reserve(2);
 
         // position
         vertices.push_back(p0);

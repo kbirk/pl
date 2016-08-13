@@ -19,44 +19,44 @@ class plPlannerShader : public plShader
         void setSeedUniform() const;
 
         // stage0 uniform setters
-        void setTemperatureUniform (PLfloat temperature) const;
-        void setLocalLoadUniform   (PLuint loadLocal) const;
+        void setTemperatureUniform (float32_t temperature) const;
+        void setLocalLoadUniform   (uint32_t loadLocal) const;
 
         // stage2-3 uniform setters
-        void setRotationAngleUniforms (PLuint numDirections) const;
-        void setRotationIndexUniform  (PLuint rotationIndex) const;
+        void setRotationAngleUniforms (uint32_t numDirections) const;
+        void setRotationIndexUniform  (uint32_t rotationIndex) const;
 
     protected:
 
         // global uniforms
-        PLuint _defectSiteGridPointCountID;
-        PLuint _defectSiteBoundaryPointCountID;
-        PLuint _defectSiteTriangleCountID;
-        PLuint _defectSiteAreaID;
-        PLuint _defectSiteAvgNormalID;
+        uint32_t _defectSiteGridPointCountID;
+        uint32_t _defectSiteBoundaryPointCountID;
+        uint32_t _defectSiteTriangleCountID;
+        uint32_t _defectSiteAreaID;
+        uint32_t _defectSiteAvgNormalID;
 
-        PLuint _donorSiteCountID;
-        PLuint _donorSiteTotalGridPointsID;
-        PLuint _donorSiteTriangleCountsID;
-        PLuint _donorSiteGridPointCountsID;
-        PLuint _donorSiteBoundaryPointCountsID;
-        PLuint _donorSiteDataOffsetsID;
+        uint32_t _donorSiteCountID;
+        uint32_t _donorSiteTotalGridPointsID;
+        uint32_t _donorSiteTriangleCountsID;
+        uint32_t _donorSiteGridPointCountsID;
+        uint32_t _donorSiteBoundaryPointCountsID;
+        uint32_t _donorSiteDataOffsetsID;
 
-        PLuint _defectSolutionGraftCountID;
-        PLuint _defectSolutionGraftPositionsID;
-        PLuint _defectSolutionGraftNormalsID;
-        PLuint _defectSolutionGraftRadiiID;
-        PLuint _defectSolutionSurfaceNormalsID;
+        uint32_t _defectSolutionGraftCountID;
+        uint32_t _defectSolutionGraftPositionsID;
+        uint32_t _defectSolutionGraftNormalsID;
+        uint32_t _defectSolutionGraftRadiiID;
+        uint32_t _defectSolutionSurfaceNormalsID;
 
-        PLuint _seedID;
+        uint32_t _seedID;
 
         // stage 0 uniforms
-        PLuint _temperatureID;
-        PLuint _loadLocalID;
+        uint32_t _temperatureID;
+        uint32_t _loadLocalID;
 
         // stage 2-3 uniforms
-        PLuint _rotationIndexID;
-        PLuint _rotationAnglesID;
+        uint32_t _rotationIndexID;
+        uint32_t _rotationAnglesID;
 
         void _getUniformLocations();
 };

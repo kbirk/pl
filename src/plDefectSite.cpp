@@ -24,7 +24,7 @@ plDefectSite::~plDefectSite()
 }
 
 
-void plDefectSite::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plDefectSite::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     if (!_isVisible)
         return;
@@ -45,7 +45,7 @@ void plDefectSite::extractRenderComponents(plRenderMap& renderMap) const
 
 void plDefectSite::recastBoundary()
 {
-    for (PLint i=boundary.size()-1; i>=0; i--)
+    for (int32_t i=boundary.size()-1; i>=0; i--)
     {
         plIntersection intersection = spline.surfaceMesh().rayIntersect(boundary.points(i), boundary.normals(i));
 

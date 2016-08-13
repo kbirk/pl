@@ -3,12 +3,12 @@
 // uniforms
 
 uniform uint  uRotationIndex;
-uniform float uRotationAngles[ PL_NUM_COMPARISION_DIRECTIONS ];
+uniform float32_t uRotationAngles[PL_NUM_COMPARISION_DIRECTIONS];
 
 // functions
 
-void setRMS(in float rms, in uint graftIndex);
-float getRMS(in uint rotationIndex, in uint gridPointIndex, in uint graftIndex);
+void setRMS(in float32_t rms, in uint graftIndex);
+float32_t getRMS(in uint rotationIndex, in uint gridPointIndex, in uint graftIndex);
 
-float getRotationAngle();
-float getRotationAngle(in uint rotationIndex);
+float32_t getRotationAngle();
+float32_t getRotationAngle(in uint rotationIndex);

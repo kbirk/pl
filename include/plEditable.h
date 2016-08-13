@@ -9,15 +9,15 @@ class plEditable
 
         plEditable();
 
-        PLbool isSelected() const { return _isSelected; }
+        bool isSelected() const { return _isSelected; }
 
         // only editors can see the private variables
         friend class plEditor;
 
     protected:
 
-        PLuint _selectedValue;
-        PLbool _isSelected;
+        uint32_t _selectedValue;
+        bool _isSelected;
 
         virtual void _clearSelection();
 };

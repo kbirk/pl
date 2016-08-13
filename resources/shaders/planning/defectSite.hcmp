@@ -6,7 +6,7 @@ uniform uint  uDefectSiteGridPointCount;
 uniform uint  uDefectSiteTriangleCount;
 uniform uint  uDefectSiteBoundaryPointCount;
 uniform vec4  uDefectSiteAvgNormal;
-uniform float uDefectSiteArea;
+uniform float32_t uDefectSiteArea;
 
 // functions
 
@@ -15,5 +15,5 @@ vec4 defectSiteNormals(in uint i);
 triangle defectSiteTriangles(in uint i);
 edge defectSiteEdge(in uint i);
 
-bool isWithinDefectBoundaryThreshold(in vec3 position, in vec3 normal, in float threshold);
-bool isWithinDefectRotationThreshold(in vec3 normal, in float threshold);
+bool isWithinDefectBoundaryThreshold(in vec3 position, in vec3 normal, in float32_t threshold);
+bool isWithinDefectRotationThreshold(in vec3 normal, in float32_t threshold);

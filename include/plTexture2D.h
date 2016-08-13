@@ -27,7 +27,7 @@ class plTexture2D
 
     public:
 
-        plTexture2D(PLuint width, PLuint height, PLuint internalFormat, PLuint format, PLuint type, GLvoid* image = nullptr);
+        plTexture2D(uint32_t width, uint32_t height, uint32_t internalFormat, uint32_t format, uint32_t type, GLvoid* image = nullptr);
         plTexture2D(const plTexture2D& texture);
         plTexture2D(plTexture2D&& texture);
 
@@ -39,12 +39,12 @@ class plTexture2D
         void bind  () const;   // bind textures AFTER binding shader AND BEFORE drawing arrays
         void unbind() const;
 
-        PLuint width()  const { return _width;  }
-        PLuint height() const { return _height; }
+        uint32_t width()  const { return _width;  }
+        uint32_t height() const { return _height; }
 
-        void set(PLuint width, PLuint height, GLvoid* image = nullptr);
-        void set(PLuint width, PLuint height, PLuint internalFormat, PLuint format, PLuint type, GLvoid* image = nullptr);
-        void setParameter(PLuint pname, PLuint param);
+        void set(uint32_t width, uint32_t height, GLvoid* image = nullptr);
+        void set(uint32_t width, uint32_t height, uint32_t internalFormat, uint32_t format, uint32_t type, GLvoid* image = nullptr);
+        void setParameter(uint32_t pname, uint32_t param);
 
         friend class plFBO;
 
@@ -57,7 +57,7 @@ class plTexture2D
         GLuint _format;
         GLuint _type;
 
-        PLuint _getFormatSize() const;
+        uint32_t _getFormatSize() const;
 
         void _destroy();
         void _copy(const plTexture2D& texture);

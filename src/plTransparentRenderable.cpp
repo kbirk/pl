@@ -45,7 +45,7 @@ void plTransparentRenderable::setInvisible()
 
 
 
-PLbool plTransparentRenderable::isTransparent() const
+bool plTransparentRenderable::isTransparent() const
 {
     return _isTransparent;
 }

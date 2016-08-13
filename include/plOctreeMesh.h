@@ -9,8 +9,8 @@ class plOctreeMesh : public plMesh
     public:
 
         plOctreeMesh();
-        plOctreeMesh(const std::vector<plTriangle> &triangles, PLuint depth, PLbool verbose = false);
-        plOctreeMesh(std::vector<plTriangle>&& triangles, PLuint depth, PLbool verbose = false);
+        plOctreeMesh(const std::vector<plTriangle> &triangles, uint32_t depth, bool verbose = false);
+        plOctreeMesh(std::vector<plTriangle>&& triangles, uint32_t depth, bool verbose = false);
 
         plOctreeMesh(const plOctreeMesh &mesh);
         plOctreeMesh(plOctreeMesh&& mesh);
@@ -21,17 +21,17 @@ class plOctreeMesh : public plMesh
         const plOctree& octree() const { return _octree; }
         void toggleOctreeVisibility() { _octree.toggleVisibility(); }
 
-        plVector3 getAverageNormal(PLfloat radius, const plVector3 &origin, const plVector3 &up) const;
+        plVector3 getAverageNormal(float32_t radius, const plVector3 &origin, const plVector3 &up) const;
 
         plIntersection rayIntersect (const plVector3 &rayOrigin, const plVector3 &rayDirection,
-                                      PLbool smoothNormal    = false,
-                                      PLbool ignoreBehindRay = false,
-                                      PLbool backFaceCull    = false) const;
+                                      bool smoothNormal    = false,
+                                      bool ignoreBehindRay = false,
+                                      bool backFaceCull    = false) const;
 
     protected:
 
         plOctree _octree;
 
-        void _buildOctree(PLuint depth, PLbool verbose);
+        void _buildOctree(uint32_t depth, bool verbose);
 
 };

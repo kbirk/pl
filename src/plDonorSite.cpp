@@ -22,7 +22,7 @@ plDonorSite::~plDonorSite()
 }
 
 
-void plDonorSite::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plDonorSite::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     if (!_isVisible)
         return;

@@ -22,7 +22,7 @@ void plEditor::_clearEditable(plEditable& editable) const
 }
 
 
-void plEditor::_selectEditable(plEditable& editable, PLuint value) const
+void plEditor::_selectEditable(plEditable& editable, uint32_t value) const
 {
     editable._isSelected = true;
     editable._selectedValue = value;

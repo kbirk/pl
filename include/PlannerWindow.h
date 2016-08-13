@@ -1,5 +1,12 @@
 #pragma once
 
+#include "plBoundaryEditor.h"
+#include "plCommon.h"
+#include "plCamera.h"
+#include "plGraftEditor.h"
+#include "plModelEditor.h"
+#include "plPlan.h"
+#include "plVector3.h"
 #include "Window.h"
 
 #define GLUT_NO_BUTTON             -1
@@ -11,14 +18,14 @@ class PlannerWindow : public Window
 {
     public:
 
-        PlannerWindow(int x, int y, int width, int height, std::string title, int argc, char **argv);
+        PlannerWindow(int32_t x, int32_t y, int32_t width, int32_t height, std::string title, int32_t argc, char **argv);
 
         void display();
-        void mouseAction(int button, int state, int mx, int my);
-        void passiveMouseMotion(int mx, int my);
-        void activeMouseMotion (int mx, int my);
-        void keyAction(unsigned char key, int mx, int my);
-        void setCursor(int mx, int my);
+        void mouseAction(int32_t button, int32_t state, int32_t mx, int32_t my);
+        void passiveMouseMotion(int32_t mx, int32_t my);
+        void activeMouseMotion (int32_t mx, int32_t my);
+        void keyAction(unsigned char key, int32_t mx, int32_t my);
+        void setCursor(int32_t mx, int32_t my);
         void idle();
 
     protected:
@@ -32,11 +39,11 @@ class PlannerWindow : public Window
         plModelEditor    _modelEditor;
 
         // camera
-        PLuint           _cameraMode; // rotation or translation mode
+        uint32_t           _cameraMode; // rotation or translation mode
         plCamera         _camera;
 
         // glut
         plVector3        _previousMouse; // last mouse position
-        PLint            _button; // which button is currently down, must be stored for glutMouseMotion
+        int32_t            _button; // which button is currently down, must be stored for glutMouseMotion
 
 };

@@ -30,30 +30,30 @@ class plSpline : public plBoundary
         const plMesh& surfaceMesh() const { return _surfaceMesh; }
 
         void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        PLuint addPointAndNormal   (const plVector3 &point, const plVector3 &normal);
-        void   movePointAndNormal  (PLuint index, const plVector3 &point, const plVector3 &normal);
-        void   removePointAndNormal(PLuint index);
+        uint32_t addPointAndNormal   (const plVector3 &point, const plVector3 &normal);
+        void   movePointAndNormal  (uint32_t index, const plVector3 &point, const plVector3 &normal);
+        void   removePointAndNormal(uint32_t index);
 
         void   clear();
 
     private:
 
-        PLtime _lastUpdate;
+        std::time_t _lastUpdate;
 
         plMesh                   _surfaceMesh;
         std::shared_ptr<plVAO> _surfaceVAO;
 
         std::vector<plVector3> _averageCornerNormals() const;
 
-        void _computeTangents(std::vector<PLfloat> &st,
-                               std::vector<PLfloat> &tt,
+        void _computeTangents(std::vector<float32_t> &st,
+                               std::vector<float32_t> &tt,
                                const std::vector<plVector3> &p,
                                const std::vector<plVector3> &n) const;
 
         void _computeHermite();
 
-        PLtime _timeSinceLastUpdate();
+        std::time_t _timeSinceLastUpdate();
 
 };

@@ -10,85 +10,65 @@
 #include "plModel.h"
 #include "plDefectSite.h"
 #include "plDonorSite.h"
-#include "plIGuideSite.h"
-#include "plIGuide.h"
-
 
 #define PL_MODEL_DEFAULT_OCTREE_DEPTH            6
 
-
-class plPlan : public plRenderable,
-               public plArthroViewable
+class plPlan : public plRenderable
 {
     public:
 
         plPlan(plString filename);
-        plPlan(int argc, char **argv);
+        plPlan(int32_t argc, char **argv);
 
         ~plPlan();
 
         void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
         void importFile(const plString &filename);
         void exportFile(const plString &filename);
 
         // non-const reference getters
-        plDefectSite& defectSites(PLuint index) { return *_defectSites[index]; }
-        plDonorSite&  donorSites (PLuint index) { return *_donorSites[index];  }
-        plIGuideSite& iGuideSites(PLuint index) { return *_iGuideSites[index]; }
-        plIGuide&     iGuides    (PLuint index) { return *_iGuides[index];     }
-        plGraft&      grafts     (PLuint index) { return *_grafts[index];      }
-        plModel&      models     (PLuint index) { return *_models[index];      }
+        plDefectSite& defectSites(uint32_t index) { return *_defectSites[index]; }
+        plDonorSite&  donorSites (uint32_t index) { return *_donorSites[index];  }
+        plGraft&      grafts     (uint32_t index) { return *_grafts[index];      }
+        plModel&      models     (uint32_t index) { return *_models[index];      }
 
         // const reference getters
-        const plDefectSite& defectSites(PLuint index) const { return *_defectSites[index]; }
-        const plDonorSite&  donorSites (PLuint index) const { return *_donorSites[index];  }
-        const plIGuideSite& iGuideSites(PLuint index) const { return *_iGuideSites[index]; }
-        const plIGuide&     iGuides    (PLuint index) const { return *_iGuides[index];     }
-        const plGraft&      grafts     (PLuint index) const { return *_grafts[index];      }
-        const plModel&      models     (PLuint index) const { return *_models[index];      }
+        const plDefectSite& defectSites(uint32_t index) const { return *_defectSites[index]; }
+        const plDonorSite&  donorSites (uint32_t index) const { return *_donorSites[index];  }
+        const plGraft&      grafts     (uint32_t index) const { return *_grafts[index];      }
+        const plModel&      models     (uint32_t index) const { return *_models[index];      }
 
         // const array getters (gives access to array without allowing control to add, remove, etc)
         const std::vector<plDefectSite*>& defectSites() const { return _defectSites; }
         const std::vector<plDonorSite*>&  donorSites()  const { return _donorSites;  }
-        const std::vector<plIGuideSite*>& iGuideSites() const { return _iGuideSites; }
-        const std::vector<plIGuide*>&     iGuides()     const { return _iGuides;     }
         const std::vector<plGraft*>&      grafts()      const { return _grafts;      }
         const std::vector<plModel*>&      models()      const { return _models;      }
 
-        void addDefectSite(PLuint modelIndex = 0);
-        void addDonorSite (PLuint modelIndex = 0);
-        void addIGuideSite(PLuint modelIndex = 0);
-        void addGraft     (const plPlug& harvest, const plPlug& recipient, PLfloat radius, PLfloat length = 15.0f);
+        void addDefectSite(uint32_t modelIndex = 0);
+        void addDonorSite (uint32_t modelIndex = 0);
+        void addGraft     (const plPlug& harvest, const plPlug& recipient, float32_t radius, float32_t length = 15.0f);
 
-        void removeDefectSite(PLuint index);
-        void removeDonorSite (PLuint index);
-        void removeIGuideSite(PLuint index);
-        void removeGraft     (PLuint index);
-
-        void toggleArthroView();
+        void removeDefectSite(uint32_t index);
+        void removeDonorSite (uint32_t index);
+        void removeGraft     (uint32_t index);
 
         void updateGraftMarkerPositions();
-        void generateIGuides();
-        void exportIGuides() const;
         void clear();
 
-        PLint getModelIndex(const plMeshSpecific& mesh) const;
+        int32_t getModelIndex(const plMeshSpecific& mesh) const;
 
     private:
 
         std::vector<plDefectSite*> _defectSites;
         std::vector<plDonorSite*>  _donorSites;
-        std::vector<plIGuideSite*> _iGuideSites;
-        std::vector<plIGuide*>     _iGuides;
-        std::vector<plKWire*>      _kWires;
         std::vector<plGraft*>      _grafts;
         std::vector<plModel*>      _models;
 
 
-        PLint _getDefectSiteIndex(const plMeshSpecific& mesh) const;
+        int32_t _getDefectSiteIndex(const plMeshSpecific& mesh) const;
 
-        PLbool _modelIndexErrorCheck(const std::string& callingFunction, PLint modelIndex) const;
+        bool _modelIndexErrorCheck(const std::string& callingFunction, int32_t modelIndex) const;
 
 };

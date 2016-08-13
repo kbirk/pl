@@ -37,11 +37,11 @@ class plTransform : public plRenderable
         plVector3 applyNormal        (const plVector3 &v) const;
         plVector3 applyInverse       (const plVector3 &v) const;
         plVector3 applyNormalInverse (const plVector3 &v) const;
-        PLfloat   squaredDistToAxis  (const plVector3 &v) const;
-        PLfloat   projectedDistOnAxis(const plVector3 &v) const;
+        float32_t squaredDistToAxis  (const plVector3 &v) const;
+        float32_t projectedDistOnAxis(const plVector3 &v) const;
 
         void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
         plTransform operator* (const plTransform &transform) const;
         plTransform operator* (const plMatrix44 &matrix) const;

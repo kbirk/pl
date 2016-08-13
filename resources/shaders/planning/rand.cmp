@@ -18,14 +18,14 @@ uint iterateSeed(inout uint seed)
 }
 
 
-float rand(inout uint seed)
+float32_t rand(inout uint seed)
 {
     // return 0 <= r < 1
-    return (float(iterateSeed(seed)) / 1.00001) * (1.0 / 4294967296.0);
+    return (float32_t(iterateSeed(seed)) / 1.00001) * (1.0 / 4294967296.0);
 }
 
 
-float rand(inout uint seed, in float min, in float max)
+float32_t rand(inout uint seed, in float32_t min, in float32_t max)
 {
     // return min <= r < max
     return rand(seed) * (max-min) + min;

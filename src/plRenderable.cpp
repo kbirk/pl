@@ -24,7 +24,7 @@ void plRenderable::setInvisible()
 }
 
 
-PLbool plRenderable::isVisible() const
+bool plRenderable::isVisible() const
 {
     return _isVisible;
 }

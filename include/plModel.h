@@ -5,7 +5,6 @@
 #include "plOctreeMesh.h"
 #include "plTriangle.h"
 #include "plTransparentRenderable.h"
-#include "plArthroViewable.h"
 #include "plPicking.h"
 #include "plRenderingPipeline.h"
 #include "plVAO.h"
@@ -17,15 +16,15 @@ class plOrderPair
 {
     public:
 
-        int   index;
-        float distance;
+        int32_t   index;
+        float32_t distance;
 
-        plOrderPair (int i, float d)
+        plOrderPair (int32_t i, float32_t d)
             : index(i), distance(d)
         {
         }
 
-        PLbool operator< (const plOrderPair& orderPair) const { return distance > orderPair.distance; } // greater distance is considered "less"
+        bool operator< (const plOrderPair& orderPair) const { return distance > orderPair.distance; } // greater distance is considered "less"
 
 };
 
@@ -35,16 +34,14 @@ class plOrderPair
 #define PL_MODEL_CARTILAGE_COLOUR                0.50f, 0.20f, 0.20f
 
 
-class plModel : public plTransparentRenderable,
-                public plArthroViewable,
-                public plEditable
+class plModel : public plTransparentRenderable, public plEditable
 {
     public:
 
         plString filename;
 
-        plModel(const plString &file, PLuint octreeDepth = 0);
-        plModel(const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth = 0);
+        plModel(const plString &file, uint32_t octreeDepth = 0);
+        plModel(const std::vector<plTriangle> &triangles, const plString &file, uint32_t octreeDepth = 0);
 
         virtual ~plModel();
 
@@ -53,7 +50,7 @@ class plModel : public plTransparentRenderable,
         void toggleOctreeVisibility();
 
         void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
         plVector3 getCentroid() const;
 

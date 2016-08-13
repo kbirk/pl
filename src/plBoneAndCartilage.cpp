@@ -6,7 +6,7 @@ plBoneAndCartilage::plBoneAndCartilage(const plString &boneFile, const plString 
 }
 
 
-void plBoneAndCartilage::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plBoneAndCartilage::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
 
     // draw combined
@@ -31,15 +31,6 @@ void plBoneAndCartilage::extractRenderComponents(plRenderMap& renderMap, PLuint 
 void plBoneAndCartilage::extractRenderComponents(plRenderMap& renderMap) const
 {
     extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
-}
-
-
-void plBoneAndCartilage::toggleArthroView()
-{
-    plArthroViewable::toggleArthroView();
-    bone.toggleArthroView();
-    cartilage.toggleArthroView();
-    combined.toggleArthroView();
 }
 
 

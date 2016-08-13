@@ -68,13 +68,13 @@ void plMesh::getMinMax(plVector3 &min, plVector3 &max) const
 }
 
 
-plVector3 plMesh::getAverageNormal(PLfloat radius, const plVector3 &origin, const plVector3 &normal) const
+plVector3 plMesh::getAverageNormal(float32_t radius, const plVector3 &origin, const plVector3 &normal) const
 {
     return plMath::getAverageNormal(_triangles, radius, origin, normal);
 }
 
 
-plIntersection plMesh::rayIntersect(const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool smoothNormal, PLbool ignoreBehindRay, PLbool backFaceCull) const
+plIntersection plMesh::rayIntersect(const plVector3 &rayOrigin, const plVector3 &rayDirection, bool smoothNormal, bool ignoreBehindRay, bool backFaceCull) const
 {
     return plMath::rayIntersect(_triangles, rayOrigin, rayDirection, smoothNormal, ignoreBehindRay, backFaceCull);
 }

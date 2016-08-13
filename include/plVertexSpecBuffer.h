@@ -12,7 +12,7 @@ class plVertexSpecBuffer
 
         virtual ~plVertexSpecBuffer();
 
-        PLuint id() const  { return _id; }
+        uint32_t id() const  { return _id; }
 
         virtual void bind  () const = 0;
         virtual void unbind() const = 0;

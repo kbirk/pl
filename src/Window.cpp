@@ -1,8 +1,11 @@
 #include "Window.h"
 
-static Window *windows[ MAX_NUM_WINDOWS ];
+#include "plWindow.h"
+#include "plRenderResources.h"
 
-Window::Window(int x, int y, int width, int height, std::string title)
+static Window *windows[MAX_NUM_WINDOWS];
+
+Window::Window(int32_t x, int32_t y, int32_t width, int32_t height, std::string title)
 {
     glutInitWindowPosition(x, y);
     glutInitWindowSize    (width, height);
@@ -19,7 +22,7 @@ Window::Window(int x, int y, int width, int height, std::string title)
 
 }
 
-void Window::registerWindow(int windowId)
+void Window::registerWindow(int32_t windowId)
 {
     if (_windowID < 0 || _windowID >= MAX_NUM_WINDOWS)
     {
@@ -28,10 +31,10 @@ void Window::registerWindow(int windowId)
                   << std::endl;
         abort();
     }
-    windows[ _windowID ] = this;
+    windows[_windowID] = this;
 }
 
-void Window::reshape(int width, int height)
+void Window::reshape(int32_t width, int32_t height)
 {
     plWindow::reshape(width, height);
     plRenderResources::reshape(plWindow::viewportWidth(), plWindow::viewportHeight());
@@ -41,42 +44,42 @@ void Window::reshape(int width, int height)
 
 void GLUTdisplay()
 {
-    windows[ glutGetWindow() ]->display();
+    windows[glutGetWindow()]->display();
 }
 
-void GLUTreshape(int x, int y)
+void GLUTreshape(int32_t x, int32_t y)
 {
-    windows[ glutGetWindow() ]->reshape(x, y);
-}
-
-
-void GLUTmouseAction(int button, int state, int x, int y)
-{
-    windows[ glutGetWindow() ]->mouseAction(button, state, x, y);
-    windows[ glutGetWindow() ]->setCursor(x, y);
+    windows[glutGetWindow()]->reshape(x, y);
 }
 
 
-void GLUTactiveMouseMotion(int x, int y)
+void GLUTmouseAction(int32_t button, int32_t state, int32_t x, int32_t y)
 {
-    windows[ glutGetWindow() ]->activeMouseMotion(x, y);
-    windows[ glutGetWindow() ]->setCursor(x, y);
+    windows[glutGetWindow()]->mouseAction(button, state, x, y);
+    windows[glutGetWindow()]->setCursor(x, y);
 }
 
 
-void GLUTpassiveMouseMotion(int x, int y)
+void GLUTactiveMouseMotion(int32_t x, int32_t y)
 {
-    windows[ glutGetWindow() ]->passiveMouseMotion(x, y);
-    windows[ glutGetWindow() ]->setCursor(x, y);
+    windows[glutGetWindow()]->activeMouseMotion(x, y);
+    windows[glutGetWindow()]->setCursor(x, y);
 }
 
 
-void GLUTkeyAction(unsigned char c, int x, int y)
+void GLUTpassiveMouseMotion(int32_t x, int32_t y)
 {
-    windows[ glutGetWindow() ]->keyAction(c, x, y);
+    windows[glutGetWindow()]->passiveMouseMotion(x, y);
+    windows[glutGetWindow()]->setCursor(x, y);
+}
+
+
+void GLUTkeyAction(unsigned char c, int32_t x, int32_t y)
+{
+    windows[glutGetWindow()]->keyAction(c, x, y);
 }
 
 void GLUTidle()
 {
-    windows[ glutGetWindow() ]->idle();
+    windows[glutGetWindow()]->idle();
 }

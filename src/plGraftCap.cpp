@@ -5,7 +5,7 @@ plGraftCap::plGraftCap()
 }
 
 
-void plGraftCap::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plGraftCap::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT);
     plColourStack::load(_getColour());
@@ -24,7 +24,7 @@ void plGraftCap::extractRenderComponents(plRenderMap& renderMap, PLuint techniqu
     component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
     component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
     // insert into render map
-    renderMap[ technique ].insert(component);
+    renderMap[technique].insert(component);
 }
 
 
@@ -34,7 +34,7 @@ void plGraftCap::extractRenderComponents(plRenderMap& renderMap) const
 }
 
 
-void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transform, const PLfloat radius)
+void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transform, const float32_t radius)
 {
     // clear previous cap incase
     triangles.clear();
@@ -54,12 +54,12 @@ void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transf
     }
 
     // calc just under radius
-    PLfloat subSquaredRadius = 0.999f * radius * radius;
+    float32_t subSquaredRadius = 0.999f * radius * radius;
 
     // find vertices of polygons along perimeter of graft, put in set to ignore duplicates
     std::set<plPointAndAngle> angles;
 
-    for (PLuint i=0; i<triangles.size(); i++)
+    for (uint32_t i=0; i<triangles.size(); i++)
     {
         const plVector3 &p0 = triangles[i].point0();
         const plVector3 &p1 = triangles[i].point1();
@@ -91,21 +91,21 @@ void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transf
 
 bool plGraftCap::_isBeyondHeightThresholds(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform) const
 {
-    const PLfloat VERTICAL_THRESHOLD = 8.0f;
-    float proj0 = transform.projectedDistOnAxis(p0);
-    float proj1 = transform.projectedDistOnAxis(p1);
-    float proj2 = transform.projectedDistOnAxis(p2);
+    const float32_t VERTICAL_THRESHOLD = 8.0f;
+    float32_t proj0 = transform.projectedDistOnAxis(p0);
+    float32_t proj1 = transform.projectedDistOnAxis(p1);
+    float32_t proj2 = transform.projectedDistOnAxis(p2);
 
-    float maxProj = PL_MAX_OF_3(proj0, proj1, proj2);
-    float minProj = PL_MIN_OF_3(proj0, proj1, proj2);
+    float32_t maxProj = PL_MAX_OF_3(proj0, proj1, proj2);
+    float32_t minProj = PL_MIN_OF_3(proj0, proj1, proj2);
 
     return (minProj > VERTICAL_THRESHOLD || maxProj < -VERTICAL_THRESHOLD);
 }
 
 
-std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], const plTransform& transform, PLfloat radius) const
+std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], const plTransform& transform, float32_t radius) const
 {
-    float radiusSquared = radius * radius;
+    float32_t radiusSquared = radius * radius;
 
     // closest points on each segment
     plVector3 e[3];
@@ -114,13 +114,13 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], c
     e[2] = plMath::closestPointOnSegment(plVector3(0, 0, 0), verts[2], verts[0]);
 
     // distances from each point to centre
-    float d[3];
+    float32_t d[3];
     d[0] = transform.squaredDistToAxis(e[0]);
     d[1] = transform.squaredDistToAxis(e[1]);
     d[2] = transform.squaredDistToAxis(e[2]);
 
     // indexs of inside points
-    std::vector<PLuint> insideEdges;
+    std::vector<uint32_t> insideEdges;
     if (d[0] < radiusSquared) insideEdges.push_back(0);
     if (d[1] < radiusSquared) insideEdges.push_back(1);
     if (d[2] < radiusSquared) insideEdges.push_back(2);
@@ -137,13 +137,13 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], c
         case 1:
         {
             // one edge overlaps
-            plVector3 &m0 = e[ insideEdges[0] ];
-            plVector3 &m1 = e[ (insideEdges[0]+1) % 3 ];
-            plVector3 &m2 = e[ (insideEdges[0]+2) % 3 ];
+            plVector3 &m0 = e[insideEdges[0]];
+            plVector3 &m1 = e[(insideEdges[0]+1) % 3];
+            plVector3 &m2 = e[(insideEdges[0]+2) % 3];
 
             // points before and after inside closest point
-            plVector3 &m0p0 = verts[ insideEdges[0] ];
-            plVector3 &m0p1 = verts[ (insideEdges[0]+1) % 3 ];
+            plVector3 &m0p0 = verts[insideEdges[0]];
+            plVector3 &m0p1 = verts[(insideEdges[0]+1) % 3];
 
             points.emplace_back(_pointOnCircumference(m0, m0p1, radius));
             points.emplace_back(_pointOnCircumference(m1, m0,   radius));
@@ -155,21 +155,21 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], c
         case 2:
         {
             // two edges overlap
-            if (d[ insideEdges[0] ] > d[ insideEdges[1] ])
+            if (d[insideEdges[0]] > d[insideEdges[1]])
             {
                 // swap so first index is closer than second
                 plUtility::swap(insideEdges[0], insideEdges[1]);
             }
 
-            plVector3 &m0 = e[ insideEdges[0] ];
-            plVector3 &m1 = e[ insideEdges[1] ];
+            plVector3 &m0 = e[insideEdges[0]];
+            plVector3 &m1 = e[insideEdges[1]];
 
             // points before the two closest points
-            plVector3 &m0p0 = verts[ insideEdges[0] ];
-            plVector3 &m1p0 = verts[ insideEdges[1] ];
+            plVector3 &m0p0 = verts[insideEdges[0]];
+            plVector3 &m1p0 = verts[insideEdges[1]];
             // points after the two closest points
-            plVector3 &m0p1 = verts[ (insideEdges[0]+1) % 3 ];
-            plVector3 &m1p1 = verts[ (insideEdges[1]+1) % 3 ];
+            plVector3 &m0p1 = verts[(insideEdges[0]+1) % 3];
+            plVector3 &m1p1 = verts[(insideEdges[1]+1) % 3];
 
             points.emplace_back(_pointOnCircumference(m0, m0p1, radius));
             points.emplace_back(_pointOnCircumference(m1p0, m1, radius));
@@ -189,9 +189,9 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], c
 }
 
 
-std::vector<plVector3> plGraftCap::_pointsInsideTriangles(plVector3 verts[3], PLfloat dist[3], const plTransform& transform, PLfloat radius) const
+std::vector<plVector3> plGraftCap::_pointsInsideTriangles(plVector3 verts[3], float32_t dist[3], const plTransform& transform, float32_t radius) const
 {
-    float radiusSquared = radius * radius;
+    float32_t radiusSquared = radius * radius;
 
     // at least one point is within radius, set it as first point
     if (dist[0] <= radiusSquared)
@@ -221,9 +221,9 @@ std::vector<plVector3> plGraftCap::_pointsInsideTriangles(plVector3 verts[3], PL
 
     std::vector<plVector3> points;      points.reserve(5);
 
-    for (int i=0; i<3; i++)
+    for (int32_t i=0; i<3; i++)
     {
-        int j = (i+1) % 3;        // vertex at next end of edge
+        int32_t j = (i+1) % 3;        // vertex at next end of edge
 
         bool currentInside = (dist[j] <= radiusSquared);
 
@@ -248,7 +248,7 @@ std::vector<plVector3> plGraftCap::_pointsInsideTriangles(plVector3 verts[3], PL
         {
             // check closest point on edge to see if it crosses into graft
             plVector3 m = plMath::closestPointOnSegment (plVector3(0, 0, 0), verts[i], verts[j]);
-            float     d = transform.squaredDistToAxis(m);
+            float32_t     d = transform.squaredDistToAxis(m);
             if (d < radiusSquared)
             {
                 // inside
@@ -264,14 +264,14 @@ std::vector<plVector3> plGraftCap::_pointsInsideTriangles(plVector3 verts[3], PL
 }
 
 
-bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTransform& transform, PLfloat radius)
+bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTransform& transform, float32_t radius)
 {
     // if triangle is overlapping cap, cut it (if necessary) and add it to cap triangle list
     if (triangle.normal() * transform.y() < 0)
         return false;
 
     // get squared radius
-    float radiusSquared = radius * radius;
+    float32_t radiusSquared = radius * radius;
 
     // get triangle verts relative to graft local coordinate system
     plVector3 verts[3];
@@ -284,13 +284,13 @@ bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTrans
         return false;
 
     // Compute distance to graft axis
-    float dist[3];
+    float32_t dist[3];
     dist[0] = transform.squaredDistToAxis(verts[0]);
     dist[1] = transform.squaredDistToAxis(verts[1]);
     dist[2] = transform.squaredDistToAxis(verts[2]);
 
-    float minDist = PL_MIN_OF_3(dist[0], dist[1], dist[2]);
-    float maxDist = PL_MAX_OF_3(dist[0], dist[1], dist[2]);
+    float32_t minDist = PL_MIN_OF_3(dist[0], dist[1], dist[2]);
+    float32_t maxDist = PL_MAX_OF_3(dist[0], dist[1], dist[2]);
 
     // At least some of the triangle is inside
     plVector3 normal = transform.applyNormalInverse(triangle.normal());
@@ -335,18 +335,18 @@ bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTrans
 }
 
 
-plVector3 plGraftCap::_pointOnCircumference(const plVector3 &u, const plVector3 &v, PLfloat radius) const
+plVector3 plGraftCap::_pointOnCircumference(const plVector3 &u, const plVector3 &v, float32_t radius) const
 {
     plVector3 uProj(u.x, 0.0f, u.z); // ignore component along y axis
     plVector3 vProj(v.x, 0.0f, v.z);
 
     plVector3 uvProj = vProj-uProj;
 
-    float a = uvProj * uvProj;
-    float b = 2*(uProj * uvProj);
-    float c = (uProj * uProj)-(radius * radius);
+    float32_t a = uvProj * uvProj;
+    float32_t b = 2*(uProj * uvProj);
+    float32_t c = (uProj * uProj)-(radius * radius);
 
-    float radical = b*b - 4*a*c;
+    float32_t radical = b*b - 4*a*c;
 
     if (radical < 0)
     {
@@ -354,12 +354,12 @@ plVector3 plGraftCap::_pointOnCircumference(const plVector3 &u, const plVector3 
         return plVector3(0,0,0);    // error
     }
 
-    float root = sqrt(radical);
+    float32_t root = sqrt(radical);
 
-    float t1 = (-b + root)/(2*a);
-    float t2 = (-b - root)/(2*a);
+    float32_t t1 = (-b + root)/(2*a);
+    float32_t t2 = (-b - root)/(2*a);
 
-    float t;
+    float32_t t;
     if (t1 >= 0 && t1 <= 1 && (t1 <= t2 || t2 <= 0))
     {
         t = t1;
@@ -397,60 +397,22 @@ plVector4 plCartilageCap::_getColour() const
 }
 
 
-void plCartilageCap::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plCartilageCap::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
-    if (!_inArthroView)
-    {
-        plGraftCap::extractRenderComponents(renderMap, technique);
-    }
-    else
-    {
-        plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT);
-        plVector4 colour = _getColour();
-        plColourStack::load(colour.x, colour.y, colour.z, 0.7f);
-
-        // if empty, do not draw
-        if (triangles.empty())
-            return;
-
-        // create render component
-        plRenderComponent component(_capVAO);
-        // attached uniforms
-        component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()));
-        component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
-        component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-        component.attach(plUniform(PL_COLOUR_UNIFORM,            plColourStack::top()));
-        component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
-        component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
-        // insert into render map
-        renderMap[ PL_OUTLINE_TECHNIQUE ].insert(component);
-
-
-        plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT_PROJECTION);
-        // create render component
-        plRenderComponent component1(_projectionVAO);
-        // attached uniforms
-        component1.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()));
-        component1.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
-        component1.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-        component1.attach(plUniform(PL_COLOUR_UNIFORM,            plColourStack::top()));
-        component1.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
-        // insert into render map
-        renderMap[ PL_OUTLINE_TECHNIQUE ].insert(component1);
-    }
+    plGraftCap::extractRenderComponents(renderMap, technique);
 }
 
 
-void plCartilageCap::generateVAO(PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter)
+void plCartilageCap::generateVAO(float32_t radius, float32_t length, const std::vector<plPointAndAngle>& bonePerimeter)
 {
     const plVector3 y(0,1,0);                // y is cylinder axis (pointing upward)
 
     std::vector<plVector3> vertices;     vertices.reserve(triangles.size()*6 + (perimeter.size() + bonePerimeter.size())*6);
-    std::vector<PLuint>    indices;      indices.reserve(triangles.size()*3 + (perimeter.size() + bonePerimeter.size())*3);
+    std::vector<uint32_t>    indices;      indices.reserve(triangles.size()*3 + (perimeter.size() + bonePerimeter.size())*3);
 
-    for (PLuint i = 0; i < triangles.size(); i++)
+    for (uint32_t i = 0; i < triangles.size(); i++)
     {
-        PLint base = vertices.size()/2;
+        int32_t base = vertices.size()/2;
 
         const plVector3 &p0 = triangles[i].point0();
         const plVector3 &p1 = triangles[i].point1();
@@ -477,15 +439,15 @@ void plCartilageCap::generateVAO(PLfloat radius, PLfloat length, const std::vect
         uint c = 0;
         uint b = 0;
 
-        float cOffset = 0;
-        float bOffset = 0;
+        float32_t cOffset = 0;
+        float32_t bOffset = 0;
 
-        int stepsLeft = perimeter.size() + bonePerimeter.size();
+        int32_t stepsLeft = perimeter.size() + bonePerimeter.size();
 
         while (stepsLeft > 0)
         {
-            float cAngle = perimeter[c].angle + cOffset;
-            float bAngle = bonePerimeter[b].angle + bOffset;
+            float32_t cAngle = perimeter[c].angle + cOffset;
+            float32_t bAngle = bonePerimeter[b].angle + bOffset;
 
             plVector3 n = (perimeter[c].point).normalize();
 
@@ -551,17 +513,17 @@ void plCartilageCap::generateVAO(PLfloat radius, PLfloat length, const std::vect
 }
 
 
-void plCartilageCap::_generateProjectionVAO(PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter)
+void plCartilageCap::_generateProjectionVAO(float32_t radius, float32_t length, const std::vector<plPointAndAngle>& bonePerimeter)
 {
 
     const plVector3 y(0,1,0);        // y is cylinder axis (pointing upward)
 
     std::vector<plVector3> vertices;     vertices.reserve(triangles.size()*6 + (perimeter.size() + bonePerimeter.size())*6);
-    std::vector<PLuint>    indices;      indices.reserve(triangles.size()*3 + (perimeter.size() + bonePerimeter.size())*3);
+    std::vector<uint32_t>    indices;      indices.reserve(triangles.size()*3 + (perimeter.size() + bonePerimeter.size())*3);
 
-    for (PLuint i = 0; i < triangles.size(); i++)
+    for (uint32_t i = 0; i < triangles.size(); i++)
     {
-        PLint base = vertices.size()/2;
+        int32_t base = vertices.size()/2;
 
         const plVector3 &p0 = triangles[i].point0();
         const plVector3 &p1 = triangles[i].point1();
@@ -602,16 +564,16 @@ void plCartilageCap::_generateProjectionVAO(PLfloat radius, PLfloat length, cons
 
     if (perimeter.size() > 0)
     {
-        PLfloat PROJECTION_LENGTH = 15;
-        PLfloat CONTRACTED_RADIUS = radius - 0.1f;
+        float32_t PROJECTION_LENGTH = 15;
+        float32_t CONTRACTED_RADIUS = radius - 0.1f;
         // generate cylinder walls
         plVector3 centreTop = (PROJECTION_LENGTH) * y;
         plVector3 z(0,0,1);
         plVector3 x(1,0,0);
 
-        PLint base = vertices.size()/2;
+        int32_t base = vertices.size()/2;
 
-        float theta = perimeter[0].angle;
+        float32_t theta = perimeter[0].angle;
         plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
 
         plVector3 prevBot = perimeter[0].point;
@@ -624,9 +586,9 @@ void plCartilageCap::_generateProjectionVAO(PLfloat radius, PLfloat length, cons
         vertices.push_back(prevTop); // position
         vertices.push_back(n);        // normal
 
-        for (PLuint i=0; i< perimeter.size(); i++)
+        for (uint32_t i=0; i< perimeter.size(); i++)
         {
-            float theta = perimeter[i].angle;
+            float32_t theta = perimeter[i].angle;
             plVector3 bot =  perimeter[i].point;
             plVector3 top = centreTop + CONTRACTED_RADIUS * cos(theta) * z + CONTRACTED_RADIUS * sin(theta) * x;
 
@@ -646,7 +608,7 @@ void plCartilageCap::_generateProjectionVAO(PLfloat radius, PLfloat length, cons
         vertices.push_back(prevTop); // position
         vertices.push_back(n);        // normal
 
-        for (PLuint j = 0; j <= perimeter.size()*2; j+=2)
+        for (uint32_t j = 0; j <= perimeter.size()*2; j+=2)
         {
             // side t1
             indices.push_back(base+j);
@@ -696,17 +658,17 @@ plVector4 plBoneCap::_getColour() const
 }
 
 
-void plBoneCap::generateVAO(PLfloat radius, PLfloat length)
+void plBoneCap::generateVAO(float32_t radius, float32_t length)
 {
     const plVector3 y(0,1,0);                // y is cylinder axis (pointing upward)
 
     std::vector<plVector3> vertices;     vertices.reserve(triangles.size()*6 + perimeter.size()*6 + 14);
-    std::vector<PLuint>    indices;      indices.reserve(triangles.size()*3 + perimeter.size() * 9);
+    std::vector<uint32_t>    indices;      indices.reserve(triangles.size()*3 + perimeter.size() * 9);
 
     // generate surface vertices for cap
-    for (PLuint i = 0; i < triangles.size(); i++)
+    for (uint32_t i = 0; i < triangles.size(); i++)
     {
-        PLint base = vertices.size()/2;
+        int32_t base = vertices.size()/2;
 
         const plVector3 &p0 = triangles[i].point0();
         const plVector3 &p1 = triangles[i].point1();
@@ -734,9 +696,9 @@ void plBoneCap::generateVAO(PLfloat radius, PLfloat length)
 
     if (perimeter.size() > 0)
     {
-        PLint base = vertices.size()/2;
+        int32_t base = vertices.size()/2;
 
-        float theta = perimeter[0].angle;
+        float32_t theta = perimeter[0].angle;
         plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
 
         plVector3 prevTop = perimeter[0].point;
@@ -752,9 +714,9 @@ void plBoneCap::generateVAO(PLfloat radius, PLfloat length)
         vertices.push_back(prevBot); // position
         vertices.push_back(-y);       // normal
 
-        for (PLuint i=0; i< perimeter.size(); i++)
+        for (uint32_t i=0; i< perimeter.size(); i++)
         {
-            float theta = perimeter[i].angle;
+            float32_t theta = perimeter[i].angle;
             plVector3 top = perimeter[i].point;
             plVector3 bot = centreBottom + radius * cos(theta) * z + radius * sin(theta) * x;
 
@@ -783,7 +745,7 @@ void plBoneCap::generateVAO(PLfloat radius, PLfloat length)
         vertices.push_back(centreBottom);   // position
         vertices.push_back(-y);             // normal
 
-        for (PLuint j = 0; j <= perimeter.size()*3; j+=3)
+        for (uint32_t j = 0; j <= perimeter.size()*3; j+=3)
         {
             // side t1
             indices.push_back(base+j);

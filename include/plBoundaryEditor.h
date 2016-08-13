@@ -15,41 +15,40 @@ class plBoundaryEditor : public plEditor
         plBoundaryEditor();
 
         void clearSelection();
-        void selectBoundary(PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex);
+        void selectBoundary(uint32_t boundaryType, uint32_t boundaryIndex, uint32_t pointIndex);
 
-        PLbool isBoundarySelected() const { return (_selectedBoundary != nullptr); }
+        bool isBoundarySelected() const { return (_selectedBoundary != nullptr); }
 
-        PLbool processMouseClick   (PLint x, PLint y);
-        PLbool processMouseDrag    (PLint x, PLint y);
-        PLbool processMouseRelease (PLint x, PLint y);
-        PLbool processJoystickDrag (PLint x, PLint y);
+        bool processMouseClick   (int32_t x, int32_t y);
+        bool processMouseDrag    (int32_t x, int32_t y);
+        bool processMouseRelease (int32_t x, int32_t y);
+        bool processJoystickDrag (int32_t x, int32_t y);
 
-        void addPoint                (PLuint x, PLuint y, PLbool selectNewPoint = true);
-        void moveSelectedPoint       (PLuint x, PLuint y);
+        void addPoint                (uint32_t x, uint32_t y, bool selectNewPoint = true);
+        void moveSelectedPoint       (uint32_t x, uint32_t y);
         void removeSelectedPoint     ();
         void clearSelectedBoundary   ();
         void removeSelectedSite      ();
         void toggleSelectedVisibility();
 
         void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
     private:
 
-        PLint       _selectedSiteIndex;    // use this and above to determine which pl*Site
+        int32_t       _selectedSiteIndex;    // use this and above to determine which pl*Site
         plBoundary *_selectedBoundary;
-        PLint       _selectedPointIndex;
+        int32_t       _selectedPointIndex;
 
         void _clearSiteBoundaries();
 
-        void _selectBoundary(plBoundary &boundary, PLuint boundaryIndex, PLuint pointIndex);
+        void _selectBoundary(plBoundary &boundary, uint32_t boundaryIndex, uint32_t pointIndex);
 
-        void _selectDefectSiteSpline     (PLuint boundaryIndex, PLuint pointIndex);
-        void _selectDefectSiteBoundary   (PLuint boundaryIndex, PLuint pointIndex);
-        void _selectDonorSiteBoundary    (PLuint boundaryIndex, PLuint pointIndex);
-        void _selectIGuideBoundary       (PLuint boundaryIndex, PLuint pointIndex);
+        void _selectDefectSiteSpline     (uint32_t boundaryIndex, uint32_t pointIndex);
+        void _selectDefectSiteBoundary   (uint32_t boundaryIndex, uint32_t pointIndex);
+        void _selectDonorSiteBoundary    (uint32_t boundaryIndex, uint32_t pointIndex);
 
-        plIntersection _getBoundaryIntersection(PLuint x, PLuint y);
+        plIntersection _getBoundaryIntersection(uint32_t x, uint32_t y);
 
         void _extractMenuRenderComponents(plRenderMap& renderMap) const;
 

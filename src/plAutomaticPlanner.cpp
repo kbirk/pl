@@ -3,10 +3,10 @@
 namespace plAutomaticPlanner
 {
     // private function prototypes
-    void _dispatch          (plPlan &plan, const plPlanningBufferData &planningData, PLuint defectSiteIndex);
+    void _dispatch          (plPlan &plan, const plPlanningBufferData &planningData, uint32_t defectSiteIndex);
     void _clearPreviousPlan (plPlan &plan);
 
-    void calculate(plPlan &plan, PLuint defectSiteIndex)
+    void calculate(plPlan &plan, uint32_t defectSiteIndex)
     {
         // error checking
         if (plan.defectSites().size() == 0)                        { std::cerr << "plAutomaticPlanner::calculate() error: No defect sites specified\n";   return; }
@@ -36,17 +36,17 @@ namespace plAutomaticPlanner
     void _clearPreviousPlan(plPlan &plan)
     {
         // clear previous grafts
-        PLuint previousCount = plan.grafts().size();
-        for (PLuint i=0; i < previousCount; i++)
+        uint32_t previousCount = plan.grafts().size();
+        for (uint32_t i=0; i < previousCount; i++)
         {
             plan.removeGraft(0);
         }
     }
 
 
-    void _dispatch(plPlan &plan, const plPlanningBufferData &planningData, PLuint defectSiteIndex)
+    void _dispatch(plPlan &plan, const plPlanningBufferData &planningData, uint32_t defectSiteIndex)
     {
-        PLtime t0, t1;
+        std::time_t t0, t1;
 
         plDefectSolution defectSolution;
         plCapIndices     capIndices;
@@ -83,7 +83,7 @@ namespace plAutomaticPlanner
 
         if (donorSolution.graftPositions.size() > 0)
         {
-            for (PLuint i=0; i < defectSolution.graftCount; i++)
+            for (uint32_t i=0; i < defectSolution.graftCount; i++)
             {
                 // harvest transform
                 plVector3 harvestOrigin(donorSolution.graftPositions[i]);
@@ -117,7 +117,7 @@ namespace plAutomaticPlanner
                 plTransform recipientRotationalOffset(recipientRotation.inverse());
 
                 // get the model id from the graft site index
-                PLuint modelID = plan.getModelIndex(plan.donorSites(donorSolution.graftSiteIndices[i]).boundary);
+                uint32_t modelID = plan.getModelIndex(plan.donorSites(donorSolution.graftSiteIndices[i]).boundary);
 
                 plPlug harvest  (plan.models(modelID).mesh(),
                                   PL_PICKING_INDEX_GRAFT_DONOR,
@@ -137,18 +137,13 @@ namespace plAutomaticPlanner
         plan.updateGraftMarkerPositions();
 
         // set boundaries invisible
-        for (PLuint i = 0; i < plan.iGuideSites().size(); i++)
-        {
-            plan.iGuideSites(i).boundary.setInvisible();
-        }
-
-        for (PLuint i = 0; i < plan.defectSites().size(); i++)
+        for (uint32_t i = 0; i < plan.defectSites().size(); i++)
         {
             plan.defectSites(i).spline.setInvisible();
             plan.defectSites(i).boundary.setInvisible();
         }
 
-        for (PLuint i = 0; i < plan.donorSites().size(); i++)
+        for (uint32_t i = 0; i < plan.donorSites().size(); i++)
         {
             plan.donorSites(i).boundary.setInvisible();
         }

@@ -1,20 +1,20 @@
 #include "plPlannerStage0.h"
 
-plAnnealingGroup::plAnnealingGroup(PLfloat initialEnergy)
-    : _invoEnergiesSSBO      (PL_STAGE_0_INVOCATIONS*sizeof(PLfloat)),
+plAnnealingGroup::plAnnealingGroup(float32_t initialEnergy)
+    : _invoEnergiesSSBO      (PL_STAGE_0_INVOCATIONS*sizeof(float32_t)),
       _invoGraftPositionsSSBO(PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
       _invoGraftNormalsSSBO  (PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
-      _invoGraftRadiiSSBO    (PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(PLfloat)),
-      _invoGraftCountsSSBO   (PL_STAGE_0_INVOCATIONS*sizeof(PLuint)),
+      _invoGraftRadiiSSBO    (PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(float32_t)),
+      _invoGraftCountsSSBO   (PL_STAGE_0_INVOCATIONS*sizeof(uint32_t)),
 
-      _groupEnergiesSSBO       (PL_STAGE_0_NUM_GROUPS*sizeof(PLfloat)), // &std::vector<PLfloat>(PL_STAGE_0_NUM_GROUPS, initialEnergy)[0]),
+      _groupEnergiesSSBO       (PL_STAGE_0_NUM_GROUPS*sizeof(float32_t)), // &std::vector<float32_t>(PL_STAGE_0_NUM_GROUPS, initialEnergy)[0]),
       _groupGraftPositionsSSBO (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
       _groupGraftNormalsSSBO   (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
-      _groupGraftRadiiSSBO     (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(PLfloat)),
-      _groupGraftCountsSSBO    (PL_STAGE_0_NUM_GROUPS*sizeof(PLuint))
+      _groupGraftRadiiSSBO     (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(float32_t)),
+      _groupGraftCountsSSBO    (PL_STAGE_0_NUM_GROUPS*sizeof(uint32_t))
 {
-    std::vector<PLfloat> energies(PL_STAGE_0_NUM_GROUPS, initialEnergy);
-    _groupEnergiesSSBO.set<PLfloat>(energies, PL_STAGE_0_NUM_GROUPS);
+    std::vector<float32_t> energies(PL_STAGE_0_NUM_GROUPS, initialEnergy);
+    _groupEnergiesSSBO.set<float32_t>(energies, PL_STAGE_0_NUM_GROUPS);
 }
 
 
@@ -52,18 +52,18 @@ void plAnnealingGroup::unbind()
 
 void plAnnealingGroup::getSolution(plDefectSolution &solution, const plPlanningBufferData &planningData)
 {
-    PLuint index;
-    PLfloat energy;
+    uint32_t index;
+    float32_t energy;
     getLowestGroupInfo(index, energy);
 
     // read graft count
-    _groupGraftCountsSSBO.readBytes<PLuint>(&solution.graftCount, sizeof(PLuint), 0, index*sizeof(PLuint));
+    _groupGraftCountsSSBO.readBytes<uint32_t>(&solution.graftCount, sizeof(uint32_t), 0, index*sizeof(uint32_t));
     _groupGraftPositionsSSBO.read<plVector4>(solution.graftPositions, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
     _groupGraftNormalsSSBO.read<plVector4>(solution.graftNormals, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
-    _groupGraftRadiiSSBO.read<PLfloat>(solution.graftRadii, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
+    _groupGraftRadiiSSBO.read<float32_t>(solution.graftRadii, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
 
     // re-compute positions as perturbations will shift them off the mesh surface!
-    for (PLuint i=0; i < solution.graftCount; i++)
+    for (uint32_t i=0; i < solution.graftCount; i++)
     {
         plVector3 rayOrigin   (solution.graftPositions[i].x, solution.graftPositions[i].y, solution.graftPositions[i].z);
         plVector3 rayDirection(solution.graftNormals[i].x,   solution.graftNormals[i].y,   solution.graftNormals[i].z);
@@ -76,17 +76,17 @@ void plAnnealingGroup::getSolution(plDefectSolution &solution, const plPlanningB
 }
 
 
-void plAnnealingGroup::getLowestGroupInfo(PLuint &index, float &energy)
+void plAnnealingGroup::getLowestGroupInfo(uint32_t &index, float32_t &energy)
 {
     // read energies
-    std::vector<PLfloat > energies;
-    _groupEnergiesSSBO.read<PLfloat>(energies, PL_STAGE_0_NUM_GROUPS);
+    std::vector<float32_t > energies;
+    _groupEnergiesSSBO.read<float32_t>(energies, PL_STAGE_0_NUM_GROUPS);
 
     // find best group
-    PLfloat lowestEnergy = FLT_MAX;
-    PLuint  lowestGroup  = 0;
+    float32_t lowestEnergy = FLT_MAX;
+    uint32_t  lowestGroup  = 0;
 
-    for (PLuint i=0; i < PL_STAGE_0_NUM_GROUPS; i++)
+    for (uint32_t i=0; i < PL_STAGE_0_NUM_GROUPS; i++)
     {
         if (energies[i] < lowestEnergy)
         {
@@ -100,7 +100,7 @@ void plAnnealingGroup::getLowestGroupInfo(PLuint &index, float &energy)
 }
 
 
-PLuint logBN(float base, float num)
+uint32_t logBN(float32_t base, float32_t num)
 {
     return log10(num) / log10(base);
 }
@@ -137,17 +137,17 @@ namespace plPlannerStage0
         stage0Shader.bind(); // bind shader
         stage0Shader.setDefectSiteUniforms(planningData.defectSite);
 
-        plSSBO triangleAreaSSBO (planningData.defectSite.triangles.size()*PL_STAGE_0_INVOCATIONS*sizeof(PLfloat));
+        plSSBO triangleAreaSSBO (planningData.defectSite.triangles.size()*PL_STAGE_0_INVOCATIONS*sizeof(float32_t));
         plAnnealingGroup annealingBuffers(planningData.defectSite.area);
 
         planningData.defectSiteSSBO.bind(0);
         triangleAreaSSBO.bind(1);
         annealingBuffers.bind(); // 2, 3, 4, 5, 6, 7, 8 , 9, 10, 11
 
-        PLfloat temperature = PL_STAGE_0_INITIAL_TEMPERATURE;
+        float32_t temperature = PL_STAGE_0_INITIAL_TEMPERATURE;
 
-        PLuint TOTAL_ITERATIONS = logBN(1.0 - PL_STAGE_0_COOLING_RATE, PL_STAGE_0_STOPPING_TEMPERATURE);
-        PLuint iterationNum = 0;
+        uint32_t TOTAL_ITERATIONS = logBN(1.0 - PL_STAGE_0_COOLING_RATE, PL_STAGE_0_STOPPING_TEMPERATURE);
+        uint32_t iterationNum = 0;
 
         // simulated annealing
         while (temperature > PL_STAGE_0_STOPPING_TEMPERATURE)
@@ -156,15 +156,14 @@ namespace plPlannerStage0
             stage0Shader.setLocalLoadUniform  (0);
             stage0Shader.setTemperatureUniform(temperature);
 
-            PLuint its = PLuint(PL_STAGE_0_ITERATIONS * temperature) + 1;
+            uint32_t its = uint32_t(PL_STAGE_0_ITERATIONS * temperature) + 1;
 
-            for (PLint i=its; i>=0; i--)
+            for (int32_t i=its; i>=0; i--)
             {
                 // local iteration
                 // call compute shader with 1D workgrouping
-#ifndef SKIP_COMPUTE_SHADER
                 glDispatchCompute(PL_STAGE_0_NUM_GROUPS, 1, 1);
-#endif
+
                 // memory barrier
                 glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -172,15 +171,15 @@ namespace plPlannerStage0
                 stage0Shader.setSeedUniform();
             }
 
-            PLuint bestGroup;
-            PLfloat energy;
+            uint32_t bestGroup;
+            float32_t energy;
             // get best group info
             annealingBuffers.getLowestGroupInfo(bestGroup, energy);
 
             // cool temperature
             temperature *= 1 - PL_STAGE_0_COOLING_RATE;
 
-            plUtility::printProgressBar(iterationNum++ / (float)TOTAL_ITERATIONS);
+            plUtility::printProgressBar(iterationNum++ / (float32_t)TOTAL_ITERATIONS);
         }
         plUtility::printProgressBar(1.0);
 
@@ -189,7 +188,7 @@ namespace plPlannerStage0
 
         /* DEBUG
         std::cout << std::endl << "DEBUG: " << std::endl;
-        for (PLuint i=0; i<defectSolution.graftCount; i++)
+        for (uint32_t i=0; i<defectSolution.graftCount; i++)
         {
             std::cout << "Graft " << i << ",    Position: " << defectSolution.graftPositions[i]
                                        << ",    Normal: "   << defectSolution.graftNormals[i]

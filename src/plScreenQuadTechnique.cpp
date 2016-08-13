@@ -26,7 +26,7 @@ void plScreenQuadTechnique::render(const std::set<plRenderComponent >& component
 plVAO plScreenQuadTechnique::_generateQuad() const
 {
     std::vector<plVector3> vertices;        vertices.reserve(8);
-    std::vector<PLuint>    indices;         indices.reserve(6);
+    std::vector<uint32_t>    indices;         indices.reserve(6);
 
     // position                                     // texture coord
     vertices.push_back(plVector3(-1, -1, 0));   vertices.push_back(plVector3(0,0,0));

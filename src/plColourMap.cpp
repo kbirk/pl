@@ -3,7 +3,7 @@
 namespace plColourMap
 {
 
-    PLuint _colourMap[PL_COLOURMAP_SIZE][4] =
+    uint32_t _colourMap[PL_COLOURMAP_SIZE][4] =
     {
       { 0, 0, 188, 128 },
       { 0, 0, 189, 128 },
@@ -519,11 +519,11 @@ namespace plColourMap
       { 201, 0, 0, 128 },
     };
 
-    plVector3 map(PLfloat k)
+    plVector3 map(float32_t k)
     {
         if (k > 1) k = 1;
         if (k < 0) k = 0;
-        PLint i = PLint(k * (PL_COLOURMAP_SIZE-1));
+        int32_t i = int32_t(k * (PL_COLOURMAP_SIZE-1));
         return plVector3(
             _colourMap[i][0]/255.0f,
             _colourMap[i][1]/255.0f,

@@ -10,7 +10,7 @@ class plMatrixStack
 
         plMatrixStack();
 
-        PLbool empty() { return _stack.size() == 0; }
+        bool empty() { return _stack.size() == 0; }
 
         void load(const plMatrix44 &m);
         void push();
@@ -24,7 +24,7 @@ class plMatrixStack
 
         void scale    (const plVector3 &v);
         void translate(const plVector3 &v);
-        void rotate   (float angle, const plVector3 &v);
+        void rotate   (float32_t angle, const plVector3 &v);
 
         const plMatrix44& top(void);
 

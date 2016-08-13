@@ -17,9 +17,7 @@ enum plPickingRedEnums
     PL_PICKING_TYPE_DEFECT_SPLINE,
     PL_PICKING_TYPE_DEFECT_CORNERS,
     PL_PICKING_TYPE_DEFECT_BOUNDARY,
-    PL_PICKING_TYPE_DONOR_BOUNDARY,
-    PL_PICKING_TYPE_IGUIDE_BOUNDARY,
-    PL_PICKING_TYPE_IGUIDE
+    PL_PICKING_TYPE_DONOR_BOUNDARY
 };
 
 
@@ -34,16 +32,16 @@ class plPickingInfo
 {
     public:
 
-        PLint r;
-        PLint g;
-        PLint b;
+        int32_t r;
+        int32_t g;
+        int32_t b;
 
         plPickingInfo()
             : r(-1), g(-1), b(-1)
         {
         }
 
-        plPickingInfo(PLint red, PLint green, PLint blue)
+        plPickingInfo(int32_t red, int32_t green, int32_t blue)
             : r(red), g(green), b(blue)
         {
         }
@@ -53,5 +51,5 @@ class plPickingInfo
 namespace plPicking
 {
     const plPickingInfo& previousPick();
-    const plPickingInfo& pickPixel(PLuint x, PLuint y);
+    const plPickingInfo& pickPixel(uint32_t x, uint32_t y);
 }

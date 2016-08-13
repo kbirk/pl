@@ -19,7 +19,7 @@ class plVertexAttributePointer
 {
     public:
 
-        plVertexAttributePointer(GLuint index, GLuint stride, GLuint offset)// = 0)
+        plVertexAttributePointer(GLuint index, GLuint stride, GLuint offset)
             : index(index), stride(stride), offset(offset)
         {
         }
@@ -36,20 +36,20 @@ class plVBO : public plVertexSpecBuffer
     public:
 
         plVBO();
-        plVBO(const std::vector<plVector4>& data, PLuint usage = GL_STATIC_DRAW);
+        plVBO(const std::vector<plVector4>& data, uint32_t usage = GL_STATIC_DRAW);
         plVBO(const plVBO& vbo);
         plVBO(plVBO&& vbo);
 
         plVBO& operator= (const plVBO& vbo);
         plVBO& operator= (plVBO&& vbo);
 
-        void set(const std::vector<plVector3>& data, PLuint usage = GL_STATIC_DRAW);
-        void set(const std::vector<plVector4>& data, PLuint usage = GL_STATIC_DRAW);
+        void set(const std::vector<plVector3>& data, uint32_t usage = GL_STATIC_DRAW);
+        void set(const std::vector<plVector4>& data, uint32_t usage = GL_STATIC_DRAW);
         void set(const plVertexAttributePointer& attributePointer);
 
         void clear();
 
-        void bind  () const { glBindBuffer(GL_ARRAY_BUFFER, _id); }
+        void bind() const { glBindBuffer(GL_ARRAY_BUFFER, _id); }
         void unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
         void upload();

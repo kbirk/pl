@@ -33,11 +33,11 @@ void plSpline::clear()
 }
 
 
-PLuint plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &normal)
+uint32_t plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &normal)
 {
     if (size() < 4)
     {
-        PLint ret = plBoundary::addPointAndNormal(point, normal);
+        int32_t ret = plBoundary::addPointAndNormal(point, normal);
 
         if (size() == 4)
         {
@@ -49,7 +49,7 @@ PLuint plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &nor
 }
 
 
-void plSpline::movePointAndNormal(PLuint index, const plVector3 &point, const plVector3 &normal)
+void plSpline::movePointAndNormal(uint32_t index, const plVector3 &point, const plVector3 &normal)
 {
     plBoundary::movePointAndNormal(index, point, normal);
 
@@ -60,13 +60,13 @@ void plSpline::movePointAndNormal(PLuint index, const plVector3 &point, const pl
 }
 
 
-void plSpline::removePointAndNormal(PLuint index)
+void plSpline::removePointAndNormal(uint32_t index)
 {
     plBoundary::removePointAndNormal(index);
 }
 
 
-void plSpline::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plSpline::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     if (!_isVisible)
         return;
@@ -101,7 +101,7 @@ void plSpline::extractRenderComponents(plRenderMap& renderMap, PLuint technique)
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        renderMap[ technique ].insert(component);
+        renderMap[technique].insert(component);
 
         plColourStack::pop();
     }
@@ -114,7 +114,7 @@ void plSpline::extractRenderComponents(plRenderMap& renderMap) const
 }
 
 
-PLfloat Q(PLfloat s, PLfloat t, const std::vector<PLfloat> &st, const std::vector<PLfloat> &tt)
+float32_t Q(float32_t s, float32_t t, const std::vector<float32_t> &st, const std::vector<float32_t> &tt)
 {
     // hermite blending matrix
     static plMatrix44 h(2, -3,  0,  1,
@@ -136,7 +136,7 @@ PLfloat Q(PLfloat s, PLfloat t, const std::vector<PLfloat> &st, const std::vecto
 
 std::vector<plVector3> plSpline::_averageCornerNormals() const
 {
-    const PLfloat AVERAGE_RADIUS = 2.0f;
+    const float32_t AVERAGE_RADIUS = 2.0f;
 
     std::vector<plVector3> cornerNormals;
 
@@ -150,7 +150,7 @@ std::vector<plVector3> plSpline::_averageCornerNormals() const
 }
 
 
-void plSpline::_computeTangents(std::vector<PLfloat> &st, std::vector<PLfloat> &tt, const std::vector<plVector3> &p, const std::vector<plVector3> &n) const
+void plSpline::_computeTangents(std::vector<float32_t> &st, std::vector<float32_t> &tt, const std::vector<plVector3> &p, const std::vector<plVector3> &n) const
 {
     // get unit directional vectors, (ex. p01 = from p0 to p1)
     plVector3 p01 = (p[1]-p[0]).normalize();
@@ -226,7 +226,7 @@ void plSpline::_computeHermite()
     const std::vector<plVector3> n  = _averageCornerNormals();
 
     // find tangents in the s and t planes
-    std::vector<PLfloat> st, tt; _computeTangents(st, tt, p, n);
+    std::vector<float32_t> st, tt; _computeTangents(st, tt, p, n);
 
     std::vector<plTriangle> triangles;
     triangles.reserve(PL_SPLINE_RESOLUTION*PL_SPLINE_RESOLUTION*2);
@@ -235,11 +235,11 @@ void plSpline::_computeHermite()
     std::vector<plVector3> colours;     colours.reserve((PL_SPLINE_RESOLUTION+1)*(PL_SPLINE_RESOLUTION+1));
 
     std::vector<plVector3> vertices;    vertices.reserve(PL_SPLINE_RESOLUTION * PL_SPLINE_RESOLUTION * 6 * 3);
-    std::vector<PLuint>    indices;     indices.reserve (PL_SPLINE_RESOLUTION * PL_SPLINE_RESOLUTION * 6);
+    std::vector<uint32_t>    indices;     indices.reserve (PL_SPLINE_RESOLUTION * PL_SPLINE_RESOLUTION * 6);
 
-    for (PLuint j=0; j <= PL_SPLINE_RESOLUTION; j++)
+    for (uint32_t j=0; j <= PL_SPLINE_RESOLUTION; j++)
     {
-        PLfloat v = j/PL_SPLINE_RESOLUTION;
+        float32_t v = j/PL_SPLINE_RESOLUTION;
 
         // interpolate spline corner positions and normals for current v coord
         plVector3 n03 = (1.0f-v)*n[0] + v*n[3];
@@ -248,12 +248,12 @@ void plSpline::_computeHermite()
         plVector3 p03 = (1.0f-v)*p[0] + v*p[3];
         plVector3 p12 = (1.0f-v)*p[1] + v*p[2];
 
-        for (PLuint i=0; i <= PL_SPLINE_RESOLUTION; i++)
+        for (uint32_t i=0; i <= PL_SPLINE_RESOLUTION; i++)
         {
-            PLfloat u = i/PL_SPLINE_RESOLUTION;
+            float32_t u = i/PL_SPLINE_RESOLUTION;
 
             // first row, don't triangulate
-            PLfloat z = Q(u, v, st, tt);
+            float32_t z = Q(u, v, st, tt);
 
             // interpolate position and normal for current u coord
             plVector3 norm = ((1.0f-u)*n03 + u*n12).normalize();
@@ -262,7 +262,7 @@ void plSpline::_computeHermite()
             // intersect surface for distance map
             plIntersection intersection = _mesh->rayIntersect(pos, -norm, false, false, true);
 
-            PLfloat distance = (intersection.point - pos).squaredLength() / PL_SPLINE_COLOUR_MAP_RANGE;
+            float32_t distance = (intersection.point - pos).squaredLength() / PL_SPLINE_COLOUR_MAP_RANGE;
 
             // get colour value
             plVector3 colour = (distance <= PL_SPLINE_COLOUR_MAP_RANGE) ? plColourMap::map(distance) : PL_SPLINE_NO_DATA_COLOUR;
@@ -273,17 +273,17 @@ void plSpline::_computeHermite()
             if (j > 0 && i > 0)
             {
                 // once past first row, begin triangulating
-                PLuint i0 = (i-1) + (j-1) * (PL_SPLINE_RESOLUTION+1);
-                PLuint i1 = i0 + 1;
-                PLuint i2 = i + j * (PL_SPLINE_RESOLUTION+1);
-                PLuint i3 = i2 - 1;
+                uint32_t i0 = (i-1) + (j-1) * (PL_SPLINE_RESOLUTION+1);
+                uint32_t i1 = i0 + 1;
+                uint32_t i2 = i + j * (PL_SPLINE_RESOLUTION+1);
+                uint32_t i3 = i2 - 1;
 
                 plVector3 normal = ((points[i2] - points[i1]) ^ (points[i0] - points[i1])).normalize();
 
                 triangles.emplace_back(plTriangle(normal, points[i0], points[i1], points[i2]));
                 triangles.emplace_back(plTriangle(normal, points[i0], points[i2], points[i3]));
 
-                PLuint base = vertices.size() / 3;
+                uint32_t base = vertices.size() / 3;
 
                 vertices.push_back(points[i0]);  vertices.push_back(normal);  vertices.push_back(colours[i0]);  // point 0
                 vertices.push_back(points[i1]);  vertices.push_back(normal);  vertices.push_back(colours[i1]);  // point 1
@@ -321,7 +321,7 @@ void plSpline::_computeHermite()
 }
 
 
-PLtime plSpline::_timeSinceLastUpdate()
+std::time_t plSpline::_timeSinceLastUpdate()
 {
     return plTimer::now() - _lastUpdate;
 }

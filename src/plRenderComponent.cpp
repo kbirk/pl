@@ -6,7 +6,7 @@ plRenderComponent::plRenderComponent(const std::shared_ptr<plVAO>& vao)
 }
 
 
-PLbool plRenderComponent::operator< (const plRenderComponent& rc) const
+bool plRenderComponent::operator< (const plRenderComponent& rc) const
 {
     // currently sorts by address
     return this < &rc;

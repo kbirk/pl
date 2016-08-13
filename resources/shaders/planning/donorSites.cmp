@@ -8,12 +8,12 @@ void getDonorSiteAndIndex(inout uint site, inout uint localIndex)
     localIndex = gl_GlobalInvocationID.x;
     for (uint i=0; i<uDonorSiteCount; i++)
     {
-        if (localIndex < uDonorSiteGridPointCounts[ i ])
+        if (localIndex < uDonorSiteGridPointCounts[i])
         {
             site = i;
             break;
         }
-        localIndex -= uDonorSiteGridPointCounts[ i ];
+        localIndex -= uDonorSiteGridPointCounts[i];
     }
 }
 
@@ -23,31 +23,31 @@ void getDonorSiteAndIndex(inout uint site, inout uint localIndex, in uint global
     localIndex = globalIndex;
     for (uint i=0; i<uDonorSiteCount; i++)
     {
-        if (localIndex < uDonorSiteGridPointCounts[ i ])
+        if (localIndex < uDonorSiteGridPointCounts[i])
         {
             site = i;
             break;
         }
-        localIndex -= uDonorSiteGridPointCounts[ i ];
+        localIndex -= uDonorSiteGridPointCounts[i];
     }
 }
 
 
 vec4 donorSitePositions(in uint site, in uint i)
 {
-    return donorSiteData[ uDonorSiteDataOffsets[ site ] + i ];
+    return donorSiteData[uDonorSiteDataOffsets[site] + i];
 }
 
 
 vec4 donorSiteNormals(in uint site, in uint i)
 {
-    return donorSiteData[ uDonorSiteDataOffsets[ site ] + uDonorSiteGridPointCounts[ site ] + i ];
+    return donorSiteData[uDonorSiteDataOffsets[site] + uDonorSiteGridPointCounts[site] + i];
 }
 
 
 triangle donorSiteTriangles(in uint site, in uint i)
 {
-    uint j = uDonorSiteDataOffsets[ site ] + uDonorSiteGridPointCounts[ site ]*2 + i*4;
+    uint j = uDonorSiteDataOffsets[site] + uDonorSiteGridPointCounts[site]*2 + i*4;
     triangle t;
     t.p0 = donorSiteData[j+0].xyz;
     t.p1 = donorSiteData[j+1].xyz;
@@ -59,24 +59,24 @@ triangle donorSiteTriangles(in uint site, in uint i)
 
 edge donorSiteEdge(in uint site, in uint i)
 {
-    uint offset = uDonorSiteDataOffsets[ site ] + uDonorSiteGridPointCounts[ site ]*2 + uDonorSiteTriangleCounts[ site ]*4;
+    uint offset = uDonorSiteDataOffsets[site] + uDonorSiteGridPointCounts[site]*2 + uDonorSiteTriangleCounts[site]*4;
 
     uint j = offset + i;
-    uint k = offset + ((i+1) % uDonorSiteBoundaryPointCounts[ site ]);
+    uint k = offset + ((i+1) % uDonorSiteBoundaryPointCounts[site]);
 
     edge e;
-    e.p0 = donorSiteData[ j ].xyz;
-    e.p1 = donorSiteData[ k ].xyz;
-    e.n  = donorSiteData[ j + uDonorSiteBoundaryPointCounts[ site ] ].xyz;
+    e.p0 = donorSiteData[j].xyz;
+    e.p1 = donorSiteData[k].xyz;
+    e.n  = donorSiteData[j + uDonorSiteBoundaryPointCounts[site]].xyz;
     return e;
 }
 
 
-bool isWithinDonorBoundary(in uint site, in vec3 position, in vec3 normal, in float radius)
+bool isWithinDonorBoundary(in uint site, in vec3 position, in vec3 normal, in float32_t radius)
 {
     // checks if closest point on all edges is within radius distance to the grafts central axis
     bool inside = true;
-    for (int i=0; i < uDonorSiteBoundaryPointCounts[ site ]; i++)
+    for (int32_t i=0; i < uDonorSiteBoundaryPointCounts[site]; i++)
     {
         edge e = donorSiteEdge(site, i);
 

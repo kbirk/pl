@@ -3,15 +3,15 @@
 namespace plWindow
 {
 
-    PLuint _width;
-    PLuint _height;
-    PLuint _viewportWidth;
-    PLuint _viewportHeight;
-    PLuint _viewportX;
-    PLuint _viewportY;
+    uint32_t _width = 0;
+    uint32_t _height =0;
+    uint32_t _viewportWidth = 0;
+    uint32_t _viewportHeight = 0;
+    uint32_t _viewportX = 0;
+    uint32_t _viewportY = 0;
 
 
-    void reshape(PLuint width, PLuint height)
+    void reshape(uint32_t width, uint32_t height)
     {
         _width = width;
         _height = height;
@@ -34,63 +34,63 @@ namespace plWindow
     }
 
 
-    PLuint width()
+    uint32_t width()
     {
         return _width;
     }
 
 
-    PLuint height()
+    uint32_t height()
     {
         return _height;
     }
 
 
-    PLuint viewportWidth()
+    uint32_t viewportWidth()
     {
         return _viewportWidth;
     }
 
 
-    PLuint viewportHeight()
+    uint32_t viewportHeight()
     {
         return _viewportHeight;
     }
 
 
-    PLuint viewportX()
+    uint32_t viewportX()
     {
         return _viewportX;
     }
 
 
-    PLuint viewportY()
+    uint32_t viewportY()
     {
         return _viewportY;
     }
 
 
-    PLint windowToViewportX(PLint x)
+    int32_t windowToViewportX(int32_t x)
     {
         return x - _viewportX;
     }
 
 
-    PLint windowToViewportY(PLint y)
+    int32_t windowToViewportY(int32_t y)
     {
         return y - _viewportY;
     }
 
 
-    plVector3 mouseToWorld(PLint x, PLint y, PLint z)
+    plVector3 mouseToWorld(int32_t x, int32_t y, int32_t z)
     {
         plMatrix44 mvp = (plProjectionStack::top() * plCameraStack::top() * plModelStack::top());
         plMatrix44 mvpInverse = mvp.inverse();
 
         // map window coords to range [0 .. 1]
-        PLfloat nx = ((PLfloat)(x)-(PLfloat)(_viewportX)) / (PLfloat)(_viewportWidth);
-        PLfloat ny = ((PLfloat)(y)-(PLfloat)(_viewportY)) / (PLfloat)(_viewportHeight);
-        PLfloat nz = (PLfloat)(z);
+        float32_t nx = ((float32_t)(x)-(float32_t)(_viewportX)) / (float32_t)(_viewportWidth);
+        float32_t ny = ((float32_t)(y)-(float32_t)(_viewportY)) / (float32_t)(_viewportHeight);
+        float32_t nz = (float32_t)(z);
 
         // map to range of [-1 .. 1]
         plVector4 input((nx * 2.0f) - 1.0f,
@@ -112,7 +112,7 @@ namespace plWindow
     }
 
 
-    plVector3 worldToScreen(PLfloat x, PLfloat y, PLfloat z)
+    plVector3 worldToScreen(float32_t x, float32_t y, float32_t z)
     {
         plVector4 projected = (plProjectionStack::top() * plCameraStack::top() * plModelStack::top()) * plVector4(x,y,z,1);
 
@@ -146,7 +146,7 @@ namespace plWindow
     }
 
 
-    void cameraToMouseRay(plVector3 &rayOrigin, plVector3 &rayDirection, PLint x, PLint y)
+    void cameraToMouseRay(plVector3 &rayOrigin, plVector3 &rayDirection, int32_t x, int32_t y)
     {
         plVector3 mouseInWorld = mouseToWorld(x, y, 0);
 

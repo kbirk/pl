@@ -1,12 +1,12 @@
 #include "plPlug.h"
 
-plPlug::plPlug(PLuint type)
+plPlug::plPlug(uint32_t type)
     : _type(type)
 {
 }
 
 
-plPlug::plPlug(const plMesh& mesh, PLuint type, const plTransform& surfaceTransform, const plTransform& rotationalOffset)
+plPlug::plPlug(const plMesh& mesh, uint32_t type, const plTransform& surfaceTransform, const plTransform& rotationalOffset)
     :   plMeshSpecific(mesh),
         _type(type),
         _surfaceTransform(surfaceTransform),
@@ -49,7 +49,7 @@ void plPlug::rotate(const plVector3& y)
     const plVector3& surfaceNormal = _surfaceTransform.y();
 
     // check angle between new y and surface normal
-    PLfloat angle = acos(surfaceNormal * y);
+    float32_t angle = acos(surfaceNormal * y);
 
     plVector3 finalY = y;
 
@@ -70,7 +70,7 @@ void plPlug::rotate(const plVector3& y)
 }
 
 
-void plPlug::rotate(PLfloat angleDegrees)
+void plPlug::rotate(float32_t angleDegrees)
 {
     plMatrix44 rot;     rot.setRotationD(angleDegrees, _surfaceTransform.y());
     _rotationalOffset = plTransform(rot * _rotationalOffset.matrix());

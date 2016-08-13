@@ -1,6 +1,6 @@
 #include "plTexture2D.h"
 
-plTexture2D::plTexture2D(PLuint width, PLuint height, PLuint internalFormat, PLuint format, PLuint type, GLvoid* image)
+plTexture2D::plTexture2D(uint32_t width, uint32_t height, uint32_t internalFormat, uint32_t format, uint32_t type, GLvoid* image)
     : _id(0)
 {
     set(width, height, internalFormat, format, type, image);
@@ -55,13 +55,13 @@ void plTexture2D::unbind() const
 }
 
 
-void plTexture2D::set(PLuint width, PLuint height, GLvoid* image)
+void plTexture2D::set(uint32_t width, uint32_t height, GLvoid* image)
 {
     set(width, height, _internalFormat, _format, _type, image);
 }
 
 
-void plTexture2D::set(PLuint width, PLuint height, PLuint internalFormat, PLuint format, PLuint type, GLvoid* image)
+void plTexture2D::set(uint32_t width, uint32_t height, uint32_t internalFormat, uint32_t format, uint32_t type, GLvoid* image)
 {
     _width  = width;
     _height = height;
@@ -89,7 +89,7 @@ void plTexture2D::set(PLuint width, PLuint height, PLuint internalFormat, PLuint
 }
 
 
-void plTexture2D::setParameter(PLuint pname, PLuint param)
+void plTexture2D::setParameter(uint32_t pname, uint32_t param)
 {
     glBindTexture(GL_TEXTURE_2D, _id);
     glTexParameteri(GL_TEXTURE_2D, pname, param);
@@ -106,7 +106,7 @@ void plTexture2D::_destroy()
 
 void plTexture2D::_copy(const plTexture2D &texture)
 {
-    PLchar *buffer = new PLchar[ texture._width * texture._height * texture._getFormatSize() ];
+    uint8_t *buffer = new uint8_t[texture._width * texture._height * texture._getFormatSize()];
 
     // copy vertex data
     glBindTexture(GL_TEXTURE_2D, texture._id);
@@ -120,9 +120,9 @@ void plTexture2D::_copy(const plTexture2D &texture)
 }
 
 
-PLuint plTexture2D::_getFormatSize() const
+uint32_t plTexture2D::_getFormatSize() const
 {
-    PLuint multiplier = 0;
+    uint32_t multiplier = 0;
 
     switch (_format)
     {
@@ -143,7 +143,7 @@ PLuint plTexture2D::_getFormatSize() const
         case GL_DEPTH_STENCIL:      multiplier = 4;     break;
     }
 
-    PLuint size = 0;
+    uint32_t size = 0;
 
     switch (_type)
     {

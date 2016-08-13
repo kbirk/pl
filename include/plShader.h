@@ -17,7 +17,7 @@ class plShader
         void unbind() const { glUseProgram(0);    }
 
         bool   good() const { return _good; }
-        PLuint id()   const { return _id;   }
+        uint32_t id()   const { return _id;   }
 
         virtual void setUniform(const plUniform& uniform) const {};
 
@@ -29,11 +29,11 @@ class plShader
         char*  _readShaderFile(const std::string &filename);
         GLuint _createShader(const std::string &shaderFile, GLenum shaderType);
         GLuint _createShader(const std::vector<std::string> &shaderFiles, GLenum shaderType);
-        PLbool _compileShader(GLuint shader);
+        bool _compileShader(GLuint shader);
         GLuint _createAndCompileShader(const std::string &shaderFile, GLenum shaderType);
         GLuint _createAndCompileShader(const std::vector<std::string> &shaderFiles, GLenum shaderType);
         void   _printCompileError(GLuint shader);
-        PLbool _linkProgram();
+        bool _linkProgram();
         void   _printLinkError();
 
         virtual void _getUniformLocations() = 0;

@@ -17,7 +17,7 @@ void plModelEditor::clearSelection()
 }
 
 
-void plModelEditor::setEditMode(PLuint editMode)
+void plModelEditor::setEditMode(uint32_t editMode)
 {
     switch (editMode)
     {
@@ -35,7 +35,7 @@ void plModelEditor::setEditMode(PLuint editMode)
 }
 
 
-PLbool plModelEditor::processMouseClick(PLint x, PLint y)
+bool plModelEditor::processMouseClick(int32_t x, int32_t y)
 {
     plPickingInfo pick = plPicking::pickPixel(x, y);
 
@@ -56,7 +56,7 @@ PLbool plModelEditor::processMouseClick(PLint x, PLint y)
 }
 
 
-PLbool plModelEditor::processMouseDrag(PLint x, PLint y)
+bool plModelEditor::processMouseDrag(int32_t x, int32_t y)
 {
     plPickingInfo pick = plPicking::previousPick();  // read pick from last click, not what is currently under mouse
 
@@ -72,14 +72,14 @@ PLbool plModelEditor::processMouseDrag(PLint x, PLint y)
 }
 
 
-PLbool plModelEditor::processMouseRelease(PLint x, PLint y)
+bool plModelEditor::processMouseRelease(int32_t x, int32_t y)
 {
     _isDraggingMenu = false;
     return true;
 }
 
 
-PLbool plModelEditor::processJoystickDrag(PLint x, PLint y)
+bool plModelEditor::processJoystickDrag(int32_t x, int32_t y)
 {
     if (_selectedModel == nullptr)
         return false;                 // no graft selected
@@ -88,7 +88,7 @@ PLbool plModelEditor::processJoystickDrag(PLint x, PLint y)
 }
 
 
-void plModelEditor::selectModel(PLuint index)
+void plModelEditor::selectModel(uint32_t index)
 {
     // clear any previous selections
     clearSelection();
@@ -98,7 +98,7 @@ void plModelEditor::selectModel(PLuint index)
 }
 
 
-void plModelEditor::_dragModel(PLint x, PLint y)
+void plModelEditor::_dragModel(int32_t x, int32_t y)
 {
     if (_selectedModel == nullptr)
         return;                 // no graft selected
@@ -136,7 +136,7 @@ void plModelEditor::toggleSelectedVisibility()
 }
 
 
-void plModelEditor::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plModelEditor::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     _extractMenuRenderComponents(renderMap);
 
@@ -156,8 +156,8 @@ void plModelEditor::extractRenderComponents(plRenderMap& renderMap) const
 
 void plModelEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
 {
-    const PLfloat HORIZONTAL       = PL_EDITOR_MENU_HORIZONTAL_BUFFER;
-    const PLfloat INITIAL_VERTICAL = PL_EDITOR_MENU_VERTICAL_BUFFER + _plan->models().size()*PL_EDITOR_MENU_VERTICAL_BUFFER;
+    const float32_t HORIZONTAL       = PL_EDITOR_MENU_HORIZONTAL_BUFFER;
+    const float32_t INITIAL_VERTICAL = PL_EDITOR_MENU_VERTICAL_BUFFER + _plan->models().size()*PL_EDITOR_MENU_VERTICAL_BUFFER;
 
     plMatrix44 ortho(0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1);
 
@@ -166,7 +166,7 @@ void plModelEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
                        0, 0, -1, 0,
                        0, 0,  0, 1);
 
-    PLfloat count = 0;
+    float32_t count = 0;
     plPickingStack::loadBlue(-1);
 
     plCameraStack::push(camera);
@@ -174,7 +174,7 @@ void plModelEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
     plModelStack::push(plMatrix44()); // load identity
     {
         // model
-        for (PLuint i=0; i<_plan->models().size(); i++)
+        for (uint32_t i=0; i<_plan->models().size(); i++)
         {
             plPickingStack::loadRed(PL_PICKING_TYPE_BONE);
             plPickingStack::loadGreen(i);
@@ -204,9 +204,9 @@ void plModelEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
 }
 
 
-PLint plModelEditor::selectedModelID() const
+int32_t plModelEditor::selectedModelID() const
 {
-    for (PLuint i=0; i< _plan->models().size(); i++)
+    for (uint32_t i=0; i< _plan->models().size(); i++)
     {
         if (_selectedModel == &_plan->models(i))
         {

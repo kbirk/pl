@@ -5,7 +5,7 @@ plEABO::plEABO()
 }
 
 
-plEABO::plEABO(const std::vector<GLuint>& data, PLuint mode, PLuint usage)
+plEABO::plEABO(const std::vector<GLuint>& data, uint32_t mode, uint32_t usage)
 {
     set(data, mode, usage);
 }
@@ -37,10 +37,10 @@ plEABO& plEABO::operator= (plEABO&& eabo)
 }
 
 
-void plEABO::set(const std::vector<PLuint>& data, PLuint mode, PLuint usage)
+void plEABO::set(const std::vector<uint32_t>& data, uint32_t mode, uint32_t usage)
 {
     _data = data;
-    _numBytes = _data.size() * sizeof(PLuint);
+    _numBytes = _data.size() * sizeof(uint32_t);
     _type = GL_UNSIGNED_INT;
     _mode = mode;
     _usage = usage;
@@ -72,7 +72,7 @@ void plEABO::upload()
 }
 
 
-void plEABO::drawElements(PLuint index) const
+void plEABO::drawElements(uint32_t index) const
 {
     glDrawElements(_mode, _data.size(), _type, (GLbyte*)(nullptr) + (index));
 }

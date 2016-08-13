@@ -2,7 +2,7 @@
 
 //functions
 
-float energy(in state s)
+float32_t energy(in state s)
 {
     for (uint i=0; i<s.graftCount; i++)
     {
@@ -13,7 +13,7 @@ float energy(in state s)
 }
 
 
-void calculateCapAreaCoverage(in vec4 position, in vec4 normal, in float radius)
+void calculateCapAreaCoverage(in vec4 position, in vec4 normal, in float32_t radius)
 {
     // iterate through each triangle in mesh
     for(uint i=0; i<uDefectSiteTriangleCount; i++)
@@ -30,9 +30,9 @@ void calculateCapAreaCoverage(in vec4 position, in vec4 normal, in float radius)
 }
 
 
-float uncoveredArea(in state s)
+float32_t uncoveredArea(in state s)
 {
-    float coveredArea = 0.0;
+    float32_t coveredArea = 0.0;
     // iterate over triangles, if they are in cap, value > 0, add to sum
     for (uint i = 0; i < uDefectSiteTriangleCount; i++)
     {
@@ -44,9 +44,9 @@ float uncoveredArea(in state s)
 }
 
 
-float graftOverlap(in state s)
+float32_t graftOverlap(in state s)
 {
-    float totalOverlap = 0;
+    float32_t totalOverlap = 0;
     for (uint i=0; i < s.graftCount; i++)
     {
         for (uint j=i+1; j < s.graftCount; j++)
@@ -59,19 +59,19 @@ float graftOverlap(in state s)
 }
 
 
-void setCapOverlap(in uint index, in float value)
+void setCapOverlap(in uint index, in float32_t value)
 {
-    triangleAreaOverlap[ gl_GlobalInvocationID.x*uDefectSiteTriangleCount + index ] = value;
+    triangleAreaOverlap[gl_GlobalInvocationID.x*uDefectSiteTriangleCount + index] = value;
 }
 
 
-float getCapOverlap(in uint index)
+float32_t getCapOverlap(in uint index)
 {
-    return triangleAreaOverlap[ gl_GlobalInvocationID.x*uDefectSiteTriangleCount + index ];
+    return triangleAreaOverlap[gl_GlobalInvocationID.x*uDefectSiteTriangleCount + index];
 }
 
 
-float acceptanceProbability(in float energy, in float newEnergy)
+float32_t acceptanceProbability(in float32_t energy, in float32_t newEnergy)
 {
     // If the new solution is better, accept it
     if (newEnergy < energy)

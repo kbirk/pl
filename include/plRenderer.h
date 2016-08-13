@@ -9,7 +9,6 @@
 #include "plPlanTechnique.h"
 #include "plScreenQuadTechnique.h"
 #include "plOutlineTechnique.h"
-#include "plArthroCamTechnique.h"
 #include "plTransparencyTechnique.h"
 #include "plMinimalTechnique.h"
 #include "plRenderShapes.h"
@@ -21,12 +20,11 @@ enum plTechniqueEnums       // ORDER MATTERS! std::map iterators are sorted by k
     PL_MINIMAL_TECHNIQUE,
     PL_TRANSPARENCY_TECHNIQUE,
     PL_OUTLINE_TECHNIQUE,
-    PL_ARTHRO_CAM_TECHNIQUE,
     PL_SCREEN_QUAD_TECHNIQUE
 };
 
 
-typedef std::map<PLuint, std::shared_ptr<plRenderTechnique> >   plTechniqueMap;
+typedef std::map<uint32_t, std::shared_ptr<plRenderTechnique> >   plTechniqueMap;
 
 
 namespace plRenderer
@@ -35,12 +33,12 @@ namespace plRenderer
     void queue(const plRenderable& renderable);
     void draw();
 
-    void queueSphere   (PLuint technique, const plVector3& position, PLfloat radius);
-    void queueCylinder (PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLfloat length);
-    void queueDisk     (PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLbool flip = false);
-    void queueCone     (PLuint technique, const plVector3& position, const plVector3& direction, PLfloat topRadius, PLfloat bottomRadius, PLfloat length);
-    void queueArrow    (PLuint technique, const plVector3& position, const plVector3 &direction, PLfloat length = 2.0f, PLfloat scale = 1.0f);
-    void queueAxis     (PLuint technique, const plVector3& position, const plVector3& x, const plVector3& y, const PLfloat scale = 1.0f);
-    void queuePlane    (PLuint technique, const plVector3& position, const plVector3& normal, PLfloat scale = 1.0f);
-    void queueLine     (PLuint technique, const plVector3& p0, const plVector3& p1);
+    void queueSphere   (uint32_t technique, const plVector3& position, float32_t radius);
+    void queueCylinder (uint32_t technique, const plVector3& position, const plVector3& direction, float32_t radius, float32_t length);
+    void queueDisk     (uint32_t technique, const plVector3& position, const plVector3& direction, float32_t radius, bool flip = false);
+    void queueCone     (uint32_t technique, const plVector3& position, const plVector3& direction, float32_t topRadius, float32_t bottomRadius, float32_t length);
+    void queueArrow    (uint32_t technique, const plVector3& position, const plVector3 &direction, float32_t length = 2.0f, float32_t scale = 1.0f);
+    void queueAxis     (uint32_t technique, const plVector3& position, const plVector3& x, const plVector3& y, const float32_t scale = 1.0f);
+    void queuePlane    (uint32_t technique, const plVector3& position, const plVector3& normal, float32_t scale = 1.0f);
+    void queueLine     (uint32_t technique, const plVector3& p0, const plVector3& p1);
 }

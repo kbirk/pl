@@ -30,13 +30,13 @@ class plAnnealingGroup
 {
     public:
 
-        plAnnealingGroup(PLfloat initialEnergy);
+        plAnnealingGroup(float32_t initialEnergy);
 
         void bind();
         void unbind();
 
         void getSolution(plDefectSolution &solution, const plPlanningBufferData &planningData);
-        void getLowestGroupInfo(PLuint &index, PLfloat &energy);
+        void getLowestGroupInfo(uint32_t &index, float32_t &energy);
 
     private:
 

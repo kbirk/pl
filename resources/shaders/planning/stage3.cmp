@@ -24,14 +24,14 @@ void getDonorPositionAndNormal(inout vec3 position, inout vec3 normal, inout vec
 }
 
 
-bool isSelectionValid(in vec3 candidateGraftPosition, in vec3 candidateGraftNormal, in float candidateGraftRadius, in uint shuffledGraftIndices[PL_MAX_GRAFTS_PER_SOLUTION], in uint solutionCount)  
+bool isSelectionValid(in vec3 candidateGraftPosition, in vec3 candidateGraftNormal, in float32_t candidateGraftRadius, in uint shuffledGraftIndices[PL_MAX_GRAFTS_PER_SOLUTION], in uint solutionCount)  
 {
     bool result = true;
     
     // check against all grafts in current solution
     for (uint i=0; i < solutionCount; i++)
     {
-        float existingGraftRadius   = defectSolutionGraftRadii (shuffledGraftIndices[i]);
+        float32_t existingGraftRadius   = defectSolutionGraftRadii (shuffledGraftIndices[i]);
         vec3  existingGraftPosition = getDonorSolutionPositions(shuffledGraftIndices[i]);
         vec3  existingGraftNormal   = getDonorSolutionNormals  (shuffledGraftIndices[i]);
 
@@ -47,7 +47,7 @@ bool isSelectionValid(in vec3 candidateGraftPosition, in vec3 candidateGraftNorm
     // check if new graft intersects defect solution (possible if donor area is close to defect spline)
     for (uint i=0; i < uDefectSolutionGraftCount; i++)
     {
-        float existingGraftRadius   = defectSolutionGraftRadii     (i);
+        float32_t existingGraftRadius   = defectSolutionGraftRadii     (i);
         vec3  existingGraftPosition = defectSolutionGraftPositions (i);
         vec3  existingGraftNormal   = defectSolutionGraftNormals   (i);
 
@@ -64,10 +64,10 @@ bool isSelectionValid(in vec3 candidateGraftPosition, in vec3 candidateGraftNorm
 } 
 
 
-bool getBestMatchForGraft(inout float lowestRMS, in uint shuffledGraftIndices[ PL_MAX_GRAFTS_PER_SOLUTION ], in uint currentSolutionCount)
+bool getBestMatchForGraft(inout float32_t lowestRMS, in uint shuffledGraftIndices[PL_MAX_GRAFTS_PER_SOLUTION], in uint currentSolutionCount)
 {
     // index of current graft
-    uint graftIndex = shuffledGraftIndices[ currentSolutionCount ];
+    uint graftIndex = shuffledGraftIndices[currentSolutionCount];
 
     // store current lowest data
     bool  lowestFound         = false;
@@ -83,13 +83,13 @@ bool getBestMatchForGraft(inout float lowestRMS, in uint shuffledGraftIndices[ P
         for (uint j=0; j < PL_NUM_COMPARISION_DIRECTIONS; j++)
         {     
             // get the rms for this point and direction
-            float currentRMS = getRMS(j, i, graftIndex);
+            float32_t currentRMS = getRMS(j, i, graftIndex);
 
             // check if this location results in a better RMS
             if (currentRMS > 0.0 && currentRMS < lowestRMS)
             {         
                 // get candidate donor graft data
-                float candidateGraftRadius = defectSolutionGraftRadii(graftIndex);   
+                float32_t candidateGraftRadius = defectSolutionGraftRadii(graftIndex);   
                 vec3 candidateGraftPosition, candidateGraftNormal, candidateXAxis;
                 uint candidateSiteIndex;
                 
@@ -122,7 +122,7 @@ bool getBestMatchForGraft(inout float lowestRMS, in uint shuffledGraftIndices[ P
 }
 
 
-void getShuffledIndexArray(inout uint array[ PL_MAX_GRAFTS_PER_SOLUTION ], in uint size, inout uint seed)
+void getShuffledIndexArray(inout uint array[PL_MAX_GRAFTS_PER_SOLUTION], in uint size, inout uint seed)
 {   
     // fill array with incremental indices
     for (uint i=0; i < size; i++)
@@ -133,7 +133,7 @@ void getShuffledIndexArray(inout uint array[ PL_MAX_GRAFTS_PER_SOLUTION ], in ui
     // randomize orders
     for (uint i = 0; i < size; i++) 
     {
-        uint j = uint(rand(seed) * float(size));
+        uint j = uint(rand(seed) * float32_t(size));
         uint t = array[j];
         array[j] = array[i];
         array[i] = t;
@@ -146,15 +146,15 @@ void main(void)
     // get invocation unique seed value for RNG
     uint seed = generateSeed();
 
-    float totalRMS = 0;
+    float32_t totalRMS = 0;
 
-    uint shuffledGraftIndices [ PL_MAX_GRAFTS_PER_SOLUTION ];   // shuffled graft indices        
+    uint shuffledGraftIndices [PL_MAX_GRAFTS_PER_SOLUTION];   // shuffled graft indices        
     getShuffledIndexArray(shuffledGraftIndices, uDefectSolutionGraftCount, seed);
 
     // for each graft
     for (uint i=0; i < uDefectSolutionGraftCount; i++)
     {    
-        float lowestRMS = PL_FLT_MAX;
+        float32_t lowestRMS = PL_FLT_MAX;
         
         if (!getBestMatchForGraft(lowestRMS, shuffledGraftIndices, i))
         {
@@ -168,6 +168,6 @@ void main(void)
     }
 
     // export total rms
-    totalRmsOutput[ gl_GlobalInvocationID.x ] = totalRMS;
+    totalRmsOutput[gl_GlobalInvocationID.x] = totalRMS;
 }
 

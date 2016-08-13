@@ -104,7 +104,7 @@ void plMatrixStack::translate(const plVector3 &v)
 }
 
 
-void plMatrixStack::rotate(float angle, const plVector3 &v)
+void plMatrixStack::rotate(float32_t angle, const plVector3 &v)
 {
     plMatrix44 rot;
     rot.setRotationD(angle, v);

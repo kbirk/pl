@@ -21,7 +21,7 @@ class plVAO
 
         ~plVAO();
 
-        std::shared_ptr<plVBO >&  vbos(PLuint index) { return _vbos[ index ]; }
+        std::shared_ptr<plVBO >&  vbos(uint32_t index) { return _vbos[index]; }
         std::shared_ptr<plEABO >& eabo()               { return _eabo; }
 
         void attach(const std::shared_ptr<plVBO >&  vbo);

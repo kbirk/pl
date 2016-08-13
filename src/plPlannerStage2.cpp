@@ -39,7 +39,7 @@ namespace plPlannerStage2
         stage2Shader.setRotationAngleUniforms(PL_NUM_COMPARISION_DIRECTIONS);
 
         // create and initialize cap indices SSBOs to 0
-        std::vector<PLfloat> rmsBuffer(planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*PL_NUM_COMPARISION_DIRECTIONS, -1.0f);
+        std::vector<float32_t> rmsBuffer(planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*PL_NUM_COMPARISION_DIRECTIONS, -1.0f);
         rmsData.rmsSSBO.set(rmsBuffer, rmsBuffer.size());
 
         // bind SSBOs
@@ -49,31 +49,30 @@ namespace plPlannerStage2
         capData.donorCapIndexSSBO.bind(3);
         rmsData.rmsSSBO.bind(4);
 
-        const PLuint NUM_WORKGROUPS = ceil(planningData.totalDonorGridPoints() / (PLfloat) PL_STAGE_2_GROUP_SIZE); // ensure enough workgroups are used
+        const uint32_t NUM_WORKGROUPS = ceil(planningData.totalDonorGridPoints() / (float32_t) PL_STAGE_2_GROUP_SIZE); // ensure enough workgroups are used
 
-        for (PLuint i=0; i < PL_NUM_COMPARISION_DIRECTIONS; i++)
+        for (uint32_t i=0; i < PL_NUM_COMPARISION_DIRECTIONS; i++)
         {
             stage2Shader.setRotationIndexUniform(i);
 
             // call compute shader with 1D workgrouping
-#ifndef SKIP_COMPUTE_SHADER
             glDispatchCompute(NUM_WORKGROUPS, 1, 1);
-#endif
+
             // memory barrier
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-            //PLuint size = planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*PL_NUM_COMPARISION_DIRECTIONS;
-            //std::vector<PLfloat> tempRms(size, -1.0f);
+            //uint32_t size = planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*PL_NUM_COMPARISION_DIRECTIONS;
+            //std::vector<float32_t> tempRms(size, -1.0f);
             //rmsData.rmsSSBO.read(tempRms, size);
             rmsData.rmsSSBO.read(rmsBuffer, rmsBuffer.size());
 
-            plUtility::printProgressBar(i / (float)PL_NUM_COMPARISION_DIRECTIONS);
+            plUtility::printProgressBar(i / (float32_t)PL_NUM_COMPARISION_DIRECTIONS);
         }
 
         plUtility::printProgressBar(1.0);
         /*
         rmsData.rmsSSBO.read(rmsBuffer, rmsBuffer.size());
-        for (PLuint i=0; i < rmsBuffer.size(); i+=planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION)
+        for (uint32_t i=0; i < rmsBuffer.size(); i+=planningData.totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION)
         {
             std::cout << rmsBuffer[i] << "  ";
         }

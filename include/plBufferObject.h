@@ -11,10 +11,10 @@ class plBufferObject
 
         virtual ~plBufferObject();
 
-        PLuint numBytes() const { return _numBytes; }
+        uint32_t numBytes() const { return _numBytes; }
 
-        virtual void bind  (PLuint location) const = 0;
-        virtual void unbind(PLuint location) const = 0;
+        virtual void bind  (uint32_t location) const = 0;
+        virtual void unbind(uint32_t location) const = 0;
 
     protected:
 

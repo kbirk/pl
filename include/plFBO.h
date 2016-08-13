@@ -27,13 +27,13 @@ class plFBO
 
         std::vector<GLenum> drawBuffers() const;
 
-        const std::shared_ptr<plTexture2D >& texture2DAttachment(PLuint attachment) const;
+        const std::shared_ptr<plTexture2D >& texture2DAttachment(uint32_t attachment) const;
 
         template< typename T >
-        plPixel<T> readPixel(GLenum attachment, PLuint x, PLuint y) const;
+        plPixel<T> readPixel(GLenum attachment, uint32_t x, uint32_t y) const;
 
-        void attach(PLuint attachment, const std::shared_ptr<plTexture2D>& texture);
-        void attach(PLuint attachment0, PLuint attachment1, const std::shared_ptr<plTexture2D>& texture); // depth-stencil shared texture
+        void attach(uint32_t attachment, const std::shared_ptr<plTexture2D>& texture);
+        void attach(uint32_t attachment0, uint32_t attachment1, const std::shared_ptr<plTexture2D>& texture); // depth-stencil shared texture
 
     private:
 
@@ -41,7 +41,7 @@ class plFBO
 
         std::map<GLenum, std::shared_ptr<plTexture2D>> _textureAttachments;
 
-        PLbool _checkAttachmentError() const;
+        bool _checkAttachmentError() const;
 
         void _create();
         void _destroy();
@@ -51,7 +51,7 @@ class plFBO
 
 
 template< typename T >
-plPixel<T> plFBO::readPixel(GLenum attachment, PLuint x, PLuint y) const
+plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
 {
     if (_textureAttachments.find(attachment) == _textureAttachments.end())
     {
@@ -63,8 +63,8 @@ plPixel<T> plFBO::readPixel(GLenum attachment, PLuint x, PLuint y) const
     const std::shared_ptr<plTexture2D>& texture = _textureAttachments.find(attachment)->second;
 
     GLuint format = texture->_format;
-    PLuint type   = texture->_type;
-    PLuint size   = texture->_getFormatSize();
+    uint32_t type   = texture->_type;
+    uint32_t size   = texture->_getFormatSize();
 
     if (sizeof(plPixel<T>) < size)
     {

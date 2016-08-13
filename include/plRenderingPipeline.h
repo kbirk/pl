@@ -10,10 +10,10 @@
 
 namespace plColourStack
 {
-    void push(PLfloat r, PLfloat g, PLfloat b, PLfloat a = 1.0f);
+    void push(float32_t r, float32_t g, float32_t b, float32_t a = 1.0f);
     void push(const plVector4 &colour);
 
-    void load(PLfloat r, PLfloat g, PLfloat b, PLfloat a = 1.0f);
+    void load(float32_t r, float32_t g, float32_t b, float32_t a = 1.0f);
     void load(const plVector4 &colour);
 
     void pop ();
@@ -24,21 +24,21 @@ namespace plColourStack
 
 namespace plPickingStack
 {
-    void pushRed   (PLint r);
-    void pushGreen (PLint g);
-    void pushBlue  (PLint b);
+    void pushRed   (int32_t r);
+    void pushGreen (int32_t g);
+    void pushBlue  (int32_t b);
 
-    void loadRed   (PLint r);
-    void loadGreen (PLint g);
-    void loadBlue  (PLint b);
+    void loadRed   (int32_t r);
+    void loadGreen (int32_t g);
+    void loadBlue  (int32_t b);
 
     void popRed   ();
     void popGreen ();
     void popBlue  ();
 
-    PLint topRed();
-    PLint topBlue();
-    PLint topGreen();
+    int32_t topRed();
+    int32_t topBlue();
+    int32_t topGreen();
 
     plPickingInfo top();
 }
@@ -59,7 +59,7 @@ namespace plModelStack
 
     void scale    (const plVector3 &v);
     void translate(const plVector3 &v);
-    void rotate   (float angle, const plVector3 &v);
+    void rotate   (float32_t angle, const plVector3 &v);
 
     const plMatrix44& top();
 }

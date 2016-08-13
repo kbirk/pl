@@ -16,7 +16,7 @@ class plRenderComponent
 
         plRenderComponent(const std::shared_ptr<plVAO>& vao);
 
-        PLbool operator< (const plRenderComponent& rc) const;
+        bool operator< (const plRenderComponent& rc) const;
 
         void attach(const plUniform& uniform);
 
@@ -30,4 +30,4 @@ class plRenderComponent
         void _bindUniforms(const plShader& shader) const;
 };
 
-typedef std::map<PLuint, std::set<plRenderComponent > >  plRenderMap;
+typedef std::map<uint32_t, std::set<plRenderComponent > >  plRenderMap;

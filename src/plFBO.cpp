@@ -1,6 +1,6 @@
 #include "plFBO.h"
 
-static PLuint currentBoundFBO = 0;
+static uint32_t currentBoundFBO = 0;
 
 plFBO::plFBO()
     : _id(0)
@@ -43,7 +43,7 @@ plFBO& plFBO::operator= (const plFBO& fbo)
 }
 
 
-void plFBO::attach(PLuint attachment, const std::shared_ptr<plTexture2D>& texture)
+void plFBO::attach(uint32_t attachment, const std::shared_ptr<plTexture2D>& texture)
 {
     // bind fbo
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
@@ -54,7 +54,7 @@ void plFBO::attach(PLuint attachment, const std::shared_ptr<plTexture2D>& textur
     if (_checkAttachmentError())
     {
         // successful, add to map
-        _textureAttachments[ attachment ] = texture;
+        _textureAttachments[attachment] = texture;
     }
 
     // unbind
@@ -62,7 +62,7 @@ void plFBO::attach(PLuint attachment, const std::shared_ptr<plTexture2D>& textur
 }
 
 
-void plFBO::attach(PLuint attachment0, PLuint attachment1, const std::shared_ptr<plTexture2D>& texture)
+void plFBO::attach(uint32_t attachment0, uint32_t attachment1, const std::shared_ptr<plTexture2D>& texture)
 {
     // bind fbo
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
@@ -74,8 +74,8 @@ void plFBO::attach(PLuint attachment0, PLuint attachment1, const std::shared_ptr
     if (_checkAttachmentError())
     {
         // successful, add to map
-        _textureAttachments[ attachment0 ] = texture;
-        _textureAttachments[ attachment1 ] = texture;
+        _textureAttachments[attachment0] = texture;
+        _textureAttachments[attachment1] = texture;
     }
 
     // unbind
@@ -83,7 +83,7 @@ void plFBO::attach(PLuint attachment0, PLuint attachment1, const std::shared_ptr
 }
 
 
-PLbool plFBO::_checkAttachmentError() const
+bool plFBO::_checkAttachmentError() const
 {
     // check for errors
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -116,7 +116,7 @@ void plFBO::unbind() const
 }
 
 
-const std::shared_ptr<plTexture2D >& plFBO::texture2DAttachment(PLuint attachment) const
+const std::shared_ptr<plTexture2D >& plFBO::texture2DAttachment(uint32_t attachment) const
 {
     if (_textureAttachments.find(attachment) == _textureAttachments.end())
     {

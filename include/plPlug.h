@@ -12,8 +12,8 @@ class plPlug : public plMeshSpecific
 {
     public:
 
-        plPlug(PLuint type);
-        plPlug(const plMesh& mesh, PLuint type, const plTransform& surfaceTransform, const plTransform& rotationalOffset);
+        plPlug(uint32_t type);
+        plPlug(const plMesh& mesh, uint32_t type, const plTransform& surfaceTransform, const plTransform& rotationalOffset);
 
         const plTransform& surfaceTransform() const;
         const plTransform& offsetTransform() const;
@@ -21,11 +21,11 @@ class plPlug : public plMeshSpecific
 
         void move  (const plVector3& origin, const plVector3& y);
         void rotate(const plVector3& y);
-        void rotate(PLfloat angleDegrees);
+        void rotate(float32_t angleDegrees);
 
     private:
 
-        PLuint      _type;
+        uint32_t      _type;
         plTransform _surfaceTransform;
         plTransform _rotationalOffset;
 

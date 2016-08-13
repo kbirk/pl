@@ -24,9 +24,9 @@ class plCamera
         void importViewParams(const std::string &filename);
         void exportViewParams(const std::string &filename);
 
-        void translate(PLint x, PLint y);
-        void rotate   (PLint x0, PLint y0, PLint x1, PLint y1);
-        void zoom     (PLfloat z);
+        void translate(int32_t x, int32_t y);
+        void rotate   (int32_t x0, int32_t y0, int32_t x1, int32_t y1);
+        void zoom     (float32_t z);
         void reset    (const plVector3 &point);
 
     private:
@@ -36,5 +36,5 @@ class plCamera
 };
 
 // Michiel's arcball code
-void      calc_p   (PLint x, PLint y, PLfloat p[]);
-plVector4 calc_quat(PLint x0, PLint y0, PLint x1, PLint y1);
+void      calc_p   (int32_t x, int32_t y, float32_t p[]);
+plVector4 calc_quat(int32_t x0, int32_t y0, int32_t x1, int32_t y1);

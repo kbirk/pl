@@ -6,19 +6,19 @@ plBoundary::plBoundary()
 }
 
 
-plBoundary::plBoundary(PLuint type, const plMesh& mesh)
+plBoundary::plBoundary(uint32_t type, const plMesh& mesh)
     : plMeshSpecific(mesh),
-    _type(type)
+      _type(type)
 {
 }
 
 
-plBoundary::plBoundary(PLuint type, const plMesh& mesh, const std::vector<plString> &row)
+plBoundary::plBoundary(uint32_t type, const plMesh& mesh, const std::vector<plString> &row)
     : plMeshSpecific(mesh),
-    _type(type)
+      _type(type)
 {
     // assumes points are counter-clockwise
-    for (PLuint j = 1; j < row.size(); j+=2)
+    for (uint32_t j = 1; j < row.size(); j+=2)
     {
         _points.push_back (plVector3(row[j]));
         _normals.push_back(plVector3(row[j+1]));
@@ -28,7 +28,7 @@ plBoundary::plBoundary(PLuint type, const plMesh& mesh, const std::vector<plStri
 }
 
 
-void plBoundary::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plBoundary::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     if (!_isVisible)
         return;
@@ -51,7 +51,7 @@ void plBoundary::extractRenderComponents(plRenderMap& renderMap, PLuint techniqu
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        renderMap[ technique ].insert(component);
+        renderMap[technique].insert(component);
     }
 
     // draw points
@@ -65,10 +65,10 @@ void plBoundary::extractRenderComponents(plRenderMap& renderMap) const
 }
 
 
-void plBoundary::_extractPointRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plBoundary::_extractPointRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     // draw points
-    for (PLuint i=0; i<_points.size(); i++)
+    for (uint32_t i=0; i<_points.size(); i++)
     {
         plPickingStack::loadBlue(i);
 
@@ -89,7 +89,7 @@ void plBoundary::_extractPointRenderComponents(plRenderMap& renderMap, PLuint te
 plVector3 plBoundary::getAverageNormal() const
 {
     plVector3 n(0,0,0);
-    for (PLuint i=0; i < _normals.size(); i++)
+    for (uint32_t i=0; i < _normals.size(); i++)
     {
         n = n + _normals[i];
     }
@@ -100,15 +100,15 @@ plVector3 plBoundary::getAverageNormal() const
 plVector3 plBoundary::getCentroid() const
 {
     plVector3 p(0,0,0);
-    for (PLuint i=0; i < _points.size(); i++)
+    for (uint32_t i=0; i < _points.size(); i++)
     {
         p = p + _points[i];
     }
-    return p * (1.0f/(PLfloat)_points.size());
+    return p * (1.0f/(float32_t)_points.size());
 }
 
 
-PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
+uint32_t plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
 {
     if (_points.size() < 2)
     {
@@ -145,24 +145,24 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
     else
     {
         // Find the closest edge to the new point
-        PLfloat minDist = FLT_MAX;
-        PLint shift_i = 0;
+        float32_t minDist = FLT_MAX;
+        int32_t shift_i = 0;
 
-        const PLfloat EPSILON = 0.000001f;
+        const float32_t EPSILON = 0.000001f;
 
-        for (PLuint i = 0; i < _points.size(); i++)
+        for (uint32_t i = 0; i < _points.size(); i++)
         {
-            PLint j = (i+1) % _points.size();   // next point
+            int32_t j = (i+1) % _points.size();   // next point
             // get closest point on current edge
             plVector3 closest = plMath::closestPointOnSegment(point, _points[i], _points[j]);
             // compare distance to current minimum distance
-            PLfloat distSquared = (closest - point).squaredLength();
+            float32_t distSquared = (closest - point).squaredLength();
 
             // check if same point as previous edge, occurs when edges are at acute angles, making a pointy "v"
             if (fabs(distSquared - minDist) < EPSILON)
             {
                 // same point as previous edge,
-                int h = (i == 0) ? _points.size()-1 : i-1; // previous index
+                int32_t h = (i == 0) ? _points.size()-1 : i-1; // previous index
                 // get current and previous wall segments
                 plVector3 previous_segment = (_points[i] - _points[h]);
                 plVector3 current_segment  = (_points[j] - _points[i]);
@@ -208,7 +208,7 @@ PLuint plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &no
 }
 
 
-void plBoundary::movePointAndNormal(PLuint index, const plVector3 &point, const plVector3 &normal)
+void plBoundary::movePointAndNormal(uint32_t index, const plVector3 &point, const plVector3 &normal)
 {
     _points[index] = point;
     _normals[index] = normal;
@@ -216,7 +216,7 @@ void plBoundary::movePointAndNormal(PLuint index, const plVector3 &point, const 
 }
 
 
-void plBoundary::removePointAndNormal(PLuint index)
+void plBoundary::removePointAndNormal(uint32_t index)
 {
 
     _points.erase (_points.begin()+index);
@@ -248,13 +248,9 @@ plVector4 plBoundary::_getColour() const
             return plVector4(PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR);
 
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
+        default:
             // donor boundary
             return plVector4(PL_BOUNDARY_DONOR_COLOUR);
-
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
-        default:
-            // iguide boundary
-            return plVector4(PL_BOUNDARY_IGUIDE_COLOUR);
     }
 
 }
@@ -268,13 +264,13 @@ void plBoundary::_generateVAO()
     plVector3 n = getAverageNormal();
 
     std::vector<plVector3> vertices;    vertices.reserve(_points.size() * 10);
-    std::vector<PLuint>    indices;     indices.reserve (_points.size() * 6 * 4);
+    std::vector<uint32_t>    indices;     indices.reserve (_points.size() * 6 * 4);
 
-    for (PLuint i = 0; i < _points.size(); i++)
+    for (uint32_t i = 0; i < _points.size(); i++)
     {
-        int j = (i+1) % _points.size();            // next index
-        int k = (i+2) % _points.size();            // next next index
-        int l = (i == 0) ? _points.size()-1 : i-1; // previous index
+        int32_t j = (i+1) % _points.size();            // next index
+        int32_t k = (i+2) % _points.size();            // next next index
+        int32_t l = (i == 0) ? _points.size()-1 : i-1; // previous index
 
         // tangent vectors of previous, current, and next segments
         plVector3 t0 = ((_points[i] - _points[l]) ^ n).normalize(); // previous tangent
@@ -305,7 +301,7 @@ void plBoundary::_generateVAO()
         plVector3 g = f + PL_BOUNDARY_MESH_HEIGHT * n;
         plVector3 h = e + PL_BOUNDARY_MESH_HEIGHT * n;
 
-        PLuint base = vertices.size()/2;
+        uint32_t base = vertices.size()/2;
 
         // "right" quad
         vertices.push_back(a);    // position
@@ -416,7 +412,7 @@ void plBoundary::_generateVAO()
 
 std::ostream& operator << (std::ostream& out, const plBoundary &b)
 {
-    for (PLuint j=0; j<b.size(); j++)
+    for (uint32_t j=0; j<b.size(); j++)
     {
         if (j != 0) out << ",";
         out << b.points(j) << "," << b.normals(j);

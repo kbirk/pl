@@ -23,12 +23,11 @@ namespace plRenderer
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // create techniques
-        _techniques[ PL_PLAN_TECHNIQUE ]         = std::make_shared<plPlanTechnique>();
-        _techniques[ PL_OUTLINE_TECHNIQUE ]      = std::make_shared<plOutlineTechnique>();
-        _techniques[ PL_SCREEN_QUAD_TECHNIQUE ]  = std::make_shared<plScreenQuadTechnique>();
-        _techniques[ PL_ARTHRO_CAM_TECHNIQUE ]   = std::make_shared<plArthroCamTechnique>();
-        _techniques[ PL_TRANSPARENCY_TECHNIQUE ] = std::make_shared<plTransparencyTechnique>();
-        _techniques[ PL_MINIMAL_TECHNIQUE ]      = std::make_shared<plMinimalTechnique>();
+        _techniques[PL_PLAN_TECHNIQUE]         = std::make_shared<plPlanTechnique>();
+        _techniques[PL_OUTLINE_TECHNIQUE]      = std::make_shared<plOutlineTechnique>();
+        _techniques[PL_SCREEN_QUAD_TECHNIQUE]  = std::make_shared<plScreenQuadTechnique>();
+        _techniques[PL_TRANSPARENCY_TECHNIQUE] = std::make_shared<plTransparencyTechnique>();
+        _techniques[PL_MINIMAL_TECHNIQUE]      = std::make_shared<plMinimalTechnique>();
     }
 
 
@@ -44,9 +43,9 @@ namespace plRenderer
         for (auto& pair : _techniques)
         {
             // get technique ptr and enum
-            PLuint techniqueEnum = pair.first;
+            uint32_t techniqueEnum = pair.first;
             auto&  technique = pair.second;
-            technique->render(_renderMap[ techniqueEnum ]);
+            technique->render(_renderMap[techniqueEnum]);
         }
 
         // clear map for this frame
@@ -54,7 +53,7 @@ namespace plRenderer
     }
 
 
-    void queueSphere(PLuint technique, const plVector3& position, PLfloat radius)
+    void queueSphere(uint32_t technique, const plVector3& position, float32_t radius)
     {
         static std::shared_ptr<plVAO> vao =  std::make_shared<plVAO>(plRenderShapes::sphereVAO(1.0f, 20, 20));
 
@@ -71,13 +70,13 @@ namespace plRenderer
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
 
-        _renderMap[ technique ].insert(component);
+        _renderMap[technique].insert(component);
 
         plModelStack::pop();
     }
 
 
-    void queueCylinder(PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLfloat length)
+    void queueCylinder(uint32_t technique, const plVector3& position, const plVector3& direction, float32_t radius, float32_t length)
     {
         static std::shared_ptr<plVAO> vao = std::make_shared<plVAO>(plRenderShapes::cylinderVAO(1.0f, 1.0f, 1.0f, 30, 1));
 
@@ -97,13 +96,13 @@ namespace plRenderer
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
 
-        _renderMap[ technique ].insert(component);
+        _renderMap[technique].insert(component);
 
         plModelStack::pop();
     }
 
 
-    void queueDisk(PLuint technique, const plVector3& position, const plVector3& direction, PLfloat radius, PLbool flip)
+    void queueDisk(uint32_t technique, const plVector3& position, const plVector3& direction, float32_t radius, bool flip)
     {
         static std::shared_ptr<plVAO> vao = std::make_shared<plVAO>(plRenderShapes::diskVAO(0.0f, 1.0f, 30, 30));
 
@@ -128,13 +127,13 @@ namespace plRenderer
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        _renderMap[ technique ].insert(component);
+        _renderMap[technique].insert(component);
 
         plModelStack::pop();
     }
 
 
-    void queueCone(PLuint technique, const plVector3& position, const plVector3& direction, PLfloat topRadius, PLfloat bottomRadius, PLfloat length)
+    void queueCone(uint32_t technique, const plVector3& position, const plVector3& direction, float32_t topRadius, float32_t bottomRadius, float32_t length)
     {
         // can't use static for cones as normals scale inversely,
         std::shared_ptr<plVAO > vao = std::make_shared<plVAO>(plRenderShapes::coneVAO(bottomRadius, topRadius, length, 30, 1));
@@ -155,13 +154,13 @@ namespace plRenderer
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        _renderMap[ technique ].insert(component);
+        _renderMap[technique].insert(component);
 
         plModelStack::pop();
     }
 
 
-    void queueArrow(PLuint technique, const plVector3& position, const plVector3 &direction, PLfloat length, PLfloat scale)
+    void queueArrow(uint32_t technique, const plVector3& position, const plVector3 &direction, float32_t length, float32_t scale)
     {
         // can't use static for cones as normals scale inversely,
         std::shared_ptr<plVAO > vao = std::make_shared<plVAO>(plRenderShapes::coneVAO(PL_HEAD_RADIUS, 0.0f, PL_ARROW_LENGTH, 30, 1));
@@ -188,7 +187,7 @@ namespace plRenderer
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        _renderMap[ technique ].insert(component);
+        _renderMap[technique].insert(component);
 
         queueDisk(technique, plVector3(0, 0, 0), plVector3(0, 0, 1), PL_HEAD_RADIUS, true);
 
@@ -196,7 +195,7 @@ namespace plRenderer
     }
 
 
-    void queueAxis(PLuint technique, const plVector3& position, const plVector3& x, const plVector3& y, const PLfloat scale)
+    void queueAxis(uint32_t technique, const plVector3& position, const plVector3& x, const plVector3& y, const float32_t scale)
     {
         plModelStack::push();
 
@@ -216,7 +215,7 @@ namespace plRenderer
     }
 
 
-    void queuePlane(PLuint technique, const plVector3& position, const plVector3& normal, PLfloat scale)
+    void queuePlane(uint32_t technique, const plVector3& position, const plVector3& normal, float32_t scale)
     {
         static std::shared_ptr<plVAO > vao = std::make_shared<plVAO>(plRenderShapes::quadVAO());
 
@@ -237,13 +236,13 @@ namespace plRenderer
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        _renderMap[ technique ].insert(component);
+        _renderMap[technique].insert(component);
 
         plModelStack::pop();
     }
 
 
-    void queueLine(PLuint technique, const plVector3& p0, const plVector3& p1)
+    void queueLine(uint32_t technique, const plVector3& p0, const plVector3& p1)
     {
         std::shared_ptr<plVAO > vao = std::make_shared<plVAO>(plRenderShapes::lineVAO(p0, p1));
 
@@ -257,7 +256,7 @@ namespace plRenderer
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        _renderMap[ technique ].insert(component);
+        _renderMap[technique].insert(component);
 
     }
 }

@@ -36,8 +36,8 @@ namespace plPlannerStage1
         stage1Shader.setDefectSolutionUniforms(defectSolution);
 
         // create and initialize cap indices SSBOs to 0
-        std::vector<PLuint> defectIndices(defectSolution.graftCount*PL_MAX_CAP_TRIANGLES, 0);
-        std::vector<PLuint> donorIndices(planningData.totalDonorGridPoints()*PL_MAX_CAP_TRIANGLES, 0);
+        std::vector<uint32_t> defectIndices(defectSolution.graftCount*PL_MAX_CAP_TRIANGLES, 0);
+        std::vector<uint32_t> donorIndices(planningData.totalDonorGridPoints()*PL_MAX_CAP_TRIANGLES, 0);
 
         capData.defectCapIndexSSBO.set(defectIndices, defectIndices.size());
         capData.donorCapIndexSSBO.set (donorIndices,  donorIndices.size());
@@ -48,14 +48,13 @@ namespace plPlannerStage1
         capData.defectCapIndexSSBO.bind(2);
         capData.donorCapIndexSSBO.bind(3);
 
-        const PLuint NUM_WORKGROUPS = ceil(planningData.totalDonorGridPoints() + defectSolution.graftCount / (PLfloat) PL_STAGE_1_GROUP_SIZE); // ensure enough workgroups are used
+        const uint32_t NUM_WORKGROUPS = ceil(planningData.totalDonorGridPoints() + defectSolution.graftCount / (float32_t) PL_STAGE_1_GROUP_SIZE); // ensure enough workgroups are used
 
         plUtility::printProgressBar(0.0);
 
         // call compute shader with 1D workgrouping
-#ifndef SKIP_COMPUTE_SHADER
         glDispatchCompute(NUM_WORKGROUPS, 1, 1);
-#endif
+
         // memory barrier
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -67,7 +66,7 @@ namespace plPlannerStage1
         capData.donorCapIndexSSBO.read (donorIndices,  donorIndices.size());
 
         std::cout << std::endl << "DEBUG: " << std::endl;
-        for (PLuint i=0; i<defectIndices.size(); i+=PL_MAX_CAP_TRIANGLES)
+        for (uint32_t i=0; i<defectIndices.size(); i+=PL_MAX_CAP_TRIANGLES)
         {
             std::cout << "Graft " << i/PL_MAX_CAP_TRIANGLES << ",     cap index count: " << defectIndices[i] << std::endl;
         }

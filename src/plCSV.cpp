@@ -7,7 +7,7 @@ plCSV::plCSV(plString fn)
 }
 
 
-void plCSV::_readFile(plString filename, PLbool verbose)
+void plCSV::_readFile(plString filename, bool verbose)
 {
     std::ifstream infile(filename.c_str());
 
@@ -47,9 +47,9 @@ void plCSV::_readFile(plString filename, PLbool verbose)
 
     if (verbose)
     {
-        for (PLuint i = 0; i < data.size(); i++)
+        for (uint32_t i = 0; i < data.size(); i++)
         {
-            for (PLuint j = 0; j < data[i].size(); j++)
+            for (uint32_t j = 0; j < data[i].size(); j++)
             {
                 std::cout << data[i][j] << ", ";
             }

@@ -2,7 +2,6 @@
 
 #include "plCommon.h"
 #include "plRenderable.h"
-#include "plArthroViewable.h"
 #include "plEditable.h"
 #include "plVector3.h"
 #include "plTriangle.h"
@@ -15,7 +14,7 @@
 #include "plGraftCap.h"
 
 
-class plGraft : public plRenderable, public plEditable, public plArthroViewable
+class plGraft : public plRenderable, public plEditable
 {
 
     public:
@@ -23,40 +22,38 @@ class plGraft : public plRenderable, public plEditable, public plArthroViewable
         plGraft();
         plGraft(const plPlug &harvest,
                  const plPlug &recipient,
-                 PLfloat radius,
-                 PLfloat length,
+                 float32_t radius,
+                 float32_t length,
                  const plVector3 &markDirection = plVector3(0,0,1));
 
         virtual ~plGraft();
 
-        const PLfloat&   radius()             const { return _radius; }
-        const PLfloat&   length()             const { return _length; }
+        const float32_t&   radius()             const { return _radius; }
+        const float32_t&   length()             const { return _length; }
         const plVector3& markDirection()      const { return _markDirection; }
-        const plVector3& markPositions(PLuint index) const { return _markPositions[ index ]; }
+        const plVector3& markPositions(uint32_t index) const { return _markPositions[index]; }
 
-        const plPlug& plug     (PLuint type) const;
+        const plPlug& plug     (uint32_t type) const;
         const plPlug& harvest  () const { return _harvest;   }
         const plPlug& recipient() const { return _recipient; }
 
-        void move  (PLuint type, const plVector3& origin, const plVector3& y);
-        void rotate(PLuint type, const plVector3& y);
-        void rotate(PLuint type, PLfloat angleDegrees);
+        void move  (uint32_t type, const plVector3& origin, const plVector3& y);
+        void rotate(uint32_t type, const plVector3& y);
+        void rotate(uint32_t type, float32_t angleDegrees);
 
         void setMarkDirection(const plVector3& direction);
         void snapMarkDirection();
 
-        void toggleArthroView() { plArthroViewable::toggleArthroView(); _cartilageCap.toggleArthroView(); }
-
         void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
     private:
 
         plPlug     _recipient;
         plPlug     _harvest;
 
-        PLfloat    _radius;
-        PLfloat    _length;
+        float32_t    _radius;
+        float32_t    _length;
 
         plVector3  _markDirection;      // marker direction in graft space
         plVector3  _markPositions[4];
@@ -64,7 +61,7 @@ class plGraft : public plRenderable, public plEditable, public plArthroViewable
         plBoneCap      _boneCap;
         plCartilageCap _cartilageCap;
 
-        void _extractGraftRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void _extractGraftRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
         void _generateCaps();
         void _generateMarkPositions();

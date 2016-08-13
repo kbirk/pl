@@ -99,7 +99,7 @@ plVector3 plTransform::applyNormalInverse(const plVector3 &v) const
 }
 
 
-PLfloat plTransform::squaredDistToAxis(const plVector3 &v) const
+float32_t plTransform::squaredDistToAxis(const plVector3 &v) const
 {
     // v is already in the *local* coordinate system of the graft
     static plVector3 axis(0,1,0);
@@ -107,7 +107,7 @@ PLfloat plTransform::squaredDistToAxis(const plVector3 &v) const
 }
 
 
-PLfloat plTransform::projectedDistOnAxis(const plVector3 &v) const
+float32_t plTransform::projectedDistOnAxis(const plVector3 &v) const
 {
     // v is already in the *local* coordinate system of the graft
     static plVector3 axis(0,1,0);
@@ -115,7 +115,7 @@ PLfloat plTransform::projectedDistOnAxis(const plVector3 &v) const
 }
 
 
-void plTransform::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plTransform::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     if (!_isVisible)
         return;

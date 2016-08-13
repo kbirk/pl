@@ -18,19 +18,6 @@
 // global light position used throughout planner
 #define PL_LIGHT_POSITION                        10, 10, 15
 
-// IGUIDE BOOLEAN MESH OPERATIONS
-
-#define PL_IGUIDE_BOOLEAN_MESH_DIFFERENCE        0
-#define PL_IGUIDE_BOOLEAN_MESH_UNION             1
-#define PL_IGUIDE_BOOLEAN_MESH_INTERSECTION      2
-
-// LOGGING
-
-#define PL_LOGGER_LEVEL_ERROR                    10
-#define PL_LOGGER_LEVEL_WARNING                  20
-#define PL_LOGGER_LEVEL_INFO                     30
-#define PL_LOGGER_LEVEL_DEBUG                    40
-
 // OTHER MACROS
 
 #define PL_PI                                    3.1415927f         // specific decimals optimize floating point accuracy. Going higher digits will result in more error
@@ -71,13 +58,9 @@
 
 // PRIMITIVE TYPEDEFS
 
-typedef unsigned char           PLbyte;
-typedef char                    PLchar;
-typedef float                   PLfloat;
-typedef double                  PLdouble;
-typedef short unsigned int      PLushort;
-typedef short int               PLshort;
-typedef unsigned int            PLuint;
-typedef int                     PLint;
-typedef bool                    PLbool;
-typedef long long unsigned int  PLtime;
+// Precision explicit typedefs
+typedef float float32_t;
+typedef double float64_t;
+
+// Fixed width integer types
+#include <cstdint>

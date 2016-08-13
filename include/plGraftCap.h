@@ -12,7 +12,6 @@
 #include "plTransform.h"
 #include "plOctreeMesh.h"
 #include "plRenderer.h"
-#include "plArthroViewable.h"
 
 
 #define PL_CAP_OFFSET                            plVector3(0, 0.025f, 0)
@@ -26,16 +25,16 @@ class plPointAndAngle
 {
     public:
 
-        PLfloat   angle;
+        float32_t   angle;
         plVector3 point;
 
         plPointAndAngle() {}
-        plPointAndAngle(const PLfloat &angle, const plVector3 &point)
+        plPointAndAngle(const float32_t &angle, const plVector3 &point)
             : angle(angle), point(point)
         {
         }
 
-        PLbool operator < (const plPointAndAngle &p) const
+        bool operator < (const plPointAndAngle &p) const
         {
             return angle < p.angle;
         }
@@ -43,9 +42,7 @@ class plPointAndAngle
 };
 
 
-class plGraftCap : public plRenderable,
-                   public plEditable,
-                   public plArthroViewable
+class plGraftCap : public plRenderable, public plEditable
 {
     public:
 
@@ -55,9 +52,9 @@ class plGraftCap : public plRenderable,
         plGraftCap();
 
         void extractRenderComponents(plRenderMap& renderMap) const;
-        virtual void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        virtual void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        void generateCap(const plOctreeMesh& mesh, const plTransform& transform, PLfloat radius);
+        void generateCap(const plOctreeMesh& mesh, const plTransform& transform, float32_t radius);
 
     protected:
 
@@ -65,11 +62,11 @@ class plGraftCap : public plRenderable,
 
         virtual plVector4 _getColour() const = 0;
 
-        std::vector<plVector3> _pointsOutsideTriangles(plVector3 verts[3], const plTransform& transform, PLfloat radius) const;
-        std::vector<plVector3> _pointsInsideTriangles (plVector3 verts[3], PLfloat dist[3], const plTransform& transform, PLfloat radius) const;
+        std::vector<plVector3> _pointsOutsideTriangles(plVector3 verts[3], const plTransform& transform, float32_t radius) const;
+        std::vector<plVector3> _pointsInsideTriangles (plVector3 verts[3], float32_t dist[3], const plTransform& transform, float32_t radius) const;
 
-        bool      _triangleIntersection (const plTriangle &triangle, const plTransform& transform, PLfloat radius);
-        plVector3 _pointOnCircumference (const plVector3 &a, const plVector3 &b, PLfloat radius) const;
+        bool      _triangleIntersection (const plTriangle &triangle, const plTransform& transform, float32_t radius);
+        plVector3 _pointOnCircumference (const plVector3 &a, const plVector3 &b, float32_t radius) const;
         bool      _isBeyondHeightThresholds(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform) const;
 
 };
@@ -82,9 +79,9 @@ class plCartilageCap : public plGraftCap
 
         plCartilageCap();
 
-        void generateVAO(PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter);
+        void generateVAO(float32_t radius, float32_t length, const std::vector<plPointAndAngle>& bonePerimeter);
 
-        virtual void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        virtual void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
     private:
 
@@ -92,7 +89,7 @@ class plCartilageCap : public plGraftCap
         std::shared_ptr<plVAO> _projectionVAO;
 
         plVector4 _getColour() const;
-        void _generateProjectionVAO(PLfloat radius, PLfloat length, const std::vector<plPointAndAngle>& bonePerimeter);
+        void _generateProjectionVAO(float32_t radius, float32_t length, const std::vector<plPointAndAngle>& bonePerimeter);
 
 };
 
@@ -104,7 +101,7 @@ class plBoneCap : public plGraftCap
 
         plBoneCap();
 
-        void generateVAO(PLfloat radius, PLfloat length);
+        void generateVAO(float32_t radius, float32_t length);
 
     private:
 

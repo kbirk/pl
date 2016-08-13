@@ -13,19 +13,19 @@ class plCut
     public:
 
         plCut() {}
-        plCut(plVector3 pt, PLint ei, PLfloat ep, PLint bi, PLfloat bp, PLint dir);
+        plCut(plVector3 pt, int32_t ei, float32_t ep, int32_t bi, float32_t bp, int32_t dir);
 
-        plVector3 point;           // int point
-        PLint     edgeIndex;       // index of edge (0,1,2)
-        PLfloat   edgeParam;       // param on triangle edge
-        PLint     boundaryIndex;   // index of wall
-        PLfloat   boundaryParam;   // param on wall
-        PLint     direction;       // direction of edge: +1 = toward outside of wall, -1 = toward inside of wall
-        PLbool    processed;
+        plVector3 point;           // int32_t point
+        int32_t   edgeIndex;       // index of edge (0,1,2)
+        float32_t edgeParam;       // param on triangle edge
+        int32_t   boundaryIndex;   // index of wall
+        float32_t boundaryParam;   // param on wall
+        int32_t   direction;       // direction of edge: +1 = toward outside of wall, -1 = toward inside of wall
+        bool      processed;
 };
 
 
 namespace plMeshCutter
 {
-    PLbool findInteriorMesh(std::vector<plTriangle> &outputTriangles, const std::vector<plTriangle> &inputTriangles, const plBoundary &boundary);
+    bool findInteriorMesh(std::vector<plTriangle> &outputTriangles, const std::vector<plTriangle> &inputTriangles, const plBoundary &boundary);
 }

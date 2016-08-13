@@ -24,30 +24,30 @@ class plGraftEditor : public plEditor
         plGraftEditor();
 
         void clearSelection();
-        void selectGraft   (PLuint index, PLuint type);
+        void selectGraft   (uint32_t index, uint32_t type);
 
-        void setEditMode(PLuint editMode);
+        void setEditMode(uint32_t editMode);
 
         void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        PLbool isGraftSelected() const { return (_selectedGraft != nullptr); }
+        bool isGraftSelected() const { return (_selectedGraft != nullptr); }
 
-        PLbool processMouseClick   (PLint x, PLint y);
-        PLbool processMouseDrag    (PLint x, PLint y);
-        PLbool processMouseRelease (PLint x, PLint y);
-        PLbool processJoystickDrag (PLint x, PLint y);
+        bool processMouseClick   (int32_t x, int32_t y);
+        bool processMouseDrag    (int32_t x, int32_t y);
+        bool processMouseRelease (int32_t x, int32_t y);
+        bool processJoystickDrag (int32_t x, int32_t y);
 
         void toggleSelectedVisibility();
 
     private:
 
-        PLint    _editMode;
-        PLint    _selectedType;
+        int32_t    _editMode;
+        int32_t    _selectedType;
         plGraft *_selectedGraft;
 
-        void _dragHandle(PLint x, PLint y);
-        void _dragMarker(PLint x, PLint y);
+        void _dragHandle(int32_t x, int32_t y);
+        void _dragMarker(int32_t x, int32_t y);
 
         void _extractMenuRenderComponents(plRenderMap& renderMap) const;
 };

@@ -36,7 +36,7 @@ GLuint plShader::_createShader(const std::vector<std::string> &shaderFiles, GLen
 {
     std::vector<const char*> sources;
 
-    for (PLuint i=0; i< shaderFiles.size(); i++)
+    for (uint32_t i=0; i< shaderFiles.size(); i++)
     {
         // load shader file into memory
         const char *shaderSource = _readShaderFile(shaderFiles[i]);  // allocate memory to shaderSource
@@ -45,7 +45,7 @@ GLuint plShader::_createShader(const std::vector<std::string> &shaderFiles, GLen
         if (!shaderSource)
         {
             // deallocate previous arrays
-            for (PLuint j=0; j<i; j++)
+            for (uint32_t j=0; j<i; j++)
             {
                 delete [] sources[j];
             }
@@ -59,7 +59,7 @@ GLuint plShader::_createShader(const std::vector<std::string> &shaderFiles, GLen
 
     // set source code of shader object
     glShaderSource(shader, sources.size(), &sources[0], nullptr);
-    for (PLuint i=0; i< shaderFiles.size(); i++)
+    for (uint32_t i=0; i< shaderFiles.size(); i++)
     {
         delete [] sources[i];  // deallocate memory from shaderSource
     }
@@ -79,7 +79,7 @@ char* plShader::_readShaderFile(const std::string& filename)
     if (stream.is_open())
     {
         std::streamoff size = stream.tellg();
-        string = new char[static_cast<PLuint>(size)+1];            // ** allocates memory but does NOT deallocate **
+        string = new char[static_cast<uint32_t>(size)+1];            // ** allocates memory but does NOT deallocate **
         stream.seekg(0, std::ios::beg);                         // set position indicator back to beginning of stream
         stream.read(string, size);
         stream.close();
@@ -93,7 +93,7 @@ char* plShader::_readShaderFile(const std::string& filename)
 }
 
 
-PLbool plShader::_compileShader(GLuint shader)
+bool plShader::_compileShader(GLuint shader)
 {
     // compile vertex shader
     glCompileShader(shader);
@@ -150,7 +150,7 @@ void plShader::_printCompileError(GLuint shader)
 }
 
 
-PLbool plShader::_linkProgram()
+bool plShader::_linkProgram()
 {
     // link shader program
     glLinkProgram(_id);

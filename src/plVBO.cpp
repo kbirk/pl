@@ -5,7 +5,7 @@ plVBO::plVBO()
 }
 
 
-plVBO::plVBO(const std::vector<plVector4>& data, PLuint usage)
+plVBO::plVBO(const std::vector<plVector4>& data, uint32_t usage)
 {
     set(data, usage);
 }
@@ -37,7 +37,7 @@ plVBO& plVBO::operator= (plVBO&& vbo)
 }
 
 
-void plVBO::set(const std::vector<plVector4>& data, PLuint usage)
+void plVBO::set(const std::vector<plVector4>& data, uint32_t usage)
 {
     _data      = data;
     _numBytes  = sizeof(plVector4) * _data.size();
@@ -45,7 +45,7 @@ void plVBO::set(const std::vector<plVector4>& data, PLuint usage)
 }
 
 
-void plVBO::set(const std::vector<plVector3>& data, PLuint usage)
+void plVBO::set(const std::vector<plVector3>& data, uint32_t usage)
 {
     set(std::vector<plVector4>(data.begin(), data.end()), usage);
 }

@@ -8,7 +8,7 @@ plGraft::plGraft()
     snapMarkDirection();
 }
 
-plGraft::plGraft(const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat length, const plVector3 &markDirection)
+plGraft::plGraft(const plPlug &harvest, const plPlug &recipient, float32_t radius, float32_t length, const plVector3 &markDirection)
     : _recipient(recipient),
       _harvest(harvest),
       _radius(radius),
@@ -25,7 +25,7 @@ plGraft::~plGraft()
 }
 
 
-void plGraft::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plGraft::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     if (!_isVisible)
         return;
@@ -50,82 +50,18 @@ void plGraft::extractRenderComponents(plRenderMap& renderMap) const
 }
 
 
-void plGraft::_extractGraftRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plGraft::_extractGraftRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT);
+    // draw cartilage cap
+    _cartilageCap.extractRenderComponents(renderMap, technique);
+    // draw bone cap
+    _boneCap.extractRenderComponents(renderMap, technique);
 
-    if (!_inArthroView)
-    {
-        // draw cartilage cap
-        _cartilageCap.extractRenderComponents(renderMap, technique);
-        // draw bone cap
-        _boneCap.extractRenderComponents(renderMap, technique);
-
-        // draw marker
-        plColourStack::load(PL_GRAFT_MARKER_COLOUR);
-        plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT_MARKER);
-        plRenderer::queueSphere(technique, _markPositions[0], 0.5f);
-    }
-    else
-    {
-        if (_isSelected)
-        {
-            // draw cartilage cap
-            _cartilageCap.extractRenderComponents(renderMap, PL_OUTLINE_TECHNIQUE);
-
-            PLint id = 0;
-            PLfloat SPACING = 7.0f;
-            PLfloat LINE_WIDTH = 0.08f;
-            PLfloat LINE_LENGTH = 5.0f;
-
-            //plColourStack::load(plVector4(1, 1, 1, 1));
-            plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT_ARTHRO_PROJECTION);
-
-            // i
-            plPickingStack::loadBlue(id++);
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[0], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-
-            // ii
-            plModelStack::push();
-            plPickingStack::loadBlue(id++);
-            plModelStack::rotate(-SPACING/2, plVector3(0, 1, 0));
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-            plModelStack::rotate(SPACING, plVector3(0, 1, 0));
-            plPickingStack::loadBlue(id++);
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[1], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-            plModelStack::pop();
-
-            // iii
-            plModelStack::push();
-            plPickingStack::loadBlue(id++);
-            plModelStack::rotate(-SPACING, plVector3(0, 1, 0));
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-            plModelStack::rotate(SPACING, plVector3(0, 1, 0));
-            plPickingStack::loadBlue(id++);
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-            plModelStack::rotate(SPACING, plVector3(0, 1, 0));
-            plPickingStack::loadBlue(id++);
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[2], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-            plModelStack::pop();
-
-            // iiii
-            plModelStack::push();
-            plPickingStack::loadBlue(id++);
-            plModelStack::rotate((-3/2)*SPACING, plVector3(0, 1, 0));
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-            plModelStack::rotate(SPACING, plVector3(0, 1, 0));
-            plPickingStack::loadBlue(id++);
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-            plModelStack::rotate(SPACING, plVector3(0, 1, 0));
-            plPickingStack::loadBlue(id++);
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-            plModelStack::rotate(SPACING, plVector3(0, 1, 0));
-            plPickingStack::loadBlue(id++);
-            plRenderer::queueCylinder(PL_OUTLINE_TECHNIQUE, _markPositions[3], plVector3(0, 1, 0), LINE_WIDTH, LINE_LENGTH);
-            plModelStack::pop();
-
-        }
-    }
+    // draw marker
+    plColourStack::load(PL_GRAFT_MARKER_COLOUR);
+    plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT_MARKER);
+    plRenderer::queueSphere(technique, _markPositions[0], 0.5f);
 }
 
 
@@ -176,7 +112,7 @@ void plGraft::snapMarkDirection()
     plVector3 upRecipientProj = (recipientIntersection.point - _recipient.surfaceTransform().origin()).normalize();
 
     // find angle between up proj and marker direction
-    PLfloat recipientAngle = (upRecipientProj).signedAngle(recipientDirection, _recipient.surfaceTransform().y());
+    float32_t recipientAngle = (upRecipientProj).signedAngle(recipientDirection, _recipient.surfaceTransform().y());
 
     plMatrix44 rotation;    rotation.setRotation(-recipientAngle/2.0f , plVector3(0, 1, 0));
 
@@ -193,7 +129,7 @@ void plGraft::_generateMarkPositions()
 {
     //plMatrix44 offsetRot;   offsetRot.setRotation(_markAngleOffset, plVector3(0, 1, 0));
 
-    for (PLuint i=0; i < 4; i++)
+    for (uint32_t i=0; i < 4; i++)
     {
         plMatrix44 rotation;  rotation.setRotationD(i*-90.0f,  plVector3(0, 1, 0));
 
@@ -201,15 +137,15 @@ void plGraft::_generateMarkPositions()
         _markPositions[i] = _radius * (rotation * _markDirection).normalize();
 
         // First, find the closest top perimeter point in the mark direction.
-        float minDist = FLT_MAX;
-        float minY = 0;
+        float32_t minDist = FLT_MAX;
+        float32_t minY = 0;
 
         const std::vector<plPointAndAngle>& perimeter = (_cartilageCap.triangles.empty()) ? _boneCap.perimeter : _cartilageCap.perimeter;
 
-        for (PLuint j=0; j<perimeter.size(); j++)
+        for (uint32_t j=0; j<perimeter.size(); j++)
         {
             const plVector3 &v = perimeter[j].point;
-            float dist = (v.x-_markPositions[i].x)*(v.x-_markPositions[i].x) + (v.z-_markPositions[i].z)*(v.z-_markPositions[i].z);
+            float32_t dist = (v.x-_markPositions[i].x)*(v.x-_markPositions[i].x) + (v.z-_markPositions[i].z)*(v.z-_markPositions[i].z);
             if (dist < minDist)
             {
                 minDist = dist;
@@ -223,7 +159,7 @@ void plGraft::_generateMarkPositions()
 }
 
 
-const plPlug &plGraft::plug(PLuint type) const
+const plPlug &plGraft::plug(uint32_t type) const
 {
     switch (type)
     {
@@ -238,7 +174,7 @@ const plPlug &plGraft::plug(PLuint type) const
 }
 
 
-void plGraft::move(PLuint type, const plVector3& origin, const plVector3& y)
+void plGraft::move(uint32_t type, const plVector3& origin, const plVector3& y)
 {
     switch (type)
     {
@@ -264,7 +200,7 @@ void plGraft::move(PLuint type, const plVector3& origin, const plVector3& y)
 }
 
 
-void plGraft::rotate(PLuint type, const plVector3& y)
+void plGraft::rotate(uint32_t type, const plVector3& y)
 {
         switch (type)
     {
@@ -290,7 +226,7 @@ void plGraft::rotate(PLuint type, const plVector3& y)
 }
 
 
-void plGraft::rotate(PLuint type, PLfloat angleDegrees)
+void plGraft::rotate(uint32_t type, float32_t angleDegrees)
 {
         switch (type)
     {

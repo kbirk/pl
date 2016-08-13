@@ -12,17 +12,17 @@ class plRenderable
 
         plRenderable();
 
-        PLbool isVisible() const;
+        bool isVisible() const;
 
         virtual void toggleVisibility();
         virtual void setVisible();
         virtual void setInvisible();
 
         virtual void extractRenderComponents(plRenderMap& renderMap) const = 0;
-        virtual void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const = 0;
+        virtual void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const = 0;
 
     protected:
 
-        PLbool _isVisible;
+        bool _isVisible;
 
 };

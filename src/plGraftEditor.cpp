@@ -18,7 +18,7 @@ void plGraftEditor::clearSelection()
 }
 
 
-void plGraftEditor::setEditMode(PLuint editMode)
+void plGraftEditor::setEditMode(uint32_t editMode)
 {
     switch (editMode)
     {
@@ -37,7 +37,7 @@ void plGraftEditor::setEditMode(PLuint editMode)
 }
 
 
-PLbool plGraftEditor::processMouseClick(PLint x, PLint y)
+bool plGraftEditor::processMouseClick(int32_t x, int32_t y)
 {
     plPickingInfo pick = plPicking::pickPixel(x, y);
 
@@ -63,7 +63,7 @@ PLbool plGraftEditor::processMouseClick(PLint x, PLint y)
 }
 
 
-PLbool plGraftEditor::processMouseDrag(PLint x, PLint y)
+bool plGraftEditor::processMouseDrag(int32_t x, int32_t y)
 {
     plPickingInfo pick = plPicking::previousPick();  // read pick from last click, not what is currently under mouse
 
@@ -89,14 +89,14 @@ PLbool plGraftEditor::processMouseDrag(PLint x, PLint y)
 }
 
 
-PLbool plGraftEditor::processMouseRelease(PLint x, PLint y)
+bool plGraftEditor::processMouseRelease(int32_t x, int32_t y)
 {
     _isDraggingMenu = false;
     return true;
 }
 
 
-PLbool plGraftEditor::processJoystickDrag(PLint x, PLint y)
+bool plGraftEditor::processJoystickDrag(int32_t x, int32_t y)
 {
     if (_selectedGraft == nullptr)
         return false;                 // no graft selected
@@ -128,7 +128,7 @@ PLbool plGraftEditor::processJoystickDrag(PLint x, PLint y)
 }
 
 
-void plGraftEditor::selectGraft(PLuint index, PLuint type)
+void plGraftEditor::selectGraft(uint32_t index, uint32_t type)
 {
     // clear any previous selections
     clearSelection();
@@ -139,7 +139,7 @@ void plGraftEditor::selectGraft(PLuint index, PLuint type)
 }
 
 
-void plGraftEditor::_dragMarker(PLint x, PLint y)
+void plGraftEditor::_dragMarker(int32_t x, int32_t y)
 {
     if (_selectedGraft == nullptr)
         return;                 // no graft selected
@@ -163,7 +163,7 @@ void plGraftEditor::_dragMarker(PLint x, PLint y)
         if (_selectedType == PL_PICKING_INDEX_GRAFT_DEFECT)
         {
             // recipient, rotate around up axis
-            PLfloat angle = _selectedGraft->markDirection().signedAngle(newMarkDir, plVector3(0, 1, 0));
+            float32_t angle = _selectedGraft->markDirection().signedAngle(newMarkDir, plVector3(0, 1, 0));
             _selectedGraft->rotate(_selectedType, PL_RAD_TO_DEG(angle));
         }
         else
@@ -176,7 +176,7 @@ void plGraftEditor::_dragMarker(PLint x, PLint y)
 }
 
 
-void plGraftEditor::_dragHandle(PLint x, PLint y)
+void plGraftEditor::_dragHandle(int32_t x, int32_t y)
 {
     if (_selectedGraft == nullptr)
         return;                 // no graft selected
@@ -263,7 +263,7 @@ void plGraftEditor::toggleSelectedVisibility()
 }
 
 
-void plGraftEditor::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plGraftEditor::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     _extractMenuRenderComponents(renderMap);
 
@@ -273,37 +273,34 @@ void plGraftEditor::extractRenderComponents(plRenderMap& renderMap, PLuint techn
     // graft outline
     _selectedGraft->extractRenderComponents(renderMap, technique);
 
-    if (!_selectedGraft->inArthroView())
+    plColourStack::load(PL_AXIS_GREY);
+    plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT_HANDLE);
+
+    plModelStack::push();
+    plModelStack::translate(_selectedGraft->plug(_selectedType).surfaceTransform().y());
+
+    plModelStack::push();
+    plModelStack::mult(_selectedGraft->plug(_selectedType).finalTransform().matrix());
+
+    plRenderer::queueSphere(PL_PLAN_TECHNIQUE, plVector3(0, 0, 0), PL_HANDLE_SPHERE_RADIUS);
+    plModelStack::load(_selectedGraft->plug(_selectedType).finalTransform().matrix());
+
+    plModelStack::pop();
+
+    if (_editMode == PL_GRAFT_EDIT_MODE_TRANSLATE)
     {
-        plColourStack::load(PL_AXIS_GREY);
-        plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT_HANDLE);
-
-        plModelStack::push();
-        plModelStack::translate(_selectedGraft->plug(_selectedType).surfaceTransform().y());
-
-        plModelStack::push();
-        plModelStack::mult(_selectedGraft->plug(_selectedType).finalTransform().matrix());
-
-        plRenderer::queueSphere(PL_PLAN_TECHNIQUE, plVector3(0, 0, 0), PL_HANDLE_SPHERE_RADIUS);
-        plModelStack::load(_selectedGraft->plug(_selectedType).finalTransform().matrix());
-
-        plModelStack::pop();
-
-        if (_editMode == PL_GRAFT_EDIT_MODE_TRANSLATE)
-        {
-            // draw axis
-            _selectedGraft->plug(_selectedType).surfaceTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
-            //_selectedGraft->recipient().surfaceTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
-        }
-        else
-        {
-            // draw axis
-            _selectedGraft->plug(_selectedType).finalTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
-            //_selectedGraft->recipient().finalTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
-        }
-
-        plModelStack::pop();
+        // draw axis
+        _selectedGraft->plug(_selectedType).surfaceTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
+        //_selectedGraft->recipient().surfaceTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
     }
+    else
+    {
+        // draw axis
+        _selectedGraft->plug(_selectedType).finalTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
+        //_selectedGraft->recipient().finalTransform().extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
+    }
+
+    plModelStack::pop();
 }
 
 
@@ -315,9 +312,9 @@ void plGraftEditor::extractRenderComponents(plRenderMap& renderMap) const
 
 void plGraftEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
 {
-    const PLfloat HARVEST_HORIZONTAL   = PL_EDITOR_MENU_HORIZONTAL_BUFFER;
-    const PLfloat RECIPIENT_HORIZONTAL = (PL_EDITOR_MENU_HORIZONTAL_BUFFER + PL_EDITOR_MENU_CIRCLE_RADIUS + PL_EDITOR_MENU_HORIZONTAL_SPACING);
-    const PLfloat INITIAL_VERTICAL     = plWindow::viewportHeight() - PL_EDITOR_MENU_VERTICAL_BUFFER;
+    const float32_t HARVEST_HORIZONTAL   = PL_EDITOR_MENU_HORIZONTAL_BUFFER;
+    const float32_t RECIPIENT_HORIZONTAL = (PL_EDITOR_MENU_HORIZONTAL_BUFFER + PL_EDITOR_MENU_CIRCLE_RADIUS + PL_EDITOR_MENU_HORIZONTAL_SPACING);
+    const float32_t INITIAL_VERTICAL     = plWindow::viewportHeight() - PL_EDITOR_MENU_VERTICAL_BUFFER;
 
     plMatrix44 ortho(0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1);
 
@@ -326,7 +323,7 @@ void plGraftEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
                        0, 0, -1, 0,
                        0, 0,  0, 1);
 
-    PLfloat count = 0;
+    float32_t count = 0;
     plPickingStack::loadBlue(-1);
 
     plCameraStack::push(camera);
@@ -334,7 +331,7 @@ void plGraftEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
     plModelStack::push(plMatrix44()); // load identity
     {
         // grafts
-        for (PLuint i=0; i<_plan->grafts().size(); i++)
+        for (uint32_t i=0; i<_plan->grafts().size(); i++)
         {
             plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT);
             plPickingStack::loadGreen(i);

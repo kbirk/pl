@@ -1,6 +1,11 @@
 #include "PlannerWindow.h"
 
-PlannerWindow::PlannerWindow(int x, int y, int width, int height, std::string title, int argc, char **argv)
+#include "plAutomaticPlanner.h"
+#include "plOpenGLInfo.h"
+#include "plRenderer.h"
+#include "plRenderResources.h"
+
+PlannerWindow::PlannerWindow(int32_t x, int32_t y, int32_t width, int32_t height, std::string title, int32_t argc, char **argv)
     : Window(x, y, width, height, title),
       _plan(argc, argv),
       _graftEditor(),
@@ -11,7 +16,10 @@ PlannerWindow::PlannerWindow(int x, int y, int width, int height, std::string ti
       _previousMouse(),
       _button(GLUT_NO_BUTTON)
 {
-    plInit();
+    // initialize openGL specific objects
+    plOpenGLInfo::init();
+    plRenderer::init();
+    plRenderResources::init();
 
     _graftEditor.attach(_plan);
     _boundaryEditor.attach(_plan);
@@ -46,7 +54,7 @@ void PlannerWindow::display()
 }
 
 
-void PlannerWindow::setCursor(int mx, int my)
+void PlannerWindow::setCursor(int32_t mx, int32_t my)
 {
     switch (_button)
     {
@@ -67,9 +75,9 @@ void PlannerWindow::setCursor(int mx, int my)
 }
 
 
-void PlannerWindow::keyAction(unsigned char key, int mx, int my)
+void PlannerWindow::keyAction(unsigned char key, int32_t mx, int32_t my)
 {
-    static int currentView = 0;
+    static int32_t currentView = 0;
 
     switch (key)
     {
@@ -93,10 +101,10 @@ void PlannerWindow::keyAction(unsigned char key, int mx, int my)
         case '9':
         case '0':   // 0-9
 
-            currentView = (PLint)(key - '0');
+            currentView = (int32_t)(key - '0');
             break;
 
-        case 'a':   _plan.toggleArthroView();                                   break;
+        case 'a':   /* UN-USED */ break;
         case 'b':   /* UN-USED */ break;
         case 'c':
 
@@ -105,7 +113,7 @@ void PlannerWindow::keyAction(unsigned char key, int mx, int my)
             break;
 
         case 'd':   /* UN-USED */ break;
-        case 'e':   _plan.exportIGuides();                                      break;
+        case 'e':   /* UN-USED */ break;
         case 'f':   /* UN-USED */ break;
         case 'g':   /* UN-USED */ break;
         case 'h':   /* UN-USED */ break;
@@ -153,8 +161,8 @@ void PlannerWindow::keyAction(unsigned char key, int mx, int my)
         case 'D':   _plan.addDonorSite(_modelEditor.selectedModelID());       break;
         case 'E':   /* UN-USED */ break;
         case 'F':   /* UN-USED */ break;
-        case 'G':   _plan.generateIGuides();                                    break;
-        case 'I':   _plan.addIGuideSite(_modelEditor.selectedModelID());      break;
+        case 'G':   /* UN-USED */ break;
+        case 'I':   /* UN-USED */ break;
         case 'J':   /* UN-USED */ break;
         case 'K':   /* UN-USED */ break;
         case 'L':   /* UN-USED */ break;
@@ -209,17 +217,17 @@ void PlannerWindow::keyAction(unsigned char key, int mx, int my)
 }
 
 
-void PlannerWindow::passiveMouseMotion(int mx, int my)
+void PlannerWindow::passiveMouseMotion(int32_t mx, int32_t my)
 {
     // do nothing
 }
 
 
-void PlannerWindow::activeMouseMotion(int mx, int my)
+void PlannerWindow::activeMouseMotion(int32_t mx, int32_t my)
 {
     // convert from GLUT window coords to OpenGL coords
-    PLint x = mx;
-    PLint y = glutGet(GLUT_WINDOW_HEIGHT) - my;
+    int32_t x = mx;
+    int32_t y = glutGet(GLUT_WINDOW_HEIGHT) - my;
 
     switch (_button)
     {
@@ -262,13 +270,13 @@ void PlannerWindow::activeMouseMotion(int mx, int my)
 
 
 // Record button state when mouse button is pressed or released
-void PlannerWindow::mouseAction(int button, int state, int mx, int my)
+void PlannerWindow::mouseAction(int32_t button, int32_t state, int32_t mx, int32_t my)
 {
     // NOTE: this function ALWAYS executes BEFORE activeMouseMotion()
 
     // convert from GLUT window coords to OpenGL coords
-    PLint x = mx;
-    PLint y = glutGet(GLUT_WINDOW_HEIGHT) - my;
+    int32_t x = mx;
+    int32_t y = glutGet(GLUT_WINDOW_HEIGHT) - my;
 
     switch (state)
     {

@@ -5,7 +5,7 @@ plSSBO::plSSBO()
 }
 
 
-plSSBO::plSSBO(PLuint numBytes, const void *buffer)
+plSSBO::plSSBO(uint32_t numBytes, const void *buffer)
 {
     _create(numBytes, buffer);
 }
@@ -37,7 +37,7 @@ plSSBO& plSSBO::operator = (const plSSBO& ssbo)
 }
 
 
-void plSSBO::_create(PLuint numBytes, const void *buffer)
+void plSSBO::_create(uint32_t numBytes, const void *buffer)
 {
     // set bytes
     _numBytes = numBytes;
@@ -51,7 +51,7 @@ void plSSBO::_create(PLuint numBytes, const void *buffer)
     if (!buffer)
     {
         // initialize empty buffer to all 0's
-        PLuint *temp = new PLuint[ numBytes ];
+        uint32_t *temp = new uint32_t[numBytes];
         memset(temp, 0, numBytes);
         glBufferData(GL_SHADER_STORAGE_BUFFER, numBytes, temp, GL_STREAM_COPY);
         delete [] temp;
@@ -71,7 +71,7 @@ void plSSBO::_create(PLuint numBytes, const void *buffer)
 void plSSBO::_copy(const plSSBO &ssbo)
 {
     // read data from previous ssbo
-    PLchar *buffer = new PLchar[ _numBytes ];
+    uint8_t *buffer = new uint8_t[_numBytes];
     ssbo.readBytes(buffer, _numBytes);
 
     // copy number of bytes and create buffer on gpu

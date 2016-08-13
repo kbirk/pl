@@ -1,35 +1,35 @@
 #pragma once
 
-#include "pl.h"
+#include "plCommon.h"
 
 #define MAX_NUM_WINDOWS 20
 
 void GLUTdisplay();
-void GLUTreshape(int x, int y);
-void GLUTmouseAction(int button, int state, int x, int y);
-void GLUTactiveMouseMotion(int x, int y);
-void GLUTpassiveMouseMotion(int x, int y);
-void GLUTkeyAction(unsigned char c, int x, int y);
+void GLUTreshape(int32_t x, int32_t y);
+void GLUTmouseAction(int32_t button, int32_t state, int32_t x, int32_t y);
+void GLUTactiveMouseMotion(int32_t x, int32_t y);
+void GLUTpassiveMouseMotion(int32_t x, int32_t y);
+void GLUTkeyAction(unsigned char c, int32_t x, int32_t y);
 void GLUTidle();
 
 class Window
 {
     public:
 
-        Window(int x, int y, int width, int height, std::string title);
+        Window(int32_t x, int32_t y, int32_t width, int32_t height, std::string title);
 
         virtual void display() = 0;
-        virtual void mouseAction(int button, int state, int mx, int my) = 0;
-        virtual void activeMouseMotion (int mx, int my) = 0;
-        virtual void passiveMouseMotion(int mx, int my) = 0;
-        virtual void keyAction(unsigned char key, int mx, int my) = 0;
-        virtual void setCursor(int mx, int my) = 0;
+        virtual void mouseAction(int32_t button, int32_t state, int32_t mx, int32_t my) = 0;
+        virtual void activeMouseMotion (int32_t mx, int32_t my) = 0;
+        virtual void passiveMouseMotion(int32_t mx, int32_t my) = 0;
+        virtual void keyAction(unsigned char key, int32_t mx, int32_t my) = 0;
+        virtual void setCursor(int32_t mx, int32_t my) = 0;
         virtual void idle() = 0;
-        virtual void reshape(int width, int height);
+        virtual void reshape(int32_t width, int32_t height);
 
     private:
 
-        int _windowID;
+        int32_t _windowID;
 
-        void registerWindow(int windowId);
+        void registerWindow(int32_t windowId);
 };

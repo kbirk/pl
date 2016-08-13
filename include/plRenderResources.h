@@ -25,8 +25,8 @@ enum plShaderEnums
 namespace plRenderResources
 {
     void init();
-    void reshape(PLuint width, PLuint height);
+    void reshape(uint32_t width, uint32_t height);
 
-    const std::shared_ptr<plFBO >&    fbos   (PLuint id);
-    const std::shared_ptr<plShader >& shaders(PLuint id);
+    const std::shared_ptr<plFBO >&    fbos   (uint32_t id);
+    const std::shared_ptr<plShader >& shaders(uint32_t id);
 }

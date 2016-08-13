@@ -12,21 +12,21 @@ class plProjection
 {
     public:
 
-        plProjection(PLfloat aspectRatio);
-        plProjection(PLfloat fov, PLfloat aspectRatio, PLfloat nearPlane, PLfloat farPlane);
+        plProjection(float32_t aspectRatio);
+        plProjection(float32_t fov, float32_t aspectRatio, float32_t nearPlane, float32_t farPlane);
 
         plMatrix44 matrix() const                { return plMatrix44(_fov, _aspect, _nearPlane, _farPlane); }
 
-        void fov        (PLfloat fov)  { _fov = fov;               }
-        void nearPlane  (PLfloat nearPlane)  { _nearPlane = nearPlane;   }
-        void farPlane   (PLfloat farPlane)  { _farPlane  = farPlane;    }
-        void aspectRatio(PLfloat aspectRatio)  { _aspect    = aspectRatio; }
+        void fov        (float32_t fov)  { _fov = fov;               }
+        void nearPlane  (float32_t nearPlane)  { _nearPlane = nearPlane;   }
+        void farPlane   (float32_t farPlane)  { _farPlane  = farPlane;    }
+        void aspectRatio(float32_t aspectRatio)  { _aspect    = aspectRatio; }
 
     private:
 
-        PLfloat _fov;
-        PLfloat _aspect;
-        PLfloat _nearPlane;
-        PLfloat _farPlane;
+        float32_t _fov;
+        float32_t _aspect;
+        float32_t _nearPlane;
+        float32_t _farPlane;
 
 };

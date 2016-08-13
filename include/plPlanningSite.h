@@ -20,7 +20,7 @@ class plPointAndNormal
             : point(p), normal(n)
         {}
 
-        PLbool operator < (const plPointAndNormal &pn) const
+        bool operator < (const plPointAndNormal &pn) const
         {
             if (point.x == pn.point.x)
             {
@@ -46,21 +46,21 @@ class plPlanningSite
         std::vector<plVector4>  gridNormals;
         std::vector<plVector4>  boundaryPoints;
         std::vector<plVector4>  boundaryNormals;
-        PLfloat                 area;
+        float32_t                 area;
         plVector3               avgNormal;
 
         plPlanningSite();
-        plPlanningSite(const std::vector<plTriangle> &triangles, const plBoundary &boundary, PLbool fineGrain = false);
+        plPlanningSite(const std::vector<plTriangle> &triangles, const plBoundary &boundary, bool fineGrain = false);
         plPlanningSite(plPlanningSite&& site);
 
         plPlanningSite& operator= (plPlanningSite&& site);
 
-        PLuint totalSize() const { return gridPoints.size() + gridNormals.size() + triangles.size()*4 + boundaryPoints.size() + boundaryNormals.size(); }
+        uint32_t totalSize() const { return gridPoints.size() + gridNormals.size() + triangles.size()*4 + boundaryPoints.size() + boundaryNormals.size(); }
 
         void   getData(std::vector<plVector4> &data) const { _bufferGridData(data); _bufferMeshData(data); _bufferBoundaryData(data); }
         plSSBO getSSBO() const;
 
-        PLbool good() const;
+        bool good() const;
 
     private:
 

@@ -22,11 +22,11 @@ class plMesh
 
         const std::vector<plTriangle>& triangles() const { return _triangles; }
         void getMinMax(plVector3 &min, plVector3 &max) const;
-        virtual plVector3 getAverageNormal (PLfloat radius, const plVector3 &origin, const plVector3 &up) const;
+        virtual plVector3 getAverageNormal (float32_t radius, const plVector3 &origin, const plVector3 &up) const;
         virtual plIntersection rayIntersect (const plVector3 &rayOrigin, const plVector3 &rayDirection,
-                                              PLbool smoothNormal    = false,
-                                              PLbool ignoreBehindRay = false,
-                                              PLbool backFaceCull    = false) const;
+                                              bool smoothNormal    = false,
+                                              bool ignoreBehindRay = false,
+                                              bool backFaceCull    = false) const;
 
     protected:
 

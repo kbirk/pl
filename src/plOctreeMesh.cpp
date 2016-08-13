@@ -5,14 +5,14 @@ plOctreeMesh::plOctreeMesh()
 }
 
 
-plOctreeMesh::plOctreeMesh(const std::vector<plTriangle> &triangles, PLuint depth, PLbool verbose)
+plOctreeMesh::plOctreeMesh(const std::vector<plTriangle> &triangles, uint32_t depth, bool verbose)
     : plMesh(triangles)
 {
     _buildOctree(depth, verbose);
 }
 
 
-plOctreeMesh::plOctreeMesh(std::vector<plTriangle>&& triangles, PLuint depth, PLbool verbose)
+plOctreeMesh::plOctreeMesh(std::vector<plTriangle>&& triangles, uint32_t depth, bool verbose)
     : plMesh(std::move(triangles))
 {
     _buildOctree(depth, verbose);
@@ -48,7 +48,7 @@ plOctreeMesh& plOctreeMesh::operator= (plOctreeMesh&& mesh)
 }
 
 
-void plOctreeMesh::_buildOctree(PLuint depth, PLbool verbose)
+void plOctreeMesh::_buildOctree(uint32_t depth, bool verbose)
 {
     // get min and max extents of model
     plVector3 min, max;
@@ -59,27 +59,27 @@ void plOctreeMesh::_buildOctree(PLuint depth, PLbool verbose)
 }
 
 
-plVector3 plOctreeMesh::getAverageNormal(PLfloat radius, const plVector3 &origin, const plVector3 &normal) const
+plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &origin, const plVector3 &normal) const
 {
     // get potential triangles in radius from octree
     std::set<const plTriangle* > triangles;
     _octree.rayIntersect(triangles, origin, -normal, radius);
 
     plVector3 avgNormal(0,0,0);
-    PLint count = 0;
-    float radiusSquared = radius * radius;
+    int32_t count = 0;
+    float32_t radiusSquared = radius * radius;
 
     // Find polygons on top of graft
     for (const plTriangle* triangle : triangles)
     {
         if (triangle->normal() * normal > 0.001)
         {
-            PLfloat dist1 = (triangle->point0() - origin).squaredLength();
-            PLfloat dist2 = (triangle->point1() - origin).squaredLength();
-            PLfloat dist3 = (triangle->point2() - origin).squaredLength();
+            float32_t dist1 = (triangle->point0() - origin).squaredLength();
+            float32_t dist2 = (triangle->point1() - origin).squaredLength();
+            float32_t dist3 = (triangle->point2() - origin).squaredLength();
 
             // if any point of triangle is withing radial sphere, accept
-            float minDist = PL_MIN_OF_3(dist1, dist2, dist3);
+            float32_t minDist = PL_MIN_OF_3(dist1, dist2, dist3);
 
             if (minDist <= radiusSquared)
             {
@@ -96,18 +96,18 @@ plVector3 plOctreeMesh::getAverageNormal(PLfloat radius, const plVector3 &origin
         return normal;
     }
 
-    return (1.0f/ (PLfloat)(count) * avgNormal).normalize();
+    return (1.0f/ (float32_t)(count) * avgNormal).normalize();
 }
 
 
-plIntersection plOctreeMesh::rayIntersect(const plVector3 &rayOrigin, const plVector3 &rayDirection, PLbool smoothNormal, PLbool ignoreBehindRay, PLbool backFaceCull) const
+plIntersection plOctreeMesh::rayIntersect(const plVector3 &rayOrigin, const plVector3 &rayDirection, bool smoothNormal, bool ignoreBehindRay, bool backFaceCull) const
 {
     // get potential triangles from octree
     std::set<const plTriangle* > triangles;
     _octree.rayIntersect(triangles, rayOrigin, rayDirection, 0.0f, ignoreBehindRay);
 
     plIntersection closestIntersection(false);
-    PLfloat min = FLT_MAX;
+    float32_t min = FLT_MAX;
 
     for (const plTriangle* tri : triangles)
     {
@@ -115,7 +115,7 @@ plIntersection plOctreeMesh::rayIntersect(const plVector3 &rayOrigin, const plVe
         plIntersection intersection = tri->rayIntersect(rayOrigin, rayDirection, ignoreBehindRay, backFaceCull);
         if (intersection.exists)
         {
-            PLfloat tAbs = fabs(intersection.t);
+            float32_t tAbs = fabs(intersection.t);
             if (tAbs < min)
             {
                 min = tAbs;

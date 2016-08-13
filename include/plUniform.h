@@ -8,7 +8,7 @@ class plUniform
     public:
 
         template< typename T >
-        plUniform(PLuint type, const T& t);
+        plUniform(uint32_t type, const T& t);
 
         plUniform(plUniform&& uniform);
         plUniform(const plUniform& uniform);
@@ -18,15 +18,15 @@ class plUniform
 
         ~plUniform();
 
-        GLvoid* data()     const { return (GLvoid*)(_data); }
-        PLuint  type()     const { return _type;            }
-        PLuint  numBytes() const { return _numBytes;        }
+        GLvoid* data()const { return (GLvoid*)(_data); }
+        uint32_t type() const { return _type; }
+        uint32_t numBytes() const { return _numBytes; }
 
     private:
 
-        PLuint  _type;
-        PLuint  _numBytes;
-        PLchar* _data;
+        uint32_t _type;
+        uint32_t _numBytes;
+        uint8_t* _data;
 
         void _copy(const plUniform& uniform);
         void _move(plUniform&& uniform);
@@ -35,11 +35,11 @@ class plUniform
 
 
 template< typename T >
-plUniform::plUniform(PLuint type, const T& t)
+plUniform::plUniform(uint32_t type, const T& t)
     : _type(type),
       _numBytes(sizeof(T))
 {
     _numBytes = sizeof(T);
-    _data = new PLchar[ _numBytes ];
-    memcpy(_data, reinterpret_cast<const PLchar*>(&t), _numBytes);
+    _data = new uint8_t[_numBytes];
+    memcpy(_data, reinterpret_cast<const uint8_t*>(&t), _numBytes);
 }

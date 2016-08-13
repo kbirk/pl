@@ -36,7 +36,7 @@ void plUniform::_copy(const plUniform& uniform)
 {
     _numBytes = uniform._numBytes;
     _type = uniform._type;
-    _data = new PLchar[ _numBytes ];
+    _data = new uint8_t[_numBytes];
     memcpy(_data, uniform._data, _numBytes);
 }
 

@@ -17,7 +17,7 @@ void plBoundaryEditor::clearSelection()
 }
 
 
-PLbool plBoundaryEditor::processMouseClick(PLint x, PLint y)
+bool plBoundaryEditor::processMouseClick(int32_t x, int32_t y)
 {
     plPickingInfo pixel = plPicking::pickPixel(x, y);
 
@@ -26,7 +26,6 @@ PLbool plBoundaryEditor::processMouseClick(PLint x, PLint y)
         case PL_PICKING_TYPE_DEFECT_CORNERS:
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
 
             selectBoundary(pixel.r, pixel.g, pixel.b);
             return true;
@@ -41,13 +40,12 @@ PLbool plBoundaryEditor::processMouseClick(PLint x, PLint y)
 }
 
 
-PLbool plBoundaryEditor::processMouseDrag (PLint x, PLint y)
+bool plBoundaryEditor::processMouseDrag (int32_t x, int32_t y)
 {
     plPickingInfo pixel = plPicking::previousPick(); // read pick from last click, not what is currently under mouse
 
     switch (pixel.r)
     {
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:
         case PL_PICKING_TYPE_DEFECT_CORNERS:
 
             _isDraggingMenu = (_selectedPointIndex < 0); // drag menu if a point isn't selected
@@ -63,7 +61,7 @@ PLbool plBoundaryEditor::processMouseDrag (PLint x, PLint y)
 }
 
 
-PLbool plBoundaryEditor::processJoystickDrag (PLint x, PLint y)
+bool plBoundaryEditor::processJoystickDrag (int32_t x, int32_t y)
 {
     if (_selectedBoundary == nullptr)
         return false;
@@ -72,7 +70,7 @@ PLbool plBoundaryEditor::processJoystickDrag (PLint x, PLint y)
 }
 
 
-PLbool plBoundaryEditor::processMouseRelease(PLint x, PLint y)
+bool plBoundaryEditor::processMouseRelease(int32_t x, int32_t y)
 {
     if (!_selectedBoundary) // no boundary or point is selected
         return false;
@@ -102,16 +100,10 @@ void plBoundaryEditor::_clearSiteBoundaries()
     {
         _clearEditable(donorSite->boundary);
     }
-
-    // iguide sites
-    for (plIGuideSite* iguideSite : _plan->iGuideSites())
-    {
-        _clearEditable(iguideSite->boundary);
-    }
 }
 
 
-void plBoundaryEditor::_selectBoundary(plBoundary &boundary, PLuint boundaryIndex, PLuint pointIndex)
+void plBoundaryEditor::_selectBoundary(plBoundary &boundary, uint32_t boundaryIndex, uint32_t pointIndex)
 {
     _selectEditable(boundary, pointIndex);
     _selectedSiteIndex  = boundaryIndex;
@@ -120,7 +112,7 @@ void plBoundaryEditor::_selectBoundary(plBoundary &boundary, PLuint boundaryInde
 }
 
 
-void plBoundaryEditor::selectBoundary(PLuint boundaryType, PLuint boundaryIndex, PLuint pointIndex)
+void plBoundaryEditor::selectBoundary(uint32_t boundaryType, uint32_t boundaryIndex, uint32_t pointIndex)
 {
     // clear any previous selections
     clearSelection();
@@ -130,13 +122,12 @@ void plBoundaryEditor::selectBoundary(PLuint boundaryType, PLuint boundaryIndex,
         case PL_PICKING_TYPE_DEFECT_CORNERS:   _selectBoundary(_plan->defectSites(boundaryIndex).spline,   boundaryIndex, pointIndex);   break;
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:  _selectBoundary(_plan->defectSites(boundaryIndex).boundary, boundaryIndex, pointIndex);   break;
         case PL_PICKING_TYPE_DONOR_BOUNDARY:   _selectBoundary(_plan->donorSites(boundaryIndex).boundary,  boundaryIndex, pointIndex);   break;
-        case PL_PICKING_TYPE_IGUIDE_BOUNDARY:  _selectBoundary(_plan->iGuideSites(boundaryIndex).boundary, boundaryIndex, pointIndex);   break;
     }
 
 }
 
 
-plIntersection plBoundaryEditor::_getBoundaryIntersection(PLuint x, PLuint y)
+plIntersection plBoundaryEditor::_getBoundaryIntersection(uint32_t x, uint32_t y)
 {
     plVector3 rayOrigin, rayDirection;
     plWindow::cameraToMouseRay(rayOrigin, rayDirection, x, y);
@@ -156,7 +147,7 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection(PLuint x, PLuint y)
 }
 
 
-void plBoundaryEditor::moveSelectedPoint(PLuint x, PLuint y)
+void plBoundaryEditor::moveSelectedPoint(uint32_t x, uint32_t y)
 {
     if (_selectedBoundary == nullptr || _selectedPointIndex < 0) // no boundary or point is selected
         return;
@@ -170,7 +161,7 @@ void plBoundaryEditor::moveSelectedPoint(PLuint x, PLuint y)
 }
 
 
-void plBoundaryEditor::addPoint(PLuint x, PLuint y, PLbool selectNewPoint)
+void plBoundaryEditor::addPoint(uint32_t x, uint32_t y, bool selectNewPoint)
 {
     if (_selectedBoundary == nullptr) // no boundary selected
         return;
@@ -179,7 +170,7 @@ void plBoundaryEditor::addPoint(PLuint x, PLuint y, PLbool selectNewPoint)
 
     if (intersection.exists)
     {
-        PLint newIndex = _selectedBoundary->addPointAndNormal(intersection.point, intersection.normal);
+        int32_t newIndex = _selectedBoundary->addPointAndNormal(intersection.point, intersection.normal);
 
         if (selectNewPoint && newIndex >= 0)
         {
@@ -226,7 +217,7 @@ void plBoundaryEditor::clearSelectedBoundary()
 }
 
 
-void plBoundaryEditor::extractRenderComponents(plRenderMap& renderMap, PLuint technique) const
+void plBoundaryEditor::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     _extractMenuRenderComponents(renderMap);
 
@@ -245,11 +236,11 @@ void plBoundaryEditor::extractRenderComponents(plRenderMap& renderMap) const
 
 void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
 {
-    const PLfloat CORNER_HORIZONTAL   = plWindow::viewportWidth() - (PL_EDITOR_MENU_HORIZONTAL_BUFFER + PL_EDITOR_MENU_CIRCLE_RADIUS + PL_EDITOR_MENU_HORIZONTAL_SPACING);
-    const PLfloat BOUNDARY_HORIZONTAL = plWindow::viewportWidth() - PL_EDITOR_MENU_HORIZONTAL_BUFFER;
-    const PLfloat INITIAL_VERTICAL    = plWindow::viewportHeight() - PL_EDITOR_MENU_VERTICAL_BUFFER;
+    const float32_t CORNER_HORIZONTAL   = plWindow::viewportWidth() - (PL_EDITOR_MENU_HORIZONTAL_BUFFER + PL_EDITOR_MENU_CIRCLE_RADIUS + PL_EDITOR_MENU_HORIZONTAL_SPACING);
+    const float32_t BOUNDARY_HORIZONTAL = plWindow::viewportWidth() - PL_EDITOR_MENU_HORIZONTAL_BUFFER;
+    const float32_t INITIAL_VERTICAL    = plWindow::viewportHeight() - PL_EDITOR_MENU_VERTICAL_BUFFER;
 
-    PLfloat count = 0;
+    float32_t count = 0;
     plPickingStack::loadBlue(-1);
 
     plMatrix44 ortho(0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1);
@@ -264,7 +255,7 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
     plModelStack::push(plMatrix44()); // load identity
     {
         // defect sites
-        for (PLuint i=0; i<_plan->defectSites().size(); i++)
+        for (uint32_t i=0; i<_plan->defectSites().size(); i++)
         {
             plPickingStack::loadGreen(i);
 
@@ -305,7 +296,7 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
         }
 
         // donor sites
-        for (PLuint i=0; i<_plan->donorSites().size(); i++)
+        for (uint32_t i=0; i<_plan->donorSites().size(); i++)
         {
             plPickingStack::loadGreen(i);
 
@@ -328,31 +319,6 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
             }
             count++;
         }
-
-        // iGuide site boundaries
-        for (PLuint i=0; i<_plan->iGuideSites().size(); i++)
-        {
-            plPickingStack::loadGreen(i);
-
-            // boundary menu
-            plPickingStack::loadRed(PL_PICKING_TYPE_IGUIDE_BOUNDARY);
-            plColourStack::load(PL_BOUNDARY_IGUIDE_COLOUR);
-
-            plRenderer::queueDisk(PL_MINIMAL_TECHNIQUE,
-                plVector3(BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0),
-                plVector3(0, 0, 1),
-                PL_EDITOR_MENU_CIRCLE_RADIUS);
-
-            if (_plan->iGuideSites(i).boundary.isSelected())
-            {
-                // draw selection outline
-                plRenderer::queueDisk(PL_OUTLINE_TECHNIQUE,
-                    plVector3(BOUNDARY_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0),
-                    plVector3(0, 0, 1),
-                    PL_EDITOR_MENU_CIRCLE_RADIUS);
-            }
-            count++;
-        }
     }
     plModelStack::pop();
     plCameraStack::pop();
@@ -363,7 +329,7 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
 void plBoundaryEditor::removeSelectedSite()
 {
     // does not have access to the site that contains the boundary, so search and find which one it is
-    for (PLuint i=0; i < _plan->defectSites().size(); i++)
+    for (uint32_t i=0; i < _plan->defectSites().size(); i++)
     {
         if (_selectedBoundary == &_plan->defectSites(i).boundary)
         {
@@ -375,7 +341,7 @@ void plBoundaryEditor::removeSelectedSite()
         }
     }
 
-    for (PLuint i=0; i < _plan->donorSites().size(); i++)
+    for (uint32_t i=0; i < _plan->donorSites().size(); i++)
     {
         if (_selectedBoundary == &_plan->donorSites(i).boundary)
         {
@@ -383,12 +349,5 @@ void plBoundaryEditor::removeSelectedSite()
         }
     }
 
-    for (PLuint i=0; i < _plan->iGuideSites().size(); i++)
-    {
-        if (_selectedBoundary == &_plan->iGuideSites(i).boundary)
-        {
-            _plan->removeIGuideSite(i);
-        }
-    }
     clearSelection();
 }

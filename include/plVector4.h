@@ -8,32 +8,32 @@ class plVector4
 {
     public:
 
-        PLfloat x, y, z, w;
+        float32_t x, y, z, w;
 
         plVector4();
-        plVector4(const plVector3 &v, PLfloat ww = 1.0f);
-        plVector4(PLfloat xx, PLfloat yy, PLfloat zz, PLfloat ww = 1.0f);
-        plVector4(PLchar *string);
+        plVector4(const plVector3 &v, float32_t ww = 1.0f);
+        plVector4(float32_t xx, float32_t yy, float32_t zz, float32_t ww = 1.0f);
+        plVector4(char *string);
         plVector4(const plString &str);
 
-        PLbool       operator == (const plVector4 &p) const;
-        PLbool       operator != (const plVector4 &p) const;
-        plVector4 operator +  (const plVector4 &p) const;
-        plVector4 operator -  (const plVector4 &p) const;
-        PLfloat   operator *  (const plVector4 &p) const;
+        bool operator == (const plVector4 &p) const;
+        bool operator != (const plVector4 &p) const;
+        plVector4 operator + (const plVector4 &p) const;
+        plVector4 operator - (const plVector4 &p) const;
+        float32_t operator * (const plVector4 &p) const;
 
         plVector4 operator-() const;
 
         plVector4 normalize() const;
-        PLfloat length() const;
-        PLfloat squaredLength() const;
+        float32_t length() const;
+        float32_t squaredLength() const;
 
 };
 
 
 // Scalar/Vector multiplication
 
-plVector4 operator * (PLfloat k, const plVector4 &p);
+plVector4 operator * (float32_t k, const plVector4 &p);
 
 // I/O operators
 

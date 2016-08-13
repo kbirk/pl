@@ -2,18 +2,18 @@
 
 namespace plUtility
 {
-    void printProgressBar(float percent, PLuint length)
+    void printProgressBar(float32_t percent, uint32_t length)
     {
         std::ios::fmtflags flags(std::cout.flags());
-        PLuint prevPrecision = std::cout.precision();
+        uint32_t prevPrecision = std::cout.precision();
         std::cout << std::fixed << std::setprecision(2);
 
         std::cout << "\r\tProgress: [";
 
-        for (PLuint i=0; i < PLuint(percent*length); i++)
+        for (uint32_t i=0; i < uint32_t(percent*length); i++)
             std::cout << "=";
 
-        for (PLuint i=0; i < length - PLuint(percent*length); i++)
+        for (uint32_t i=0; i < length - uint32_t(percent*length); i++)
             std::cout << " ";
 
         std::cout << "]  " << percent*100.0f << "%";

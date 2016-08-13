@@ -65,12 +65,12 @@ void plPlannerShader::setDefectSiteUniforms(const plPlanningSite &defectSite) co
 
 void plPlannerShader::setDonorSiteUniforms(const std::vector<plPlanningSite> &donorSites) const
 {
-    PLuint totalGridPoints = 0;
-    PLuint dataIndexOffset = 0;
-    std::vector<PLuint> gridPointCounts;
-    std::vector<PLuint> triangleCounts;
-    std::vector<PLuint> boundaryPointCounts;
-    std::vector<PLuint> dataOffsets;
+    uint32_t totalGridPoints = 0;
+    uint32_t dataIndexOffset = 0;
+    std::vector<uint32_t> gridPointCounts;
+    std::vector<uint32_t> triangleCounts;
+    std::vector<uint32_t> boundaryPointCounts;
+    std::vector<uint32_t> dataOffsets;
 
     for (const plPlanningSite& donorSite : donorSites)
     {
@@ -107,24 +107,24 @@ void plPlannerShader::setSeedUniform() const
 }
 
 
-void plPlannerShader::setTemperatureUniform(PLfloat temperature) const
+void plPlannerShader::setTemperatureUniform(float32_t temperature) const
 {
     glUniform1f   (_temperatureID, temperature);
 }
 
 
-void plPlannerShader::setLocalLoadUniform(PLuint loadLocal) const
+void plPlannerShader::setLocalLoadUniform(uint32_t loadLocal) const
 {
     glUniform1ui (_loadLocalID, loadLocal);
 }
 
 
-void plPlannerShader::setRotationAngleUniforms(PLuint numDirections) const
+void plPlannerShader::setRotationAngleUniforms(uint32_t numDirections) const
 {
     // get rotation angles
-    std::vector<PLfloat> rotationAngles;
-    float da = 360.0f / (float)(numDirections);
-    for (PLuint i=0; i < numDirections; i++)
+    std::vector<float32_t> rotationAngles;
+    float32_t da = 360.0f / (float32_t)(numDirections);
+    for (uint32_t i=0; i < numDirections; i++)
     {
             rotationAngles.push_back(da * i);
     }
@@ -132,7 +132,7 @@ void plPlannerShader::setRotationAngleUniforms(PLuint numDirections) const
 }
 
 
-void plPlannerShader::setRotationIndexUniform(PLuint rotationIndex) const
+void plPlannerShader::setRotationIndexUniform(uint32_t rotationIndex) const
 {
     glUniform1ui (_rotationIndexID, rotationIndex);
 

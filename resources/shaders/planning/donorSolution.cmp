@@ -5,7 +5,7 @@
 void setDonorSolutionPositions(in vec3 position, in uint graftIndex)
 {
     uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;
-    donorSolutionPositions[ offset + graftIndex ] = vec4(position, 1.0f);
+    donorSolutionPositions[offset + graftIndex] = vec4(position, 1.0f);
     memoryBarrier();
 }
 
@@ -13,7 +13,7 @@ void setDonorSolutionPositions(in vec3 position, in uint graftIndex)
 void setDonorSolutionNormals(in vec3 normal, in uint graftIndex)
 {
     uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;
-    donorSolutionNormals[ offset + graftIndex ] = vec4(normal, 1.0f);
+    donorSolutionNormals[offset + graftIndex] = vec4(normal, 1.0f);
     memoryBarrier();
 }
 
@@ -21,14 +21,14 @@ void setDonorSolutionNormals(in vec3 normal, in uint graftIndex)
 void setDonorSolutionXAxes(in vec3 xAxis, in uint graftIndex)
 {
     uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;
-    donorSolutionXAxes[ offset + graftIndex ] = vec4(xAxis, 1.0f);
+    donorSolutionXAxes[offset + graftIndex] = vec4(xAxis, 1.0f);
     memoryBarrier();
 }
 
 void setDonorSolutionSiteIndex(in uint siteIndex, in uint graftIndex)
 {
     uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;
-    donorSolutionSiteIndices[ offset + graftIndex ] = siteIndex;
+    donorSolutionSiteIndices[offset + graftIndex] = siteIndex;
     memoryBarrier();
 
 }
@@ -36,12 +36,12 @@ void setDonorSolutionSiteIndex(in uint siteIndex, in uint graftIndex)
 vec3 getDonorSolutionPositions(in uint graftIndex)
 {
     uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;
-    return donorSolutionPositions[ offset + graftIndex ].xyz;
+    return donorSolutionPositions[offset + graftIndex].xyz;
 }
 
 
 vec3 getDonorSolutionNormals(in uint graftIndex)
 {
     uint offset = gl_GlobalInvocationID.x * PL_MAX_GRAFTS_PER_SOLUTION;
-    return donorSolutionNormals[ offset + graftIndex ].xyz;
+    return donorSolutionNormals[offset + graftIndex].xyz;
 }

@@ -10,16 +10,16 @@ class plEABO : public plVertexSpecBuffer
     public:
 
         plEABO();
-        plEABO(const std::vector<PLuint>& data, PLuint mode = GL_TRIANGLES, PLuint usage = GL_STATIC_DRAW);
+        plEABO(const std::vector<uint32_t>& data, uint32_t mode = GL_TRIANGLES, uint32_t usage = GL_STATIC_DRAW);
         plEABO(const plEABO& eabo);
         plEABO(plEABO&& eabo);
 
         plEABO& operator= (const plEABO& eabo);
         plEABO& operator= (plEABO&& eabo);
 
-        std::vector<PLuint> data() const { return _data; }
+        std::vector<uint32_t> data() const { return _data; }
 
-        void set(const std::vector<PLuint>& data, PLuint mode = GL_TRIANGLES, PLuint usage = GL_STATIC_DRAW);
+        void set(const std::vector<uint32_t>& data, uint32_t mode = GL_TRIANGLES, uint32_t usage = GL_STATIC_DRAW);
 
         void upload();
 
@@ -28,13 +28,13 @@ class plEABO : public plVertexSpecBuffer
         void bind  () const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id); }
         void unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
 
-        void drawElements(PLuint index = 0) const;
+        void drawElements(uint32_t index = 0) const;
 
     private:
 
-        std::vector<PLuint> _data;
-        PLuint _type;           // eventually use this for templated version of class
-        PLuint _mode;
+        std::vector<uint32_t> _data;
+        uint32_t _type;           // eventually use this for templated version of class
+        uint32_t _mode;
 
         void _copy(const plEABO& eabo);
         void _move(plEABO&& eabo);

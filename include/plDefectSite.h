@@ -22,7 +22,7 @@ class plDefectSite : public plRenderable
         virtual ~plDefectSite();
 
         void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
         void recastBoundary();
 };

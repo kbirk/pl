@@ -1,6 +1,6 @@
 #include "plTimer.h"
 
-PLtime plTimer::now()
+std::time_t plTimer::now()
 {
     #ifdef WIN32
         // return elapsed time in seconds
@@ -8,7 +8,7 @@ PLtime plTimer::now()
         LARGE_INTEGER WIN32Frequency;
         QueryPerformanceFrequency(&WIN32Frequency);    // cycles per second
         QueryPerformanceCounter(&WIN32StopTime);
-        return PLtime((WIN32StopTime.QuadPart / double(WIN32Frequency.QuadPart)) * 1000.0);
+        return std::time_t((WIN32StopTime.QuadPart / double(WIN32Frequency.QuadPart)) * 1000.0);
     #else
         typedef std::chrono::high_resolution_clock         plClock;
         typedef std::chrono::milliseconds                  plMilliseconds;

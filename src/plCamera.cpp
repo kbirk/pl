@@ -50,7 +50,7 @@ void plCamera::reset(const plVector3 &point)
     plVector3 focus_centre = point;
     plVector3 separation = position - focus_centre;
     plVector3 camera_direction = (lookat-position).normalize();
-    PLfloat projection = separation * camera_direction;
+    float32_t projection = separation * camera_direction;
 
     position = focus_centre + (projection * camera_direction);
     lookat = focus_centre;
@@ -92,17 +92,17 @@ void plCamera::importViewParams(const std::string &filename)
 }
 
 
-void plCamera::zoom(PLfloat z)
+void plCamera::zoom(float32_t z)
 {
-    const PLfloat ZOOM_SENSITIVITY = 0.005f;
+    const float32_t ZOOM_SENSITIVITY = 0.005f;
 
     position = (position + (z*ZOOM_SENSITIVITY)*(lookat - position));
 
 }
 
-void plCamera::translate(PLint x, PLint y)
+void plCamera::translate(int32_t x, int32_t y)
 {
-    const PLfloat TRANSLATION_SENSITIVITY = 0.1f;
+    const float32_t TRANSLATION_SENSITIVITY = 0.1f;
 
     plVector3 ydir = up.normalize();
     plVector3 zdir = (position - lookat).normalize();
@@ -113,7 +113,7 @@ void plCamera::translate(PLint x, PLint y)
 
 }
 
-void plCamera::rotate(PLint x0, PLint y0, PLint x1, PLint y1)
+void plCamera::rotate(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
 {
     // create quaternion
     plVector4 quat = calc_quat(x0, y0, x1, y1);
@@ -152,15 +152,15 @@ void plCamera::rotate(PLint x0, PLint y0, PLint x1, PLint y1)
 //                 From Michiel's arcball code
 // ================================================================
 
-void calc_p(PLint x, PLint y, PLfloat p[])
+void calc_p(int32_t x, int32_t y, float32_t p[])
 {
-    PLfloat r,s;
+    float32_t r,s;
 
     // normally use plWindow:: for these, however this would cause a circular dependancy, so it is done manually
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
-    PLint width  = viewport[2] + viewport[0]*2;
-    PLint height = viewport[3] + viewport[1]*2;
+    int32_t width  = viewport[2] + viewport[0]*2;
+    int32_t height = viewport[3] + viewport[1]*2;
 
     p[0] =  2.0f * (x - 0.5f*width) / width;
     p[1] = -2.0f * (-(y-height) - 0.5f*height) / height;
@@ -179,9 +179,9 @@ void calc_p(PLint x, PLint y, PLfloat p[])
 }
 
 
-plVector4 calc_quat(PLint x0, PLint y0, PLint x1, PLint y1)
+plVector4 calc_quat(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
 {
-    PLfloat p0[4], p1[4];
+    float32_t p0[4], p1[4];
 
     calc_p(x0,y0,p0);
     calc_p(x1,y1,p1);

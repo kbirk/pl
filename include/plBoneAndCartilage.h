@@ -3,7 +3,7 @@
 #include "plCommon.h"
 #include "plModel.h"
 
-class plBoneAndCartilage : public plRenderable, public plArthroViewable
+class plBoneAndCartilage : public plRenderable
 {
     public:
 
@@ -14,10 +14,8 @@ class plBoneAndCartilage : public plRenderable, public plArthroViewable
         plBoneAndCartilage(const plString &boneFile, const plString &cartilageFile, const plString &combinedFile);
 
         void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, PLuint technique) const;
+        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
         plVector3 getCentroid() const;
-
-        void toggleArthroView();
 
 };
