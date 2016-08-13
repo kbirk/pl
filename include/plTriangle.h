@@ -73,9 +73,9 @@ class plTriangle
     private:
 
         std::vector<plVector3> _points;
-        plVector3        _normal;
-        plVector3        _centroid;
-        PLfloat          _radius;
+        plVector3 _normal;
+        plVector3 _centroid;
+        PLfloat _radius;
 
         void _recalculate();
         void _calcRadius();

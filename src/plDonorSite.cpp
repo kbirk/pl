@@ -1,4 +1,4 @@
-#include "plDonorSite.h" 
+#include "plDonorSite.h"
 
 plDonorSite::plDonorSite()
 {
@@ -13,6 +13,11 @@ plDonorSite::plDonorSite( const plMesh& mesh )
 
 plDonorSite::plDonorSite( const plBoundary& boundary  )
     : boundary( boundary )
+{
+}
+
+
+plDonorSite::~plDonorSite() 
 {
 }
 

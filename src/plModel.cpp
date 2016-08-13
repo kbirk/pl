@@ -41,6 +41,9 @@ plModel::plModel( const plString &file, PLuint octreeDepth )
     _generateVAO();
 }
 
+plModel::~plModel() 
+{
+}
 
 void plModel::extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const
 {

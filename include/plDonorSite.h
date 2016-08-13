@@ -18,6 +18,8 @@ class plDonorSite : public plRenderable
         plDonorSite( const plMesh& mesh );
         plDonorSite( const plBoundary &boundary );
 
+        virtual ~plDonorSite();
+
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 };

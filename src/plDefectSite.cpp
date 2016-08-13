@@ -1,4 +1,4 @@
-#include "plDefectSite.h" 
+#include "plDefectSite.h"
 
 plDefectSite::plDefectSite()
 {
@@ -16,6 +16,11 @@ plDefectSite::plDefectSite( const plSpline& splne, const std::vector<plString> &
     : spline( splne )
 {
     boundary = plBoundary( PL_PICKING_TYPE_DEFECT_BOUNDARY, spline.surfaceMesh(), row );
+}
+
+
+plDefectSite::~plDefectSite()
+{
 }
 
 

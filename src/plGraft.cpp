@@ -1,18 +1,27 @@
 #include "plGraft.h"
 
 plGraft::plGraft()
-    :   _recipient( PL_PICKING_INDEX_GRAFT_DEFECT ), _harvest( PL_PICKING_INDEX_GRAFT_DONOR )
+    : _recipient( PL_PICKING_INDEX_GRAFT_DEFECT ),
+      _harvest( PL_PICKING_INDEX_GRAFT_DONOR )
+{
+    _generateCaps();
+    snapMarkDirection();
+}
+
+plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat length, const plVector3 &markDirection  )
+    : _recipient( recipient ),
+      _harvest( harvest ),
+      _radius( radius ),
+      _length( length ),
+      _markDirection( markDirection )
 {
     _generateCaps();
     snapMarkDirection();
 }
 
 
-plGraft::plGraft( const plPlug &harvest, const plPlug &recipient, PLfloat radius, PLfloat length, const plVector3 &markDirection  )
-    :   _recipient( recipient ), _harvest( harvest ), _radius( radius ), _markDirection( markDirection ), _length( length )
+plGraft::~plGraft()
 {
-    _generateCaps();
-    snapMarkDirection();
 }
 
 
@@ -142,9 +151,6 @@ void plGraft::setMarkDirection( const plVector3& direction )
 
 void plGraft::snapMarkDirection()
 {
-    // calculate seperation vector between grafts
-    plVector3 up = plCameraStack::up();
-    plVector3 screenNormal = -plCameraStack::direction();
 
     // ray cast up, this gets up vector overlayed onto plane (projected from screen direction, rather than projected by surface normal )
     plIntersection harvestIntersection = plMath::rayIntersect( _harvest.surfaceTransform().origin() + plCameraStack::up(),
@@ -196,7 +202,7 @@ void plGraft::_generateMarkPositions()
 
         // First, find the closest top perimeter point in the mark direction.
         float minDist = FLT_MAX;
-        float minY;
+        float minY = 0;
 
         const std::vector<plPointAndAngle>& perimeter = ( _cartilageCap.triangles.empty() ) ? _boneCap.perimeter : _cartilageCap.perimeter;
 

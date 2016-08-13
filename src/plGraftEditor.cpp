@@ -1,12 +1,11 @@
 #include "plGraftEditor.h"
 
 plGraftEditor::plGraftEditor()
-    :   _editMode( PL_GRAFT_EDIT_MODE_TRANSLATE ),
-        _selectedGraft( nullptr ),
-        _selectedType( -1 )
+    : _editMode( PL_GRAFT_EDIT_MODE_TRANSLATE ),
+      _selectedType( -1 ),
+      _selectedGraft( nullptr )
 {
 }
-
 
 void plGraftEditor::clearSelection()
 {

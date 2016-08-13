@@ -391,10 +391,11 @@ namespace plOpenGLInfo
 
     void reportError( const std::string &str )
     {
-        GLuint errnum;
-        while ( errnum = glGetError() )
+        GLuint errnum = glGetError();
+        while ( errnum > 0 )
         {
             std::cout << str << " " << _errorToString( errnum ) << std::endl;
+            errnum = glGetError();
         }
     }
 

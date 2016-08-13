@@ -1,6 +1,5 @@
 #include "plBoundary.h"
 
-
 plBoundary::plBoundary()
     : _type( -1 )
 {
@@ -8,14 +7,15 @@ plBoundary::plBoundary()
 
 
 plBoundary::plBoundary( PLuint type, const plMesh& mesh )
-    : _type( type ), plMeshSpecific( mesh )
+    : plMeshSpecific( mesh ),
+    _type( type )
 {
-
 }
 
 
 plBoundary::plBoundary( PLuint type, const plMesh& mesh, const std::vector<plString> &row )
-    : _type( type ), plMeshSpecific( mesh )
+    : plMeshSpecific( mesh ),
+    _type( type )
 {
     // assumes points are counter-clockwise
     for ( PLuint j = 1; j < row.size(); j+=2)

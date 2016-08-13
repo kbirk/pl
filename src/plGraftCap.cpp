@@ -475,8 +475,8 @@ void plCartilageCap::generateVAO( PLfloat radius, PLfloat length, const std::vec
     // cartilage walls
     if ( bonePerimeter.size() > 0 && perimeter.size() > 0 )
     {
-        int c = 0;
-        int b = 0;
+        uint c = 0;
+        uint b = 0;
 
         float cOffset = 0;
         float bOffset = 0;
@@ -607,7 +607,6 @@ void plCartilageCap::_generateProjectionVAO( PLfloat radius, PLfloat length, con
         PLfloat CONTRACTED_RADIUS = radius - 0.1f;
         // generate cylinder walls
         plVector3 centreTop = ( PROJECTION_LENGTH ) * y;
-        plVector3 centreBottom = -( length ) * y;
         plVector3 z(0,0,1);
         plVector3 x(1,0,0);
 

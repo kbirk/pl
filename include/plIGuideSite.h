@@ -22,6 +22,8 @@ class plIGuideSite : public plRenderable
         plIGuideSite( const plMesh& mesh );
         plIGuideSite( const plBoundary& boundary );
 
+        virtual ~plIGuideSite();
+
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 

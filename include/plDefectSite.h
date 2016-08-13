@@ -20,6 +20,8 @@ class plDefectSite : public plRenderable
         plDefectSite( const plMesh& mesh );
         plDefectSite( const plSpline& spline, const std::vector<plString> &row );
 
+        virtual ~plDefectSite();
+
         void extractRenderComponents( plRenderMap& renderMap ) const;
         void extractRenderComponents( plRenderMap& renderMap, PLuint technique ) const;
 

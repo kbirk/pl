@@ -1,9 +1,9 @@
 #include "plEditor.h"
 
 plEditor::plEditor()
-    :    _isDraggingMenu( false ), _plan( nullptr )
+    : _plan( nullptr ),
+      _isDraggingMenu( false )
 {
-
 }
 
 void plEditor::attach( plPlan& plan )

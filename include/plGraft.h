@@ -16,9 +16,7 @@
 #include "plGraftCap.h"
 
 
-class plGraft : public plRenderable,
-                public plEditable,
-                public plArthroViewable
+class plGraft : public plRenderable, public plEditable, public plArthroViewable
 {
 
     public:
@@ -29,6 +27,8 @@ class plGraft : public plRenderable,
                  PLfloat radius,
                  PLfloat length,
                  const plVector3 &markDirection = plVector3(0,0,1) );
+
+        virtual ~plGraft();
 
         const PLfloat&   radius()             const { return _radius; }
         const PLfloat&   length()             const { return _length; }

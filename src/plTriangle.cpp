@@ -1,7 +1,14 @@
 #include "plTriangle.h"
 
+std::vector<plVector3> _points;
+plVector3 _normal;
+plVector3 _centroid;
+PLfloat _radius;
+
 plTriangle::plTriangle()
-    :   _normal(0,0,0), _points( 3, plVector3(0,0,0) ), _centroid(0,0,0)
+    : _points( 3, plVector3(0,0,0) ),
+      _normal(0,0,0),
+      _centroid(0,0,0)
 {
     _calcRadius();
 }
@@ -27,8 +34,8 @@ plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 
 
 
 plTriangle::plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2 )
-    :   _normal(((p1 - p0) ^ (p2 - p0)).normalize()),
-        _centroid(0.333333f * (p0 + p1 + p2))
+    : _normal(((p1 - p0) ^ (p2 - p0)).normalize()),
+      _centroid(0.333333f * (p0 + p1 + p2))
 {
     _points.push_back( p0 );
     _points.push_back( p1 );

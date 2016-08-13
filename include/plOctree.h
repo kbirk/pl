@@ -39,7 +39,7 @@ class plOctree : public plRenderable
         plOctree& operator= ( const plOctree& octree );
         plOctree& operator= ( plOctree&& octree );
 
-        ~plOctree();
+        virtual ~plOctree();
 
         PLuint depth() const { return _depth; }
 

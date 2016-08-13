@@ -140,17 +140,15 @@ PLbool plMeshAlgorithm::_splitEdgeOnVect( const plMeshConnectivityDataEdge* edge
         // create the new cells
         const plMeshConnectivityDataEdge* edgeNC = _data.addEdge(vertN,vertC,edgeAB->originatingMesh);
 
-        const plMeshConnectivityDataFace* faceANC(NULL);
-        const plMeshConnectivityDataFace* faceBNC(NULL);
         if (faceOrientationABC)
         {
-            faceANC = _data.addFace(vertA,vertN,vertC,edgeAN,edgeNC,edgeAC,faceABC->originatingMesh);
-            faceBNC = _data.addFace(vertB,vertC,vertN,edgeBC,edgeNC,edgeNB,faceABC->originatingMesh);
+            _data.addFace(vertA,vertN,vertC,edgeAN,edgeNC,edgeAC,faceABC->originatingMesh);
+            _data.addFace(vertB,vertC,vertN,edgeBC,edgeNC,edgeNB,faceABC->originatingMesh);
         }
         else
         {
-            faceANC = _data.addFace(vertC,vertN,vertA,edgeNC,edgeAN,edgeAC,faceABC->originatingMesh);
-            faceBNC = _data.addFace(vertN,vertC,vertB,edgeNC,edgeBC,edgeNB,faceABC->originatingMesh);
+            _data.addFace(vertC,vertN,vertA,edgeNC,edgeAN,edgeAC,faceABC->originatingMesh);
+            _data.addFace(vertN,vertC,vertB,edgeNC,edgeBC,edgeNB,faceABC->originatingMesh);
         }
 
         _data.removeFace(faceABC);

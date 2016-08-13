@@ -1,7 +1,7 @@
 #include "plFBO.h"
 
 
-static PLint currentBoundFBO = 0;
+static PLuint currentBoundFBO = 0;
 
 
 plFBO::plFBO()
@@ -140,14 +140,15 @@ std::vector<GLenum> plFBO::drawBuffers() const
 {
     std::vector<GLenum> drawBuffers;
 
-    for ( auto &attachment : _textureAttachments )
+    for ( auto &iter : _textureAttachments )
     {
+        auto attachment = static_cast<GLint>(iter.first);
         // check if attachment is a color attachment
-        if ( attachment.first >= GL_COLOR_ATTACHMENT0 &&
-             attachment.first < GL_COLOR_ATTACHMENT0 + plOpenGLInfo::maxColorAttachments )
+        if ( attachment >= GL_COLOR_ATTACHMENT0 &&
+             attachment < GL_COLOR_ATTACHMENT0 + plOpenGLInfo::maxColorAttachments )
         {
             // if color attachment, add to draw buffers
-            drawBuffers.push_back( attachment.first );
+            drawBuffers.push_back( attachment );
         }
     }
 

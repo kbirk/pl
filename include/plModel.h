@@ -47,6 +47,8 @@ class plModel : public plTransparentRenderable,
         plModel( const plString &file, PLuint octreeDepth = 0 );
         plModel( const std::vector<plTriangle> &triangles, const plString &file, PLuint octreeDepth = 0 );
 
+        virtual ~plModel();
+
         const plMesh& mesh() const { return *_mesh; }
 
         void toggleOctreeVisibility();

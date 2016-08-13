@@ -37,8 +37,8 @@ class plUniform
 
 template< typename T >
 plUniform::plUniform( PLuint type, const T& t )
-    :   _numBytes( sizeof( T ) ),
-        _type( type )
+    : _type( type ),
+      _numBytes( sizeof( T ) )
 {
     _numBytes = sizeof( T );
     _data = new PLchar[ _numBytes ];

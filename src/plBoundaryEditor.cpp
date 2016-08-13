@@ -1,9 +1,9 @@
 #include "plBoundaryEditor.h"
 
 plBoundaryEditor::plBoundaryEditor()
-    :   _selectedSiteIndex( -1 ),
-        _selectedPointIndex( -1 ),
-        _selectedBoundary( NULL )
+    : _selectedSiteIndex( -1 ),
+      _selectedBoundary( NULL ),
+      _selectedPointIndex( -1 )
 {
 }
 

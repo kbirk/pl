@@ -11,10 +11,7 @@ plChessBoard::plChessBoard()
 void plChessBoard::_generateVAO()
 {
     PLint  WIDTH_COUNT = 8;
-    PLfloat width      = WIDTH_COUNT * _blockSize;
-
     PLint  HEIGHT_COUNT = 9;
-    PLfloat height      = HEIGHT_COUNT * _blockSize;
 
     PLbool black = true;
 
@@ -23,7 +20,7 @@ void plChessBoard::_generateVAO()
 
     for (PLint i = -1; i < WIDTH_COUNT-1; i++)
     {
-        PLfloat width_pos  = i * _blockSize;
+        PLfloat width_pos = i * _blockSize;
 
         for (PLint j = -1; j < HEIGHT_COUNT-1; j++)
         {

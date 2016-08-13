@@ -303,7 +303,7 @@ void plPlan::importFile( const plString &filename )
             std::vector<PLuint>   kWireIDs;
             for (PLuint j=0; j<kWireCount; j++)
             {
-                PLuint  kWireID ( std::stoi( csv.data[i][2+j] ) );
+                // PLuint  kWireID ( std::stoi( csv.data[i][2+j] ) );
                 // **write code to add kwires for iguide here**
 
             }
@@ -499,7 +499,7 @@ PLbool plPlan::_modelIndexErrorCheck( const std::string& callingFunction, PLint 
         return true;
     }
 
-    if ( _models.size() < modelIndex+1 )
+    if ( _models.size() < static_cast<PLuint>(modelIndex+1) )
     {
         std::cerr << "plPlan::" << callingFunction << " error: model ID does not exist" << std::endl;
         return true;

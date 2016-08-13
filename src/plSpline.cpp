@@ -1,6 +1,5 @@
 #include "plSpline.h"
 
-
 plSpline::plSpline()
     : _lastUpdate( 0 )
 {
@@ -8,13 +7,15 @@ plSpline::plSpline()
 
 
 plSpline::plSpline( const plMesh &mesh )
-    :  _lastUpdate( 0 ), plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh )
+    : plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh ),
+      _lastUpdate( 0 )
 {
 }
 
 
 plSpline::plSpline( const plMesh &mesh, const std::vector<plString> &row )
-    :  _lastUpdate( 0 ), plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh, row )
+    : plBoundary( PL_PICKING_TYPE_DEFECT_SPLINE, mesh, row ),
+      _lastUpdate( 0 )
 {
     // construct spline
     if (size() == 4)

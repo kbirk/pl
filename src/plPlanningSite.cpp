@@ -157,7 +157,7 @@ void plPlanningSite::_generateFineGridPoints()
         PLfloat longest = PL_MAX_OF_3( eLength01, eLength12, eLength20 );
 
         plVector3 u, v, origin;
-        PLfloat uMax, vMax;
+        PLfloat uMax, vMax = 0;
 
         if (longest == eLength01)
         {
@@ -177,7 +177,7 @@ void plPlanningSite::_generateFineGridPoints()
             u = tangent.normalize();
             uMax = e01 * tangent;
         }
-        else if (longest == eLength20)
+        else // if (longest == eLength20)
         {
             plVector3 tangent = ( e20 ^ triangles[i].normal() ).normalize();
             origin = triangles[i].point2();

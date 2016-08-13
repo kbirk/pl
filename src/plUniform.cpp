@@ -1,6 +1,5 @@
 #include "plUniform.h"
 
-
 plUniform::plUniform( plUniform&& uniform )
 {
     _move( std::move( uniform ) );

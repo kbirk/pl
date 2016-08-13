@@ -1,4 +1,4 @@
-#include "plIGuideSite.h" 
+#include "plIGuideSite.h"
 
 plIGuideSite::plIGuideSite()
 {
@@ -13,6 +13,11 @@ plIGuideSite::plIGuideSite( const plMesh& mesh )
 
 plIGuideSite::plIGuideSite( const plBoundary& boundary )
     : boundary( boundary )
+{
+}
+
+
+plIGuideSite::~plIGuideSite()
 {
 }
 

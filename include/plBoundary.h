@@ -26,9 +26,7 @@
 #define PL_BOUNDARY_DONOR_COLOUR                 0.40f, 0.40f, 0.80f
 #define PL_BOUNDARY_IGUIDE_COLOUR                0.20f, 0.53f, 0.45f
 
-class plBoundary : public plRenderable,
-                   public plEditable,
-                   public plMeshSpecific
+class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
 {
     public:
 
@@ -56,10 +54,8 @@ class plBoundary : public plRenderable,
     protected:
 
         PLint _type;
-
         std::vector< plVector3 > _points;       // always in counterclockwise direction
         std::vector< plVector3 > _normals;
-
         std::shared_ptr< plVAO > _vao;
 
         plVector4 _getColour() const;

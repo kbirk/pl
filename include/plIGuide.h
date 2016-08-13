@@ -88,6 +88,8 @@ class plIGuide : public plRenderable
                   const std::vector<const plSpline*>& splines,
                   std::vector<PLuint>&                defectIDs );
 
+        virtual ~plIGuide();
+
         PLbool generateIGuideModels();
         PLbool exportIGuideModels  ( const std::string &directory );
         void   clearIGuideModels   ();

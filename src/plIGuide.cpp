@@ -19,6 +19,11 @@ plIGuide::plIGuide( plIGuideSite *site,
 }
 
 
+plIGuide::~plIGuide()
+{
+}
+
+
 PLbool plIGuide::generateIGuideModels()
 {
     std::cout << "Generating iGuide..." << std::endl;

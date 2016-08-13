@@ -1,15 +1,14 @@
 #include "plOctree.h"
 
-
 plOctree::plOctree()
-    : _children( 8, (plOctree*)(NULL) )
+    : _children( 8, nullptr )
 {
     _isVisible = false;
 }
 
 
 plOctree::plOctree( const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, PLuint depth )
-    : _children( 8, (plOctree*)(NULL) )
+    : _children( 8, nullptr )
 {
     // build from root
     build( min, max, triangles, depth );
@@ -18,7 +17,10 @@ plOctree::plOctree( const plVector3 &min, const plVector3 &max, const std::vecto
 
 
 plOctree::plOctree( const plVector3 &centre, PLfloat halfWidth, PLuint depth )
-    : _centre( centre ), _halfWidth( halfWidth ), _depth( depth ), _children( 8, (plOctree*)(NULL) )
+    : _depth( depth ),
+      _centre( centre ),
+      _halfWidth( halfWidth ),
+      _children( 8, nullptr )
 {
     _isVisible = false;
 }
