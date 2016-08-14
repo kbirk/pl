@@ -20,7 +20,7 @@ vec3 defectSolutionGraftNormals(in uint i)
 }
 
 
-float32_t defectSolutionGraftRadii(in uint i)
+float defectSolutionGraftRadii(in uint i)
 {
     return uDefectSolutionGraftRadii[i];
 }
@@ -32,7 +32,7 @@ vec3 defectSolutionSurfaceNormals(in uint i)
 }
 
 
-void defectToDonorRotation(inout mat4 rotation, in vec3 defectSurfaceNormal, in vec3 donorSurfaceNormal, in float32_t rotationAngle)
+void defectToDonorRotation(inout mat4 rotation, in vec3 defectSurfaceNormal, in vec3 donorSurfaceNormal, in float rotationAngle)
 {
     // get rotational transform from defect space to donor space
     mat4 graftRot;     getRotationFromTo(graftRot, defectSurfaceNormal, donorSurfaceNormal);

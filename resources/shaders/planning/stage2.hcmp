@@ -9,4 +9,4 @@ layout (std430,  binding = 2) buffer defectCapIndicesBlock  { uint defectCapIndi
 layout (std430,  binding = 3) buffer donorCapIndicesBlock   { uint donorCapIndices[];  };
 
 // output data
-layout (std430,  binding = 4) buffer rmsOutputBlock         { float32_t rmsBuffer[];      };
+layout (std430,  binding = 4) buffer rmsOutputBlock         { float rmsBuffer[];      };

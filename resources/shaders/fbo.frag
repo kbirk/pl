@@ -18,15 +18,15 @@ vec4 getBlurredPixel(in ivec3 outline)
 {
     vec2 dim = textureSize(uTextureUnit1, 0);
 
-    int32_t outlineCount = 0;
-    int32_t sampleCount  = 0;
+    int outlineCount = 0;
+    int sampleCount  = 0;
 
-    for (int32_t i= -(BLUR_KERNAL_SIZE-1); i < BLUR_KERNAL_SIZE; i+=BLUR_KERNAL_STRIDE)
+    for (int i= -(BLUR_KERNAL_SIZE-1); i < BLUR_KERNAL_SIZE; i+=BLUR_KERNAL_STRIDE)
     {
-        for (int32_t j= -(BLUR_KERNAL_SIZE-1); j < BLUR_KERNAL_SIZE; j+=BLUR_KERNAL_STRIDE)
+        for (int j= -(BLUR_KERNAL_SIZE-1); j < BLUR_KERNAL_SIZE; j+=BLUR_KERNAL_STRIDE)
         {
-            float32_t x = texCoordOut.x + (i / dim.x);
-            float32_t y = texCoordOut.y + (j / dim.y);
+            float x = texCoordOut.x + (i / dim.x);
+            float y = texCoordOut.y + (j / dim.y);
 
             ivec4 value = texture(uTextureUnit1, vec2(x, y));
 
@@ -37,7 +37,7 @@ vec4 getBlurredPixel(in ivec3 outline)
         }
     }
 
-    float32_t x = outlineCount / float32_t(sampleCount);
+    float x = outlineCount / float(sampleCount);
 
     if (outlineCount == sampleCount)
         return vec4(0, 0, 0, 0);

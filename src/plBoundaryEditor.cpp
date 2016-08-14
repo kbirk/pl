@@ -17,7 +17,7 @@ void plBoundaryEditor::clearSelection()
 }
 
 
-bool plBoundaryEditor::processMouseClick(int32_t x, int32_t y)
+bool plBoundaryEditor::processMousePress(int32_t x, int32_t y)
 {
     plPickingInfo pixel = plPicking::pickPixel(x, y);
 

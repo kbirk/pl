@@ -7,5 +7,5 @@ uniform uint  uSeed;
 
 uint generateSeed();
 uint iterateSeed(inout uint seed);
-float32_t rand(inout uint seed);
-float32_t rand(inout uint seed, in float32_t min, in float32_t max);
+float rand(inout uint seed);
+float rand(inout uint seed, in float min, in float max);

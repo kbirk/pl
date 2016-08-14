@@ -4,6 +4,8 @@
 #include "plVertexSpecBuffer.h"
 #include "plOpenGLInfo.h"
 
+#include <epoxy/gl.h>
+
 class plEABO : public plVertexSpecBuffer
 {
 

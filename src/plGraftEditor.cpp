@@ -37,7 +37,7 @@ void plGraftEditor::setEditMode(uint32_t editMode)
 }
 
 
-bool plGraftEditor::processMouseClick(int32_t x, int32_t y)
+bool plGraftEditor::processMousePress(int32_t x, int32_t y)
 {
     plPickingInfo pick = plPicking::pickPixel(x, y);
 

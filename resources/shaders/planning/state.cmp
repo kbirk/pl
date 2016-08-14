@@ -6,14 +6,14 @@ struct state
 {
     vec4  positions     [PL_MAX_GRAFTS_PER_SOLUTION];
     vec4  normals       [PL_MAX_GRAFTS_PER_SOLUTION];
-    float32_t radii         [PL_MAX_GRAFTS_PER_SOLUTION];
+    float radii         [PL_MAX_GRAFTS_PER_SOLUTION];
     uint  graftCount;
 };
 
 
 //functions
 
-float32_t getInvoEnergies()
+float getInvoEnergies()
 {
     return invoEnergies[gl_GlobalInvocationID.x];
 }
@@ -31,7 +31,7 @@ vec4 getInvoGraftNormals(in uint index)
 }
 
 
-float32_t getInvoGraftRadii(in uint index)
+float getInvoGraftRadii(in uint index)
 {
     return invoGraftRadii[(gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION) + index];
 }
@@ -42,7 +42,7 @@ uint getInvoGraftCounts()
     return invoGraftCounts[gl_GlobalInvocationID.x];
 }
 
-float32_t getInvoEnergies(in uint invoIndex)
+float getInvoEnergies(in uint invoIndex)
 {
     return invoEnergies[invoIndex];
 }
@@ -60,7 +60,7 @@ vec4 getInvoGraftNormals(in uint invoIndex, in uint graftIndex)
 }
 
 
-float32_t getInvoGraftRadii(in uint invoIndex, in uint graftIndex)
+float getInvoGraftRadii(in uint invoIndex, in uint graftIndex)
 {
     return invoGraftRadii[(invoIndex*PL_MAX_GRAFTS_PER_SOLUTION) + graftIndex];
 }
@@ -72,7 +72,7 @@ uint getInvoGraftCounts(in uint invoIndex)
 }
 
 
-float32_t getGroupEnergies()
+float getGroupEnergies()
 {
     return groupEnergies[gl_WorkGroupID.x];
 }
@@ -90,7 +90,7 @@ vec4 getGroupGraftNormals(in uint index)
 }
 
 
-float32_t getGroupGraftRadii(in uint index)
+float getGroupGraftRadii(in uint index)
 {
     return groupGraftRadii[gl_WorkGroupID.x*PL_MAX_GRAFTS_PER_SOLUTION + index];
 }
@@ -102,7 +102,7 @@ uint getGroupGraftCounts()
 }
 
 
-void setInvoEnergies(in float32_t energy)
+void setInvoEnergies(in float energy)
 {
     invoEnergies[gl_GlobalInvocationID.x] = energy;
 }
@@ -120,7 +120,7 @@ void setInvoGraftNormals(in uint index, in vec4 normal)
 }
 
 
-void setInvoGraftRadii(in uint index, in float32_t radius)
+void setInvoGraftRadii(in uint index, in float radius)
 {
     invoGraftRadii[(gl_GlobalInvocationID.x*PL_MAX_GRAFTS_PER_SOLUTION) + index] = radius;
 }
@@ -132,7 +132,7 @@ void setInvoGraftCounts(in uint count)
 }
 
 
-void setGroupEnergies(in float32_t energy)
+void setGroupEnergies(in float energy)
 {
     groupEnergies[gl_WorkGroupID.x] = energy;
 }
@@ -150,7 +150,7 @@ void setGroupGraftNormals(in uint index, in vec4 normal)
 }
 
 
-void setGroupGraftRadii(in uint index, in float32_t radius)
+void setGroupGraftRadii(in uint index, in float radius)
 {
     groupGraftRadii[gl_WorkGroupID.x*PL_MAX_GRAFTS_PER_SOLUTION + index] = radius;
 }
@@ -162,12 +162,12 @@ void setGroupGraftCounts(in uint count)
 }
 
 
-void translateGraft(inout vec4 graftPosition, in vec4 graftNormal, in float32_t graftRadius, inout uint seed)
+void translateGraft(inout vec4 graftPosition, in vec4 graftNormal, in float graftRadius, inout uint seed)
 {
     // get random translation
-    float32_t tx = rand(seed);
-    float32_t ty = rand(seed);
-    float32_t tz = rand(seed);
+    float tx = rand(seed);
+    float ty = rand(seed);
+    float tz = rand(seed);
 
     // project translation so that it is perpendicular to the site normal, normalize for a direction
     vec3 planeDir = normalize(projectOntoPlane(vec3(tx, ty, tz), uDefectSiteAvgNormal.xyz));
@@ -188,10 +188,10 @@ void translateGraft(inout vec4 graftPosition, in vec4 graftNormal, in float32_t 
 void rotateGraft(inout vec4 graftNormal, inout uint seed)
 {
     // get random rotation
-    float32_t angle = rand(seed, -1.0, 1.0) * (uTemperature+0.05) * 5.0;
-    float32_t ax = rand(seed);
-    float32_t ay = rand(seed);
-    float32_t az = rand(seed);
+    float angle = rand(seed, -1.0, 1.0) * (uTemperature+0.05) * 5.0;
+    float ax = rand(seed);
+    float ay = rand(seed);
+    float az = rand(seed);
     vec3 axis = normalize(vec3(ax, ay, az));
     mat4 rot;   getRotation(rot, angle, axis);
 
@@ -221,7 +221,7 @@ void perturbState(inout state s, inout uint seed)
 
 void addCap(inout state s, inout uint seed)
 {
-    float32_t radius = uint(rand(seed) * (PL_MAX_GRAFT_RADIUS-PL_MIN_GRAFT_RADIUS+1) + PL_MIN_GRAFT_RADIUS);
+    float radius = uint(rand(seed) * (PL_MAX_GRAFT_RADIUS-PL_MIN_GRAFT_RADIUS+1) + PL_MIN_GRAFT_RADIUS);
     uint  index  = uint(uDefectSiteGridPointCount*rand(seed));
 
     if (isWithinDefectBoundaryThreshold(vec3(defectSitePositions(index)), vec3(defectSiteNormals(index)), radius*PL_STAGE_0_SITE_OVERLAP_THRESHOLD))
@@ -262,7 +262,7 @@ void copyGroupState(inout state s)
 {
     s.graftCount = getGroupGraftCounts();
 
-    for (int32_t i=0; i<s.graftCount; i++)
+    for (int i=0; i<s.graftCount; i++)
     {
         s.positions[i] = getGroupGraftPositions(i);
         s.normals  [i] = getGroupGraftNormals  (i);
@@ -275,7 +275,7 @@ void copyLocalState(inout state s)
 {
     s.graftCount = getInvoGraftCounts();
 
-    for (int32_t i=0; i<s.graftCount; i++)
+    for (int i=0; i<s.graftCount; i++)
     {
         s.positions[i] = getInvoGraftPositions(i);
         s.normals  [i] = getInvoGraftNormals  (i);
@@ -377,7 +377,7 @@ void getShuffledIndexArray(inout uint array[PL_STAGE_0_WORKGROUP_SIZE], inout ui
     // randomize orders
     for (uint i = 0; i < PL_STAGE_0_WORKGROUP_SIZE; i++)
     {
-        uint j = uint(rand(seed) * float32_t(PL_STAGE_0_WORKGROUP_SIZE));
+        uint j = uint(rand(seed) * float(PL_STAGE_0_WORKGROUP_SIZE));
         uint t = array[j];
         array[j] = array[i];
         array[i] = t;
@@ -395,22 +395,22 @@ void updateGroupStates(inout uint seed)
         getShuffledIndexArray(shuffledIndices, seed);
 
         // set current group energy
-        float32_t currentGroupEnergy = getGroupEnergies();
+        float currentGroupEnergy = getGroupEnergies();
         // set best index to -1
-        int32_t bestIndex = -1;
+        int bestIndex = -1;
 
         for (uint i=0; i < PL_STAGE_0_WORKGROUP_SIZE; i++)
         {
             // get a shuffled index to prevent bias
             uint j = shuffledIndices[i];
             // get the energy
-            float32_t newEnergy = getInvoEnergies(j);
+            float newEnergy = getInvoEnergies(j);
 
             if (acceptanceProbability(currentGroupEnergy, newEnergy) > rand(seed))
             {
                 // better local state found
                 currentGroupEnergy = newEnergy;
-                bestIndex = int32_t(j);
+                bestIndex = int(j);
             }
         }
 

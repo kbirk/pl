@@ -58,6 +58,6 @@ class plAnnealingGroup
 namespace plPlannerStage0
 {
 
-    void run(plDefectSolution &state, const plPlanningBufferData &planningData, plPlan& plan);
+    void run(plDefectSolution &state, const plPlanningBufferData &planningData);
 
 }

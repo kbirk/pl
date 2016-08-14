@@ -40,11 +40,11 @@ edge defectSiteEdge(in uint i)
 }
 
 
-bool isWithinDefectBoundaryThreshold(in vec3 position, in vec3 normal, in float32_t threshold)
+bool isWithinDefectBoundaryThreshold(in vec3 position, in vec3 normal, in float threshold)
 {
     // checks if closest point on all edges is within radius distance to the grafts central axis
     bool inside = true;
-    for (int32_t i=0; i<uDefectSiteBoundaryPointCount; i++)
+    for (int i=0; i<uDefectSiteBoundaryPointCount; i++)
     {
         edge e = defectSiteEdge(i);
 
@@ -67,7 +67,7 @@ bool isWithinDefectBoundaryThreshold(in vec3 position, in vec3 normal, in float3
 }
 
 
-bool isWithinDefectRotationThreshold(in vec3 normal, in float32_t threshold)
+bool isWithinDefectRotationThreshold(in vec3 normal, in float threshold)
 {
     return acos(dot(normal, vec3(uDefectSiteAvgNormal))) < threshold*0.01745329;
 }

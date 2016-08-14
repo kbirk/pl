@@ -63,5 +63,5 @@ make
 Run the executable with a patient file:
 
 ```bash
-./planner ./resources/patient1/plan.csv
+./planner ./resources/patient1/plan0.csv
 ```

@@ -6,6 +6,7 @@
 #include "plRenderingPipeline.h"
 #include "plVertexSpecBuffer.h"
 
+#include <epoxy/gl.h>
 
 class plVAO
 {

@@ -1,5 +1,5 @@
 model
-    filename,      ./patient1/boneandcart.stl
+    filename,      ./resources/patient1/boneandcart.stl
 
 defect_site
     spline_model_id,   0

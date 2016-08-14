@@ -5,6 +5,7 @@
 #include "plTexture2D.h"
 #include "plOpenGLInfo.h"
 
+#include <epoxy/gl.h>
 
 class plFBO
 {
@@ -29,7 +30,7 @@ class plFBO
 
         const std::shared_ptr<plTexture2D >& texture2DAttachment(uint32_t attachment) const;
 
-        template< typename T >
+        template<typename T>
         plPixel<T> readPixel(GLenum attachment, uint32_t x, uint32_t y) const;
 
         void attach(uint32_t attachment, const std::shared_ptr<plTexture2D>& texture);
@@ -50,7 +51,7 @@ class plFBO
 };
 
 
-template< typename T >
+template<typename T>
 plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
 {
     if (_textureAttachments.find(attachment) == _textureAttachments.end())

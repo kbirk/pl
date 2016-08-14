@@ -30,7 +30,7 @@ class plModelEditor : public plEditor
         bool isModelSelected() const { return (_selectedModel != nullptr); }
         int32_t  selectedModelID() const;
 
-        bool processMouseClick   (int32_t x, int32_t y);
+        bool processMousePress   (int32_t x, int32_t y);
         bool processMouseDrag    (int32_t x, int32_t y);
         bool processMouseRelease (int32_t x, int32_t y);
         bool processJoystickDrag (int32_t x, int32_t y);

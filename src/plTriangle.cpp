@@ -233,18 +233,19 @@ namespace plSTL
             return false;
         }
 
-        if (verbose)
-            std::cout << "Importing " << filename << "...";
+        std::cout << "Importing " << filename << "..." << std::endl;
 
-        // just in case, clear seq
+        // just in case, clear
         triangles.clear();
 
-        std::ifstream infile (filename.c_str(), std::ifstream::binary);
+        std::ifstream infile(filename.c_str(), std::ifstream::binary);
         if (!infile.good())
         {
             std::cerr << "plSTL::importFile() error: STL file could not be opened" << std::endl;
             return false;
         }
+
+        std::cout << "Opened " << filename << " successfully..." << std::endl;
 
         plVector3 n, p0, p1, p2;
 
@@ -255,6 +256,7 @@ namespace plSTL
 
         if (isAscii)
         {
+            std::cout << "ASCII STL format detected..." << std::endl;
             uint8_t filler[1024];    // for reading filler text
 
             // Read ASCII STL
@@ -264,7 +266,6 @@ namespace plSTL
                 std::getline(infile, line);
 
                 line.stripPreceedingWhitespace();
-
 
                 if (line.compare("facet", 5))
                 {
@@ -292,22 +293,25 @@ namespace plSTL
         }
         else
         {
+            std::cout << "Binary STL format detected..." << std::endl;
             if (!_plCheckTypeSizes())
+            {
                 return false;
+            }
 
             // close previous binary file
-            infile.close();
+            //infile.close();
 
-            // open new stream, binary format
-            std::ifstream binfile(filename.c_str(), std::ifstream::binary);
+            // reset get pointer
+            infile.seekg(0);
 
             // Skip 80-byte header
             char first80[80]; // create a buffer
-            binfile.read(&first80[0], sizeof(char)*80); // read to buffer
+            infile.read(&first80[0], sizeof(char)*80); // read to buffer
 
             // get number of faces
             uint32_t numTriangles;
-            binfile.read(reinterpret_cast<char*>(&numTriangles), sizeof(uint32_t));
+            infile.read(reinterpret_cast<char*>(&numTriangles), sizeof(uint32_t));
             triangles.reserve(numTriangles);
 
             // Read the triangles
@@ -315,20 +319,19 @@ namespace plSTL
             {
                 uint16_t nAttr;
 
-                binfile.read(reinterpret_cast<char*>(&n.x),   sizeof(float32_t)*3);
-                binfile.read(reinterpret_cast<char*>(&p0.x),  sizeof(float32_t)*3);
-                binfile.read(reinterpret_cast<char*>(&p1.x),  sizeof(float32_t)*3);
-                binfile.read(reinterpret_cast<char*>(&p2.x),  sizeof(float32_t)*3);
-                binfile.read(reinterpret_cast<char*>(&nAttr), sizeof(uint16_t));
+                infile.read(reinterpret_cast<char*>(&n.x),   sizeof(float32_t)*3);
+                infile.read(reinterpret_cast<char*>(&p0.x),  sizeof(float32_t)*3);
+                infile.read(reinterpret_cast<char*>(&p1.x),  sizeof(float32_t)*3);
+                infile.read(reinterpret_cast<char*>(&p2.x),  sizeof(float32_t)*3);
+                infile.read(reinterpret_cast<char*>(&nAttr), sizeof(uint16_t));
 
                 triangles.push_back(plTriangle(n, p0, p1, p2));
             }
 
-            binfile.close();
+            infile.close();
         }
 
-        if (verbose)
-            std::cout << "\t\t\tComplete.\n";
+        std::cout << "Successfully loaded " << filename << "..." << std::endl;
         return true;
     }
 

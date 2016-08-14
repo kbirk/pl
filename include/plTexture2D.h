@@ -3,7 +3,9 @@
 #include "plCommon.h"
 #include "plVector3.h"
 
-template< typename T >
+#include <epoxy/gl.h>
+
+template<typename T>
 class plPixel
 {
     public:

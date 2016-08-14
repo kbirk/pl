@@ -6,13 +6,13 @@ plEditor::plEditor()
 {
 }
 
-void plEditor::attach(plPlan& plan)
+void plEditor::attach(std::shared_ptr<plPlan> plan)
 {
     if (_plan)
     {
         std::cout << "plEditor::attach() warning: plan already attached to editor" << std::endl;
     }
-    _plan = &plan;
+    _plan = plan;
 }
 
 

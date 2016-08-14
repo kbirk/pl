@@ -46,8 +46,8 @@
 #define PL_STAGE_2_WORKGROUP_SIZE               1024
 #define PL_STAGE_2_NUM_COMPARISON_SLICES        32
 #define PL_STAGE_2_NUM_COMPARISON_RADII         4
-#define PL_STAGE_2_SLICE_ANGLE_INCREMENT        ((2.0 * PL_PI) / float32_t(PL_STAGE_2_NUM_COMPARISON_SLICES))
-#define PL_STAGE_2_RADIUS_INCREMENT(radius)     ((radius / float32_t(PL_STAGE_2_NUM_COMPARISON_RADII)) - 0.01)
+#define PL_STAGE_2_SLICE_ANGLE_INCREMENT        ((2.0 * PL_PI) / float(PL_STAGE_2_NUM_COMPARISON_SLICES))
+#define PL_STAGE_2_RADIUS_INCREMENT(radius)     ((radius / float(PL_STAGE_2_NUM_COMPARISON_RADII)) - 0.01)
 #define PL_STAGE_2_ANGULAR_DISTANCE_THRESHOLD   1.04666 // (30 degrees)
 
 /**************************************************************/

@@ -35,7 +35,7 @@ void plModelEditor::setEditMode(uint32_t editMode)
 }
 
 
-bool plModelEditor::processMouseClick(int32_t x, int32_t y)
+bool plModelEditor::processMousePress(int32_t x, int32_t y)
 {
     plPickingInfo pick = plPicking::pickPixel(x, y);
 

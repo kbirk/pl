@@ -7,20 +7,20 @@ namespace plPlannerStage1
     {
         std::vector<std::string > shaderfiles;
 
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defines.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/geometry.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSite.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/donorSites.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSolution.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/capIndices.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/stage1.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/defines.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/geometry.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/defectSite.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/donorSites.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/defectSolution.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/capIndices.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/stage1.hcmp");
 
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/geometry.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSite.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/donorSites.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSolution.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/capIndices.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/stage1.cmp");
+        shaderfiles.push_back("./resources/shaders/planning/geometry.cmp");
+        shaderfiles.push_back("./resources/shaders/planning/defectSite.cmp");
+        shaderfiles.push_back("./resources/shaders/planning/donorSites.cmp");
+        shaderfiles.push_back("./resources/shaders/planning/defectSolution.cmp");
+        shaderfiles.push_back("./resources/shaders/planning/capIndices.cmp");
+        shaderfiles.push_back("./resources/shaders/planning/stage1.cmp");
 
         // compile / link stage 1 shader
         plPlannerShader stage1Shader(shaderfiles);

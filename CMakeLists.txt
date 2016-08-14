@@ -11,7 +11,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${pl_SOURCE_DIR}/cmake")
 # Required packages
 find_package(OpenGL REQUIRED)
 find_package(Epoxy REQUIRED)
-find_package(GLUT REQUIRED)
+find_package(SDL2 REQUIRED)
 
 # Warning pedantic flags for all
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
@@ -21,7 +21,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Werror -pedantic -Wfatal-errors -O2 ${CMAKE_CXX_FLAG
 include_directories("include")
 include_directories(${OPENGL_INCLUDE_DIR})
 include_directories(${EPOXY_INCLUDE_DIRS})
-include_directories(${GLUT_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIR})
 
 ## Build Executable
 
@@ -97,8 +97,6 @@ set(sources
     "src/plVertexFragmentShader"
     "src/plVertexSpecBuffer"
     "src/plWindow"
-    "src/Window"
-    "src/PlannerWindow"
     "src/main")
 
 # Construct the executable
@@ -108,7 +106,7 @@ add_executable(planner ${sources})
 target_link_libraries(planner
     ${OPENGL_LIBRARIES}
     ${EPOXY_LIBRARIES}
-    ${GLUT_LIBRARIES})
+    ${SDL2_LIBRARY})
 
 # Copy resource dir to build
 file(COPY

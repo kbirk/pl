@@ -2,6 +2,8 @@
 
 #include "plCommon.h"
 
+#include <epoxy/gl.h>
+
 namespace plOpenGLInfo
 {
 

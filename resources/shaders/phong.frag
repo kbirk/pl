@@ -18,8 +18,8 @@ void main()
     vec3 L = normalize(viewLightDirection);
     vec3 R = normalize(reflect(-L, N));
 
-    float32_t diff = abs(dot(N,L));
-    float32_t spec = pow(abs(dot(N, R)), 128);
+    float diff = abs(dot(N,L));
+    float spec = pow(abs(dot(N, R)), 128);
 
     // Multiply intensity by diffuse color, force alpha to 1.0
     vec4 colour = vec4(colourInterp.r*diff, colourInterp.g*diff, colourInterp.b*diff, colourInterp.a)

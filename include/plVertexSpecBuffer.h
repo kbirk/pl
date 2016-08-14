@@ -2,6 +2,7 @@
 
 #include "plCommon.h"
 
+#include <epoxy/gl.h>
 
 class plVertexSpecBuffer
 {
@@ -14,7 +15,7 @@ class plVertexSpecBuffer
 
         uint32_t id() const  { return _id; }
 
-        virtual void bind  () const = 0;
+        virtual void bind() const = 0;
         virtual void unbind() const = 0;
 
     protected:

@@ -18,4 +18,4 @@ vec4 donorSiteNormals(in uint site, in uint i);
 triangle donorSiteTriangles(in uint site, in uint i);
 edge donorSiteEdge(in uint site, in uint i);
 
-bool isWithinDonorBoundary(in uint site, in vec3 position, in vec3 normal, in float32_t radius);
+bool isWithinDonorBoundary(in uint site, in vec3 position, in vec3 normal, in float radius);

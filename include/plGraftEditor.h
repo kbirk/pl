@@ -24,7 +24,7 @@ class plGraftEditor : public plEditor
         plGraftEditor();
 
         void clearSelection();
-        void selectGraft   (uint32_t index, uint32_t type);
+        void selectGraft(uint32_t index, uint32_t type);
 
         void setEditMode(uint32_t editMode);
 
@@ -33,17 +33,17 @@ class plGraftEditor : public plEditor
 
         bool isGraftSelected() const { return (_selectedGraft != nullptr); }
 
-        bool processMouseClick   (int32_t x, int32_t y);
-        bool processMouseDrag    (int32_t x, int32_t y);
-        bool processMouseRelease (int32_t x, int32_t y);
-        bool processJoystickDrag (int32_t x, int32_t y);
+        bool processMousePress(int32_t x, int32_t y);
+        bool processMouseDrag(int32_t x, int32_t y);
+        bool processMouseRelease(int32_t x, int32_t y);
+        bool processJoystickDrag(int32_t x, int32_t y);
 
         void toggleSelectedVisibility();
 
     private:
 
-        int32_t    _editMode;
-        int32_t    _selectedType;
+        int32_t _editMode;
+        int32_t _selectedType;
         plGraft *_selectedGraft;
 
         void _dragHandle(int32_t x, int32_t y);

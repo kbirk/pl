@@ -3,6 +3,8 @@
 #include "plCommon.h"
 #include "plBufferObject.h"
 
+#include <epoxy/gl.h>
+
 class plSSBO : public plBufferObject
 {
 
@@ -21,17 +23,17 @@ class plSSBO : public plBufferObject
         void unbind(uint32_t location) const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, 0); }
 
         // set
-        template < class T >
+        template <typename T>
         void set(std::vector<T> &ts, uint32_t count, uint32_t index = 0, uint32_t ssboIndex = 0);
 
-        template < class T >
+        template <typename T>
         void setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset = 0, uint32_t ssboByteOffset = 0);
 
         // read
-        template < class T >
+        template <typename T>
         void read(std::vector<T> &ts, uint32_t count, uint32_t index = 0, uint32_t ssboIndex = 0) const;
 
-        template < class T >
+        template <typename T>
         void readBytes(T *ts, uint32_t numBytes, uint32_t byteOffset = 0, uint32_t ssboByteOffset = 0) const;
 
     private:
@@ -42,7 +44,7 @@ class plSSBO : public plBufferObject
 };
 
 
-template < class T >
+template <typename T>
 void plSSBO::set(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t ssboIndex)
 {
     if (count == 0)
@@ -55,7 +57,7 @@ void plSSBO::set(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t ss
 }
 
 
-template < class T >
+template <typename T>
 void plSSBO::setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ssboByteOffset)
 {
     if (numBytes == 0)
@@ -82,7 +84,7 @@ void plSSBO::setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ss
 }
 
 
-template < class T >
+template <typename T>
 void plSSBO::read(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t ssboIndex) const
 {
     if (!_id)
@@ -110,7 +112,7 @@ void plSSBO::read(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t s
 }
 
 
-template < class T >
+template <typename T>
 void plSSBO::readBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ssboByteOffset) const
 {
     if (!_id)

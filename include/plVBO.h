@@ -4,6 +4,7 @@
 #include "plVertexSpecBuffer.h"
 #include "plVector4.h"
 
+#include <epoxy/gl.h>
 
 // attribute locations, set by VBOs and mirrored in shader files
 enum plVertexAttributeIndexEnum

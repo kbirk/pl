@@ -79,11 +79,11 @@ namespace plRenderResources
     void _initShaders()
     {
         // create shader objects
-        _shaders[PL_MINIMAL_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader(PL_FILE_PREPATH"shaders/minimal.vert", PL_FILE_PREPATH"shaders/minimal.frag"));
-        _shaders[PL_PHONG_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader(PL_FILE_PREPATH"shaders/phong.vert",   PL_FILE_PREPATH"shaders/phong.frag"));
-        _shaders[PL_OUTLINE_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader(PL_FILE_PREPATH"shaders/outline.vert", PL_FILE_PREPATH"shaders/outline.frag"));
-        _shaders[PL_ARTHRO_CAM_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader(PL_FILE_PREPATH"shaders/arthro.vert",  PL_FILE_PREPATH"shaders/arthro.frag"));
-        _shaders[PL_FBO_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader(PL_FILE_PREPATH"shaders/fbo.vert",     PL_FILE_PREPATH"shaders/fbo.frag"));
+        _shaders[PL_MINIMAL_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader("./resources/shaders/minimal.vert", "./resources/shaders/minimal.frag"));
+        _shaders[PL_PHONG_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader("./resources/shaders/phong.vert",   "./resources/shaders/phong.frag"));
+        _shaders[PL_OUTLINE_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader("./resources/shaders/outline.vert", "./resources/shaders/outline.frag"));
+        _shaders[PL_ARTHRO_CAM_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader("./resources/shaders/arthro.vert",  "./resources/shaders/arthro.frag"));
+        _shaders[PL_FBO_SHADER] = std::shared_ptr<plVertexFragmentShader>(new plVertexFragmentShader("./resources/shaders/fbo.vert",     "./resources/shaders/fbo.frag"));
     }
 
 }
