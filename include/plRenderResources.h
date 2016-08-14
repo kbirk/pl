@@ -17,7 +17,6 @@ enum plShaderEnums
     PL_MINIMAL_SHADER = 1,      // no lighting calculations
     PL_PHONG_SHADER,            // phong lighting
     PL_OUTLINE_SHADER,          // draws to outline shader
-    PL_ARTHRO_CAM_SHADER,       // texturing shader for arthro cam feed
     PL_FBO_SHADER,              // shader for final rendering pass, draws colour buffer to screen and applies outline effect
 };
 

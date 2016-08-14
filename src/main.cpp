@@ -9,8 +9,8 @@
 #include "plVector3.h"
 #include "plWindow.h"
 
-#define CAMERA_ROTATION_MODE        1
-#define CAMERA_TRANSLATION_MODE     2
+#define CAMERA_ROTATION_MODE    1
+#define CAMERA_TRANSLATION_MODE 2
 
 // planner
 std::shared_ptr<plPlan> plan;
@@ -108,6 +108,9 @@ void render()
 void handleKeyRelease(const WindowEvent& event)
 {
     auto key = event.originalEvent->key.keysym.sym;
+
+    std::cout << "key release " << uint32_t(key) << std::endl;
+
     switch (key)
     {
         case SDLK_LCTRL:
@@ -123,6 +126,8 @@ void handleKeyPress(const WindowEvent& event)
 
     auto key = event.originalEvent->key.keysym.sym;
 
+    std::cout << "key press " << uint32_t(key) << std::endl;
+
     switch (key)
     {
         case SDLK_ESCAPE:
@@ -131,7 +136,7 @@ void handleKeyPress(const WindowEvent& event)
 
         case SDLK_SPACE:
             // spacebar
-            cameraMode =  (cameraMode == CAMERA_ROTATION_MODE) ? CAMERA_TRANSLATION_MODE : CAMERA_ROTATION_MODE;
+            cameraMode = (cameraMode == CAMERA_ROTATION_MODE) ? CAMERA_TRANSLATION_MODE : CAMERA_ROTATION_MODE;
             break;
 
         case SDLK_LCTRL:
@@ -292,8 +297,6 @@ void handleKeyPress(const WindowEvent& event)
         case 'Y':   /* UN-USED */ break;
         case 'Z':   /* UN-USED */ break;
 
-
-
     }
 }
 
@@ -304,6 +307,8 @@ void handleMouseMove(const WindowEvent& event)
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
     int32_t x = mouseEvent.x;
     int32_t y = plWindow::height() - mouseEvent.y;
+
+    std::cout << "mouse move " << x << ", " << y << std::endl;
 
     switch (button)
     {
@@ -349,6 +354,8 @@ void handleMousePress(const WindowEvent& event)
     int32_t x = mouseEvent.x;
     int32_t y = plWindow::height() - mouseEvent.y;
 
+    std::cout << "mouse press " << uint32_t(mouseEvent.button) << std::endl;
+
     if (mouseEvent.button == SDL_BUTTON_LEFT) {
         if (ctrl)
         {
@@ -377,6 +384,8 @@ void handleMouseRelease(const WindowEvent& event)
     int32_t x = mouseEvent.x;
     int32_t y = plWindow::height() - mouseEvent.y;
 
+    std::cout << "mouse release " << uint32_t(mouseEvent.button) << std::endl;
+
     // process mouse release
     graftEditor.processMouseRelease(x, y);
     boundaryEditor.processMouseRelease(x, y);
@@ -386,12 +395,23 @@ void handleMouseRelease(const WindowEvent& event)
     button = -1;
 }
 
-void handleClose(const WindowEvent& event) {
+void handleClose(const WindowEvent& event)
+{
     exit(0);
 }
 
-void handleSignal(int32_t signal) {
-	std::cout << "Caught signal: " << signal << ", shutting down..." << std::endl;
+void handleResize(const WindowEvent& event)
+{
+    uint32_t width = event.originalEvent->window.data1;
+    uint32_t height = event.originalEvent->window.data2;
+    std::cout << width << ", " << height << std::endl;
+    plWindow::reshape(width, height);
+    plRenderResources::reshape(plWindow::viewportWidth(), plWindow::viewportHeight());
+}
+
+void handleSignal(int32_t signal)
+{
+    std::cout << "Caught signal: " << signal << ", shutting down..." << std::endl;
     exit(0);
 }
 
@@ -418,6 +438,7 @@ int32_t main(int32_t argc, char **argv)
 	//plWindow::on(WindowEventType::MOUSE_WHEEL, handle_mouse_wheel);
 	plWindow::on(WindowEventType::KEY_PRESS, handleKeyPress);
 	plWindow::on(WindowEventType::KEY_RELEASE, handleKeyRelease);
+	plWindow::on(WindowEventType::RESIZE, handleResize);
 	plWindow::on(WindowEventType::CLOSE, handleClose);
 
     while (true) {
