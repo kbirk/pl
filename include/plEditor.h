@@ -20,10 +20,9 @@ class plEditor : public plRenderable
 
         virtual void clearSelection() = 0;
 
-        virtual bool processMousePress   (int32_t x, int32_t y) = 0;
-        virtual bool processMouseDrag    (int32_t x, int32_t y) = 0;
-        virtual bool processMouseRelease (int32_t x, int32_t y) = 0;
-        virtual bool processJoystickDrag (int32_t x, int32_t y) = 0;
+        virtual bool processMousePress(int32_t x, int32_t y) = 0;
+        virtual bool processMouseDrag(int32_t x, int32_t y) = 0;
+        virtual bool processMouseRelease(int32_t x, int32_t y) = 0;
 
         virtual void toggleSelectedVisibility() = 0;
 

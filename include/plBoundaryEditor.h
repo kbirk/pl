@@ -22,8 +22,7 @@ class plBoundaryEditor : public plEditor
         bool processMousePress(int32_t x, int32_t y);
         bool processMouseDrag(int32_t x, int32_t y);
         bool processMouseRelease(int32_t x, int32_t y);
-        bool processJoystickDrag(int32_t x, int32_t y);
-
+        
         void addPoint(uint32_t x, uint32_t y, bool selectNewPoint = true);
         void moveSelectedPoint(uint32_t x, uint32_t y);
         void removeSelectedPoint();

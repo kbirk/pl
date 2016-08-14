@@ -267,37 +267,11 @@ namespace plWindow {
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
-                    switch (event.button.button)
-                    {
-                        case SDL_BUTTON_LEFT:
-                            executeCallbacks(WindowEventType::MOUSE_LEFT_PRESS, &event);
-                            break;
-
-                        case SDL_BUTTON_RIGHT:
-                            executeCallbacks(WindowEventType::MOUSE_RIGHT_PRESS, &event);
-                            break;
-
-                        case SDL_BUTTON_MIDDLE:
-                            executeCallbacks(WindowEventType::MOUSE_MIDDLE_PRESS, &event);
-                            break;
-                    }
+                    executeCallbacks(WindowEventType::MOUSE_PRESS, &event);
                     break;
 
                 case SDL_MOUSEBUTTONUP:
-                    switch (event.button.button)
-                    {
-                        case SDL_BUTTON_LEFT:
-                            executeCallbacks(WindowEventType::MOUSE_LEFT_RELEASE, &event);
-                            break;
-
-                        case SDL_BUTTON_RIGHT:
-                            executeCallbacks(WindowEventType::MOUSE_RIGHT_RELEASE, &event);
-                            break;
-
-                        case SDL_BUTTON_MIDDLE:
-                            executeCallbacks(WindowEventType::MOUSE_MIDDLE_RELEASE, &event);
-                            break;
-                    }
+                    executeCallbacks(WindowEventType::MOUSE_RELEASE, &event);
                     break;
 
                 case SDL_MOUSEWHEEL:

@@ -30,17 +30,16 @@ class plModelEditor : public plEditor
         bool isModelSelected() const { return (_selectedModel != nullptr); }
         int32_t  selectedModelID() const;
 
-        bool processMousePress   (int32_t x, int32_t y);
-        bool processMouseDrag    (int32_t x, int32_t y);
-        bool processMouseRelease (int32_t x, int32_t y);
-        bool processJoystickDrag (int32_t x, int32_t y);
+        bool processMousePress(int32_t x, int32_t y);
+        bool processMouseDrag(int32_t x, int32_t y);
+        bool processMouseRelease(int32_t x, int32_t y);
 
         void toggleSelectedVisibility();
 
     private:
 
-        int32_t    _editMode;
-        plModel *_selectedModel;
+        int32_t _editMode;
+        plModel* _selectedModel;
 
         void _dragModel(int32_t x, int32_t y);
         void _extractMenuRenderComponents(plRenderMap& renderMap) const;

@@ -28,6 +28,7 @@ plCamera camera;
 plVector3 previousMouse; // last mouse position
 int32_t button = -1; // which button is currently down
 bool ctrl = false; // whether ctrl is currently down
+bool shift = false; // whether shift is currently down
 
 void init(int32_t argc, char** argv)
 {
@@ -109,13 +110,19 @@ void handleKeyRelease(const WindowEvent& event)
 {
     auto key = event.originalEvent->key.keysym.sym;
 
-    std::cout << "key release " << uint32_t(key) << std::endl;
-
+    // unmodifiable keys
     switch (key)
     {
         case SDLK_LCTRL:
         case SDLK_RCTRL:
+            // ctrl
             ctrl = false;
+            break;
+
+        case SDLK_LSHIFT:
+        case SDLK_RSHIFT:
+            // shift
+            shift = false;
             break;
     }
 }
@@ -126,8 +133,7 @@ void handleKeyPress(const WindowEvent& event)
 
     auto key = event.originalEvent->key.keysym.sym;
 
-    std::cout << "key press " << uint32_t(key) << std::endl;
-
+    // unmodifiable keys
     switch (key)
     {
         case SDLK_ESCAPE:
@@ -143,6 +149,13 @@ void handleKeyPress(const WindowEvent& event)
         case SDLK_RCTRL:
             // ctrl
             ctrl = true;
+            break;
+
+        case SDLK_LSHIFT:
+        case SDLK_RSHIFT:
+            // shift
+            shift = true;
+            break;
 
         case SDLK_DELETE:
             // delete
@@ -158,145 +171,172 @@ void handleKeyPress(const WindowEvent& event)
             }
             break;
 
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        case '0':   // 0-9
-
+        case SDLK_0:
+        case SDLK_1:
+        case SDLK_2:
+        case SDLK_3:
+        case SDLK_4:
+        case SDLK_5:
+        case SDLK_6:
+        case SDLK_7:
+        case SDLK_8:
+        case SDLK_9:
+            // 0-9
             currentView = (int32_t)(key - '0');
             break;
+    }
 
-        case 'a':   /* UN-USED */ break;
-        case 'b':   /* UN-USED */ break;
-        case 'c':
+    if (shift)
+    {
+        // uppercase keys
+        switch (key)
+        {
+            case SDLK_a:   /* UN-USED */ break;
+            case SDLK_b:   /* UN-USED */ break;
+            case SDLK_c:   /* UN-USED */ break;
+            case SDLK_d:
 
-            camera.up = plVector3(0, 1, 0);
-            camera.lookat = camera.position + plVector3(0, 0, 1);
-            break;
+                // add a donor site
+                plan->addDonorSite(modelEditor.selectedModelID());
+                break;
 
-        case 'd':   /* UN-USED */ break;
-        case 'e':   /* UN-USED */ break;
-        case 'f':   /* UN-USED */ break;
-        case 'g':   /* UN-USED */ break;
-        case 'h':   /* UN-USED */ break;
-        case 'i':   /* UN-USED */ break;
-        case 'j':   /* UN-USED */ break;
-        case 'k':   /* UN-USED */ break;
-        case 'l':
+            case SDLK_e:   /* UN-USED */ break;
+            case SDLK_f:   /* UN-USED */ break;
+            case SDLK_g:   /* UN-USED */ break;
+            case SDLK_h:   /* UN-USED */ break;
+            case SDLK_i:   /* UN-USED */ break;
+            case SDLK_j:   /* UN-USED */ break;
+            case SDLK_k:   /* UN-USED */ break;
+            case SDLK_l:   /* UN-USED */ break;
+            case SDLK_m:   /* UN-USED */ break;
+            case SDLK_n:
 
-            graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_LENGTH);
-            break;
+                // clear plan, start new
+                plan->clear();
+                graftEditor.clearSelection();
+                boundaryEditor.clearSelection();
+                modelEditor.clearSelection();
+                break;
 
-        case 'm':
+            case SDLK_o:
 
-            plan->updateGraftMarkerPositions();
-            break;
+                // export plan file
+                plan->exportFile("plan");
+                break;
 
-        case 'n':   /* UN-USED */ break;
-        case 'o':
+            case SDLK_p:
 
-            if (modelEditor.isModelSelected())
-            {
-                plan->models(modelEditor.selectedModelID()).toggleOctreeVisibility();
-            }
-            break;
+                // calculate plan
+                plAutomaticPlanner::calculate(plan, 0);
+                break;
 
-        case 'p':
-            plan->toggleVisibility();
-            break;
+            case SDLK_q:   /* UN-USED */ break;
+            case SDLK_r:
 
-        case 'q':   /* UN-USED */ break;
-        case 'r':
-            graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_ROTATE);
-            break;
+                // import view
+                camera.importViewParams("./resources/view" + std::to_string(currentView));
+                break;
 
-        case 's':   /* UN-USED */ break;
-        case 't':
-            graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_TRANSLATE);
-            break;
+            case SDLK_s:
 
-        case 'u':   /* UN-USED */ break;
-        case 'v':
+                // add defect site
+                plan->addDefectSite(modelEditor.selectedModelID());
+                break;
 
-            graftEditor.toggleSelectedVisibility();
-            boundaryEditor.toggleSelectedVisibility();
-            modelEditor.toggleSelectedVisibility();
-            break;
+            case SDLK_t:   /* UN-USED */ break;
+            case SDLK_u:   /* UN-USED */ break;
+            case SDLK_v:   /* UN-USED */ break;
+            case SDLK_w:
 
-        case 'w':   /* UN-USED */ break;
-        case 'x':   /* UN-USED */ break;
-        case 'y':   /* UN-USED */ break;
-        case 'z':
+                // export view
+                camera.exportViewParams("./resources/view" + std::to_string(currentView));
+                break;
 
-            if (modelEditor.isModelSelected())
-            {
-                camera.reset(plan->models(modelEditor.selectedModelID()).getCentroid());
-            }
-            break;
+            case SDLK_x:   /* UN-USED */ break;
+            case SDLK_y:   /* UN-USED */ break;
+            case SDLK_z:   /* UN-USED */ break;
+        }
 
-        case 'A':   /* UN-USED */ break;
-        case 'B':   /* UN-USED */ break;
-        case 'C':   /* UN-USED */ break;
-        case 'D':
+    }
+    else
+    {
+        // lowercase keys
+        switch (key)
+        {
+            case SDLK_a:   /* UN-USED */ break;
+            case SDLK_b:   /* UN-USED */ break;
+            case SDLK_c:   /* UN-USED */ break;
+            case SDLK_d:   /* UN-USED */ break;
+            case SDLK_e:   /* UN-USED */ break;
+            case SDLK_f:   /* UN-USED */ break;
+            case SDLK_g:   /* UN-USED */ break;
+            case SDLK_h:   /* UN-USED */ break;
+            case SDLK_i:   /* UN-USED */ break;
+            case SDLK_j:   /* UN-USED */ break;
+            case SDLK_k:   /* UN-USED */ break;
+            case SDLK_l:
 
-            plan->addDonorSite(modelEditor.selectedModelID());
-            break;
+                // set graft edit mode to length
+                graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_LENGTH);
+                break;
 
-        case 'E':   /* UN-USED */ break;
-        case 'F':   /* UN-USED */ break;
-        case 'G':   /* UN-USED */ break;
-        case 'I':   /* UN-USED */ break;
-        case 'J':   /* UN-USED */ break;
-        case 'K':   /* UN-USED */ break;
-        case 'L':   /* UN-USED */ break;
-        case 'M':   /* UN-USED */ break;
-        case 'N':
+            case SDLK_m:
 
-            plan->clear();
-            graftEditor.clearSelection();
-            boundaryEditor.clearSelection();
-            modelEditor.clearSelection();
-            break;
+                // re-align graft markers based on camera position
+                plan->updateGraftMarkerPositions();
+                break;
 
-        case 'O':
+            case SDLK_n:   /* UN-USED */ break;
+            case SDLK_o:
 
-            plan->exportFile("plan");
-            break;
+                // toggle octree view for selected model
+                if (modelEditor.isModelSelected())
+                {
+                    plan->models(modelEditor.selectedModelID()).toggleOctreeVisibility();
+                }
+                break;
 
-        case 'P':
+            case SDLK_p:
 
-            plAutomaticPlanner::calculate(plan, 0);
-            break;
+                // toggle plan visibility
+                plan->toggleVisibility();
+                break;
 
-        case 'Q':   /* UN-USED */ break;
-        case 'R':
+            case SDLK_q:   /* UN-USED */ break;
+            case SDLK_r:
 
-            camera.importViewParams("./resources/view" + std::to_string(currentView));
-            break;
+                // set graft edit mode to rotation
+                graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_ROTATE);
+                break;
 
-        case 'S':
+            case SDLK_s:   /* UN-USED */ break;
+            case SDLK_t:
 
-            plan->addDefectSite(modelEditor.selectedModelID());
-            break;
+                // set graft edit mode to translation
+                graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_TRANSLATE);
+                break;
 
-        case 'T':   /* UN-USED */ break;
-        case 'U':   /* UN-USED */ break;
-        case 'V':   /* UN-USED */ break;
-        case 'W':
+            case SDLK_u:   /* UN-USED */ break;
+            case SDLK_v:
 
-            camera.exportViewParams("./resources/view" + std::to_string(currentView));
-            break;
+                // toggle visibility of selected component (solid, transparent, invisible)
+                graftEditor.toggleSelectedVisibility();
+                boundaryEditor.toggleSelectedVisibility();
+                modelEditor.toggleSelectedVisibility();
+                break;
 
-        case 'X':   /* UN-USED */ break;
-        case 'Y':   /* UN-USED */ break;
-        case 'Z':   /* UN-USED */ break;
+            case SDLK_w:   /* UN-USED */ break;
+            case SDLK_x:   /* UN-USED */ break;
+            case SDLK_y:   /* UN-USED */ break;
+            case SDLK_z:
 
+                // reset camera onto model
+                if (modelEditor.isModelSelected())
+                {
+                    camera.reset(plan->models(modelEditor.selectedModelID()).getCentroid());
+                }
+                break;
+        }
     }
 }
 
@@ -307,8 +347,6 @@ void handleMouseMove(const WindowEvent& event)
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
     int32_t x = mouseEvent.x;
     int32_t y = plWindow::height() - mouseEvent.y;
-
-    std::cout << "mouse move " << x << ", " << y << std::endl;
 
     switch (button)
     {
@@ -345,6 +383,12 @@ void handleMouseMove(const WindowEvent& event)
     previousMouse.y = y;
 }
 
+void handleMouseWheel(const WindowEvent& event)
+{
+    const float32_t SCROLL_FACTOR = 5.0f;
+    float32_t y = event.originalEvent->wheel.y;
+    camera.zoom(y * SCROLL_FACTOR);
+}
 
 void handleMousePress(const WindowEvent& event)
 {
@@ -353,8 +397,6 @@ void handleMousePress(const WindowEvent& event)
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
     int32_t x = mouseEvent.x;
     int32_t y = plWindow::height() - mouseEvent.y;
-
-    std::cout << "mouse press " << uint32_t(mouseEvent.button) << std::endl;
 
     if (mouseEvent.button == SDL_BUTTON_LEFT) {
         if (ctrl)
@@ -375,7 +417,6 @@ void handleMousePress(const WindowEvent& event)
     button = mouseEvent.button;
 }
 
-
 void handleMouseRelease(const WindowEvent& event)
 {
     auto mouseEvent = event.originalEvent->button;
@@ -383,8 +424,6 @@ void handleMouseRelease(const WindowEvent& event)
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
     int32_t x = mouseEvent.x;
     int32_t y = plWindow::height() - mouseEvent.y;
-
-    std::cout << "mouse release " << uint32_t(mouseEvent.button) << std::endl;
 
     // process mouse release
     graftEditor.processMouseRelease(x, y);
@@ -404,7 +443,6 @@ void handleResize(const WindowEvent& event)
 {
     uint32_t width = event.originalEvent->window.data1;
     uint32_t height = event.originalEvent->window.data2;
-    std::cout << width << ", " << height << std::endl;
     plWindow::reshape(width, height);
     plRenderResources::reshape(plWindow::viewportWidth(), plWindow::viewportHeight());
 }
@@ -432,10 +470,10 @@ int32_t main(int32_t argc, char **argv)
 
     init(argc, argv);
 
-    plWindow::on(WindowEventType::MOUSE_LEFT_PRESS, handleMousePress);
-	plWindow::on(WindowEventType::MOUSE_LEFT_RELEASE, handleMouseRelease);
+    plWindow::on(WindowEventType::MOUSE_PRESS, handleMousePress);
+	plWindow::on(WindowEventType::MOUSE_RELEASE, handleMouseRelease);
 	plWindow::on(WindowEventType::MOUSE_MOVE, handleMouseMove);
-	//plWindow::on(WindowEventType::MOUSE_WHEEL, handle_mouse_wheel);
+	plWindow::on(WindowEventType::MOUSE_WHEEL, handleMouseWheel);
 	plWindow::on(WindowEventType::KEY_PRESS, handleKeyPress);
 	plWindow::on(WindowEventType::KEY_RELEASE, handleKeyRelease);
 	plWindow::on(WindowEventType::RESIZE, handleResize);
