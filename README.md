@@ -19,21 +19,6 @@ sudo aptitude install libsdl2-dev
 sudo aptitude install libepoxy-dev
 ```
 
-#### OSX
-
-Install CMake:
-
-```bash
-brew install cmake
-```
-
-Install Dependencies:
-
-```bash
-brew install sdl2
-brew install libepoxy
-```
-
 ## Build
 
 Clone the repo:
@@ -59,7 +44,7 @@ make
 
 ## Usage
 
-Run the executable with a patient file:
+Run the executable with a plan file:
 
 ```bash
 ./planner ./resources/patient1/plan0.csv
