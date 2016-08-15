@@ -20,7 +20,7 @@ plBoundary::plBoundary(uint32_t type, const plMesh& mesh, const std::vector<plSt
     // assumes points are counter-clockwise
     for (uint32_t j = 1; j < row.size(); j+=2)
     {
-        _points.push_back (plVector3(row[j]));
+        _points.push_back(plVector3(row[j]));
         _normals.push_back(plVector3(row[j+1]));
     }
     // construct mesh

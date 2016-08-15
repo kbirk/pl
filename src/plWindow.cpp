@@ -2,28 +2,25 @@
 
 namespace plWindow {
 
-    uint32_t _width = 0;
-    uint32_t _height =0;
-    uint32_t _viewportWidth = 0;
-    uint32_t _viewportHeight = 0;
-    uint32_t _viewportX = 0;
-    uint32_t _viewportY = 0;
+    int32_t _width = 0;
+    int32_t _height = 0;
+    int32_t _viewportWidth = 0;
+    int32_t _viewportHeight = 0;
+    int32_t _viewportX = 0;
+    int32_t _viewportY = 0;
 
     const std::string WINDOW_TITLE = "Planner";
-    const uint32_t DEFAULT_WINDOW_WIDTH = 1400;
-    const uint32_t DEFAULT_WINDOW_HEIGHT = 1050;
+    const uint32_t DEFAULT_WINDOW_WIDTH = 1200;
+    const uint32_t DEFAULT_WINDOW_HEIGHT = 800;
 
     SDL_Window* window;
     SDL_GLContext context;
     std::map<WindowEventType, std::vector<WindowEventFunc>> callbacks;
 
-    void reshape(uint32_t width, uint32_t height)
+    void _reshapeWindow()
     {
-        _width = width;
-        _height = height;
-
+        SDL_GL_GetDrawableSize(window, &_width, &_height);
         _viewportHeight = _width / PL_ASPECT_RATIO ;
-
         if (_viewportHeight <= _height)
         {
             _viewportY = (_height - _viewportHeight)*0.5f;
@@ -98,10 +95,11 @@ namespace plWindow {
         float32_t nz = (float32_t)(z);
 
         // map to range of [-1 .. 1]
-        plVector4 input((nx * 2.0f) - 1.0f,
-                         (ny * 2.0f) - 1.0f,
-                         (nz * 2.0f) - 1.0f,
-                         1.0f);
+        plVector4 input(
+            (nx * 2.0f) - 1.0f,
+            (ny * 2.0f) - 1.0f,
+            (nz * 2.0f) - 1.0f,
+            1.0f);
 
         plVector4 output = mvpInverse * input;
 
@@ -137,7 +135,6 @@ namespace plWindow {
             (projected.x*0.5f + 0.5f) * _viewportWidth  + _viewportX,
             (projected.y*0.5f + 0.5f) * _viewportHeight + _viewportY,
             (1.0f+projected.z)*0.5f);
-
     }
 
 
@@ -225,6 +222,8 @@ namespace plWindow {
         SDL_SetRelativeMouseMode(SDL_FALSE);
         // sync buffer swap with monitor's vertical refresh rate
         SDL_GL_SetSwapInterval(1);
+        // set initial dimensions
+        _reshapeWindow();
     }
 
     void teardown()
@@ -240,14 +239,6 @@ namespace plWindow {
     {
         SDL_GL_SwapWindow(window);
     }
-
-    // glm::ivec2 size()
-    // {
-    //     int32_t w = 0;
-    //     int32_t h = 0;
-    //     SDL_GL_GetDrawableSize(window, &w, &h);
-    //     return glm::ivec2(w, h);
-    // }
 
     void handleEvents()
     {
@@ -291,6 +282,7 @@ namespace plWindow {
                     {
                         case SDL_WINDOWEVENT_RESIZED:
                         case SDL_WINDOWEVENT_SIZE_CHANGED:
+                            _reshapeWindow();
                             executeCallbacks(WindowEventType::RESIZE, &event);
                             break;
                     }

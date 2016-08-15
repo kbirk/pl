@@ -23,6 +23,7 @@ namespace plSTL
         std::ifstream infile(filename.c_str(), std::ifstream::binary);
         if (!infile.good())
         {
+            std::cout << " Failed." << std::endl;
             std::cerr << "plSTL::importFile() error: STL file could not be opened" << std::endl;
             infile.close();
             return false;
@@ -170,11 +171,11 @@ namespace plSTL
         uint16_t zeroShort(0); // at the end of every facet
         for (uint32_t i=0; i<triangles.size(); i++)
         {
-            outfile.write(reinterpret_cast<const char*>(&triangles[i].normal().x) , sizeof(float32_t)*3);
-            outfile.write(reinterpret_cast<const char*>(&triangles[i].point0().x) , sizeof(float32_t)*3);
-            outfile.write(reinterpret_cast<const char*>(&triangles[i].point1().x) , sizeof(float32_t)*3);
-            outfile.write(reinterpret_cast<const char*>(&triangles[i].point2().x) , sizeof(float32_t)*3);
-            outfile.write(reinterpret_cast<const char*>(&zeroShort)               , sizeof(uint16_t));
+            outfile.write(reinterpret_cast<const char*>(&triangles[i].normal().x), sizeof(float32_t)*3);
+            outfile.write(reinterpret_cast<const char*>(&triangles[i].point0().x), sizeof(float32_t)*3);
+            outfile.write(reinterpret_cast<const char*>(&triangles[i].point1().x), sizeof(float32_t)*3);
+            outfile.write(reinterpret_cast<const char*>(&triangles[i].point2().x), sizeof(float32_t)*3);
+            outfile.write(reinterpret_cast<const char*>(&zeroShort), sizeof(uint16_t));
         }
 
         outfile.close();

@@ -42,6 +42,12 @@ void init(int32_t argc, char** argv)
     plRenderer::init();
     plRenderResources::init();
 
+    // set initial size
+    plRenderResources::reshape(
+        plWindow::viewportWidth(),
+        plWindow::viewportHeight());
+
+    // attach plan to editors
     graftEditor.attach(plan);
     boundaryEditor.attach(plan);
     modelEditor.attach(plan);
@@ -441,10 +447,9 @@ void handleClose(const WindowEvent& event)
 
 void handleResize(const WindowEvent& event)
 {
-    uint32_t width = event.originalEvent->window.data1;
-    uint32_t height = event.originalEvent->window.data2;
-    plWindow::reshape(width, height);
-    plRenderResources::reshape(plWindow::viewportWidth(), plWindow::viewportHeight());
+    plRenderResources::reshape(
+        plWindow::viewportWidth(),
+        plWindow::viewportHeight());
 }
 
 void handleSignal(int32_t signal)

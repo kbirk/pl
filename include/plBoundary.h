@@ -44,10 +44,10 @@ class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
         plVector3 getAverageNormal() const;
         plVector3 getCentroid() const;
 
-        virtual uint32_t addPointAndNormal   (const plVector3 &point, const plVector3 &normal);
-        virtual void   movePointAndNormal  (uint32_t index, const plVector3 &point, const plVector3 &normal);
-        virtual void   removePointAndNormal(uint32_t index);
-        virtual void   clear();
+        virtual uint32_t addPointAndNormal(const plVector3 &point, const plVector3 &normal);
+        virtual void movePointAndNormal(uint32_t index, const plVector3 &point, const plVector3 &normal);
+        virtual void removePointAndNormal(uint32_t index);
+        virtual void clear();
 
     protected:
 

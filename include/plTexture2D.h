@@ -41,7 +41,7 @@ class plTexture2D
         void bind() const;   // bind textures AFTER binding shader AND BEFORE drawing arrays
         void unbind() const;
 
-        uint32_t width() const { return _width;  }
+        uint32_t width() const  { return _width;  }
         uint32_t height() const { return _height; }
 
         void set(uint32_t width, uint32_t height, GLvoid* image = nullptr);

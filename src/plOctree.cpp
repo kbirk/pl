@@ -86,8 +86,8 @@ void plOctree::build(const plVector3 &min, const plVector3 &max, const std::vect
     // find largest distance component, becomes half width
     plVector3 minDiff = min - _centre;
     plVector3 maxDiff = max - _centre;
-    float32_t minMax    = PL_MAX_OF_3(fabs(minDiff.x), fabs(minDiff.y), fabs(minDiff.z));
-    float32_t maxMax    = PL_MAX_OF_3(fabs(maxDiff.x), fabs(maxDiff.y), fabs(maxDiff.z));
+    float32_t minMax = PL_MAX_OF_3(fabs(minDiff.x), fabs(minDiff.y), fabs(minDiff.z));
+    float32_t maxMax = PL_MAX_OF_3(fabs(maxDiff.x), fabs(maxDiff.y), fabs(maxDiff.z));
 
     // half width of octree cell
     _halfWidth = PL_MAX_OF_2(minMax, maxMax);
@@ -102,7 +102,7 @@ void plOctree::build(const plVector3 &min, const plVector3 &max, const std::vect
     }
 
     if (verbose)
-        std::cout << " Complete.\n";
+        std::cout << " Complete." << std::endl;
 }
 
 

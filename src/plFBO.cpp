@@ -43,7 +43,7 @@ plFBO& plFBO::operator= (const plFBO& fbo)
 }
 
 
-void plFBO::attach(uint32_t attachment, const std::shared_ptr<plTexture2D>& texture)
+void plFBO::attach(uint32_t attachment, std::shared_ptr<plTexture2D> texture)
 {
     // bind fbo
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
@@ -62,7 +62,7 @@ void plFBO::attach(uint32_t attachment, const std::shared_ptr<plTexture2D>& text
 }
 
 
-void plFBO::attach(uint32_t attachment0, uint32_t attachment1, const std::shared_ptr<plTexture2D>& texture)
+void plFBO::attach(uint32_t attachment0, uint32_t attachment1, std::shared_ptr<plTexture2D> texture)
 {
     // bind fbo
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
@@ -143,7 +143,7 @@ std::vector<GLenum> plFBO::drawBuffers() const
         auto attachment = static_cast<GLint>(iter.first);
         // check if attachment is a color attachment
         if (attachment >= GL_COLOR_ATTACHMENT0 &&
-             attachment < GL_COLOR_ATTACHMENT0 + plOpenGLInfo::maxColorAttachments)
+            attachment < GL_COLOR_ATTACHMENT0 + plOpenGLInfo::maxColorAttachments)
         {
             // if color attachment, add to draw buffers
             drawBuffers.push_back(attachment);
@@ -163,7 +163,7 @@ void plFBO::_create()
 
 void plFBO::_destroy()
 {
-    glDeleteFramebuffers (1, &_id);
+    glDeleteFramebuffers(1, &_id);
 }
 
 
@@ -181,7 +181,7 @@ void plFBO::_copy(const plFBO& fbo)
     for (auto &attachment : _textureAttachments)
     {
         // copy texture to a new shared pointer
-        std::shared_ptr<plTexture2D> texture(new plTexture2D(*(attachment.second)));
+        auto texture = std::make_shared<plTexture2D>(*attachment.second);
 
         // attach new texture
         attach(attachment.first, texture);

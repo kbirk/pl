@@ -18,14 +18,22 @@ plVector3::plVector3(const plVector4& v)
     z = v.z;
 }
 
-plVector3::plVector3(char *string)
+plVector3::plVector3(char *str)
 {
-    sscanf(string, "%f %f %f", &x, &y, &z);
+    int filled = sscanf(str, "%f %f %f", &x, &y, &z);
+    if (filled != 3) {
+        std::cerr << "Error occured while loading plVector3 from: `" << str << "`." << std::endl;
+        exit(1);
+    }
 }
 
 plVector3::plVector3(const plString &str)
 {
-    sscanf(str.c_str(), "%f %f %f", &x, &y, &z);
+    int filled = sscanf(str.c_str(), "%f %f %f", &x, &y, &z);
+    if (filled != 3) {
+        std::cerr << "Error occured while loading plVector3 from: `" << str << "`." << std::endl;
+        exit(1);
+    }
 }
 
 bool plVector3::operator == (const plVector3 &p) const

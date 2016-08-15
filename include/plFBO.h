@@ -27,13 +27,13 @@ class plFBO
 
         std::vector<GLenum> drawBuffers() const;
 
-        const std::shared_ptr<plTexture2D >& texture2DAttachment(uint32_t attachment) const;
+        const std::shared_ptr<plTexture2D>& texture2DAttachment(uint32_t attachment) const;
 
         template<typename T>
         plPixel<T> readPixel(GLenum attachment, uint32_t x, uint32_t y) const;
 
-        void attach(uint32_t attachment, const std::shared_ptr<plTexture2D>& texture);
-        void attach(uint32_t attachment0, uint32_t attachment1, const std::shared_ptr<plTexture2D>& texture); // depth-stencil shared texture
+        void attach(uint32_t attachment, std::shared_ptr<plTexture2D> texture);
+        void attach(uint32_t attachment0, uint32_t attachment1, std::shared_ptr<plTexture2D> texture); // depth-stencil shared texture
 
     private:
 
@@ -63,8 +63,8 @@ plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
     const std::shared_ptr<plTexture2D>& texture = _textureAttachments.find(attachment)->second;
 
     GLuint format = texture->_format;
-    uint32_t type   = texture->_type;
-    uint32_t size   = texture->_getFormatSize();
+    uint32_t type = texture->_type;
+    uint32_t size = texture->_getFormatSize();
 
     if (sizeof(plPixel<T>) < size)
     {
@@ -75,11 +75,11 @@ plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
     plPixel<T> pixel;
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _id);
-    glReadBuffer     (attachment);
+    glReadBuffer(attachment);
 
     glReadPixels(x, y, 1, 1, format, type, &pixel.r);
 
-    glReadBuffer     (GL_NONE);
+    glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
     return pixel;

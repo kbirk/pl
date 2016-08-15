@@ -25,7 +25,10 @@ plModel::plModel(const plString &file, uint32_t octreeDepth)
 
     // import triangles from STL file
     if (!plSTL::importFile(triangles, filename, true))
-        return;
+    {
+        exit(1);
+    }
+
 
     if (octreeDepth > 1)
     {

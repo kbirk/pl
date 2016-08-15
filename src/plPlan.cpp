@@ -36,9 +36,11 @@ plPlan::plPlan(int32_t argc, char **argv)
         }
         else
         {
-            std::cerr << "Unrecognized suffix on filename '" << filename
-                      << "'. plPlan filenames should have suffix .csv, "
-                      << "plModel filenames should have suffix .stl" << std::endl;
+            std::cerr << "Unrecognized suffix on filename '"
+                << filename
+                << "'. plPlan filenames should have suffix .csv, "
+                << "plModel filenames should have suffix .stl"
+                << std::endl;
             exit(1);
         }
     }
@@ -147,9 +149,18 @@ void plPlan::importFile(const plString &filename)
 {
     plCSV csv(filename);
 
+    if (!csv.good()) {
+        exit(1);
+    }
+
     for (uint32_t i = 0; i < csv.data.size(); i++)
     {
-        plString field = csv.data[i][0];    // get field name
+        if (csv.data[i].empty()) {
+            std::cerr << "Expected row is empty" << std::endl;
+            exit(1);
+        }
+
+        plString field = csv.data[i][0]; // get field name
 
         if (field.compareCaseInsensitive("model"))
         {
@@ -202,6 +213,7 @@ void plPlan::importFile(const plString &filename)
         else
         {
             std::cerr << "Error in '" << filename << "': Unrecognized word '" << field << "' in first column." << std::endl;
+            exit(1);
         }
     }
 }

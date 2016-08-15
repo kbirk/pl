@@ -40,7 +40,6 @@ namespace plWindow
 
     void setup();
     void teardown();
-    void reshape(uint32_t width, uint32_t height);
     plVector3 mouseToWorld(int32_t x, int32_t y, int32_t z);
     plVector3 worldToScreen (float32_t x, float32_t y, float32_t z);
     plVector3 mouseToWorld(const plVector3& position);

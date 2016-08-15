@@ -15,14 +15,22 @@ plVector4::plVector4(float32_t xx, float32_t yy, float32_t zz, float32_t ww)
     x = xx;     y = yy;     z = zz;     w = ww;
 }
 
-plVector4::plVector4(char *string)
+plVector4::plVector4(char *str)
 {
-    sscanf(string, "%f %f %f %f", &x, &y, &z, &w);
+    int filled = sscanf(str, "%f %f %f %f", &x, &y, &z, &w);
+    if (filled != 4) {
+        std::cerr << "Error occured while loading plVector3 from: `" << str << "`." << std::endl;
+        exit(1);
+    }
 }
 
 plVector4::plVector4(const plString &str)
 {
-    sscanf(str.c_str(), "%f %f %f %f", &x, &y, &z, &w);
+    int filled = sscanf(str.c_str(), "%f %f %f %f", &x, &y, &z, &w);
+    if (filled != 4) {
+        std::cerr << "Error occured while loading plVector3 from: `" << str << "`." << std::endl;
+        exit(1);
+    }
 }
 
 bool plVector4::operator == (const plVector4 &p) const
