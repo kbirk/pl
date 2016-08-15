@@ -4,8 +4,7 @@
 
 namespace plUtility
 {
-
-    template <class T>
+    template <typename T>
     void swap(T &a, T &b)
     {
         T temp = a;
@@ -13,7 +12,7 @@ namespace plUtility
         b = temp;
     }
 
-    template <class T>
+    template <typename T>
     void shuffle(std::vector<T> &array)
     {
         uint32_t size = array.size();
@@ -26,8 +25,8 @@ namespace plUtility
         }
     }
 
-    template< class Type1, class Type2 >
-    bool removeIfExists(std::vector<Type1 > &vector, const Type2 &t)
+    template<typename T1, typename T2>
+    bool removeIfExists(std::vector<T1> &vector, const T2 &t)
     {
         auto itr = std::find(vector.begin(), vector.end(), t);
         if (itr != vector.end())
@@ -39,8 +38,8 @@ namespace plUtility
     }
 
 
-    template< class Type1, class Type2 >
-    bool exists(const std::vector<Type1> &vector, const Type2 &t)
+    template<typename T1, typename T2>
+    bool exists(const std::vector<T1> &vector, const T2 &t)
     {
         return std::find(vector.begin(), vector.end(), t) != vector.end();
     }

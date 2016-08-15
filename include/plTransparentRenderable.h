@@ -3,7 +3,6 @@
 #include "plCommon.h"
 #include "plRenderable.h"
 
-
 class plTransparentRenderable : public plRenderable
 {
 

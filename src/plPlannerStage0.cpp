@@ -109,24 +109,24 @@ uint32_t logBN(float32_t base, float32_t num)
 namespace plPlannerStage0
 {
 
-    void run(plDefectSolution &defectSolution, const plPlanningBufferData &planningData, plPlan& plan)
+    void run(plDefectSolution &defectSolution, const plPlanningBufferData &planningData)
     {
         std::vector<std::string > shaderfiles;
 
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defines.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/geometry.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSite.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/state.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/annealing.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/rand.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/stage0.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/defines.h");
+        shaderfiles.push_back("./resources/shaders/planning/geometry.h");
+        shaderfiles.push_back("./resources/shaders/planning/defectSite.h");
+        shaderfiles.push_back("./resources/shaders/planning/state.h");
+        shaderfiles.push_back("./resources/shaders/planning/annealing.h");
+        shaderfiles.push_back("./resources/shaders/planning/rand.h");
+        shaderfiles.push_back("./resources/shaders/planning/stage0.h");
 
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/geometry.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSite.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/state.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/annealing.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/rand.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/stage0.cmp");
+        shaderfiles.push_back("./resources/shaders/planning/geometry.comp");
+        shaderfiles.push_back("./resources/shaders/planning/defectSite.comp");
+        shaderfiles.push_back("./resources/shaders/planning/state.comp");
+        shaderfiles.push_back("./resources/shaders/planning/annealing.comp");
+        shaderfiles.push_back("./resources/shaders/planning/rand.comp");
+        shaderfiles.push_back("./resources/shaders/planning/stage0.comp");
 
         // compile / link stage 0 shader
         plPlannerShader stage0Shader(shaderfiles);
@@ -185,17 +185,6 @@ namespace plPlannerStage0
 
         // load global solution from annealing state to defect state
         annealingBuffers.getSolution(defectSolution, planningData);
-
-        /* DEBUG
-        std::cout << std::endl << "DEBUG: " << std::endl;
-        for (uint32_t i=0; i<defectSolution.graftCount; i++)
-        {
-            std::cout << "Graft " << i << ",    Position: " << defectSolution.graftPositions[i]
-                                       << ",    Normal: "   << defectSolution.graftNormals[i]
-                                       << ",    Radius: "   << defectSolution.graftRadii[i] << std::endl;
-        }
-        std::cout << std::endl;
-        */
 
         // unbind and delete site and temporary buffers
         planningData.defectSiteSSBO.unbind(0);

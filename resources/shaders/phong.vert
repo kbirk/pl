@@ -1,7 +1,7 @@
 #version 330
 
-#define PL_COLOUR_MESH_OPAQUE_COLOUR             0,  0,  0, 0
-#define PL_COLOUR_MESH_TRANSPARENT_COLOUR       -1, -1, -1, 0
+#define PL_COLOUR_MESH_OPAQUE_COLOUR        0,  0,  0, 0
+#define PL_COLOUR_MESH_TRANSPARENT_COLOUR  -1, -1, -1, 0
 
 layout(location = 0) in vec3 vPosition;
 layout(location = 1) in vec3 vNormal;

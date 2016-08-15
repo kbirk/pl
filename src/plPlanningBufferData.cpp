@@ -15,10 +15,12 @@ plPlanningBufferData::plPlanningBufferData(const plDefectSite& defect, const std
     // generate donor sites and buffer
     for (uint32_t i=0; i<donorSiteCount; i++)
     {
-        std::cout << "    Generating donor site planning data " << i << " planning data " << std::endl;
-        donorSites.push_back(plPlanningSite(donors[i]->boundary.mesh().triangles(),
-                                              donors[i]->boundary,
-                                              true));
+        std::cout << "    Generating donor site " << i << " planning data " << std::endl;
+        donorSites.push_back(
+            plPlanningSite(
+                donors[i]->boundary.mesh().triangles(),
+                donors[i]->boundary,
+                true));
     }
     std::cout << "    Generating donor sites SSBO" << std::endl;
     donorSitesSSBO = _getGroupSSBO();

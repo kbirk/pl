@@ -25,7 +25,10 @@ plModel::plModel(const plString &file, uint32_t octreeDepth)
 
     // import triangles from STL file
     if (!plSTL::importFile(triangles, filename, true))
-        return;
+    {
+        exit(1);
+    }
+
 
     if (octreeDepth > 1)
     {
@@ -62,7 +65,7 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
     component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()));
     component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
     component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-    component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM, plVector3(PL_LIGHT_POSITION)));
+    component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
     component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
 
     if (!_isTransparent)
@@ -73,7 +76,7 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
     }
     else
     {
-        // Sort by distance
+        // sort by distance
         plVector3 viewDir = plCameraStack::direction();
 
         std::vector<plOrderPair> order;     order.reserve(_mesh->triangles().size());
@@ -130,8 +133,11 @@ void plModel::toggleOctreeVisibility()
 void plModel::_generateVAO()
 {
     // convert to interleaved format
-    std::vector<plVector3> vertices;    vertices.reserve(_mesh->triangles().size() * 3 * 2);
-    std::vector<uint32_t>    indices;     indices.reserve (_mesh->triangles().size() * 3);
+    std::vector<plVector3> vertices;
+    vertices.reserve(_mesh->triangles().size() * 3 * 2);
+
+    std::vector<uint32_t> indices;
+    indices.reserve(_mesh->triangles().size() * 3);
 
     int32_t indexCount = 0;
     for (const plTriangle& triangle : _mesh->triangles())
@@ -151,7 +157,7 @@ void plModel::_generateVAO()
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
@@ -170,8 +176,6 @@ void plModel::_generateVAO()
 plVector3 plModel::getCentroid() const
 {
     plVector3 min, max;
-
     _mesh->getMinMax(min, max);
-
     return 0.5f * (max + min);
 }

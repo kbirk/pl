@@ -16,7 +16,6 @@
 #define PL_TEXTURE_UNIT_2_SAMPLER_UNIFORM_NAME      "uTextureUnit2"
 #define PL_TEXTURE_UNIT_3_SAMPLER_UNIFORM_NAME      "uTextureUnit3"
 
-
 enum plUniformTypeEnum
 {
     PL_MODEL_MATRIX_UNIFORM = 0,
@@ -31,10 +30,8 @@ enum plUniformTypeEnum
     PL_TEXTURE_UNIT_3_UNIFORM
 };
 
-
 class plVertexFragmentShader : public plShader
 {
-
     public:
 
         plVertexFragmentShader(const char *vertexFile, const char *fragmentFile);

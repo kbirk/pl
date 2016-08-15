@@ -13,7 +13,6 @@
 #include "plOctreeMesh.h"
 #include "plRenderer.h"
 
-
 #define PL_CAP_OFFSET                            plVector3(0, 0.025f, 0)
 #define PL_GRAFT_DONOR_BONE_COLOUR               0.60f, 0.90f, 0.52f
 #define PL_GRAFT_DONOR_CARTILAGE_COLOUR          0.30f, 0.66f, 0.22f
@@ -40,7 +39,6 @@ class plPointAndAngle
         }
 
 };
-
 
 class plGraftCap : public plRenderable, public plEditable
 {

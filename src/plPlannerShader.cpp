@@ -82,22 +82,22 @@ void plPlannerShader::setDonorSiteUniforms(const std::vector<plPlanningSite> &do
         dataIndexOffset += donorSite.totalSize();
     }
 
-    glUniform1ui  (_donorSiteCountID,               donorSites.size());
-    glUniform1ui  (_donorSiteTotalGridPointsID,     totalGridPoints);
-    glUniform1uiv (_donorSiteGridPointCountsID,     gridPointCounts.size(),     &gridPointCounts[0]);
-    glUniform1uiv (_donorSiteTriangleCountsID,      triangleCounts.size(),      &triangleCounts[0]);
-    glUniform1uiv (_donorSiteBoundaryPointCountsID, boundaryPointCounts.size(), &boundaryPointCounts[0]);
-    glUniform1uiv (_donorSiteDataOffsetsID,         dataOffsets.size(),         &dataOffsets[0]);
+    glUniform1ui(_donorSiteCountID,                donorSites.size());
+    glUniform1ui(_donorSiteTotalGridPointsID,      totalGridPoints);
+    glUniform1uiv(_donorSiteGridPointCountsID,     gridPointCounts.size(),     &gridPointCounts[0]);
+    glUniform1uiv(_donorSiteTriangleCountsID,      triangleCounts.size(),      &triangleCounts[0]);
+    glUniform1uiv(_donorSiteBoundaryPointCountsID, boundaryPointCounts.size(), &boundaryPointCounts[0]);
+    glUniform1uiv(_donorSiteDataOffsetsID,         dataOffsets.size(),         &dataOffsets[0]);
 }
 
 
 void plPlannerShader::setDefectSolutionUniforms (const plDefectSolution &solution) const
 {
-    glUniform1ui  (_defectSolutionGraftCountID,     solution.graftCount);
-    glUniform4fv  (_defectSolutionGraftPositionsID, solution.graftPositions.size(),      &solution.graftPositions[0].x);
-    glUniform4fv  (_defectSolutionGraftNormalsID,   solution.graftNormals.size(),        &solution.graftNormals[0].x);
-    glUniform1fv  (_defectSolutionGraftRadiiID,     solution.graftRadii.size(),          &solution.graftRadii[0]);
-    glUniform4fv  (_defectSolutionSurfaceNormalsID, solution.graftSurfaceNormals.size(), &solution.graftSurfaceNormals[0].x);
+    glUniform1ui(_defectSolutionGraftCountID,     solution.graftCount);
+    glUniform4fv(_defectSolutionGraftPositionsID, solution.graftPositions.size(),      &solution.graftPositions[0].x);
+    glUniform4fv(_defectSolutionGraftNormalsID,   solution.graftNormals.size(),        &solution.graftNormals[0].x);
+    glUniform1fv(_defectSolutionGraftRadiiID,     solution.graftRadii.size(),          &solution.graftRadii[0]);
+    glUniform4fv(_defectSolutionSurfaceNormalsID, solution.graftSurfaceNormals.size(), &solution.graftSurfaceNormals[0].x);
 }
 
 

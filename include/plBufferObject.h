@@ -2,9 +2,10 @@
 
 #include "plCommon.h"
 
+#include <epoxy/gl.h>
+
 class plBufferObject
 {
-
     public:
 
         plBufferObject();

@@ -98,24 +98,24 @@ namespace plPlannerStage3
     {
         std::vector<std::string > shaderfiles;
 
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defines.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/geometry.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSite.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/donorSites.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSolution.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/donorSolution.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/rms.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/rand.hcmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/stage3.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/defines.h");
+        shaderfiles.push_back("./resources/shaders/planning/geometry.h");
+        shaderfiles.push_back("./resources/shaders/planning/defectSite.h");
+        shaderfiles.push_back("./resources/shaders/planning/donorSites.h");
+        shaderfiles.push_back("./resources/shaders/planning/defectSolution.h");
+        shaderfiles.push_back("./resources/shaders/planning/donorSolution.h");
+        shaderfiles.push_back("./resources/shaders/planning/rms.h");
+        shaderfiles.push_back("./resources/shaders/planning/rand.h");
+        shaderfiles.push_back("./resources/shaders/planning/stage3.h");
 
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/geometry.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSite.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/donorSites.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/defectSolution.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/donorSolution.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/rms.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/rand.cmp");
-        shaderfiles.push_back(PL_FILE_PREPATH"shaders/planning/stage3.cmp");
+        shaderfiles.push_back("./resources/shaders/planning/geometry.comp");
+        shaderfiles.push_back("./resources/shaders/planning/defectSite.comp");
+        shaderfiles.push_back("./resources/shaders/planning/donorSites.comp");
+        shaderfiles.push_back("./resources/shaders/planning/defectSolution.comp");
+        shaderfiles.push_back("./resources/shaders/planning/donorSolution.comp");
+        shaderfiles.push_back("./resources/shaders/planning/rms.comp");
+        shaderfiles.push_back("./resources/shaders/planning/rand.comp");
+        shaderfiles.push_back("./resources/shaders/planning/stage3.comp");
 
         // compile / link stage 2 shader
         plPlannerShader stage3Shader(shaderfiles);

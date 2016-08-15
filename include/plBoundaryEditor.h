@@ -19,16 +19,15 @@ class plBoundaryEditor : public plEditor
 
         bool isBoundarySelected() const { return (_selectedBoundary != nullptr); }
 
-        bool processMouseClick   (int32_t x, int32_t y);
-        bool processMouseDrag    (int32_t x, int32_t y);
-        bool processMouseRelease (int32_t x, int32_t y);
-        bool processJoystickDrag (int32_t x, int32_t y);
-
-        void addPoint                (uint32_t x, uint32_t y, bool selectNewPoint = true);
-        void moveSelectedPoint       (uint32_t x, uint32_t y);
-        void removeSelectedPoint     ();
-        void clearSelectedBoundary   ();
-        void removeSelectedSite      ();
+        bool processMousePress(int32_t x, int32_t y);
+        bool processMouseDrag(int32_t x, int32_t y);
+        bool processMouseRelease(int32_t x, int32_t y);
+        
+        void addPoint(uint32_t x, uint32_t y, bool selectNewPoint = true);
+        void moveSelectedPoint(uint32_t x, uint32_t y);
+        void removeSelectedPoint();
+        void clearSelectedBoundary();
+        void removeSelectedSite();
         void toggleSelectedVisibility();
 
         void extractRenderComponents(plRenderMap& renderMap) const;
@@ -36,17 +35,17 @@ class plBoundaryEditor : public plEditor
 
     private:
 
-        int32_t       _selectedSiteIndex;    // use this and above to determine which pl*Site
+        int32_t _selectedSiteIndex;    // use this and above to determine which pl*Site
         plBoundary *_selectedBoundary;
-        int32_t       _selectedPointIndex;
+        int32_t _selectedPointIndex;
 
         void _clearSiteBoundaries();
 
         void _selectBoundary(plBoundary &boundary, uint32_t boundaryIndex, uint32_t pointIndex);
 
-        void _selectDefectSiteSpline     (uint32_t boundaryIndex, uint32_t pointIndex);
-        void _selectDefectSiteBoundary   (uint32_t boundaryIndex, uint32_t pointIndex);
-        void _selectDonorSiteBoundary    (uint32_t boundaryIndex, uint32_t pointIndex);
+        void _selectDefectSiteSpline(uint32_t boundaryIndex, uint32_t pointIndex);
+        void _selectDefectSiteBoundary(uint32_t boundaryIndex, uint32_t pointIndex);
+        void _selectDonorSiteBoundary(uint32_t boundaryIndex, uint32_t pointIndex);
 
         plIntersection _getBoundaryIntersection(uint32_t x, uint32_t y);
 

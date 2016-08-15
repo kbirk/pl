@@ -7,7 +7,6 @@
 
 class plPlannerShader : public plShader
 {
-
     public:
 
         plPlannerShader(const std::vector<std::string > &sourceFiles);

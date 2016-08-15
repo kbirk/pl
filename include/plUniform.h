@@ -2,12 +2,13 @@
 
 #include "plCommon.h"
 
+#include <epoxy/gl.h>
 
 class plUniform
 {
     public:
 
-        template< typename T >
+        template<typename T>
         plUniform(uint32_t type, const T& t);
 
         plUniform(plUniform&& uniform);
@@ -18,8 +19,8 @@ class plUniform
 
         ~plUniform();
 
-        GLvoid* data()const { return (GLvoid*)(_data); }
-        uint32_t type() const { return _type; }
+        GLvoid* data() const      { return (GLvoid*)(_data); }
+        uint32_t type() const     { return _type; }
         uint32_t numBytes() const { return _numBytes; }
 
     private:
@@ -34,7 +35,7 @@ class plUniform
 };
 
 
-template< typename T >
+template<typename T>
 plUniform::plUniform(uint32_t type, const T& t)
     : _type(type),
       _numBytes(sizeof(T))

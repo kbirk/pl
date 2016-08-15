@@ -7,27 +7,23 @@
 
 class plEdge
 {
+    public:
 
-  public:
+        plVector3 pt1;
+        plVector3 pt2;
 
-    plVector3 pt1;
-    plVector3 pt2;
+        plEdge ();
+        plEdge (const plVector3 &v1, const plVector3 &v2);
 
-    plEdge ();
-    plEdge (const plVector3 &v1, const plVector3 &v2);
-
-    bool    contains  (const plVector3& point, const float32_t &epsilon = PL_EPSILON) const;
-    plVector3 otherPt   (const plVector3 &point, const float32_t &epsilon = PL_EPSILON) const;
-    bool    equals    (const plEdge& e2,       const float32_t &epsilon = PL_EPSILON) const; // flexible epsilon
-    bool    operator==(const plEdge& e2) const; // epsilon is absolute zero
-    plEdge&   operator= (const plEdge& other);
-
+        bool contains(const plVector3& point, const float32_t &epsilon = PL_EPSILON) const;
+        plVector3 otherPt(const plVector3 &point, const float32_t &epsilon = PL_EPSILON) const;
+        bool equals(const plEdge& e2, const float32_t &epsilon = PL_EPSILON) const; // flexible epsilon
+        bool operator==(const plEdge& e2) const; // epsilon is absolute zero
+        plEdge& operator= (const plEdge& other);
 };
-
 
 class plPolygon
 {
-
     public:
 
         plPolygon() {}
@@ -40,7 +36,7 @@ class plPolygon
         }
 
         std::vector<plVector3> points;
-        plVector3              normal;
+        plVector3 normal;
 
 };
 

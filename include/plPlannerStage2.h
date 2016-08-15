@@ -9,7 +9,6 @@
 
 #define PL_STAGE_2_GROUP_SIZE                   1024
 
-
 namespace plPlannerStage2
 {
     void run(plRmsData &rmsData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plCapIndices &capIndices);

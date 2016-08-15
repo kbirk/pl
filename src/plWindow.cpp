@@ -1,23 +1,26 @@
 #include "plWindow.h"
 
-namespace plWindow
-{
+namespace plWindow {
 
-    uint32_t _width = 0;
-    uint32_t _height =0;
-    uint32_t _viewportWidth = 0;
-    uint32_t _viewportHeight = 0;
-    uint32_t _viewportX = 0;
-    uint32_t _viewportY = 0;
+    int32_t _width = 0;
+    int32_t _height = 0;
+    int32_t _viewportWidth = 0;
+    int32_t _viewportHeight = 0;
+    int32_t _viewportX = 0;
+    int32_t _viewportY = 0;
 
+    const std::string WINDOW_TITLE = "Planner";
+    const uint32_t DEFAULT_WINDOW_WIDTH = 1200;
+    const uint32_t DEFAULT_WINDOW_HEIGHT = 800;
 
-    void reshape(uint32_t width, uint32_t height)
+    SDL_Window* window;
+    SDL_GLContext context;
+    std::map<WindowEventType, std::vector<WindowEventFunc>> callbacks;
+
+    void _reshapeWindow()
     {
-        _width = width;
-        _height = height;
-
+        SDL_GL_GetDrawableSize(window, &_width, &_height);
         _viewportHeight = _width / PL_ASPECT_RATIO ;
-
         if (_viewportHeight <= _height)
         {
             _viewportY = (_height - _viewportHeight)*0.5f;
@@ -32,7 +35,6 @@ namespace plWindow
             _viewportY = 0;
         }
     }
-
 
     uint32_t width()
     {
@@ -93,10 +95,11 @@ namespace plWindow
         float32_t nz = (float32_t)(z);
 
         // map to range of [-1 .. 1]
-        plVector4 input((nx * 2.0f) - 1.0f,
-                         (ny * 2.0f) - 1.0f,
-                         (nz * 2.0f) - 1.0f,
-                         1.0f);
+        plVector4 input(
+            (nx * 2.0f) - 1.0f,
+            (ny * 2.0f) - 1.0f,
+            (nz * 2.0f) - 1.0f,
+            1.0f);
 
         plVector4 output = mvpInverse * input;
 
@@ -106,9 +109,10 @@ namespace plWindow
              return plVector3();
         }
 
-        return plVector3 (output.x / output.w,
-                          output.y / output.w,
-                          output.z / output.w);
+        return plVector3(
+            output.x / output.w,
+            output.y / output.w,
+            output.z / output.w);
     }
 
 
@@ -127,10 +131,10 @@ namespace plWindow
         projected.y /= projected.w;
         projected.z /= projected.w;
 
-        return plVector3((projected.x*0.5f + 0.5f)* _viewportWidth  + _viewportX,
-                          (projected.y*0.5f + 0.5f)* _viewportHeight + _viewportY,
-                          (1.0f+projected.z)*0.5f);
-
+        return plVector3(
+            (projected.x*0.5f + 0.5f) * _viewportWidth  + _viewportX,
+            (projected.y*0.5f + 0.5f) * _viewportHeight + _viewportY,
+            (1.0f+projected.z)*0.5f);
     }
 
 
@@ -152,6 +156,144 @@ namespace plWindow
 
         rayOrigin = plCameraStack::position();
         rayDirection = (mouseInWorld - rayOrigin).normalize();
+    }
+
+    void on(WindowEventType id, WindowEventFunc func)
+    {
+        auto iter = callbacks.find(id);
+        if (iter == callbacks.end())
+        {
+            callbacks[id] = std::vector<WindowEventFunc>();
+        }
+        callbacks[id].push_back(func);
+    }
+
+    void executeCallbacks(WindowEventType type, SDL_Event* event)
+    {
+        auto iter = callbacks.find(type);
+        if (iter != callbacks.end())
+        {
+            WindowEvent msg{
+                type,
+                event
+            };
+            for (auto func : iter->second)
+            {
+                func(msg);
+            }
+        }
+    }
+
+    void setup()
+    {
+        // initialize SDL2
+        SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
+        // set the opengl context version
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        // set byte depths
+        SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        // muli-sampling
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+        // create an application window with the following settings:
+        window = SDL_CreateWindow(
+            WINDOW_TITLE.c_str(), // window title
+            SDL_WINDOWPOS_UNDEFINED, // initial x position
+            SDL_WINDOWPOS_UNDEFINED, // initial y position
+            DEFAULT_WINDOW_WIDTH, // width, in pixels
+            DEFAULT_WINDOW_HEIGHT, // height, in pixels
+            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI); // flags
+        // check that the window was successfully made
+        if (window == nullptr)
+        {
+            // In the event that the window could not be made...
+            std::cout << "Could not create window: " << SDL_GetError() << std::endl;
+            return;
+        }
+        // create the OpenGL context
+        context = SDL_GL_CreateContext(window);
+        // disable relative mouse mode
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+        // sync buffer swap with monitor's vertical refresh rate
+        SDL_GL_SetSwapInterval(1);
+        // set initial dimensions
+        _reshapeWindow();
+    }
+
+    void teardown()
+    {
+        SDL_GL_DeleteContext(context);
+        // close and destroy the window
+        SDL_DestroyWindow(window);
+        // clean up
+        SDL_Quit();
+    }
+
+    void swapBuffers()
+    {
+        SDL_GL_SwapWindow(window);
+    }
+
+    void handleEvents()
+    {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+
+            switch (event.type)
+            {
+
+                case SDL_KEYDOWN:
+                    executeCallbacks(WindowEventType::KEY_PRESS, &event);
+                    break;
+
+                case SDL_KEYUP:
+                    executeCallbacks(WindowEventType::KEY_RELEASE, &event);
+                    break;
+
+                case SDL_MOUSEBUTTONDOWN:
+                    executeCallbacks(WindowEventType::MOUSE_PRESS, &event);
+                    break;
+
+                case SDL_MOUSEBUTTONUP:
+                    executeCallbacks(WindowEventType::MOUSE_RELEASE, &event);
+                    break;
+
+                case SDL_MOUSEWHEEL:
+                    executeCallbacks(WindowEventType::MOUSE_WHEEL, &event);
+                    break;
+
+                case SDL_MOUSEMOTION:
+                    executeCallbacks(WindowEventType::MOUSE_MOVE, &event);
+                    break;
+
+                case SDL_QUIT:
+                    executeCallbacks(WindowEventType::CLOSE, &event);
+                    break;
+
+                case SDL_WINDOWEVENT:
+                    switch (event.window.event)
+                    {
+                        case SDL_WINDOWEVENT_RESIZED:
+                        case SDL_WINDOWEVENT_SIZE_CHANGED:
+                            _reshapeWindow();
+                            executeCallbacks(WindowEventType::RESIZE, &event);
+                            break;
+                    }
+                    break;
+            }
+        }
+    }
+
+    const uint8_t* pollKeyboard()
+    {
+        return SDL_GetKeyboardState(nullptr);
     }
 
 }

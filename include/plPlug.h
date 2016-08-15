@@ -17,15 +17,15 @@ class plPlug : public plMeshSpecific
 
         const plTransform& surfaceTransform() const;
         const plTransform& offsetTransform() const;
-        plTransform        finalTransform() const;
+        plTransform finalTransform() const;
 
-        void move  (const plVector3& origin, const plVector3& y);
+        void move(const plVector3& origin, const plVector3& y);
         void rotate(const plVector3& y);
         void rotate(float32_t angleDegrees);
 
     private:
 
-        uint32_t      _type;
+        uint32_t _type;
         plTransform _surfaceTransform;
         plTransform _rotationalOffset;
 

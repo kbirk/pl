@@ -1,11 +1,16 @@
 #include "plCSV.h"
 
 plCSV::plCSV(plString fn)
+    : _good(false)
 {
     filename = fn;
     _readFile(fn);
 }
 
+
+bool plCSV::good() const {
+    return _good;
+}
 
 void plCSV::_readFile(plString filename, bool verbose)
 {
@@ -15,6 +20,7 @@ void plCSV::_readFile(plString filename, bool verbose)
     if (!infile.good())
     {
         std::cerr << "Could not open '" << filename << "'." << std::endl;
+        _good = false;
         return;
     }
 
@@ -30,16 +36,16 @@ void plCSV::_readFile(plString filename, bool verbose)
         // parse each comma seperated value
         while(std::getline(lineStream, entry, ','))
         {
-            entry.stripCharacter('\r');        // remove any carrage returns
+            entry.stripCharacter('\r'); // remove any carrage returns
 
-            if (!entry.isOnlyWhitespace())     // ignore any lines consisting of only whitespace
+            if (!entry.isOnlyWhitespace()) // ignore any lines consisting of only whitespace
             {
                 entry.stripPreceedingWhitespace();
                 lineData.push_back(entry);
             }
         }
 
-        if (lineData.size() > 0)                    // ignore any empty rows
+        if (lineData.size() > 0) // ignore any empty rows
         {
             data.push_back(lineData);
         }
@@ -57,4 +63,5 @@ void plCSV::_readFile(plString filename, bool verbose)
         }
     }
 
+    _good = true;
 }

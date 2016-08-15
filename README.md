@@ -15,24 +15,8 @@ sudo aptitude install cmake
 Install Dependencies:
 
 ```bash
-sudo aptitude install libxmu-dev
-sudo aptitude install libxi-dev
-sudo aptitude install freeglut3-dev
+sudo aptitude install libsdl2-dev
 sudo aptitude install libepoxy-dev
-```
-
-#### OSX
-
-Install CMake:
-
-```bash
-brew install cmake
-```
-
-Install Dependencies:
-
-```bash
-brew install libepoxy
 ```
 
 ## Build
@@ -60,8 +44,8 @@ make
 
 ## Usage
 
-Run the executable with a patient file:
+Run the executable with a plan file:
 
 ```bash
-./planner ./resources/patient1/plan.csv
+./planner ./resources/patient1/plan0.csv
 ```

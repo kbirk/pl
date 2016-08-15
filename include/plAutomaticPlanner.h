@@ -11,5 +11,5 @@
 
 namespace plAutomaticPlanner
 {
-    void calculate(plPlan &plan, uint32_t defectSiteIndex);
+    void calculate(std::shared_ptr<plPlan> plan, uint32_t defectSiteIndex);
 }

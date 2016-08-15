@@ -13,7 +13,6 @@
 // uniforms are set to these value, it tells the shader to use the attribute
 // colour instead
 #define PL_USE_ATTRIBUTE_COLOUR_OPAQUE           0, 0, 0, 0
-#define PL_USE_ATTRIBUTE_COLOUR_TRANSPARENT      -1, -1, -1, 0
 
 // global light position used throughout planner
 #define PL_LIGHT_POSITION                        10, 10, 15
@@ -33,17 +32,16 @@
 
 #define PL_NORMAL_SMOOTHING_RADIUS               4.0f
 
-#define PL_FILE_PREPATH                          "./resources/"
-
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
-#include <algorithm>
+#include <csignal>
 #include <cctype>
 #include <cstring>
 #include <cfloat>
 #include <cmath>
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
 #include <vector>
 #include <stack>
 #include <limits>
@@ -52,9 +50,6 @@
 #include <iomanip>
 #include <memory>
 #include <map>
-
-#include <epoxy/gl.h>
-#include <GL/glut.h>
 
 // PRIMITIVE TYPEDEFS
 

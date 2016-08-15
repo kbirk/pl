@@ -10,7 +10,6 @@
 
 #define PL_STAGE_1_GROUP_SIZE                   1024
 
-
 namespace plPlannerStage1
 {
     void run(plCapIndices &capData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution);

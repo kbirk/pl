@@ -25,7 +25,6 @@
 #define PL_STAGE_0_STOPPING_TEMPERATURE       0.001f
 #define PL_STAGE_0_COOLING_RATE               0.015f //0.00175f
 
-
 class plAnnealingGroup
 {
     public:
@@ -54,10 +53,9 @@ class plAnnealingGroup
 
 };
 
-
 namespace plPlannerStage0
 {
 
-    void run(plDefectSolution &state, const plPlanningBufferData &planningData, plPlan& plan);
+    void run(plDefectSolution &state, const plPlanningBufferData &planningData);
 
 }

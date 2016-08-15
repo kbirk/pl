@@ -3,7 +3,6 @@
 #include "plCommon.h"
 #include "plRenderResources.h"
 
-
 enum plPickingRedEnums
 {
     PL_PICKING_TYPE_NONE = 0,
@@ -13,13 +12,11 @@ enum plPickingRedEnums
     PL_PICKING_TYPE_GRAFT_HANDLE,
     PL_PICKING_TYPE_GRAFT_MARKER,
     PL_PICKING_TYPE_GRAFT,
-    PL_PICKING_TYPE_GRAFT_ARTHRO_PROJECTION,
     PL_PICKING_TYPE_DEFECT_SPLINE,
     PL_PICKING_TYPE_DEFECT_CORNERS,
     PL_PICKING_TYPE_DEFECT_BOUNDARY,
     PL_PICKING_TYPE_DONOR_BOUNDARY
 };
-
 
 enum plPickingBlueEnums
 {
@@ -46,7 +43,6 @@ class plPickingInfo
         {
         }
 };
-
 
 namespace plPicking
 {

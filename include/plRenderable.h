@@ -4,10 +4,8 @@
 #include "plVector3.h"
 #include "plRenderComponent.h"
 
-
 class plRenderable
 {
-
     public:
 
         plRenderable();

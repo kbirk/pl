@@ -6,7 +6,6 @@
 
 class plMinimalTechnique : public plRenderTechnique
 {
-
     public:
 
         plMinimalTechnique();

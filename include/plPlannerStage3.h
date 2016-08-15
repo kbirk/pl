@@ -12,7 +12,6 @@
 #define PL_STAGE_3_NUM_GROUPS                 1
 #define PL_STAGE_3_INVOCATIONS                PL_STAGE_3_NUM_GROUPS*PL_STAGE_3_GROUP_SIZE
 
-
 class plGreedyGroup
 {
     public:
@@ -40,7 +39,6 @@ class plGreedyGroup
         plSSBO _donorSolutionSiteIndicesSSBO;
         plSSBO _totalRmsSSBO;
 };
-
 
 namespace plPlannerStage3
 {

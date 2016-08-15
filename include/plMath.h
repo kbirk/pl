@@ -11,7 +11,6 @@ class plIntersection;
 
 namespace plMath
 {
-
     plVector3 projectVectorOnPlane(
         const plVector3 &vector,
         const plVector3 &plane_normal);

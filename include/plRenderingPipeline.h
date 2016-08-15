@@ -7,7 +7,6 @@
 #include "plCamera.h"
 #include "plPicking.h"
 
-
 namespace plColourStack
 {
     void push(float32_t r, float32_t g, float32_t b, float32_t a = 1.0f);
@@ -16,25 +15,24 @@ namespace plColourStack
     void load(float32_t r, float32_t g, float32_t b, float32_t a = 1.0f);
     void load(const plVector4 &colour);
 
-    void pop ();
+    void pop();
 
     const plVector4& top();
 }
 
-
 namespace plPickingStack
 {
-    void pushRed   (int32_t r);
-    void pushGreen (int32_t g);
-    void pushBlue  (int32_t b);
+    void pushRed(int32_t r);
+    void pushGreen(int32_t g);
+    void pushBlue(int32_t b);
 
-    void loadRed   (int32_t r);
-    void loadGreen (int32_t g);
-    void loadBlue  (int32_t b);
+    void loadRed(int32_t r);
+    void loadGreen(int32_t g);
+    void loadBlue(int32_t b);
 
-    void popRed   ();
-    void popGreen ();
-    void popBlue  ();
+    void popRed();
+    void popGreen();
+    void popBlue();
 
     int32_t topRed();
     int32_t topBlue();
@@ -42,7 +40,6 @@ namespace plPickingStack
 
     plPickingInfo top();
 }
-
 
 namespace plModelStack
 {
@@ -52,14 +49,14 @@ namespace plModelStack
     void mult(const plMatrix44 &m);
     void pop();
 
-    void scale    (GLfloat s);
-    void scale    (GLfloat x, GLfloat y, GLfloat z);
+    void scale(GLfloat s);
+    void scale(GLfloat x, GLfloat y, GLfloat z);
     void translate(GLfloat x, GLfloat y, GLfloat z);
-    void rotate   (GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
+    void rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
 
-    void scale    (const plVector3 &v);
+    void scale(const plVector3 &v);
     void translate(const plVector3 &v);
-    void rotate   (float32_t angle, const plVector3 &v);
+    void rotate(float32_t angle, const plVector3 &v);
 
     const plMatrix44& top();
 }

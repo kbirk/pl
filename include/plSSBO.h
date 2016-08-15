@@ -3,6 +3,8 @@
 #include "plCommon.h"
 #include "plBufferObject.h"
 
+#include <epoxy/gl.h>
+
 class plSSBO : public plBufferObject
 {
 
@@ -17,32 +19,32 @@ class plSSBO : public plBufferObject
         plSSBO& operator= (plSSBO&& ssbo);
         plSSBO& operator= (const plSSBO& ssbo);
 
-        void bind  (uint32_t location) const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, _id); }
+        void bind(uint32_t location) const   { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, _id); }
         void unbind(uint32_t location) const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, 0); }
 
         // set
-        template < class T >
+        template <typename T>
         void set(std::vector<T> &ts, uint32_t count, uint32_t index = 0, uint32_t ssboIndex = 0);
 
-        template < class T >
+        template <typename T>
         void setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset = 0, uint32_t ssboByteOffset = 0);
 
         // read
-        template < class T >
+        template <typename T>
         void read(std::vector<T> &ts, uint32_t count, uint32_t index = 0, uint32_t ssboIndex = 0) const;
 
-        template < class T >
+        template <typename T>
         void readBytes(T *ts, uint32_t numBytes, uint32_t byteOffset = 0, uint32_t ssboByteOffset = 0) const;
 
     private:
 
         void _create(uint32_t numBytes, const void *buffer = nullptr);
-        void _copy  (const plSSBO &ssbo);
-        void _move  (plSSBO&& ssbo);
+        void _copy(const plSSBO &ssbo);
+        void _move(plSSBO&& ssbo);
 };
 
 
-template < class T >
+template <typename T>
 void plSSBO::set(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t ssboIndex)
 {
     if (count == 0)
@@ -55,7 +57,7 @@ void plSSBO::set(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t ss
 }
 
 
-template < class T >
+template <typename T>
 void plSSBO::setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ssboByteOffset)
 {
     if (numBytes == 0)
@@ -72,17 +74,18 @@ void plSSBO::setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ss
     }
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id);
-    T *mappedBuffer = (T*) glMapBufferRange(GL_SHADER_STORAGE_BUFFER,
-                                             ssboByteOffset,
-                                             numBytes,
-                                             GL_MAP_WRITE_BIT);
+    T *mappedBuffer = (T*) glMapBufferRange(
+        GL_SHADER_STORAGE_BUFFER,
+        ssboByteOffset,
+        numBytes,
+        GL_MAP_WRITE_BIT);
 
     memcpy(mappedBuffer, reinterpret_cast<uint8_t*>(ts)+byteOffset, numBytes); // cast to char array to ensure bytewise increments
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 }
 
 
-template < class T >
+template <typename T>
 void plSSBO::read(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t ssboIndex) const
 {
     if (!_id)
@@ -110,7 +113,7 @@ void plSSBO::read(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t s
 }
 
 
-template < class T >
+template <typename T>
 void plSSBO::readBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ssboByteOffset) const
 {
     if (!_id)

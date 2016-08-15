@@ -10,8 +10,12 @@
 #include "plVAO.h"
 #include "plRenderer.h"
 #include "plEditable.h"
+#include "plSTL.h"
 
-// used to order triangles for drawing transparent meshes
+#define PL_MODEL_COLOUR            0.80f, 0.80f, 0.80f
+#define PL_MODEL_BONE_COLOUR       0.80f, 0.80f, 0.80f
+#define PL_MODEL_CARTILAGE_COLOUR  0.50f, 0.20f, 0.20f
+
 class plOrderPair
 {
     public:
@@ -27,12 +31,6 @@ class plOrderPair
         bool operator< (const plOrderPair& orderPair) const { return distance > orderPair.distance; } // greater distance is considered "less"
 
 };
-
-
-#define PL_MODEL_COLOUR                          0.80f, 0.80f, 0.80f
-#define PL_MODEL_BONE_COLOUR                     0.80f, 0.80f, 0.80f
-#define PL_MODEL_CARTILAGE_COLOUR                0.50f, 0.20f, 0.20f
-
 
 class plModel : public plTransparentRenderable, public plEditable
 {

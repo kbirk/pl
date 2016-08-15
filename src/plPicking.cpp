@@ -14,12 +14,13 @@ namespace plPicking
         uint32_t viewportX = x - viewport[0];
         uint32_t viewportY = y - viewport[1];
 
+        // read pixel from color buffer
         plPixel<int32_t> pick = plRenderResources::fbos(PL_MAIN_FBO)->readPixel<int32_t>(GL_COLOR_ATTACHMENT4, viewportX, viewportY);
 
+        // store pixel value
         _previousPick = plPickingInfo(pick.r, pick.g, pick.b);
 
-        std::cout << "picking: " << _previousPick.r << " " << _previousPick.g << " " << _previousPick.b << "\n";
-
+        // return value
         return _previousPick;
     }
 

@@ -1,8 +1,8 @@
 model
-    filename,      ./patient1/boneandcart.stl
+    filename,      ./resources/patient1/boneandcart.stl
 
 model
-    filename,      ./patient1/femur_bone_cartilage_manifold.stl
+    filename,      ./resources/patient2/femur_bone_cartilage_manifold.stl
 
 defect_site
     spline_model_id,   0
@@ -71,4 +71,3 @@ graft
     radius,                   3
     length,                   15
     mark_direction,           0.155753 0 0.987796
-
