@@ -2,7 +2,7 @@
 
 #include "plCommon.h"
 
-class plString : public std::string // technically unsafe as std::string does not have a virtual destructor, but that is okay in this implementation
+class plString : public std::string // technically unsafe as std::string does not have a virtual destructor, but that's just how I roll'
 {
     public:
 
@@ -16,12 +16,12 @@ class plString : public std::string // technically unsafe as std::string does no
         bool compare(const plString &str, uint32_t num) const;
         bool compare(const plString &str, uint32_t index, uint32_t num) const;
 
-        bool compareCaseInsensitive (const plString &str2, uint32_t num) const;
-        bool compareCaseInsensitive (const plString &str2) const;
-        bool isOnlyWhitespace       () const;
+        bool compareCaseInsensitive(const plString &str2, uint32_t num) const;
+        bool compareCaseInsensitive(const plString &str2) const;
+        bool isOnlyWhitespace() const;
         plString withoutFilepath() const;
 
-        void stripCharacter             (char c);
-        void stripPreceedingWhitespace  ();
+        void stripCharacter(char c);
+        void stripPreceedingWhitespace();
         void toLower();
 };

@@ -5,7 +5,6 @@
 #include "plVector3.h"
 #include "plMath.h"
 
-// a struct for storing information about ray intersection with a triangle
 class plIntersection
 {
     public:
@@ -27,7 +26,6 @@ class plIntersection
 
 };
 
-
 class plTriangle
 {
     public:
@@ -36,28 +34,29 @@ class plTriangle
         plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2);
         plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2);
 
-        const plVector3 &point0()   const { return _points[0]; }
-        const plVector3 &point1()   const { return _points[1]; }
-        const plVector3 &point2()   const { return _points[2]; }
-        const plVector3 &normal()   const { return _normal;    }
+        const plVector3 &point0() const   { return _points[0]; }
+        const plVector3 &point1() const   { return _points[1]; }
+        const plVector3 &point2() const   { return _points[2]; }
+        const plVector3 &normal() const   { return _normal;    }
         const plVector3 &centroid() const { return _centroid;  }
-        float32_t          radius()   const { return _radius;    }
+        float32_t radius() const          { return _radius;    }
 
-        void  point0(const plVector3 &point);
-        void  point1(const plVector3 &point);
-        void  point2(const plVector3 &point);
+        void point0(const plVector3 &point);
+        void point1(const plVector3 &point);
+        void point2(const plVector3 &point);
 
-        void  swapVertices0And1();
+        void swapVertices0And1();
 
         bool operator== (const plTriangle&) const;
         const plVector3& operator[](int32_t index) const { return _points[index]; }
 
         bool isInside(const plVector3 &point) const;
 
-        plIntersection rayIntersect(const plVector3 &rayStart,
-                                     const plVector3 &rayDir,
-                                     bool ignoreBehindRay = false,
-                                     bool backFaceCull = false) const;
+        plIntersection rayIntersect(
+            const plVector3 &rayStart,
+            const plVector3 &rayDir,
+            bool ignoreBehindRay = false,
+            bool backFaceCull = false) const;
 
         plVector3 barycentricCoords(const plVector3 &point) const;
 
@@ -80,13 +79,4 @@ class plTriangle
         void _calcRadius();
 };
 
-
 std::ostream& operator << (std::ostream &stream, const plTriangle &p);
-
-
-namespace plSTL
-{
-    bool importFile      (std::vector<plTriangle> &triangles, const plString &filename, bool verbose = false);
-    bool exportFileBinary(const std::vector<plTriangle> &triangles , const plString &filename);
-    bool exportFileASCII (const std::vector<plTriangle> &triangles , const plString &filename);
-}

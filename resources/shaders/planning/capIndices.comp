@@ -1,6 +1,6 @@
 
 
-//functions
+// functions
 
 
 void setDefectCapTriangleIndex(in uint graftIndex, in uint i, in uint triIndex)

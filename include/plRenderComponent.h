@@ -8,10 +8,8 @@
 #include "plVAO.h"
 #include "plVertexFragmentShader.h"
 
-
 class plRenderComponent
 {
-
     public:
 
         plRenderComponent(const std::shared_ptr<plVAO>& vao);
@@ -30,4 +28,4 @@ class plRenderComponent
         void _bindUniforms(const plShader& shader) const;
 };
 
-typedef std::map<uint32_t, std::set<plRenderComponent > >  plRenderMap;
+typedef std::map<uint32_t, std::set<plRenderComponent>>  plRenderMap;

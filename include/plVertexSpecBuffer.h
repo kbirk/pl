@@ -6,14 +6,13 @@
 
 class plVertexSpecBuffer
 {
-
     public:
 
         plVertexSpecBuffer();
 
         virtual ~plVertexSpecBuffer();
 
-        uint32_t id() const  { return _id; }
+        uint32_t id() const { return _id; }
 
         virtual void bind() const = 0;
         virtual void unbind() const = 0;

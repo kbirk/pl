@@ -4,10 +4,8 @@
 #include "plRenderTechnique.h"
 #include "plRenderResources.h"
 
-
 class plOutlineTechnique : public plRenderTechnique
 {
-
     public:
 
         plOutlineTechnique();

@@ -16,7 +16,6 @@
 #define PL_GRAFT_EDIT_MODE_LENGTH                3
 #define PL_GRAFT_EDIT_MODE_RADIUS                4
 
-
 class plGraftEditor : public plEditor
 {
     public:

@@ -13,10 +13,8 @@
 #include "plRenderer.h"
 #include "plGraftCap.h"
 
-
 class plGraft : public plRenderable, public plEditable
 {
-
     public:
 
         plGraft();

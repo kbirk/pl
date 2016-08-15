@@ -6,7 +6,6 @@
 
 class plBufferObject
 {
-
     public:
 
         plBufferObject();

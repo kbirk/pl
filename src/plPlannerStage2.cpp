@@ -7,22 +7,22 @@ namespace plPlannerStage2
     {
         std::vector<std::string > shaderfiles;
 
-        shaderfiles.push_back("./resources/shaders/planning/defines.hcmp");
-        shaderfiles.push_back("./resources/shaders/planning/geometry.hcmp");
-        shaderfiles.push_back("./resources/shaders/planning/defectSite.hcmp");
-        shaderfiles.push_back("./resources/shaders/planning/donorSites.hcmp");
-        shaderfiles.push_back("./resources/shaders/planning/defectSolution.hcmp");
-        shaderfiles.push_back("./resources/shaders/planning/capIndices.hcmp");
-        shaderfiles.push_back("./resources/shaders/planning/rms.hcmp");
-        shaderfiles.push_back("./resources/shaders/planning/stage2.hcmp");
+        shaderfiles.push_back("./resources/shaders/planning/defines.h");
+        shaderfiles.push_back("./resources/shaders/planning/geometry.h");
+        shaderfiles.push_back("./resources/shaders/planning/defectSite.h");
+        shaderfiles.push_back("./resources/shaders/planning/donorSites.h");
+        shaderfiles.push_back("./resources/shaders/planning/defectSolution.h");
+        shaderfiles.push_back("./resources/shaders/planning/capIndices.h");
+        shaderfiles.push_back("./resources/shaders/planning/rms.h");
+        shaderfiles.push_back("./resources/shaders/planning/stage2.h");
 
-        shaderfiles.push_back("./resources/shaders/planning/geometry.cmp");
-        shaderfiles.push_back("./resources/shaders/planning/defectSite.cmp");
-        shaderfiles.push_back("./resources/shaders/planning/donorSites.cmp");
-        shaderfiles.push_back("./resources/shaders/planning/defectSolution.cmp");
-        shaderfiles.push_back("./resources/shaders/planning/capIndices.cmp");
-        shaderfiles.push_back("./resources/shaders/planning/rms.cmp");
-        shaderfiles.push_back("./resources/shaders/planning/stage2.cmp");
+        shaderfiles.push_back("./resources/shaders/planning/geometry.comp");
+        shaderfiles.push_back("./resources/shaders/planning/defectSite.comp");
+        shaderfiles.push_back("./resources/shaders/planning/donorSites.comp");
+        shaderfiles.push_back("./resources/shaders/planning/defectSolution.comp");
+        shaderfiles.push_back("./resources/shaders/planning/capIndices.comp");
+        shaderfiles.push_back("./resources/shaders/planning/rms.comp");
+        shaderfiles.push_back("./resources/shaders/planning/stage2.comp");
 
         // compile / link stage 2 shader
         plPlannerShader stage2Shader(shaderfiles);

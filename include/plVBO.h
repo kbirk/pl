@@ -15,7 +15,6 @@ enum plVertexAttributeIndexEnum
     PL_TEXCOORD_ATTRIBUTE
 };
 
-
 class plVertexAttributePointer
 {
     public:
@@ -30,10 +29,8 @@ class plVertexAttributePointer
         GLuint offset;
 };
 
-
 class plVBO : public plVertexSpecBuffer
 {
-
     public:
 
         plVBO();

@@ -102,7 +102,7 @@ void plOctree::build(const plVector3 &min, const plVector3 &max, const std::vect
     }
 
     if (verbose)
-        std::cout << "\tComplete.\n";
+        std::cout << " Complete.\n";
 }
 
 

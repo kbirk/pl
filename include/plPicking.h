@@ -3,7 +3,6 @@
 #include "plCommon.h"
 #include "plRenderResources.h"
 
-
 enum plPickingRedEnums
 {
     PL_PICKING_TYPE_NONE = 0,
@@ -18,7 +17,6 @@ enum plPickingRedEnums
     PL_PICKING_TYPE_DEFECT_BOUNDARY,
     PL_PICKING_TYPE_DONOR_BOUNDARY
 };
-
 
 enum plPickingBlueEnums
 {
@@ -45,7 +43,6 @@ class plPickingInfo
         {
         }
 };
-
 
 namespace plPicking
 {

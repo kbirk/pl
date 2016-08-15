@@ -18,7 +18,6 @@ class plDefectSolution
         plDefectSolution() {};
 };
 
-
 class plCapIndices
 {
     public:
@@ -29,7 +28,6 @@ class plCapIndices
         plCapIndices() {};
 };
 
-
 class plRmsData
 {
     public:
@@ -39,7 +37,6 @@ class plRmsData
 
         plRmsData() {}
 };
-
 
 class plDonorSolution
 {

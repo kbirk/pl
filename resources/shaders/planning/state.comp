@@ -11,7 +11,7 @@ struct state
 };
 
 
-//functions
+// functions
 
 float getInvoEnergies()
 {

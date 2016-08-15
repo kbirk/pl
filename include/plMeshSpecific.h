@@ -3,7 +3,6 @@
 #include "plCommon.h"
 #include "plMesh.h"
 
-
 class plMeshSpecific
 {
     public:

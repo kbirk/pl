@@ -38,10 +38,10 @@ class plTexture2D
         plTexture2D& operator = (const plTexture2D& texture);
         plTexture2D& operator = (plTexture2D&& texture);
 
-        void bind  () const;   // bind textures AFTER binding shader AND BEFORE drawing arrays
+        void bind() const;   // bind textures AFTER binding shader AND BEFORE drawing arrays
         void unbind() const;
 
-        uint32_t width()  const { return _width;  }
+        uint32_t width() const { return _width;  }
         uint32_t height() const { return _height; }
 
         void set(uint32_t width, uint32_t height, GLvoid* image = nullptr);

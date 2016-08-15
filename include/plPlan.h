@@ -11,7 +11,7 @@
 #include "plDefectSite.h"
 #include "plDonorSite.h"
 
-#define PL_MODEL_DEFAULT_OCTREE_DEPTH            6
+#define PL_MODEL_DEFAULT_OCTREE_DEPTH 6
 
 class plPlan : public plRenderable
 {

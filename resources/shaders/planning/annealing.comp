@@ -1,6 +1,6 @@
 
 
-//functions
+// functions
 
 float energy(in state s)
 {
@@ -26,7 +26,6 @@ void calculateCapAreaCoverage(in vec4 position, in vec4 normal, in float radius)
             setCapOverlap(i, area(t));
         }
     }
-
 }
 
 
@@ -51,8 +50,9 @@ float graftOverlap(in state s)
     {
         for (uint j=i+1; j < s.graftCount; j++)
         {
-            totalOverlap += cylinderOverlap(s.positions[i].xyz, s.normals[i].xyz, s.radii[i],
-                                             s.positions[j].xyz, s.normals[j].xyz, s.radii[j]);
+            totalOverlap += cylinderOverlap(
+                s.positions[i].xyz, s.normals[i].xyz, s.radii[i],
+                s.positions[j].xyz, s.normals[j].xyz, s.radii[j]);
         }
     }
     return totalOverlap;

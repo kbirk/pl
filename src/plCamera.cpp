@@ -15,8 +15,8 @@ void plCamera::_defaultInit()
 {
     // set default position
     position = plVector3(0,0,50);
-    lookat   = plVector3(0,0,0);
-    up       = plVector3(0,1,0);
+    lookat = plVector3(0,0,0);
+    up = plVector3(0,1,0);
 }
 
 plMatrix44 plCamera::getMatrix() const
@@ -108,7 +108,7 @@ void plCamera::translate(int32_t x, int32_t y)
     plVector3 zdir = (position - lookat).normalize();
     plVector3 xdir = (ydir ^ zdir).normalize();
 
-    lookat   = lookat   + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);
+    lookat = lookat + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);
     position = position + TRANSLATION_SENSITIVITY * (x * xdir + y * ydir);
 
 }
@@ -162,7 +162,7 @@ void calc_p(int32_t x, int32_t y, float32_t p[])
     int32_t width  = viewport[2] + viewport[0]*2;
     int32_t height = viewport[3] + viewport[1]*2;
 
-    p[0] =  2.0f * (x - 0.5f*width) / width;
+    p[0] = 2.0f * (x - 0.5f*width) / width;
     p[1] = -2.0f * (-(y-height) - 0.5f*height) / height;
     r = p[0]*p[0] + p[1]*p[1];
     if (r > 1.0f)

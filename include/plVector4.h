@@ -30,8 +30,7 @@ class plVector4
 
 };
 
-
-// Scalar/Vector multiplication
+// Scalar / Vector multiplication
 
 plVector4 operator * (float32_t k, const plVector4 &p);
 

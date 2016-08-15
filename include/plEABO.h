@@ -8,7 +8,6 @@
 
 class plEABO : public plVertexSpecBuffer
 {
-
     public:
 
         plEABO();

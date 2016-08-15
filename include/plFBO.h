@@ -9,7 +9,6 @@
 
 class plFBO
 {
-
     public:
 
         plFBO();

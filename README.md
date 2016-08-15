@@ -15,9 +15,7 @@ sudo aptitude install cmake
 Install Dependencies:
 
 ```bash
-sudo aptitude install libxmu-dev
-sudo aptitude install libxi-dev
-sudo aptitude install freeglut3-dev
+sudo aptitude install libsdl2-dev
 sudo aptitude install libepoxy-dev
 ```
 
@@ -32,6 +30,7 @@ brew install cmake
 Install Dependencies:
 
 ```bash
+brew install sdl2
 brew install libepoxy
 ```
 

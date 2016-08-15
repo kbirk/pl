@@ -4,10 +4,8 @@
 #include "plRenderTechnique.h"
 #include "plRenderResources.h"
 
-
 class plScreenQuadTechnique : public plRenderTechnique
 {
-
     public:
 
         plScreenQuadTechnique();

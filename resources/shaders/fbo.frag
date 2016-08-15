@@ -1,7 +1,5 @@
 #version 330
 
-#extension GL_EXT_gpu_shader4 : enable
-
 #define BLUR_KERNAL_SIZE        5
 #define BLUR_KERNAL_STRIDE      1
 #define OUTLINE_COLOUR          0.8, 1.0, 1.0
@@ -20,9 +18,9 @@ vec4 getBlurredPixel(in ivec3 outline)
     int outlineCount = 0;
     int sampleCount  = 0;
 
-    for (int i= -(BLUR_KERNAL_SIZE-1); i < BLUR_KERNAL_SIZE; i+=BLUR_KERNAL_STRIDE)
+    for (int i = -(BLUR_KERNAL_SIZE-1); i < BLUR_KERNAL_SIZE; i+=BLUR_KERNAL_STRIDE)
     {
-        for (int j= -(BLUR_KERNAL_SIZE-1); j < BLUR_KERNAL_SIZE; j+=BLUR_KERNAL_STRIDE)
+        for (int j = -(BLUR_KERNAL_SIZE-1); j < BLUR_KERNAL_SIZE; j+=BLUR_KERNAL_STRIDE)
         {
             float x = texCoordOut.x + (i / dim.x);
             float y = texCoordOut.y + (j / dim.y);
@@ -41,7 +39,7 @@ vec4 getBlurredPixel(in ivec3 outline)
     if (outlineCount == sampleCount)
         return vec4(0, 0, 0, 0);
 
-    return vec4(OUTLINE_COLOUR, (1 - x) * pow(x, 0.5)); // pow(x, 0.5));
+    return vec4(OUTLINE_COLOUR, (1 - x) * pow(x, 0.5));
 }
 
 

@@ -81,6 +81,7 @@ set(sources
     "src/plShader"
     "src/plSpline"
     "src/plSSBO"
+    "src/plSTL"
     "src/plString"
     "src/plTexture2D"
     "src/plTimer"

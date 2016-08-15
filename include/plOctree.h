@@ -10,19 +10,15 @@
 #include "plVAO.h"
 #include "plRenderer.h"
 
-// children quadrant indices
-// (functions rely on specific bitwise AND operations)
-/*
-    [0] = - - -
-    [1] = + - -
-    [2] = - + -
-    [3] = + + -
-    [4] = - - +
-    [5] = + - +
-    [6] = - + +
-    [7] = + + +
-*/
-
+// children quadrant indices:
+//   [0] = - - -
+//   [1] = + - -
+//   [2] = - + -
+//   [3] = + + -
+//   [4] = - - +
+//   [5] = + - +
+//   [6] = - + +
+//   [7] = + + +
 
 class plOctree : public plRenderable
 {
@@ -54,21 +50,21 @@ class plOctree : public plRenderable
 
     private:
 
-        uint32_t                            _depth;
-        plVector3                         _centre;       // center point of octree node (not strictly needed)
-        float32_t                           _halfWidth;    // half the width of the node volume (not strictly needed)
-        std::vector<plOctree*>            _children;     // pointers to the eight children nodes
-        std::vector<const plTriangle* >  _contained;    // triangles contained at this node
+        uint32_t _depth;
+        plVector3 _centre; // center point of octree node (not strictly needed)
+        float32_t _halfWidth; // half the width of the node volume (not strictly needed)
+        std::vector<plOctree*> _children; // pointers to the eight children nodes
+        std::vector<const plTriangle*> _contained; // triangles contained at this node
 
-        void      _insert            (const plTriangle &tri);
-        void      _insertIntoChild   (uint32_t index, const plTriangle &tri);
-        float32_t   _sqrDistFromPoint  (const plVector3 &point, int32_t child) const;
-        plVector3 _closestPointInBox (const plVector3 &point, int32_t child) const;
-        bool    _sphereCheck       (const plVector3 &centre, float32_t radius, int32_t child) const;
+        void _insert(const plTriangle &tri);
+        void _insertIntoChild(uint32_t index, const plTriangle &tri);
+        float32_t _sqrDistFromPoint(const plVector3 &point, int32_t child) const;
+        plVector3 _closestPointInBox(const plVector3 &point, int32_t child) const;
+        bool _sphereCheck(const plVector3 &centre, float32_t radius, int32_t child) const;
 
-        plVAO     _generateVAO(float32_t halfWidth) const;
+        plVAO _generateVAO(float32_t halfWidth) const;
 
-        void      _move(plOctree &&octree);
-        void      _copy(const plOctree& octree);
+        void _move(plOctree &&octree);
+        void _copy(const plOctree& octree);
 
 };

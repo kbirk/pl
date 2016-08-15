@@ -10,7 +10,6 @@
 
 class plVAO
 {
-
     public:
 
         plVAO();
@@ -22,7 +21,7 @@ class plVAO
 
         ~plVAO();
 
-        std::shared_ptr<plVBO >&  vbos(uint32_t index) { return _vbos[index]; }
+        std::shared_ptr<plVBO >& vbos(uint32_t index)  { return _vbos[index]; }
         std::shared_ptr<plEABO >& eabo()               { return _eabo; }
 
         void attach(const std::shared_ptr<plVBO >&  vbo);
@@ -37,7 +36,7 @@ class plVAO
 
         GLuint _id;
 
-        std::vector<std::shared_ptr<plVBO >> _vbos;
+        std::vector<std::shared_ptr<plVBO>> _vbos;
         std::shared_ptr<plEABO> _eabo;
 
         void _copy(const plVAO& vao);
