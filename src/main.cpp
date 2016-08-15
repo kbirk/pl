@@ -33,9 +33,7 @@ bool shift = false; // whether shift is currently down
 void init(int32_t argc, char** argv)
 {
     plan = std::make_shared<plPlan>(argc, argv);
-
     camera = plCamera("./resources/view0");
-    cameraMode = CAMERA_ROTATION_MODE;
 
     // initialize openGL specific objects
     plOpenGLInfo::init();
@@ -74,43 +72,6 @@ void render()
     // dispatch draw call
     plRenderer::draw();
 }
-
-// void setCursor(int32_t mx, int32_t my)
-// {
-//     switch (button)
-//     {
-//         case GLUT_MIDDLE_BUTTON:
-//             // middle button:   zoom
-//             glutSetCursor(GLUT_CURSOR_CROSSHAIR);
-//             break;
-//
-//         case GLUT_LEFT_BUTTON:
-//             // left button:     click / drag
-//             glutSetCursor(GLUT_CURSOR_INFO);
-//             break;
-//
-//         case GLUT_RIGHT_BUTTON:
-//
-//             // right button:    translate / rotate
-//             switch(_cameraMode)
-//             {
-//                 case CAMERA_TRANSLATION_MODE:
-//                     // translation cursor
-//                     glutSetCursor(GLUT_CURSOR_CROSSHAIR);
-//                     break;
-//                 case CAMERA_ROTATION_MODE:
-//                     // rotation cursor
-//                     glutSetCursor(GLUT_CURSOR_CYCLE);
-//                     break;
-//             }
-//             break;
-//
-//         default:
-//             // no button:     idle cursor
-//             glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
-//             break;
-//     }
-// }
 
 void handleKeyRelease(const WindowEvent& event)
 {

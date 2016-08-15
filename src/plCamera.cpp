@@ -1,5 +1,10 @@
 #include "plCamera.h"
 
+#include "plWindow.h"
+
+void calcP(int32_t x, int32_t y, float32_t p[4]);
+plVector4 calcQuat(int32_t x0, int32_t y0, int32_t x1, int32_t y1);
+
 plCamera::plCamera()
 {
     _defaultInit();
@@ -116,9 +121,10 @@ void plCamera::translate(int32_t x, int32_t y)
 void plCamera::rotate(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
 {
     // create quaternion
-    plVector4 quat = calc_quat(x0, y0, x1, y1);
+    plVector4 quat = calcQuat(x0, y0, x1, y1);
     // get the rotation matrix from quaternion
-    plMatrix44 qm;  qm.setRotation(quat);
+    plMatrix44 qm;
+    qm.setRotation(quat);
 
     // get current modelview matrix (rotation component only)
     plMatrix44 m = getMatrix();
@@ -148,26 +154,17 @@ void plCamera::rotate(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
     up.z = next.z/next.w;
 }
 
-// ================================================================
-//                 From Michiel's arcball code
-// ================================================================
-
-void calc_p(int32_t x, int32_t y, float32_t p[])
+void calcP(int32_t x, int32_t y, float32_t p[4])
 {
-    float32_t r,s;
-
-    // normally use plWindow:: for these, however this would cause a circular dependancy, so it is done manually
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    int32_t width  = viewport[2] + viewport[0]*2;
-    int32_t height = viewport[3] + viewport[1]*2;
+    int32_t width = plWindow::viewportWidth() + plWindow::viewportX() * 2;
+    int32_t height = plWindow::viewportHeight() + plWindow::viewportY() * 2;
 
     p[0] = 2.0f * (x - 0.5f*width) / width;
     p[1] = -2.0f * (-(y-height) - 0.5f*height) / height;
-    r = p[0]*p[0] + p[1]*p[1];
+    float32_t r = p[0]*p[0] + p[1]*p[1];
     if (r > 1.0f)
     {
-        s = 1.0f/sqrt(r);
+        float32_t s = 1.0f/sqrt(r);
         p[0] *= s;
         p[1] *= s;
         p[2] = 0.0f;
@@ -179,12 +176,12 @@ void calc_p(int32_t x, int32_t y, float32_t p[])
 }
 
 
-plVector4 calc_quat(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
+plVector4 calcQuat(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
 {
     float32_t p0[4], p1[4];
 
-    calc_p(x0,y0,p0);
-    calc_p(x1,y1,p1);
+    calcP(x0, y0, p0);
+    calcP(x1, y1, p1);
 
     plVector4 q;
     q.x = p0[1]*p1[2] - p1[1]*p0[2];
@@ -193,7 +190,8 @@ plVector4 calc_quat(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
     q.w = (p0[0]*p1[0] + p0[1]*p1[1] + p0[2]*p1[2]);
 
     if (q.w < -1.0f)
+    {
         q.w = -1.0f;
-
+    }
     return q;
 }

@@ -36,7 +36,3 @@ class plCamera
         void _defaultInit();
 
 };
-
-// Michiel's arcball code
-void      calc_p   (int32_t x, int32_t y, float32_t p[]);
-plVector4 calc_quat(int32_t x0, int32_t y0, int32_t x1, int32_t y1);
