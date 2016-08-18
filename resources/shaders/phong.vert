@@ -32,7 +32,9 @@ void main()
         colourInterp = vec4(vColour.x, vColour.y, vColour.z, 0.7);
     }
     else
+    {
         colourInterp = uColour;
+    }
 
     mat4 modelView = uViewMatrix * uModelMatrix;
 

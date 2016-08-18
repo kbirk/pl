@@ -142,7 +142,7 @@ namespace plPlannerStage0
 
         planningData.defectSiteSSBO.bind(0);
         triangleAreaSSBO.bind(1);
-        annealingBuffers.bind(); // 2, 3, 4, 5, 6, 7, 8 , 9, 10, 11
+        annealingBuffers.bind(); // 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 
         float32_t temperature = PL_STAGE_0_INITIAL_TEMPERATURE;
 

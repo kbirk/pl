@@ -4,10 +4,10 @@ plPlanTechnique::plPlanTechnique()
 {
 }
 
-void plPlanTechnique::render(const std::set<plRenderComponent >& componentSet) const
+void plPlanTechnique::render(const std::set<plRenderComponent>& componentSet) const
 {
-    const std::shared_ptr<plFBO >&    fbo    = plRenderResources::fbos(PL_MAIN_FBO);
-    const std::shared_ptr<plShader >& shader = plRenderResources::shaders(PL_PHONG_SHADER);
+    auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
+    auto shader = plRenderResources::shaders(PL_PHONG_SHADER);
 
     // bind fbo
     fbo->bind();

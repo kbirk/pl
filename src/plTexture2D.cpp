@@ -73,8 +73,6 @@ void plTexture2D::set(uint32_t width, uint32_t height, uint32_t internalFormat, 
         glGenTextures(1, &_id);
 
     glBindTexture(GL_TEXTURE_2D, _id);
-
-    // THIS IS OPENCV TYPE: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_BGR, GL_UNSIGNED_BYTE, image);
     glTexImage2D(GL_TEXTURE_2D, 0, _internalFormat, _width, _height, 0, _format, _type, image);
 
     // default linear interpolate

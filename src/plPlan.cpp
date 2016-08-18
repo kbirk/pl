@@ -204,8 +204,14 @@ void plPlan::importFile(const plString &filename)
             float32_t length(std::stof(csv.data[++i][1]));
             plVector3 markDirection(csv.data[++i][1]);
 
-            plPlug recipientPlug(_defectSites[recipientSiteID]->spline.surfaceMesh(), PL_PICKING_INDEX_GRAFT_DEFECT, recipientTransform, recipientRotation);
-            plPlug harvestPlug(_models[harvestModelID]->mesh(), PL_PICKING_INDEX_GRAFT_DONOR, harvestTransform, harvestRotation);
+            plPlug recipientPlug(
+                _defectSites[recipientSiteID]->spline.surfaceMesh(),
+                recipientTransform,
+                recipientRotation);
+            plPlug harvestPlug(
+                _models[harvestModelID]->mesh(),
+                harvestTransform,
+                harvestRotation);
 
             _grafts.push_back(new plGraft(harvestPlug, recipientPlug, radius, length, markDirection));
             std::cout << " Complete." << std::endl;

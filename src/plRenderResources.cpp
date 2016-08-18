@@ -43,12 +43,12 @@ namespace plRenderResources
         // create main fbo
         _fbos[PL_MAIN_FBO] = std::make_shared<plFBO>();
 
-        // main render buffer
+        // color texture
         _fbos[PL_MAIN_FBO]->attach(
             GL_COLOR_ATTACHMENT0,
             std::make_shared<plTexture2D>(width, height, GL_RGBA8,  GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
 
-        // texture for outlining
+        // outline texture
         _fbos[PL_MAIN_FBO]->attach(
             GL_COLOR_ATTACHMENT1,
             std::make_shared<plTexture2D>(width, height, GL_RGBA32I,  GL_RGBA_INTEGER, GL_INT, nullptr));
@@ -63,7 +63,7 @@ namespace plRenderResources
             GL_COLOR_ATTACHMENT3,
             std::make_shared<plTexture2D>(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
 
-        // colour picking texture
+        // picking texture
         _fbos[PL_MAIN_FBO]->attach(
             GL_COLOR_ATTACHMENT4,
             std::make_shared<plTexture2D>(width, height, GL_RGB32I, GL_RGB_INTEGER, GL_INT, nullptr));

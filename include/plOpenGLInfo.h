@@ -10,7 +10,7 @@ namespace plOpenGLInfo
     void init();
     void print();
     uint32_t sizeOfType(uint32_t enumType);
-    void reportError(const std::string &str);
+    void reportError(const std::string& str = "");
 
     extern GLint maxComputeShaderStorageBlocks,
         maxCombinedShaderStorageBlocks,

@@ -37,8 +37,6 @@ void plBoneAndCartilage::extractRenderComponents(plRenderMap& renderMap) const
 plVector3 plBoneAndCartilage::getCentroid() const
 {
     plVector3 min, max;
-
     combined.mesh().getMinMax(min, max);
-
     return 0.5f * (max + min);
 }

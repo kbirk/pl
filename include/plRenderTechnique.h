@@ -13,5 +13,5 @@ class plRenderTechnique
 
         virtual ~plRenderTechnique();
 
-        virtual void render(const std::set<plRenderComponent >& componentSet) const = 0;
+        virtual void render(const std::set<plRenderComponent>& componentSet) const = 0;
 };

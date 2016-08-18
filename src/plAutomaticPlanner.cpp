@@ -10,7 +10,7 @@ namespace plAutomaticPlanner
     {
         // error checking
         if (plan->defectSites().size() == 0)                        { std::cerr << "plAutomaticPlanner::calculate() error: No defect sites specified\n";   return; }
-        if (plan->donorSites().size()  == 0)                        { std::cerr << "plAutomaticPlanner::calculate() error: No donor sites specified\n";    return; }
+        if (plan->donorSites().size() == 0)                         { std::cerr << "plAutomaticPlanner::calculate() error: No donor sites specified\n";    return; }
         if (plan->defectSites(defectSiteIndex).spline.size() < 4)   { std::cerr << "plAutomaticPlanner::calculate() error: No defect spline specified\n";  return; }
         if (plan->defectSites(defectSiteIndex).boundary.size() < 3) { std::cerr << "plAutomaticPlanner::calculate() error: No recipient area specified\n"; return; }
 
@@ -123,13 +123,11 @@ namespace plAutomaticPlanner
 
                 plPlug harvest(
                     plan->models(modelID).mesh(),
-                    PL_PICKING_INDEX_GRAFT_DONOR,
                     harvestSurfaceOrientation,
                     harvestRotationalOffset);
 
                 plPlug recipient(
                     plan->defectSites(defectSiteIndex).spline.surfaceMesh(),
-                    PL_PICKING_INDEX_GRAFT_DEFECT,
                     recipientSurfaceOrientation,
                     recipientRotationalOffset);
 

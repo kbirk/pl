@@ -102,7 +102,7 @@ void plGraftEditor::selectGraft(uint32_t index, uint32_t type)
     clearSelection();
 
     _selectEditable(_plan->grafts(index), type);
-    _selectedType  = type;
+    _selectedType = type;
     _selectedGraft = &_plan->grafts(index);
 }
 

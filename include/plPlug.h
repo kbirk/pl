@@ -6,14 +6,14 @@
 #include "plBoneAndCartilage.h"
 #include "plTransform.h"
 
-#define PL_MAX_GRAFT_ROTATION                    25.0f
+#define PL_MAX_GRAFT_ROTATION 25.0f
 
 class plPlug : public plMeshSpecific
 {
     public:
 
-        plPlug(uint32_t type);
-        plPlug(const plMesh& mesh, uint32_t type, const plTransform& surfaceTransform, const plTransform& rotationalOffset);
+        plPlug();
+        plPlug(const plMesh& mesh, const plTransform& surfaceTransform, const plTransform& rotationalOffset);
 
         const plTransform& surfaceTransform() const;
         const plTransform& offsetTransform() const;
@@ -25,7 +25,6 @@ class plPlug : public plMeshSpecific
 
     private:
 
-        uint32_t _type;
         plTransform _surfaceTransform;
         plTransform _rotationalOffset;
 

@@ -6,7 +6,7 @@ in vec3 viewLightDirection;
 
 layout(location = 0) out vec4   colourOutput;        // GL_COLOR_ATTACHMENT0
 layout(location = 1) out ivec4  dummy0;              // GL_COLOR_ATTACHMENT1
-layout(location = 2) out vec4   transparencyOutput;  // GL_COLOR_ATTACHMENT2
+layout(location = 2) out vec4   dummy1;              // GL_COLOR_ATTACHMENT2
 layout(location = 3) out vec4   dummy2;              // GL_COLOR_ATTACHMENT3
 layout(location = 4) out ivec3  pickingOutput;       // GL_COLOR_ATTACHMENT4
 
@@ -27,6 +27,5 @@ void main()
                 + vec4(spec,                spec,                spec,                0.0);
 
     colourOutput = colour;
-    transparencyOutput = colour;
     pickingOutput = uPickingColour;
 }

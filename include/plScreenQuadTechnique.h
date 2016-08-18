@@ -10,7 +10,7 @@ class plScreenQuadTechnique : public plRenderTechnique
 
         plScreenQuadTechnique();
 
-        void render(const std::set<plRenderComponent >& componentSet) const;
+        void render(const std::set<plRenderComponent>& componentSet) const;
 
     private:
 

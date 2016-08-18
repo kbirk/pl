@@ -37,6 +37,7 @@ namespace plWindow
     uint32_t viewportY();
     int32_t windowToViewportX(int32_t x);
     int32_t windowToViewportY(int32_t y);
+	int32_t pixelRatio();
 
     void setup();
     void teardown();

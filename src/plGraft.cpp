@@ -1,8 +1,6 @@
 #include "plGraft.h"
 
 plGraft::plGraft()
-    : _recipient(PL_PICKING_INDEX_GRAFT_DEFECT),
-      _harvest(PL_PICKING_INDEX_GRAFT_DONOR)
 {
     _generateCaps();
     snapMarkDirection();
@@ -69,7 +67,7 @@ void plGraft::_generateCaps()
 {
     // generate cap polygons
     _cartilageCap.generateCap((const plOctreeMesh&)_harvest.mesh(), _harvest.finalTransform(), _radius);
-    _boneCap.generateCap     ((const plOctreeMesh&)_harvest.mesh(), _harvest.finalTransform(), _radius);
+    _boneCap.generateCap((const plOctreeMesh&)_harvest.mesh(), _harvest.finalTransform(), _radius);
 
     // generate vaos
     _cartilageCap.generateVAO(_radius, _length, _boneCap.perimeter);
@@ -89,19 +87,22 @@ void plGraft::snapMarkDirection()
 {
 
     // ray cast up, this gets up vector overlayed onto plane (projected from screen direction, rather than projected by surface normal)
-    plIntersection harvestIntersection = plMath::rayIntersect(_harvest.surfaceTransform().origin() + plCameraStack::up(),
-                                                               plCameraStack::direction(),
-                                                               _harvest.surfaceTransform().origin(),
-                                                               _harvest.surfaceTransform().y());
+    plIntersection harvestIntersection = plMath::rayIntersect(
+        _harvest.surfaceTransform().origin() + plCameraStack::up(),
+        plCameraStack::direction(),
+        _harvest.surfaceTransform().origin(),
+        _harvest.surfaceTransform().y());
 
     // find the up direction overlayed on plane, not projected
     plVector3 upHarvestProj = (harvestIntersection.point - _harvest.surfaceTransform().origin()).normalize();
 
     // ray cast up, this gets up vector overlayed onto plane (projected from screen direction, rather than projected by surface normal)
-    plIntersection recipientIntersection = plMath::rayIntersect(_recipient.surfaceTransform().origin() + plCameraStack::up(),
-                                                                 plCameraStack::direction(),
-                                                                 _recipient.surfaceTransform().origin(),
-                                                                 _recipient.surfaceTransform().y());
+    plIntersection recipientIntersection = plMath::rayIntersect(
+        _recipient.surfaceTransform().origin() + plCameraStack::up(),
+        plCameraStack::direction(),
+        _recipient.surfaceTransform().origin(),
+        _recipient.surfaceTransform().y());
+
     // get vector in graft local space
     plVector3 graftZ = _harvest.finalTransform().applyNormalInverse(upHarvestProj);
 
@@ -114,21 +115,15 @@ void plGraft::snapMarkDirection()
     // find angle between up proj and marker direction
     float32_t recipientAngle = (upRecipientProj).signedAngle(recipientDirection, _recipient.surfaceTransform().y());
 
-    plMatrix44 rotation;    rotation.setRotation(-recipientAngle/2.0f , plVector3(0, 1, 0));
+    plMatrix44 rotation;
+    rotation.setRotation(-recipientAngle/2.0f , plVector3(0, 1, 0));
 
     setMarkDirection(rotation * graftZ);
-
-    /*
-    _markDirection = rotation * graftZ; //_harvest.finalTransform().applyNormalInverse(rotation * upHarvestProj).normalize(); // perfect casted up
-    _generateMarkPositions();
-    */
 }
 
 
 void plGraft::_generateMarkPositions()
 {
-    //plMatrix44 offsetRot;   offsetRot.setRotation(_markAngleOffset, plVector3(0, 1, 0));
-
     for (uint32_t i=0; i < 4; i++)
     {
         plMatrix44 rotation;  rotation.setRotationD(i*-90.0f,  plVector3(0, 1, 0));
@@ -163,11 +158,13 @@ const plPlug &plGraft::plug(uint32_t type) const
 {
     switch (type)
     {
-        case PL_PICKING_INDEX_GRAFT_DONOR:      return _harvest;
-        case PL_PICKING_INDEX_GRAFT_DEFECT:     return _recipient;
+        case PL_PICKING_INDEX_GRAFT_DONOR:
+            return _harvest;
+
+        case PL_PICKING_INDEX_GRAFT_DEFECT:
+            return _recipient;
 
         default:
-
             std::cerr << "plGraft plug() error: invalid type enumeration provided, defaulting to recipient" << std::endl;
             return _recipient;
     }
@@ -202,7 +199,7 @@ void plGraft::move(uint32_t type, const plVector3& origin, const plVector3& y)
 
 void plGraft::rotate(uint32_t type, const plVector3& y)
 {
-        switch (type)
+    switch (type)
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
 
@@ -228,7 +225,7 @@ void plGraft::rotate(uint32_t type, const plVector3& y)
 
 void plGraft::rotate(uint32_t type, float32_t angleDegrees)
 {
-        switch (type)
+    switch (type)
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
 

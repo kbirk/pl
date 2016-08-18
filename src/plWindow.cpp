@@ -83,10 +83,24 @@ namespace plWindow {
         return y - _viewportY;
     }
 
+	int32_t pixelRatio() {
+        int32_t vWidth, vHeight, sWidth, sHeight;
+        SDL_GL_GetDrawableSize(window, &vWidth, &vHeight);
+        SDL_GetWindowSize(window, &sWidth, &sHeight);
+        int32_t horizontalRatio = vWidth / sWidth;
+        int32_t verticalRatio = vHeight / sHeight;
+        if (horizontalRatio != verticalRatio) {
+            std::cerr << "Horizontal pixel ratio of " <<
+                horizontalRatio <<
+                " is not equal to vertical pixel ratio of " <<
+                verticalRatio << ", this will cause picking errors" << std::endl;
+        }
+        return horizontalRatio;
+    }
 
     plVector3 mouseToWorld(int32_t x, int32_t y, int32_t z)
     {
-        plMatrix44 mvp = (plProjectionStack::top() * plCameraStack::top() * plModelStack::top());
+        plMatrix44 mvp = plProjectionStack::top() * plCameraStack::top() * plModelStack::top();
         plMatrix44 mvpInverse = mvp.inverse();
 
         // map window coords to range [0 .. 1]

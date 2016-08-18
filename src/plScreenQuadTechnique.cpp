@@ -5,9 +5,9 @@ plScreenQuadTechnique::plScreenQuadTechnique()
 }
 
 
-void plScreenQuadTechnique::render(const std::set<plRenderComponent >& componentSet) const
+void plScreenQuadTechnique::render(const std::set<plRenderComponent>& componentSet) const
 {
-    const std::shared_ptr<plShader >& shader = plRenderResources::shaders(PL_FBO_SHADER);
+    auto shader = plRenderResources::shaders(PL_FBO_SHADER);
 
     // bind shader
     shader->bind();
@@ -25,14 +25,17 @@ void plScreenQuadTechnique::render(const std::set<plRenderComponent >& component
 
 plVAO plScreenQuadTechnique::_generateQuad() const
 {
-    std::vector<plVector3> vertices;        vertices.reserve(8);
-    std::vector<uint32_t>    indices;         indices.reserve(6);
+    std::vector<plVector3> vertices;
+    vertices.reserve(8);
 
-    // position                                     // texture coord
-    vertices.push_back(plVector3(-1, -1, 0));   vertices.push_back(plVector3(0,0,0));
-    vertices.push_back(plVector3(1, -1, 0));   vertices.push_back(plVector3(1,0,0));
-    vertices.push_back(plVector3(1,  1, 0));   vertices.push_back(plVector3(1,1,0));
-    vertices.push_back(plVector3(-1,  1, 0));   vertices.push_back(plVector3(0,1,0));
+    std::vector<uint32_t> indices;
+    indices.reserve(6);
+
+    // position                               // texture coord
+    vertices.push_back(plVector3(-1, -1, 0)); vertices.push_back(plVector3(0,0,0));
+    vertices.push_back(plVector3(1, -1, 0));  vertices.push_back(plVector3(1,0,0));
+    vertices.push_back(plVector3(1,  1, 0));  vertices.push_back(plVector3(1,1,0));
+    vertices.push_back(plVector3(-1,  1, 0)); vertices.push_back(plVector3(0,1,0));
 
     indices.push_back(0);   indices.push_back(1);   indices.push_back(2);
     indices.push_back(0);   indices.push_back(2);   indices.push_back(3);
@@ -61,10 +64,11 @@ plRenderComponent plScreenQuadTechnique::_generateComponent() const
 {
     static plMatrix44 ortho(-1, 1, -1, 1, -1, 1);
 
-    static plMatrix44 camera(1, 0,  0, 0,
-                              0, 1,  0, 0,
-                              0, 0, -1, 0,
-                              0, 0,  0, 1);
+    static plMatrix44 camera(
+        1, 0,  0, 0,
+        0, 1,  0, 0,
+        0, 0, -1, 0,
+        0, 0,  0, 1);
 
     static std::shared_ptr<plVAO > screenQuadVAO = std::make_shared<plVAO>(_generateQuad());
 

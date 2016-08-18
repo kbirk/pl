@@ -146,8 +146,8 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], c
             plVector3 &m0p1 = verts[(insideEdges[0]+1) % 3];
 
             points.emplace_back(_pointOnCircumference(m0, m0p1, radius));
-            points.emplace_back(_pointOnCircumference(m1, m0,   radius));
-            points.emplace_back(_pointOnCircumference(m2, m0,   radius));
+            points.emplace_back(_pointOnCircumference(m1, m0, radius));
+            points.emplace_back(_pointOnCircumference(m2, m0, radius));
             points.emplace_back(_pointOnCircumference(m0p0, m0, radius));
 
             break;
@@ -219,7 +219,8 @@ std::vector<plVector3> plGraftCap::_pointsInsideTriangles(plVector3 verts[3], fl
 
     bool prevInside = true; // always starts as true (ds[0] <= radiusSquared)
 
-    std::vector<plVector3> points;      points.reserve(5);
+    std::vector<plVector3> points;
+    points.reserve(5);
 
     for (int32_t i=0; i<3; i++)
     {
@@ -302,7 +303,8 @@ bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTrans
         return true;
     }
 
-    std::vector<plVector3> points;      points.reserve(6);
+    std::vector<plVector3> points;
+    points.reserve(6);
 
     if (minDist > radiusSquared)
     {

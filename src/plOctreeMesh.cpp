@@ -62,7 +62,7 @@ void plOctreeMesh::_buildOctree(uint32_t depth, bool verbose)
 plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &origin, const plVector3 &normal) const
 {
     // get potential triangles in radius from octree
-    std::set<const plTriangle* > triangles;
+    std::set<const plTriangle*> triangles;
     _octree.rayIntersect(triangles, origin, -normal, radius);
 
     plVector3 avgNormal(0,0,0);
@@ -103,7 +103,7 @@ plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &orig
 plIntersection plOctreeMesh::rayIntersect(const plVector3 &rayOrigin, const plVector3 &rayDirection, bool smoothNormal, bool ignoreBehindRay, bool backFaceCull) const
 {
     // get potential triangles from octree
-    std::set<const plTriangle* > triangles;
+    std::set<const plTriangle*> triangles;
     _octree.rayIntersect(triangles, rayOrigin, rayDirection, 0.0f, ignoreBehindRay);
 
     plIntersection closestIntersection(false);

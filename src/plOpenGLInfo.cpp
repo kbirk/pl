@@ -98,8 +98,6 @@ namespace plOpenGLInfo
           maxVertexAttribBindings,
           maxElementIndex;
 
-
-
     void init()
     {
         glGetIntegerv(GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS,
@@ -234,12 +232,18 @@ namespace plOpenGLInfo
         glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &maxVertexAttribBindings); //1
         glGetIntegerv(GL_MAX_ELEMENT_INDEX, &maxElementIndex); //1
 
+        // at this point there may be errors due to unrecognized enums, pull
+        // them off the queue.
+        GLuint errnum = glGetError();
+        while (errnum != GL_NO_ERROR)
+        {
+            errnum = glGetError();
+        }
     }
 
 
     void print()
     {
-
         std::cout << "OpenGL " << majorVersion << "." << minorVersion;
         std::cout << std::endl << "MaxComputeShaderStorageBlocks "
                 << maxComputeShaderStorageBlocks;
@@ -369,6 +373,7 @@ namespace plOpenGLInfo
                 << maxVertexAttribRelativeOffset;
         std::cout << std::endl << "MaxVertexAttribBindings " << maxVertexAttribBindings;
         std::cout << std::endl << "MaxElementIndex " << maxElementIndex;
+        std::cout << std::endl;
     }
 
 
@@ -391,10 +396,12 @@ namespace plOpenGLInfo
 
     void reportError(const std::string &str)
     {
+        uint32_t numErrs = 0;
         GLuint errnum = glGetError();
-        while (errnum > 0)
+        while (errnum != GL_NO_ERROR)
         {
             std::cout << str << " " << _errorToString(errnum) << std::endl;
+            numErrs++;
             errnum = glGetError();
         }
     }

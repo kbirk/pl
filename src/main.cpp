@@ -8,6 +8,7 @@
 #include "plAutomaticPlanner.h"
 #include "plVector3.h"
 #include "plWindow.h"
+#include "plOpenGLInfo.h"
 
 #define CAMERA_ROTATION_MODE    1
 #define CAMERA_TRANSLATION_MODE 2
@@ -37,6 +38,7 @@ void init(int32_t argc, char** argv)
 
     // initialize openGL specific objects
     plOpenGLInfo::init();
+    //plOpenGLInfo::print();
     plRenderer::init();
     plRenderResources::init();
 
@@ -71,6 +73,8 @@ void render()
     plRenderer::queue(modelEditor);
     // dispatch draw call
     plRenderer::draw();
+    // DEBUG
+    plOpenGLInfo::reportError();
 }
 
 void handleKeyRelease(const WindowEvent& event)
@@ -158,24 +162,24 @@ void handleKeyPress(const WindowEvent& event)
         // uppercase keys
         switch (key)
         {
-            case SDLK_a:   /* UN-USED */ break;
-            case SDLK_b:   /* UN-USED */ break;
-            case SDLK_c:   /* UN-USED */ break;
+            case SDLK_a: /* UN-USED */ break;
+            case SDLK_b: /* UN-USED */ break;
+            case SDLK_c: /* UN-USED */ break;
             case SDLK_d:
 
                 // add a donor site
                 plan->addDonorSite(modelEditor.selectedModelID());
                 break;
 
-            case SDLK_e:   /* UN-USED */ break;
-            case SDLK_f:   /* UN-USED */ break;
-            case SDLK_g:   /* UN-USED */ break;
-            case SDLK_h:   /* UN-USED */ break;
-            case SDLK_i:   /* UN-USED */ break;
-            case SDLK_j:   /* UN-USED */ break;
-            case SDLK_k:   /* UN-USED */ break;
-            case SDLK_l:   /* UN-USED */ break;
-            case SDLK_m:   /* UN-USED */ break;
+            case SDLK_e: /* UN-USED */ break;
+            case SDLK_f: /* UN-USED */ break;
+            case SDLK_g: /* UN-USED */ break;
+            case SDLK_h: /* UN-USED */ break;
+            case SDLK_i: /* UN-USED */ break;
+            case SDLK_j: /* UN-USED */ break;
+            case SDLK_k: /* UN-USED */ break;
+            case SDLK_l: /* UN-USED */ break;
+            case SDLK_m: /* UN-USED */ break;
             case SDLK_n:
 
                 // clear plan, start new
@@ -197,7 +201,7 @@ void handleKeyPress(const WindowEvent& event)
                 plAutomaticPlanner::calculate(plan, 0);
                 break;
 
-            case SDLK_q:   /* UN-USED */ break;
+            case SDLK_q: /* UN-USED */ break;
             case SDLK_r:
 
                 // import view
@@ -210,18 +214,18 @@ void handleKeyPress(const WindowEvent& event)
                 plan->addDefectSite(modelEditor.selectedModelID());
                 break;
 
-            case SDLK_t:   /* UN-USED */ break;
-            case SDLK_u:   /* UN-USED */ break;
-            case SDLK_v:   /* UN-USED */ break;
+            case SDLK_t: /* UN-USED */ break;
+            case SDLK_u: /* UN-USED */ break;
+            case SDLK_v: /* UN-USED */ break;
             case SDLK_w:
 
                 // export view
                 camera.exportViewParams("./resources/view" + std::to_string(currentView));
                 break;
 
-            case SDLK_x:   /* UN-USED */ break;
-            case SDLK_y:   /* UN-USED */ break;
-            case SDLK_z:   /* UN-USED */ break;
+            case SDLK_x: /* UN-USED */ break;
+            case SDLK_y: /* UN-USED */ break;
+            case SDLK_z: /* UN-USED */ break;
         }
 
     }
@@ -230,17 +234,17 @@ void handleKeyPress(const WindowEvent& event)
         // lowercase keys
         switch (key)
         {
-            case SDLK_a:   /* UN-USED */ break;
-            case SDLK_b:   /* UN-USED */ break;
-            case SDLK_c:   /* UN-USED */ break;
-            case SDLK_d:   /* UN-USED */ break;
-            case SDLK_e:   /* UN-USED */ break;
-            case SDLK_f:   /* UN-USED */ break;
-            case SDLK_g:   /* UN-USED */ break;
-            case SDLK_h:   /* UN-USED */ break;
-            case SDLK_i:   /* UN-USED */ break;
-            case SDLK_j:   /* UN-USED */ break;
-            case SDLK_k:   /* UN-USED */ break;
+            case SDLK_a: /* UN-USED */ break;
+            case SDLK_b: /* UN-USED */ break;
+            case SDLK_c: /* UN-USED */ break;
+            case SDLK_d: /* UN-USED */ break;
+            case SDLK_e: /* UN-USED */ break;
+            case SDLK_f: /* UN-USED */ break;
+            case SDLK_g: /* UN-USED */ break;
+            case SDLK_h: /* UN-USED */ break;
+            case SDLK_i: /* UN-USED */ break;
+            case SDLK_j: /* UN-USED */ break;
+            case SDLK_k: /* UN-USED */ break;
             case SDLK_l:
 
                 // set graft edit mode to length
@@ -253,7 +257,7 @@ void handleKeyPress(const WindowEvent& event)
                 plan->updateGraftMarkerPositions();
                 break;
 
-            case SDLK_n:   /* UN-USED */ break;
+            case SDLK_n: /* UN-USED */ break;
             case SDLK_o:
 
                 // toggle octree view for selected model
@@ -269,21 +273,21 @@ void handleKeyPress(const WindowEvent& event)
                 plan->toggleVisibility();
                 break;
 
-            case SDLK_q:   /* UN-USED */ break;
+            case SDLK_q: /* UN-USED */ break;
             case SDLK_r:
 
                 // set graft edit mode to rotation
                 graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_ROTATE);
                 break;
 
-            case SDLK_s:   /* UN-USED */ break;
+            case SDLK_s: /* UN-USED */ break;
             case SDLK_t:
 
                 // set graft edit mode to translation
                 graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_TRANSLATE);
                 break;
 
-            case SDLK_u:   /* UN-USED */ break;
+            case SDLK_u: /* UN-USED */ break;
             case SDLK_v:
 
                 // toggle visibility of selected component (solid, transparent, invisible)
@@ -292,9 +296,9 @@ void handleKeyPress(const WindowEvent& event)
                 modelEditor.toggleSelectedVisibility();
                 break;
 
-            case SDLK_w:   /* UN-USED */ break;
-            case SDLK_x:   /* UN-USED */ break;
-            case SDLK_y:   /* UN-USED */ break;
+            case SDLK_w: /* UN-USED */ break;
+            case SDLK_x: /* UN-USED */ break;
+            case SDLK_y: /* UN-USED */ break;
             case SDLK_z:
 
                 // reset camera onto model
@@ -312,8 +316,8 @@ void handleMouseMove(const WindowEvent& event)
     auto mouseEvent = event.originalEvent->motion;
 
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
-    int32_t x = mouseEvent.x;
-    int32_t y = plWindow::height() - mouseEvent.y;
+    int32_t x = mouseEvent.x * plWindow::pixelRatio();
+    int32_t y = plWindow::height() - (mouseEvent.y * plWindow::pixelRatio());
 
     switch (button)
     {
@@ -362,8 +366,8 @@ void handleMousePress(const WindowEvent& event)
     auto mouseEvent = event.originalEvent->button;
 
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
-    int32_t x = mouseEvent.x;
-    int32_t y = plWindow::height() - mouseEvent.y;
+    int32_t x = mouseEvent.x * plWindow::pixelRatio();
+    int32_t y = plWindow::height() - (mouseEvent.y * plWindow::pixelRatio());
 
     if (mouseEvent.button == SDL_BUTTON_LEFT) {
         if (ctrl)
@@ -389,8 +393,8 @@ void handleMouseRelease(const WindowEvent& event)
     auto mouseEvent = event.originalEvent->button;
 
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
-    int32_t x = mouseEvent.x;
-    int32_t y = plWindow::height() - mouseEvent.y;
+    int32_t x = mouseEvent.x * plWindow::pixelRatio();
+    int32_t y = plWindow::height() - (mouseEvent.y * plWindow::pixelRatio());
 
     // process mouse release
     graftEditor.processMouseRelease(x, y);
@@ -450,8 +454,6 @@ int32_t main(int32_t argc, char **argv)
         plWindow::handleEvents();
         // render
         render();
-        // set cursor
-        // setCursor();
     	// swap back buffer
     	plWindow::swapBuffers();
     }
