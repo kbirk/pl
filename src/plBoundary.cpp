@@ -34,7 +34,7 @@ void plBoundary::extractRenderComponents(plRenderMap& renderMap, uint32_t techni
         return;
 
     plPickingStack::loadRed(_type);
-    plColourStack::load(_getColour());
+    plColorStack::load(_getColor());
 
     // draw walls
     if (_points.size() > 1)
@@ -47,7 +47,7 @@ void plBoundary::extractRenderComponents(plRenderMap& renderMap, uint32_t techni
         component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plMatrix44()));
         component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
         component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-        component.attach(plUniform(PL_COLOUR_UNIFORM,            plColourStack::top()));
+        component.attach(plUniform(PL_COLOR_UNIFORM,             plColorStack::top()));
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
@@ -233,7 +233,7 @@ void plBoundary::clear()
 }
 
 
-plVector4 plBoundary::_getColour() const
+plVector4 plBoundary::_getColor() const
 {
     // not selected
     switch (_type)
@@ -241,16 +241,16 @@ plVector4 plBoundary::_getColour() const
         case PL_PICKING_TYPE_DEFECT_CORNERS:
         case PL_PICKING_TYPE_DEFECT_SPLINE:
             // defect spline / corners
-            return plVector4(PL_BOUNDARY_DEFECT_CORNER_COLOUR);
+            return plVector4(PL_BOUNDARY_DEFECT_CORNER_COLOR);
 
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
             // defect boundary
-            return plVector4(PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR);
+            return plVector4(PL_BOUNDARY_DEFECT_BOUNDARY_COLOR);
 
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
         default:
             // donor boundary
-            return plVector4(PL_BOUNDARY_DONOR_COLOUR);
+            return plVector4(PL_BOUNDARY_DONOR_COLOR);
     }
 
 }
@@ -394,7 +394,7 @@ void plBoundary::_generateVAO()
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16)); // FOUR COMPONENT FLOATING POINT OFFSET

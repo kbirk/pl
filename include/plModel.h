@@ -12,9 +12,9 @@
 #include "plEditable.h"
 #include "plSTL.h"
 
-#define PL_MODEL_COLOUR            0.80f, 0.80f, 0.80f
-#define PL_MODEL_BONE_COLOUR       0.80f, 0.80f, 0.80f
-#define PL_MODEL_CARTILAGE_COLOUR  0.50f, 0.20f, 0.20f
+#define PL_MODEL_COLOR            0.80f, 0.80f, 0.80f
+#define PL_MODEL_BONE_COLOR       0.80f, 0.80f, 0.80f
+#define PL_MODEL_CARTILAGE_COLOR  0.50f, 0.20f, 0.20f
 
 class plOrderPair
 {
@@ -55,7 +55,7 @@ class plModel : public plTransparentRenderable, public plEditable
     private:
 
         std::shared_ptr<plMesh> _mesh;
-        std::shared_ptr<plVAO >  _vao;
+        std::shared_ptr<plVAO> _vao;
 
         void _generateVAO();
 

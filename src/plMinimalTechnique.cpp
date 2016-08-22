@@ -29,16 +29,14 @@ void plMinimalTechnique::render(const std::set<plRenderComponent>& componentSet)
     shader->bind();
 
     glDepthFunc(GL_ALWAYS);
-    //glDisable(GL_DEPTH_TEST);
 
     // draw main render components
-    for (const plRenderComponent& component : componentSet)
+    for (auto component : componentSet)
     {
         component.draw(*shader);
     }
 
     glDepthFunc(GL_LEQUAL);
-    //glEnable(GL_DEPTH_TEST);
 
     // unbind shader
     shader->unbind();

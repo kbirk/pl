@@ -51,7 +51,7 @@ namespace plRenderResources
         // outline texture
         _fbos[PL_MAIN_FBO]->attach(
             GL_COLOR_ATTACHMENT1,
-            std::make_shared<plTexture2D>(width, height, GL_RGBA32I,  GL_RGBA_INTEGER, GL_INT, nullptr));
+            std::make_shared<plTexture2D>(width, height, GL_RGBA8I,  GL_RGBA_INTEGER, GL_INT, nullptr));
 
         // **CURRENTLY UN-USED**
         _fbos[PL_MAIN_FBO]->attach(
@@ -66,7 +66,7 @@ namespace plRenderResources
         // picking texture
         _fbos[PL_MAIN_FBO]->attach(
             GL_COLOR_ATTACHMENT4,
-            std::make_shared<plTexture2D>(width, height, GL_RGB32I, GL_RGB_INTEGER, GL_INT, nullptr));
+            std::make_shared<plTexture2D>(width, height, GL_RGBA8I, GL_RGB_INTEGER, GL_INT, nullptr));
 
         // depth-stencil buffer texture
         _fbos[PL_MAIN_FBO]->attach(

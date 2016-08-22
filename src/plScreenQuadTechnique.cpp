@@ -13,7 +13,7 @@ void plScreenQuadTechnique::render(const std::set<plRenderComponent>& componentS
     shader->bind();
 
     // clear back buffer
-    glClearColor(PL_CLEAR_COLOUR);
+    glClearColor(PL_CLEAR_COLOR);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glViewport(plWindow::viewportX(), plWindow::viewportY(), plWindow::viewportWidth(), plWindow::viewportHeight());
 
@@ -23,7 +23,7 @@ void plScreenQuadTechnique::render(const std::set<plRenderComponent>& componentS
 }
 
 
-plVAO plScreenQuadTechnique::_generateQuad() const
+std::shared_ptr<plVAO> plScreenQuadTechnique::_generateQuad() const
 {
     std::vector<plVector3> vertices;
     vertices.reserve(8);
@@ -41,48 +41,55 @@ plVAO plScreenQuadTechnique::_generateQuad() const
     indices.push_back(0);   indices.push_back(2);   indices.push_back(3);
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_TEXCOORD_ATTRIBUTE, 32, 16));
     // set eabo
     std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
     eabo->set(indices);
-
-    plVAO vao;
+    // create vao
+    std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
     // attach to vao
-    vao.attach(vbo);
-    vao.attach(eabo);
+    vao->attach(vbo);
+    vao->attach(eabo);
     // upload to gpu
-    vao.upload();
-
+    vao->upload();
     return vao;
 }
 
 
 plRenderComponent plScreenQuadTechnique::_generateComponent() const
 {
-    static plMatrix44 ortho(-1, 1, -1, 1, -1, 1);
+    static plMatrix44 ortho(
+        -1, 1,
+        -1, 1,
+        -1, 1);
+
+    static plMatrix44 model(
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1);
 
     static plMatrix44 camera(
-        1, 0,  0, 0,
-        0, 1,  0, 0,
+        1, 0, 0, 0,
+        0, 1, 0, 0,
         0, 0, -1, 0,
-        0, 0,  0, 1);
+        0, 0, 0, 1);
 
-    static std::shared_ptr<plVAO > screenQuadVAO = std::make_shared<plVAO>(_generateQuad());
+    static std::shared_ptr<plVAO> quad = _generateQuad();
 
-    const std::shared_ptr<plFBO >& fbo = plRenderResources::fbos(PL_MAIN_FBO);
+    auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
 
-    plRenderComponent component(screenQuadVAO);
-
+    plRenderComponent component(quad);
     // attach transformation uniforms
-    component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plMatrix44()));
+    component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      model));
     component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       camera));
     component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, ortho));
     // attach texture uniforms
-    component.attach(plUniform(PL_TEXTURE_UNIT_0_UNIFORM, &(*fbo->texture2DAttachment(GL_COLOR_ATTACHMENT0))));     // colour buffer
-    component.attach(plUniform(PL_TEXTURE_UNIT_1_UNIFORM, &(*fbo->texture2DAttachment(GL_COLOR_ATTACHMENT1))));     // outline buffer
+    component.attach(PL_TEXTURE_UNIT_0, fbo->texture2DAttachment(GL_COLOR_ATTACHMENT0));     // color buffer
+    component.attach(PL_TEXTURE_UNIT_1, fbo->texture2DAttachment(GL_COLOR_ATTACHMENT1));     // outline buffer
 
     return component;
 }

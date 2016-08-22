@@ -14,6 +14,6 @@ class plScreenQuadTechnique : public plRenderTechnique
 
     private:
 
-        virtual plVAO _generateQuad() const;
-        virtual plRenderComponent _generateComponent() const;
+        std::shared_ptr<plVAO> _generateQuad() const;
+        plRenderComponent _generateComponent() const;
 };

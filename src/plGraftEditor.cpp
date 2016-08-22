@@ -241,7 +241,7 @@ void plGraftEditor::extractRenderComponents(plRenderMap& renderMap, uint32_t tec
     // graft outline
     _selectedGraft->extractRenderComponents(renderMap, technique);
 
-    plColourStack::load(PL_AXIS_GREY);
+    plColorStack::load(PL_AXIS_GREY);
     plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT_HANDLE);
 
     plModelStack::push();
@@ -305,7 +305,7 @@ void plGraftEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
 
             // harvest
             plPickingStack::loadBlue(PL_PICKING_INDEX_GRAFT_DONOR);
-            plColourStack::load(PL_GRAFT_DONOR_CARTILAGE_COLOUR);
+            plColorStack::load(PL_GRAFT_DONOR_CARTILAGE_COLOR);
 
             plRenderer::queueDisk(
                 PL_MINIMAL_TECHNIQUE,
@@ -325,7 +325,7 @@ void plGraftEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
 
             // recipient
             plPickingStack::loadBlue(PL_PICKING_INDEX_GRAFT_DEFECT);
-            plColourStack::load(PL_GRAFT_DEFECT_CARTILAGE_COLOUR);
+            plColorStack::load(PL_GRAFT_DEFECT_CARTILAGE_COLOR);
 
             plRenderer::queueDisk(
                 PL_MINIMAL_TECHNIQUE,

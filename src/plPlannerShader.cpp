@@ -46,7 +46,7 @@ void plPlannerShader::_getUniformLocations()
     _seedID = glGetUniformLocation(_id, "uSeed");
 
     _temperatureID = glGetUniformLocation(_id, "uTemperature");
-    _loadLocalID   = glGetUniformLocation(_id, "uLoadLocal");
+    _loadLocalID = glGetUniformLocation(_id, "uLoadLocal");
 
     _rotationIndexID  = glGetUniformLocation(_id, "uRotationIndex");
     _rotationAnglesID = glGetUniformLocation(_id, "uRotationAngles");
@@ -55,11 +55,11 @@ void plPlannerShader::_getUniformLocations()
 
 void plPlannerShader::setDefectSiteUniforms(const plPlanningSite &defectSite) const
 {
-    glUniform1ui  (_defectSiteTriangleCountID,      defectSite.triangles.size());
-    glUniform1f   (_defectSiteAreaID,               defectSite.area);
-    glUniform1ui  (_defectSiteGridPointCountID,     defectSite.gridPoints.size());
-    glUniform1ui  (_defectSiteBoundaryPointCountID, defectSite.boundaryPoints.size());
-    glUniform4fv  (_defectSiteAvgNormalID, 1,      &defectSite.avgNormal.x);
+    glUniform1ui(_defectSiteTriangleCountID,      defectSite.triangles.size());
+    glUniform1f(_defectSiteAreaID,                defectSite.area);
+    glUniform1ui(_defectSiteGridPointCountID,     defectSite.gridPoints.size());
+    glUniform1ui(_defectSiteBoundaryPointCountID, defectSite.boundaryPoints.size());
+    glUniform4fv(_defectSiteAvgNormalID, 1,       &defectSite.avgNormal.x);
 }
 
 
@@ -74,10 +74,10 @@ void plPlannerShader::setDonorSiteUniforms(const std::vector<plPlanningSite> &do
 
     for (const plPlanningSite& donorSite : donorSites)
     {
-        totalGridPoints +=  donorSite.gridPoints.size();
-        gridPointCounts.push_back     (donorSite.gridPoints.size());
-        triangleCounts.push_back      (donorSite.triangles.size());
-        boundaryPointCounts.push_back (donorSite.boundaryPoints.size());
+        totalGridPoints += donorSite.gridPoints.size();
+        gridPointCounts.push_back(donorSite.gridPoints.size());
+        triangleCounts.push_back(donorSite.triangles.size());
+        boundaryPointCounts.push_back(donorSite.boundaryPoints.size());
         dataOffsets.push_back(dataIndexOffset);
         dataIndexOffset += donorSite.totalSize();
     }
@@ -103,19 +103,19 @@ void plPlannerShader::setDefectSolutionUniforms (const plDefectSolution &solutio
 
 void plPlannerShader::setSeedUniform() const
 {
-    glUniform1ui  (_seedID, rand());
+    glUniform1ui(_seedID, rand());
 }
 
 
 void plPlannerShader::setTemperatureUniform(float32_t temperature) const
 {
-    glUniform1f   (_temperatureID, temperature);
+    glUniform1f(_temperatureID, temperature);
 }
 
 
 void plPlannerShader::setLocalLoadUniform(uint32_t loadLocal) const
 {
-    glUniform1ui (_loadLocalID, loadLocal);
+    glUniform1ui(_loadLocalID, loadLocal);
 }
 
 
@@ -126,14 +126,14 @@ void plPlannerShader::setRotationAngleUniforms(uint32_t numDirections) const
     float32_t da = 360.0f / (float32_t)(numDirections);
     for (uint32_t i=0; i < numDirections; i++)
     {
-            rotationAngles.push_back(da * i);
+        rotationAngles.push_back(da * i);
     }
-    glUniform1fv (_rotationAnglesID, rotationAngles.size(), &rotationAngles[0]);
+    glUniform1fv(_rotationAnglesID, rotationAngles.size(), &rotationAngles[0]);
 }
 
 
 void plPlannerShader::setRotationIndexUniform(uint32_t rotationIndex) const
 {
-    glUniform1ui (_rotationIndexID, rotationIndex);
+    glUniform1ui(_rotationIndexID, rotationIndex);
 
 }

@@ -57,7 +57,7 @@ void plGraft::_extractGraftRenderComponents(plRenderMap& renderMap, uint32_t tec
     _boneCap.extractRenderComponents(renderMap, technique);
 
     // draw marker
-    plColourStack::load(PL_GRAFT_MARKER_COLOUR);
+    plColorStack::load(PL_GRAFT_MARKER_COLOR);
     plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT_MARKER);
     plRenderer::queueSphere(technique, _markPositions[0], 0.5f);
 }

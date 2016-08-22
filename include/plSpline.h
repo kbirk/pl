@@ -6,7 +6,7 @@
 #include "plBoundary.h"
 #include "plRenderable.h"
 #include "plEditable.h"
-#include "plColourMap.h"
+#include "plColorMap.h"
 #include "plOctreeMesh.h"
 #include "plVAO.h"
 #include "plRenderer.h"
@@ -15,8 +15,8 @@
 #define PL_SPLINE_RESOLUTION                60.0f // higher number results in worse performance, but
                                                   // higher accuracy in automated planning surface area
                                                   // coverage results
-#define PL_SPLINE_COLOUR_MAP_RANGE          1.5f
-#define PL_SPLINE_NO_DATA_COLOUR            (plVector3(0.2, 0.2, 0.2))
+#define PL_SPLINE_COLOR_MAP_RANGE          1.5f
+#define PL_SPLINE_NO_DATA_COLOR            (plVector3(0.2, 0.2, 0.2))
 
 class plSpline : public plBoundary
 {

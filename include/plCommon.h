@@ -1,18 +1,18 @@
 #pragma once
 
-// COLOUR MACROS
+// COLOR MACROS
 
-#define PL_PURPLE_COLOUR                         0.57, 0.17, 0.93
-#define PL_AXIS_GREY                             0.2f, 0.2f, 0.2f
-#define PL_X_AXIS_COLOUR                         1.0f, 0.2f, 0.2f
-#define PL_Y_AXIS_COLOUR                         0.2f, 1.0f, 0.2f
-#define PL_Z_AXIS_COLOUR                         0.2f, 0.2f, 1.0f
-#define PL_CLEAR_COLOUR                          0.137f, 0.137f, 0.137f, 1.0f
+#define PL_PURPLE_COLOR                         0.57, 0.17, 0.93
+#define PL_AXIS_GREY                            0.2f, 0.2f, 0.2f
+#define PL_X_AXIS_COLOR                         1.0f, 0.2f, 0.2f
+#define PL_Y_AXIS_COLOR                         0.2f, 1.0f, 0.2f
+#define PL_Z_AXIS_COLOR                         0.2f, 0.2f, 1.0f
+#define PL_CLEAR_COLOR                          0.137f, 0.137f, 0.137f, 1.0f
 
-// some renderables use different colours per vertex. When the colour
+// some renderables use different colors per vertex. When the color
 // uniforms are set to these value, it tells the shader to use the attribute
-// colour instead
-#define PL_USE_ATTRIBUTE_COLOUR_OPAQUE           0, 0, 0, 0
+// color instead
+#define PL_USE_ATTRIBUTE_COLOR_OPAQUE           0, 0, 0, 0
 
 // global light position used throughout planner
 #define PL_LIGHT_POSITION                        10, 10, 15

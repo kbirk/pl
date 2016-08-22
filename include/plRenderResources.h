@@ -15,7 +15,7 @@ enum plShaderEnums
     PL_MINIMAL_SHADER = 1,      // no lighting calculations
     PL_PHONG_SHADER,            // phong lighting
     PL_OUTLINE_SHADER,          // draws to outline shader
-    PL_FBO_SHADER,              // shader for final rendering pass, draws colour buffer to screen and applies outline effect
+    PL_FBO_SHADER,              // shader for final rendering pass, draws color buffer to screen and applies outline effect
 };
 
 namespace plRenderResources

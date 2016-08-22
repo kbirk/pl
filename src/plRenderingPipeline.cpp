@@ -1,11 +1,11 @@
 #include "plRenderingPipeline.h"
 
-namespace plColourStack
+namespace plColorStack
 {
     std::stack<plVector4> _stack;
 
     void push(float32_t r, float32_t g, float32_t b, float32_t a) {  _stack.push(plVector4(r,g,b,a));  }
-    void push(const plVector4 &colour) { _stack.push(colour); }
+    void push(const plVector4 &color) { _stack.push(color); }
     void pop () { if (!_stack.empty()) _stack.pop(); }
 
     const plVector4& top()    { return _stack.top(); }
@@ -22,9 +22,9 @@ namespace plColourStack
         }
     }
 
-    void load(const plVector4 &colour)
+    void load(const plVector4 &color)
     {
-        load(colour.x, colour.y, colour.z, colour.w);
+        load(color.x, color.y, color.z, color.w);
     }
 
 }

@@ -88,7 +88,7 @@ void plPlan::extractRenderComponents(plRenderMap& renderMap, uint32_t technique)
         plPickingStack::loadRed(PL_PICKING_TYPE_BONE);
         plPickingStack::loadGreen(i);
         plPickingStack::loadBlue(-1); // unused by models
-        plColourStack::load(PL_MODEL_COLOUR);
+        plColorStack::load(PL_MODEL_COLOR);
         _models[i]->extractRenderComponents(renderMap, technique);
     }
 }

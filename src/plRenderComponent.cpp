@@ -1,6 +1,6 @@
 #include "plRenderComponent.h"
 
-plRenderComponent::plRenderComponent(const std::shared_ptr<plVAO>& vao)
+plRenderComponent::plRenderComponent(std::shared_ptr<plVAO> vao)
     :   _vao (vao)
 {
 }
@@ -19,18 +19,32 @@ void plRenderComponent::attach(const plUniform& uniform)
 }
 
 
+void plRenderComponent::attach(uint32_t type, std::shared_ptr<plTexture2D> texture)
+{
+    _textures[type] = texture;
+}
+
+
 void plRenderComponent::draw(const plShader& shader) const
 {
-
     _bindUniforms(shader);
+    _bindTextures(shader);
     _vao->draw();
 }
 
+void plRenderComponent::_bindTextures(const plShader& shader) const
+{
+    // set all textures
+    for (auto iter : _textures)
+    {
+        shader.setTexture(iter.first, iter.second);
+    }
+}
 
 void plRenderComponent::_bindUniforms(const plShader& shader) const
 {
     // set all uniforms
-    for (const plUniform& uniform : _uniforms)
+    for (auto uniform : _uniforms)
     {
         shader.setUniform(uniform);
     }

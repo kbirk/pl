@@ -33,7 +33,7 @@ set(sources
     "src/plBoundaryEditor"
     "src/plBufferObject"
     "src/plCamera"
-    "src/plColourMap"
+    "src/plColorMap"
     "src/plCSV"
     "src/plDefectSite"
     "src/plDonorSite"

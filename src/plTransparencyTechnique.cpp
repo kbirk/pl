@@ -7,13 +7,13 @@ plTransparencyTechnique::plTransparencyTechnique()
 
 void plTransparencyTechnique::render(const std::set<plRenderComponent>& componentSet) const
 {
-    const std::shared_ptr<plFBO >& fbo = plRenderResources::fbos(PL_MAIN_FBO);
-    const std::shared_ptr<plShader >& shader = plRenderResources::shaders(PL_PHONG_SHADER);
+    auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
+    auto shader = plRenderResources::shaders(PL_PHONG_SHADER);
 
     // bind fbo
     fbo->bind();
 
-    // set draw buffers to only write to colour output
+    // set draw buffers to only write to color output
     std::vector<GLenum> drawBuffers;
     drawBuffers.push_back(GL_COLOR_ATTACHMENT0);
     drawBuffers.push_back(GL_NONE);
@@ -30,8 +30,8 @@ void plTransparencyTechnique::render(const std::set<plRenderComponent>& componen
 
     glDepthMask(false);
 
-    // draw render components to colour buffer
-    for (const plRenderComponent& component : componentSet)
+    // draw render components to color buffer
+    for (auto component : componentSet)
     {
         component.draw(*shader);
     }
@@ -44,7 +44,7 @@ void plTransparencyTechnique::render(const std::set<plRenderComponent>& componen
 
     // set draw buffers to only write to picking buffer
     drawBuffers.clear();
-    drawBuffers.push_back(GL_NONE); // no colour output
+    drawBuffers.push_back(GL_NONE); // no color output
     drawBuffers.push_back(GL_NONE);
     drawBuffers.push_back(GL_NONE);
     drawBuffers.push_back(GL_NONE);
@@ -52,7 +52,7 @@ void plTransparencyTechnique::render(const std::set<plRenderComponent>& componen
     fbo->setDrawBuffers(drawBuffers);
 
     // draw render components to picking buffer
-    for (const plRenderComponent& component : componentSet)
+    for (auto component : componentSet)
     {
         component.draw(*shader);
     }

@@ -11,18 +11,18 @@
 #include "plVAO.h"
 #include "plRenderer.h"
 
-#define PL_BOUNDARY_SELECTED_POINT_RADIUS        1.0f
-#define PL_BOUNDARY_POINT_RADIUS                 0.75f
-#define PL_BOUNDARY_MESH_HEIGHT                  1.0f
-#define PL_BOUNDARY_MESH_WIDTH_HALF              0.4f
-#define PL_BOUNDARY_MESH_CURVE_HEIGHT            0.2f
+#define PL_BOUNDARY_SELECTED_POINT_RADIUS       1.0f
+#define PL_BOUNDARY_POINT_RADIUS                0.75f
+#define PL_BOUNDARY_MESH_HEIGHT                 1.0f
+#define PL_BOUNDARY_MESH_WIDTH_HALF             0.4f
+#define PL_BOUNDARY_MESH_CURVE_HEIGHT           0.2f
 
-#define PL_BOUNDARY_SELECTED_COLOUR              0.20f, 0.90f, 0.70f
-#define PL_BOUNDARY_POINT_SELECTED_COLOUR        0.20f, 0.90f, 0.70f
+#define PL_BOUNDARY_SELECTED_COLOR              0.20f, 0.90f, 0.70f
+#define PL_BOUNDARY_POINT_SELECTED_COLOR        0.20f, 0.90f, 0.70f
 
-#define PL_BOUNDARY_DEFECT_CORNER_COLOUR         0.90f, 0.20f, 0.20f
-#define PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR       0.55f, 0.21f, 0.55f
-#define PL_BOUNDARY_DONOR_COLOUR                 0.40f, 0.40f, 0.80f
+#define PL_BOUNDARY_DEFECT_CORNER_COLOR         0.90f, 0.20f, 0.20f
+#define PL_BOUNDARY_DEFECT_BOUNDARY_COLOR       0.55f, 0.21f, 0.55f
+#define PL_BOUNDARY_DONOR_COLOR                 0.40f, 0.40f, 0.80f
 
 class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
 {
@@ -56,7 +56,7 @@ class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
         std::vector<plVector3> _normals;
         std::shared_ptr<plVAO> _vao;
 
-        plVector4 _getColour() const;
+        plVector4 _getColor() const;
 
         void _generateVAO();
         void _extractPointRenderComponents(plRenderMap& renderMap, uint32_t technique) const;

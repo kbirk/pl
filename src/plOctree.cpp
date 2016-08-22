@@ -127,7 +127,7 @@ void plOctree::extractRenderComponents(plRenderMap& renderMap, uint32_t techniqu
     // draw current node
     if (_contained.size() > 0 || count > 0)    // only draw if contains objects, or has children that contain
     {
-        plColourStack::load(PL_PURPLE_COLOUR);
+        plColorStack::load(PL_PURPLE_COLOR);
 
         plModelStack::push();
         plModelStack::translate(_centre);
@@ -139,7 +139,7 @@ void plOctree::extractRenderComponents(plRenderMap& renderMap, uint32_t techniqu
         component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()));
         component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
         component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-        component.attach(plUniform(PL_COLOUR_UNIFORM,            plColourStack::top()));
+        component.attach(plUniform(PL_COLOR_UNIFORM,             plColorStack::top()));
         // insert into render map
         renderMap[technique].insert(component);
 
@@ -203,7 +203,7 @@ plVAO plOctree::_generateVAO(float32_t halfWidth) const
     indices.push_back(7);   indices.push_back(4);
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 16, 0));
     // set eabo

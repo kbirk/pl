@@ -11,18 +11,18 @@ void plBoneAndCartilage::extractRenderComponents(plRenderMap& renderMap, uint32_
 
     // draw combined
     plPickingStack::loadRed(PL_PICKING_TYPE_CARTILAGE);
-    plColourStack::load(PL_MODEL_BONE_COLOUR);
+    plColorStack::load(PL_MODEL_BONE_COLOR);
     combined.extractRenderComponents(renderMap, technique);
 
     /*
     // draw cartilage
     plPickingStack::loadRed(PL_PICKING_TYPE_CARTILAGE);
-    plColourStack::load(PL_MODEL_CARTILAGE_COLOUR);
+    plColorStack::load(PL_MODEL_CARTILAGE_COLOR);
     cartilage.extractRenderComponents(renderMap, technique);
 
     // draw bone
     plPickingStack::loadRed(PL_PICKING_TYPE_BONE);
-    plColourStack::load(PL_MODEL_BONE_COLOUR);
+    plColorStack::load(PL_MODEL_BONE_COLOR);
     bone.extractRenderComponents(renderMap, technique);
     */
 }

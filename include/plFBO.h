@@ -27,7 +27,7 @@ class plFBO
 
         std::vector<GLenum> drawBuffers() const;
 
-        const std::shared_ptr<plTexture2D>& texture2DAttachment(uint32_t attachment) const;
+        std::shared_ptr<plTexture2D> texture2DAttachment(uint32_t attachment) const;
 
         template<typename T>
         plPixel<T> readPixel(GLenum attachment, uint32_t x, uint32_t y) const;

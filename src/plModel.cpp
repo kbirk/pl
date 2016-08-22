@@ -21,14 +21,13 @@ plModel::plModel(const std::vector<plTriangle> &triangles, const plString &file,
 plModel::plModel(const plString &file, uint32_t octreeDepth)
     : filename(file)
 {
-    std::vector<plTriangle > triangles;
+    std::vector<plTriangle> triangles;
 
     // import triangles from STL file
     if (!plSTL::importFile(triangles, filename, true))
     {
         exit(1);
     }
-
 
     if (octreeDepth > 1)
     {
@@ -70,7 +69,7 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
 
     if (!_isTransparent)
     {
-        component.attach(plUniform(PL_COLOUR_UNIFORM, plColourStack::top()));
+        component.attach(plUniform(PL_COLOR_UNIFORM, plColorStack::top()));
         // insert into render map
         renderMap[technique].insert(component);
     }
@@ -79,7 +78,9 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
         // sort by distance
         plVector3 viewDir = plCameraStack::direction();
 
-        std::vector<plOrderPair> order;     order.reserve(_mesh->triangles().size());
+        std::vector<plOrderPair> order;
+        order.reserve(_mesh->triangles().size());
+
         uint32_t index = 0;
         for (const plTriangle& triangle : _mesh->triangles())
         {
@@ -87,7 +88,8 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
         }
         std::sort(order.begin(), order.end());
 
-        std::vector<uint32_t> indices;    indices.reserve(_mesh->triangles().size()*3);
+        std::vector<uint32_t> indices;
+        indices.reserve(_mesh->triangles().size()*3);
         for (uint32_t i = 0; i < order.size(); i++)
         {
             indices.push_back(order[i].index*3);
@@ -96,10 +98,10 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
         }
 
         // dirty const_cast
-        const_cast< std::shared_ptr<plVAO >&>(_vao)->eabo()->set(indices);
-        const_cast< std::shared_ptr<plVAO >&>(_vao)->upload();
+        const_cast<std::shared_ptr<plVAO>&>(_vao)->eabo()->set(indices);
+        const_cast<std::shared_ptr<plVAO>&>(_vao)->upload();
 
-        component.attach(plUniform(PL_COLOUR_UNIFORM, plVector4(plColourStack::top().x, plColourStack::top().y, plColourStack::top().z, 0.7f)));
+        component.attach(plUniform(PL_COLOR_UNIFORM, plVector4(plColorStack::top().x, plColorStack::top().y, plColorStack::top().z, 0.7f)));
 
         // insert into render map
         if (technique == PL_PLAN_TECHNIQUE)

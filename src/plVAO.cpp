@@ -40,14 +40,13 @@ plVAO::~plVAO()
 }
 
 
-void plVAO::attach(const std::shared_ptr<plVBO >& vbo)
+void plVAO::attach(std::shared_ptr<plVBO> vbo)
 {
     _vbos.push_back(vbo);
-
 }
 
 
-void plVAO::attach(const std::shared_ptr<plEABO >& eabo)
+void plVAO::attach(std::shared_ptr<plEABO> eabo)
 {
     _eabo = eabo;
 }

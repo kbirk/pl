@@ -84,7 +84,7 @@ void plVBO::upload()
     glBindBuffer(GL_ARRAY_BUFFER, _id);
     glBufferData(GL_ARRAY_BUFFER, _numBytes, &_data[0], _usage);
 
-    for (const plVertexAttributePointer& attributePointer : _attributePointers)
+    for (auto attributePointer : _attributePointers)
     {
         // set position pointer, offset and stride
         glEnableVertexAttribArray(attributePointer.index);

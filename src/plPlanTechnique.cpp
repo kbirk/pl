@@ -31,21 +31,19 @@ void plPlanTechnique::render(const std::set<plRenderComponent>& componentSet) co
 
     glDisable(GL_CULL_FACE);
 
-    // set stencil testing to write 1's whereever is rendered, this is later used in transparency shader to ensure proper picking in transparent areas
+    // set stencil testing to write 1's wherever is rendered, this is later used in transparency shader to ensure proper picking in transparent areas
     glEnable(GL_STENCIL_TEST) ;
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilMask(0xFF);
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 
     // draw main render components
-    for (const plRenderComponent& component : componentSet)
+    for (auto component : componentSet)
     {
         component.draw(*shader);
     }
 
-
     glDisable(GL_STENCIL_TEST);
-
     glEnable(GL_CULL_FACE);
 
     // unbind shader

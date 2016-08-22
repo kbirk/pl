@@ -7,13 +7,13 @@
 #include "plCamera.h"
 #include "plPicking.h"
 
-namespace plColourStack
+namespace plColorStack
 {
     void push(float32_t r, float32_t g, float32_t b, float32_t a = 1.0f);
-    void push(const plVector4 &colour);
+    void push(const plVector4& color);
 
     void load(float32_t r, float32_t g, float32_t b, float32_t a = 1.0f);
-    void load(const plVector4 &colour);
+    void load(const plVector4& color);
 
     void pop();
 
@@ -44,9 +44,9 @@ namespace plPickingStack
 namespace plModelStack
 {
     void push();
-    void push(const plMatrix44 &m);
-    void load(const plMatrix44 &m);
-    void mult(const plMatrix44 &m);
+    void push(const plMatrix44& m);
+    void load(const plMatrix44& m);
+    void mult(const plMatrix44& m);
     void pop();
 
     void scale(GLfloat s);
@@ -54,9 +54,9 @@ namespace plModelStack
     void translate(GLfloat x, GLfloat y, GLfloat z);
     void rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
 
-    void scale(const plVector3 &v);
-    void translate(const plVector3 &v);
-    void rotate(float32_t angle, const plVector3 &v);
+    void scale(const plVector3& v);
+    void translate(const plVector3& v);
+    void rotate(float32_t angle, const plVector3& v);
 
     const plMatrix44& top();
 }
@@ -65,10 +65,10 @@ namespace plModelStack
 namespace plCameraStack
 {
     void push();
-    void push(const plMatrix44 &m);
-    void push(const plCamera   &c);
-    void load(const plMatrix44 &m);
-    void load(const plCamera   &c);
+    void push(const plMatrix44& m);
+    void push(const plCamera& c);
+    void load(const plMatrix44& m);
+    void load(const plCamera& c);
     void pop();
 
     plVector3 direction();
@@ -82,10 +82,10 @@ namespace plCameraStack
 namespace plProjectionStack
 {
     void push();
-    void push(const plMatrix44   &m);
-    void push(const plProjection &p);
-    void load(const plMatrix44   &m);
-    void load(const plProjection &p);
+    void push(const plMatrix44& m);
+    void push(const plProjection& p);
+    void load(const plMatrix44& m);
+    void load(const plProjection& p);
     void pop();
 
     const plMatrix44& top();

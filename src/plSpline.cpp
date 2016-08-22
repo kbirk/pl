@@ -38,7 +38,6 @@ uint32_t plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &n
     if (size() < 4)
     {
         int32_t ret = plBoundary::addPointAndNormal(point, normal);
-
         if (size() == 4)
         {
             _computeHermite();
@@ -52,7 +51,6 @@ uint32_t plSpline::addPointAndNormal (const plVector3 &point, const plVector3 &n
 void plSpline::movePointAndNormal(uint32_t index, const plVector3 &point, const plVector3 &normal)
 {
     plBoundary::movePointAndNormal(index, point, normal);
-
     if (size() == 4)
     {
         _computeHermite();
@@ -80,7 +78,7 @@ void plSpline::extractRenderComponents(plRenderMap& renderMap, uint32_t techniqu
     else
     {
         plPickingStack::loadRed(PL_PICKING_TYPE_DEFECT_CORNERS);
-        plColourStack::load(_getColour());
+        plColorStack::load(_getColor());
 
         // draw points
         _extractPointRenderComponents(renderMap, technique);
@@ -88,8 +86,8 @@ void plSpline::extractRenderComponents(plRenderMap& renderMap, uint32_t techniqu
         // draw spline
         plPickingStack::loadBlue(-1);  // unused
 
-        // set colour flag to use vertex attribute colours
-        plColourStack::push(PL_USE_ATTRIBUTE_COLOUR_OPAQUE);
+        // set color flag to use vertex attribute colors
+        plColorStack::push(PL_USE_ATTRIBUTE_COLOR_OPAQUE);
 
         // create render component
         plRenderComponent component(_surfaceVAO);
@@ -97,13 +95,13 @@ void plSpline::extractRenderComponents(plRenderMap& renderMap, uint32_t techniqu
         component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plMatrix44()));
         component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
         component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-        component.attach(plUniform(PL_COLOUR_UNIFORM,            plColourStack::top()));
+        component.attach(plUniform(PL_COLOR_UNIFORM,            plColorStack::top()));
         component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
         component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
         // insert into render map
         renderMap[technique].insert(component);
 
-        plColourStack::pop();
+        plColorStack::pop();
     }
 }
 
@@ -117,15 +115,17 @@ void plSpline::extractRenderComponents(plRenderMap& renderMap) const
 float32_t Q(float32_t s, float32_t t, const std::vector<float32_t> &st, const std::vector<float32_t> &tt)
 {
     // hermite blending matrix
-    static plMatrix44 h(2, -3,  0,  1,
-                        -2,  3,  0,  0,
-                         1, -2,  1,  0,
-                         1, -1,  0,  0);
+    static plMatrix44 h(
+        2, -3, 0, 1,
+        -2, 3, 0, 0,
+        1, -2, 1, 0,
+        1, -1, 0, 0);
 
-    plMatrix44  q (0.0f,   0.0f, tt[0],  tt[3],
-                    0.0f,   0.0f, tt[1],  tt[2],
-                    st[0], st[3],  0.0f,   0.0f,
-                    st[1], st[2],  0.0f,   0.0f);
+    plMatrix44 q(
+        0.0f, 0.0f, tt[0], tt[3],
+        0.0f, 0.0f, tt[1], tt[2],
+        st[0], st[3], 0.0f, 0.0f,
+        st[1], st[2], 0.0f, 0.0f);
 
     plVector4 sc(s*s*s, s*s, s, 1);
     plVector4 tc(t*t*t, t*t, t, 1);
@@ -175,28 +175,28 @@ void plSpline::_computeTangents(std::vector<float32_t> &st, std::vector<float32_
     tn = (p03 ^ n03).normalize();
 
     s.push_back(plMath::projectVectorOnPlane(p03 ^ n[0], sn).normalize());
-    t.push_back(plMath::projectVectorOnPlane(p01 ^ -n[0], tn).normalize()) ;
+    t.push_back(plMath::projectVectorOnPlane(p01 ^ -n[0], tn).normalize());
 
     // p1 plane normals
     //sn = (p01 ^ -n01).normalize(); // redundant
     tn = (p12 ^ n12).normalize();
 
     s.push_back(plMath::projectVectorOnPlane(p03 ^ n[1], sn).normalize());
-    t.push_back(plMath::projectVectorOnPlane(p01 ^ -n[1], tn).normalize()) ;
+    t.push_back(plMath::projectVectorOnPlane(p01 ^ -n[1], tn).normalize());
 
     // p2 plane normals
     sn = (p32 ^ -n32).normalize();
     //tn = (p12 ^ n12).normalize();  // redundant
 
     s.push_back(plMath::projectVectorOnPlane(p12 ^ n[2], sn).normalize());
-    t.push_back(plMath::projectVectorOnPlane(p32 ^ -n[2], tn).normalize()) ;
+    t.push_back(plMath::projectVectorOnPlane(p32 ^ -n[2], tn).normalize());
 
     // p3 plane normals
     //sn = (p32 ^ -n32).normalize(); // redundant
     tn = (p03 ^ n03).normalize();
 
     s.push_back(plMath::projectVectorOnPlane(p03 ^ n[3], sn).normalize());
-    t.push_back(plMath::projectVectorOnPlane(p32 ^ -n[3], tn).normalize()) ;
+    t.push_back(plMath::projectVectorOnPlane(p32 ^ -n[3], tn).normalize());
 
     // find the slope of the line along the plane of the spline boundary wall
     // scale by the length between two points to ensure proper scaling
@@ -217,7 +217,7 @@ void plSpline::_computeTangents(std::vector<float32_t> &st, std::vector<float32_
 
 void plSpline::_computeHermite()
 {
-    // spline colour map computations are very intensive, to prevent unnecessary updates due to frequency of mouse events, add a limit
+    // spline color map computations are very intensive, to prevent unnecessary updates due to frequency of mouse events, add a limit
     if (_timeSinceLastUpdate() < 5)
         return;
 
@@ -232,10 +232,10 @@ void plSpline::_computeHermite()
     triangles.reserve(PL_SPLINE_RESOLUTION*PL_SPLINE_RESOLUTION*2);
 
     std::vector<plVector3> points;      points.reserve((PL_SPLINE_RESOLUTION+1)*(PL_SPLINE_RESOLUTION+1));
-    std::vector<plVector3> colours;     colours.reserve((PL_SPLINE_RESOLUTION+1)*(PL_SPLINE_RESOLUTION+1));
+    std::vector<plVector3> colors;      colors.reserve((PL_SPLINE_RESOLUTION+1)*(PL_SPLINE_RESOLUTION+1));
 
     std::vector<plVector3> vertices;    vertices.reserve(PL_SPLINE_RESOLUTION * PL_SPLINE_RESOLUTION * 6 * 3);
-    std::vector<uint32_t>    indices;     indices.reserve (PL_SPLINE_RESOLUTION * PL_SPLINE_RESOLUTION * 6);
+    std::vector<uint32_t> indices;      indices.reserve (PL_SPLINE_RESOLUTION * PL_SPLINE_RESOLUTION * 6);
 
     for (uint32_t j=0; j <= PL_SPLINE_RESOLUTION; j++)
     {
@@ -257,18 +257,18 @@ void plSpline::_computeHermite()
 
             // interpolate position and normal for current u coord
             plVector3 norm = ((1.0f-u)*n03 + u*n12).normalize();
-            plVector3 pos  = (1.0f-u)*p03 + u*p12 + z*norm;          // inflate this point using normal scaled by z value returned by hermite spline
+            plVector3 pos  = (1.0f-u)*p03 + u*p12 + z*norm; // inflate this point using normal scaled by z value returned by hermite spline
 
             // intersect surface for distance map
             plIntersection intersection = _mesh->rayIntersect(pos, -norm, false, false, true);
 
-            float32_t distance = (intersection.point - pos).squaredLength() / PL_SPLINE_COLOUR_MAP_RANGE;
+            float32_t distance = (intersection.point - pos).squaredLength() / PL_SPLINE_COLOR_MAP_RANGE;
 
-            // get colour value
-            plVector3 colour = (distance <= PL_SPLINE_COLOUR_MAP_RANGE) ? plColourMap::map(distance) : PL_SPLINE_NO_DATA_COLOUR;
+            // get color value
+            plVector3 color = (distance <= PL_SPLINE_COLOR_MAP_RANGE) ? plColorMap::map(distance) : PL_SPLINE_NO_DATA_COLOR;
 
             points.push_back(pos);
-            colours.push_back(colour);
+            colors.push_back(color);
 
             if (j > 0 && i > 0)
             {
@@ -285,10 +285,10 @@ void plSpline::_computeHermite()
 
                 uint32_t base = vertices.size() / 3;
 
-                vertices.push_back(points[i0]);  vertices.push_back(normal);  vertices.push_back(colours[i0]);  // point 0
-                vertices.push_back(points[i1]);  vertices.push_back(normal);  vertices.push_back(colours[i1]);  // point 1
-                vertices.push_back(points[i2]);  vertices.push_back(normal);  vertices.push_back(colours[i2]);  // point 2
-                vertices.push_back(points[i3]);  vertices.push_back(normal);  vertices.push_back(colours[i3]);  // point 3
+                vertices.push_back(points[i0]);  vertices.push_back(normal);  vertices.push_back(colors[i0]);  // point 0
+                vertices.push_back(points[i1]);  vertices.push_back(normal);  vertices.push_back(colors[i1]);  // point 1
+                vertices.push_back(points[i2]);  vertices.push_back(normal);  vertices.push_back(colors[i2]);  // point 2
+                vertices.push_back(points[i3]);  vertices.push_back(normal);  vertices.push_back(colors[i3]);  // point 3
 
                 // triangle indices
                 indices.push_back(base);   indices.push_back(base+1);   indices.push_back(base+2);
@@ -301,11 +301,11 @@ void plSpline::_computeHermite()
     _surfaceMesh = plMesh(triangles);
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 48, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   48, 16));
-    vbo->set(plVertexAttributePointer(PL_COLOUR_ATTRIBUTE,   48, 32));
+    vbo->set(plVertexAttributePointer(PL_COLOR_ATTRIBUTE,    48, 32));
     // set eabo
     std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
     eabo->set(indices);

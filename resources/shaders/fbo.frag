@@ -1,62 +1,65 @@
 #version 330
 
-#define BLUR_KERNAL_SIZE        5
-#define BLUR_KERNAL_STRIDE      1
-#define OUTLINE_COLOUR          0.8, 1.0, 1.0
+#define BLUR_KERNAL_RADIUS      4
+#define BLUR_KERNAL_LEFT        (-BLUR_KERNAL_RADIUS)
+#define BLUR_KERNAL_RIGHT       (BLUR_KERNAL_RADIUS)
+#define OUTLINE_COLOR           0.8, 1.0, 1.0
 
-in vec2 texCoordOut;
+in vec2 vTexCoord;
 
 uniform sampler2D uTextureUnit0;
 uniform isampler2D uTextureUnit1;
 
-out vec4 colourOutput;
+out vec4 colorOutput;
 
 vec4 getBlurredPixel(in ivec3 outline)
 {
     vec2 dim = textureSize(uTextureUnit1, 0);
 
     int outlineCount = 0;
-    int sampleCount  = 0;
+    int sampleCount = 0;
 
-    for (int i = -(BLUR_KERNAL_SIZE-1); i < BLUR_KERNAL_SIZE; i+=BLUR_KERNAL_STRIDE)
+    for (int i = BLUR_KERNAL_LEFT; i < BLUR_KERNAL_RIGHT; i++)
     {
-        for (int j = -(BLUR_KERNAL_SIZE-1); j < BLUR_KERNAL_SIZE; j+=BLUR_KERNAL_STRIDE)
+        for (int j = BLUR_KERNAL_LEFT; j < BLUR_KERNAL_RIGHT; j++)
         {
-            float x = texCoordOut.x + (i / dim.x);
-            float y = texCoordOut.y + (j / dim.y);
+            float x = vTexCoord.x + (i / dim.x);
+            float y = vTexCoord.y + (j / dim.y);
 
             ivec4 value = texture(uTextureUnit1, vec2(x, y));
 
             if (value.rgb == outline.rgb)
-                outlineCount += value.a;
+            {
+                outlineCount++;
+            }
 
             sampleCount++;
         }
     }
 
-    float x = outlineCount / float(sampleCount);
+    float nval = outlineCount / float(sampleCount);
 
-    if (outlineCount == sampleCount)
-        return vec4(0, 0, 0, 0);
+    // DEBUG
+    // nval = 0.5;
 
-    return vec4(OUTLINE_COLOUR, (1 - x) * pow(x, 0.5));
+    return vec4(OUTLINE_COLOR, (1.0 - nval) * pow(nval, 0.5));
 }
 
 
 void main()
 {
-    // get outline buffer colour
-    vec4 colour = texture(uTextureUnit0, vec2(texCoordOut.x, texCoordOut.y));
-    ivec4 outline = texture(uTextureUnit1, vec2(texCoordOut.x, texCoordOut.y));
+    // get outline buffer color
+    vec4 color = texture(uTextureUnit0, vec2(vTexCoord.x, vTexCoord.y));
+    ivec4 outline = texture(uTextureUnit1, vec2(vTexCoord.x, vTexCoord.y));
 
     // if outline is clear, just render
     if (outline.a == 0)
     {
-        colourOutput = colour;
+        colorOutput = color;
         return;
     }
 
     // otherwise blur the outline
     vec4 blur = getBlurredPixel(outline.rgb);
-    colourOutput = mix(colour, blur, blur.a) + vec4(blur.rgb * blur.a, blur.a);
+    colorOutput = mix(color, blur, blur.a) + vec4(blur.rgb * blur.a, blur.a);
 }

@@ -167,7 +167,7 @@ void plModelEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
             plPickingStack::loadRed(PL_PICKING_TYPE_BONE);
             plPickingStack::loadGreen(i);
             plPickingStack::loadBlue(-1);
-            plColourStack::load(PL_MODEL_COLOUR);
+            plColorStack::load(PL_MODEL_COLOR);
 
             plRenderer::queueDisk(
                 PL_MINIMAL_TECHNIQUE,

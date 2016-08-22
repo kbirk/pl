@@ -8,7 +8,7 @@ plGraftCap::plGraftCap()
 void plGraftCap::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT);
-    plColourStack::load(_getColour());
+    plColorStack::load(_getColor());
 
     // if empty, do not draw
     if (triangles.empty())
@@ -20,7 +20,7 @@ void plGraftCap::extractRenderComponents(plRenderMap& renderMap, uint32_t techni
     component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()));
     component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
     component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-    component.attach(plUniform(PL_COLOUR_UNIFORM,            plColourStack::top()));
+    component.attach(plUniform(PL_COLOR_UNIFORM,            plColorStack::top()));
     component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
     component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
     // insert into render map
@@ -80,7 +80,6 @@ void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transf
     if (angles.size() > 0)
     {
         perimeter.reserve(angles.size());  // reserve size
-
         for (const plPointAndAngle& angle : angles)
         {
             perimeter.push_back(angle);
@@ -386,15 +385,15 @@ plCartilageCap::plCartilageCap()
 }
 
 
-plVector4 plCartilageCap::_getColour() const
+plVector4 plCartilageCap::_getColor() const
 {
     if (plPickingStack::topBlue() == PL_PICKING_INDEX_GRAFT_DEFECT)
     {
-        return plVector4(PL_GRAFT_DEFECT_CARTILAGE_COLOUR);
+        return plVector4(PL_GRAFT_DEFECT_CARTILAGE_COLOR);
     }
     else
     {
-        return plVector4(PL_GRAFT_DONOR_CARTILAGE_COLOUR);
+        return plVector4(PL_GRAFT_DONOR_CARTILAGE_COLOR);
     }
 }
 
@@ -496,7 +495,7 @@ void plCartilageCap::generateVAO(float32_t radius, float32_t length, const std::
     if (indices.size() > 0)
     {
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
@@ -547,7 +546,7 @@ void plCartilageCap::_generateProjectionVAO(float32_t radius, float32_t length, 
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
@@ -647,15 +646,15 @@ plBoneCap::plBoneCap()
 }
 
 
-plVector4 plBoneCap::_getColour() const
+plVector4 plBoneCap::_getColor() const
 {
     if (plPickingStack::topBlue() == PL_PICKING_INDEX_GRAFT_DEFECT)
     {
-        return plVector4(PL_GRAFT_DEFECT_BONE_COLOUR);
+        return plVector4(PL_GRAFT_DEFECT_BONE_COLOR);
     }
     else
     {
-        return plVector4(PL_GRAFT_DONOR_BONE_COLOUR);
+        return plVector4(PL_GRAFT_DONOR_BONE_COLOR);
     }
 }
 
@@ -766,7 +765,7 @@ void plBoneCap::generateVAO(float32_t radius, float32_t length)
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));

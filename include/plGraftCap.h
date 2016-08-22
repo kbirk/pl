@@ -13,12 +13,12 @@
 #include "plOctreeMesh.h"
 #include "plRenderer.h"
 
-#define PL_CAP_OFFSET                            plVector3(0, 0.025f, 0)
-#define PL_GRAFT_DONOR_BONE_COLOUR               0.60f, 0.90f, 0.52f
-#define PL_GRAFT_DONOR_CARTILAGE_COLOUR          0.30f, 0.66f, 0.22f
-#define PL_GRAFT_DEFECT_BONE_COLOUR              0.90f, 0.68f, 0.27f
-#define PL_GRAFT_DEFECT_CARTILAGE_COLOUR         0.80f, 0.48f, 0.07f
-#define PL_GRAFT_MARKER_COLOUR                   0.80f, 0.20f, 0.80f
+#define PL_CAP_OFFSET                           plVector3(0, 0.025f, 0)
+#define PL_GRAFT_DONOR_BONE_COLOR               0.60f, 0.90f, 0.52f
+#define PL_GRAFT_DONOR_CARTILAGE_COLOR          0.30f, 0.66f, 0.22f
+#define PL_GRAFT_DEFECT_BONE_COLOR              0.90f, 0.68f, 0.27f
+#define PL_GRAFT_DEFECT_CARTILAGE_COLOR         0.80f, 0.48f, 0.07f
+#define PL_GRAFT_MARKER_COLOR                   0.80f, 0.20f, 0.80f
 
 class plPointAndAngle
 {
@@ -58,7 +58,7 @@ class plGraftCap : public plRenderable, public plEditable
 
         std::shared_ptr<plVAO> _vao;
 
-        virtual plVector4 _getColour() const = 0;
+        virtual plVector4 _getColor() const = 0;
 
         std::vector<plVector3> _pointsOutsideTriangles(plVector3 verts[3], const plTransform& transform, float32_t radius) const;
         std::vector<plVector3> _pointsInsideTriangles (plVector3 verts[3], float32_t dist[3], const plTransform& transform, float32_t radius) const;
@@ -86,7 +86,7 @@ class plCartilageCap : public plGraftCap
         std::shared_ptr<plVAO> _capVAO;
         std::shared_ptr<plVAO> _projectionVAO;
 
-        plVector4 _getColour() const;
+        plVector4 _getColor() const;
         void _generateProjectionVAO(float32_t radius, float32_t length, const std::vector<plPointAndAngle>& bonePerimeter);
 
 };
@@ -103,6 +103,6 @@ class plBoneCap : public plGraftCap
 
     private:
 
-        plVector4 _getColour() const;
+        plVector4 _getColor() const;
 
 };

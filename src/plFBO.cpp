@@ -116,13 +116,12 @@ void plFBO::unbind() const
 }
 
 
-const std::shared_ptr<plTexture2D >& plFBO::texture2DAttachment(uint32_t attachment) const
+std::shared_ptr<plTexture2D> plFBO::texture2DAttachment(uint32_t attachment) const
 {
     if (_textureAttachments.find(attachment) == _textureAttachments.end())
     {
         std::cerr << "plFBO::texture2DAttachment() error: attachment enumeration does not exist for this fbo" << std::endl;
-        static std::shared_ptr<plTexture2D> emptyAttachment;
-        return emptyAttachment;
+        return nullptr;
     }
     return _textureAttachments.find(attachment)->second;
 }
@@ -138,7 +137,7 @@ std::vector<GLenum> plFBO::drawBuffers() const
 {
     std::vector<GLenum> drawBuffers;
 
-    for (auto &iter : _textureAttachments)
+    for (auto iter : _textureAttachments)
     {
         auto attachment = static_cast<GLint>(iter.first);
         // check if attachment is a color attachment
@@ -178,11 +177,10 @@ void plFBO::_copy(const plFBO& fbo)
 {
     _create();
 
-    for (auto &attachment : _textureAttachments)
+    for (auto attachment : _textureAttachments)
     {
         // copy texture to a new shared pointer
         auto texture = std::make_shared<plTexture2D>(*attachment.second);
-
         // attach new texture
         attach(attachment.first, texture);
     }

@@ -30,7 +30,7 @@ void plOutlineTechnique::render(const std::set<plRenderComponent>& componentSet)
     glDepthFunc(GL_LEQUAL);
 
     // draw shapes to outline buffer
-    for (const plRenderComponent& component : componentSet)
+    for (auto component : componentSet)
     {
         component.draw(*shader);
     }

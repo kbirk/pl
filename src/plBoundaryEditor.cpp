@@ -80,14 +80,14 @@ bool plBoundaryEditor::processMouseRelease(int32_t x, int32_t y)
 void plBoundaryEditor::_clearSiteBoundaries()
 {
     // defect sites
-    for (plDefectSite* defectSite : _plan->defectSites())
+    for (auto defectSite : _plan->defectSites())
     {
         _clearEditable(defectSite->spline);
         _clearEditable(defectSite->boundary);
     }
 
     // donor sites
-    for (plDonorSite* donorSite : _plan->donorSites())
+    for (auto donorSite : _plan->donorSites())
     {
         _clearEditable(donorSite->boundary);
     }
@@ -262,7 +262,7 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
 
             // spline menu
             plPickingStack::loadRed(PL_PICKING_TYPE_DEFECT_CORNERS);
-            plColourStack::load(PL_BOUNDARY_DEFECT_CORNER_COLOUR);
+            plColorStack::load(PL_BOUNDARY_DEFECT_CORNER_COLOR);
             plRenderer::queueDisk(
                 PL_MINIMAL_TECHNIQUE,
                 plVector3(CORNER_HORIZONTAL, INITIAL_VERTICAL - count*PL_EDITOR_MENU_VERTICAL_SPACING, 0),
@@ -280,7 +280,7 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
             }
             // boundary menu
             plPickingStack::loadRed(PL_PICKING_TYPE_DEFECT_BOUNDARY);
-            plColourStack::load(PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR);
+            plColorStack::load(PL_BOUNDARY_DEFECT_BOUNDARY_COLOR);
 
             plRenderer::queueDisk(
                 PL_MINIMAL_TECHNIQUE,
@@ -307,7 +307,7 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
 
             // boundary menu
             plPickingStack::loadRed(PL_PICKING_TYPE_DONOR_BOUNDARY);
-            plColourStack::load(PL_BOUNDARY_DONOR_COLOUR);
+            plColorStack::load(PL_BOUNDARY_DONOR_COLOR);
 
             plRenderer::queueDisk(
                 PL_MINIMAL_TECHNIQUE,

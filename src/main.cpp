@@ -38,7 +38,6 @@ void init(int32_t argc, char** argv)
 
     // initialize openGL specific objects
     plOpenGLInfo::init();
-    //plOpenGLInfo::print();
     plRenderer::init();
     plRenderResources::init();
 

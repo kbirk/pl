@@ -208,7 +208,7 @@ void plPlanningSite::_generateFineGridPoints()
 
     for (const plPointAndNormal& pointNormal : pointsAndNormals)
     {
-        gridPoints.push_back(plVector4(pointNormal.point,  1));
+        gridPoints.push_back(plVector4(pointNormal.point, 1));
         gridNormals.push_back(plVector4(pointNormal.normal, 1));
     }
 

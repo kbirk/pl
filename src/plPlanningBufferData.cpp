@@ -44,7 +44,7 @@ uint32_t plPlanningBufferData::totalDonorGridPoints() const
     uint32_t totalGridPoints = 0;
     for (const plPlanningSite& donorSite : donorSites)
     {
-        totalGridPoints +=  donorSite.gridPoints.size();
+        totalGridPoints += donorSite.gridPoints.size();
     }
     return totalGridPoints;
 }

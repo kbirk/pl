@@ -11,7 +11,7 @@ enum plVertexAttributeIndexEnum
 {
     PL_POSITION_ATTRIBUTE = 0,
     PL_NORMAL_ATTRIBUTE,
-    PL_COLOUR_ATTRIBUTE,
+    PL_COLOR_ATTRIBUTE,
     PL_TEXCOORD_ATTRIBUTE
 };
 
@@ -47,7 +47,7 @@ class plVBO : public plVertexSpecBuffer
 
         void clear();
 
-        void bind() const { glBindBuffer(GL_ARRAY_BUFFER, _id); }
+        void bind() const   { glBindBuffer(GL_ARRAY_BUFFER, _id); }
         void unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
         void upload();
