@@ -74,11 +74,8 @@ void plOctree::clear()
 }
 
 
-void plOctree::build(const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, uint32_t depth, bool verbose)
+void plOctree::build(const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, uint32_t depth)
 {
-    if (verbose)
-        std::cout << "Building octree for " << triangles.size() << " triangles (depth = " << depth << ")...";
-
     // centre point of octree
     _centre = 0.5f * (min+max);
     _depth = depth;
@@ -100,9 +97,6 @@ void plOctree::build(const plVector3 &min, const plVector3 &max, const std::vect
     {
         _insert(triangle);
     }
-
-    if (verbose)
-        std::cout << " Complete." << std::endl;
 }
 
 

@@ -6,7 +6,7 @@ plModel::plModel(const std::vector<plTriangle> &triangles, const plString &file,
     if (octreeDepth > 1)
     {
         // use octree mesh
-        _mesh = std::make_shared<plOctreeMesh>(std::move(triangles), octreeDepth, true);
+        _mesh = std::make_shared<plOctreeMesh>(std::move(triangles), octreeDepth);
     }
     else
     {
@@ -32,7 +32,7 @@ plModel::plModel(const plString &file, uint32_t octreeDepth)
     if (octreeDepth > 1)
     {
         // use octree mesh
-        _mesh = std::make_shared<plOctreeMesh>(std::move(triangles), octreeDepth, true);
+        _mesh = std::make_shared<plOctreeMesh>(std::move(triangles), octreeDepth);
     }
     else
     {
@@ -52,7 +52,7 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
     // render octree
     if (std::dynamic_pointer_cast<plOctreeMesh>(_mesh))
     {
-        std::dynamic_pointer_cast<plOctreeMesh>(_mesh)->octree().extractRenderComponents(renderMap);
+        std::dynamic_pointer_cast<plOctreeMesh>(_mesh)->octree()->extractRenderComponents(renderMap);
     }
 
     if (!_isVisible)

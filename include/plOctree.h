@@ -38,13 +38,22 @@ class plOctree : public plRenderable
 
         uint32_t depth() const { return _depth; }
 
-        void build (const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, uint32_t depth, bool verbose = false);
-        void clear ();
+        void build(
+            const plVector3& min,
+            const plVector3& max,
+            const std::vector<plTriangle>& triangles,
+            uint32_t depth);
+        void clear();
 
         void extractRenderComponents(plRenderMap& renderMap) const;
         void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        bool rayIntersect(std::set<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, float32_t rayRadius = 0.0f, bool ignoreBehindRay = false) const;
+        bool rayIntersect(
+            std::set<const plTriangle*> &triangles,
+            const plVector3 &rayOrigin,
+            const plVector3 &rayDirection,
+            float32_t rayRadius = 0.0f,
+            bool ignoreBehindRay = false) const;
 
         void toggleVisibility();
 

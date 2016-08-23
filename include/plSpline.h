@@ -22,7 +22,6 @@ class plSpline : public plBoundary
 {
     public:
 
-        plSpline();
         plSpline(std::shared_ptr<plMesh> mesh);
         plSpline(std::shared_ptr<plMesh> mesh, const std::vector<plString>& row);
 
@@ -35,7 +34,7 @@ class plSpline : public plBoundary
         void movePointAndNormal(uint32_t index, const plVector3 &point, const plVector3 &normal);
         void removePointAndNormal(uint32_t index);
 
-        void   clear();
+        void clear();
 
     private:
 

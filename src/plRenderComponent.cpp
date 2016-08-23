@@ -27,9 +27,16 @@ void plRenderComponent::attach(uint32_t type, std::shared_ptr<plTexture2D> textu
 
 void plRenderComponent::draw(const plShader& shader) const
 {
-    _bindUniforms(shader);
-    _bindTextures(shader);
-    _vao->draw();
+    if (_vao != nullptr)
+    {
+        _bindUniforms(shader);
+        _bindTextures(shader);
+        _vao->draw();
+    }
+    else
+    {
+        std::cerr << "Attempting to draw null _vao" << std::endl;
+    }
 }
 
 void plRenderComponent::_bindTextures(const plShader& shader) const

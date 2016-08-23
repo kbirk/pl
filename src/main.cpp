@@ -34,6 +34,7 @@ bool shift = false; // whether shift is currently down
 void init(int32_t argc, char** argv)
 {
     plan = std::make_shared<plPlan>(argc, argv);
+
     camera = plCamera("./resources/view0");
 
     // initialize openGL specific objects

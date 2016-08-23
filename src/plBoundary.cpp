@@ -259,12 +259,18 @@ plVector4 plBoundary::_getColor() const
 void plBoundary::_generateVAO()
 {
     if (_points.size() < 2)
+    {
+        _vao = nullptr;
         return;
+    }
 
     plVector3 n = getAverageNormal();
 
-    std::vector<plVector3> vertices;    vertices.reserve(_points.size() * 10);
-    std::vector<uint32_t>    indices;     indices.reserve (_points.size() * 6 * 4);
+    std::vector<plVector3> vertices;
+    vertices.reserve(_points.size() * 10);
+
+    std::vector<uint32_t> indices;
+    indices.reserve (_points.size() * 6 * 4);
 
     for (uint32_t i = 0; i < _points.size(); i++)
     {

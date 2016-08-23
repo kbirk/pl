@@ -41,7 +41,7 @@ void plGraftCap::generateCap(std::shared_ptr<plOctreeMesh> mesh, const plTransfo
     perimeter.clear();
 
     std::set<const plTriangle*> potentialTriangles;
-    mesh->octree().rayIntersect(potentialTriangles, transform.origin(), transform.y(), radius);
+    mesh->octree()->rayIntersect(potentialTriangles, transform.origin(), transform.y(), radius);
 
     // reserve for max number of triangles
     triangles.reserve(triangles.size());

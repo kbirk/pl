@@ -124,19 +124,19 @@ void plPlan::addGraft(std::shared_ptr<plPlug>harvest, std::shared_ptr<plPlug>rec
 
 void plPlan::removeDefectSite(uint32_t index)
 {
-    _defectSites.erase(_defectSites.begin()+index);
+    _defectSites.erase(_defectSites.begin() + index);
 }
 
 
 void plPlan::removeDonorSite(uint32_t index)
 {
-    _donorSites.erase(_donorSites.begin()+index);
+    _donorSites.erase(_donorSites.begin() + index);
 }
 
 
 void plPlan::removeGraft(uint32_t index)
 {
-    _grafts.erase(_grafts.begin()+index);
+    _grafts.erase(_grafts.begin() + index);
 }
 
 
@@ -218,7 +218,12 @@ void plPlan::importFile(const plString &filename)
                 _models[harvestModelID]->mesh(),
                 harvestTransform,
                 harvestRotation);
-            auto graft = std::make_shared<plGraft>(harvestPlug, recipientPlug, radius, length, markDirection);
+            auto graft = std::make_shared<plGraft>(
+                harvestPlug,
+                recipientPlug,
+                radius,
+                length,
+                markDirection);
 
             _grafts.push_back(graft);
 

@@ -48,6 +48,18 @@ plMesh& plMesh::operator= (plMesh&& mesh)
 }
 
 
+void plMesh::setTriangles(const std::vector<plTriangle>& triangles)
+{
+    _triangles = triangles;
+}
+
+
+void plMesh::setTriangles(std::vector<plTriangle>&& triangles)
+{
+    _triangles = std::move(triangles);
+}
+
+
 void plMesh::getMinMax(plVector3 &min, plVector3 &max) const
 {
     min = plVector3(FLT_MAX, FLT_MAX, FLT_MAX);

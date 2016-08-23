@@ -1,15 +1,10 @@
 #include "plSpline.h"
 
-plSpline::plSpline()
-    : _lastUpdate(0)
-{
-}
-
-
 plSpline::plSpline(std::shared_ptr<plMesh> mesh)
     : plBoundary(PL_PICKING_TYPE_DEFECT_SPLINE, mesh),
       _lastUpdate(0)
 {
+    _surfaceMesh = std::make_shared<plMesh>();
 }
 
 
@@ -17,6 +12,7 @@ plSpline::plSpline(std::shared_ptr<plMesh> mesh, const std::vector<plString> &ro
     : plBoundary(PL_PICKING_TYPE_DEFECT_SPLINE, mesh, row),
       _lastUpdate(0)
 {
+    _surfaceMesh = std::make_shared<plMesh>();
     // construct spline
     if (size() == 4)
     {
@@ -28,7 +24,7 @@ plSpline::plSpline(std::shared_ptr<plMesh> mesh, const std::vector<plString> &ro
 void plSpline::clear()
 {
     plBoundary::clear();
-    _surfaceMesh = std::make_shared<plMesh>();
+    _surfaceMesh->clear();
     _lastUpdate = 0;
 }
 
@@ -298,7 +294,10 @@ void plSpline::_computeHermite()
 
     }
 
-    _surfaceMesh = std::make_shared<plMesh>(triangles);
+    // clear the mesh
+    _surfaceMesh->clear();
+    // set the triangles
+    _surfaceMesh->setTriangles(triangles);
 
     // set vbo and attach attribute pointers
     std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
