@@ -43,7 +43,7 @@ class plPlan : public plRenderable
         void addDefectSite(uint32_t modelIndex = 0);
         void addDonorSite(uint32_t modelIndex = 0);
         void addGraft(
-            std::shared_ptr<plPlug>harvest, 
+            std::shared_ptr<plPlug>harvest,
             std::shared_ptr<plPlug>recipient,
             float32_t radius,
             float32_t length = 15.0f);

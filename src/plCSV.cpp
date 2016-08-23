@@ -1,10 +1,46 @@
 #include "plCSV.h"
 
-plCSV::plCSV(plString fn)
-    : _good(false)
+plCSVRow::plCSVRow()
 {
-    filename = fn;
-    _readFile(fn);
+}
+
+
+plCSVRow::plCSVRow(const std::vector<plString>& cols)
+    : _cols(cols)
+{
+}
+
+
+plString plCSVRow::getCol(uint32_t index) const
+{
+    if (index > _cols.size())
+    {
+        std::cerr << "CSV column index " << index << " does not exist" << std::endl;
+        return "";
+    }
+    return _cols[index];
+}
+
+
+std::vector<plString> plCSVRow::getCols() const
+{
+    return _cols;
+}
+
+
+plCSV::plCSV()
+    : _good(false),
+      _rowIndex(0)
+{
+}
+
+
+plCSV::plCSV(const plString& filename)
+    : _good(false),
+      _rowIndex(0)
+{
+    _filename = filename;
+    _readFile(filename);
 }
 
 
@@ -12,14 +48,30 @@ bool plCSV::good() const {
     return _good;
 }
 
-void plCSV::_readFile(plString filename, bool verbose)
+
+bool plCSV::eof() const {
+    return _rowIndex >= _rows.size();
+}
+
+
+plCSVRow plCSV::getRow()
+{
+    if (_rowIndex > _rows.size())
+    {
+        std::cerr << "CSV has no more rows" << std::endl;
+        return plCSVRow();
+    }
+    return _rows[_rowIndex++];
+}
+
+
+void plCSV::_readFile(const plString& filename)
 {
     std::ifstream infile(filename.c_str());
 
     // make sure import file opens correctly
     if (!infile.good())
     {
-        std::cerr << "Could not open '" << filename << "'." << std::endl;
         _good = false;
         return;
     }
@@ -27,39 +79,27 @@ void plCSV::_readFile(plString filename, bool verbose)
     // parse each line
     while (!infile.eof())
     {
-        std::vector<plString> lineData;
-        plString line, entry;
+        std::vector<plString> row;
+        plString line, col;
 
         std::getline(infile, line);
         std::stringstream lineStream(line);
 
         // parse each comma seperated value
-        while(std::getline(lineStream, entry, ','))
+        while(std::getline(lineStream, col, ','))
         {
-            entry.stripCharacter('\r'); // remove any carrage returns
+            col.stripCharacter('\r'); // remove any carrage returns
 
-            if (!entry.isOnlyWhitespace()) // ignore any lines consisting of only whitespace
+            if (!col.isOnlyWhitespace()) // ignore any lines consisting of only whitespace
             {
-                entry.stripPreceedingWhitespace();
-                lineData.push_back(entry);
+                col.stripPreceedingWhitespace();
+                row.push_back(col);
             }
         }
 
-        if (lineData.size() > 0) // ignore any empty rows
+        if (row.size() > 0) // ignore any empty rows
         {
-            data.push_back(lineData);
-        }
-    }
-
-    if (verbose)
-    {
-        for (uint32_t i = 0; i < data.size(); i++)
-        {
-            for (uint32_t j = 0; j < data[i].size(); j++)
-            {
-                std::cout << data[i][j] << ", ";
-            }
-            std::cout << "" << std::endl;
+            _rows.push_back(plCSVRow(row));
         }
     }
 

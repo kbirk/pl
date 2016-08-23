@@ -79,7 +79,7 @@ void plPlan::extractRenderComponents(plRenderMap& renderMap, uint32_t technique)
     }
 
     // draw models
-    for (uint32_t i =0; i < _models.size(); i++)
+    for (uint32_t i = 0; i < _models.size(); i++)
     {
         plPickingStack::loadRed(PL_PICKING_TYPE_BONE);
         plPickingStack::loadGreen(i);
@@ -146,25 +146,25 @@ void plPlan::importFile(const plString &filename)
 
     if (!csv.good())
     {
+        std::cerr << "Could not open '" << filename << "'." << std::endl;
         exit(1);
     }
 
-    for (uint32_t i = 0; i < csv.data.size(); i++)
-    {
-        if (csv.data[i].empty())
-        {
-            std::cerr << "Expected row is empty" << std::endl;
-            exit(1);
-        }
+    while (!csv.eof()) {
 
-        plString field = csv.data[i][0]; // get field name
+        auto field = csv.getRow().getCol(0);
 
         if (field.compareCaseInsensitive("model"))
         {
             std::cout << "Loading model...";
 
-            plString modelFile(csv.data[++i][1]);
-            auto model = std::make_shared<plModel>(modelFile, PL_MODEL_DEFAULT_OCTREE_DEPTH);
+            // model data
+            plString modelFile = csv.getRow().getCol(1);
+
+            // model
+            auto model = std::make_shared<plModel>(
+                modelFile,
+                PL_MODEL_DEFAULT_OCTREE_DEPTH);
             _models.push_back(model);
 
             std::cout << " Complete." << std::endl;
@@ -173,9 +173,16 @@ void plPlan::importFile(const plString &filename)
         {
             std::cout << "Loading defect site...";
 
-            uint32_t splineModelID(std::stoi(csv.data[++i][1]));
-            auto spline = std::make_shared<plSpline>(_models[splineModelID]->mesh(), csv.data[++i]);
-            auto defectSite = std::make_shared<plDefectSite>(spline, csv.data[++i]);
+            // spline data
+            uint32_t splineModelID = std::stoi(csv.getRow().getCol(1));
+            auto spline = std::make_shared<plSpline>(
+                _models[splineModelID]->mesh(),
+                csv.getRow().getCols());
+
+            // defect site
+            auto defectSite = std::make_shared<plDefectSite>(
+                spline,
+                csv.getRow().getCols());
             _defectSites.push_back(defectSite);
 
             std::cout << " Complete." << std::endl;
@@ -185,11 +192,14 @@ void plPlan::importFile(const plString &filename)
         {
             std::cout << "Loading donor site...";
 
-            uint32_t boundaryModelID(std::stoi(csv.data[++i][1]));
+            // boundary data
+            uint32_t boundaryModelID = std::stoi(csv.getRow().getCol(1));
             auto boundary = std::make_shared<plBoundary>(
                 PL_PICKING_TYPE_DONOR_BOUNDARY,
                 _models[boundaryModelID]->mesh(),
-                csv.data[++i]);
+                csv.getRow().getCols());
+
+            // donor site
             auto donorSite = std::make_shared<plDonorSite>(boundary);
             _donorSites.push_back(donorSite);
 
@@ -200,51 +210,68 @@ void plPlan::importFile(const plString &filename)
         {
             std::cout << "Loading graft...";
 
-            uint32_t recipientSiteID(std::stoi(csv.data[++i][1]));
-            plTransform recipientTransform(csv.data[++i]);
-            plTransform recipientRotation(csv.data[++i]);
-            uint32_t harvestModelID(std::stoi(csv.data[++i][1]));
-            plTransform harvestTransform(csv.data[++i]);
-            plTransform harvestRotation(csv.data[++i]);
-            float32_t radius(std::stof(csv.data[++i][1]));
-            float32_t length(std::stof(csv.data[++i][1]));
-            plVector3 markDirection(csv.data[++i][1]);
+            // recipient data
+            uint32_t recipientSiteID = std::stoi(csv.getRow().getCol(1));
+            plTransform recipientTransform(csv.getRow().getCols());
+            plTransform recipientRotation(csv.getRow().getCols());
 
+            // recipient plug
             auto recipientPlug = std::make_shared<plPlug>(
                 _defectSites[recipientSiteID]->spline->surfaceMesh(),
                 recipientTransform,
                 recipientRotation);
+
+            // harvest data
+            uint32_t harvestModelID = std::stoi(csv.getRow().getCol(1));
+            plTransform harvestTransform(csv.getRow().getCols());
+            plTransform harvestRotation(csv.getRow().getCols());
+
+            // harvest plug
             auto harvestPlug = std::make_shared<plPlug>(
                 _models[harvestModelID]->mesh(),
                 harvestTransform,
                 harvestRotation);
+
+            // graft data
+            float32_t radius = std::stof(csv.getRow().getCol(1));
+            float32_t length = std::stof(csv.getRow().getCol(1));
+            plVector3 markDirection(csv.getRow().getCol(1));
+
+            // graft
             auto graft = std::make_shared<plGraft>(
                 harvestPlug,
                 recipientPlug,
                 radius,
                 length,
                 markDirection);
-
             _grafts.push_back(graft);
 
             std::cout << " Complete." << std::endl;
         }
         else
         {
-            std::cerr << "Error in '" << filename << "': Unrecognized word '" << field << "' in first column." << std::endl;
+            std::cerr << "Error in '"
+                << filename
+                << "': Unrecognized word '"
+                << field
+                << "' in first column."
+                << std::endl;
             exit(1);
         }
     }
 }
 
 
-void plPlan::exportFile(const plString &filename)
+void plPlan::exportFile(const plString& filename)
 {
-    std::ofstream out((filename + plString(".csv")).c_str());
+    std::ofstream out(filename + ".csv");
 
     if (!out)
     {
-        std::cerr << "Could not open '" << filename << "' to store the plan." << std::endl;
+        std::cerr << "Could not open '"
+            << filename
+            << "' to store the plan."
+            << std::endl;
     }
     else
     {
@@ -292,7 +319,10 @@ void plPlan::exportFile(const plString &filename)
                 << std::endl;
         }
 
-        std::cout << "Exported plan to file: '" << filename << ".csv'." << std::endl;
+        std::cout << "Exported plan to file: '"
+            << filename
+            << ".csv'."
+            << std::endl;
     }
 }
 
