@@ -1,5 +1,7 @@
 #include "plAutomaticPlanner.h"
 
+#include "plOpenGLInfo.h"
+
 namespace plAutomaticPlanner
 {
     // private function prototypes
@@ -11,6 +13,16 @@ namespace plAutomaticPlanner
 
     void calculate(std::shared_ptr<plPlan> plan, uint32_t defectSiteIndex)
     {
+        if (plOpenGLInfo::majorVersion < 4 ||
+            (plOpenGLInfo::majorVersion == 4 && plOpenGLInfo::minorVersion < 3))
+        {
+            // compute shaders require at least OpenGL 4.3
+            std::cerr << "plAutomaticPlanner::calculate() error: Requires OpenGL 4.3, current version: "
+                << plOpenGLInfo::majorVersion << "." << plOpenGLInfo::minorVersion
+                << std::endl;
+            return;
+        }
+
         // error checking
         if (plan->defectSites().size() == 0)
         {
