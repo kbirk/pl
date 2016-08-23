@@ -5,7 +5,7 @@ plMinimalTechnique::plMinimalTechnique()
 }
 
 
-void plMinimalTechnique::render(const std::set<plRenderComponent>& componentSet) const
+void plMinimalTechnique::render(const plRenderList& components) const
 {
     auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
     auto shader = plRenderResources::shaders(PL_MINIMAL_SHADER);
@@ -31,9 +31,9 @@ void plMinimalTechnique::render(const std::set<plRenderComponent>& componentSet)
     glDepthFunc(GL_ALWAYS);
 
     // draw main render components
-    for (auto component : componentSet)
+    for (auto component : components)
     {
-        component.draw(*shader);
+        component->draw(*shader);
     }
 
     glDepthFunc(GL_LEQUAL);

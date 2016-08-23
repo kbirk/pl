@@ -53,7 +53,7 @@ plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &orig
     std::set<const plTriangle*> triangles;
     _octree->rayIntersect(triangles, origin, -normal, radius);
 
-    plVector3 avgNormal(0,0,0);
+    plVector3 avgNormal(0, 0, 0);
     int32_t count = 0;
     float32_t radiusSquared = radius * radius;
 

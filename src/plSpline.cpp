@@ -86,16 +86,16 @@ void plSpline::extractRenderComponents(plRenderMap& renderMap, uint32_t techniqu
         plColorStack::push(PL_USE_ATTRIBUTE_COLOR_OPAQUE);
 
         // create render component
-        plRenderComponent component(_surfaceVAO);
+        auto component = std::make_shared<plRenderComponent>(_surfaceVAO);
         // attached uniforms
-        component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plMatrix44()));
-        component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
-        component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-        component.attach(plUniform(PL_COLOR_UNIFORM,            plColorStack::top()));
-        component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
-        component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
+        component->attach(PL_MODEL_MATRIX_UNIFORM, std::make_shared<plUniform>(plMatrix44()));
+        component->attach(PL_VIEW_MATRIX_UNIFORM, std::make_shared<plUniform>(plCameraStack::top()));
+        component->attach(PL_PROJECTION_MATRIX_UNIFORM, std::make_shared<plUniform>(plProjectionStack::top()));
+        component->attach(PL_COLOR_UNIFORM, std::make_shared<plUniform>(plColorStack::top()));
+        component->attach(PL_PICKING_UNIFORM, std::make_shared<plUniform>(plPickingStack::top()));
+        component->attach(PL_LIGHT_POSITION_UNIFORM, std::make_shared<plUniform>(plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        renderMap[technique].insert(component);
+        renderMap[technique].push_back(component);
 
         plColorStack::pop();
     }
@@ -300,13 +300,13 @@ void plSpline::_computeHermite()
     _surfaceMesh->setTriangles(triangles);
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+    auto vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 48, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   48, 16));
     vbo->set(plVertexAttributePointer(PL_COLOR_ATTRIBUTE,    48, 32));
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    auto eabo = std::make_shared<plEABO>();
     eabo->set(indices);
     // create vao, attach eabo and vbo, upload to gpu
     _surfaceVAO = std::make_shared<plVAO>();

@@ -2,8 +2,8 @@
 
 plEdge::plEdge()
 {
-    pt1 = plVector3(0,0,0);
-    pt2 = plVector3(0,0,0);
+    pt1 = plVector3(0, 0, 0);
+    pt2 = plVector3(0, 0, 0);
 }
 
 plEdge::plEdge(const plVector3 &v1, const plVector3 &v2)
@@ -26,7 +26,7 @@ plVector3 plEdge::otherPt(const plVector3 &point, const float32_t &epsilon) cons
 
     // shouldn't proceed past here if one of this edge's points are used, but this basically just says that no match was found
     std::cout << "Warning in plEdge::otherPt() - point " << point << " was not found! returning vector of zeros!" << std::endl;
-    return plVector3(0,0,0);
+    return plVector3(0, 0, 0);
 }
 
 bool plEdge::equals(const plEdge &e2, const float32_t &epsilon) const

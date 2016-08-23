@@ -10,10 +10,10 @@ class plScreenQuadTechnique : public plRenderTechnique
 
         plScreenQuadTechnique();
 
-        void render(const std::set<plRenderComponent>& componentSet) const;
+        void render(const plRenderList& components) const;
 
     private:
 
         std::shared_ptr<plVAO> _generateQuad() const;
-        plRenderComponent _generateComponent() const;
+        std::shared_ptr<plRenderComponent> _generateComponent() const;
 };

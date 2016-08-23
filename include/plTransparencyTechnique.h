@@ -12,6 +12,6 @@ class plTransparencyTechnique : public plRenderTechnique
 
         plTransparencyTechnique();
 
-        void render(const std::set<plRenderComponent>& componentSet) const;
+        void render(const plRenderList& components) const;
 
 };

@@ -6,16 +6,9 @@ plRenderComponent::plRenderComponent(std::shared_ptr<plVAO> vao)
 }
 
 
-bool plRenderComponent::operator< (const plRenderComponent& rc) const
+void plRenderComponent::attach(uint32_t type, std::shared_ptr<plUniform> uniform)
 {
-    // currently sorts by address
-    return this < &rc;
-}
-
-
-void plRenderComponent::attach(const plUniform& uniform)
-{
-    _uniforms.push_back(uniform);
+    _uniforms[type] = uniform;
 }
 
 
@@ -51,8 +44,8 @@ void plRenderComponent::_bindTextures(const plShader& shader) const
 void plRenderComponent::_bindUniforms(const plShader& shader) const
 {
     // set all uniforms
-    for (auto uniform : _uniforms)
+    for (auto iter : _uniforms)
     {
-        shader.setUniform(uniform);
+        shader.setUniform(iter.first, iter.second);
     }
 }

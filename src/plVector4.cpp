@@ -72,7 +72,7 @@ plVector4 plVector4::normalize() const
     if (len == 0)
     {
         std::cerr << "normalize error: length is 0" << std::endl;
-        return plVector4(0,0,0,0);
+        return plVector4(0, 0, 0,0);
     }
     else
         return plVector4(x/len, y/len, z/len, w/len);

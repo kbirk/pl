@@ -5,7 +5,7 @@ plOutlineTechnique::plOutlineTechnique()
 }
 
 
-void plOutlineTechnique::render(const std::set<plRenderComponent>& componentSet) const
+void plOutlineTechnique::render(const plRenderList& components) const
 {
     auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
     auto shader = plRenderResources::shaders(PL_OUTLINE_SHADER);
@@ -30,9 +30,9 @@ void plOutlineTechnique::render(const std::set<plRenderComponent>& componentSet)
     glDepthFunc(GL_LEQUAL);
 
     // draw shapes to outline buffer
-    for (auto component : componentSet)
+    for (auto component : components)
     {
-        component.draw(*shader);
+        component->draw(*shader);
     }
 
     // unbind shader

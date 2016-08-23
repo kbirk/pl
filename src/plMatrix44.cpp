@@ -106,7 +106,7 @@ plMatrix44::plMatrix44(float32_t c1r1, float32_t c2r1, float32_t c3r1, float32_t
 // copy constructor
 plMatrix44::plMatrix44(const plMatrix44 &m)
 {
-    memcpy(_data, m._data, sizeof(float32_t)*16);
+    std::memcpy(_data, m._data, sizeof(float32_t)*16);
 }
 
 
@@ -217,7 +217,7 @@ void plMatrix44::setScale(const plVector3 s)
 plMatrix44 &plMatrix44::operator=(const plMatrix44 &m)
 {
     // copy data
-    memcpy(_data, m._data, sizeof(float32_t)*16);
+    std::memcpy(_data, m._data, sizeof(float32_t)*16);
     return *this;
 }
 

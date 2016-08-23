@@ -4,7 +4,7 @@ plPlanTechnique::plPlanTechnique()
 {
 }
 
-void plPlanTechnique::render(const std::set<plRenderComponent>& componentSet) const
+void plPlanTechnique::render(const plRenderList& components) const
 {
     auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
     auto shader = plRenderResources::shaders(PL_PHONG_SHADER);
@@ -38,9 +38,9 @@ void plPlanTechnique::render(const std::set<plRenderComponent>& componentSet) co
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 
     // draw main render components
-    for (auto component : componentSet)
+    for (auto component : components)
     {
-        component.draw(*shader);
+        component->draw(*shader);
     }
 
     glDisable(GL_STENCIL_TEST);

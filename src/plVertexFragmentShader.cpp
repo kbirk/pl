@@ -113,16 +113,20 @@ void plVertexFragmentShader::setTexture(uint32_t type, const std::shared_ptr<plT
 }
 
 
-void plVertexFragmentShader::setUniform(const plUniform& uniform) const
+void plVertexFragmentShader::setUniform(uint32_t type, const std::shared_ptr<plUniform>& uniform) const
 {
-    switch (uniform.type())
+    switch (type)
     {
         // transformations
         case PL_MODEL_MATRIX_UNIFORM:
         {
             if (_modelMatrixUniformID != -1)
             {
-                glUniformMatrix4fv(_modelMatrixUniformID, 1, GL_FALSE, (GLfloat*)(uniform.data()));
+                glUniformMatrix4fv(
+                    _modelMatrixUniformID,
+                    1,
+                    GL_FALSE,
+                    (GLfloat*)(uniform->data()));
             }
             break;
         }
@@ -130,7 +134,11 @@ void plVertexFragmentShader::setUniform(const plUniform& uniform) const
         {
             if (_viewMatrixUniformID != -1)
             {
-                glUniformMatrix4fv(_viewMatrixUniformID, 1, GL_FALSE, (GLfloat*)(uniform.data()));
+                glUniformMatrix4fv(
+                    _viewMatrixUniformID,
+                    1,
+                    GL_FALSE,
+                    (GLfloat*)(uniform->data()));
             }
             break;
         }
@@ -138,7 +146,11 @@ void plVertexFragmentShader::setUniform(const plUniform& uniform) const
         {
             if (_projectionMatrixUniformID != -1)
             {
-                glUniformMatrix4fv(_projectionMatrixUniformID, 1, GL_FALSE, (GLfloat*)(uniform.data()));
+                glUniformMatrix4fv(
+                    _projectionMatrixUniformID,
+                    1,
+                    GL_FALSE,
+                    (GLfloat*)(uniform->data()));
             }
             break;
         }
@@ -148,7 +160,10 @@ void plVertexFragmentShader::setUniform(const plUniform& uniform) const
         {
             if (_colorUniformID != -1)
             {
-                glUniform4fv(_colorUniformID, 1, (GLfloat*)(uniform.data()));
+                glUniform4fv(
+                    _colorUniformID,
+                    1,
+                    (GLfloat*)(uniform->data()));
             }
             break;
         }
@@ -158,7 +173,10 @@ void plVertexFragmentShader::setUniform(const plUniform& uniform) const
         {
             if (_lightPositionUniformID != -1)
             {
-                glUniform3fv(_lightPositionUniformID, 1, (GLfloat*)(uniform.data()));
+                glUniform3fv(
+                    _lightPositionUniformID,
+                    1,
+                    (GLfloat*)(uniform->data()));
             }
             break;
         }
@@ -168,7 +186,10 @@ void plVertexFragmentShader::setUniform(const plUniform& uniform) const
         {
             if (_pickingUniformID != -1)
             {
-                glUniform3iv(_pickingUniformID, 1, (GLint*)(uniform.data()));
+                glUniform3iv(
+                    _pickingUniformID,
+                    1,
+                    (GLint*)(uniform->data()));
             }
             break;
         }

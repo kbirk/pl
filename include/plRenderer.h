@@ -22,7 +22,7 @@ enum plTechniqueEnums       // ORDER MATTERS! std::map iterators are sorted by k
     PL_SCREEN_QUAD_TECHNIQUE
 };
 
-typedef std::map<uint32_t, std::shared_ptr<plRenderTechnique> >   plTechniqueMap;
+typedef std::map<uint32_t, std::shared_ptr<plRenderTechnique>> plTechniqueMap;
 
 namespace plRenderer
 {

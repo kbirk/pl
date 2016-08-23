@@ -42,8 +42,8 @@ class plVertexFragmentShader : public plShader
 
         plVertexFragmentShader(const char* vertexFile, const char* fragmentFile);
 
+        void setUniform(uint32_t type, const std::shared_ptr<plUniform>& uniform) const;
         void setTexture(uint32_t type, const std::shared_ptr<plTexture2D>& texture) const;
-        void setUniform(const plUniform& uniform) const;
 
     private:
 

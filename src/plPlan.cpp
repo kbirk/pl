@@ -156,10 +156,10 @@ void plPlan::importFile(const plString &filename)
 
         if (field.compareCaseInsensitive("model"))
         {
-            std::cout << "Loading model...";
-
             // model data
             plString modelFile = csv.getRow().getCol(1);
+
+            std::cout << "Loading model `" << modelFile << "`...";
 
             // model
             auto model = std::make_shared<plModel>(
@@ -171,7 +171,7 @@ void plPlan::importFile(const plString &filename)
         }
         else if (field.compareCaseInsensitive("defect_site"))
         {
-            std::cout << "Loading defect site...";
+            std::cout << "Loading defect site " << _defectSites.size() << "...";
 
             // spline data
             uint32_t splineModelID = std::stoi(csv.getRow().getCol(1));
@@ -190,7 +190,7 @@ void plPlan::importFile(const plString &filename)
         }
         else if (field.compareCaseInsensitive("donor_site"))
         {
-            std::cout << "Loading donor site...";
+            std::cout << "Loading donor site " << _donorSites.size() << "...";
 
             // boundary data
             uint32_t boundaryModelID = std::stoi(csv.getRow().getCol(1));
@@ -208,7 +208,7 @@ void plPlan::importFile(const plString &filename)
         }
         else if (field.compareCaseInsensitive("graft"))
         {
-            std::cout << "Loading graft...";
+            std::cout << "Loading graft " << _grafts.size() << "...";
 
             // recipient data
             uint32_t recipientSiteID = std::stoi(csv.getRow().getCol(1));

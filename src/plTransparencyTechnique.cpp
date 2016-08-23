@@ -5,7 +5,7 @@ plTransparencyTechnique::plTransparencyTechnique()
 }
 
 
-void plTransparencyTechnique::render(const std::set<plRenderComponent>& componentSet) const
+void plTransparencyTechnique::render(const plRenderList& components) const
 {
     auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
     auto shader = plRenderResources::shaders(PL_PHONG_SHADER);
@@ -31,9 +31,9 @@ void plTransparencyTechnique::render(const std::set<plRenderComponent>& componen
     glDepthMask(false);
 
     // draw render components to color buffer
-    for (auto component : componentSet)
+    for (auto component : components)
     {
-        component.draw(*shader);
+        component->draw(*shader);
     }
 
     // set stencil testing for picking buffer
@@ -52,9 +52,9 @@ void plTransparencyTechnique::render(const std::set<plRenderComponent>& componen
     fbo->setDrawBuffers(drawBuffers);
 
     // draw render components to picking buffer
-    for (auto component : componentSet)
+    for (auto component : components)
     {
-        component.draw(*shader);
+        component->draw(*shader);
     }
 
     glDisable(GL_STENCIL_TEST);

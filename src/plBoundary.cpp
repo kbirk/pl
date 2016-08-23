@@ -37,16 +37,16 @@ void plBoundary::extractRenderComponents(plRenderMap& renderMap, uint32_t techni
         plPickingStack::loadBlue(-1); // draw walls with index of -1
 
         // create render component
-        plRenderComponent component(_vao);
+        auto component = std::make_shared<plRenderComponent>(_vao);
         // attached uniforms
-        component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plMatrix44()));
-        component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
-        component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-        component.attach(plUniform(PL_COLOR_UNIFORM,             plColorStack::top()));
-        component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
-        component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
+        component->attach(PL_MODEL_MATRIX_UNIFORM, std::make_shared<plUniform>(plMatrix44()));
+        component->attach(PL_VIEW_MATRIX_UNIFORM, std::make_shared<plUniform>(plCameraStack::top()));
+        component->attach(PL_PROJECTION_MATRIX_UNIFORM, std::make_shared<plUniform>(plProjectionStack::top()));
+        component->attach(PL_COLOR_UNIFORM, std::make_shared<plUniform>(plColorStack::top()));
+        component->attach(PL_PICKING_UNIFORM, std::make_shared<plUniform>(plPickingStack::top()));
+        component->attach(PL_LIGHT_POSITION_UNIFORM, std::make_shared<plUniform>(plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        renderMap[technique].insert(component);
+        renderMap[technique].push_back(component);
     }
 
     // draw points
@@ -83,7 +83,7 @@ void plBoundary::_extractPointRenderComponents(plRenderMap& renderMap, uint32_t 
 
 plVector3 plBoundary::getAverageNormal() const
 {
-    plVector3 n(0,0,0);
+    plVector3 n(0, 0, 0);
     for (uint32_t i=0; i < _normals.size(); i++)
     {
         n = n + _normals[i];
@@ -94,7 +94,7 @@ plVector3 plBoundary::getAverageNormal() const
 
 plVector3 plBoundary::getCentroid() const
 {
-    plVector3 p(0,0,0);
+    plVector3 p(0, 0, 0);
     for (uint32_t i=0; i < _points.size(); i++)
     {
         p = p + _points[i];
@@ -395,12 +395,12 @@ void plBoundary::_generateVAO()
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+    auto vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16)); // FOUR COMPONENT FLOATING POINT OFFSET
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    auto eabo = std::make_shared<plEABO>();
     eabo->set(indices);
     // attach to vao
     _vao = std::make_shared<plVAO>();

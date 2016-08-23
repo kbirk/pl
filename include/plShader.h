@@ -19,7 +19,7 @@ class plShader
         bool good() const   { return _good; }
         uint32_t id() const { return _id;   }
 
-        virtual void setUniform(const plUniform& uniform) const {};
+        virtual void setUniform(uint32_t type, const std::shared_ptr<plUniform>& uniform) const {};
         virtual void setTexture(uint32_t type, const std::shared_ptr<plTexture2D>& texture) const {};
 
     protected:

@@ -20,7 +20,7 @@ void plCamera::_defaultInit()
 {
     // set default position
     position = plVector3(0,0,50);
-    lookat = plVector3(0,0,0);
+    lookat = plVector3(0, 0, 0);
     up = plVector3(0,1,0);
 }
 

@@ -59,19 +59,19 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
         return;
 
     // create render component
-    plRenderComponent component(_vao);
+    auto component = std::make_shared<plRenderComponent>(_vao);
     // attached uniforms
-    component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()));
-    component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
-    component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-    component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
-    component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
+    component->attach(PL_MODEL_MATRIX_UNIFORM,std::make_shared<plUniform>(plModelStack::top()));
+    component->attach(PL_VIEW_MATRIX_UNIFORM, std::make_shared<plUniform>(plCameraStack::top()));
+    component->attach(PL_PROJECTION_MATRIX_UNIFORM, std::make_shared<plUniform>(plProjectionStack::top()));
+    component->attach(PL_LIGHT_POSITION_UNIFORM, std::make_shared<plUniform>(plVector3(PL_LIGHT_POSITION)));
+    component->attach(PL_PICKING_UNIFORM, std::make_shared<plUniform>(plPickingStack::top()));
 
     if (!_isTransparent)
     {
-        component.attach(plUniform(PL_COLOR_UNIFORM, plColorStack::top()));
+        component->attach(PL_COLOR_UNIFORM, std::make_shared<plUniform>(plColorStack::top()));
         // insert into render map
-        renderMap[technique].insert(component);
+        renderMap[technique].push_back(component);
     }
     else
     {
@@ -101,17 +101,19 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
         const_cast<std::shared_ptr<plVAO>&>(_vao)->eabo()->set(indices);
         const_cast<std::shared_ptr<plVAO>&>(_vao)->upload();
 
-        component.attach(plUniform(PL_COLOR_UNIFORM, plVector4(plColorStack::top().x, plColorStack::top().y, plColorStack::top().z, 0.7f)));
+        auto color = plColorStack::top();
+        auto alpha = 0.7f;
+        component->attach(PL_COLOR_UNIFORM, std::make_shared<plUniform>(plVector4(color.x, color.y, color.z, alpha)));
 
         // insert into render map
         if (technique == PL_PLAN_TECHNIQUE)
         {
             // if originally meant to be rendered using plan technique
-            renderMap[PL_TRANSPARENCY_TECHNIQUE].insert(component);
+            renderMap[PL_TRANSPARENCY_TECHNIQUE].push_back(component);
         }
         else
         {
-            renderMap[technique].insert(component);
+            renderMap[technique].push_back(component);
         }
     }
 
@@ -159,12 +161,12 @@ void plModel::_generateVAO()
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+    auto vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    auto eabo = std::make_shared<plEABO>();
     eabo->set(indices);
     // create vao, attach eabo and vbo, upload to gpu
     _vao = std::make_shared<plVAO>();

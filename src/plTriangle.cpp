@@ -1,9 +1,9 @@
 #include "plTriangle.h"
 
 plTriangle::plTriangle()
-    : _points(3, plVector3(0,0,0)),
-      _normal(0,0,0),
-      _centroid(0,0,0)
+    : _points(3, plVector3(0, 0, 0)),
+      _normal(0, 0, 0),
+      _centroid(0, 0, 0)
 {
     _calcRadius();
 }

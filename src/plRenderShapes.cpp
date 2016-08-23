@@ -105,12 +105,12 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
         std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
@@ -170,12 +170,12 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
         std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
@@ -255,12 +255,12 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
         std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
@@ -320,12 +320,12 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
         std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
@@ -359,12 +359,12 @@ namespace plRenderShapes
         indices.push_back(3);
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
         std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
@@ -391,11 +391,11 @@ namespace plRenderShapes
         indices.push_back(1);
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 16, 0));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices, GL_LINES);
         // create and attach to vao
         std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();

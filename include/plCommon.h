@@ -46,6 +46,7 @@
 #include <stack>
 #include <limits>
 #include <set>
+#include <list>
 #include <chrono>
 #include <iomanip>
 #include <memory>

@@ -72,7 +72,7 @@ void plSSBO::setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ss
         numBytes,
         GL_MAP_WRITE_BIT);
 
-    memcpy(mappedBuffer, reinterpret_cast<uint8_t*>(ts)+byteOffset, numBytes); // cast to char array to ensure bytewise increments
+    std::memcpy(mappedBuffer, reinterpret_cast<uint8_t*>(ts)+byteOffset, numBytes); // cast to char array to ensure bytewise increments
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 }
 
@@ -132,6 +132,6 @@ void plSSBO::readBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t s
         numBytes,
         GL_MAP_READ_BIT);
 
-    memcpy(reinterpret_cast<uint8_t*>(ts)+byteOffset, &mappedBuffer[0], numBytes);
+    std::memcpy(reinterpret_cast<uint8_t*>(ts)+byteOffset, &mappedBuffer[0], numBytes);
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 }

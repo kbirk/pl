@@ -99,14 +99,14 @@ void plOctree::extractRenderComponents(plRenderMap& renderMap, uint32_t techniqu
         plModelStack::scale(plVector3(_halfWidth, _halfWidth, _halfWidth));
 
         // create render component
-        plRenderComponent component(vao);
+        auto component = std::make_shared<plRenderComponent>(vao);
         // attached uniforms
-        component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()));
-        component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
-        component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-        component.attach(plUniform(PL_COLOR_UNIFORM,             plColorStack::top()));
+        component->attach(PL_MODEL_MATRIX_UNIFORM, std::make_shared<plUniform>(plModelStack::top()));
+        component->attach(PL_VIEW_MATRIX_UNIFORM, std::make_shared<plUniform>(plCameraStack::top()));
+        component->attach(PL_PROJECTION_MATRIX_UNIFORM, std::make_shared<plUniform>(plProjectionStack::top()));
+        component->attach(PL_COLOR_UNIFORM, std::make_shared<plUniform>(plColorStack::top()));
         // insert into render map
-        renderMap[technique].insert(component);
+        renderMap[technique].push_back(component);
 
         plModelStack::pop();
     }
