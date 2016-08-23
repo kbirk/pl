@@ -68,7 +68,7 @@ void plCamera::exportViewParams(const std::string &filename)
 
     if (!out)
     {
-        std::cerr << "plCamera outputViewParams error: Failed to open the output file\n";
+        std::cerr << "plCamera outputViewParams error: Failed to open the output file" << std::endl;
     }
     else
     {
@@ -85,7 +85,7 @@ void plCamera::importViewParams(const std::string &filename)
 
     if (!in)
     {
-        std::cerr << "plCamera readViewParams error: Failed to open the input file\n";
+        std::cerr << "plCamera readViewParams error: Failed to open the input file" << std::endl;
         _defaultInit();
     }
     else

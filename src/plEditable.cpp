@@ -7,6 +7,6 @@ plEditable::plEditable()
 
 void plEditable::_clearSelection()
 {
-    _isSelected    = false;
+    _isSelected = false;
     _selectedValue = -1;
 }

@@ -1,6 +1,6 @@
 #include "plPlannerShader.h"
 
-plPlannerShader::plPlannerShader(const std::vector<std::string > &sourceFiles)
+plPlannerShader::plPlannerShader(const std::vector<std::string>& sourceFiles)
 {
     // create and compile shader, tests for errors
     GLuint shader = _createAndCompileShader(sourceFiles, GL_COMPUTE_SHADER);
@@ -53,17 +53,17 @@ void plPlannerShader::_getUniformLocations()
 }
 
 
-void plPlannerShader::setDefectSiteUniforms(const plPlanningSite &defectSite) const
+void plPlannerShader::setDefectSiteUniforms(std::shared_ptr<plPlanningSite> defectSite) const
 {
-    glUniform1ui(_defectSiteTriangleCountID,      defectSite.triangles.size());
-    glUniform1f(_defectSiteAreaID,                defectSite.area);
-    glUniform1ui(_defectSiteGridPointCountID,     defectSite.gridPoints.size());
-    glUniform1ui(_defectSiteBoundaryPointCountID, defectSite.boundaryPoints.size());
-    glUniform4fv(_defectSiteAvgNormalID, 1,       &defectSite.avgNormal.x);
+    glUniform1ui(_defectSiteTriangleCountID,      defectSite->triangles.size());
+    glUniform1f(_defectSiteAreaID,                defectSite->area);
+    glUniform1ui(_defectSiteGridPointCountID,     defectSite->gridPoints.size());
+    glUniform1ui(_defectSiteBoundaryPointCountID, defectSite->boundaryPoints.size());
+    glUniform4fv(_defectSiteAvgNormalID, 1,       &defectSite->avgNormal.x);
 }
 
 
-void plPlannerShader::setDonorSiteUniforms(const std::vector<plPlanningSite> &donorSites) const
+void plPlannerShader::setDonorSiteUniforms(const std::vector<std::shared_ptr<plPlanningSite>>& donorSites) const
 {
     uint32_t totalGridPoints = 0;
     uint32_t dataIndexOffset = 0;
@@ -72,14 +72,14 @@ void plPlannerShader::setDonorSiteUniforms(const std::vector<plPlanningSite> &do
     std::vector<uint32_t> boundaryPointCounts;
     std::vector<uint32_t> dataOffsets;
 
-    for (const plPlanningSite& donorSite : donorSites)
+    for (auto donorSite : donorSites)
     {
-        totalGridPoints += donorSite.gridPoints.size();
-        gridPointCounts.push_back(donorSite.gridPoints.size());
-        triangleCounts.push_back(donorSite.triangles.size());
-        boundaryPointCounts.push_back(donorSite.boundaryPoints.size());
+        totalGridPoints += donorSite->gridPoints.size();
+        gridPointCounts.push_back(donorSite->gridPoints.size());
+        triangleCounts.push_back(donorSite->triangles.size());
+        boundaryPointCounts.push_back(donorSite->boundaryPoints.size());
         dataOffsets.push_back(dataIndexOffset);
-        dataIndexOffset += donorSite.totalSize();
+        dataIndexOffset += donorSite->totalSize();
     }
 
     glUniform1ui(_donorSiteCountID,                donorSites.size());
@@ -91,13 +91,13 @@ void plPlannerShader::setDonorSiteUniforms(const std::vector<plPlanningSite> &do
 }
 
 
-void plPlannerShader::setDefectSolutionUniforms (const plDefectSolution &solution) const
+void plPlannerShader::setDefectSolutionUniforms(std::shared_ptr<plDefectSolution> solution) const
 {
-    glUniform1ui(_defectSolutionGraftCountID,     solution.graftCount);
-    glUniform4fv(_defectSolutionGraftPositionsID, solution.graftPositions.size(),      &solution.graftPositions[0].x);
-    glUniform4fv(_defectSolutionGraftNormalsID,   solution.graftNormals.size(),        &solution.graftNormals[0].x);
-    glUniform1fv(_defectSolutionGraftRadiiID,     solution.graftRadii.size(),          &solution.graftRadii[0]);
-    glUniform4fv(_defectSolutionSurfaceNormalsID, solution.graftSurfaceNormals.size(), &solution.graftSurfaceNormals[0].x);
+    glUniform1ui(_defectSolutionGraftCountID,     solution->graftCount);
+    glUniform4fv(_defectSolutionGraftPositionsID, solution->graftPositions.size(),      &solution->graftPositions[0].x);
+    glUniform4fv(_defectSolutionGraftNormalsID,   solution->graftNormals.size(),        &solution->graftNormals[0].x);
+    glUniform1fv(_defectSolutionGraftRadiiID,     solution->graftRadii.size(),          &solution->graftRadii[0]);
+    glUniform4fv(_defectSolutionSurfaceNormalsID, solution->graftSurfaceNormals.size(), &solution->graftSurfaceNormals[0].x);
 }
 
 
@@ -135,5 +135,4 @@ void plPlannerShader::setRotationAngleUniforms(uint32_t numDirections) const
 void plPlannerShader::setRotationIndexUniform(uint32_t rotationIndex) const
 {
     glUniform1ui(_rotationIndexID, rotationIndex);
-
 }

@@ -7,7 +7,7 @@ plAnnealingGroup::plAnnealingGroup(float32_t initialEnergy)
       _invoGraftRadiiSSBO    (PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(float32_t)),
       _invoGraftCountsSSBO   (PL_STAGE_0_INVOCATIONS*sizeof(uint32_t)),
 
-      _groupEnergiesSSBO       (PL_STAGE_0_NUM_GROUPS*sizeof(float32_t)), // &std::vector<float32_t>(PL_STAGE_0_NUM_GROUPS, initialEnergy)[0]),
+      _groupEnergiesSSBO       (PL_STAGE_0_NUM_GROUPS*sizeof(float32_t)),
       _groupGraftPositionsSSBO (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
       _groupGraftNormalsSSBO   (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
       _groupGraftRadiiSSBO     (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(float32_t)),
@@ -50,33 +50,35 @@ void plAnnealingGroup::unbind()
 }
 
 
-void plAnnealingGroup::getSolution(plDefectSolution &solution, const plPlanningBufferData &planningData)
+void plAnnealingGroup::getSolution(
+    std::shared_ptr<plDefectSolution> solution,
+    std::shared_ptr<plPlanningBufferData> planningData)
 {
     uint32_t index;
     float32_t energy;
     getLowestGroupInfo(index, energy);
 
     // read graft count
-    _groupGraftCountsSSBO.readBytes<uint32_t>(&solution.graftCount, sizeof(uint32_t), 0, index*sizeof(uint32_t));
-    _groupGraftPositionsSSBO.read<plVector4>(solution.graftPositions, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
-    _groupGraftNormalsSSBO.read<plVector4>(solution.graftNormals, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
-    _groupGraftRadiiSSBO.read<float32_t>(solution.graftRadii, solution.graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
+    _groupGraftCountsSSBO.readBytes<uint32_t>(&solution->graftCount, sizeof(uint32_t), 0, index*sizeof(uint32_t));
+    _groupGraftPositionsSSBO.read<plVector4>(solution->graftPositions, solution->graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
+    _groupGraftNormalsSSBO.read<plVector4>(solution->graftNormals, solution->graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
+    _groupGraftRadiiSSBO.read<float32_t>(solution->graftRadii, solution->graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
 
     // re-compute positions as perturbations will shift them off the mesh surface!
-    for (uint32_t i=0; i < solution.graftCount; i++)
+    for (uint32_t i=0; i < solution->graftCount; i++)
     {
-        plVector3 rayOrigin   (solution.graftPositions[i].x, solution.graftPositions[i].y, solution.graftPositions[i].z);
-        plVector3 rayDirection(solution.graftNormals[i].x,   solution.graftNormals[i].y,   solution.graftNormals[i].z);
+        plVector3 rayOrigin(solution->graftPositions[i].x, solution->graftPositions[i].y, solution->graftPositions[i].z);
+        plVector3 rayDirection(solution->graftNormals[i].x, solution->graftNormals[i].y, solution->graftNormals[i].z);
 
-        plIntersection intersection = plMath::rayIntersect(planningData.defectSite.triangles, rayOrigin, rayDirection, true);
+        plIntersection intersection = plMath::rayIntersect(planningData->defectSite->triangles, rayOrigin, rayDirection, true);
 
-        solution.graftPositions[i] = plVector4(intersection.point,  1.0f);
-        solution.graftSurfaceNormals.push_back(plVector4(intersection.normal, 1.0f)); //plVector4(planningData.defectSite.getSmoothNormal(intersection.point, intersection.normal, PL_NORMAL_SMOOTHING_RADIUS), 1.0f));
+        solution->graftPositions[i] = plVector4(intersection.point,  1.0f);
+        solution->graftSurfaceNormals.push_back(plVector4(intersection.normal, 1.0f));
     }
 }
 
 
-void plAnnealingGroup::getLowestGroupInfo(uint32_t &index, float32_t &energy)
+void plAnnealingGroup::getLowestGroupInfo(uint32_t& index, float32_t& energy)
 {
     // read energies
     std::vector<float32_t > energies;
@@ -96,7 +98,7 @@ void plAnnealingGroup::getLowestGroupInfo(uint32_t &index, float32_t &energy)
     }
 
     energy = lowestEnergy;
-    index  = lowestGroup;
+    index = lowestGroup;
 }
 
 
@@ -109,9 +111,11 @@ uint32_t logBN(float32_t base, float32_t num)
 namespace plPlannerStage0
 {
 
-    void run(plDefectSolution &defectSolution, const plPlanningBufferData &planningData)
+    void run(
+        std::shared_ptr<plDefectSolution> defectSolution,
+        std::shared_ptr<plPlanningBufferData> planningData)
     {
-        std::vector<std::string > shaderfiles;
+        std::vector<std::string> shaderfiles;
 
         shaderfiles.push_back("./resources/shaders/planning/defines.h");
         shaderfiles.push_back("./resources/shaders/planning/geometry.h");
@@ -135,12 +139,12 @@ namespace plPlannerStage0
             return;
 
         stage0Shader.bind(); // bind shader
-        stage0Shader.setDefectSiteUniforms(planningData.defectSite);
+        stage0Shader.setDefectSiteUniforms(planningData->defectSite);
 
-        plSSBO triangleAreaSSBO (planningData.defectSite.triangles.size()*PL_STAGE_0_INVOCATIONS*sizeof(float32_t));
-        plAnnealingGroup annealingBuffers(planningData.defectSite.area);
+        plSSBO triangleAreaSSBO(planningData->defectSite->triangles.size()*PL_STAGE_0_INVOCATIONS*sizeof(float32_t));
+        plAnnealingGroup annealingBuffers(planningData->defectSite->area);
 
-        planningData.defectSiteSSBO.bind(0);
+        planningData->defectSiteSSBO.bind(0);
         triangleAreaSSBO.bind(1);
         annealingBuffers.bind(); // 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 
@@ -187,7 +191,7 @@ namespace plPlannerStage0
         annealingBuffers.getSolution(defectSolution, planningData);
 
         // unbind and delete site and temporary buffers
-        planningData.defectSiteSSBO.unbind(0);
+        planningData->defectSiteSSBO.unbind(0);
         triangleAreaSSBO.unbind(1);
         annealingBuffers.unbind();
     }

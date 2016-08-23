@@ -6,7 +6,12 @@ plGraft::plGraft()
     snapMarkDirection();
 }
 
-plGraft::plGraft(const plPlug &harvest, const plPlug &recipient, float32_t radius, float32_t length, const plVector3 &markDirection)
+plGraft::plGraft(
+    std::shared_ptr<plPlug> harvest,
+    std::shared_ptr<plPlug> recipient,
+    float32_t radius,
+    float32_t length,
+    const plVector3 &markDirection)
     : _recipient(recipient),
       _harvest(harvest),
       _radius(radius),
@@ -29,13 +34,13 @@ void plGraft::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
         return;
 
     // Draw at harvest location
-    plModelStack::push(_harvest.finalTransform().matrix());
+    plModelStack::push(_harvest->finalTransform().matrix());
     plPickingStack::loadBlue(PL_PICKING_INDEX_GRAFT_DONOR);
     _extractGraftRenderComponents(renderMap, technique);
     plModelStack::pop();
 
     // Draw at recipient location
-    plModelStack::push(_recipient.finalTransform().matrix());
+    plModelStack::push(_recipient->finalTransform().matrix());
     plPickingStack::loadBlue(PL_PICKING_INDEX_GRAFT_DEFECT);
     _extractGraftRenderComponents(renderMap, technique);
     plModelStack::pop();
@@ -66,8 +71,8 @@ void plGraft::_extractGraftRenderComponents(plRenderMap& renderMap, uint32_t tec
 void plGraft::_generateCaps()
 {
     // generate cap polygons
-    _cartilageCap.generateCap((const plOctreeMesh&)_harvest.mesh(), _harvest.finalTransform(), _radius);
-    _boneCap.generateCap((const plOctreeMesh&)_harvest.mesh(), _harvest.finalTransform(), _radius);
+    _cartilageCap.generateCap((std::dynamic_pointer_cast<plOctreeMesh>)(_harvest->mesh()), _harvest->finalTransform(), _radius);
+    _boneCap.generateCap((std::dynamic_pointer_cast<plOctreeMesh>)(_harvest->mesh()), _harvest->finalTransform(), _radius);
 
     // generate vaos
     _cartilageCap.generateVAO(_radius, _length, _boneCap.perimeter);
@@ -88,32 +93,32 @@ void plGraft::snapMarkDirection()
 
     // ray cast up, this gets up vector overlayed onto plane (projected from screen direction, rather than projected by surface normal)
     plIntersection harvestIntersection = plMath::rayIntersect(
-        _harvest.surfaceTransform().origin() + plCameraStack::up(),
+        _harvest->surfaceTransform().origin() + plCameraStack::up(),
         plCameraStack::direction(),
-        _harvest.surfaceTransform().origin(),
-        _harvest.surfaceTransform().y());
+        _harvest->surfaceTransform().origin(),
+        _harvest->surfaceTransform().y());
 
     // find the up direction overlayed on plane, not projected
-    plVector3 upHarvestProj = (harvestIntersection.point - _harvest.surfaceTransform().origin()).normalize();
+    plVector3 upHarvestProj = (harvestIntersection.point - _harvest->surfaceTransform().origin()).normalize();
 
     // ray cast up, this gets up vector overlayed onto plane (projected from screen direction, rather than projected by surface normal)
     plIntersection recipientIntersection = plMath::rayIntersect(
-        _recipient.surfaceTransform().origin() + plCameraStack::up(),
+        _recipient->surfaceTransform().origin() + plCameraStack::up(),
         plCameraStack::direction(),
-        _recipient.surfaceTransform().origin(),
-        _recipient.surfaceTransform().y());
+        _recipient->surfaceTransform().origin(),
+        _recipient->surfaceTransform().y());
 
     // get vector in graft local space
-    plVector3 graftZ = _harvest.finalTransform().applyNormalInverse(upHarvestProj);
+    plVector3 graftZ = _harvest->finalTransform().applyNormalInverse(upHarvestProj);
 
     // calulate this direction for recipient graft in world space
-    plVector3 recipientDirection = (_recipient.finalTransform().applyNormal(graftZ)).normalize();
+    plVector3 recipientDirection = (_recipient->finalTransform().applyNormal(graftZ)).normalize();
 
     // project up onto recipient
-    plVector3 upRecipientProj = (recipientIntersection.point - _recipient.surfaceTransform().origin()).normalize();
+    plVector3 upRecipientProj = (recipientIntersection.point - _recipient->surfaceTransform().origin()).normalize();
 
     // find angle between up proj and marker direction
-    float32_t recipientAngle = (upRecipientProj).signedAngle(recipientDirection, _recipient.surfaceTransform().y());
+    float32_t recipientAngle = (upRecipientProj).signedAngle(recipientDirection, _recipient->surfaceTransform().y());
 
     plMatrix44 rotation;
     rotation.setRotation(-recipientAngle/2.0f , plVector3(0, 1, 0));
@@ -154,7 +159,7 @@ void plGraft::_generateMarkPositions()
 }
 
 
-const plPlug &plGraft::plug(uint32_t type) const
+std::shared_ptr<plPlug> plGraft::plug(uint32_t type) const
 {
     switch (type)
     {
@@ -177,13 +182,13 @@ void plGraft::move(uint32_t type, const plVector3& origin, const plVector3& y)
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
 
-            _harvest.move(origin, y);
+            _harvest->move(origin, y);
             _generateCaps();
             break;
 
         case PL_PICKING_INDEX_GRAFT_DEFECT:
 
-            _recipient.move(origin, y);
+            _recipient->move(origin, y);
             break;
 
         default:
@@ -203,13 +208,13 @@ void plGraft::rotate(uint32_t type, const plVector3& y)
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
 
-            _harvest.rotate(y);
+            _harvest->rotate(y);
             _generateCaps();
             break;
 
         case PL_PICKING_INDEX_GRAFT_DEFECT:
 
-            _recipient.rotate(y);
+            _recipient->rotate(y);
             break;
 
         default:
@@ -229,13 +234,13 @@ void plGraft::rotate(uint32_t type, float32_t angleDegrees)
     {
         case PL_PICKING_INDEX_GRAFT_DONOR:
 
-            _harvest.rotate(angleDegrees);
+            _harvest->rotate(angleDegrees);
             _generateCaps();
             break;
 
         case PL_PICKING_INDEX_GRAFT_DEFECT:
 
-            _recipient.rotate(angleDegrees);
+            _recipient->rotate(angleDegrees);
             break;
 
         default:

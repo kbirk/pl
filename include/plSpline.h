@@ -23,10 +23,10 @@ class plSpline : public plBoundary
     public:
 
         plSpline();
-        plSpline(const plMesh &mesh);
-        plSpline(const plMesh &mesh, const std::vector<plString> &row);
+        plSpline(std::shared_ptr<plMesh> mesh);
+        plSpline(std::shared_ptr<plMesh> mesh, const std::vector<plString>& row);
 
-        const plMesh& surfaceMesh() const { return _surfaceMesh; }
+        std::shared_ptr<plMesh> surfaceMesh() const { return _surfaceMesh; }
 
         void extractRenderComponents(plRenderMap& renderMap) const;
         void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
@@ -41,7 +41,7 @@ class plSpline : public plBoundary
 
         std::time_t _lastUpdate;
 
-        plMesh _surfaceMesh;
+        std::shared_ptr<plMesh> _surfaceMesh;
         std::shared_ptr<plVAO> _surfaceVAO;
 
         std::vector<plVector3> _averageCornerNormals() const;

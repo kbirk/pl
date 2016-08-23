@@ -44,15 +44,15 @@ class plGraftCap : public plRenderable, public plEditable
 {
     public:
 
-        std::vector<plTriangle>       triangles;
-        std::vector<plPointAndAngle>  perimeter;  // perimeter vertices, ordered CCW from above
+        std::vector<plTriangle> triangles;
+        std::vector<plPointAndAngle> perimeter;  // perimeter vertices, ordered CCW from above
 
         plGraftCap();
 
         void extractRenderComponents(plRenderMap& renderMap) const;
         virtual void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        void generateCap(const plOctreeMesh& mesh, const plTransform& transform, float32_t radius);
+        void generateCap(std::shared_ptr<plOctreeMesh> mesh, const plTransform& transform, float32_t radius);
 
     protected:
 
@@ -63,9 +63,9 @@ class plGraftCap : public plRenderable, public plEditable
         std::vector<plVector3> _pointsOutsideTriangles(plVector3 verts[3], const plTransform& transform, float32_t radius) const;
         std::vector<plVector3> _pointsInsideTriangles (plVector3 verts[3], float32_t dist[3], const plTransform& transform, float32_t radius) const;
 
-        bool      _triangleIntersection (const plTriangle &triangle, const plTransform& transform, float32_t radius);
-        plVector3 _pointOnCircumference (const plVector3 &a, const plVector3 &b, float32_t radius) const;
-        bool      _isBeyondHeightThresholds(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform) const;
+        bool _triangleIntersection(const plTriangle &triangle, const plTransform& transform, float32_t radius);
+        plVector3 _pointOnCircumference(const plVector3 &a, const plVector3 &b, float32_t radius) const;
+        bool _isBeyondHeightThresholds(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform) const;
 
 };
 

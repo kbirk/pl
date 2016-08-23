@@ -59,7 +59,7 @@ void plCSV::_readFile(plString filename, bool verbose)
             {
                 std::cout << data[i][j] << ", ";
             }
-            std::cout << "\n";
+            std::cout << "" << std::endl;
         }
     }
 

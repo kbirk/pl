@@ -12,12 +12,8 @@ class plDefectSite : public plRenderable
 {
     public:
 
-        plSpline    spline;
-        plBoundary  boundary;
-
-        plDefectSite();
-        plDefectSite(const plMesh& mesh);
-        plDefectSite(const plSpline& spline, const std::vector<plString> &row);
+        plDefectSite(std::shared_ptr<plMesh> mesh);
+        plDefectSite(std::shared_ptr<plSpline> spline, const std::vector<plString>& row);
 
         virtual ~plDefectSite();
 
@@ -25,4 +21,7 @@ class plDefectSite : public plRenderable
         void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
         void recastBoundary();
+
+        std::shared_ptr<plSpline> spline;
+        std::shared_ptr<plBoundary> boundary;
 };

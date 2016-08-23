@@ -6,14 +6,14 @@ plBoundary::plBoundary()
 }
 
 
-plBoundary::plBoundary(uint32_t type, const plMesh& mesh)
+plBoundary::plBoundary(uint32_t type, std::shared_ptr<plMesh> mesh)
     : plMeshSpecific(mesh),
       _type(type)
 {
 }
 
 
-plBoundary::plBoundary(uint32_t type, const plMesh& mesh, const std::vector<plString> &row)
+plBoundary::plBoundary(uint32_t type, std::shared_ptr<plMesh> mesh, const std::vector<plString> &row)
     : plMeshSpecific(mesh),
       _type(type)
 {

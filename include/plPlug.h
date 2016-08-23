@@ -13,7 +13,10 @@ class plPlug : public plMeshSpecific
     public:
 
         plPlug();
-        plPlug(const plMesh& mesh, const plTransform& surfaceTransform, const plTransform& rotationalOffset);
+        plPlug(
+            std::shared_ptr<plMesh> mesh,
+            const plTransform& surfaceTransform,
+            const plTransform& rotationalOffset);
 
         const plTransform& surfaceTransform() const;
         const plTransform& offsetTransform() const;

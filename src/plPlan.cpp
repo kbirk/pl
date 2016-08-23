@@ -4,8 +4,10 @@ plPlan::plPlan(plString filename)
 {
     if (filename.compare(".csv", filename.size()-4, 4))
     {
-        std::cerr << "Unrecognized suffix on filename '" << filename
-                  << "'. plPlan filenames should have suffix .csv" << std::endl;
+        std::cerr << "Unrecognized suffix on filename '"
+            << filename
+            << "'. plPlan filenames should have suffix .csv"
+            << std::endl;
         exit(1);
     }
     importFile(filename);
@@ -32,7 +34,7 @@ plPlan::plPlan(int32_t argc, char **argv)
         else if (filename.compare(".stl", filename.size()-4, 4))
         {
             // model input order: bone, cartilage, bone, cartilage, etc...
-            _models.push_back(new plModel(filename, PL_MODEL_DEFAULT_OCTREE_DEPTH));
+            _models.push_back(std::make_shared<plModel>(filename, PL_MODEL_DEFAULT_OCTREE_DEPTH));
         }
         else
         {
@@ -46,15 +48,9 @@ plPlan::plPlan(int32_t argc, char **argv)
     }
 }
 
-
 plPlan::~plPlan()
 {
-    for (uint32_t i = 0; i < _defectSites.size(); i++) delete _defectSites[i];
-    for (uint32_t i = 0; i < _donorSites.size();  i++) delete _donorSites[i];
-    for (uint32_t i = 0; i < _grafts.size();      i++) delete _grafts[i];
-    for (uint32_t i = 0; i < _models.size();      i++) delete _models[i];
 }
-
 
 void plPlan::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
@@ -103,44 +99,43 @@ void plPlan::extractRenderComponents(plRenderMap& renderMap) const
 void plPlan::addDefectSite(uint32_t modelIndex)
 {
     if (_modelIndexErrorCheck("addDefectSite", modelIndex))
+    {
         return;
-
-    _defectSites.push_back(new plDefectSite(_models[modelIndex]->mesh()));
+    }
+    _defectSites.push_back(std::make_shared<plDefectSite>(_models[modelIndex]->mesh()));
 }
 
 
 void plPlan::addDonorSite(uint32_t modelIndex)
 {
     if (_modelIndexErrorCheck("addDonorSite", modelIndex))
+    {
         return;
-
-    _donorSites.push_back(new plDonorSite(_models[modelIndex]->mesh()));
+    }
+    _donorSites.push_back(std::make_shared<plDonorSite>(_models[modelIndex]->mesh()));
 }
 
 
-void plPlan::addGraft(const plPlug &harvest, const plPlug &recipient, float32_t radius, float32_t length)
+void plPlan::addGraft(std::shared_ptr<plPlug>harvest, std::shared_ptr<plPlug>recipient, float32_t radius, float32_t length)
 {
-    _grafts.push_back(new plGraft(harvest, recipient, radius, length));
+    _grafts.push_back(std::make_shared<plGraft>(harvest, recipient, radius, length));
 }
 
 
 void plPlan::removeDefectSite(uint32_t index)
 {
-    delete _defectSites[index];
     _defectSites.erase(_defectSites.begin()+index);
 }
 
 
 void plPlan::removeDonorSite(uint32_t index)
 {
-    delete _donorSites[index];
     _donorSites.erase(_donorSites.begin()+index);
 }
 
 
 void plPlan::removeGraft(uint32_t index)
 {
-    delete _grafts[index];
     _grafts.erase(_grafts.begin()+index);
 }
 
@@ -149,13 +144,15 @@ void plPlan::importFile(const plString &filename)
 {
     plCSV csv(filename);
 
-    if (!csv.good()) {
+    if (!csv.good())
+    {
         exit(1);
     }
 
     for (uint32_t i = 0; i < csv.data.size(); i++)
     {
-        if (csv.data[i].empty()) {
+        if (csv.data[i].empty())
+        {
             std::cerr << "Expected row is empty" << std::endl;
             exit(1);
         }
@@ -164,18 +161,23 @@ void plPlan::importFile(const plString &filename)
 
         if (field.compareCaseInsensitive("model"))
         {
-            plString modelFile(csv.data[++i][1]);
+            std::cout << "Loading model...";
 
-            _models.push_back(new plModel(modelFile, PL_MODEL_DEFAULT_OCTREE_DEPTH));
+            plString modelFile(csv.data[++i][1]);
+            auto model = std::make_shared<plModel>(modelFile, PL_MODEL_DEFAULT_OCTREE_DEPTH);
+            _models.push_back(model);
+
+            std::cout << " Complete." << std::endl;
         }
         else if (field.compareCaseInsensitive("defect_site"))
         {
             std::cout << "Loading defect site...";
 
             uint32_t splineModelID(std::stoi(csv.data[++i][1]));
-            plSpline spline(_models[splineModelID]->mesh(), csv.data[++i]);
+            auto spline = std::make_shared<plSpline>(_models[splineModelID]->mesh(), csv.data[++i]);
+            auto defectSite = std::make_shared<plDefectSite>(spline, csv.data[++i]);
+            _defectSites.push_back(defectSite);
 
-            _defectSites.push_back(new plDefectSite(spline, csv.data[++i]));
             std::cout << " Complete." << std::endl;
 
         }
@@ -184,9 +186,13 @@ void plPlan::importFile(const plString &filename)
             std::cout << "Loading donor site...";
 
             uint32_t boundaryModelID(std::stoi(csv.data[++i][1]));
-            plBoundary boundary(PL_PICKING_TYPE_DONOR_BOUNDARY, _models[boundaryModelID]->mesh(), csv.data[++i]);
+            auto boundary = std::make_shared<plBoundary>(
+                PL_PICKING_TYPE_DONOR_BOUNDARY,
+                _models[boundaryModelID]->mesh(),
+                csv.data[++i]);
+            auto donorSite = std::make_shared<plDonorSite>(boundary);
+            _donorSites.push_back(donorSite);
 
-            _donorSites.push_back(new plDonorSite(boundary));
             std::cout << " Complete." << std::endl;
 
         }
@@ -204,16 +210,18 @@ void plPlan::importFile(const plString &filename)
             float32_t length(std::stof(csv.data[++i][1]));
             plVector3 markDirection(csv.data[++i][1]);
 
-            plPlug recipientPlug(
-                _defectSites[recipientSiteID]->spline.surfaceMesh(),
+            auto recipientPlug = std::make_shared<plPlug>(
+                _defectSites[recipientSiteID]->spline->surfaceMesh(),
                 recipientTransform,
                 recipientRotation);
-            plPlug harvestPlug(
+            auto harvestPlug = std::make_shared<plPlug>(
                 _models[harvestModelID]->mesh(),
                 harvestTransform,
                 harvestRotation);
+            auto graft = std::make_shared<plGraft>(harvestPlug, recipientPlug, radius, length, markDirection);
 
-            _grafts.push_back(new plGraft(harvestPlug, recipientPlug, radius, length, markDirection));
+            _grafts.push_back(graft);
+
             std::cout << " Complete." << std::endl;
         }
         else
@@ -236,46 +244,46 @@ void plPlan::exportFile(const plString &filename)
     else
     {
         // models
-        for (uint32_t i=0; i<_models.size(); i++)
+        for (auto model : _models)
         {
             out << "model"               << std::endl
-                << "    filename,      " << _models[i]->filename  << std::endl
+                << "    filename,      " << model->filename  << std::endl
                 << std::endl;
         }
 
         // defect sites
-        for (uint32_t i=0; i<_defectSites.size(); i++)
+        for (auto defectSite : _defectSites)
         {
-            out << "defect_site"  << std::endl
-                << "    spline_model_id,   " << getModelIndex(_defectSites[i]->spline)    << std::endl
-                << "    spline,            " << _defectSites[i]->spline                   << std::endl
-                << "    boundary,          " << _defectSites[i]->boundary                 << std::endl
+            out << "defect_site"                                                     << std::endl
+                << "    spline_model_id,   " << getModelIndex(defectSite->spline)    << std::endl
+                << "    spline,            " << defectSite->spline                   << std::endl
+                << "    boundary,          " << defectSite->boundary                 << std::endl
 
                 << std::endl;
         }
 
         // donor sites
-        for (uint32_t i=0; i<_donorSites.size(); i++)
+        for (auto donorSite : _donorSites)
         {
-            out << "donor_site"   << std::endl
-                << "    boundary_model_id, " << getModelIndex(_donorSites[i]->boundary) << std::endl
-                << "    boundary,          " << _donorSites[i]->boundary                << std::endl
+            out << "donor_site"                                                    << std::endl
+                << "    boundary_model_id, " << getModelIndex(donorSite->boundary) << std::endl
+                << "    boundary,          " << donorSite->boundary                << std::endl
                 << std::endl;
         }
 
         // grafts
-        for (uint32_t i=0; i<_grafts.size(); i++)
+        for (auto graft : _grafts)
         {
-            out << "graft"                          << std::endl
-                << "    recipient_defect_site_id, " << _getDefectSiteIndex(_grafts[i]->recipient())     << std::endl
-                << "    recipient_transform,      " << _grafts[i]->recipient().surfaceTransform()       << std::endl
-                << "    recipient_rotation,       " << _grafts[i]->recipient().offsetTransform()        << std::endl
-                << "    harvest_model_id,         " << getModelIndex(_grafts[i]->harvest())             << std::endl
-                << "    harvest_transform,        " << _grafts[i]->harvest().surfaceTransform()         << std::endl
-                << "    harvest_rotation,         " << _grafts[i]->harvest().offsetTransform()          << std::endl
-                << "    radius,                   " << _grafts[i]->radius()                             << std::endl
-                << "    length,                   " << _grafts[i]->length()                             << std::endl
-                << "    mark_direction,           " << _grafts[i]->markDirection()                      << std::endl
+            out << "graft"                                                                     << std::endl
+                << "    recipient_defect_site_id, " << _getDefectSiteIndex(graft->recipient()) << std::endl
+                << "    recipient_transform,      " << graft->recipient()->surfaceTransform()  << std::endl
+                << "    recipient_rotation,       " << graft->recipient()->offsetTransform()   << std::endl
+                << "    harvest_model_id,         " << getModelIndex(graft->harvest())         << std::endl
+                << "    harvest_transform,        " << graft->harvest()->surfaceTransform()    << std::endl
+                << "    harvest_rotation,         " << graft->harvest()->offsetTransform()     << std::endl
+                << "    radius,                   " << graft->radius()                         << std::endl
+                << "    length,                   " << graft->length()                         << std::endl
+                << "    mark_direction,           " << graft->markDirection()                  << std::endl
                 << std::endl;
         }
 
@@ -286,7 +294,7 @@ void plPlan::exportFile(const plString &filename)
 
 void plPlan::updateGraftMarkerPositions()
 {
-    for (plGraft* graft : _grafts)
+    for (auto graft : _grafts)
     {
         graft->snapMarkDirection();
     }
@@ -295,32 +303,37 @@ void plPlan::updateGraftMarkerPositions()
 
 void plPlan::clear()
 {
-    for (uint32_t i = 0; i < _defectSites.size(); i++) delete _defectSites[i];
-    for (uint32_t i = 0; i < _donorSites.size();  i++) delete _donorSites[i];
-    for (uint32_t i = 0; i < _grafts.size();      i++) delete _grafts[i];
     _defectSites.clear();
     _donorSites.clear();
     _grafts.clear();
 }
 
 
-int32_t plPlan::getModelIndex(const plMeshSpecific& mesh) const
+int32_t plPlan::getModelIndex(std::shared_ptr<plMeshSpecific> mesh) const
 {
-    for (uint32_t i = 0; i < _models.size(); i++)
+    int32_t index = 0;
+    for (auto model : _models)
     {
-        if (&_models[i]->mesh() == &mesh.mesh())
-            return i;
+        if (model->mesh() == mesh->mesh())
+        {
+            return index;
+        }
+        index++;
     }
     return -1;
 }
 
 
-int32_t plPlan::_getDefectSiteIndex(const plMeshSpecific& mesh) const
+int32_t plPlan::_getDefectSiteIndex(std::shared_ptr<plMeshSpecific> mesh) const
 {
-    for (uint32_t i = 0; i < _defectSites.size(); i++)
+    int32_t index = 0;
+    for (auto defectSite : _defectSites)
     {
-        if (&_defectSites[i]->spline.surfaceMesh() == &mesh.mesh())
-            return i;
+        if (defectSite->spline->surfaceMesh() == mesh->mesh())
+        {
+            return index;
+        }
+        index++;
     }
     return -1;
 }

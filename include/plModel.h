@@ -43,7 +43,7 @@ class plModel : public plTransparentRenderable, public plEditable
 
         virtual ~plModel();
 
-        const plMesh& mesh() const { return *_mesh; }
+        std::shared_ptr<plMesh> mesh() const { return _mesh; }
 
         void toggleOctreeVisibility();
 

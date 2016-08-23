@@ -262,7 +262,7 @@ void handleKeyPress(const WindowEvent& event)
                 // toggle octree view for selected model
                 if (modelEditor.isModelSelected())
                 {
-                    plan->models(modelEditor.selectedModelID()).toggleOctreeVisibility();
+                    plan->models(modelEditor.selectedModelID())->toggleOctreeVisibility();
                 }
                 break;
 
@@ -303,7 +303,7 @@ void handleKeyPress(const WindowEvent& event)
                 // reset camera onto model
                 if (modelEditor.isModelSelected())
                 {
-                    camera.reset(plan->models(modelEditor.selectedModelID()).getCentroid());
+                    camera.reset(plan->models(modelEditor.selectedModelID())->getCentroid());
                 }
                 break;
         }

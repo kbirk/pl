@@ -71,7 +71,7 @@ plVector4 plVector4::normalize() const
     len = sqrt(x*x + y*y + z*z + w*w);
     if (len == 0)
     {
-        std::cerr << "normalize error: length is 0\n";
+        std::cerr << "normalize error: length is 0" << std::endl;
         return plVector4(0,0,0,0);
     }
     else

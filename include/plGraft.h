@@ -19,8 +19,8 @@ class plGraft : public plRenderable, public plEditable
 
         plGraft();
         plGraft(
-            const plPlug &harvest,
-            const plPlug &recipient,
+            std::shared_ptr<plPlug> harvest,
+            std::shared_ptr<plPlug> recipient,
             float32_t radius,
             float32_t length,
             const plVector3& markDirection = plVector3(0, 0, 1));
@@ -32,9 +32,9 @@ class plGraft : public plRenderable, public plEditable
         const plVector3& markDirection() const { return _markDirection; }
         const plVector3& markPositions(uint32_t index) const { return _markPositions[index]; }
 
-        const plPlug& plug(uint32_t type) const;
-        const plPlug& harvest() const { return _harvest; }
-        const plPlug& recipient() const { return _recipient; }
+        std::shared_ptr<plPlug> plug(uint32_t type) const;
+        std::shared_ptr<plPlug> harvest() const { return _harvest; }
+        std::shared_ptr<plPlug> recipient() const { return _recipient; }
 
         void move(uint32_t type, const plVector3& origin, const plVector3& y);
         void rotate(uint32_t type, const plVector3& y);
@@ -48,8 +48,8 @@ class plGraft : public plRenderable, public plEditable
 
     private:
 
-        plPlug _recipient;
-        plPlug _harvest;
+        std::shared_ptr<plPlug> _recipient;
+        std::shared_ptr<plPlug> _harvest;
 
         float32_t _radius;
         float32_t _length;

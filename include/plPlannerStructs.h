@@ -9,11 +9,11 @@ class plDefectSolution
 {
     public:
 
-        uint32_t                  graftCount;
-        std::vector<plVector4>  graftPositions;
-        std::vector<plVector4>  graftNormals;         // normal / direction of graft
-        std::vector<plVector4>  graftSurfaceNormals;  // actual normal of the surface
-        std::vector<float32_t>    graftRadii;
+        uint32_t graftCount;
+        std::vector<plVector4> graftPositions;
+        std::vector<plVector4> graftNormals;         // normal / direction of graft
+        std::vector<plVector4> graftSurfaceNormals;  // actual normal of the surface
+        std::vector<float32_t> graftRadii;
 
         plDefectSolution() {};
 };
@@ -42,12 +42,12 @@ class plDonorSolution
 {
     public:
 
-        std::vector<plVector4>  graftPositions;
-        std::vector<plVector4>  graftNormals;
-        std::vector<plVector4>  graftSurfaceNormals;
-        std::vector<plVector4>  graftXAxes;
-        std::vector<uint32_t>     graftSiteIndices;
-        float32_t                   rms;
+        std::vector<plVector4> graftPositions;
+        std::vector<plVector4> graftNormals;
+        std::vector<plVector4> graftSurfaceNormals;
+        std::vector<plVector4> graftXAxes;
+        std::vector<uint32_t> graftSiteIndices;
+        float32_t rms;
 
         plDonorSolution() {};
 

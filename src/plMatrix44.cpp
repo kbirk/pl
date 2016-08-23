@@ -40,7 +40,7 @@ bool plMatrix44::importFile(const plString &file)
     }
     else
     {
-        std::cerr << "plMatrix44::plMatrix44() error: xml file could not be opened\n";
+        std::cerr << "plMatrix44::plMatrix44() error: xml file could not be opened" << std::endl;
     }
     return true;
 }
@@ -645,7 +645,7 @@ std::ostream& operator << (std::ostream& stream, const plMatrix44 &m)
 {
     for (uint32_t i=0; i < 4; i++)
     {
-       stream << m(i,0) << "    " << m(i,1) << "    " << m(i,2) << "    " << m(i,3) << "\n";
+       stream << m(i,0) << "    " << m(i,1) << "    " << m(i,2) << "    " << m(i,3) << "" << std::endl;
     }
 
     return stream;

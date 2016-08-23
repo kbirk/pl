@@ -34,14 +34,14 @@ void plGraftCap::extractRenderComponents(plRenderMap& renderMap) const
 }
 
 
-void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transform, const float32_t radius)
+void plGraftCap::generateCap(std::shared_ptr<plOctreeMesh> mesh, const plTransform& transform, const float32_t radius)
 {
     // clear previous cap incase
     triangles.clear();
     perimeter.clear();
 
     std::set<const plTriangle*> potentialTriangles;
-    mesh.octree().rayIntersect(potentialTriangles, transform.origin(), transform.y(), radius);
+    mesh->octree().rayIntersect(potentialTriangles, transform.origin(), transform.y(), radius);
 
     // reserve for max number of triangles
     triangles.reserve(triangles.size());

@@ -5,7 +5,10 @@ plPlug::plPlug()
 }
 
 
-plPlug::plPlug(const plMesh& mesh, const plTransform& surfaceTransform, const plTransform& rotationalOffset)
+plPlug::plPlug(
+    std::shared_ptr<plMesh> mesh,
+    const plTransform& surfaceTransform,
+    const plTransform& rotationalOffset)
     : plMeshSpecific(mesh),
       _surfaceTransform(surfaceTransform),
       _rotationalOffset(rotationalOffset)

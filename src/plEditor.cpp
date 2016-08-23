@@ -8,7 +8,7 @@ plEditor::plEditor()
 
 void plEditor::attach(std::shared_ptr<plPlan> plan)
 {
-    if (_plan)
+    if (_plan != nullptr)
     {
         std::cout << "plEditor::attach() warning: plan already attached to editor" << std::endl;
     }
@@ -16,14 +16,14 @@ void plEditor::attach(std::shared_ptr<plPlan> plan)
 }
 
 
-void plEditor::_clearEditable(plEditable& editable) const
+void plEditor::_clearEditable(std::shared_ptr<plEditable> editable) const
 {
-    editable._clearSelection();
+    editable->_clearSelection();
 }
 
 
-void plEditor::_selectEditable(plEditable& editable, uint32_t value) const
+void plEditor::_selectEditable(std::shared_ptr<plEditable> editable, uint32_t value) const
 {
-    editable._isSelected = true;
-    editable._selectedValue = value;
+    editable->_isSelected = true;
+    editable->_selectedValue = value;
 }

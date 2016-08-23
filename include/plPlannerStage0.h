@@ -34,7 +34,9 @@ class plAnnealingGroup
         void bind();
         void unbind();
 
-        void getSolution(plDefectSolution &solution, const plPlanningBufferData &planningData);
+        void getSolution(
+            std::shared_ptr<plDefectSolution> solution,
+            std::shared_ptr<plPlanningBufferData> planningData);
         void getLowestGroupInfo(uint32_t &index, float32_t &energy);
 
     private:
@@ -56,6 +58,8 @@ class plAnnealingGroup
 namespace plPlannerStage0
 {
 
-    void run(plDefectSolution &state, const plPlanningBufferData &planningData);
+    void run(
+        std::shared_ptr<plDefectSolution> state,
+        std::shared_ptr<plPlanningBufferData> planningData);
 
 }

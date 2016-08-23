@@ -17,12 +17,12 @@ class plBoundaryEditor : public plEditor
         void clearSelection();
         void selectBoundary(uint32_t boundaryType, uint32_t boundaryIndex, uint32_t pointIndex);
 
-        bool isBoundarySelected() const { return (_selectedBoundary != nullptr); }
+        bool isBoundarySelected() const { return _selectedBoundary != nullptr; }
 
         bool processMousePress(int32_t x, int32_t y);
         bool processMouseDrag(int32_t x, int32_t y);
         bool processMouseRelease(int32_t x, int32_t y);
-        
+
         void addPoint(uint32_t x, uint32_t y, bool selectNewPoint = true);
         void moveSelectedPoint(uint32_t x, uint32_t y);
         void removeSelectedPoint();
@@ -35,13 +35,13 @@ class plBoundaryEditor : public plEditor
 
     private:
 
-        int32_t _selectedSiteIndex;    // use this and above to determine which pl*Site
-        plBoundary *_selectedBoundary;
+        int32_t _selectedSiteIndex;
+        std::shared_ptr<plBoundary> _selectedBoundary;
         int32_t _selectedPointIndex;
 
         void _clearSiteBoundaries();
 
-        void _selectBoundary(plBoundary &boundary, uint32_t boundaryIndex, uint32_t pointIndex);
+        void _selectBoundary(std::shared_ptr<plBoundary> boundary, uint32_t boundaryIndex, uint32_t pointIndex);
 
         void _selectDefectSiteSpline(uint32_t boundaryIndex, uint32_t pointIndex);
         void _selectDefectSiteBoundary(uint32_t boundaryIndex, uint32_t pointIndex);

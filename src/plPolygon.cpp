@@ -55,16 +55,16 @@ plEdge& plEdge::operator =(const plEdge& other)
 
 std::ostream& operator << (std::ostream &stream, const plEdge &e)
 {
-    stream << e.pt1 << " " << e.pt2 << "\n";
+    stream << e.pt1 << " " << e.pt2 << "" << std::endl;
     return stream;
 }
 
 std::ostream& operator << (std::ostream &stream, const plPolygon &p)
 {
-    stream << "Normal    = " << p.normal << "\n";
+    stream << "Normal    = " << p.normal << "" << std::endl;
     for (uint32_t i = 0; i < p.points.size(); i++)
     {
-        stream << "Vertex " << i << " = " << p.points[i] << "\n";
+        stream << "Vertex " << i << " = " << p.points[i] << "" << std::endl;
     }
     return stream;
 }

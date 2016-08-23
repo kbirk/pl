@@ -226,6 +226,6 @@ std::ostream& operator << (std::ostream& stream, const plTriangle &p)
     stream << "Normal    = " << p.normal() << "\n"
            << "Vertex 0  = " << p.point0() << "\n"
            << "Vertex 1  = " << p.point1() << "\n"
-           << "Vertex 2  = " << p.point2() << "\n";
+           << "Vertex 2  = " << p.point2() << "" << std::endl;
     return stream;
 }

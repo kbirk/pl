@@ -43,7 +43,7 @@ void plGreedyGroup::update()
     _totalRmsSSBO.read(totalRMS, totalRMS.size());
 
     // find invocation with lowest RMS
-    float32_t minRMS   = FLT_MAX;
+    float32_t minRMS = FLT_MAX;
     int32_t minIndex = -1;
 
     // get lowest rms index
@@ -51,7 +51,7 @@ void plGreedyGroup::update()
     {
         if (totalRMS[i] > 0 && totalRMS[i] < minRMS)
         {
-            minRMS   = totalRMS[i];
+            minRMS = totalRMS[i];
             minIndex = i;
         }
     }
@@ -69,24 +69,26 @@ void plGreedyGroup::update()
 }
 
 
-void plGreedyGroup::getSolution(plDonorSolution &solution, const plPlanningBufferData &planningData)
+void plGreedyGroup::getSolution(
+    std::shared_ptr<plDonorSolution> solution,
+    std::shared_ptr<plPlanningBufferData> planningData)
 {
-    solution.graftPositions = _lowestPositions;
-    solution.graftNormals   = _lowestNormals;
-    solution.graftXAxes     = _lowestXAxes;
-    solution.graftSiteIndices = _lowestSiteIndices;
-    solution.rms = _lowestRMS;
+    solution->graftPositions = _lowestPositions;
+    solution->graftNormals = _lowestNormals;
+    solution->graftXAxes = _lowestXAxes;
+    solution->graftSiteIndices = _lowestSiteIndices;
+    solution->rms = _lowestRMS;
 
-    for (uint32_t i=0; i < solution.graftPositions.size(); i++)
+    for (uint32_t i=0; i < solution->graftPositions.size(); i++)
     {
         // intersect surface
-        plIntersection intersection = plMath::rayIntersect(planningData.donorSites[solution.graftSiteIndices[i]].triangles,
-                                                            solution.graftPositions[i],
-                                                            -solution.graftNormals[i],
-                                                            true);
+        plIntersection intersection = plMath::rayIntersect(
+            planningData->donorSites[solution->graftSiteIndices[i]]->triangles,
+            solution->graftPositions[i],
+            -solution->graftNormals[i],
+            true);
         // set surface normal for graft
-        solution.graftSurfaceNormals.push_back(plVector4(intersection.normal, 1.0f));
-
+        solution->graftSurfaceNormals.push_back(plVector4(intersection.normal, 1.0f));
     }
 }
 
@@ -94,9 +96,13 @@ void plGreedyGroup::getSolution(plDonorSolution &solution, const plPlanningBuffe
 namespace plPlannerStage3
 {
 
-    void run(plDonorSolution &donorSolution, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plRmsData &rmsData)
+    void run(
+        std::shared_ptr<plDonorSolution> donorSolution,
+        std::shared_ptr<plPlanningBufferData> planningData,
+        std::shared_ptr<plDefectSolution> defectSolution,
+        std::shared_ptr<plRmsData> rmsData)
     {
-        std::vector<std::string > shaderfiles;
+        std::vector<std::string> shaderfiles;
 
         shaderfiles.push_back("./resources/shaders/planning/defines.h");
         shaderfiles.push_back("./resources/shaders/planning/geometry.h");
@@ -126,19 +132,19 @@ namespace plPlannerStage3
         stage3Shader.bind();
 
         // set uniforms
-        stage3Shader.setDefectSiteUniforms(planningData.defectSite);
-        stage3Shader.setDonorSiteUniforms(planningData.donorSites);
+        stage3Shader.setDefectSiteUniforms(planningData->defectSite);
+        stage3Shader.setDonorSiteUniforms(planningData->donorSites);
         stage3Shader.setDefectSolutionUniforms(defectSolution);
         stage3Shader.setRotationAngleUniforms(PL_NUM_COMPARISION_DIRECTIONS);
 
         // create and initialize cap indices SSBOs to 0
-        plGreedyGroup greedyBuffers;
+        auto greedyBuffers = std::make_shared<plGreedyGroup>();
 
         // bind SSBOs
-        planningData.defectSiteSSBO.bind(0);
-        planningData.donorSitesSSBO.bind(1);
-        rmsData.rmsSSBO.bind(2);
-        greedyBuffers.bind(); // 3, 4, 5, 6, 7
+        planningData->defectSiteSSBO.bind(0);
+        planningData->donorSitesSSBO.bind(1);
+        rmsData->rmsSSBO.bind(2);
+        greedyBuffers->bind(); // 3, 4, 5, 6, 7
 
         for (uint32_t i=0; i<PL_STAGE_3_ITERATIONS; i++)
         {
@@ -152,37 +158,25 @@ namespace plPlannerStage3
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
             // check latest solution
-            greedyBuffers.update();
+            greedyBuffers->update();
 
             plUtility::printProgressBar(i / (float32_t)PL_STAGE_3_ITERATIONS);
         }
         plUtility::printProgressBar(1.0);
 
-        greedyBuffers.getSolution(donorSolution, planningData);
+        greedyBuffers->getSolution(donorSolution, planningData);
 
         // no state found
-        if (donorSolution.rms == FLT_MAX)
+        if (donorSolution->rms == FLT_MAX)
         {
-            std::cerr << "plPlannerStage3::run() error: Unable to find suitable harvest locations \n";
+            std::cerr << "plPlannerStage3::run() error: Unable to find suitable harvest locations " << std::endl;
         }
 
         // unbind and delete site and rms buffers
-        planningData.defectSiteSSBO.unbind(0);
-        planningData.donorSitesSSBO.unbind(1);
-        rmsData.rmsSSBO.unbind(2);
-        greedyBuffers.unbind();
-
-        // DEBUG
-        /*
-        std::cout << std::endl << "DEBUG: " << std::endl;
-        for (uint32_t i=0; i<defectSolution.graftCount; i++)
-        {
-            std::cout << "Graft " << i << ",    Position: " << donorSolution.graftPositions[i]
-                                       << ",    Normal: "   << donorSolution.graftNormals[i] << std::endl;
-        }
-        std::cout << std::endl;
-        //
-        */
+        planningData->defectSiteSSBO.unbind(0);
+        planningData->donorSitesSSBO.unbind(1);
+        rmsData->rmsSSBO.unbind(2);
+        greedyBuffers->unbind();
     }
 
 

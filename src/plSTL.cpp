@@ -15,8 +15,6 @@ namespace plSTL
             return false;
         }
 
-        std::cout << "Importing " << filename << "...";
-
         // just in case, clear
         triangles.clear();
 
@@ -109,7 +107,6 @@ namespace plSTL
             infile.close();
         }
 
-        std::cout << " Complete.\n";
         return true;
     }
 
@@ -119,11 +116,11 @@ namespace plSTL
         std::ofstream outfile (filename.c_str());
         if (!outfile.good())
         {
-            std::cerr << "plSTL::exportFileASCII() error: STL file could not be written \n";
+            std::cerr << "plSTL::exportFileASCII() error: STL file could not be written " << std::endl;
             return false;
         }
 
-        outfile << "solid\n";
+        outfile << "solid" << std::endl;
 
         for (uint32_t i=0; i<triangles.size(); i++)
         {
@@ -133,10 +130,10 @@ namespace plSTL
                        "      vertex " << triangles[i].point1().x << " " << triangles[i].point1().y << " " << triangles[i].point1().z << "\n" <<
                        "      vertex " << triangles[i].point2().x << " " << triangles[i].point2().y << " " << triangles[i].point2().z << "\n" <<
                        "    endloop\n" <<
-                       "  endfacet\n";
+                       "  endfacet" << std::endl;
         }
 
-        outfile <<"endsolid\n";
+        outfile <<"endsolid" << std::endl;
 
         outfile.close();
         return true;
@@ -151,7 +148,7 @@ namespace plSTL
         std::ofstream outfile (filename.c_str(), std::ios::trunc | std::ios::out | std::ios::binary);
         if (!outfile.good())
         {
-            std::cerr << "plSTL::exportFileBinary() error: STL file could not be written \n";
+            std::cerr << "plSTL::exportFileBinary() error: STL file could not be written " << std::endl;
             return false;
         }
 

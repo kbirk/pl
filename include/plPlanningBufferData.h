@@ -8,19 +8,21 @@
 #include "plDonorSite.h"
 #include "plSSBO.h"
 
-#define PL_MAX_DONOR_SITES                   5
+#define PL_MAX_DONOR_SITES 5
 
 class plPlanningBufferData
 {
     public:
 
-        plPlanningSite defectSite;
-        plSSBO         defectSiteSSBO;
+        std::shared_ptr<plPlanningSite> defectSite;
+        plSSBO defectSiteSSBO;
 
-        std::vector<plPlanningSite > donorSites;
-        plSSBO                        donorSitesSSBO;
+        std::vector<std::shared_ptr<plPlanningSite>> donorSites;
+        plSSBO donorSitesSSBO;
 
-        plPlanningBufferData(const plDefectSite& defect, const std::vector<plDonorSite*>& donors);
+        plPlanningBufferData(
+            std::shared_ptr<plDefectSite> defect,
+            const std::vector<std::shared_ptr<plDonorSite>>& donors);
 
         bool good() const;
 

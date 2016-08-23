@@ -40,7 +40,7 @@ bool plBoundaryEditor::processMousePress(int32_t x, int32_t y)
 }
 
 
-bool plBoundaryEditor::processMouseDrag (int32_t x, int32_t y)
+bool plBoundaryEditor::processMouseDrag(int32_t x, int32_t y)
 {
     plPickingInfo pixel = plPicking::previousPick(); // read pick from last click, not what is currently under mouse
 
@@ -69,7 +69,7 @@ bool plBoundaryEditor::processMouseRelease(int32_t x, int32_t y)
     // moving spline corners, recast defect site boundary
     if (_selectedBoundary->type() == PL_PICKING_TYPE_DEFECT_SPLINE)
     {
-        _plan->defectSites(_selectedSiteIndex).recastBoundary();
+        _plan->defectSites(_selectedSiteIndex)->recastBoundary();
     }
 
     _isDraggingMenu = false;
@@ -94,12 +94,12 @@ void plBoundaryEditor::_clearSiteBoundaries()
 }
 
 
-void plBoundaryEditor::_selectBoundary(plBoundary &boundary, uint32_t boundaryIndex, uint32_t pointIndex)
+void plBoundaryEditor::_selectBoundary(std::shared_ptr<plBoundary> boundary, uint32_t boundaryIndex, uint32_t pointIndex)
 {
     _selectEditable(boundary, pointIndex);
     _selectedSiteIndex = boundaryIndex;
     _selectedPointIndex = pointIndex;
-    _selectedBoundary = &boundary;
+    _selectedBoundary = boundary;
 }
 
 
@@ -110,9 +110,17 @@ void plBoundaryEditor::selectBoundary(uint32_t boundaryType, uint32_t boundaryIn
     // select
     switch (boundaryType)
     {
-        case PL_PICKING_TYPE_DEFECT_CORNERS:   _selectBoundary(_plan->defectSites(boundaryIndex).spline,   boundaryIndex, pointIndex);   break;
-        case PL_PICKING_TYPE_DEFECT_BOUNDARY:  _selectBoundary(_plan->defectSites(boundaryIndex).boundary, boundaryIndex, pointIndex);   break;
-        case PL_PICKING_TYPE_DONOR_BOUNDARY:   _selectBoundary(_plan->donorSites(boundaryIndex).boundary,  boundaryIndex, pointIndex);   break;
+        case PL_PICKING_TYPE_DEFECT_CORNERS:
+            _selectBoundary(_plan->defectSites(boundaryIndex)->spline, boundaryIndex, pointIndex);
+            break;
+
+        case PL_PICKING_TYPE_DEFECT_BOUNDARY:
+            _selectBoundary(_plan->defectSites(boundaryIndex)->boundary, boundaryIndex, pointIndex);
+            break;
+
+        case PL_PICKING_TYPE_DONOR_BOUNDARY:
+            _selectBoundary(_plan->donorSites(boundaryIndex)->boundary, boundaryIndex, pointIndex);
+            break;
     }
 
 }
@@ -123,14 +131,14 @@ plIntersection plBoundaryEditor::_getBoundaryIntersection(uint32_t x, uint32_t y
     plVector3 rayOrigin, rayDirection;
     plWindow::cameraToMouseRay(rayOrigin, rayDirection, x, y);
 
-    plIntersection intersection = _selectedBoundary->mesh().rayIntersect(rayOrigin, rayDirection);
+    plIntersection intersection = _selectedBoundary->mesh()->rayIntersect(rayOrigin, rayDirection);
 
     if (!intersection.exists)
     {
         // if no intersection, and is defect boundary point, find closest point on spline
         if (_selectedBoundary->type() == PL_PICKING_TYPE_DEFECT_BOUNDARY)
         {
-            intersection = plMath::getClosestPointToRay(_selectedBoundary->mesh().triangles(), rayOrigin, rayDirection);
+            intersection = plMath::getClosestPointToRay(_selectedBoundary->mesh()->triangles(), rayOrigin, rayDirection);
         }
     }
 
@@ -171,11 +179,10 @@ void plBoundaryEditor::addPoint(uint32_t x, uint32_t y, bool selectNewPoint)
 
         if (selectNewPoint && newIndex >= 0)
         {
-            _selectEditable(*_selectedBoundary, newIndex);
+            _selectEditable(_selectedBoundary, newIndex);
             _selectedPointIndex = newIndex;
         }
     }
-
 }
 
 
@@ -188,7 +195,7 @@ void plBoundaryEditor::removeSelectedPoint()
     }
 
     _selectedBoundary->removePointAndNormal(_selectedPointIndex);
-    _selectEditable(*_selectedBoundary);
+    _selectEditable(_selectedBoundary);
     _selectedPointIndex = -1;
 }
 
@@ -212,7 +219,7 @@ void plBoundaryEditor::clearSelectedBoundary()
     // clearing corners, destroy defect site boundary
     if (_selectedBoundary->type() == PL_PICKING_TYPE_DEFECT_CORNERS)
     {
-        _plan->defectSites(_selectedSiteIndex).boundary.clear();
+        _plan->defectSites(_selectedSiteIndex)->boundary->clear();
     }
 }
 
@@ -243,7 +250,10 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
     float32_t count = 0;
     plPickingStack::loadBlue(-1);
 
-    plMatrix44 ortho(0, plWindow::viewportWidth(), 0, plWindow::viewportHeight(), -1, 1);
+    plMatrix44 ortho(
+        0, plWindow::viewportWidth(),
+        0, plWindow::viewportHeight(),
+        -1, 1);
 
     plMatrix44 camera(
         1, 0,  0, 0,
@@ -269,7 +279,7 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
                 plVector3(0, 0, 1),
                 PL_EDITOR_MENU_CIRCLE_RADIUS);
 
-            if (_plan->defectSites(i).spline.isSelected())
+            if (_plan->defectSites(i)->spline->isSelected())
             {
                 // draw selection outline
                 plRenderer::queueDisk(
@@ -288,7 +298,7 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
                 plVector3(0, 0, 1),
                 PL_EDITOR_MENU_CIRCLE_RADIUS);
 
-            if (_plan->defectSites(i).boundary.isSelected())
+            if (_plan->defectSites(i)->boundary->isSelected())
             {
                 // draw selection outline
                 plRenderer::queueDisk(
@@ -315,7 +325,7 @@ void plBoundaryEditor::_extractMenuRenderComponents(plRenderMap& renderMap) cons
                 plVector3(0, 0, 1),
                 PL_EDITOR_MENU_CIRCLE_RADIUS);
 
-            if (_plan->donorSites(i).boundary.isSelected())
+            if (_plan->donorSites(i)->boundary->isSelected())
             {
                 // draw selection outline
                 plRenderer::queueDisk(
@@ -338,11 +348,11 @@ void plBoundaryEditor::removeSelectedSite()
     // does not have access to the site that contains the boundary, so search and find which one it is
     for (uint32_t i=0; i < _plan->defectSites().size(); i++)
     {
-        if (_selectedBoundary == &_plan->defectSites(i).boundary)
+        if (_selectedBoundary == _plan->defectSites(i)->boundary)
         {
             _plan->removeDefectSite(i);
         }
-        if (_selectedBoundary == &_plan->defectSites(i).spline)
+        if (_selectedBoundary == _plan->defectSites(i)->spline)
         {
             _plan->removeDefectSite(i);
         }
@@ -350,7 +360,7 @@ void plBoundaryEditor::removeSelectedSite()
 
     for (uint32_t i=0; i < _plan->donorSites().size(); i++)
     {
-        if (_selectedBoundary == &_plan->donorSites(i).boundary)
+        if (_selectedBoundary == _plan->donorSites(i)->boundary)
         {
             _plan->removeDonorSite(i);
         }

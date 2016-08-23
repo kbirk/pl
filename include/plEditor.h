@@ -35,7 +35,7 @@ class plEditor : public plRenderable
         bool _isDraggingMenu;
 
         // used to prevent anything other than a pl*Editor from changing a plEditable selection state
-        void _clearEditable(plEditable& editable) const;
-        void _selectEditable(plEditable& editable, uint32_t value = -1) const;
+        void _clearEditable(std::shared_ptr<plEditable> editable) const;
+        void _selectEditable(std::shared_ptr<plEditable> editable, uint32_t value = -1) const;
 
 };

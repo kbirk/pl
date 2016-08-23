@@ -15,11 +15,11 @@ class plPointAndNormal
         plVector3 point;
         plVector3 normal;
 
-        plPointAndNormal(const plVector3 &p, const plVector3 &n)
+        plPointAndNormal(const plVector3& p, const plVector3& n)
             : point(p), normal(n)
         {}
 
-        bool operator < (const plPointAndNormal &pn) const
+        bool operator < (const plPointAndNormal& pn) const
         {
             if (point.x == pn.point.x)
             {
@@ -28,10 +28,14 @@ class plPointAndNormal
                     return point.z < pn.point.z;
                 }
                 else
+                {
                     return point.y < pn.point.y;
+                }
             }
             else
+            {
                 return point.x < pn.point.x;
+            }
         }
 };
 
@@ -48,7 +52,10 @@ class plPlanningSite
         plVector3 avgNormal;
 
         plPlanningSite();
-        plPlanningSite(const std::vector<plTriangle> &triangles, const plBoundary &boundary, bool fineGrain = false);
+        plPlanningSite(
+            const std::vector<plTriangle> &triangles,
+            std::shared_ptr<plBoundary> boundary,
+            bool fineGrain = false);
         plPlanningSite(plPlanningSite&& site);
 
         plPlanningSite& operator= (plPlanningSite&& site);
@@ -68,7 +75,7 @@ class plPlanningSite
 
         void _generateCoarseGridPoints();
         void _generateFineGridPoints();
-        void _generateBoundaryPoints(const plBoundary &boundary);
+        void _generateBoundaryPoints(std::shared_ptr<plBoundary> boundary);
         void _calcArea();
         void _calcNormal();
 

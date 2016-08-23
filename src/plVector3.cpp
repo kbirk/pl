@@ -86,7 +86,7 @@ plVector3 plVector3::normalize() const
     len = sqrt(x*x + y*y + z*z);
     if (len == 0)
     {
-        //std::cerr << "normalize error: length is 0\n";
+        //std::cerr << "normalize error: length is 0" << std::endl;
         return plVector3(0,0,0);
     }
     else
