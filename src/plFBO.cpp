@@ -9,37 +9,9 @@ plFBO::plFBO()
 }
 
 
-plFBO::plFBO(plFBO&& fbo)
-    : _id(0)
-{
-    _move(std::move(fbo));
-}
-
-
-plFBO::plFBO(const plFBO& fbo)
-    : _id(0)
-{
-    _copy(fbo);
-}
-
-
 plFBO::~plFBO()
 {
     _destroy();
-}
-
-
-plFBO& plFBO::operator= (plFBO&& fbo)
-{
-    _move(std::move(fbo));
-    return *this;
-}
-
-
-plFBO& plFBO::operator= (const plFBO& fbo)
-{
-    _copy(fbo);
-    return *this;
 }
 
 
@@ -136,7 +108,6 @@ void plFBO::setDrawBuffers(const std::vector<GLenum>& buffers) const
 std::vector<GLenum> plFBO::drawBuffers() const
 {
     std::vector<GLenum> drawBuffers;
-
     for (auto iter : _textureAttachments)
     {
         auto attachment = static_cast<GLint>(iter.first);
@@ -148,7 +119,6 @@ std::vector<GLenum> plFBO::drawBuffers() const
             drawBuffers.push_back(attachment);
         }
     }
-
     return drawBuffers;
 }
 
@@ -163,25 +133,4 @@ void plFBO::_create()
 void plFBO::_destroy()
 {
     glDeleteFramebuffers(1, &_id);
-}
-
-
-void plFBO::_move(plFBO&& fbo)
-{
-    _id = fbo._id;
-    fbo._id = 0;
-}
-
-
-void plFBO::_copy(const plFBO& fbo)
-{
-    _create();
-
-    for (auto attachment : _textureAttachments)
-    {
-        // copy texture to a new shared pointer
-        auto texture = std::make_shared<plTexture2D>(*attachment.second);
-        // attach new texture
-        attach(attachment.first, texture);
-    }
 }

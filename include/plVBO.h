@@ -34,12 +34,9 @@ class plVBO : public plVertexSpecBuffer
     public:
 
         plVBO();
-        plVBO(const std::vector<plVector4>& data, uint32_t usage = GL_STATIC_DRAW);
-        plVBO(const plVBO& vbo);
-        plVBO(plVBO&& vbo);
-
-        plVBO& operator= (const plVBO& vbo);
-        plVBO& operator= (plVBO&& vbo);
+        plVBO(
+            const std::vector<plVector4>& data,
+            uint32_t usage = GL_STATIC_DRAW);
 
         void set(const std::vector<plVector3>& data, uint32_t usage = GL_STATIC_DRAW);
         void set(const std::vector<plVector4>& data, uint32_t usage = GL_STATIC_DRAW);
@@ -58,7 +55,4 @@ class plVBO : public plVertexSpecBuffer
 
         std::vector<plVector4> _data;
         std::vector<plVertexAttributePointer> _attributePointers;
-
-        void _copy(const plVBO& vbo);
-        void _move(plVBO&& vbo);
 };

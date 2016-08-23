@@ -1,10 +1,5 @@
 #include "plPlanningSite.h"
 
-plPlanningSite::plPlanningSite()
-{
-}
-
-
 plPlanningSite::plPlanningSite(
     const std::vector<plTriangle>& tris,
     std::shared_ptr<plBoundary> boundary,
@@ -34,31 +29,6 @@ plPlanningSite::plPlanningSite(
 }
 
 
-plPlanningSite::plPlanningSite(plPlanningSite&& site)
-    : triangles      (std::move(site.triangles)),
-      gridPoints     (std::move(site.gridPoints)),
-      gridNormals    (std::move(site.gridNormals)),
-      boundaryPoints (std::move(site.boundaryPoints)),
-      boundaryNormals(std::move(site.boundaryNormals)),
-      area           (site.area),
-      avgNormal      (site.avgNormal)
-{
-}
-
-
-plPlanningSite& plPlanningSite::operator= (plPlanningSite&& site)
-{
-    triangles       = std::move(site.triangles);
-    gridPoints      = std::move(site.gridPoints);
-    gridNormals     = std::move(site.gridNormals);
-    boundaryPoints  = std::move(site.boundaryPoints);
-    boundaryNormals = std::move(site.boundaryNormals);
-    area            = site.area;
-    avgNormal       = site.avgNormal;
-    return *this;
-}
-
-
 bool plPlanningSite::good() const
 {
     return !(gridPoints.size() == 0  ||
@@ -77,7 +47,7 @@ void plPlanningSite::_bufferGridData(std::vector<plVector4> &data) const
     {
         data.push_back(gridPoints[i]);
     }
-        
+
     for (uint32_t i=0; i < gridNormals.size(); i++)
     {
         data.push_back(gridNormals[i]);
@@ -107,7 +77,7 @@ void plPlanningSite::_bufferBoundaryData(std::vector<plVector4> &data) const
 }
 
 
-plSSBO plPlanningSite::getSSBO() const
+std::shared_ptr<plSSBO> plPlanningSite::getSSBO() const
 {
     std::vector<plVector4> data;
     data.reserve(totalSize());
@@ -120,7 +90,7 @@ plSSBO plPlanningSite::getSSBO() const
 
     std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;
 
-    return plSSBO(numBytes, (void*)(&data[0]));
+    return std::make_shared<plSSBO>(numBytes, (void*)(&data[0]));
 }
 
 

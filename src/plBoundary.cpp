@@ -1,10 +1,5 @@
 #include "plBoundary.h"
 
-plBoundary::plBoundary()
-    : _type(-1)
-{
-}
-
 
 plBoundary::plBoundary(uint32_t type, std::shared_ptr<plMesh> mesh)
     : plMeshSpecific(mesh),
@@ -416,7 +411,7 @@ void plBoundary::_generateVAO()
 }
 
 
-std::ostream& operator << (std::ostream& out, const plBoundary &b)
+std::ostream& operator << (std::ostream& out, const plBoundary& b)
 {
     for (uint32_t j=0; j<b.size(); j++)
     {

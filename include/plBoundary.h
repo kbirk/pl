@@ -28,7 +28,6 @@ class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
 {
     public:
 
-        plBoundary();
         plBoundary(uint32_t type, std::shared_ptr<plMesh>);
         plBoundary(uint32_t type, std::shared_ptr<plMesh>, const std::vector<plString> &row);
 

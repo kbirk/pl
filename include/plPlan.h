@@ -34,12 +34,6 @@ class plPlan : public plRenderable
         std::shared_ptr<plGraft> grafts(uint32_t index) { return _grafts[index]; }
         std::shared_ptr<plModel> models(uint32_t index) { return _models[index]; }
 
-        // const reference getters
-        // const plDefectSite& defectSites(uint32_t index) const { return *_defectSites[index]; }
-        // const plDonorSite& donorSites (uint32_t index) const  { return *_donorSites[index]; }
-        // const plGraft& grafts(uint32_t index) const           { return *_grafts[index]; }
-        // const plModel& models(uint32_t index) const           { return *_models[index]; }
-
         // const array getters (gives access to array without allowing control to add, remove, etc)
         const std::vector<std::shared_ptr<plDefectSite>>& defectSites() const { return _defectSites; }
         const std::vector<std::shared_ptr<plDonorSite>>& donorSites() const { return _donorSites; }
@@ -48,7 +42,11 @@ class plPlan : public plRenderable
 
         void addDefectSite(uint32_t modelIndex = 0);
         void addDonorSite(uint32_t modelIndex = 0);
-        void addGraft(std::shared_ptr<plPlug>harvest, std::shared_ptr<plPlug>recipient, float32_t radius, float32_t length = 15.0f);
+        void addGraft(
+            std::shared_ptr<plPlug>harvest, 
+            std::shared_ptr<plPlug>recipient,
+            float32_t radius,
+            float32_t length = 15.0f);
 
         void removeDefectSite(uint32_t index);
         void removeDonorSite(uint32_t index);

@@ -12,13 +12,8 @@ class plMesh
         plMesh();
         plMesh(const std::vector<plTriangle> &triangles);
         plMesh(std::vector<plTriangle>&& triangles);
-        plMesh(const plMesh &mesh);
-        plMesh(plMesh&& mesh);
 
         virtual ~plMesh();
-
-        plMesh& operator= (const plMesh& mesh);
-        plMesh& operator= (plMesh&& mesh);
 
         virtual void setTriangles(const std::vector<plTriangle>& triangles);
         virtual void setTriangles(std::vector<plTriangle>&& triangles);

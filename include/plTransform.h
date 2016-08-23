@@ -52,8 +52,6 @@ class plTransform : public plRenderable
         plVector3 _origin;
 
         void _compute();
-
-
 };
 
 std::ostream& operator << (std::ostream& out, const plTransform &t);

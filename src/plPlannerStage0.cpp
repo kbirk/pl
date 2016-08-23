@@ -1,52 +1,54 @@
 #include "plPlannerStage0.h"
 
 plAnnealingGroup::plAnnealingGroup(float32_t initialEnergy)
-    : _invoEnergiesSSBO      (PL_STAGE_0_INVOCATIONS*sizeof(float32_t)),
-      _invoGraftPositionsSSBO(PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
-      _invoGraftNormalsSSBO  (PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
-      _invoGraftRadiiSSBO    (PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(float32_t)),
-      _invoGraftCountsSSBO   (PL_STAGE_0_INVOCATIONS*sizeof(uint32_t)),
-
-      _groupEnergiesSSBO       (PL_STAGE_0_NUM_GROUPS*sizeof(float32_t)),
-      _groupGraftPositionsSSBO (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
-      _groupGraftNormalsSSBO   (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
-      _groupGraftRadiiSSBO     (PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(float32_t)),
-      _groupGraftCountsSSBO    (PL_STAGE_0_NUM_GROUPS*sizeof(uint32_t))
 {
-    std::vector<float32_t> energies(PL_STAGE_0_NUM_GROUPS, initialEnergy);
-    _groupEnergiesSSBO.set<float32_t>(energies, PL_STAGE_0_NUM_GROUPS);
+    // invocation ssbos
+    _invoEnergiesSSBO = std::make_shared<plSSBO>(PL_STAGE_0_INVOCATIONS*sizeof(float32_t));
+    _invoGraftPositionsSSBO = std::make_shared<plSSBO>(PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
+    _invoGraftNormalsSSBO = std::make_shared<plSSBO>(PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
+    _invoGraftRadiiSSBO = std::make_shared<plSSBO>(PL_STAGE_0_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(float32_t));
+    _invoGraftCountsSSBO = std::make_shared<plSSBO>(PL_STAGE_0_INVOCATIONS*sizeof(uint32_t));
+    // group ssbos
+    _groupEnergiesSSBO = std::make_shared<plSSBO>(PL_STAGE_0_NUM_GROUPS*sizeof(float32_t));
+    _groupGraftPositionsSSBO = std::make_shared<plSSBO>(PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
+    _groupGraftNormalsSSBO = std::make_shared<plSSBO>(PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
+    _groupGraftRadiiSSBO = std::make_shared<plSSBO>(PL_STAGE_0_NUM_GROUPS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(float32_t));
+    _groupGraftCountsSSBO = std::make_shared<plSSBO>(PL_STAGE_0_NUM_GROUPS*sizeof(uint32_t));
+    // group energies
+    auto energies = std::vector<float32_t>(PL_STAGE_0_NUM_GROUPS, initialEnergy);
+    _groupEnergiesSSBO->set<float32_t>(energies, PL_STAGE_0_NUM_GROUPS);
 }
 
 
 void plAnnealingGroup::bind()
 {
-    _invoEnergiesSSBO.bind      (2);
-    _invoGraftPositionsSSBO.bind(3);
-    _invoGraftNormalsSSBO.bind  (4);
-    _invoGraftRadiiSSBO.bind    (5);
-    _invoGraftCountsSSBO.bind   (6);
+    _invoEnergiesSSBO->bind(2);
+    _invoGraftPositionsSSBO->bind(3);
+    _invoGraftNormalsSSBO->bind(4);
+    _invoGraftRadiiSSBO->bind(5);
+    _invoGraftCountsSSBO->bind(6);
 
-    _groupEnergiesSSBO.bind      (7);
-    _groupGraftPositionsSSBO.bind(8);
-    _groupGraftNormalsSSBO.bind  (9);
-    _groupGraftRadiiSSBO.bind    (10);
-    _groupGraftCountsSSBO.bind   (11);
+    _groupEnergiesSSBO->bind(7);
+    _groupGraftPositionsSSBO->bind(8);
+    _groupGraftNormalsSSBO->bind(9);
+    _groupGraftRadiiSSBO->bind(10);
+    _groupGraftCountsSSBO->bind(11);
 }
 
 
 void plAnnealingGroup::unbind()
 {
-    _invoEnergiesSSBO.unbind      (2);
-    _invoGraftPositionsSSBO.unbind(3);
-    _invoGraftNormalsSSBO.unbind  (4);
-    _invoGraftRadiiSSBO.unbind    (5);
-    _invoGraftCountsSSBO.unbind   (6);
+    _invoEnergiesSSBO->unbind(2);
+    _invoGraftPositionsSSBO->unbind(3);
+    _invoGraftNormalsSSBO->unbind(4);
+    _invoGraftRadiiSSBO->unbind(5);
+    _invoGraftCountsSSBO->unbind(6);
 
-    _groupEnergiesSSBO.unbind      (7);
-    _groupGraftPositionsSSBO.unbind(8);
-    _groupGraftNormalsSSBO.unbind  (9);
-    _groupGraftRadiiSSBO.unbind    (10);
-    _groupGraftCountsSSBO.unbind   (11);
+    _groupEnergiesSSBO->unbind(7);
+    _groupGraftPositionsSSBO->unbind(8);
+    _groupGraftNormalsSSBO->unbind(9);
+    _groupGraftRadiiSSBO->unbind(10);
+    _groupGraftCountsSSBO->unbind(11);
 }
 
 
@@ -59,10 +61,10 @@ void plAnnealingGroup::getSolution(
     getLowestGroupInfo(index, energy);
 
     // read graft count
-    _groupGraftCountsSSBO.readBytes<uint32_t>(&solution->graftCount, sizeof(uint32_t), 0, index*sizeof(uint32_t));
-    _groupGraftPositionsSSBO.read<plVector4>(solution->graftPositions, solution->graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
-    _groupGraftNormalsSSBO.read<plVector4>(solution->graftNormals, solution->graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
-    _groupGraftRadiiSSBO.read<float32_t>(solution->graftRadii, solution->graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
+    _groupGraftCountsSSBO->readBytes<uint32_t>(&solution->graftCount, sizeof(uint32_t), 0, index*sizeof(uint32_t));
+    _groupGraftPositionsSSBO->read<plVector4>(solution->graftPositions, solution->graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
+    _groupGraftNormalsSSBO->read<plVector4>(solution->graftNormals, solution->graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
+    _groupGraftRadiiSSBO->read<float32_t>(solution->graftRadii, solution->graftCount, 0, index*PL_MAX_GRAFTS_PER_SOLUTION);
 
     // re-compute positions as perturbations will shift them off the mesh surface!
     for (uint32_t i=0; i < solution->graftCount; i++)
@@ -81,12 +83,12 @@ void plAnnealingGroup::getSolution(
 void plAnnealingGroup::getLowestGroupInfo(uint32_t& index, float32_t& energy)
 {
     // read energies
-    std::vector<float32_t > energies;
-    _groupEnergiesSSBO.read<float32_t>(energies, PL_STAGE_0_NUM_GROUPS);
+    std::vector<float32_t> energies;
+    _groupEnergiesSSBO->read<float32_t>(energies, PL_STAGE_0_NUM_GROUPS);
 
     // find best group
     float32_t lowestEnergy = FLT_MAX;
-    uint32_t  lowestGroup  = 0;
+    uint32_t lowestGroup  = 0;
 
     for (uint32_t i=0; i < PL_STAGE_0_NUM_GROUPS; i++)
     {
@@ -141,12 +143,12 @@ namespace plPlannerStage0
         stage0Shader.bind(); // bind shader
         stage0Shader.setDefectSiteUniforms(planningData->defectSite);
 
-        plSSBO triangleAreaSSBO(planningData->defectSite->triangles.size()*PL_STAGE_0_INVOCATIONS*sizeof(float32_t));
-        plAnnealingGroup annealingBuffers(planningData->defectSite->area);
+        auto triangleAreaSSBO = std::make_shared<plSSBO>(planningData->defectSite->triangles.size()*PL_STAGE_0_INVOCATIONS*sizeof(float32_t));
+        auto annealingBuffers = std::make_shared<plAnnealingGroup>(planningData->defectSite->area);
 
-        planningData->defectSiteSSBO.bind(0);
-        triangleAreaSSBO.bind(1);
-        annealingBuffers.bind(); // 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+        planningData->defectSiteSSBO->bind(0);
+        triangleAreaSSBO->bind(1);
+        annealingBuffers->bind(); // 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 
         float32_t temperature = PL_STAGE_0_INITIAL_TEMPERATURE;
 
@@ -178,7 +180,7 @@ namespace plPlannerStage0
             uint32_t bestGroup;
             float32_t energy;
             // get best group info
-            annealingBuffers.getLowestGroupInfo(bestGroup, energy);
+            annealingBuffers->getLowestGroupInfo(bestGroup, energy);
 
             // cool temperature
             temperature *= 1 - PL_STAGE_0_COOLING_RATE;
@@ -188,12 +190,12 @@ namespace plPlannerStage0
         plUtility::printProgressBar(1.0);
 
         // load global solution from annealing state to defect state
-        annealingBuffers.getSolution(defectSolution, planningData);
+        annealingBuffers->getSolution(defectSolution, planningData);
 
         // unbind and delete site and temporary buffers
-        planningData->defectSiteSSBO.unbind(0);
-        triangleAreaSSBO.unbind(1);
-        annealingBuffers.unbind();
+        planningData->defectSiteSSBO->unbind(0);
+        triangleAreaSSBO->unbind(1);
+        annealingBuffers->unbind();
     }
 
 }

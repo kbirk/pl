@@ -13,12 +13,6 @@ class plVAO
     public:
 
         plVAO();
-        plVAO(const plVAO& vao);
-        plVAO(plVAO&& vao);
-
-        plVAO& operator= (const plVAO& vao);
-        plVAO& operator= (plVAO&& vao);
-
         ~plVAO();
 
         std::shared_ptr<plVBO> vbos(uint32_t index) { return _vbos[index]; }
@@ -35,11 +29,8 @@ class plVAO
     private:
 
         GLuint _id;
-
         std::vector<std::shared_ptr<plVBO>> _vbos;
         std::shared_ptr<plEABO> _eabo;
 
-        void _copy(const plVAO& vao);
-        void _move(plVAO&& vao);
         void _destroy();
 };

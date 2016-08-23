@@ -7,7 +7,11 @@ plOctree::plOctree()
 }
 
 
-plOctree::plOctree(const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, uint32_t depth)
+plOctree::plOctree(
+    const plVector3& min,
+    const plVector3& max,
+    const std::vector<plTriangle>& triangles,
+    uint32_t depth)
     : _children(8, nullptr)
 {
     // build from root
@@ -16,7 +20,10 @@ plOctree::plOctree(const plVector3 &min, const plVector3 &max, const std::vector
 }
 
 
-plOctree::plOctree(const plVector3 &centre, float32_t halfWidth, uint32_t depth)
+plOctree::plOctree(
+    const plVector3& centre,
+    float32_t halfWidth,
+    uint32_t depth)
     : _depth(depth),
       _centre(centre),
       _halfWidth(halfWidth),
@@ -26,51 +33,15 @@ plOctree::plOctree(const plVector3 &centre, float32_t halfWidth, uint32_t depth)
 }
 
 
-plOctree::plOctree (const plOctree& octree)
-    : _children(8, (plOctree*)(nullptr))
-{
-    _copy(octree);
-}
-
-
-plOctree::plOctree (plOctree&& octree)
-    : _children(8, (plOctree*)(nullptr))
-{
-    _move(std::move(octree));
-}
-
-
 plOctree::~plOctree ()
 {
     clear();
 }
 
 
-plOctree& plOctree::operator= (const plOctree& octree)
-{
-    _copy(octree);
-    return *this;
-}
-
-
-plOctree& plOctree::operator= (plOctree&& octree)
-{
-    _move(std::move(octree));
-    return *this;
-}
-
-
 void plOctree::clear()
 {
-    for (uint32_t i=0; i < 8; i++)
-    {
-        if (_children[i])
-        {
-            // delete child
-            delete _children[i];
-            _children[i] = nullptr;
-        }
-    }
+    _children = std::vector<std::shared_ptr<plOctree>>(8, nullptr);
 }
 
 
@@ -105,7 +76,7 @@ void plOctree::extractRenderComponents(plRenderMap& renderMap, uint32_t techniqu
     if (!_isVisible)
         return;
 
-    static std::shared_ptr<plVAO> vao = std::make_shared<plVAO>(_generateVAO(1.0f));
+    static std::shared_ptr<plVAO> vao = _generateVAO(1.0f);
 
     int32_t count = 0;
     // draw child nodes
@@ -161,10 +132,12 @@ void plOctree::toggleVisibility()
 }
 
 
-plVAO plOctree::_generateVAO(float32_t halfWidth) const
+std::shared_ptr<plVAO> plOctree::_generateVAO(float32_t halfWidth) const
 {
-    std::vector<plVector3> vertices;    vertices.reserve(8);
-    std::vector<uint32_t>    indices;     indices.reserve(8*3);
+    std::vector<plVector3> vertices;
+    vertices.reserve(8);
+    std::vector<uint32_t> indices;
+    indices.reserve(8*3);
 
     // front face
     vertices.emplace_back(plVector3(-halfWidth, -halfWidth, halfWidth));
@@ -197,19 +170,18 @@ plVAO plOctree::_generateVAO(float32_t halfWidth) const
     indices.push_back(7);   indices.push_back(4);
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+    auto vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 16, 0));
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    auto eabo = std::make_shared<plEABO>();
     eabo->set(indices, GL_LINES);
     // create and attach to vao
-    plVAO vao;
-    vao.attach(vbo);
-    vao.attach(eabo);
+    auto vao = std::make_shared<plVAO>();
+    vao->attach(vbo);
+    vao->attach(eabo);
     // upload to gpu
-    vao.upload();
-
+    vao->upload();
     return vao;
 }
 
@@ -270,7 +242,7 @@ void plOctree::_insertIntoChild(uint32_t index, const plTriangle &tri)
             offset.x = ((index & 1) ? step : -step);
             offset.y = ((index & 2) ? step : -step);
             offset.z = ((index & 4) ? step : -step);
-            _children[index] = new plOctree(_centre + offset, step, _depth-1);
+            _children[index] = std::make_shared<plOctree>(_centre + offset, step, _depth-1);
             _children[index]->_insert(tri);
         }
     }
@@ -378,54 +350,4 @@ bool plOctree::rayIntersect(std::set<const plTriangle*> &triangles, const plVect
     }
 
     return true;
-}
-
-
-void plOctree::_move(plOctree &&octree)
-{
-    for (uint32_t i=0; i < 8; i++)
-    {
-        _children[i] = octree._children[i];
-        octree._children[i] = 0;
-    }
-    _depth     = octree._depth;
-    _centre    = octree._centre;
-    _halfWidth = octree._halfWidth;
-    _contained = octree._contained;
-    _isVisible = octree._isVisible;
-}
-
-
-void plOctree::_copy(const plOctree& octree)
-{
-    // clear this entire octree
-    clear();
-
-    // copy data
-    _depth     = octree._depth;
-    _centre    = octree._centre;
-    _halfWidth = octree._halfWidth;
-    _contained = octree._contained;
-    _isVisible = octree._isVisible;
-
-    // copy children
-    for (uint32_t i=0; i < 8; i++)
-    {
-        if (octree._children[i])
-        {
-            // this child exists, allocate if needed
-            if (!_children[i])
-                _children[i] = new plOctree();
-
-            // copy node
-            _children[i]->_copy(*(octree._children[i]));
-
-        }
-        else
-        {
-            // nothign to copy, free this child
-            delete _children[i];
-        }
-
-    }
 }

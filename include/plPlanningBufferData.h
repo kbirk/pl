@@ -15,10 +15,10 @@ class plPlanningBufferData
     public:
 
         std::shared_ptr<plPlanningSite> defectSite;
-        plSSBO defectSiteSSBO;
+        std::shared_ptr<plSSBO> defectSiteSSBO;
 
         std::vector<std::shared_ptr<plPlanningSite>> donorSites;
-        plSSBO donorSitesSSBO;
+        std::shared_ptr<plSSBO> donorSitesSSBO;
 
         plPlanningBufferData(
             std::shared_ptr<plDefectSite> defect,
@@ -30,5 +30,5 @@ class plPlanningBufferData
 
     private:
 
-        plSSBO _getGroupSSBO();
+        std::shared_ptr<plSSBO> _getGroupSSBO();
 };

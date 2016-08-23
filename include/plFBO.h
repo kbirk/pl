@@ -12,13 +12,7 @@ class plFBO
     public:
 
         plFBO();
-        plFBO(const plFBO& fbo);
-        plFBO(plFBO&& fbo);
-
         ~plFBO();
-
-        plFBO& operator= (const plFBO& fbo);
-        plFBO& operator= (plFBO&& fbo);
 
         void bind() const;
         void unbind() const;
@@ -45,8 +39,6 @@ class plFBO
 
         void _create();
         void _destroy();
-        void _move(plFBO&& fbo);
-        void _copy(const plFBO& fbo);
 };
 
 

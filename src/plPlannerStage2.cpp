@@ -44,14 +44,14 @@ namespace plPlannerStage2
 
         // create and initialize cap indices SSBOs to 0
         std::vector<float32_t> rmsBuffer(planningData->totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*PL_NUM_COMPARISION_DIRECTIONS, -1.0f);
-        rmsData->rmsSSBO.set(rmsBuffer, rmsBuffer.size());
+        rmsData->rmsSSBO->set(rmsBuffer, rmsBuffer.size());
 
         // bind SSBOs
-        planningData->defectSiteSSBO.bind(0);
-        planningData->donorSitesSSBO.bind(1);
-        capData->defectCapIndexSSBO.bind(2);
-        capData->donorCapIndexSSBO.bind(3);
-        rmsData->rmsSSBO.bind(4);
+        planningData->defectSiteSSBO->bind(0);
+        planningData->donorSitesSSBO->bind(1);
+        capData->defectCapIndexSSBO->bind(2);
+        capData->donorCapIndexSSBO->bind(3);
+        rmsData->rmsSSBO->bind(4);
 
         const uint32_t NUM_WORKGROUPS = ceil(planningData->totalDonorGridPoints() / (float32_t) PL_STAGE_2_GROUP_SIZE); // ensure enough workgroups are used
 
@@ -65,18 +65,18 @@ namespace plPlannerStage2
             // memory barrier
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-            rmsData->rmsSSBO.read(rmsBuffer, rmsBuffer.size());
+            rmsData->rmsSSBO->read(rmsBuffer, rmsBuffer.size());
 
             plUtility::printProgressBar(i / (float32_t)PL_NUM_COMPARISION_DIRECTIONS);
         }
 
         plUtility::printProgressBar(1.0);
 
-        planningData->defectSiteSSBO.unbind(0);
-        planningData->donorSitesSSBO.unbind(1);
-        capData->defectCapIndexSSBO.unbind(2);
-        capData->donorCapIndexSSBO.unbind(3);
-        rmsData->rmsSSBO.unbind(4);
+        planningData->defectSiteSSBO->unbind(0);
+        planningData->donorSitesSSBO->unbind(1);
+        capData->defectCapIndexSSBO->unbind(2);
+        capData->donorCapIndexSSBO->unbind(3);
+        rmsData->rmsSSBO->unbind(4);
     }
 
 }

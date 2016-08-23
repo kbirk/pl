@@ -9,14 +9,12 @@ class plOctreeMesh : public plMesh
     public:
 
         plOctreeMesh();
-        plOctreeMesh(const std::vector<plTriangle> &triangles, uint32_t depth);
-        plOctreeMesh(std::vector<plTriangle>&& triangles, uint32_t depth);
-
-        plOctreeMesh(const plOctreeMesh &mesh);
-        plOctreeMesh(plOctreeMesh&& mesh);
-
-        plOctreeMesh& operator= (const plOctreeMesh& mesh);
-        plOctreeMesh& operator= (plOctreeMesh&& mesh);
+        plOctreeMesh(
+            const std::vector<plTriangle>& triangles,
+            uint32_t depth);
+        plOctreeMesh(
+            std::vector<plTriangle>&& triangles,
+            uint32_t depth);
 
         void setTriangles(const std::vector<plTriangle>& triangles);
         void setTriangles(std::vector<plTriangle>&& triangles);

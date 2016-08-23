@@ -60,7 +60,7 @@ uint32_t plPlanningBufferData::totalDonorGridPoints() const
 }
 
 
-plSSBO plPlanningBufferData::_getGroupSSBO()
+std::shared_ptr<plSSBO> plPlanningBufferData::_getGroupSSBO()
 {
     // find total data size
     uint32_t dataSize = 0;
@@ -82,5 +82,5 @@ plSSBO plPlanningBufferData::_getGroupSSBO()
 
     std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;
 
-    return plSSBO(numBytes, (void*)(&data[0]));
+    return std::make_shared<plSSBO>(numBytes, (void*)(&data[0]));
 }

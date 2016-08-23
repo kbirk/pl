@@ -11,37 +11,11 @@ plVBO::plVBO(const std::vector<plVector4>& data, uint32_t usage)
 }
 
 
-plVBO::plVBO(const plVBO& vbo)
-{
-    _copy(vbo);
-}
-
-
-plVBO::plVBO(plVBO&& vbo)
-{
-    _move(std::move(vbo));
-}
-
-
-plVBO& plVBO::operator = (const plVBO &vbo)
-{
-    _copy(vbo);
-    return *this;
-}
-
-
-plVBO& plVBO::operator= (plVBO&& vbo)
-{
-    _move(std::move(vbo));
-    return *this;
-}
-
-
 void plVBO::set(const std::vector<plVector4>& data, uint32_t usage)
 {
-    _data      = data;
-    _numBytes  = sizeof(plVector4) * _data.size();
-    _usage     = usage;
+    _data = data;
+    _numBytes = sizeof(plVector4) * _data.size();
+    _usage = usage;
 }
 
 
@@ -92,25 +66,4 @@ void plVBO::upload()
     }
 
     // do not unbind buffer as this will most likely be called from a vao
-}
-
-
-void plVBO::_copy(const plVBO &vbo)
-{
-    set(vbo._data, vbo._usage);
-    _attributePointers = vbo._attributePointers;
-}
-
-
-void plVBO::_move(plVBO&& vbo)
-{
-    _id = vbo._id;
-    _numBytes = vbo._numBytes;
-    _attributePointers = vbo._attributePointers;
-    _usage = vbo._usage;
-    _data = std::move(vbo._data);
-
-    vbo._id = 0;
-    vbo._numBytes = 0;
-    vbo._usage = 0;
 }

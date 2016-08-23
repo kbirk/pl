@@ -36,11 +36,7 @@ namespace plRenderer
         // it would be nice to have each technique contain its own set of rc's
         renderable.extractRenderComponents(_renderMap);
     }
-    // PL_PLAN_TECHNIQUE = 1,
-    // PL_MINIMAL_TECHNIQUE,
-    // PL_TRANSPARENCY_TECHNIQUE,
-    // PL_OUTLINE_TECHNIQUE,
-    // PL_SCREEN_QUAD_TECHNIQUE
+    
 
     void draw()
     {

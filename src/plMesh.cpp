@@ -17,34 +17,8 @@ plMesh::plMesh(std::vector<plTriangle>&& triangles)
 }
 
 
-plMesh::plMesh(const plMesh &mesh)
-    : _triangles(mesh._triangles)
-{
-}
-
-
-plMesh::plMesh(plMesh&& mesh)
-    : _triangles(std::move(mesh._triangles))
-{
-}
-
-
 plMesh::~plMesh()
 {
-}
-
-
-plMesh& plMesh::operator= (const plMesh& mesh)
-{
-    _triangles = mesh._triangles;
-    return *this;
-}
-
-
-plMesh& plMesh::operator= (plMesh&& mesh)
-{
-    _triangles = std::move(mesh._triangles);
-    return *this;
 }
 
 

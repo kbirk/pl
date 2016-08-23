@@ -35,11 +35,11 @@ class plGreedyGroup
         std::vector<plVector4> _lowestXAxes;
         std::vector<uint32_t> _lowestSiteIndices;
 
-        plSSBO _donorSolutionPositionsSSBO;
-        plSSBO _donorSolutionNormalsSSBO;
-        plSSBO _donorSolutionXAxesSSBO;
-        plSSBO _donorSolutionSiteIndicesSSBO;
-        plSSBO _totalRmsSSBO;
+        std::shared_ptr<plSSBO> _donorSolutionPositionsSSBO;
+        std::shared_ptr<plSSBO> _donorSolutionNormalsSSBO;
+        std::shared_ptr<plSSBO> _donorSolutionXAxesSSBO;
+        std::shared_ptr<plSSBO> _donorSolutionSiteIndicesSSBO;
+        std::shared_ptr<plSSBO> _totalRmsSSBO;
 };
 
 namespace plPlannerStage3
@@ -47,6 +47,6 @@ namespace plPlannerStage3
     void run(
         std::shared_ptr<plDonorSolution> donorSolution,
         std::shared_ptr<plPlanningBufferData> planningData,
-        std::shared_ptr<plDefectSolution> defectSolution, 
+        std::shared_ptr<plDefectSolution> defectSolution,
         std::shared_ptr<plRmsData> rmsInput);
 }

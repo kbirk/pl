@@ -1,46 +1,46 @@
 #include "plPlannerStage3.h"
 
 plGreedyGroup::plGreedyGroup()
-    :   _lowestRMS       (FLT_MAX),
-        _lowestPositions (PL_MAX_GRAFTS_PER_SOLUTION, plVector4()),
-        _lowestNormals   (PL_MAX_GRAFTS_PER_SOLUTION, plVector4()),
-        _lowestXAxes     (PL_MAX_GRAFTS_PER_SOLUTION, plVector4()),
-        _donorSolutionPositionsSSBO  (PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
-        _donorSolutionNormalsSSBO    (PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
-        _donorSolutionXAxesSSBO      (PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4)),
-        _donorSolutionSiteIndicesSSBO(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(uint32_t)),
-        _totalRmsSSBO                (PL_STAGE_3_INVOCATIONS*sizeof(float32_t))
+    : _lowestRMS(FLT_MAX),
+      _lowestPositions(PL_MAX_GRAFTS_PER_SOLUTION, plVector4()),
+      _lowestNormals(PL_MAX_GRAFTS_PER_SOLUTION, plVector4()),
+      _lowestXAxes(PL_MAX_GRAFTS_PER_SOLUTION, plVector4())
 {
+    _donorSolutionPositionsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
+    _donorSolutionNormalsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
+    _donorSolutionXAxesSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
+    _donorSolutionSiteIndicesSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(uint32_t));
+    _totalRmsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*sizeof(float32_t));
     // initialize all rms to -1
     std::vector<float32_t> totalRMS(PL_STAGE_3_INVOCATIONS, -1.0f);
-    _totalRmsSSBO.set(totalRMS, totalRMS.size());
+    _totalRmsSSBO->set(totalRMS, totalRMS.size());
 }
 
 
 void plGreedyGroup::bind()
 {
-    _donorSolutionPositionsSSBO.bind(3);
-    _donorSolutionNormalsSSBO.bind(4);
-    _donorSolutionXAxesSSBO.bind(5);
-    _donorSolutionSiteIndicesSSBO.bind(6);
-    _totalRmsSSBO.bind(7);
+    _donorSolutionPositionsSSBO->bind(3);
+    _donorSolutionNormalsSSBO->bind(4);
+    _donorSolutionXAxesSSBO->bind(5);
+    _donorSolutionSiteIndicesSSBO->bind(6);
+    _totalRmsSSBO->bind(7);
 }
 
 
 void plGreedyGroup::unbind()
 {
-    _donorSolutionPositionsSSBO.unbind(3);
-    _donorSolutionNormalsSSBO.unbind(4);
-    _donorSolutionXAxesSSBO.unbind(5);
-    _donorSolutionSiteIndicesSSBO.bind(6);
-    _totalRmsSSBO.unbind(7);
+    _donorSolutionPositionsSSBO->unbind(3);
+    _donorSolutionNormalsSSBO->unbind(4);
+    _donorSolutionXAxesSSBO->unbind(5);
+    _donorSolutionSiteIndicesSSBO->bind(6);
+    _totalRmsSSBO->unbind(7);
 }
 
 
 void plGreedyGroup::update()
 {
     std::vector<float32_t> totalRMS(PL_STAGE_3_INVOCATIONS, -1.0f);
-    _totalRmsSSBO.read(totalRMS, totalRMS.size());
+    _totalRmsSSBO->read(totalRMS, totalRMS.size());
 
     // find invocation with lowest RMS
     float32_t minRMS = FLT_MAX;
@@ -60,10 +60,10 @@ void plGreedyGroup::update()
     if (minIndex != -1 && minRMS < _lowestRMS)
     {
         _lowestRMS = minRMS;
-        _donorSolutionPositionsSSBO.read  (_lowestPositions,   PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
-        _donorSolutionNormalsSSBO.read    (_lowestNormals,     PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
-        _donorSolutionXAxesSSBO.read      (_lowestXAxes,       PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
-        _donorSolutionSiteIndicesSSBO.read(_lowestSiteIndices, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
+        _donorSolutionPositionsSSBO->read(_lowestPositions, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
+        _donorSolutionNormalsSSBO->read(_lowestNormals, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
+        _donorSolutionXAxesSSBO->read(_lowestXAxes, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
+        _donorSolutionSiteIndicesSSBO->read(_lowestSiteIndices, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
     }
 
 }
@@ -141,9 +141,9 @@ namespace plPlannerStage3
         auto greedyBuffers = std::make_shared<plGreedyGroup>();
 
         // bind SSBOs
-        planningData->defectSiteSSBO.bind(0);
-        planningData->donorSitesSSBO.bind(1);
-        rmsData->rmsSSBO.bind(2);
+        planningData->defectSiteSSBO->bind(0);
+        planningData->donorSitesSSBO->bind(1);
+        rmsData->rmsSSBO->bind(2);
         greedyBuffers->bind(); // 3, 4, 5, 6, 7
 
         for (uint32_t i=0; i<PL_STAGE_3_ITERATIONS; i++)
@@ -173,9 +173,9 @@ namespace plPlannerStage3
         }
 
         // unbind and delete site and rms buffers
-        planningData->defectSiteSSBO.unbind(0);
-        planningData->donorSitesSSBO.unbind(1);
-        rmsData->rmsSSBO.unbind(2);
+        planningData->defectSiteSSBO->unbind(0);
+        planningData->donorSitesSSBO->unbind(1);
+        rmsData->rmsSSBO->unbind(2);
         greedyBuffers->unbind();
     }
 

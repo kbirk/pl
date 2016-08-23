@@ -261,8 +261,8 @@ void plPlan::exportFile(const plString &filename)
         {
             out << "defect_site"                                                     << std::endl
                 << "    spline_model_id,   " << getModelIndex(defectSite->spline)    << std::endl
-                << "    spline,            " << defectSite->spline                   << std::endl
-                << "    boundary,          " << defectSite->boundary                 << std::endl
+                << "    spline,            " << *defectSite->spline                  << std::endl
+                << "    boundary,          " << *defectSite->boundary                << std::endl
 
                 << std::endl;
         }
@@ -272,7 +272,7 @@ void plPlan::exportFile(const plString &filename)
         {
             out << "donor_site"                                                    << std::endl
                 << "    boundary_model_id, " << getModelIndex(donorSite->boundary) << std::endl
-                << "    boundary,          " << donorSite->boundary                << std::endl
+                << "    boundary,          " << *donorSite->boundary               << std::endl
                 << std::endl;
         }
 

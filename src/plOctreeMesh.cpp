@@ -22,36 +22,6 @@ plOctreeMesh::plOctreeMesh(std::vector<plTriangle>&& triangles, uint32_t depth)
 }
 
 
-plOctreeMesh::plOctreeMesh(const plOctreeMesh &mesh)
-    : plMesh(mesh._triangles)
-{
-    _octree = std::make_shared<plOctree>();
-    _buildOctree(mesh.octree()->depth());  // must build a new octree to maintain proper coherency
-}
-
-
-plOctreeMesh::plOctreeMesh(plOctreeMesh&& mesh)
-    : plMesh(std::move(mesh._triangles)), _octree(std::move(mesh._octree))
-{
-}
-
-
-plOctreeMesh& plOctreeMesh::operator= (const plOctreeMesh& mesh)
-{
-    _triangles = mesh._triangles;
-    _buildOctree(mesh.octree()->depth());  // must build a new octree to maintain proper coherency
-    return *this;
-}
-
-
-plOctreeMesh& plOctreeMesh::operator= (plOctreeMesh&& mesh)
-{
-    _triangles = std::move(mesh._triangles);
-    _octree = std::move(mesh._octree);
-    return *this;
-}
-
-
 void plOctreeMesh::setTriangles(const std::vector<plTriangle>& triangles)
 {
     _triangles = triangles;

@@ -7,37 +7,9 @@ plTexture2D::plTexture2D(uint32_t width, uint32_t height, uint32_t internalForma
 }
 
 
-plTexture2D::plTexture2D(const plTexture2D& texture)
-    : _id(0)
-{
-    _copy(texture);
-}
-
-
-plTexture2D::plTexture2D(plTexture2D&& texture)
-    : _id(0)
-{
-    _move(std::move(texture));
-}
-
-
 plTexture2D::~plTexture2D()
 {
     _destroy();
-}
-
-
-plTexture2D& plTexture2D::operator= (const plTexture2D& texture)
-{
-    _copy(texture);
-    return *this;
-}
-
-
-plTexture2D& plTexture2D::operator= (plTexture2D&& texture)
-{
-    _move(std::move(texture));
-    return *this;
 }
 
 
@@ -102,22 +74,6 @@ void plTexture2D::_destroy()
 }
 
 
-void plTexture2D::_copy(const plTexture2D &texture)
-{
-    uint8_t *buffer = new uint8_t[texture._width * texture._height * texture._getFormatSize()];
-
-    // copy vertex data
-    glBindTexture(GL_TEXTURE_2D, texture._id);
-    glGetTexImage(GL_TEXTURE_2D, 0, texture._format, texture._type, buffer);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // set texture
-    set(texture._width, texture._height, texture._internalFormat, texture._format, texture._type, buffer);
-
-    delete [] buffer;
-}
-
-
 uint32_t plTexture2D::_getFormatSize() const
 {
     uint32_t multiplier = 0;
@@ -178,17 +134,4 @@ uint32_t plTexture2D::_getFormatSize() const
     }
 
     return multiplier * size;
-}
-
-
-void plTexture2D::_move(plTexture2D&& texture)
-{
-    _id = texture._id;
-    _width = texture._width;
-    _height = texture._height;
-    _internalFormat = texture._internalFormat;
-    _format = texture._format;
-    _type = texture._type;
-
-    texture._id = 0;
 }

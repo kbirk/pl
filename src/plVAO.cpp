@@ -6,34 +6,6 @@ plVAO::plVAO()
 }
 
 
-plVAO::plVAO(const plVAO& vao)
-    : _id(0)
-{
-    _copy(vao);
-}
-
-
-plVAO::plVAO(plVAO&& vao)
-    : _id(0)
-{
-    _move(std::move(vao));
-}
-
-
-plVAO& plVAO::operator = (const plVAO &vao)
-{
-    _copy(vao);
-    return *this;
-}
-
-
-plVAO& plVAO::operator= (plVAO&& vao)
-{
-    _move(std::move(vao));
-    return *this;
-}
-
-
 plVAO::~plVAO()
 {
     _destroy();
@@ -101,31 +73,6 @@ void plVAO::upload()
     _eabo->upload();
 
     glBindVertexArray(0);
-}
-
-
-void plVAO::_copy(const plVAO& vao)
-{
-    attach(std::make_shared<plEABO>(*vao._eabo));
-    for (auto& vbo : vao._vbos)
-    {
-        attach(std::make_shared<plVBO>(*vbo));
-    }
-
-    upload();
-}
-
-
-void plVAO::_move(plVAO&& vao)
-{
-    // move vao
-    _id = vao._id;
-
-    // move vbo and eabo
-    _vbos = std::move(vao._vbos);
-    _eabo = std::move(vao._eabo);
-
-    vao._id = 0;
 }
 
 

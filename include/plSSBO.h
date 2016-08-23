@@ -13,12 +13,6 @@ class plSSBO : public plBufferObject
         plSSBO();
         plSSBO(uint32_t numBytes, const void *buffer = nullptr);
 
-        plSSBO(const plSSBO& ssbo);
-        plSSBO(plSSBO&& ssbo);
-
-        plSSBO& operator= (plSSBO&& ssbo);
-        plSSBO& operator= (const plSSBO& ssbo);
-
         void bind(uint32_t location) const   { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, _id); }
         void unbind(uint32_t location) const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, 0); }
 
@@ -39,8 +33,6 @@ class plSSBO : public plBufferObject
     private:
 
         void _create(uint32_t numBytes, const void *buffer = nullptr);
-        void _copy(const plSSBO &ssbo);
-        void _move(plSSBO&& ssbo);
 };
 
 
@@ -136,9 +128,9 @@ void plSSBO::readBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t s
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id);
     T *mappedBuffer = (T*) glMapBufferRange(GL_SHADER_STORAGE_BUFFER,
-                                             ssboByteOffset,
-                                             numBytes,
-                                             GL_MAP_READ_BIT);
+        ssboByteOffset,
+        numBytes,
+        GL_MAP_READ_BIT);
 
     memcpy(reinterpret_cast<uint8_t*>(ts)+byteOffset, &mappedBuffer[0], numBytes);
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);

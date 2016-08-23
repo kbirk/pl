@@ -56,14 +56,11 @@ class plPlanningSite
             const std::vector<plTriangle> &triangles,
             std::shared_ptr<plBoundary> boundary,
             bool fineGrain = false);
-        plPlanningSite(plPlanningSite&& site);
-
-        plPlanningSite& operator= (plPlanningSite&& site);
 
         uint32_t totalSize() const { return gridPoints.size() + gridNormals.size() + triangles.size()*4 + boundaryPoints.size() + boundaryNormals.size(); }
 
-        void getData(std::vector<plVector4> &data) const { _bufferGridData(data); _bufferMeshData(data); _bufferBoundaryData(data); }
-        plSSBO getSSBO() const;
+        void getData(std::vector<plVector4>& data) const { _bufferGridData(data); _bufferMeshData(data); _bufferBoundaryData(data); }
+        std::shared_ptr<plSSBO> getSSBO() const;
 
         bool good() const;
 

@@ -23,7 +23,7 @@ plModelEditor modelEditor;
 
 // camera
 uint32_t cameraMode = CAMERA_ROTATION_MODE; // rotation or translation mode
-plCamera camera;
+std::shared_ptr<plCamera> camera;
 
 // interaction
 plVector3 previousMouse; // last mouse position
@@ -33,16 +33,18 @@ bool shift = false; // whether shift is currently down
 
 void init(int32_t argc, char** argv)
 {
+    // initialize the plan
     plan = std::make_shared<plPlan>(argc, argv);
 
-    camera = plCamera("./resources/view0");
+    // intialize the camera
+    camera = std::make_shared<plCamera>("./resources/view0");
 
     // initialize openGL specific objects
     plOpenGLInfo::init();
     plRenderer::init();
     plRenderResources::init();
 
-    // set initial size
+    // set initial size for buffers
     plRenderResources::reshape(
         plWindow::viewportWidth(),
         plWindow::viewportHeight());
@@ -56,7 +58,7 @@ void init(int32_t argc, char** argv)
 void render()
 {
     // set camera
-    plCameraStack::load(camera);
+    plCameraStack::load(*camera);
     // set perspective projection
     plProjectionStack::load(plProjection(PL_FIELD_OF_VIEW , PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE));
     // queue plan for drawing
@@ -205,7 +207,7 @@ void handleKeyPress(const WindowEvent& event)
             case SDLK_r:
 
                 // import view
-                camera.importViewParams("./resources/view" + std::to_string(currentView));
+                camera->importViewParams("./resources/view" + std::to_string(currentView));
                 break;
 
             case SDLK_s:
@@ -220,7 +222,7 @@ void handleKeyPress(const WindowEvent& event)
             case SDLK_w:
 
                 // export view
-                camera.exportViewParams("./resources/view" + std::to_string(currentView));
+                camera->exportViewParams("./resources/view" + std::to_string(currentView));
                 break;
 
             case SDLK_x: /* UN-USED */ break;
@@ -304,7 +306,7 @@ void handleKeyPress(const WindowEvent& event)
                 // reset camera onto model
                 if (modelEditor.isModelSelected())
                 {
-                    camera.reset(plan->models(modelEditor.selectedModelID())->getCentroid());
+                    camera->reset(plan->models(modelEditor.selectedModelID())->getCentroid());
                 }
                 break;
         }
@@ -332,7 +334,7 @@ void handleMouseMove(const WindowEvent& event)
         case SDL_BUTTON_MIDDLE:
 
             // zoom camera
-            camera.zoom(y - previousMouse.y);
+            camera->zoom(y - previousMouse.y);
             break;
 
         case SDL_BUTTON_RIGHT:
@@ -340,11 +342,11 @@ void handleMouseMove(const WindowEvent& event)
             // previous and current mouse coords should be very small
             if (cameraMode == CAMERA_ROTATION_MODE)
             {
-                camera.rotate(previousMouse.x, previousMouse.y, x, y);
+                camera->rotate(previousMouse.x, previousMouse.y, x, y);
             }
             else
             {
-                camera.translate(previousMouse.x - x, previousMouse.y - y);
+                camera->translate(previousMouse.x - x, previousMouse.y - y);
             }
             break;
     }
@@ -358,7 +360,7 @@ void handleMouseWheel(const WindowEvent& event)
 {
     const float32_t SCROLL_FACTOR = 5.0f;
     float32_t y = event.originalEvent->wheel.y;
-    camera.zoom(y * SCROLL_FACTOR);
+    camera->zoom(y * SCROLL_FACTOR);
 }
 
 void handleMousePress(const WindowEvent& event)

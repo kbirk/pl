@@ -9,10 +9,10 @@ class plIntersection
 {
     public:
 
-        bool    exists;
+        bool exists;
         plVector3 point;
         plVector3 normal;
-        float32_t   t;
+        float32_t t;
 
         plIntersection(bool e)
             : exists(e)

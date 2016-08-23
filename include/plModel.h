@@ -38,8 +38,13 @@ class plModel : public plTransparentRenderable, public plEditable
 
         plString filename;
 
-        plModel(const plString &file, uint32_t octreeDepth = 0);
-        plModel(const std::vector<plTriangle> &triangles, const plString &file, uint32_t octreeDepth = 0);
+        plModel(
+            const plString &file,
+            uint32_t octreeDepth = 0);
+        plModel(
+            const std::vector<plTriangle>& triangles,
+            const plString& file, 
+            uint32_t octreeDepth = 0);
 
         virtual ~plModel();
 

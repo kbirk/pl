@@ -42,14 +42,14 @@ namespace plPlannerStage1
         std::vector<uint32_t> defectIndices(defectSolution->graftCount*PL_MAX_CAP_TRIANGLES, 0);
         std::vector<uint32_t> donorIndices(planningData->totalDonorGridPoints()*PL_MAX_CAP_TRIANGLES, 0);
 
-        capData->defectCapIndexSSBO.set(defectIndices, defectIndices.size());
-        capData->donorCapIndexSSBO.set (donorIndices,  donorIndices.size());
+        capData->defectCapIndexSSBO->set(defectIndices, defectIndices.size());
+        capData->donorCapIndexSSBO->set(donorIndices, donorIndices.size());
 
         // bind SSBOs
-        planningData->defectSiteSSBO.bind(0);
-        planningData->donorSitesSSBO.bind(1);
-        capData->defectCapIndexSSBO.bind(2);
-        capData->donorCapIndexSSBO.bind(3);
+        planningData->defectSiteSSBO->bind(0);
+        planningData->donorSitesSSBO->bind(1);
+        capData->defectCapIndexSSBO->bind(2);
+        capData->donorCapIndexSSBO->bind(3);
 
         const uint32_t NUM_WORKGROUPS = ceil(planningData->totalDonorGridPoints() + defectSolution->graftCount / (float32_t) PL_STAGE_1_GROUP_SIZE); // ensure enough workgroups are used
 
@@ -63,10 +63,10 @@ namespace plPlannerStage1
 
         plUtility::printProgressBar(1.0);
 
-        planningData->defectSiteSSBO.unbind(0);
-        planningData->donorSitesSSBO.unbind(1);
-        capData->defectCapIndexSSBO.unbind(2);
-        capData->donorCapIndexSSBO.unbind(3);
+        planningData->defectSiteSSBO->unbind(0);
+        planningData->donorSitesSSBO->unbind(1);
+        capData->defectCapIndexSSBO->unbind(2);
+        capData->donorCapIndexSSBO->unbind(3);
 
     }
 

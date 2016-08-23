@@ -24,10 +24,11 @@ class plPointAndAngle
 {
     public:
 
-        float32_t   angle;
+        float32_t angle;
         plVector3 point;
 
-        plPointAndAngle() {}
+        plPointAndAngle()
+        {}
         plPointAndAngle(const float32_t &angle, const plVector3 &point)
             : angle(angle), point(point)
         {
