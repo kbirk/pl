@@ -1,7 +1,6 @@
 #version 330
 
-#define PL_COLOR_MESH_OPAQUE_COLOR        0,  0,  0, 0
-#define PL_COLOR_MESH_TRANSPARENT_COLOR  -1, -1, -1, 0
+#define PL_USE_ATTRIBUTE_COLOR  0, 0, 0, 0
 
 layout(location = 0) in vec3 aPosition;
 layout(location = 1) in vec3 aNormal;
@@ -19,18 +18,15 @@ out vec3 vViewLightDirection;
 
 void main()
 {
-    // if vertex color attribute is unspecified, all indices are 1
-    // if vertex color is unspecified, use uniform, else use vertex color (for color meshes)
-    if (uColor == vec4(PL_COLOR_MESH_OPAQUE_COLOR))
+    // if uniform is set to vec4(PL_USE_ATTRIBUTE_COLOR), use the attribute colors instead
+    if (uColor == vec4(PL_USE_ATTRIBUTE_COLOR))
     {
+        // attribute color
         vColor = aColor;
-    }
-    else if (uColor == vec4(PL_COLOR_MESH_TRANSPARENT_COLOR))
-    {
-        vColor = vec4(aColor.r, aColor.g, aColor.b, 0.7f);
     }
     else
     {
+        // uniform color
         vColor = uColor;
     }
     // pre-compute modelview matrix

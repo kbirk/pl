@@ -169,7 +169,7 @@ namespace plPlannerStage3
         // no state found
         if (donorSolution->rms == FLT_MAX)
         {
-            std::cerr << "plPlannerStage3::run() error: Unable to find suitable harvest locations " << std::endl;
+            LOG_WARN("Unable to find suitable harvest locations");
         }
 
         // unbind and delete site and rms buffers

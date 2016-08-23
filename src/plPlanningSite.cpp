@@ -19,12 +19,12 @@ plPlanningSite::plPlanningSite(
     _calcArea();
     _calcNormal();
 
-    std::cout << "\t\t" <<  triangles.size()  << " triangles calculated " << std::endl;
-    std::cout << "\t\t" <<  gridPoints.size() << " grid points calculated " << std::endl;
+    LOG_INFO("\t\t" <<  triangles.size()  << " triangles calculated");
+    LOG_INFO("\t\t" <<  gridPoints.size() << " grid points calculated");
 
     if (triangles.size() == 0 || gridPoints.size() == 0)
     {
-        std::cerr << "plPlanningSite::plPlanningSite() error: planning data buffer empty, please REMOVE all empty boundaries before proceeding with planner" << std::endl;
+        LOG_WARN("Planning data buffer empty, please REMOVE all empty boundaries before proceeding with planner");
     }
 }
 
@@ -88,7 +88,7 @@ std::shared_ptr<plSSBO> plPlanningSite::getSSBO() const
 
     uint32_t numBytes = totalSize() * sizeof(plVector4);
 
-    std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;
+    LOG_INFO("\t\tTotal buffer size: " << numBytes << " bytes");
 
     return std::make_shared<plSSBO>(numBytes, (void*)(&data[0]));
 }
@@ -218,7 +218,7 @@ void plPlanningSite::_calcArea()
     {
         area += triangles[i].getArea();
     }
-    std::cout << "\t\tSite area: " << area << "" << std::endl;
+    LOG_INFO("\t\tSite area: " << area << "");
 }
 
 

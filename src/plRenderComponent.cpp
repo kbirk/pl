@@ -28,7 +28,7 @@ void plRenderComponent::draw(const plShader& shader) const
     }
     else
     {
-        std::cerr << "Attempting to draw null _vao" << std::endl;
+        LOG_WARN("Attempting to draw null _vao");
     }
 }
 

@@ -8,10 +8,8 @@ namespace plSTL
     {
         if (!filename.compare(".stl", filename.length()-4, 4))
         {
-            std::cout << "plSTL::importFile() error: Unrecognized suffix on filename '"
-                << filename
-                << "'. STL filenames should have suffix .stl"
-                << std::endl;
+            LOG_WARN("Unrecognized suffix on filename `" << filename
+                << "`. STL filenames should have suffix .stl");
             return false;
         }
 
@@ -21,8 +19,7 @@ namespace plSTL
         std::ifstream infile(filename.c_str(), std::ifstream::binary);
         if (!infile.good())
         {
-            std::cout << " Failed." << std::endl;
-            std::cerr << "plSTL::importFile() error: STL file could not be opened" << std::endl;
+            LOG_WARN("STL file could not be opened");
             infile.close();
             return false;
         }
@@ -116,7 +113,7 @@ namespace plSTL
         std::ofstream outfile (filename.c_str());
         if (!outfile.good())
         {
-            std::cerr << "plSTL::exportFileASCII() error: STL file could not be written " << std::endl;
+            LOG_WARN("STL file could not be written");
             return false;
         }
 
@@ -124,16 +121,16 @@ namespace plSTL
 
         for (uint32_t i=0; i<triangles.size(); i++)
         {
-            outfile << "  facet normal " << triangles[i].normal().x << " " << triangles[i].normal().y << " " << triangles[i].normal().z << "\n" <<
-                       "    outer loop\n" <<
-                       "      vertex " << triangles[i].point0().x << " " << triangles[i].point0().y << " " << triangles[i].point0().z << "\n" <<
-                       "      vertex " << triangles[i].point1().x << " " << triangles[i].point1().y << " " << triangles[i].point1().z << "\n" <<
-                       "      vertex " << triangles[i].point2().x << " " << triangles[i].point2().y << " " << triangles[i].point2().z << "\n" <<
-                       "    endloop\n" <<
-                       "  endfacet" << std::endl;
+            outfile << "facet normal " << triangles[i].normal().x << " " << triangles[i].normal().y << " " << triangles[i].normal().z << std::endl
+                    << "outer loop" << std::endl
+                    << "vertex " << triangles[i].point0().x << " " << triangles[i].point0().y << " " << triangles[i].point0().z << std::endl
+                    << "vertex " << triangles[i].point1().x << " " << triangles[i].point1().y << " " << triangles[i].point1().z << std::endl
+                    << "vertex " << triangles[i].point2().x << " " << triangles[i].point2().y << " " << triangles[i].point2().z << std::endl
+                    << "endloop" << std::endl
+                    << "endfacet" << std::endl;
         }
 
-        outfile <<"endsolid" << std::endl;
+        outfile << "endsolid" << std::endl;
 
         outfile.close();
         return true;
@@ -148,7 +145,7 @@ namespace plSTL
         std::ofstream outfile (filename.c_str(), std::ios::trunc | std::ios::out | std::ios::binary);
         if (!outfile.good())
         {
-            std::cerr << "plSTL::exportFileBinary() error: STL file could not be written " << std::endl;
+            LOG_WARN("STL file could not be written");
             return false;
         }
 
@@ -185,20 +182,17 @@ namespace plSTL
         // check to ensure compiler designates compatible bytes to each type
         if (sizeof(uint32_t) != 4)
         {
-            std::cerr << "plSTL::_plCheckTypeSizes() error: Expected uint32_t to be 4 bytes, but it is "
-                      << sizeof(uint32_t) << ".  Fix this." << std::endl;
+            LOG_WARN("Expected uint32_t to be 4 bytes, but it is " << sizeof(uint32_t));
             return false;
         }
         if (sizeof(uint16_t) != 2)
         {
-            std::cerr << "plSTL::_plCheckTypeSizes() error: Expected uint16_t to be 2 bytes, but it is "
-                      << sizeof(uint16_t) << ".  Fix this." << std::endl;
+            LOG_WARN("Expected uint16_t to be 2 bytes, but it is " << sizeof(uint16_t));
             return false;
         }
         if (sizeof(float32_t) != 4)
         {
-            std::cerr << "plSTL::_plCheckTypeSizes() error: Expected float32_t to be 4 bytes, but it is "
-                      << sizeof(float32_t) << ".  Fix this." << std::endl;
+            LOG_WARN("Expected float32_t to be 4 bytes, but it is " << sizeof(float32_t));
             return false;
         }
         return true;

@@ -66,6 +66,6 @@ class plPlan : public plRenderable
 
         int32_t _getDefectSiteIndex(std::shared_ptr<plMeshSpecific> mesh) const;
 
-        bool _modelIndexErrorCheck(const std::string& callingFunction, int32_t modelIndex) const;
+        bool _modelIndexErrorCheck(int32_t modelIndex) const;
 
 };

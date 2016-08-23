@@ -83,7 +83,7 @@ void plSpline::extractRenderComponents(plRenderMap& renderMap, uint32_t techniqu
         plPickingStack::loadBlue(-1);  // unused
 
         // set color flag to use vertex attribute colors
-        plColorStack::push(PL_USE_ATTRIBUTE_COLOR_OPAQUE);
+        plColorStack::push(PL_USE_ATTRIBUTE_COLOR);
 
         // create render component
         auto component = std::make_shared<plRenderComponent>(_surfaceVAO);

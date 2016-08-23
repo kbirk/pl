@@ -244,136 +244,94 @@ namespace plOpenGLInfo
 
     void print()
     {
-        std::cout << "OpenGL " << majorVersion << "." << minorVersion;
-        std::cout << std::endl << "MaxComputeShaderStorageBlocks "
-                << maxComputeShaderStorageBlocks;
-        std::cout << std::endl << "MaxCombinedShaderStorageBlocks "
-                << maxCombinedShaderStorageBlocks;
-        std::cout << std::endl << "MaxComputeUniformBlocks " << maxComputeUniformBlocks;
-        std::cout << std::endl << "MaxComputeTextureImageUnits "
-                << maxComputeTextureImageUnits;
-        std::cout << std::endl << "MaxComputeUniformComponents "
-                << maxComputeUniformComponents;
-        std::cout << std::endl << "MaxComputeAtomicCounters "
-                << maxComputeUniformComponents;
-        std::cout << std::endl << "MaxComputeAtomicCounterBuffers "
-                << maxComputeAtomicCounterBuffers;
-        std::cout << std::endl << "MaxCombinedComputeUniformComponents "
-                << maxCombinedComputeUniformComponents;
-        std::cout << std::endl << "MaxComputeWorkGroupInvocations "
-                << maxComputeWorkGroupInvocations;
-        std::cout << std::endl << "MaxComputeWorkGroupCount[3] "
-                << maxComputeWorkGroupCount[0] << " " << maxComputeWorkGroupCount[1]
-                << " " << maxComputeWorkGroupCount[2];
-        std::cout << std::endl << "MaxComputeWorkGroupSize[3] "
-                << maxComputeWorkGroupSize[0] << " " << maxComputeWorkGroupSize[1]
-                << " " << maxComputeWorkGroupSize[2];
-        std::cout << std::endl << "MaxDebugGroupStackDepth " << maxDebugGroupStackDepth;
-
-        std::cout << std::endl << "Max3DTextureSize " << max3DTextureSize;
-        std::cout << std::endl << "MaxArrayTextureLayers " << maxArrayTextureLayers;
-        std::cout << std::endl << "MaxClipDistances " << maxClipDistances;
-        std::cout << std::endl << "MaxColorTextureSamples " << maxColorTextureSamples;
-        std::cout << std::endl << "MaxColorTextureSamples " << maxColorAttachments;
-        std::cout << std::endl << "MaxCombinedAtomicCounters "
-                << maxCombinedAtomicCounters;
-        std::cout << std::endl << "MaxCombinedFragmentUniformComponents "
-                << maxCombinedFragmentUniformComponents;
-        std::cout << std::endl << "MaxCombinedGeometryUniformComponents "
-                << maxCombinedGeometryUniformComponents;
-        std::cout << std::endl << "MaxCombinedTextureImageUnits "
-                << maxCombinedTextureImageUnits;
-        std::cout << std::endl << "MaxCombinedUniformBlocks " << maxCombinedUniformBlocks;
-        std::cout << std::endl << "MaxCombinedVertexUniformComponents "
-                << maxCombinedVertexUniformComponents;
-        std::cout << std::endl << "MaxCubeMapTextureSize " << maxCubeMapTextureSize;
-        std::cout << std::endl << "MaxDepthTextureSamples " << maxDepthTextureSamples;
-        std::cout << std::endl << "MaxDrawBuffers " << maxDrawBuffers;
-        std::cout << std::endl << "MaxDualSourceDrawBuffers " << maxDualSourceDrawBuffers;
-        std::cout << std::endl << "MaxElementsIndices " << maxElementsIndices;
-        std::cout << std::endl << "MaxElementsVertices " << maxElementsVertices;
-        std::cout << std::endl << "MaxFragmentAtomicCounters "
-                << maxFragmentAtomicCounters;
-        std::cout << std::endl << "MaxFragmentShaderStorageBlocks "
-                << maxFragmentShaderStorageBlocks;
-        std::cout << std::endl << "MaxFragmentInputComponents "
-                << maxFragmentInputComponents;
-        std::cout << std::endl << "MaxFragmentUniformComponents "
-                << maxFragmentUniformComponents;
-        std::cout << std::endl << "MaxFragmentUniformVectors "
-                << maxFragmentUniformVectors;
-        std::cout << std::endl << "MaxFragmentUniformBlocks " << maxFragmentUniformBlocks;
-        std::cout << std::endl << "MaxFramebufferWidth " << maxFramebufferWidth;
-        std::cout << std::endl << "MaxFramebufferHeight " << maxFramebufferHeight;
-        std::cout << std::endl << "MaxFramebufferLayers " << maxFramebufferLayers;
-        std::cout << std::endl << "MaxFramebufferSamples " << maxFramebufferSamples;
-        std::cout << std::endl << "MaxGeometryAtomicCounters "
-                << maxGeometryAtomicCounters;
-        std::cout << std::endl << "MaxGeometryShaderStorageBlocks "
-                << maxGeometryShaderStorageBlocks;
-        std::cout << std::endl << "MaxGeometryInputComponents "
-                << maxGeometryInputComponents;
-        std::cout << std::endl << "MaxGeometryOutputComponents "
-                << maxGeometryOutputComponents;
-        std::cout << std::endl << "MaxGeometryTextureImageUnits "
-                << maxGeometryTextureImageUnits;
-        std::cout << std::endl << "MaxGeometryUniformBlocks " << maxGeometryUniformBlocks;
-        std::cout << std::endl << "MaxGeometryUniformComponents "
-                << maxGeometryUniformComponents;
-        std::cout << std::endl << "MaxIntegerSamples " << maxIntegerSamples;
-        std::cout << std::endl << "MinMapBufferAlignment " << minMapBufferAlignment;
-        std::cout << std::endl << "MaxLabelLength " << maxLabelLength;
-        std::cout << std::endl << "MaxProgramTexelOffset " << maxProgramTexelOffset;
-        std::cout << std::endl << "MinProgramTexelOffset " << minProgramTexelOffset;
-        std::cout << std::endl << "MaxRectangleTextureSize " << maxRectangleTextureSize;
-        std::cout << std::endl << "MaxRenderbufferSize " << maxRenderbufferSize;
-        std::cout << std::endl << "MaxSampleMaskWords " << maxSampleMaskWords;
-        std::cout << std::endl << "MaxServerWaitTimeout " << maxServerWaitTimeout;
-        std::cout << std::endl << "MaxShaderStorageBufferBindings "
-                << maxShaderStorageBufferBindings;
-        std::cout << std::endl << "MaxTessControlAtomicCounters "
-                << maxTessControlAtomicCounters;
-        std::cout << std::endl << "MaxTessEvaluationAtomicCounters "
-                << maxTessEvaluationAtomicCounters;
-        std::cout << std::endl << "MaxTessControlShaderStorageBlocks "
-                << maxTessControlShaderStorageBlocks;
-        std::cout << std::endl << "MaxTessEvaluationShaderStorageBlocks "
-                << maxTessEvaluationShaderStorageBlocks;
-        std::cout << std::endl << "MaxTextureBufferSize " << maxTextureBufferSize;
-        std::cout << std::endl << "MaxTextureImageUnits " << maxTextureImageUnits;
-        std::cout << std::endl << "MaxTextureLODBias " << maxTextureLODBias;
-        std::cout << std::endl << "MaxTextureSize " << maxTextureSize;
-        std::cout << std::endl << "MaxUniformBufferBindings " << maxUniformBufferBindings;
-        std::cout << std::endl << "MaxUniformBlockSize " << maxUniformBlockSize;
-        std::cout << std::endl << "MaxUniformLocations " << maxUniformLocations;
-        std::cout << std::endl << "MaxVaryingComponents " << maxVaryingComponents;
-        std::cout << std::endl << "MaxVaryingVectors " << maxVaryingVectors;
-        std::cout << std::endl << "MaxVaryingFloats " << maxVaryingFloats;
-        std::cout << std::endl << "MaxVertexAtomicCounters " << maxVertexAtomicCounters;
-        std::cout << std::endl << "MaxVertexAttribs " << maxVertexAttribs;
-        std::cout << std::endl << "MaxVertexShaderStorageBlocks "
-                << maxVertexShaderStorageBlocks;
-        std::cout << std::endl << "MaxVertexTextureImageUnits "
-                << maxVertexTextureImageUnits;
-        std::cout << std::endl << "MaxVertexUniformComponents "
-                << maxVertexUniformComponents;
-        std::cout << std::endl << "MaxVertexUniformVectors " << maxVertexUniformVectors;
-        std::cout << std::endl << "MaxVertexOutputComponents "
-                << maxVertexOutputComponents;
-        std::cout << std::endl << "MaxVertexUniformBlocks " << maxVertexUniformBlocks;
-        std::cout << std::endl << "MaxViewportDims[2] " << maxViewportDims[0] << " "
-                << maxViewportDims[1];
-        std::cout << std::endl << "MaxViewports " << maxViewports;
-        std::cout << std::endl << "NumCompreoutedTextureFormats "
-                << numCompressedTextureFormats;
-        std::cout << std::endl << "NumExtensions " << numExtensions;
-        std::cout << std::endl << "NumProgramBinaryFormats " << numProgramBinaryFormats;
-        std::cout << std::endl << "NumShaderBinaryFormats " << numShaderBinaryFormats;
-        std::cout << std::endl << "MaxVertexAttribRelativeOffset "
-                << maxVertexAttribRelativeOffset;
-        std::cout << std::endl << "MaxVertexAttribBindings " << maxVertexAttribBindings;
-        std::cout << std::endl << "MaxElementIndex " << maxElementIndex;
-        std::cout << std::endl;
+        LOG_INFO("OpenGL Version: " << majorVersion << "." << minorVersion);
+        LOG_INFO("MaxComputeShaderStorageBlocks: " << maxComputeShaderStorageBlocks);
+        LOG_INFO("MaxCombinedShaderStorageBlocks: " << maxCombinedShaderStorageBlocks);
+        LOG_INFO("MaxComputeUniformBlocks: " << maxComputeUniformBlocks);
+        LOG_INFO("MaxComputeTextureImageUnits: " << maxComputeTextureImageUnits);
+        LOG_INFO("MaxComputeUniformComponents: " << maxComputeUniformComponents);
+        LOG_INFO("MaxComputeAtomicCounters: " << maxComputeUniformComponents);
+        LOG_INFO("MaxComputeAtomicCounterBuffers: " << maxComputeAtomicCounterBuffers);
+        LOG_INFO("MaxCombinedComputeUniformComponents: " << maxCombinedComputeUniformComponents);
+        LOG_INFO("MaxComputeWorkGroupInvocations: " << maxComputeWorkGroupInvocations);
+        LOG_INFO("MaxComputeWorkGroupCount[3]: " << maxComputeWorkGroupCount[0] << " " << maxComputeWorkGroupCount[1] << " " << maxComputeWorkGroupCount[2]);
+        LOG_INFO("MaxComputeWorkGroupSize[3]: " << maxComputeWorkGroupSize[0] << " " << maxComputeWorkGroupSize[1] << " " << maxComputeWorkGroupSize[2]);
+        LOG_INFO("MaxDebugGroupStackDepth: " << maxDebugGroupStackDepth);
+        LOG_INFO("Max3DTextureSize: " << max3DTextureSize);
+        LOG_INFO("MaxArrayTextureLayers: " << maxArrayTextureLayers);
+        LOG_INFO("MaxClipDistances: " << maxClipDistances);
+        LOG_INFO("MaxColorTextureSamples: " << maxColorTextureSamples);
+        LOG_INFO("MaxColorTextureSamples: " << maxColorAttachments);
+        LOG_INFO("MaxCombinedAtomicCounters: " << maxCombinedAtomicCounters);
+        LOG_INFO("MaxCombinedFragmentUniformComponents: " << maxCombinedFragmentUniformComponents);
+        LOG_INFO("MaxCombinedGeometryUniformComponents: " << maxCombinedGeometryUniformComponents);
+        LOG_INFO("MaxCombinedTextureImageUnits: " << maxCombinedTextureImageUnits);
+        LOG_INFO("MaxCombinedUniformBlocks: " << maxCombinedUniformBlocks);
+        LOG_INFO("MaxCombinedVertexUniformComponents: " << maxCombinedVertexUniformComponents);
+        LOG_INFO("MaxCubeMapTextureSize: " << maxCubeMapTextureSize);
+        LOG_INFO("MaxDepthTextureSamples: " << maxDepthTextureSamples);
+        LOG_INFO("MaxDrawBuffers: " << maxDrawBuffers);
+        LOG_INFO("MaxDualSourceDrawBuffers: " << maxDualSourceDrawBuffers);
+        LOG_INFO("MaxElementsIndices: " << maxElementsIndices);
+        LOG_INFO("MaxElementsVertices: " << maxElementsVertices);
+        LOG_INFO("MaxFragmentAtomicCounters: " << maxFragmentAtomicCounters);
+        LOG_INFO("MaxFragmentShaderStorageBlocks: " << maxFragmentShaderStorageBlocks);
+        LOG_INFO("MaxFragmentInputComponents: " << maxFragmentInputComponents);
+        LOG_INFO("MaxFragmentUniformComponents: " << maxFragmentUniformComponents);
+        LOG_INFO("MaxFragmentUniformVectors: " << maxFragmentUniformVectors);
+        LOG_INFO("MaxFragmentUniformBlocks: " << maxFragmentUniformBlocks);
+        LOG_INFO("MaxFramebufferWidth: " << maxFramebufferWidth);
+        LOG_INFO("MaxFramebufferHeight: " << maxFramebufferHeight);
+        LOG_INFO("MaxFramebufferLayers: " << maxFramebufferLayers);
+        LOG_INFO("MaxFramebufferSamples: " << maxFramebufferSamples);
+        LOG_INFO("MaxGeometryAtomicCounters: " << maxGeometryAtomicCounters);
+        LOG_INFO("MaxGeometryShaderStorageBlocks: " << maxGeometryShaderStorageBlocks);
+        LOG_INFO("MaxGeometryInputComponents: " << maxGeometryInputComponents);
+        LOG_INFO("MaxGeometryOutputComponents: " << maxGeometryOutputComponents);
+        LOG_INFO("MaxGeometryTextureImageUnits: " << maxGeometryTextureImageUnits);
+        LOG_INFO("MaxGeometryUniformBlocks: " << maxGeometryUniformBlocks);
+        LOG_INFO("MaxGeometryUniformComponents: " << maxGeometryUniformComponents);
+        LOG_INFO("MaxIntegerSamples: " << maxIntegerSamples);
+        LOG_INFO("MinMapBufferAlignment: " << minMapBufferAlignment);
+        LOG_INFO("MaxLabelLength: " << maxLabelLength);
+        LOG_INFO("MaxProgramTexelOffset: " << maxProgramTexelOffset);
+        LOG_INFO("MinProgramTexelOffset: " << minProgramTexelOffset);
+        LOG_INFO("MaxRectangleTextureSize: " << maxRectangleTextureSize);
+        LOG_INFO("MaxRenderbufferSize: " << maxRenderbufferSize);
+        LOG_INFO("MaxSampleMaskWords: " << maxSampleMaskWords);
+        LOG_INFO("MaxServerWaitTimeout: " << maxServerWaitTimeout);
+        LOG_INFO("MaxShaderStorageBufferBindings: " << maxShaderStorageBufferBindings);
+        LOG_INFO("MaxTessControlAtomicCounters: " << maxTessControlAtomicCounters);
+        LOG_INFO("MaxTessEvaluationAtomicCounters: " << maxTessEvaluationAtomicCounters);
+        LOG_INFO("MaxTessControlShaderStorageBlocks: " << maxTessControlShaderStorageBlocks);
+        LOG_INFO("MaxTessEvaluationShaderStorageBlocks: " << maxTessEvaluationShaderStorageBlocks);
+        LOG_INFO("MaxTextureBufferSize: " << maxTextureBufferSize);
+        LOG_INFO("MaxTextureImageUnits: " << maxTextureImageUnits);
+        LOG_INFO("MaxTextureLODBias: " << maxTextureLODBias);
+        LOG_INFO("MaxTextureSize: " << maxTextureSize);
+        LOG_INFO("MaxUniformBufferBindings: " << maxUniformBufferBindings);
+        LOG_INFO("MaxUniformBlockSize: " << maxUniformBlockSize);
+        LOG_INFO("MaxUniformLocations: " << maxUniformLocations);
+        LOG_INFO("MaxVaryingComponents: " << maxVaryingComponents);
+        LOG_INFO("MaxVaryingVectors: " << maxVaryingVectors);
+        LOG_INFO("MaxVaryingFloats: " << maxVaryingFloats);
+        LOG_INFO("MaxVertexAtomicCounters: " << maxVertexAtomicCounters);
+        LOG_INFO("MaxVertexAttribs: " << maxVertexAttribs);
+        LOG_INFO("MaxVertexShaderStorageBlocks: " << maxVertexShaderStorageBlocks);
+        LOG_INFO("MaxVertexTextureImageUnits: " << maxVertexTextureImageUnits);
+        LOG_INFO("MaxVertexUniformComponents: " << maxVertexUniformComponents);
+        LOG_INFO("MaxVertexUniformVectors: " << maxVertexUniformVectors);
+        LOG_INFO("MaxVertexOutputComponents: " << maxVertexOutputComponents);
+        LOG_INFO("MaxVertexUniformBlocks: " << maxVertexUniformBlocks);
+        LOG_INFO("MaxViewportDims[2]: " << maxViewportDims[0] << " " << maxViewportDims[1]);
+        LOG_INFO("MaxViewports: " << maxViewports);
+        LOG_INFO("NumCompreoutedTextureFormats: " << numCompressedTextureFormats);
+        LOG_INFO("NumExtensions: " << numExtensions);
+        LOG_INFO("NumProgramBinaryFormats: " << numProgramBinaryFormats);
+        LOG_INFO("NumShaderBinaryFormats: " << numShaderBinaryFormats);
+        LOG_INFO("MaxVertexAttribRelativeOffset: " << maxVertexAttribRelativeOffset);
+        LOG_INFO("MaxVertexAttribBindings: " << maxVertexAttribBindings);
+        LOG_INFO("MaxElementIndex: " << maxElementIndex);
     }
 
 
@@ -400,7 +358,7 @@ namespace plOpenGLInfo
         GLuint errnum = glGetError();
         while (errnum != GL_NO_ERROR)
         {
-            std::cout << str << " " << _errorToString(errnum) << std::endl;
+            LOG_INFO(str << " " << _errorToString(errnum));
             numErrs++;
             errnum = glGetError();
         }

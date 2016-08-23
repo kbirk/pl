@@ -90,10 +90,11 @@ namespace plWindow {
         int32_t horizontalRatio = vWidth / sWidth;
         int32_t verticalRatio = vHeight / sHeight;
         if (horizontalRatio != verticalRatio) {
-            std::cerr << "Horizontal pixel ratio of " <<
-                horizontalRatio <<
-                " is not equal to vertical pixel ratio of " <<
-                verticalRatio << ", this will cause picking errors" << std::endl;
+            LOG_WARN("Horizontal pixel ratio of "
+                << horizontalRatio
+                << " is not equal to vertical pixel ratio of "
+                << verticalRatio
+                << ", this will cause picking errors");
         }
         return horizontalRatio;
     }
@@ -119,7 +120,7 @@ namespace plWindow {
 
         if (output.w == 0.0f)
         {
-             std::cerr << "plWindow::mouseToWorld() error, w == 0" << std::endl;
+             LOG_WARN("w == 0");
              return plVector3();
         }
 
@@ -136,7 +137,7 @@ namespace plWindow {
 
         if (projected.w == 0.0f)
         {
-            std::cerr << "plWindow::mouseToWorld() error, w == 0" << std::endl;
+            LOG_WARN("w == 0");
             return plVector3();
         }
 
@@ -227,7 +228,7 @@ namespace plWindow {
         if (window == nullptr)
         {
             // In the event that the window could not be made...
-            std::cout << "Could not create window: " << SDL_GetError() << std::endl;
+            LOG_INFO("Could not create window: " << SDL_GetError());
             return;
         }
         // create the OpenGL context

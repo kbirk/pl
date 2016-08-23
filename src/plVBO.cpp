@@ -41,13 +41,13 @@ void plVBO::upload()
 {
     if (_data.empty())
     {
-        std::cerr << "plVBO::upload() error: data buffer empty, ignoring command" << std::endl;
+        LOG_WARN("Data buffer empty, ignoring command");
         return;
     }
 
     if (_attributePointers.empty())
     {
-        std::cerr << "plVBO::upload() error: vertex attribute pointers unspecified, ignoring command" << std::endl;
+        LOG_WARN("Vertex attribute pointers unspecified, ignoring command");
         return;
     }
 

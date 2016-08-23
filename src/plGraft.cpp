@@ -170,7 +170,7 @@ std::shared_ptr<plPlug> plGraft::plug(uint32_t type) const
             return _recipient;
 
         default:
-            std::cerr << "plGraft plug() error: invalid type enumeration provided, defaulting to recipient" << std::endl;
+            LOG_WARN("Invalid type enumeration `" << type << "` provided, defaulting to recipient");
             return _recipient;
     }
 }
@@ -193,7 +193,7 @@ void plGraft::move(uint32_t type, const plVector3& origin, const plVector3& y)
 
         default:
 
-            std::cerr << "plGraft move() error: invalid type enumeration provided" << std::endl;
+            LOG_WARN("Invalid type enumeration provided");
             break;
     }
 
@@ -219,7 +219,7 @@ void plGraft::rotate(uint32_t type, const plVector3& y)
 
         default:
 
-            std::cerr << "plGraft rotate() error: invalid type enumeration provided" << std::endl;
+            LOG_WARN("Invalid type enumeration provided");
             break;
     }
 
@@ -245,7 +245,7 @@ void plGraft::rotate(uint32_t type, float32_t angleDegrees)
 
         default:
 
-            std::cerr << "plGraft rotate() error: invalid type enumeration provided" << std::endl;
+            LOG_WARN("Invalid type enumeration provided");
             break;
     }
 

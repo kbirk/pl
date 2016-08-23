@@ -80,7 +80,7 @@ plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &orig
     if (count == 0)
     {
         // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
-        //std::cout << "plOctreeMesh::getAverageNormal() warning: No normal found" << std::endl;
+        LOG_WARN("No normal found");
         return normal;
     }
 

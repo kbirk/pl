@@ -61,7 +61,7 @@ bool plFBO::_checkAttachmentError() const
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        printf("plFBO::attach() error: 0x%x\n", status);
+        LOG_WARN("Framebuffer status error: " << status);
         return false;
     }
     return true;
@@ -92,7 +92,7 @@ std::shared_ptr<plTexture2D> plFBO::texture2DAttachment(uint32_t attachment) con
 {
     if (_textureAttachments.find(attachment) == _textureAttachments.end())
     {
-        std::cerr << "plFBO::texture2DAttachment() error: attachment enumeration does not exist for this fbo" << std::endl;
+        LOG_WARN("Attachment enumeration `" << attachment << "` does not exist for this fbo");
         return nullptr;
     }
     return _textureAttachments.find(attachment)->second;

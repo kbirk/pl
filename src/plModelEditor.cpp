@@ -29,7 +29,7 @@ void plModelEditor::setEditMode(uint32_t editMode)
 
         default:
 
-            std::cerr << "plModelEditor::setEditMode() error: invalid edit mode enumeration provided" << std::endl;
+            LOG_WARN("Invalid edit mode enumeration provided");
             break;
     }
 }

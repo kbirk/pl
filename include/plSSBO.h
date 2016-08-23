@@ -41,7 +41,7 @@ void plSSBO::set(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t ss
 {
     if (count == 0)
     {
-        std::cerr << "plSSBO::set() warning: write count is 0, function ignored" << std::endl;
+        LOG_WARN("Write count is 0, function ignored");
         return;
     }
 
@@ -54,7 +54,7 @@ void plSSBO::setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ss
 {
     if (numBytes == 0)
     {
-        std::cerr << "plSSBO::setBytes() warning: numBytes is 0, function ignored" << std::endl;
+        LOG_WARN("Argument `numBytes` is 0, function ignored");
         return;
     }
 
@@ -82,19 +82,19 @@ void plSSBO::read(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t s
 {
     if (!_id)
     {
-        std::cerr << "plSSBO::read() error: SSBO buffer has not been generated" << std::endl;
+        LOG_WARN("SSBO buffer has not been generated");
         return;
     }
 
     if (count == 0)
     {
-        std::cerr << "plSSBO::read() warning: read count is 0, function ignored" << std::endl;
+        LOG_WARN("Argument `count` is 0, function ignored");
         return;
     }
 
     if (count*sizeof(T)> _numBytes)
     {
-        std::cerr << "plSSBO::read() error: requested read size larger than SSBO, function ignored" << std::endl;
+        LOG_WARN("Requested read size larger than SSBO, function ignored");
         return;
     }
 
@@ -110,19 +110,19 @@ void plSSBO::readBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t s
 {
     if (!_id)
     {
-        std::cerr << "plSSBO::readBytes() error: SSBO buffer has not been generated" << std::endl;
+        LOG_WARN("SSBO buffer has not been generated");
         return;
     }
 
     if (numBytes == 0)
     {
-        std::cerr << "plSSBO::readBytes() warning: numBytes is 0, function ignored" << std::endl;
+        LOG_WARN("Argument `numBytes` is 0, function ignored");
         return;
     }
 
     if (numBytes> _numBytes)
     {
-        std::cerr << "plSSBO::readBytes() error: requested read size larger than SSBO, function ignored" << std::endl;
+        LOG_WARN("Requested read size larger than SSBO, function ignored");
         return;
     }
 

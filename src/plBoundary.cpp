@@ -415,7 +415,10 @@ std::ostream& operator << (std::ostream& out, const plBoundary& b)
 {
     for (uint32_t j=0; j<b.size(); j++)
     {
-        if (j != 0) out << ",";
+        if (j != 0)
+        {
+            out << ",";
+        }
         out << b.points(j) << "," << b.normals(j);
     }
     return out;

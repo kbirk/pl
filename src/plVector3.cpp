@@ -22,7 +22,7 @@ plVector3::plVector3(char *str)
 {
     int filled = sscanf(str, "%f %f %f", &x, &y, &z);
     if (filled != 3) {
-        std::cerr << "Error occured while loading plVector3 from: `" << str << "`." << std::endl;
+        LOG_WARN("Error occured while loading plVector3 from: `" << str << "`.");
         exit(1);
     }
 }
@@ -31,7 +31,7 @@ plVector3::plVector3(const plString &str)
 {
     int filled = sscanf(str.c_str(), "%f %f %f", &x, &y, &z);
     if (filled != 3) {
-        std::cerr << "Error occured while loading plVector3 from: `" << str << "`." << std::endl;
+        LOG_WARN("Error occured while loading plVector3 from: `" << str << "`.");
         exit(1);
     }
 }
@@ -82,15 +82,16 @@ plVector3& plVector3::operator=(const plVector3& other)
 
 plVector3 plVector3::normalize() const
 {
-    float32_t len;
-    len = sqrt(x*x + y*y + z*z);
-    if (len == 0)
+    float32_t len = sqrt(x*x + y*y + z*z);
+    if (len == 0.0)
     {
-        //std::cerr << "normalize error: length is 0" << std::endl;
+        LOG_WARN("Length is 0, return zero vector");
         return plVector3(0, 0, 0);
     }
     else
+    {
         return plVector3(x/len, y/len, z/len);
+    }
 }
 
 float32_t plVector3::length() const

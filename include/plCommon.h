@@ -2,24 +2,23 @@
 
 // COLOR MACROS
 
-#define PL_PURPLE_COLOR                         0.57, 0.17, 0.93
-#define PL_AXIS_GREY                            0.2f, 0.2f, 0.2f
-#define PL_X_AXIS_COLOR                         1.0f, 0.2f, 0.2f
-#define PL_Y_AXIS_COLOR                         0.2f, 1.0f, 0.2f
-#define PL_Z_AXIS_COLOR                         0.2f, 0.2f, 1.0f
-#define PL_CLEAR_COLOR                          0.137f, 0.137f, 0.137f, 1.0f
+#define PL_PURPLE_COLOR                          0.57, 0.17, 0.93
+#define PL_AXIS_GREY                             0.2f, 0.2f, 0.2f
+#define PL_X_AXIS_COLOR                          1.0f, 0.2f, 0.2f
+#define PL_Y_AXIS_COLOR                          0.2f, 1.0f, 0.2f
+#define PL_Z_AXIS_COLOR                          0.2f, 0.2f, 1.0f
+#define PL_CLEAR_COLOR                           0.137f, 0.137f, 0.137f, 1.0f
 
-// some renderables use different colors per vertex. When the color
-// uniforms are set to these value, it tells the shader to use the attribute
-// color instead
-#define PL_USE_ATTRIBUTE_COLOR_OPAQUE           0, 0, 0, 0
+// some renderables use different colors per vertex. When the color uniform is
+// set to these values, it tells the shader to use the attribute colors instead
+#define PL_USE_ATTRIBUTE_COLOR                   0, 0, 0, 0
 
 // global light position used throughout planner
 #define PL_LIGHT_POSITION                        10, 10, 15
 
 // OTHER MACROS
 
-#define PL_PI                                    3.1415927f         // specific decimals optimize floating point accuracy. Going higher digits will result in more error
+#define PL_PI                                    3.1415927f
 #define PL_EPSILON                               0.00001f
 
 #define PL_RAD_TO_DEG(a)                         (a * (180.0f / PL_PI))
@@ -32,6 +31,10 @@
 
 #define PL_NORMAL_SMOOTHING_RADIUS               4.0f
 
+// logger
+#include "plLog.h"
+
+// stl
 #include <csignal>
 #include <cctype>
 #include <cstring>

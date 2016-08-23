@@ -33,8 +33,6 @@ class plMatrix44
 
         plMatrix44(const plMatrix44 &m); // copy constructor
 
-        bool importFile(const plString &file);  // openCV xml input file
-
         void setRow(int32_t row, float32_t x, float32_t y, float32_t z, float32_t w);
         void setColumn(int32_t col, float32_t x, float32_t y, float32_t z, float32_t w);
         void setRow(int32_t row, const plVector4& vector);

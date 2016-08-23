@@ -35,7 +35,7 @@ void plTransform::_compute()
 
     if (fabs(_x * _y) > 0.001)
     {
-        std::cerr << "x and y are not perpendicular (dot product = " << _x*_y << std::endl;
+        LOG_WARN("x and y are not perpendicular (dot product = " << _x*_y);
     }
 
     _transform.setColumn(0, _x.x,      _x.y,      _x.z,      0.0f);

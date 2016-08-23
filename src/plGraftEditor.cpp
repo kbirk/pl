@@ -31,7 +31,7 @@ void plGraftEditor::setEditMode(uint32_t editMode)
 
         default:
 
-            std::cerr << "plGraftEditor::setEditMode() error: invalid edit mode enumeration provided" << std::endl;
+            LOG_WARN("Invalid edit mode enumeration provided");
             break;
     }
 }

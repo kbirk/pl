@@ -191,7 +191,7 @@ namespace plMeshCutter
 
             if (edgeCutIndex == edgeCuts.size())
             {
-                std::cerr << "Error: Couldn't find an initial outgoing triangle edge cut." << std::endl;
+                LOG_WARN("Error: Couldn't find an initial outgoing triangle edge cut.");
                 return false;
             }
 
@@ -212,7 +212,7 @@ namespace plMeshCutter
 
                 if (boundaryCutIndex == boundaryCuts.size())
                 {
-                    std::cerr << "Error: An intersection point is missing from the boundaryCuts list." << std::endl;
+                    LOG_WARN("Error: An intersection point is missing from the boundaryCuts list.");
                     return false;
                 }
 
@@ -245,12 +245,12 @@ namespace plMeshCutter
                 // error checking
                 if (edgeCutIndex == edgeCuts.size())
                 {
-                    std::cerr << "Error: An intersection point is missing from the edgeCuts list." << std::endl;
+                    LOG_WARN("Error: An intersection point is missing from the edgeCuts list.");
                     return false;
                 }
                 else if (edgeCuts[edgeCutIndex].direction != -1)
                 {
-                    std::cerr << "Error: Expected to have an incoming triangle edge but an outgoing edge was found." << std::endl;
+                    LOG_WARN("Error: Expected to have an incoming triangle edge but an outgoing edge was found.");
                     return false;
                 }
 

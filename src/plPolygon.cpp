@@ -20,12 +20,16 @@ bool plEdge::contains(const plVector3 &point, const float32_t &epsilon) const
 plVector3 plEdge::otherPt(const plVector3 &point, const float32_t &epsilon) const
 {
     if ((pt1 - point).length() <= epsilon)
+    {
         return pt2;
+    }
     else if ((pt2 - point).length() <= epsilon)
+    {
         return pt1;
+    }
 
     // shouldn't proceed past here if one of this edge's points are used, but this basically just says that no match was found
-    std::cout << "Warning in plEdge::otherPt() - point " << point << " was not found! returning vector of zeros!" << std::endl;
+    LOG_INFO("Point " << point << " was not found. Returning zero vector");
     return plVector3(0, 0, 0);
 }
 
@@ -55,16 +59,16 @@ plEdge& plEdge::operator =(const plEdge& other)
 
 std::ostream& operator << (std::ostream &stream, const plEdge &e)
 {
-    stream << e.pt1 << " " << e.pt2 << "" << std::endl;
+    stream << e.pt1 << " " << e.pt2 << std::endl;
     return stream;
 }
 
 std::ostream& operator << (std::ostream &stream, const plPolygon &p)
 {
-    stream << "Normal    = " << p.normal << "" << std::endl;
+    stream << "Normal    = " << p.normal << std::endl;
     for (uint32_t i = 0; i < p.points.size(); i++)
     {
-        stream << "Vertex " << i << " = " << p.points[i] << "" << std::endl;
+        stream << "Vertex " << i << " = " << p.points[i] << std::endl;
     }
     return stream;
 }

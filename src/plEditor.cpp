@@ -10,7 +10,7 @@ void plEditor::attach(std::shared_ptr<plPlan> plan)
 {
     if (_plan != nullptr)
     {
-        std::cout << "plEditor::attach() warning: plan already attached to editor" << std::endl;
+        LOG_WARN("Plan already attached to editor");
     }
     _plan = plan;
 }

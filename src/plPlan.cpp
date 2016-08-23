@@ -4,10 +4,9 @@ plPlan::plPlan(plString filename)
 {
     if (filename.compare(".csv", filename.size()-4, 4))
     {
-        std::cerr << "Unrecognized suffix on filename '"
+        LOG_WARN("Unrecognized suffix on filename `"
             << filename
-            << "'. plPlan filenames should have suffix .csv"
-            << std::endl;
+            << "`. plPlan filenames should have suffix .csv");
         exit(1);
     }
     importFile(filename);
@@ -19,7 +18,7 @@ plPlan::plPlan(int32_t argc, char **argv)
     if (argc == 1)
     {
         // 0 arguments
-        std::cerr << "plPlan::plPlan() error: No arguments provided" << std::endl;
+        LOG_WARN("No arguments provided");
         exit(1);
     }
     if (argc >= 2)
@@ -38,11 +37,9 @@ plPlan::plPlan(int32_t argc, char **argv)
         }
         else
         {
-            std::cerr << "Unrecognized suffix on filename '"
-                << filename
-                << "'. plPlan filenames should have suffix .csv, "
-                << "plModel filenames should have suffix .stl"
-                << std::endl;
+            LOG_WARN("Unrecognized suffix on filename `" << filename
+                << "`. plPlan filenames should have suffix .csv, "
+                << "plModel filenames should have suffix .stl");
             exit(1);
         }
     }
@@ -98,7 +95,7 @@ void plPlan::extractRenderComponents(plRenderMap& renderMap) const
 
 void plPlan::addDefectSite(uint32_t modelIndex)
 {
-    if (_modelIndexErrorCheck("addDefectSite", modelIndex))
+    if (_modelIndexErrorCheck(modelIndex))
     {
         return;
     }
@@ -108,7 +105,7 @@ void plPlan::addDefectSite(uint32_t modelIndex)
 
 void plPlan::addDonorSite(uint32_t modelIndex)
 {
-    if (_modelIndexErrorCheck("addDonorSite", modelIndex))
+    if (_modelIndexErrorCheck(modelIndex))
     {
         return;
     }
@@ -146,7 +143,7 @@ void plPlan::importFile(const plString &filename)
 
     if (!csv.good())
     {
-        std::cerr << "Could not open '" << filename << "'." << std::endl;
+        LOG_WARN("Could not open `" << filename << "`.");
         exit(1);
     }
 
@@ -159,19 +156,17 @@ void plPlan::importFile(const plString &filename)
             // model data
             plString modelFile = csv.getRow().getCol(1);
 
-            std::cout << "Loading model `" << modelFile << "`...";
+            LOG_INFO("Loading model `" << modelFile << "`");
 
             // model
             auto model = std::make_shared<plModel>(
                 modelFile,
                 PL_MODEL_DEFAULT_OCTREE_DEPTH);
             _models.push_back(model);
-
-            std::cout << " Complete." << std::endl;
         }
         else if (field.compareCaseInsensitive("defect_site"))
         {
-            std::cout << "Loading defect site " << _defectSites.size() << "...";
+            LOG_INFO("Loading defect site " << _defectSites.size());
 
             // spline data
             uint32_t splineModelID = std::stoi(csv.getRow().getCol(1));
@@ -185,12 +180,10 @@ void plPlan::importFile(const plString &filename)
                 csv.getRow().getCols());
             _defectSites.push_back(defectSite);
 
-            std::cout << " Complete." << std::endl;
-
         }
         else if (field.compareCaseInsensitive("donor_site"))
         {
-            std::cout << "Loading donor site " << _donorSites.size() << "...";
+            LOG_INFO("Loading donor site " << _donorSites.size());
 
             // boundary data
             uint32_t boundaryModelID = std::stoi(csv.getRow().getCol(1));
@@ -203,12 +196,10 @@ void plPlan::importFile(const plString &filename)
             auto donorSite = std::make_shared<plDonorSite>(boundary);
             _donorSites.push_back(donorSite);
 
-            std::cout << " Complete." << std::endl;
-
         }
         else if (field.compareCaseInsensitive("graft"))
         {
-            std::cout << "Loading graft " << _grafts.size() << "...";
+            LOG_INFO("Loading graft " << _grafts.size());
 
             // recipient data
             uint32_t recipientSiteID = std::stoi(csv.getRow().getCol(1));
@@ -245,17 +236,11 @@ void plPlan::importFile(const plString &filename)
                 length,
                 markDirection);
             _grafts.push_back(graft);
-
-            std::cout << " Complete." << std::endl;
         }
         else
         {
-            std::cerr << "Error in '"
-                << filename
-                << "': Unrecognized word '"
-                << field
-                << "' in first column."
-                << std::endl;
+            LOG_WARN("Error in `" << filename << "`: Unrecognized field: `"
+                << field << "` in first column.");
             exit(1);
         }
     }
@@ -268,61 +253,54 @@ void plPlan::exportFile(const plString& filename)
 
     if (!out)
     {
-        std::cerr << "Could not open '"
-            << filename
-            << "' to store the plan."
-            << std::endl;
+        LOG_WARN("Could not open `" << filename << "` to store the plan.");
     }
     else
     {
         // models
         for (auto model : _models)
         {
-            out << "model"               << std::endl
-                << "    filename,      " << model->filename  << std::endl
+            out << "model" << std::endl
+                << "\tfilename," << model->filename  << std::endl
                 << std::endl;
         }
 
         // defect sites
         for (auto defectSite : _defectSites)
         {
-            out << "defect_site"                                                     << std::endl
-                << "    spline_model_id,   " << getModelIndex(defectSite->spline)    << std::endl
-                << "    spline,            " << *defectSite->spline                  << std::endl
-                << "    boundary,          " << *defectSite->boundary                << std::endl
-
+            out << "defect_site" << std::endl
+                << "\tspline_model_id," << getModelIndex(defectSite->spline) << std::endl
+                << "\tspline," << *defectSite->spline << std::endl
+                << "\tboundary," << *defectSite->boundary << std::endl
                 << std::endl;
         }
 
         // donor sites
         for (auto donorSite : _donorSites)
         {
-            out << "donor_site"                                                    << std::endl
-                << "    boundary_model_id, " << getModelIndex(donorSite->boundary) << std::endl
-                << "    boundary,          " << *donorSite->boundary               << std::endl
+            out << "donor_site" << std::endl
+                << "\tboundary_model_id," << getModelIndex(donorSite->boundary) << std::endl
+                << "\tboundary," << *donorSite->boundary << std::endl
                 << std::endl;
         }
 
         // grafts
         for (auto graft : _grafts)
         {
-            out << "graft"                                                                     << std::endl
-                << "    recipient_defect_site_id, " << _getDefectSiteIndex(graft->recipient()) << std::endl
-                << "    recipient_transform,      " << graft->recipient()->surfaceTransform()  << std::endl
-                << "    recipient_rotation,       " << graft->recipient()->offsetTransform()   << std::endl
-                << "    harvest_model_id,         " << getModelIndex(graft->harvest())         << std::endl
-                << "    harvest_transform,        " << graft->harvest()->surfaceTransform()    << std::endl
-                << "    harvest_rotation,         " << graft->harvest()->offsetTransform()     << std::endl
-                << "    radius,                   " << graft->radius()                         << std::endl
-                << "    length,                   " << graft->length()                         << std::endl
-                << "    mark_direction,           " << graft->markDirection()                  << std::endl
+            out << "graft" << std::endl
+                << "\trecipient_defect_site_id," << _getDefectSiteIndex(graft->recipient()) << std::endl
+                << "\trecipient_transform," << graft->recipient()->surfaceTransform() << std::endl
+                << "\trecipient_rotation," << graft->recipient()->offsetTransform() << std::endl
+                << "\tharvest_model_id," << getModelIndex(graft->harvest()) << std::endl
+                << "\tharvest_transform," << graft->harvest()->surfaceTransform() << std::endl
+                << "\tharvest_rotation," << graft->harvest()->offsetTransform() << std::endl
+                << "\tradius," << graft->radius() << std::endl
+                << "\tlength," << graft->length() << std::endl
+                << "\tmark_direction," << graft->markDirection() << std::endl
                 << std::endl;
         }
 
-        std::cout << "Exported plan to file: '"
-            << filename
-            << ".csv'."
-            << std::endl;
+        LOG_INFO("Exported plan to file: `" << filename << ".csv`");
     }
 }
 
@@ -374,17 +352,17 @@ int32_t plPlan::_getDefectSiteIndex(std::shared_ptr<plMeshSpecific> mesh) const
 }
 
 
-bool plPlan::_modelIndexErrorCheck(const std::string& callingFunction, int32_t modelIndex) const
+bool plPlan::_modelIndexErrorCheck(int32_t modelIndex) const
 {
     if (modelIndex == -1)
     {
-        std::cerr << "plPlan::" << callingFunction << " error: model has not been selected" << std::endl;
+        LOG_WARN("Model has not been selected");
         return true;
     }
 
     if (_models.size() < static_cast<uint32_t>(modelIndex+1))
     {
-        std::cerr << "plPlan::" << callingFunction << " error: model ID does not exist" << std::endl;
+        LOG_WARN("Model ID does not exist");
         return true;
     }
     return false;

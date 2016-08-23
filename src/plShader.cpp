@@ -88,7 +88,7 @@ char* plShader::_readShaderFile(const std::string& filename)
     }
 
     // print error message
-    std::cerr << "plShader::_readShaderFile() error: could not open shader file: " << filename << std::endl;
+    LOG_WARN("Could not open shader file: " << filename);
     return nullptr;
 }
 

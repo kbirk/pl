@@ -9,42 +9,6 @@ plMatrix44::plMatrix44()
     setIdentity();
 }
 
-// openCV xml input file
-bool plMatrix44::importFile(const plString &file)
-{
-    plString xml;
-    if (xml.importFile(file))
-    {
-        plString values;
-        // find start position
-        plString::size_type startPos = xml.find("<data>");
-        if (startPos != std::string::npos)
-        {
-            startPos+=6; // start after "<data>".
-
-            // find end position;
-            plString::size_type endPos = xml.find("</data>");
-            if (endPos != std::string::npos)
-            {
-                values = xml.substr(startPos, endPos - startPos);
-            }
-        }
-        sscanf(values.c_str(), "%f %f %f %f "
-                               "%f %f %f %f "
-                               "%f %f %f %f "
-                               "%f %f %f %f",
-                               &_data[0], &_data[4], &_data[8],  &_data[12],
-                               &_data[1], &_data[5], &_data[9],  &_data[13],
-                               &_data[2], &_data[6], &_data[10], &_data[14],
-                               &_data[3], &_data[7], &_data[11], &_data[15]);
-    }
-    else
-    {
-        std::cerr << "plMatrix44::plMatrix44() error: xml file could not be opened" << std::endl;
-    }
-    return true;
-}
-
 // scale
 plMatrix44::plMatrix44(float32_t scale)
 {
@@ -645,7 +609,7 @@ std::ostream& operator << (std::ostream& stream, const plMatrix44 &m)
 {
     for (uint32_t i=0; i < 4; i++)
     {
-       stream << m(i,0) << "    " << m(i,1) << "    " << m(i,2) << "    " << m(i,3) << "" << std::endl;
+       stream << m(i,0) << " " << m(i,1) << " " << m(i,2) << " " << m(i,3) << std::endl;
     }
 
     return stream;

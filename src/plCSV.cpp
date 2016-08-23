@@ -15,7 +15,7 @@ plString plCSVRow::getCol(uint32_t index) const
 {
     if (index > _cols.size())
     {
-        std::cerr << "CSV column index " << index << " does not exist" << std::endl;
+        LOG_WARN("CSV column index " << index << " does not exist");
         return "";
     }
     return _cols[index];
@@ -58,7 +58,7 @@ plCSVRow plCSV::getRow()
 {
     if (_rowIndex > _rows.size())
     {
-        std::cerr << "CSV has no more rows" << std::endl;
+        LOG_WARN("CSV has no more rows");
         return plCSVRow();
     }
     return _rows[_rowIndex++];

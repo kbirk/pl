@@ -352,7 +352,7 @@ plVector3 plGraftCap::_pointOnCircumference(const plVector3 &u, const plVector3 
 
     if (radical < 0)
     {
-        std::cout << "plGraft::_pointOnCircumference() error: radical = " << radical << std::endl;
+        LOG_WARN("Radical = " << radical);
         return plVector3(0, 0, 0);
     }
 
@@ -372,7 +372,7 @@ plVector3 plGraftCap::_pointOnCircumference(const plVector3 &u, const plVector3 
     }
     else
     {
-        std::cerr << "plGraft::_pointOnCircumference() error: t1 = " << t1 << ", t2 = " << t2 << std::endl;
+        LOG_WARN("t1 = " << t1 << ", t2 = " << t2);
         return plVector3(0, 0, 0);
     }
     return u + t*(v-u);

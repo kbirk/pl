@@ -47,7 +47,7 @@ plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
 {
     if (_textureAttachments.find(attachment) == _textureAttachments.end())
     {
-        std::cerr << "plFBO::readPixel() error: attachment does not exist" << std::endl;
+        LOG_WARN("Attachment `" << attachment << "` does not exist");
         return plPixel<T>();
     }
 
@@ -60,7 +60,7 @@ plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
 
     if (sizeof(plPixel<T>) < size)
     {
-        std::cerr << "plFBO::readPixel() error: specified pixel type is too small for respective texture format" << std::endl;
+        LOG_WARN("Specified pixel type is too small for respective texture format");
         return plPixel<T>();
     }
 

@@ -421,7 +421,6 @@ void handleResize(const WindowEvent& event)
 
 void handleSignal(int32_t signal)
 {
-    std::cout << "Caught signal: " << signal << ", shutting down..." << std::endl;
     exit(0);
 }
 
@@ -430,7 +429,7 @@ int32_t main(int32_t argc, char **argv)
     // check command line argument count
     if (argc < 2)
     {
-        std::cerr << "Required file inputs not provided, aborting" << std::endl;
+        LOG_WARN("Required file inputs not provided, aborting");
         exit(1);
     }
 

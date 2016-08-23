@@ -49,13 +49,13 @@ void plVAO::upload()
 {
     if (!_eabo)
     {
-        std::cerr << " plVAO::upload() error: cannot upload to GPU, VAO has no EABO attached, command ignored " << std::endl;
+        LOG_WARN("Cannot upload, VAO has no EABO attached, command ignored");
         return;
     }
 
     if (_vbos.empty())
     {
-        std::cerr << " plVAO::upload() error: cannot upload to GPU, VAO has no VBOs attached, command ignored " << std::endl;
+        LOG_WARN("Cannot upload, VAO has no VBOs attached, command ignored");
         return;
     }
 

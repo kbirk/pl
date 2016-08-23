@@ -248,8 +248,8 @@ namespace plMath
 
         if (count == 0)
         {
-            // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
-            //std::cout << "plMath::getAverageNormal() warning: No normal found" << std::endl;
+            // no triangles in radial sphere, just assume previous normal, (this can be bad...)
+            LOG_WARN("No normal found");
             return normal;
         }
 
@@ -305,7 +305,7 @@ namespace plMath
             }
             else // must be an invalid polygon
             {
-                std::cerr << " plMath::convexPolysToTris() error: polygon with less than three vertices detected: " << polys[i].points.size() << std::endl;
+                LOG_WARN("Polygon with less than three vertices detected: " << polys[i].points.size());
             }
         }
     }

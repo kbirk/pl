@@ -31,7 +31,7 @@ void plEABO::upload()
 {
     if (_data.empty())
     {
-        std::cerr << "plEABO::upload() error: data buffer empty, ignoring command" << std::endl;
+        LOG_WARN("Data buffer empty, ignoring command");
         return;
     }
 
