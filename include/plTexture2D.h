@@ -1,9 +1,8 @@
 #pragma once
 
 #include "plCommon.h"
+#include "plOpenGLCommon.h"
 #include "plVector3.h"
-
-#include <epoxy/gl.h>
 
 template<typename T>
 class plPixel

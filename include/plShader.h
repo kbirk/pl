@@ -13,8 +13,16 @@ class plShader
         plShader();
         ~plShader();
 
-        void bind() const   { glUseProgram(_id);  }
-        void unbind() const { glUseProgram(0);    }
+        void bind() const
+        {
+            glUseProgram(_id);
+            LOG_OPENGL("glUseProgram");
+        }
+        void unbind() const
+        {
+            glUseProgram(0);
+            LOG_OPENGL("glUseProgram");  
+        }
 
         bool good() const   { return _good; }
         uint32_t id() const { return _id;   }

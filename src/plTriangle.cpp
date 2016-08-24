@@ -218,14 +218,3 @@ plVector3 plTriangle::closestPointOnEdge(uint32_t edgeIndex, const plVector3& po
 {
     return plMath::closestPointOnSegment(point, _points[edgeIndex], _points[(edgeIndex + 1) % 3]);
 }
-
-
-// I/O operators
-std::ostream& operator << (std::ostream& stream, const plTriangle &p)
-{
-    stream << "Normal    = " << p.normal() << std::endl
-           << "Vertex 0  = " << p.point0() << std::endl
-           << "Vertex 1  = " << p.point1() << std::endl
-           << "Vertex 2  = " << p.point2() << std::endl;
-    return stream;
-}

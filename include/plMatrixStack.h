@@ -1,9 +1,8 @@
 #pragma once
 
 #include "plCommon.h"
+#include "plOpenGLCommon.h"
 #include "plMatrix44.h"
-
-#include <epoxy/gl.h>
 
 class plMatrixStack
 {

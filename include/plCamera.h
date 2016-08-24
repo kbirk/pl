@@ -1,12 +1,10 @@
 #pragma once
 
 #include "plCommon.h"
-
+#include "plOpenGLCommon.h"
 #include "plVector3.h"
 #include "plVector4.h"
 #include "plMatrix44.h"
-
-#include <epoxy/gl.h>
 
 class plCamera
 {

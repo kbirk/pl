@@ -37,10 +37,12 @@ void plVAO::draw() const
     {
         // bind vertex array object
         glBindVertexArray(_id);
+        LOG_OPENGL("glBindVertexArray");
         // draw
         _eabo->drawElements();
         // unbind vao
         glBindVertexArray(0);
+        LOG_OPENGL("glBindVertexArray");
     }
 }
 
@@ -61,9 +63,13 @@ void plVAO::upload()
 
     // create and bind VAO
     if (!_id)
+    {
         glGenVertexArrays(1, &_id);
+        LOG_OPENGL("glGenVertexArrays");
+    }
 
     glBindVertexArray(_id);
+    LOG_OPENGL("glBindVertexArray");
 
     for (auto& vbo : _vbos)
     {
@@ -73,11 +79,13 @@ void plVAO::upload()
     _eabo->upload();
 
     glBindVertexArray(0);
+    LOG_OPENGL("glBindVertexArray");
 }
 
 
 void plVAO::_destroy()
 {
     glDeleteVertexArrays(1, &_id) ;    // delete vao
+    LOG_OPENGL("glDeleteVertexArrays");
     _id = 0;
 }

@@ -37,10 +37,15 @@ void plEABO::upload()
 
     // if buffer not allocated, generate
     if (!_id)
+    {
         glGenBuffers(1, &_id);
+        LOG_OPENGL("glGenBuffers");
+    }
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id);
+    LOG_OPENGL("glBindBuffer");
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numBytes, &_data[0], _usage);
+    LOG_OPENGL("glBufferData");
 
     // do not unbind buffer as this will most likely be called from a vao
 }
@@ -49,4 +54,5 @@ void plEABO::upload()
 void plEABO::drawElements(uint32_t index) const
 {
     glDrawElements(_mode, _data.size(), _type, (GLbyte*)(nullptr) + (index));
+    LOG_OPENGL("glDrawElements");
 }

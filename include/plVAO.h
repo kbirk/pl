@@ -1,12 +1,11 @@
 #pragma once
 
 #include "plCommon.h"
+#include "plOpenGLCommon.h"
 #include "plVBO.h"
 #include "plEABO.h"
 #include "plRenderingPipeline.h"
 #include "plVertexSpecBuffer.h"
-
-#include <epoxy/gl.h>
 
 class plVAO
 {

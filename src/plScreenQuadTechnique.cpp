@@ -14,8 +14,11 @@ void plScreenQuadTechnique::render(const plRenderList& components) const
 
     // clear back buffer
     glClearColor(PL_CLEAR_COLOR);
+    LOG_OPENGL("glClearColor");
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    LOG_OPENGL("glClear");
     glViewport(plWindow::viewportX(), plWindow::viewportY(), plWindow::viewportWidth(), plWindow::viewportHeight());
+    LOG_OPENGL("glViewport");
 
     std::shared_ptr<plRenderComponent> component = _generateComponent();
 

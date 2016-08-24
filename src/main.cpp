@@ -75,8 +75,6 @@ void render()
     plRenderer::queue(modelEditor);
     // dispatch draw call
     plRenderer::draw();
-    // DEBUG
-    plOpenGLInfo::reportError();
 }
 
 void handleKeyRelease(const WindowEvent& event)

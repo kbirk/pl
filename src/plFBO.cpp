@@ -19,9 +19,11 @@ void plFBO::attach(uint32_t attachment, std::shared_ptr<plTexture2D> texture)
 {
     // bind fbo
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
+    LOG_OPENGL("glBindFramebuffer");
 
     // bind texture to attachment
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture->_id, 0);
+    LOG_OPENGL("glFramebufferTexture2D");
 
     if (_checkAttachmentError())
     {
@@ -31,6 +33,7 @@ void plFBO::attach(uint32_t attachment, std::shared_ptr<plTexture2D> texture)
 
     // unbind
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    LOG_OPENGL("glBindFramebuffer");
 }
 
 
@@ -38,10 +41,13 @@ void plFBO::attach(uint32_t attachment0, uint32_t attachment1, std::shared_ptr<p
 {
     // bind fbo
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
+    LOG_OPENGL("glBindFramebuffer");
 
     // bind texture to attachments
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment0, GL_TEXTURE_2D, texture->_id, 0);
+    LOG_OPENGL("glFramebufferTexture2D");
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment1, GL_TEXTURE_2D, texture->_id, 0);
+    LOG_OPENGL("glFramebufferTexture2D");
 
     if (_checkAttachmentError())
     {
@@ -52,6 +58,7 @@ void plFBO::attach(uint32_t attachment0, uint32_t attachment1, std::shared_ptr<p
 
     // unbind
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    LOG_OPENGL("glBindFramebuffer");
 }
 
 
@@ -74,8 +81,10 @@ void plFBO::bind() const
         return;
 
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
+    LOG_OPENGL("glBindFramebuffer");
     std::vector<GLenum> buffers = drawBuffers();
     glDrawBuffers(buffers.size(), &buffers[0]);
+    LOG_OPENGL("glDrawBuffers");
 
     currentBoundFBO = _id;
 }
@@ -85,6 +94,7 @@ void plFBO::unbind() const
 {
     currentBoundFBO = 0;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    LOG_OPENGL("glBindFramebuffer");
 }
 
 
@@ -102,6 +112,7 @@ std::shared_ptr<plTexture2D> plFBO::texture2DAttachment(uint32_t attachment) con
 void plFBO::setDrawBuffers(const std::vector<GLenum>& buffers) const
 {
     glDrawBuffers(buffers.size(), &buffers[0]);
+    LOG_OPENGL("glDrawBuffers");
 }
 
 
@@ -126,11 +137,15 @@ std::vector<GLenum> plFBO::drawBuffers() const
 void plFBO::_create()
 {
     if (!_id)
+    {
         glGenFramebuffers(1, &_id);
+        LOG_OPENGL("glGenFramebuffers");
+    }
 }
 
 
 void plFBO::_destroy()
 {
     glDeleteFramebuffers(1, &_id);
+    LOG_OPENGL("glDeleteFramebuffers");
 }

@@ -1,11 +1,10 @@
 #pragma once
 
 #include "plCommon.h"
+#include "plOpenGLCommon.h"
 #include "plVector3.h"
 #include "plTexture2D.h"
 #include "plOpenGLInfo.h"
-
-#include <epoxy/gl.h>
 
 class plFBO
 {
@@ -67,12 +66,17 @@ plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
     plPixel<T> pixel;
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _id);
+    LOG_OPENGL("glBindFramebuffer");
     glReadBuffer(attachment);
+    LOG_OPENGL("glReadBuffer");
 
     glReadPixels(x, y, 1, 1, format, type, &pixel.r);
+    LOG_OPENGL("glReadPixels");
 
     glReadBuffer(GL_NONE);
+    LOG_OPENGL("glReadBuffer");
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    LOG_OPENGL("glBindFramebuffer");
 
     return pixel;
 }

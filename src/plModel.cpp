@@ -13,7 +13,6 @@ plModel::plModel(const std::vector<plTriangle> &triangles, const plString &file,
         // use non-octree mesh
         _mesh = std::make_shared<plMesh>(std::move(triangles));
     }
-
     _generateVAO();
 }
 
@@ -24,7 +23,7 @@ plModel::plModel(const plString &file, uint32_t octreeDepth)
     std::vector<plTriangle> triangles;
 
     // import triangles from STL file
-    if (!plSTL::importFile(triangles, filename, true))
+    if (!plSTL::importFile(triangles, filename))
     {
         exit(1);
     }

@@ -2,8 +2,6 @@
 
 #include "plCommon.h"
 
-#include <epoxy/gl.h>
-
 class plUniform
 {
     public:

@@ -78,5 +78,3 @@ class plTriangle
         void _recalculate();
         void _calcRadius();
 };
-
-std::ostream& operator << (std::ostream &stream, const plTriangle &p);

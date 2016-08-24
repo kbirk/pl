@@ -13,14 +13,21 @@ namespace plRenderer
 
         // enable back face culling
         glEnable(GL_CULL_FACE);
+        LOG_OPENGL("glEnable");
         glCullFace(GL_BACK);
+        LOG_OPENGL("glCullFace");
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        LOG_OPENGL("glPolygonMode");
         // set depth testing
         glEnable(GL_DEPTH_TEST);
+        LOG_OPENGL("glEnable");
         glDepthFunc(GL_LEQUAL);
+        LOG_OPENGL("glDepthFunc");
         // enable blending
         glEnable(GL_BLEND);
+        LOG_OPENGL("glEnable");
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        LOG_OPENGL("glBlendFunc");
 
         // create techniques
         _techniques[PL_PLAN_TECHNIQUE]         = std::make_shared<plPlanTechnique>();

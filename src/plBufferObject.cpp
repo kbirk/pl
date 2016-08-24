@@ -15,6 +15,7 @@ plBufferObject::~plBufferObject()
 void plBufferObject::_destroy()
 {
     glDeleteBuffers(1, &_id);
+    LOG_OPENGL("glDeleteBuffers");
     _numBytes = 0;
     _id = 0;
 }

@@ -53,16 +53,23 @@ void plVBO::upload()
 
     // if buffer not allocated, generate
     if (!_id)
+    {
         glGenBuffers(1, &_id);
+        LOG_OPENGL("glGenBuffers");
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, _id);
+    LOG_OPENGL("glBindBuffer");
     glBufferData(GL_ARRAY_BUFFER, _numBytes, &_data[0], _usage);
+    LOG_OPENGL("glBufferData");
 
     for (auto attributePointer : _attributePointers)
     {
         // set position pointer, offset and stride
         glEnableVertexAttribArray(attributePointer.index);
+        LOG_OPENGL("glEnableVertexAttribArray");
         glVertexAttribPointer(attributePointer.index, 4, GL_FLOAT, GL_FALSE, attributePointer.stride, ((GLbyte*)(nullptr) + (attributePointer.offset)));
+        LOG_OPENGL("glVertexAttribPointer");
     }
 
     // do not unbind buffer as this will most likely be called from a vao

@@ -15,6 +15,7 @@ void plOutlineTechnique::render(const plRenderList& components) const
 
     // set viewport
     glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
+    LOG_OPENGL("glViewport");
 
     std::vector<GLenum> drawBuffers;
     drawBuffers.push_back(GL_NONE);
@@ -28,6 +29,7 @@ void plOutlineTechnique::render(const plRenderList& components) const
     shader->bind();
 
     glDepthFunc(GL_LEQUAL);
+    LOG_OPENGL("glDepthFunc");
 
     // draw shapes to outline buffer
     for (auto component : components)

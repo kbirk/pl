@@ -169,9 +169,11 @@ namespace plPlannerStage0
                 // local iteration
                 // call compute shader with 1D workgrouping
                 glDispatchCompute(PL_STAGE_0_NUM_GROUPS, 1, 1);
+                LOG_OPENGL("glDispatchCompute");
 
                 // memory barrier
                 glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+                LOG_OPENGL("glMemoryBarrier");
 
                 stage0Shader.setLocalLoadUniform(i);
                 stage0Shader.setSeedUniform();

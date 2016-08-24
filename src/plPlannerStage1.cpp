@@ -57,9 +57,11 @@ namespace plPlannerStage1
 
         // call compute shader with 1D workgrouping
         glDispatchCompute(NUM_WORKGROUPS, 1, 1);
+        LOG_OPENGL("glDispatchCompute");
 
         // memory barrier
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        LOG_OPENGL("glMemoryBarrier");
 
         plUtility::printProgressBar(1.0);
 

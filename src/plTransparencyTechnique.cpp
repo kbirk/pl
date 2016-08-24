@@ -27,8 +27,10 @@ void plTransparencyTechnique::render(const plRenderList& components) const
 
     // set viewport
     glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
+    LOG_OPENGL("glViewport");
 
     glDepthMask(false);
+    LOG_OPENGL("glDepthMask");
 
     // draw render components to color buffer
     for (auto component : components)
@@ -37,10 +39,14 @@ void plTransparencyTechnique::render(const plRenderList& components) const
     }
 
     // set stencil testing for picking buffer
-    glEnable(GL_STENCIL_TEST) ;
+    glEnable(GL_STENCIL_TEST);
+    LOG_OPENGL("glEnable");
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    LOG_OPENGL("glStencilFunc");
     glStencilMask(0xFF);
+    LOG_OPENGL("glStencilMask");
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    LOG_OPENGL("glStencilOp");
 
     // set draw buffers to only write to picking buffer
     drawBuffers.clear();
@@ -58,12 +64,13 @@ void plTransparencyTechnique::render(const plRenderList& components) const
     }
 
     glDisable(GL_STENCIL_TEST);
+    LOG_OPENGL("glDisable");
 
     glDepthMask(true);
+    LOG_OPENGL("glDepthMask");
 
     // unbind shader
     shader->unbind();
     // unbind fbo
     fbo->unbind();
-
 }

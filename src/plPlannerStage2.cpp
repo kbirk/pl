@@ -61,9 +61,11 @@ namespace plPlannerStage2
 
             // call compute shader with 1D workgrouping
             glDispatchCompute(NUM_WORKGROUPS, 1, 1);
+            LOG_OPENGL("glDispatchCompute");
 
             // memory barrier
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            LOG_OPENGL("glMemoryBarrier");
 
             rmsData->rmsSSBO->read(rmsBuffer, rmsBuffer.size());
 

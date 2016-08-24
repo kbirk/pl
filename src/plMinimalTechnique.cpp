@@ -15,6 +15,7 @@ void plMinimalTechnique::render(const plRenderList& components) const
 
     // set viewport
     glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
+    LOG_OPENGL("glViewport");
 
     // set draw buffers
     std::vector<GLenum> drawBuffers;
@@ -29,6 +30,7 @@ void plMinimalTechnique::render(const plRenderList& components) const
     shader->bind();
 
     glDepthFunc(GL_ALWAYS);
+    LOG_OPENGL("glDepthFunc");
 
     // draw main render components
     for (auto component : components)
@@ -37,6 +39,7 @@ void plMinimalTechnique::render(const plRenderList& components) const
     }
 
     glDepthFunc(GL_LEQUAL);
+    LOG_OPENGL("glDepthFunc");
 
     // unbind shader
     shader->unbind();

@@ -153,9 +153,11 @@ namespace plPlannerStage3
 
             // call compute shader with 1D workgrouping
             glDispatchCompute(PL_STAGE_3_NUM_GROUPS, 1, 1);
+            LOG_OPENGL("glDispatchCompute");
 
             // memory barrier
             glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            LOG_OPENGL("glMemoryBarrier");
 
             // check latest solution
             greedyBuffers->update();

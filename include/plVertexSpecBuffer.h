@@ -1,8 +1,7 @@
 #pragma once
 
 #include "plCommon.h"
-
-#include <epoxy/gl.h>
+#include "plOpenGLCommon.h"
 
 class plVertexSpecBuffer
 {

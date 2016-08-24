@@ -1,10 +1,10 @@
 #pragma once
 
 #include "plCommon.h"
+#include "plOpenGLCommon.h"
 #include "plMatrix44.h"
 #include "plRenderingPipeline.h"
 
-#include <epoxy/gl.h>
 #include <SDL2/SDL.h>
 
 enum class WindowEventType

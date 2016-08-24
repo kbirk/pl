@@ -39,6 +39,3 @@ class plPolygon
         plVector3 normal;
 
 };
-
-std::ostream& operator << (std::ostream &stream, const plEdge &e);
-std::ostream& operator << (std::ostream &stream, const plPolygon &p);

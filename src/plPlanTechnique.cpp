@@ -14,8 +14,11 @@ void plPlanTechnique::render(const plRenderList& components) const
 
     // clear fbo before individual draw buffers are set
     glClearColor(0, 0, 0, 0);
+    LOG_OPENGL("glClearColor");
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    LOG_OPENGL("glClear");
     glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
+    LOG_OPENGL("glViewport");
 
     // set draw buffers
     std::vector<GLenum> drawBuffers;
@@ -30,12 +33,17 @@ void plPlanTechnique::render(const plRenderList& components) const
     shader->bind();
 
     glDisable(GL_CULL_FACE);
+    LOG_OPENGL("glDisable");
 
     // set stencil testing to write 1's wherever is rendered, this is later used in transparency shader to ensure proper picking in transparent areas
-    glEnable(GL_STENCIL_TEST) ;
+    glEnable(GL_STENCIL_TEST);
+    LOG_OPENGL("glEnable");
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    LOG_OPENGL("glStencilFunc");
     glStencilMask(0xFF);
+    LOG_OPENGL("glStencilMask");
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+    LOG_OPENGL("glStencilOp");
 
     // draw main render components
     for (auto component : components)
@@ -44,7 +52,9 @@ void plPlanTechnique::render(const plRenderList& components) const
     }
 
     glDisable(GL_STENCIL_TEST);
+    LOG_OPENGL("glDisable");
     glEnable(GL_CULL_FACE);
+    LOG_OPENGL("glEnable");
 
     // unbind shader
     shader->unbind();

@@ -1,10 +1,9 @@
 #pragma once
 
 #include "plCommon.h"
+#include "plOpenGLCommon.h"
 #include "plVertexSpecBuffer.h"
 #include "plVector4.h"
-
-#include <epoxy/gl.h>
 
 // attribute locations, set by VBOs and mirrored in shader files
 enum plVertexAttributeIndexEnum
@@ -44,8 +43,16 @@ class plVBO : public plVertexSpecBuffer
 
         void clear();
 
-        void bind() const   { glBindBuffer(GL_ARRAY_BUFFER, _id); }
-        void unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
+        void bind() const
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, _id);
+            LOG_OPENGL("glBindBuffer");
+        }
+        void unbind() const
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            LOG_OPENGL("glBindBuffer");
+        }
 
         void upload();
 
