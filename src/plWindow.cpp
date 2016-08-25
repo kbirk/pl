@@ -165,7 +165,7 @@ namespace plWindow {
     }
 
 
-    void cameraToMouseRay(plVector3 &rayOrigin, plVector3 &rayDirection, int32_t x, int32_t y)
+    void cameraToMouseRay(plVector3& rayOrigin, plVector3& rayDirection, int32_t x, int32_t y)
     {
         plVector3 mouseInWorld = mouseToWorld(x, y, 0);
 

@@ -5,7 +5,7 @@ plVector4::plVector4()
     x = y = z = 0;
 }
 
-plVector4::plVector4(const plVector3 &v, float32_t ww)
+plVector4::plVector4(const plVector3& v, float32_t ww)
 {
     x = v.x;    y = v.y;    z = v.z;    w = ww;
 }
@@ -24,7 +24,7 @@ plVector4::plVector4(char *str)
     }
 }
 
-plVector4::plVector4(const plString &str)
+plVector4::plVector4(const plString& str)
 {
     int filled = sscanf(str.c_str(), "%f %f %f %f", &x, &y, &z, &w);
     if (filled != 4) {
@@ -33,27 +33,27 @@ plVector4::plVector4(const plString &str)
     }
 }
 
-bool plVector4::operator == (const plVector4 &p) const
+bool plVector4::operator == (const plVector4& p) const
 {
     return x == p.x && y == p.y && z == p.z && w == p.w;
 }
 
-bool plVector4::operator != (const plVector4 &p) const
+bool plVector4::operator != (const plVector4& p) const
 {
     return x != p.x || y != p.y || z != p.z || w != p.w;
 }
 
-plVector4 plVector4::operator + (const plVector4 &p) const
+plVector4 plVector4::operator + (const plVector4& p) const
 {
     return plVector4(x+p.x, y+p.y, z+p.z, w+p.w);
 }
 
-plVector4 plVector4::operator - (const plVector4 &p) const
+plVector4 plVector4::operator - (const plVector4& p) const
 {
     return plVector4(x-p.x, y-p.y, z-p.z, w-p.w);
 }
 
-float32_t plVector4::operator * (const plVector4 &p) const     /* dot product */
+float32_t plVector4::operator * (const plVector4& p) const     /* dot product */
 {
     return x * p.x + y * p.y + z * p.z + w * p.w;
 }
@@ -89,7 +89,7 @@ float32_t plVector4::squaredLength() const
     return x*x + y*y + z*z + w*w;
 }
 
-plVector4 operator * (float32_t k, const plVector4 &p)
+plVector4 operator * (float32_t k, const plVector4& p)
 {
     plVector4 q;
 
@@ -103,13 +103,13 @@ plVector4 operator * (float32_t k, const plVector4 &p)
 
 
 // I/O operators
-std::ostream& operator << (std::ostream& stream, const plVector4 &p)
+std::ostream& operator << (std::ostream& stream, const plVector4& p)
 {
   stream << p.x << " " << p.y << " " << p.z << " " << p.w;
   return stream;
 }
 
-std::istream& operator >> (std::istream& stream, plVector4 & p)
+std::istream& operator >> (std::istream& stream, plVector4& p)
 {
   stream >> p.x >> p.y >> p.z >> p.w;
   return stream;

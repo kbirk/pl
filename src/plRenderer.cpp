@@ -167,7 +167,7 @@ namespace plRenderer
     }
 
 
-    void queueArrow(uint32_t technique, const plVector3& position, const plVector3 &direction, float32_t length, float32_t scale)
+    void queueArrow(uint32_t technique, const plVector3& position, const plVector3& direction, float32_t length, float32_t scale)
     {
         // can't use static for cones as normals scale inversely,
         std::shared_ptr<plVAO> vao = plRenderShapes::coneVAO(PL_HEAD_RADIUS, 0.0f, PL_ARROW_LENGTH, 30, 1);

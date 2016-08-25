@@ -87,7 +87,7 @@ void plGraftCap::generateCap(std::shared_ptr<plOctreeMesh> mesh, const plTransfo
 }
 
 
-bool plGraftCap::_isBeyondHeightThresholds(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform) const
+bool plGraftCap::_isBeyondHeightThresholds(const plVector3& p0, const plVector3& p1, const plVector3& p2, const plTransform& transform) const
 {
     const float32_t VERTICAL_THRESHOLD = 8.0f;
     float32_t proj0 = transform.projectedDistOnAxis(p0);
@@ -265,7 +265,7 @@ std::vector<plVector3> plGraftCap::_pointsInsideTriangles(plVector3 verts[3], fl
 }
 
 
-bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTransform& transform, float32_t radius)
+bool plGraftCap::_triangleIntersection(const plTriangle& triangle, const plTransform& transform, float32_t radius)
 {
     // if triangle is overlapping cap, cut it (if necessary) and add it to cap triangle list
     if (triangle.normal() * transform.y() < 0)
@@ -337,7 +337,7 @@ bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTrans
 }
 
 
-plVector3 plGraftCap::_pointOnCircumference(const plVector3 &u, const plVector3 &v, float32_t radius) const
+plVector3 plGraftCap::_pointOnCircumference(const plVector3& u, const plVector3& v, float32_t radius) const
 {
     plVector3 uProj(u.x, 0.0f, u.z); // ignore component along y axis
     plVector3 vProj(v.x, 0.0f, v.z);
@@ -417,10 +417,10 @@ void plCartilageCap::generateVAO(float32_t radius, float32_t length, const std::
     {
         int32_t base = vertices.size()/2;
 
-        const plVector3 &p0 = triangles[i].point0();
-        const plVector3 &p1 = triangles[i].point1();
-        const plVector3 &p2 = triangles[i].point2();
-        const plVector3 &n  = triangles[i].normal();
+        const plVector3& p0 = triangles[i].point0();
+        const plVector3& p1 = triangles[i].point1();
+        const plVector3& p2 = triangles[i].point2();
+        const plVector3& n  = triangles[i].normal();
 
         vertices.push_back(p0  + PL_CAP_OFFSET);  // position
         vertices.push_back(n);                    // normal
@@ -527,10 +527,10 @@ void plCartilageCap::_generateProjectionVAO(float32_t radius, float32_t length, 
     {
         int32_t base = vertices.size()/2;
 
-        const plVector3 &p0 = triangles[i].point0();
-        const plVector3 &p1 = triangles[i].point1();
-        const plVector3 &p2 = triangles[i].point2();
-        const plVector3 &n  = triangles[i].normal();
+        const plVector3& p0 = triangles[i].point0();
+        const plVector3& p1 = triangles[i].point1();
+        const plVector3& p2 = triangles[i].point2();
+        const plVector3& n  = triangles[i].normal();
 
         vertices.push_back(p0 + PL_CAP_OFFSET); // position
         vertices.push_back(n);                  // normal
@@ -675,10 +675,10 @@ void plBoneCap::generateVAO(float32_t radius, float32_t length)
     {
         int32_t base = vertices.size()/2;
 
-        const plVector3 &p0 = triangles[i].point0();
-        const plVector3 &p1 = triangles[i].point1();
-        const plVector3 &p2 = triangles[i].point2();
-        const plVector3 &n  = triangles[i].normal();
+        const plVector3& p0 = triangles[i].point0();
+        const plVector3& p1 = triangles[i].point1();
+        const plVector3& p2 = triangles[i].point2();
+        const plVector3& n  = triangles[i].normal();
 
         vertices.emplace_back(p0 + (0.5f * PL_CAP_OFFSET)); // position
         vertices.push_back(n);                              // normal

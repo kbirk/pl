@@ -137,7 +137,7 @@ void plPlan::removeGraft(uint32_t index)
 }
 
 
-void plPlan::importFile(const plString &filename)
+void plPlan::importFile(const plString& filename)
 {
     plCSV csv(filename);
 

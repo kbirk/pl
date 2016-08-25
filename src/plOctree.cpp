@@ -45,7 +45,7 @@ void plOctree::clear()
 }
 
 
-void plOctree::build(const plVector3 &min, const plVector3 &max, const std::vector<plTriangle> &triangles, uint32_t depth)
+void plOctree::build(const plVector3& min, const plVector3& max, const std::vector<plTriangle>& triangles, uint32_t depth)
 {
     // centre point of octree
     _centre = 0.5f * (min+max);
@@ -186,7 +186,7 @@ std::shared_ptr<plVAO> plOctree::_generateVAO(float32_t halfWidth) const
 }
 
 
-void plOctree::_insert(const plTriangle &tri)
+void plOctree::_insert(const plTriangle& tri)
 {
     // only add triangle if leaf node
     if (_depth == 0)
@@ -225,7 +225,7 @@ void plOctree::_insert(const plTriangle &tri)
 }
 
 
-void plOctree::_insertIntoChild(uint32_t index, const plTriangle &tri)
+void plOctree::_insertIntoChild(uint32_t index, const plTriangle& tri)
 {
     if (_children[index])
     {
@@ -249,7 +249,7 @@ void plOctree::_insertIntoChild(uint32_t index, const plTriangle &tri)
 }
 
 
-float32_t plOctree::_sqrDistFromPoint(const plVector3 &point, int32_t child) const
+float32_t plOctree::_sqrDistFromPoint(const plVector3& point, int32_t child) const
 {
     // shift AABB dimesions based on which child cell is begin tested
     plVector3 offsetCentre = _centre;
@@ -276,7 +276,7 @@ float32_t plOctree::_sqrDistFromPoint(const plVector3 &point, int32_t child) con
 }
 
 
-plVector3 plOctree::_closestPointInBox(const plVector3 &point, int32_t child) const
+plVector3 plOctree::_closestPointInBox(const plVector3& point, int32_t child) const
 {
     // shift AABB dimesions based on which child cell is begin tested
     float32_t step = 0.5f * _halfWidth;
@@ -296,7 +296,7 @@ plVector3 plOctree::_closestPointInBox(const plVector3 &point, int32_t child) co
 }
 
 
-bool plOctree::_sphereCheck(const plVector3 &centre, float32_t radius, int32_t child) const
+bool plOctree::_sphereCheck(const plVector3& centre, float32_t radius, int32_t child) const
 {
     // compute squared distance between sphere centre and AABB
     float32_t dist = _sqrDistFromPoint(centre, child);
@@ -305,7 +305,7 @@ bool plOctree::_sphereCheck(const plVector3 &centre, float32_t radius, int32_t c
 }
 
 
-bool plOctree::rayIntersect(std::set<const plTriangle*> &triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection, float32_t rayRadius, bool ignoreBehindRay) const
+bool plOctree::rayIntersect(std::set<const plTriangle*>& triangles, const plVector3& rayOrigin, const plVector3& rayDirection, float32_t rayRadius, bool ignoreBehindRay) const
 {
     // box inflation is used to intersect cylinder with box rather than ray, used for grafts
     float32_t boxExtents = _halfWidth + rayRadius;

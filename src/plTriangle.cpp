@@ -9,7 +9,7 @@ plTriangle::plTriangle()
 }
 
 
-plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 &p1, const plVector3 &p2)
+plTriangle::plTriangle(const plVector3& n, const plVector3& p0, const plVector3& p1, const plVector3& p2)
     :   _centroid(0.333333f * (p0 + p1 + p2))
 {
     _points.push_back(p0);
@@ -28,7 +28,7 @@ plTriangle::plTriangle(const plVector3 &n, const plVector3 &p0, const plVector3 
 }
 
 
-plTriangle::plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2)
+plTriangle::plTriangle(const plVector3& p0, const plVector3& p1, const plVector3& p2)
     : _normal(((p1 - p0) ^ (p2 - p0)).normalize()),
       _centroid(0.333333f * (p0 + p1 + p2))
 {
@@ -39,21 +39,21 @@ plTriangle::plTriangle(const plVector3 &p0, const plVector3 &p1, const plVector3
 }
 
 
-void plTriangle::point0(const plVector3 &point)
+void plTriangle::point0(const plVector3& point)
 {
     _points[0] = point;
     _recalculate();
 }
 
 
-void plTriangle::point1(const plVector3 &point)
+void plTriangle::point1(const plVector3& point)
 {
     _points[1] = point;
     _recalculate();
 }
 
 
-void plTriangle::point2(const plVector3 &point)
+void plTriangle::point2(const plVector3& point)
 {
     _points[2] = point;
     _recalculate();
@@ -85,7 +85,7 @@ void plTriangle::_calcRadius()
 }
 
 
-bool plTriangle::isInside(const plVector3 &point) const
+bool plTriangle::isInside(const plVector3& point) const
 {
     // Compute barycentric coords
     float32_t totalAreaDiv = 1 / (((_points[1]-_points[0]) ^ (_points[2]-_points[0])) * _normal);
@@ -100,7 +100,7 @@ bool plTriangle::isInside(const plVector3 &point) const
 }
 
 
-plIntersection plTriangle::rayIntersect(const plVector3 &rayStart, const plVector3 &rayDir, bool ignoreBehindRay, bool backFaceCull) const
+plIntersection plTriangle::rayIntersect(const plVector3& rayStart, const plVector3& rayDir, bool ignoreBehindRay, bool backFaceCull) const
 {
     // Compute ray/plane intersection
     float32_t dn = rayDir * _normal;
@@ -126,7 +126,7 @@ plIntersection plTriangle::rayIntersect(const plVector3 &rayStart, const plVecto
 }
 
 
-plVector3 plTriangle::barycentricCoords(const plVector3 &testPoint) const
+plVector3 plTriangle::barycentricCoords(const plVector3& testPoint) const
 {
     // we're assuming that testPoint is in-plane with the triangle.
 

@@ -8,7 +8,7 @@ plBoundary::plBoundary(uint32_t type, std::shared_ptr<plMesh> mesh)
 }
 
 
-plBoundary::plBoundary(uint32_t type, std::shared_ptr<plMesh> mesh, const std::vector<plString> &row)
+plBoundary::plBoundary(uint32_t type, std::shared_ptr<plMesh> mesh, const std::vector<plString>& row)
     : plMeshSpecific(mesh),
       _type(type)
 {
@@ -103,7 +103,7 @@ plVector3 plBoundary::getCentroid() const
 }
 
 
-uint32_t plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
+uint32_t plBoundary::addPointAndNormal(const plVector3& point, const plVector3& normal)
 {
     if (_points.size() < 2)
     {
@@ -203,7 +203,7 @@ uint32_t plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &
 }
 
 
-void plBoundary::movePointAndNormal(uint32_t index, const plVector3 &point, const plVector3 &normal)
+void plBoundary::movePointAndNormal(uint32_t index, const plVector3& point, const plVector3& normal)
 {
     _points[index] = point;
     _normals[index] = normal;

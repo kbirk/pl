@@ -8,7 +8,10 @@
 namespace plMath
 {
 
-    void _concavePolysToTris(std::vector<plTriangle> &triangles, float32_t &minSurfaceArea, const plPolygon &polygon);
+    void _concavePolysToTris(
+        std::vector<plTriangle>& triangles,
+        float32_t& minSurfaceArea,
+        const plPolygon& polygon);
 
 
     plVector3 projectVectorOnPlane(
@@ -75,8 +78,8 @@ namespace plMath
 
     plIntersection rayIntersect(
         const std::vector<plTriangle>& triangles,
-        const plVector3 &rayOrigin,
-        const plVector3 &rayDirection,
+        const plVector3& rayOrigin,
+        const plVector3& rayDirection,
         bool smoothNormal,
         bool ignoreBehindRay,
         bool backFaceCull)

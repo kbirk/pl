@@ -29,7 +29,7 @@ class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
     public:
 
         plBoundary(uint32_t type, std::shared_ptr<plMesh>);
-        plBoundary(uint32_t type, std::shared_ptr<plMesh>, const std::vector<plString> &row);
+        plBoundary(uint32_t type, std::shared_ptr<plMesh>, const std::vector<plString>& row);
 
         uint32_t size() const { return _points.size(); }
         uint32_t type() const { return _type; }
@@ -43,8 +43,8 @@ class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
         plVector3 getAverageNormal() const;
         plVector3 getCentroid() const;
 
-        virtual uint32_t addPointAndNormal(const plVector3 &point, const plVector3 &normal);
-        virtual void movePointAndNormal(uint32_t index, const plVector3 &point, const plVector3 &normal);
+        virtual uint32_t addPointAndNormal(const plVector3& point, const plVector3& normal);
+        virtual void movePointAndNormal(uint32_t index, const plVector3& point, const plVector3& normal);
         virtual void removePointAndNormal(uint32_t index);
         virtual void clear();
 
@@ -62,4 +62,4 @@ class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
 
 };
 
-std::ostream& operator << (std::ostream& out, const plBoundary &b);
+std::ostream& operator << (std::ostream& out, const plBoundary& b);

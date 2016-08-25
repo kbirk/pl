@@ -27,7 +27,7 @@ plVector3::plVector3(char *str)
     }
 }
 
-plVector3::plVector3(const plString &str)
+plVector3::plVector3(const plString& str)
 {
     int filled = sscanf(str.c_str(), "%f %f %f", &x, &y, &z);
     if (filled != 3) {
@@ -36,32 +36,32 @@ plVector3::plVector3(const plString &str)
     }
 }
 
-bool plVector3::operator == (const plVector3 &p) const
+bool plVector3::operator == (const plVector3& p) const
 {
     return x == p.x && y == p.y && z == p.z;
 }
 
-bool plVector3::operator != (const plVector3 &p) const
+bool plVector3::operator != (const plVector3& p) const
 {
     return x != p.x || y != p.y || z != p.z;
 }
 
-plVector3 plVector3::operator + (const plVector3 &p) const
+plVector3 plVector3::operator + (const plVector3& p) const
 {
     return plVector3(x+p.x, y+p.y, z+p.z);
 }
 
-plVector3 plVector3::operator - (const plVector3 &p) const
+plVector3 plVector3::operator - (const plVector3& p) const
 {
     return plVector3(x-p.x, y-p.y, z-p.z);
 }
 
-float32_t plVector3::operator * (const plVector3 &p) const     /* dot product */
+float32_t plVector3::operator * (const plVector3& p) const     /* dot product */
 {
     return x * p.x + y * p.y + z * p.z;
 }
 
-plVector3 plVector3::operator ^ (const plVector3 &p) const    /* cross product */
+plVector3 plVector3::operator ^ (const plVector3& p) const    /* cross product */
 {
     return plVector3(y*p.z-p.y*z, -(x*p.z-p.x*z), x*p.y-p.x*y);
 }
@@ -120,7 +120,7 @@ float32_t plVector3::signedAngle(const plVector3 v, const plVector3& planeNormal
 }
 
 
-plVector3 operator * (float32_t k, const plVector3 &p)
+plVector3 operator * (float32_t k, const plVector3& p)
 {
     plVector3 q;
 
@@ -132,14 +132,14 @@ plVector3 operator * (float32_t k, const plVector3 &p)
 }
 
 
-std::ostream& operator << (std::ostream& stream, const plVector3 &p)
+std::ostream& operator << (std::ostream& stream, const plVector3& p)
 {
   stream << p.x << " " << p.y << " " << p.z;
   return stream;
 }
 
 
-std::istream& operator >> (std::istream& stream, plVector3 & p)
+std::istream& operator >> (std::istream& stream, plVector3& p)
 {
   stream >> p.x >> p.y >> p.z;
   return stream;

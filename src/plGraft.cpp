@@ -11,7 +11,7 @@ plGraft::plGraft(
     std::shared_ptr<plPlug> recipient,
     float32_t radius,
     float32_t length,
-    const plVector3 &markDirection)
+    const plVector3& markDirection)
     : _recipient(recipient),
       _harvest(harvest),
       _radius(radius),
@@ -144,7 +144,7 @@ void plGraft::_generateMarkPositions()
 
         for (uint32_t j=0; j<perimeter.size(); j++)
         {
-            const plVector3 &v = perimeter[j].point;
+            const plVector3& v = perimeter[j].point;
             float32_t dist = (v.x-_markPositions[i].x)*(v.x-_markPositions[i].x) + (v.z-_markPositions[i].z)*(v.z-_markPositions[i].z);
             if (dist < minDist)
             {

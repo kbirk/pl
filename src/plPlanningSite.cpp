@@ -41,7 +41,7 @@ bool plPlanningSite::good() const
 }
 
 
-void plPlanningSite::_bufferGridData(std::vector<plVector4> &data) const
+void plPlanningSite::_bufferGridData(std::vector<plVector4>& data) const
 {
     for (uint32_t i=0; i < gridPoints.size(); i++)
     {
@@ -55,7 +55,7 @@ void plPlanningSite::_bufferGridData(std::vector<plVector4> &data) const
 }
 
 
-void plPlanningSite::_bufferMeshData(std::vector<plVector4> &data) const
+void plPlanningSite::_bufferMeshData(std::vector<plVector4>& data) const
 {
     for (uint32_t i=0; i < triangles.size(); i++)
     {
@@ -67,7 +67,7 @@ void plPlanningSite::_bufferMeshData(std::vector<plVector4> &data) const
 }
 
 
-void plPlanningSite::_bufferBoundaryData(std::vector<plVector4> &data) const
+void plPlanningSite::_bufferBoundaryData(std::vector<plVector4>& data) const
 {
     for (uint32_t i=0; i < boundaryPoints.size(); i++)
         data.push_back(boundaryPoints[i]);

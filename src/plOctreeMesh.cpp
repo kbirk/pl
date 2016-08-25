@@ -6,7 +6,7 @@ plOctreeMesh::plOctreeMesh()
 }
 
 
-plOctreeMesh::plOctreeMesh(const std::vector<plTriangle> &triangles, uint32_t depth)
+plOctreeMesh::plOctreeMesh(const std::vector<plTriangle>& triangles, uint32_t depth)
     : plMesh(triangles)
 {
     _octree = std::make_shared<plOctree>();
@@ -47,7 +47,7 @@ void plOctreeMesh::_buildOctree(uint32_t depth)
 }
 
 
-plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &origin, const plVector3 &normal) const
+plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3& origin, const plVector3& normal) const
 {
     // get potential triangles in radius from octree
     std::set<const plTriangle*> triangles;
@@ -88,7 +88,7 @@ plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &orig
 }
 
 
-plIntersection plOctreeMesh::rayIntersect(const plVector3 &rayOrigin, const plVector3 &rayDirection, bool smoothNormal, bool ignoreBehindRay, bool backFaceCull) const
+plIntersection plOctreeMesh::rayIntersect(const plVector3& rayOrigin, const plVector3& rayDirection, bool smoothNormal, bool ignoreBehindRay, bool backFaceCull) const
 {
     // get potential triangles from octree
     std::set<const plTriangle*> triangles;

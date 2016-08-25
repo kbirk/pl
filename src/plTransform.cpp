@@ -7,14 +7,14 @@ plTransform::plTransform()
 }
 
 
-plTransform::plTransform(const plVector3 &x, const plVector3 &y, const plVector3 &origin)
+plTransform::plTransform(const plVector3& x, const plVector3& y, const plVector3& origin)
     : _x(x), _y(y), _origin(origin)
 {
     _compute();
 }
 
 
-plTransform::plTransform(const std::vector<plString> &row)
+plTransform::plTransform(const std::vector<plString>& row)
     : _x(row[2]), _y(row[3]), _origin(row[1])
 {
     _compute();
@@ -45,7 +45,7 @@ void plTransform::_compute()
 }
 
 
-void plTransform::set(const plVector3 &x, const plVector3 &y)
+void plTransform::set(const plVector3& x, const plVector3& y)
 {
     _x = x.normalize();
     _y = y.normalize();
@@ -53,7 +53,7 @@ void plTransform::set(const plVector3 &x, const plVector3 &y)
 }
 
 
-void plTransform::set(const plVector3 &x, const plVector3 &y, const plVector3 &origin)
+void plTransform::set(const plVector3& x, const plVector3& y, const plVector3& origin)
 {
     _x = x.normalize();
     _y = y.normalize();
@@ -62,7 +62,7 @@ void plTransform::set(const plVector3 &x, const plVector3 &y, const plVector3 &o
 }
 
 
-void plTransform::set(const plVector3 &x, const plVector3 &y, const plVector3 &z, const plVector3 &origin)
+void plTransform::set(const plVector3& x, const plVector3& y, const plVector3& z, const plVector3& origin)
 {
     _x = x.normalize();
     _y = y.normalize();
@@ -72,13 +72,13 @@ void plTransform::set(const plVector3 &x, const plVector3 &y, const plVector3 &z
 }
 
 
-plVector3 plTransform::apply(const plVector3 &v) const
+plVector3 plTransform::apply(const plVector3& v) const
 {
     return _transform * v;
 }
 
 
-plVector3 plTransform::applyNormal(const plVector3 &v) const
+plVector3 plTransform::applyNormal(const plVector3& v) const
 {
     plMatrix44 rot = _transform;
     rot.setColumn(3, 0.0f, 0.0f, 0.0f, 1.0f);
@@ -86,20 +86,20 @@ plVector3 plTransform::applyNormal(const plVector3 &v) const
 }
 
 
-plVector3 plTransform::applyInverse(const plVector3 &v) const
+plVector3 plTransform::applyInverse(const plVector3& v) const
 {
     plVector3 p = v-_origin;
     return plVector3(p*_x, p*_y, p*_z);
 }
 
 
-plVector3 plTransform::applyNormalInverse(const plVector3 &v) const
+plVector3 plTransform::applyNormalInverse(const plVector3& v) const
 {
     return plVector3(v*_x, v*_y, v*_z);
 }
 
 
-float32_t plTransform::squaredDistToAxis(const plVector3 &v) const
+float32_t plTransform::squaredDistToAxis(const plVector3& v) const
 {
     // v is already in the *local* coordinate system of the graft
     static plVector3 axis(0,1,0);
@@ -107,7 +107,7 @@ float32_t plTransform::squaredDistToAxis(const plVector3 &v) const
 }
 
 
-float32_t plTransform::projectedDistOnAxis(const plVector3 &v) const
+float32_t plTransform::projectedDistOnAxis(const plVector3& v) const
 {
     // v is already in the *local* coordinate system of the graft
     static plVector3 axis(0,1,0);
@@ -131,7 +131,7 @@ void plTransform::extractRenderComponents(plRenderMap& renderMap) const
 }
 
 
-plTransform plTransform::operator* (const plTransform &transform) const
+plTransform plTransform::operator* (const plTransform& transform) const
 {
     plMatrix44 m = _transform * transform.matrix();
 
@@ -141,7 +141,7 @@ plTransform plTransform::operator* (const plTransform &transform) const
 }
 
 
-plTransform plTransform::operator* (const plMatrix44 &matrix) const
+plTransform plTransform::operator* (const plMatrix44& matrix) const
 {
     plMatrix44 m = _transform * matrix;
 
@@ -151,7 +151,7 @@ plTransform plTransform::operator* (const plMatrix44 &matrix) const
 }
 
 
-std::ostream& operator << (std::ostream& out, const plTransform &t)
+std::ostream& operator << (std::ostream& out, const plTransform& t)
 {
     out << t.origin() << "," << t.x() << "," << t.y();
     return out;

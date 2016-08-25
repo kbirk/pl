@@ -13,7 +13,7 @@ plShader::~plShader()
 }
 
 
-GLuint plShader::_createShader(const std::string &shaderFile, GLenum shaderType)
+GLuint plShader::_createShader(const std::string& shaderFile, GLenum shaderType)
 {
     // load shader file into memory
     const char *shaderSource = _readShaderFile(shaderFile);     // allocate memory to shaderSource
@@ -123,7 +123,7 @@ bool plShader::_compileShader(GLuint shader)
 }
 
 
-GLuint plShader::_createAndCompileShader(const std::string &shaderFile, GLenum shaderType)
+GLuint plShader::_createAndCompileShader(const std::string& shaderFile, GLenum shaderType)
 {
     // create shader object
     GLuint shader = _createShader(shaderFile, shaderType);

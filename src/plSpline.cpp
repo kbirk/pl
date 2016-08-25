@@ -8,7 +8,7 @@ plSpline::plSpline(std::shared_ptr<plMesh> mesh)
 }
 
 
-plSpline::plSpline(std::shared_ptr<plMesh> mesh, const std::vector<plString> &row)
+plSpline::plSpline(std::shared_ptr<plMesh> mesh, const std::vector<plString>& row)
     : plBoundary(PL_PICKING_TYPE_DEFECT_SPLINE, mesh, row),
       _lastUpdate(0)
 {
@@ -29,7 +29,7 @@ void plSpline::clear()
 }
 
 
-uint32_t plSpline::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
+uint32_t plSpline::addPointAndNormal(const plVector3& point, const plVector3& normal)
 {
     if (size() < 4)
     {
@@ -44,7 +44,7 @@ uint32_t plSpline::addPointAndNormal(const plVector3 &point, const plVector3 &no
 }
 
 
-void plSpline::movePointAndNormal(uint32_t index, const plVector3 &point, const plVector3 &normal)
+void plSpline::movePointAndNormal(uint32_t index, const plVector3& point, const plVector3& normal)
 {
     plBoundary::movePointAndNormal(index, point, normal);
     if (size() == 4)
@@ -108,7 +108,11 @@ void plSpline::extractRenderComponents(plRenderMap& renderMap) const
 }
 
 
-float32_t Q(float32_t s, float32_t t, const std::vector<float32_t> &st, const std::vector<float32_t> &tt)
+float32_t Q(
+    float32_t s,
+    float32_t t,
+    const std::vector<float32_t>& st,
+    const std::vector<float32_t>& tt)
 {
     // hermite blending matrix
     static plMatrix44 h(
@@ -146,7 +150,11 @@ std::vector<plVector3> plSpline::_averageCornerNormals() const
 }
 
 
-void plSpline::_computeTangents(std::vector<float32_t> &st, std::vector<float32_t> &tt, const std::vector<plVector3> &p, const std::vector<plVector3> &n) const
+void plSpline::_computeTangents(
+    std::vector<float32_t>& st,
+    std::vector<float32_t>& tt,
+    const std::vector<plVector3>& p,
+    const std::vector<plVector3>& n) const
 {
     // get unit directional vectors, (ex. p01 = from p0 to p1)
     plVector3 p01 = (p[1]-p[0]).normalize();

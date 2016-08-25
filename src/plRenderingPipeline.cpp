@@ -5,7 +5,7 @@ namespace plColorStack
     std::stack<plVector4> _stack;
 
     void push(float32_t r, float32_t g, float32_t b, float32_t a) {  _stack.push(plVector4(r,g,b,a));  }
-    void push(const plVector4 &color) { _stack.push(color); }
+    void push(const plVector4& color) { _stack.push(color); }
     void pop () { if (!_stack.empty()) _stack.pop(); }
 
     const plVector4& top()    { return _stack.top(); }
@@ -22,7 +22,7 @@ namespace plColorStack
         }
     }
 
-    void load(const plVector4 &color)
+    void load(const plVector4& color)
     {
         load(color.x, color.y, color.z, color.w);
     }
@@ -104,9 +104,9 @@ namespace plModelStack
     plMatrixStack _stack;
 
     void push()                    { _stack.push(_stack.top()); }
-    void push(const plMatrix44 &m) { _stack.push(m); }
-    void load(const plMatrix44 &m) { _stack.load(m); }
-    void mult(const plMatrix44 &m) { _stack.load(_stack.top() * m); }
+    void push(const plMatrix44& m) { _stack.push(m); }
+    void load(const plMatrix44& m) { _stack.load(m); }
+    void mult(const plMatrix44& m) { _stack.load(_stack.top() * m); }
     void pop()                     { if (!_stack.empty()) _stack.pop(); }
 
     void scale(GLfloat s)                                       { _stack.scale(s,s,s); }
@@ -114,9 +114,9 @@ namespace plModelStack
     void translate(GLfloat x, GLfloat y, GLfloat z)             { _stack.translate(x,y,z); }
     void rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) { _stack.rotate(angle,x,y,z); }
 
-    void scale(const plVector3 &v)                   { _stack.scale(v); }
-    void translate(const plVector3 &v)               { _stack.translate(v); }
-    void rotate(float32_t angle, const plVector3 &v) { _stack.rotate(angle, v); }
+    void scale(const plVector3& v)                   { _stack.scale(v); }
+    void translate(const plVector3& v)               { _stack.translate(v); }
+    void rotate(float32_t angle, const plVector3& v) { _stack.rotate(angle, v); }
 
     const plMatrix44& top() { return _stack.top(); }
 }
@@ -127,10 +127,10 @@ namespace plProjectionStack
     plMatrixStack _stack;
 
     void push()                      { _stack.push(); }
-    void push(const plMatrix44 &m)   { _stack.push(m); }
-    void push(const plProjection &p) { _stack.push(p.matrix()); }
-    void load(const plMatrix44 &m)   { _stack.load(m); }
-    void load(const plProjection &p) { _stack.load(p.matrix()); }
+    void push(const plMatrix44& m)   { _stack.push(m); }
+    void push(const plProjection& p) { _stack.push(p.matrix()); }
+    void load(const plMatrix44& m)   { _stack.load(m); }
+    void load(const plProjection& p) { _stack.load(p.matrix()); }
     void pop()                       { if (!_stack.empty()) _stack.pop(); }
 
     const plMatrix44& top() { return _stack.top(); }
@@ -142,10 +142,10 @@ namespace plCameraStack
     plMatrixStack _stack;
 
     void push()                    { _stack.push(); }
-    void push(const plMatrix44 &m) { _stack.push(m); }
-    void push(const plCamera &c)   { _stack.push(c.getMatrix()); }
-    void load(const plMatrix44 &m) { _stack.load(m); }
-    void load(const plCamera &c)   { _stack.load(c.getMatrix()); }
+    void push(const plMatrix44& m) { _stack.push(m); }
+    void push(const plCamera& c)   { _stack.push(c.getMatrix()); }
+    void load(const plMatrix44& m) { _stack.load(m); }
+    void load(const plCamera& c)   { _stack.load(c.getMatrix()); }
     void pop()                     { if (!_stack.empty()) _stack.pop(); }
 
     const plMatrix44& top() { return _stack.top(); }

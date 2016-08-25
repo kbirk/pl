@@ -7,7 +7,7 @@ plMatrixStack::plMatrixStack()
 }
 
 
-void plMatrixStack::load(const plMatrix44 &m)
+void plMatrixStack::load(const plMatrix44& m)
 {
     if (_stack.size() == 0)
     {
@@ -33,13 +33,13 @@ void plMatrixStack::push()
 }
 
 
-void plMatrixStack::push(const plMatrix44 &m)
+void plMatrixStack::push(const plMatrix44& m)
 {
     _stack.push(m);
 }
 
 
-void plMatrixStack::mult(const plMatrix44 &m)
+void plMatrixStack::mult(const plMatrix44& m)
 {
     _stack.top() = _stack.top() * m;
 }
@@ -88,7 +88,7 @@ void plMatrixStack::rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 }
 
 
-void plMatrixStack::scale(const plVector3 &v)
+void plMatrixStack::scale(const plVector3& v)
 {
     plMatrix44 scale;
     scale.setScale(v);
@@ -96,7 +96,7 @@ void plMatrixStack::scale(const plVector3 &v)
 }
 
 
-void plMatrixStack::translate(const plVector3 &v)
+void plMatrixStack::translate(const plVector3& v)
 {
     plMatrix44 trans;
     trans.setTranslation(v);
@@ -104,7 +104,7 @@ void plMatrixStack::translate(const plVector3 &v)
 }
 
 
-void plMatrixStack::rotate(float32_t angle, const plVector3 &v)
+void plMatrixStack::rotate(float32_t angle, const plVector3& v)
 {
     plMatrix44 rot;
     rot.setRotationD(angle, v);

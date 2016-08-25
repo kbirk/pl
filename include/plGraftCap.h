@@ -29,12 +29,12 @@ class plPointAndAngle
 
         plPointAndAngle()
         {}
-        plPointAndAngle(float32_t angle, const plVector3 &point)
+        plPointAndAngle(float32_t angle, const plVector3& point)
             : angle(angle), point(point)
         {
         }
 
-        bool operator < (const plPointAndAngle &p) const
+        bool operator < (const plPointAndAngle& p) const
         {
             return angle < p.angle;
         }
@@ -64,9 +64,9 @@ class plGraftCap : public plRenderable, public plEditable
         std::vector<plVector3> _pointsOutsideTriangles(plVector3 verts[3], const plTransform& transform, float32_t radius) const;
         std::vector<plVector3> _pointsInsideTriangles (plVector3 verts[3], float32_t dist[3], const plTransform& transform, float32_t radius) const;
 
-        bool _triangleIntersection(const plTriangle &triangle, const plTransform& transform, float32_t radius);
-        plVector3 _pointOnCircumference(const plVector3 &a, const plVector3 &b, float32_t radius) const;
-        bool _isBeyondHeightThresholds(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform) const;
+        bool _triangleIntersection(const plTriangle& triangle, const plTransform& transform, float32_t radius);
+        plVector3 _pointOnCircumference(const plVector3& a, const plVector3& b, float32_t radius) const;
+        bool _isBeyondHeightThresholds(const plVector3& p0, const plVector3& p1, const plVector3& p2, const plTransform& transform) const;
 
 };
 
