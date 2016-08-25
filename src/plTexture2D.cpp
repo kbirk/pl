@@ -55,9 +55,9 @@ void plTexture2D::set(uint32_t width, uint32_t height, uint32_t internalFormat, 
     LOG_OPENGL("glTexImage2D");
 
     // default linear interpolate
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     LOG_OPENGL("glTexParameterf");
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     LOG_OPENGL("glTexParameterf");
 
     // default repeat wrap

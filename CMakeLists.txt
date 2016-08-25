@@ -28,7 +28,6 @@ include_directories(${SDL2_INCLUDE_DIR})
 # Add source files
 set(sources
     "src/plAutomaticPlanner"
-    "src/plBoneAndCartilage"
     "src/plBoundary"
     "src/plBoundaryEditor"
     "src/plBufferObject"

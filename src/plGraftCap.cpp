@@ -34,7 +34,7 @@ void plGraftCap::extractRenderComponents(plRenderMap& renderMap) const
 }
 
 
-void plGraftCap::generateCap(std::shared_ptr<plOctreeMesh> mesh, const plTransform& transform, const float32_t radius)
+void plGraftCap::generateCap(std::shared_ptr<plOctreeMesh> mesh, const plTransform& transform, float32_t radius)
 {
     // clear previous cap incase
     triangles.clear();

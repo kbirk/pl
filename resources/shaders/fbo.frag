@@ -1,6 +1,6 @@
 #version 330
 
-#define BLUR_KERNAL_RADIUS      4
+#define BLUR_KERNAL_RADIUS      6
 #define BLUR_KERNAL_LEFT        (-BLUR_KERNAL_RADIUS)
 #define BLUR_KERNAL_RIGHT       (BLUR_KERNAL_RADIUS)
 #define OUTLINE_COLOR           0.8, 1.0, 1.0
@@ -19,9 +19,9 @@ vec4 getBlurredPixel(in ivec3 outline)
     int outlineCount = 0;
     int sampleCount = 0;
 
-    for (int i = BLUR_KERNAL_LEFT; i < BLUR_KERNAL_RIGHT; i++)
+    for (int i = BLUR_KERNAL_LEFT; i <= BLUR_KERNAL_RIGHT; i++)
     {
-        for (int j = BLUR_KERNAL_LEFT; j < BLUR_KERNAL_RIGHT; j++)
+        for (int j = BLUR_KERNAL_LEFT; j <= BLUR_KERNAL_RIGHT; j++)
         {
             float x = vTexCoord.x + (i / dim.x);
             float y = vTexCoord.y + (j / dim.y);
@@ -37,10 +37,11 @@ vec4 getBlurredPixel(in ivec3 outline)
         }
     }
 
-    float nval = outlineCount / float(sampleCount);
+    if (sampleCount == outlineCount) {
+        return vec4(0.0, 0.0, 0.0, 0.0);
+    }
 
-    // DEBUG
-    // nval = 0.5;
+    float nval = outlineCount / float(sampleCount);
 
     return vec4(OUTLINE_COLOR, (1.0 - nval) * pow(nval, 0.5));
 }

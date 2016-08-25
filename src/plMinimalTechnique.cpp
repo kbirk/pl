@@ -13,6 +13,9 @@ void plMinimalTechnique::render(const plRenderList& components) const
     // bind fbo
     fbo->bind();
 
+    // bind shader
+    shader->bind();
+
     // set viewport
     glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
     LOG_OPENGL("glViewport");
@@ -26,11 +29,13 @@ void plMinimalTechnique::render(const plRenderList& components) const
     drawBuffers.push_back(GL_COLOR_ATTACHMENT4);
     fbo->setDrawBuffers(drawBuffers);
 
-    // bind shader
-    shader->bind();
+    // disable depth testing
+    glDisable(GL_DEPTH_TEST);
+    LOG_OPENGL("glDisable");
 
-    glDepthFunc(GL_ALWAYS);
-    LOG_OPENGL("glDepthFunc");
+    // turn off writing to depth buffer
+    glDepthMask(false);
+    LOG_OPENGL("glDepthMask");
 
     // draw main render components
     for (auto component : components)
@@ -38,8 +43,13 @@ void plMinimalTechnique::render(const plRenderList& components) const
         component->draw(*shader);
     }
 
-    glDepthFunc(GL_LEQUAL);
-    LOG_OPENGL("glDepthFunc");
+    // re-enable writing to depth buffer
+    glDepthMask(true);
+    LOG_OPENGL("glDepthMask");
+
+    // re-enable depth testing
+    glEnable(GL_DEPTH_TEST);
+    LOG_OPENGL("glEnable");
 
     // unbind shader
     shader->unbind();

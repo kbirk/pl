@@ -3,7 +3,6 @@
 #include "plCommon.h"
 #include "plMeshSpecific.h"
 #include "plVector3.h"
-#include "plBoneAndCartilage.h"
 #include "plTransform.h"
 
 #define PL_MAX_GRAFT_ROTATION 25.0f

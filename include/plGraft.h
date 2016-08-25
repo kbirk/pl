@@ -27,8 +27,8 @@ class plGraft : public plRenderable, public plEditable
 
         virtual ~plGraft();
 
-        const float32_t& radius() const { return _radius; }
-        const float32_t& length() const { return _length; }
+        float32_t radius() const { return _radius; }
+        float32_t length() const { return _length; }
         const plVector3& markDirection() const { return _markDirection; }
         const plVector3& markPositions(uint32_t index) const { return _markPositions[index]; }
 

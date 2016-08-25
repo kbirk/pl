@@ -13,10 +13,14 @@ void plOutlineTechnique::render(const plRenderList& components) const
     // bind fbo
     fbo->bind();
 
+    // bind shader
+    shader->bind();
+
     // set viewport
     glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
     LOG_OPENGL("glViewport");
 
+    // set draw buffers
     std::vector<GLenum> drawBuffers;
     drawBuffers.push_back(GL_NONE);
     drawBuffers.push_back(GL_COLOR_ATTACHMENT1);
@@ -25,20 +29,15 @@ void plOutlineTechnique::render(const plRenderList& components) const
     drawBuffers.push_back(GL_NONE);
     fbo->setDrawBuffers(drawBuffers);
 
-    // bind shader
-    shader->bind();
-
-    glDepthFunc(GL_LEQUAL);
-    LOG_OPENGL("glDepthFunc");
-
-    // draw shapes to outline buffer
+    // draw main render components
     for (auto component : components)
     {
         component->draw(*shader);
     }
-
+    
     // unbind shader
     shader->unbind();
+
     // unbind fbo
     fbo->unbind();
 }

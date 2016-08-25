@@ -11,6 +11,17 @@ void plPlanTechnique::render(const plRenderList& components) const
 
     // bind fbo
     fbo->bind();
+    // bind shader
+    shader->bind();
+
+    // set all draw buffers
+    std::vector<GLenum> drawBuffers;
+    drawBuffers.push_back(GL_COLOR_ATTACHMENT0);
+    drawBuffers.push_back(GL_COLOR_ATTACHMENT1);
+    drawBuffers.push_back(GL_COLOR_ATTACHMENT2);
+    drawBuffers.push_back(GL_COLOR_ATTACHMENT3);
+    drawBuffers.push_back(GL_COLOR_ATTACHMENT4);
+    fbo->setDrawBuffers(drawBuffers);
 
     // clear fbo before individual draw buffers are set
     glClearColor(0, 0, 0, 0);
@@ -20,8 +31,12 @@ void plPlanTechnique::render(const plRenderList& components) const
     glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
     LOG_OPENGL("glViewport");
 
+    // disable face culling
+    glDisable(GL_CULL_FACE);
+    LOG_OPENGL("glDisable");
+
     // set draw buffers
-    std::vector<GLenum> drawBuffers;
+    drawBuffers.clear();
     drawBuffers.push_back(GL_COLOR_ATTACHMENT0);
     drawBuffers.push_back(GL_NONE);
     drawBuffers.push_back(GL_NONE);
@@ -29,13 +44,8 @@ void plPlanTechnique::render(const plRenderList& components) const
     drawBuffers.push_back(GL_COLOR_ATTACHMENT4);
     fbo->setDrawBuffers(drawBuffers);
 
-    // bind shader
-    shader->bind();
-
-    glDisable(GL_CULL_FACE);
-    LOG_OPENGL("glDisable");
-
-    // set stencil testing to write 1's wherever is rendered, this is later used in transparency shader to ensure proper picking in transparent areas
+    // set stencil testing to write 1's wherever is rendered, this is later
+    // used in transparency shader to ensure proper picking in transparent areas
     glEnable(GL_STENCIL_TEST);
     LOG_OPENGL("glEnable");
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -51,8 +61,11 @@ void plPlanTechnique::render(const plRenderList& components) const
         component->draw(*shader);
     }
 
+    // disable depth testing
     glDisable(GL_STENCIL_TEST);
     LOG_OPENGL("glDisable");
+
+    // re-enable face culling
     glEnable(GL_CULL_FACE);
     LOG_OPENGL("glEnable");
 

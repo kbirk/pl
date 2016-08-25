@@ -1,7 +1,5 @@
 #include "plFBO.h"
 
-static uint32_t currentBoundFBO = 0;
-
 plFBO::plFBO()
     : _id(0)
 {
@@ -77,22 +75,13 @@ bool plFBO::_checkAttachmentError() const
 
 void plFBO::bind() const
 {
-    if (currentBoundFBO == _id)
-        return;
-
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
     LOG_OPENGL("glBindFramebuffer");
-    std::vector<GLenum> buffers = drawBuffers();
-    glDrawBuffers(buffers.size(), &buffers[0]);
-    LOG_OPENGL("glDrawBuffers");
-
-    currentBoundFBO = _id;
 }
 
 
 void plFBO::unbind() const
 {
-    currentBoundFBO = 0;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     LOG_OPENGL("glBindFramebuffer");
 }
@@ -100,12 +89,13 @@ void plFBO::unbind() const
 
 std::shared_ptr<plTexture2D> plFBO::texture2DAttachment(uint32_t attachment) const
 {
-    if (_textureAttachments.find(attachment) == _textureAttachments.end())
+    auto iter = _textureAttachments.find(attachment);
+    if (iter == _textureAttachments.end())
     {
         LOG_WARN("Attachment enumeration `" << attachment << "` does not exist for this fbo");
         return nullptr;
     }
-    return _textureAttachments.find(attachment)->second;
+    return iter->second;
 }
 
 
@@ -113,24 +103,6 @@ void plFBO::setDrawBuffers(const std::vector<GLenum>& buffers) const
 {
     glDrawBuffers(buffers.size(), &buffers[0]);
     LOG_OPENGL("glDrawBuffers");
-}
-
-
-std::vector<GLenum> plFBO::drawBuffers() const
-{
-    std::vector<GLenum> drawBuffers;
-    for (auto iter : _textureAttachments)
-    {
-        auto attachment = static_cast<GLint>(iter.first);
-        // check if attachment is a color attachment
-        if (attachment >= GL_COLOR_ATTACHMENT0 &&
-            attachment < GL_COLOR_ATTACHMENT0 + plOpenGLInfo::maxColorAttachments)
-        {
-            // if color attachment, add to draw buffers
-            drawBuffers.push_back(attachment);
-        }
-    }
-    return drawBuffers;
 }
 
 

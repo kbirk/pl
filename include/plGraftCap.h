@@ -29,7 +29,7 @@ class plPointAndAngle
 
         plPointAndAngle()
         {}
-        plPointAndAngle(const float32_t &angle, const plVector3 &point)
+        plPointAndAngle(float32_t angle, const plVector3 &point)
             : angle(angle), point(point)
         {
         }

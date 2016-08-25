@@ -1,6 +1,6 @@
 #include "plModel.h"
 
-plModel::plModel(const std::vector<plTriangle> &triangles, const plString &file, uint32_t octreeDepth)
+plModel::plModel(const std::vector<plTriangle>& triangles, const plString& file, uint32_t octreeDepth)
     : filename(file)
 {
     if (octreeDepth > 1)
@@ -17,7 +17,7 @@ plModel::plModel(const std::vector<plTriangle> &triangles, const plString &file,
 }
 
 
-plModel::plModel(const plString &file, uint32_t octreeDepth)
+plModel::plModel(const plString& file, uint32_t octreeDepth)
     : filename(file)
 {
     std::vector<plTriangle> triangles;
@@ -115,7 +115,6 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
             renderMap[technique].push_back(component);
         }
     }
-
 }
 
 

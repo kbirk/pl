@@ -13,6 +13,9 @@ void plTransparencyTechnique::render(const plRenderList& components) const
     // bind fbo
     fbo->bind();
 
+    // bind shader
+    shader->bind();
+
     // set draw buffers to only write to color output
     std::vector<GLenum> drawBuffers;
     drawBuffers.push_back(GL_COLOR_ATTACHMENT0);
@@ -22,13 +25,11 @@ void plTransparencyTechnique::render(const plRenderList& components) const
     drawBuffers.push_back(GL_NONE);   // no picking output
     fbo->setDrawBuffers(drawBuffers);
 
-    // bind shader
-    shader->bind();
-
     // set viewport
     glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
     LOG_OPENGL("glViewport");
 
+    // turn off writing to depth buffer
     glDepthMask(false);
     LOG_OPENGL("glDepthMask");
 
@@ -63,9 +64,11 @@ void plTransparencyTechnique::render(const plRenderList& components) const
         component->draw(*shader);
     }
 
+    // disable stencil testing
     glDisable(GL_STENCIL_TEST);
     LOG_OPENGL("glDisable");
 
+    // re-enable writing to depth buffer
     glDepthMask(true);
     LOG_OPENGL("glDepthMask");
 

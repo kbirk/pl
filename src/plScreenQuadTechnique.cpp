@@ -20,9 +20,14 @@ void plScreenQuadTechnique::render(const plRenderList& components) const
     glViewport(plWindow::viewportX(), plWindow::viewportY(), plWindow::viewportWidth(), plWindow::viewportHeight());
     LOG_OPENGL("glViewport");
 
-    std::shared_ptr<plRenderComponent> component = _generateComponent();
+    // get the quad component
+    auto component = _generateComponent();
 
+    // draw the quad component
     component->draw(*shader);
+
+    // unbind shader
+    shader->unbind();
 }
 
 
@@ -35,11 +40,12 @@ std::shared_ptr<plVAO> plScreenQuadTechnique::_generateQuad() const
     indices.reserve(6);
 
     // position                               // texture coord
-    vertices.push_back(plVector3(-1, -1, 0)); vertices.push_back(plVector3(0, 0, 0));
+    vertices.push_back(plVector3(-1, -1, 0)); vertices.push_back(plVector3(0,0,0));
     vertices.push_back(plVector3(1, -1, 0));  vertices.push_back(plVector3(1,0,0));
-    vertices.push_back(plVector3(1,  1, 0));  vertices.push_back(plVector3(1,1,0));
-    vertices.push_back(plVector3(-1,  1, 0)); vertices.push_back(plVector3(0,1,0));
+    vertices.push_back(plVector3(1, 1, 0));   vertices.push_back(plVector3(1,1,0));
+    vertices.push_back(plVector3(-1, 1, 0));  vertices.push_back(plVector3(0,1,0));
 
+    // indices
     indices.push_back(0);   indices.push_back(1);   indices.push_back(2);
     indices.push_back(0);   indices.push_back(2);   indices.push_back(3);
 
@@ -52,7 +58,7 @@ std::shared_ptr<plVAO> plScreenQuadTechnique::_generateQuad() const
     auto eabo = std::make_shared<plEABO>();
     eabo->set(indices);
     // create vao
-    std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
+    auto vao = std::make_shared<plVAO>();
     // attach to vao
     vao->attach(vbo);
     vao->attach(eabo);

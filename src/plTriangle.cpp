@@ -147,7 +147,7 @@ plVector3 plTriangle::barycentricCoords(const plVector3 &testPoint) const
 }
 
 
-bool plTriangle::contains(const plVector3& pt, const float32_t& epsilon) const
+bool plTriangle::contains(const plVector3& pt, float32_t epsilon) const
 {
     if (epsilon)
     {

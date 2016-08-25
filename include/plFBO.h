@@ -18,15 +18,18 @@ class plFBO
 
         void setDrawBuffers(const std::vector<GLenum>& buffers) const;
 
-        std::vector<GLenum> drawBuffers() const;
-
         std::shared_ptr<plTexture2D> texture2DAttachment(uint32_t attachment) const;
 
         template<typename T>
         plPixel<T> readPixel(GLenum attachment, uint32_t x, uint32_t y) const;
 
-        void attach(uint32_t attachment, std::shared_ptr<plTexture2D> texture);
-        void attach(uint32_t attachment0, uint32_t attachment1, std::shared_ptr<plTexture2D> texture); // depth-stencil shared texture
+        void attach(
+            uint32_t attachment,
+            std::shared_ptr<plTexture2D> texture);
+        void attach(
+            uint32_t attachment0,
+            uint32_t attachment1,
+            std::shared_ptr<plTexture2D> texture); // depth-stencil shared texture
 
     private:
 
@@ -44,14 +47,15 @@ class plFBO
 template<typename T>
 plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
 {
-    if (_textureAttachments.find(attachment) == _textureAttachments.end())
+    // get texture by the attachment
+    auto iter = _textureAttachments.find(attachment);
+    if (iter == _textureAttachments.end())
     {
         LOG_WARN("Attachment `" << attachment << "` does not exist");
         return plPixel<T>();
     }
-
-    // get pointer to texture
-    const std::shared_ptr<plTexture2D>& texture = _textureAttachments.find(attachment)->second;
+    // get texture
+    auto texture = iter->second;
 
     GLuint format = texture->_format;
     uint32_t type = texture->_type;
