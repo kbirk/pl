@@ -1,5 +1,7 @@
 #include "plPlannerStage2.h"
 
+#include "plProgress.h"
+
 namespace plPlannerStage2
 {
 
@@ -42,7 +44,7 @@ namespace plPlannerStage2
         stage2Shader.setDefectSolutionUniforms(defectSolution);
         stage2Shader.setRotationAngleUniforms(PL_NUM_COMPARISION_DIRECTIONS);
 
-        // create and initialize cap indices SSBOs to 0
+        // create and initialize cap indices SSBOs to -1.0
         std::vector<float32_t> rmsBuffer(planningData->totalDonorGridPoints()*PL_MAX_GRAFTS_PER_SOLUTION*PL_NUM_COMPARISION_DIRECTIONS, -1.0f);
         rmsData->rmsSSBO->set(rmsBuffer, rmsBuffer.size());
 
@@ -69,10 +71,8 @@ namespace plPlannerStage2
 
             rmsData->rmsSSBO->read(rmsBuffer, rmsBuffer.size());
 
-            plUtility::printProgressBar(i / (float32_t)PL_NUM_COMPARISION_DIRECTIONS);
+            plProgress::printProgress(i / (float32_t)PL_NUM_COMPARISION_DIRECTIONS);
         }
-
-        plUtility::printProgressBar(1.0);
 
         planningData->defectSiteSSBO->unbind(0);
         planningData->donorSitesSSBO->unbind(1);

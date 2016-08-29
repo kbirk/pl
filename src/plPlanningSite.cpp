@@ -19,8 +19,8 @@ plPlanningSite::plPlanningSite(
     _calcArea();
     _calcNormal();
 
-    LOG_INFO("\t\t" <<  triangles.size()  << " triangles calculated");
-    LOG_INFO("\t\t" <<  gridPoints.size() << " grid points calculated");
+    LOG_INFO("    " <<  triangles.size()  << " triangles calculated");
+    LOG_INFO("    " <<  gridPoints.size() << " grid points calculated");
 
     if (triangles.size() == 0 || gridPoints.size() == 0)
     {
@@ -88,7 +88,7 @@ std::shared_ptr<plSSBO> plPlanningSite::getSSBO() const
 
     uint32_t numBytes = totalSize() * sizeof(plVector4);
 
-    LOG_INFO("\t\tTotal buffer size: " << numBytes << " bytes");
+    LOG_INFO("    Total buffer size: " << numBytes << " bytes");
 
     return std::make_shared<plSSBO>(numBytes, (void*)(&data[0]));
 }
@@ -218,7 +218,7 @@ void plPlanningSite::_calcArea()
     {
         area += triangles[i].getArea();
     }
-    LOG_INFO("\t\tSite area: " << area << "");
+    LOG_INFO("    Site area: " << area << "");
 }
 
 

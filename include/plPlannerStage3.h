@@ -24,6 +24,7 @@ class plGreedyGroup
         float32_t lowestRMS() const { return _lowestRMS; }
         void update();
         void getSolution(
+            uint32_t numGrafts,
             std::shared_ptr<plDonorSolution> solution,
             std::shared_ptr<plPlanningBufferData> planningData);
 

@@ -1,10 +1,12 @@
 #include "plPlannerStage3.h"
 
+#include "plProgress.h"
+
 plGreedyGroup::plGreedyGroup()
     : _lowestRMS(FLT_MAX),
-      _lowestPositions(PL_MAX_GRAFTS_PER_SOLUTION, plVector4()),
-      _lowestNormals(PL_MAX_GRAFTS_PER_SOLUTION, plVector4()),
-      _lowestXAxes(PL_MAX_GRAFTS_PER_SOLUTION, plVector4())
+      _lowestPositions(PL_MAX_GRAFTS_PER_SOLUTION, plVector4(0, 0, 0)),
+      _lowestNormals(PL_MAX_GRAFTS_PER_SOLUTION, plVector4(0, 0, 0)),
+      _lowestXAxes(PL_MAX_GRAFTS_PER_SOLUTION, plVector4(0, 0, 0))
 {
     _donorSolutionPositionsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
     _donorSolutionNormalsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
@@ -70,6 +72,7 @@ void plGreedyGroup::update()
 
 
 void plGreedyGroup::getSolution(
+    uint32_t numGrafts,
     std::shared_ptr<plDonorSolution> solution,
     std::shared_ptr<plPlanningBufferData> planningData)
 {
@@ -79,11 +82,12 @@ void plGreedyGroup::getSolution(
     solution->graftSiteIndices = _lowestSiteIndices;
     solution->rms = _lowestRMS;
 
-    for (uint32_t i=0; i < solution->graftPositions.size(); i++)
+    for (uint32_t i=0; i < numGrafts; i++)
     {
+        auto graftSiteIndex = solution->graftSiteIndices[i];
         // intersect surface
         plIntersection intersection = plMath::rayIntersect(
-            planningData->donorSites[solution->graftSiteIndices[i]]->triangles,
+            planningData->donorSites[graftSiteIndex]->triangles,
             solution->graftPositions[i],
             -solution->graftNormals[i],
             true);
@@ -162,11 +166,14 @@ namespace plPlannerStage3
             // check latest solution
             greedyBuffers->update();
 
-            plUtility::printProgressBar(i / (float32_t)PL_STAGE_3_ITERATIONS);
+            plProgress::printProgress(i / (float32_t)PL_STAGE_3_ITERATIONS);
         }
-        plUtility::printProgressBar(1.0);
 
-        greedyBuffers->getSolution(donorSolution, planningData);
+        // load the greedy solution to the donor solution
+        greedyBuffers->getSolution(
+            defectSolution->graftCount,
+            donorSolution,
+            planningData);
 
         // no state found
         if (donorSolution->rms == FLT_MAX)
@@ -180,6 +187,4 @@ namespace plPlannerStage3
         rmsData->rmsSSBO->unbind(2);
         greedyBuffers->unbind();
     }
-
-
 }

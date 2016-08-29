@@ -5,13 +5,13 @@ plPlanningBufferData::plPlanningBufferData(
     const std::vector<std::shared_ptr<plDonorSite>>& donors)
 {
     // generate defect site and buffer
-    LOG_INFO("\tGenerating defect site planning data");
+    LOG_INFO("  Generating defect site planning data");
     defectSite = std::make_shared<plPlanningSite>(
         defect->boundary->mesh()->triangles(),
         defect->boundary,
         false);
 
-    LOG_INFO("\tGenerating defect site SSBO");
+    LOG_INFO("  Generating defect site SSBO");
     defectSiteSSBO = defectSite->getSSBO();
 
     // ensure number of sites remains within maximum
@@ -20,14 +20,14 @@ plPlanningBufferData::plPlanningBufferData(
     // generate donor sites and buffer
     for (uint32_t i=0; i<donorSiteCount; i++)
     {
-        LOG_INFO("\tGenerating donor site " << i << " planning data");
+        LOG_INFO("  Generating donor site " << i << " planning data");
         auto donorSite = std::make_shared<plPlanningSite>(
             donors[i]->boundary->mesh()->triangles(),
             donors[i]->boundary,
             true);
         donorSites.push_back(donorSite);
     }
-    LOG_INFO("\tGenerating donor sites SSBO");
+    LOG_INFO("  Generating donor sites SSBO");
     donorSitesSSBO = _getGroupSSBO();
 }
 
@@ -80,7 +80,7 @@ std::shared_ptr<plSSBO> plPlanningBufferData::_getGroupSSBO()
 
     uint32_t numBytes = dataSize * sizeof(plVector4);
 
-    LOG_INFO("\t\tTotal buffer size: " << numBytes << " bytes");
+    LOG_INFO("    Total buffer size: " << numBytes << " bytes");
 
     return std::make_shared<plSSBO>(numBytes, (void*)(&data[0]));
 }

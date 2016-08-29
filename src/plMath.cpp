@@ -101,8 +101,10 @@ namespace plMath
             }
         }
 
-        if (smoothNormal)
+        if (closestIntersection.exists && smoothNormal)
+        {
             closestIntersection.normal = plMath::getAverageNormal(triangles, PL_NORMAL_SMOOTHING_RADIUS, closestIntersection.point, closestIntersection.normal);
+        }
 
         return closestIntersection;
     }
@@ -156,7 +158,7 @@ namespace plMath
 
         if (count == 0)
         {
-            // no triangles in radial sphere, just assume previous normal, (this can be bad...)
+            // no triangles in radial sphere, just return previous normal
             LOG_WARN("No normal found");
             return normal;
         }

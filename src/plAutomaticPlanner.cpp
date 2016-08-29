@@ -1,6 +1,7 @@
 #include "plAutomaticPlanner.h"
 
 #include "plOpenGLInfo.h"
+#include "plProgress.h"
 
 namespace plAutomaticPlanner
 {
@@ -75,40 +76,40 @@ namespace plAutomaticPlanner
 
     void _dispatch(std::shared_ptr<plPlan> plan, std::shared_ptr<plPlanningBufferData> planningData, uint32_t defectSiteIndex)
     {
-        std::time_t t0, t1;
-
         auto defectSolution = std::make_shared<plDefectSolution>();
         auto capIndices = std::make_shared<plCapIndices>();
         auto rmsData = std::make_shared<plRmsData>();
         auto donorSolution = std::make_shared<plDonorSolution>();
 
+        auto start = plTimer::now();
+
         // stage 0
-        LOG_INFO("Stage 0:   Optimizing defect site graft surface area coverage");
-        t0 = plTimer::now();
+        LOG_INFO("Stage 0: Optimizing defect site graft surface area coverage");
+        plProgress::startProgress();
         plPlannerStage0::run(defectSolution, planningData);
-        t1 = plTimer::now();
-        LOG_INFO(", elapsed time: " << (t1 - t0) / 1000.0f << " sec");
+        plProgress::endProgress();
 
         // stage 1
-        LOG_INFO("Stage 1:   Preprocessing and caching defect site graft surface indices");
-        t0 = plTimer::now();
+        LOG_INFO("Stage 1: Preprocessing and caching defect site graft surface indices");
+        plProgress::startProgress();
         plPlannerStage1::run(capIndices, planningData, defectSolution);
-        t1 = plTimer::now();
-        LOG_INFO(", elapsed time: " << (t1 - t0) / 1000.0f << " sec");
+        plProgress::endProgress();
 
         // stage 2
-        LOG_INFO("Stage 2:   Calculating potential donor grafts surface RMS error");
-        t0 = plTimer::now();
+        LOG_INFO("Stage 2: Calculating potential donor grafts surface RMS error");
+        plProgress::startProgress();
         plPlannerStage2::run(rmsData, planningData, defectSolution, capIndices);
-        t1 = plTimer::now();
-        LOG_INFO(", elapsed time: " << (t1 - t0) / 1000.0f << " sec");
+        plProgress::endProgress();
 
         // stage 3
-        LOG_INFO("Stage 3:   Optimizing donor cap selection");
-        t0 = plTimer::now();
+        LOG_INFO("Stage 3: Optimizing donor cap selection");
+        plProgress::startProgress();
         plPlannerStage3::run(donorSolution, planningData, defectSolution, rmsData);
-        t1 = plTimer::now();
-        LOG_INFO(", elapsed time: " << (t1 - t0) / 1000.0f << " sec");
+        plProgress::endProgress();
+
+        auto end = plTimer::now();
+
+        LOG_INFO("SUCCESS: Plan computed successfully in " << ((end - start) / 1000.0) << " sec");
 
         if (donorSolution->graftPositions.size() > 0)
         {
@@ -173,7 +174,6 @@ namespace plAutomaticPlanner
             plan->defectSites(i)->spline->setInvisible();
             plan->defectSites(i)->boundary->setInvisible();
         }
-
         for (uint32_t i = 0; i < plan->donorSites().size(); i++)
         {
             plan->donorSites(i)->boundary->setInvisible();

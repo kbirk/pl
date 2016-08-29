@@ -1,5 +1,7 @@
 #include "plPlannerStage0.h"
 
+#include "plProgress.h"
+
 plAnnealingGroup::plAnnealingGroup(float32_t initialEnergy)
 {
     // invocation ssbos
@@ -187,11 +189,10 @@ namespace plPlannerStage0
             // cool temperature
             temperature *= 1 - PL_STAGE_0_COOLING_RATE;
 
-            plUtility::printProgressBar(iterationNum++ / (float32_t)TOTAL_ITERATIONS);
+            plProgress::printProgress(iterationNum++ / (float32_t)TOTAL_ITERATIONS);
         }
-        plUtility::printProgressBar(1.0);
 
-        // load global solution from annealing state to defect state
+        // load global solution from annealing state to the defect solution
         annealingBuffers->getSolution(defectSolution, planningData);
 
         // unbind and delete site and temporary buffers

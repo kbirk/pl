@@ -29,12 +29,24 @@ void plOutlineTechnique::render(const plRenderList& components) const
     drawBuffers.push_back(GL_NONE);
     fbo->setDrawBuffers(drawBuffers);
 
+    // glEnable(GL_POLYGON_OFFSET_FILL);
+    // LOG_OPENGL("glEnable");
+    //
+    // glPolygonOffset(-1.0, -1.0);
+    // LOG_OPENGL("glPolygonOffset");
+
     // draw main render components
     for (auto component : components)
     {
         component->draw(*shader);
     }
-    
+
+    // glPolygonOffset(0.0, 0.0);
+    // LOG_OPENGL("glPolygonOffset");
+    //
+    // glDisable(GL_POLYGON_OFFSET_FILL);
+    // LOG_OPENGL("glDisable");
+
     // unbind shader
     shader->unbind();
 
