@@ -71,6 +71,7 @@ void log(const char* level, const char* file, const char* time, int32_t line, co
 	LOGGING_OUT << " ";
 	LOGGING_OUT << BLUE_LOG_COLOR;
 	LOGGING_OUT << "(" << file << ":" << line << ")";
+	LOGGING_OUT << DEFAULT_LOG_COLOR;
 	LOGGING_OUT << std::endl;
 }
 

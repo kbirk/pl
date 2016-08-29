@@ -51,7 +51,8 @@ namespace plPlannerStage1
         capData->defectCapIndexSSBO->bind(2);
         capData->donorCapIndexSSBO->bind(3);
 
-        const uint32_t NUM_WORKGROUPS = ceil(planningData->totalDonorGridPoints() + defectSolution->graftCount / (float32_t) PL_STAGE_1_GROUP_SIZE); // ensure enough workgroups are used
+        // ensure enough workgroups are used
+        const uint32_t NUM_WORKGROUPS = ceil(planningData->totalDonorGridPoints() + defectSolution->graftCount / (float32_t) PL_STAGE_1_GROUP_SIZE);
 
         plUtility::printProgressBar(0.0);
 

@@ -159,7 +159,7 @@ namespace plPlannerStage0
         while (temperature > PL_STAGE_0_STOPPING_TEMPERATURE)
         {
             // group iteration
-            stage0Shader.setLocalLoadUniform  (0);
+            stage0Shader.setLocalLoadUniform(0);
             stage0Shader.setTemperatureUniform(temperature);
 
             uint32_t its = uint32_t(PL_STAGE_0_ITERATIONS * temperature) + 1;

@@ -4,233 +4,195 @@ namespace plOpenGLInfo
 {
 
     GLint maxComputeShaderStorageBlocks,
-          maxCombinedShaderStorageBlocks,
-          maxComputeUniformBlocks,
-          maxComputeTextureImageUnits,
-          maxComputeUniformComponents,
-          maxComputeAtomicCounters,
-          maxComputeAtomicCounterBuffers,
-          maxCombinedComputeUniformComponents,
-          maxComputeWorkGroupInvocations;
+        maxCombinedShaderStorageBlocks,
+        maxComputeUniformBlocks,
+        maxComputeTextureImageUnits,
+        maxComputeUniformComponents,
+        maxComputeAtomicCounters,
+        maxComputeAtomicCounterBuffers,
+        maxCombinedComputeUniformComponents,
+        maxComputeWorkGroupInvocations;
 
     GLint maxComputeWorkGroupCount[3];
     GLint maxComputeWorkGroupSize[3];
 
     GLint maxDebugGroupStackDepth,
-          majorVersion,
-          max3DTextureSize,
-          maxArrayTextureLayers,
-          maxClipDistances,
-          maxColorTextureSamples,
-          maxColorAttachments,
-          maxCombinedAtomicCounters,
-          maxCombinedFragmentUniformComponents,
-          maxCombinedGeometryUniformComponents,
-          maxCombinedTextureImageUnits,
-          maxCombinedUniformBlocks,
-          maxCombinedVertexUniformComponents,
-          maxCubeMapTextureSize,
-          maxDepthTextureSamples,
-          maxDrawBuffers,
-          maxDualSourceDrawBuffers,
-          maxElementsIndices,
-          maxElementsVertices,
-          maxFragmentAtomicCounters,
-          maxFragmentShaderStorageBlocks,
-          maxFragmentInputComponents,
-          maxFragmentUniformComponents,
-          maxFragmentUniformVectors,
-          maxFragmentUniformBlocks,
-          maxFramebufferWidth,
-          maxFramebufferHeight,
-          maxFramebufferLayers,
-          maxFramebufferSamples,
-          maxGeometryAtomicCounters,
-          maxGeometryShaderStorageBlocks,
-          maxGeometryInputComponents,
-          maxGeometryOutputComponents,
-          maxGeometryTextureImageUnits,
-          maxGeometryUniformBlocks,
-          maxGeometryUniformComponents,
-          maxIntegerSamples,
-          minMapBufferAlignment,
-          maxLabelLength,
-          maxProgramTexelOffset,
-          minProgramTexelOffset,
-          maxRectangleTextureSize,
-          maxRenderbufferSize,
-          maxSampleMaskWords;
+        majorVersion,
+        max3DTextureSize,
+        maxArrayTextureLayers,
+        maxClipDistances,
+        maxColorTextureSamples,
+        maxColorAttachments,
+        maxCombinedAtomicCounters,
+        maxCombinedFragmentUniformComponents,
+        maxCombinedGeometryUniformComponents,
+        maxCombinedTextureImageUnits,
+        maxCombinedUniformBlocks,
+        maxCombinedVertexUniformComponents,
+        maxCubeMapTextureSize,
+        maxDepthTextureSamples,
+        maxDrawBuffers,
+        maxDualSourceDrawBuffers,
+        maxElementsIndices,
+        maxElementsVertices,
+        maxFragmentAtomicCounters,
+        maxFragmentShaderStorageBlocks,
+        maxFragmentInputComponents,
+        maxFragmentUniformComponents,
+        maxFragmentUniformVectors,
+        maxFragmentUniformBlocks,
+        maxFramebufferWidth,
+        maxFramebufferHeight,
+        maxFramebufferLayers,
+        maxFramebufferSamples,
+        maxGeometryAtomicCounters,
+        maxGeometryShaderStorageBlocks,
+        maxGeometryInputComponents,
+        maxGeometryOutputComponents,
+        maxGeometryTextureImageUnits,
+        maxGeometryUniformBlocks,
+        maxGeometryUniformComponents,
+        maxIntegerSamples,
+        minMapBufferAlignment,
+        maxLabelLength,
+        maxProgramTexelOffset,
+        minProgramTexelOffset,
+        maxRectangleTextureSize,
+        maxRenderbufferSize,
+        maxSampleMaskWords;
 
     GLint64 maxServerWaitTimeout;
 
     GLint maxShaderStorageBufferBindings,
-          maxTessControlAtomicCounters,
-          maxTessEvaluationAtomicCounters,
-          maxTessControlShaderStorageBlocks,
-          maxTessEvaluationShaderStorageBlocks,
-          maxTextureBufferSize,
-          maxTextureImageUnits,
-          maxTextureLODBias,
-          maxTextureSize,
-          maxUniformBufferBindings,
-          maxUniformBlockSize,
-          maxUniformLocations,
-          maxVaryingComponents,
-          maxVaryingVectors,
-          maxVaryingFloats,
-          maxVertexAtomicCounters,
-          maxVertexAttribs,
-          maxVertexShaderStorageBlocks,
-          maxVertexTextureImageUnits,
-          maxVertexUniformComponents,
-          maxVertexUniformVectors,
-          maxVertexOutputComponents,
-          maxVertexUniformBlocks;
+        maxTessControlAtomicCounters,
+        maxTessEvaluationAtomicCounters,
+        maxTessControlShaderStorageBlocks,
+        maxTessEvaluationShaderStorageBlocks,
+        maxTextureBufferSize,
+        maxTextureImageUnits,
+        maxTextureLODBias,
+        maxTextureSize,
+        maxUniformBufferBindings,
+        maxUniformBlockSize,
+        maxUniformLocations,
+        maxVaryingComponents,
+        maxVaryingVectors,
+        maxVaryingFloats,
+        maxVertexAtomicCounters,
+        maxVertexAttribs,
+        maxVertexShaderStorageBlocks,
+        maxVertexTextureImageUnits,
+        maxVertexUniformComponents,
+        maxVertexUniformVectors,
+        maxVertexOutputComponents,
+        maxVertexUniformBlocks;
 
     GLint maxViewportDims[2];
     GLint maxViewports,
-          minorVersion,
-          numCompressedTextureFormats,
-          numExtensions,
-          numProgramBinaryFormats,
-          numShaderBinaryFormats,
-          maxVertexAttribRelativeOffset,
-          maxVertexAttribBindings,
-          maxElementIndex;
+        minorVersion,
+        numCompressedTextureFormats,
+        numExtensions,
+        numProgramBinaryFormats,
+        numShaderBinaryFormats,
+        maxVertexAttribRelativeOffset,
+        maxVertexAttribBindings,
+        maxElementIndex;
 
     void init()
     {
-        glGetIntegerv(GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS,
-                &maxComputeShaderStorageBlocks); //1
-        glGetIntegerv(GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS,
-                &maxCombinedShaderStorageBlocks); //1
-        glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_BLOCKS, &maxComputeUniformBlocks); //1
-        glGetIntegerv(GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS,
-                &maxComputeTextureImageUnits); //1
-        glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_COMPONENTS,
-                &maxComputeUniformComponents); //1
-        glGetIntegerv(GL_MAX_COMPUTE_ATOMIC_COUNTERS, &maxComputeAtomicCounters); //1
-        glGetIntegerv(GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS,
-                &maxComputeAtomicCounterBuffers); //1
-        glGetIntegerv(GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS,
-                &maxCombinedComputeUniformComponents); //1
-        glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS,
-                &maxComputeWorkGroupInvocations); //1
-
-        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0,
-                &(maxComputeWorkGroupCount[0])); //3
-        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1,
-                &(maxComputeWorkGroupCount[1])); //3
-        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2,
-                &(maxComputeWorkGroupCount[2])); //3
-
-        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0,
-                &(maxComputeWorkGroupSize[0])); //3
-        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1,
-                &(maxComputeWorkGroupSize[1])); //3
-        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2,
-                &(maxComputeWorkGroupSize[2])); //3
-
-        glGetIntegerv(GL_MAX_DEBUG_GROUP_STACK_DEPTH, &maxDebugGroupStackDepth); //1
-        glGetIntegerv(GL_MAJOR_VERSION, &majorVersion); //1
-        glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &max3DTextureSize); //1
-        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxArrayTextureLayers); //1
-        glGetIntegerv(GL_MAX_CLIP_DISTANCES, &maxClipDistances); //1
-        glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, &maxColorTextureSamples); //1
-        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments); //1
-        glGetIntegerv(GL_MAX_COMBINED_ATOMIC_COUNTERS, &maxCombinedAtomicCounters); //1
-        glGetIntegerv(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS,
-                &maxCombinedFragmentUniformComponents); //1
-        glGetIntegerv(GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS,
-                &maxCombinedGeometryUniformComponents); //1
-        glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
-                &maxCombinedTextureImageUnits); //1
-        glGetIntegerv(GL_MAX_COMBINED_UNIFORM_BLOCKS, &maxCombinedUniformBlocks); //1
-        glGetIntegerv(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS,
-                &maxCombinedVertexUniformComponents); //1
-        glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &maxCubeMapTextureSize); //1
-        glGetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, &maxDepthTextureSamples); //1
-        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers); //1
-        glGetIntegerv(GL_MAX_DUAL_SOURCE_DRAW_BUFFERS, &maxDualSourceDrawBuffers); //1
-        glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxElementsIndices); //1
-        glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &maxElementsVertices); //1
-        glGetIntegerv(GL_MAX_FRAGMENT_ATOMIC_COUNTERS, &maxFragmentAtomicCounters); //1
-        glGetIntegerv(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS,
-                &maxFragmentShaderStorageBlocks); //1
-        glGetIntegerv(GL_MAX_FRAGMENT_INPUT_COMPONENTS,
-                &maxFragmentInputComponents); //1
-        glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS,
-                &maxFragmentUniformComponents); //1
-        glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &maxFragmentUniformVectors); //1
-        glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &maxFragmentUniformBlocks); //1
-        glGetIntegerv(GL_MAX_FRAMEBUFFER_WIDTH, &maxFramebufferWidth); //1
-        glGetIntegerv(GL_MAX_FRAMEBUFFER_HEIGHT, &maxFramebufferHeight); //1
-        glGetIntegerv(GL_MAX_FRAMEBUFFER_LAYERS, &maxFramebufferLayers); //1
-        glGetIntegerv(GL_MAX_FRAMEBUFFER_SAMPLES, &maxFramebufferSamples); //1
-        glGetIntegerv(GL_MAX_GEOMETRY_ATOMIC_COUNTERS, &maxGeometryAtomicCounters); //1
-        glGetIntegerv(GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS,
-                &maxGeometryShaderStorageBlocks); //1
-        glGetIntegerv(GL_MAX_GEOMETRY_INPUT_COMPONENTS,
-                &maxGeometryInputComponents); //1
-        glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS,
-                &maxGeometryOutputComponents); //1
-        glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS,
-                &maxGeometryTextureImageUnits); //1
-        glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &maxGeometryUniformBlocks); //1
-        glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS,
-                &maxGeometryUniformComponents); //1
-        glGetIntegerv(GL_MAX_INTEGER_SAMPLES, &maxIntegerSamples); //1
-        glGetIntegerv(GL_MIN_MAP_BUFFER_ALIGNMENT, &minMapBufferAlignment); //1
-        glGetIntegerv(GL_MAX_LABEL_LENGTH, &maxLabelLength); //1
-        glGetIntegerv(GL_MAX_PROGRAM_TEXEL_OFFSET, &maxProgramTexelOffset); //1
-        glGetIntegerv(GL_MIN_PROGRAM_TEXEL_OFFSET, &minProgramTexelOffset); //1
-        glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &maxRectangleTextureSize); //1
-        glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderbufferSize); //1
-        glGetIntegerv(GL_MAX_SAMPLE_MASK_WORDS, &maxSampleMaskWords); //1
-        glGetInteger64v(GL_MAX_SERVER_WAIT_TIMEOUT, &maxServerWaitTimeout); //1
-        glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS,
-                &maxShaderStorageBufferBindings); //1
-        glGetIntegerv(GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS,
-                &maxTessControlAtomicCounters); //1
-        glGetIntegerv(GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS,
-                &maxTessEvaluationAtomicCounters); //1
-        glGetIntegerv(GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS,
-                &maxTessControlShaderStorageBlocks); //1
-        glGetIntegerv(GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS,
-                &maxTessEvaluationShaderStorageBlocks); //1
-        glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &maxTextureBufferSize); //1
-        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureImageUnits); //1
-        glGetIntegerv(GL_MAX_TEXTURE_LOD_BIAS, &maxTextureLODBias); //1
-        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize); //1
-        glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &maxUniformBufferBindings); //1
-        glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformBlockSize); //1
-        glGetIntegerv(GL_MAX_UNIFORM_LOCATIONS, &maxUniformLocations); //1
-        glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &maxVaryingComponents); //1
-        glGetIntegerv(GL_MAX_VARYING_VECTORS, &maxVaryingVectors); //1
-        glGetIntegerv(GL_MAX_VARYING_FLOATS, &maxVaryingFloats); //1
-        glGetIntegerv(GL_MAX_VERTEX_ATOMIC_COUNTERS, &maxVertexAtomicCounters); //1
-        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVertexAttribs); //1
-        glGetIntegerv(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS,
-                &maxVertexShaderStorageBlocks); //1
-        glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,
-                &maxVertexTextureImageUnits); //1
-        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS,
-                &maxVertexUniformComponents); //1
-        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &maxVertexUniformVectors); //1
-        glGetIntegerv(GL_MAX_VERTEX_OUTPUT_COMPONENTS, &maxVertexOutputComponents); //1
-        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &maxVertexUniformBlocks); //1
-        glGetIntegerv(GL_MAX_VIEWPORT_DIMS, maxViewportDims); //2
-        glGetIntegerv(GL_MAX_VIEWPORTS, &maxViewports); //1
-        glGetIntegerv(GL_MINOR_VERSION, &minorVersion); //1
-        glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS,
-                &numCompressedTextureFormats); //1
-        glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions); //1
-        glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &numProgramBinaryFormats); //1
-        glGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &numShaderBinaryFormats); //1
-        glGetIntegerv(GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET,
-                &maxVertexAttribRelativeOffset); //1
-        glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &maxVertexAttribBindings); //1
-        glGetIntegerv(GL_MAX_ELEMENT_INDEX, &maxElementIndex); //1
+        glGetIntegerv(GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS, &maxComputeShaderStorageBlocks);
+        glGetIntegerv(GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS, &maxCombinedShaderStorageBlocks);
+        glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_BLOCKS, &maxComputeUniformBlocks);
+        glGetIntegerv(GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS, &maxComputeTextureImageUnits);
+        glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_COMPONENTS, &maxComputeUniformComponents);
+        glGetIntegerv(GL_MAX_COMPUTE_ATOMIC_COUNTERS, &maxComputeAtomicCounters);
+        glGetIntegerv(GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS, &maxComputeAtomicCounterBuffers);
+        glGetIntegerv(GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS, &maxCombinedComputeUniformComponents);
+        glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &maxComputeWorkGroupInvocations);
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &(maxComputeWorkGroupCount[0]));
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &(maxComputeWorkGroupCount[1]));
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &(maxComputeWorkGroupCount[2]));
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &(maxComputeWorkGroupSize[0]));
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &(maxComputeWorkGroupSize[1]));
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &(maxComputeWorkGroupSize[2]));
+        glGetIntegerv(GL_MAX_DEBUG_GROUP_STACK_DEPTH, &maxDebugGroupStackDepth);
+        glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+        glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &max3DTextureSize);
+        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxArrayTextureLayers);
+        glGetIntegerv(GL_MAX_CLIP_DISTANCES, &maxClipDistances);
+        glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, &maxColorTextureSamples);
+        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
+        glGetIntegerv(GL_MAX_COMBINED_ATOMIC_COUNTERS, &maxCombinedAtomicCounters);
+        glGetIntegerv(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS, &maxCombinedFragmentUniformComponents);
+        glGetIntegerv(GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS, &maxCombinedGeometryUniformComponents);
+        glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCombinedTextureImageUnits);
+        glGetIntegerv(GL_MAX_COMBINED_UNIFORM_BLOCKS, &maxCombinedUniformBlocks);
+        glGetIntegerv(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS, &maxCombinedVertexUniformComponents);
+        glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &maxCubeMapTextureSize);
+        glGetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, &maxDepthTextureSamples);
+        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
+        glGetIntegerv(GL_MAX_DUAL_SOURCE_DRAW_BUFFERS, &maxDualSourceDrawBuffers);
+        glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxElementsIndices);
+        glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &maxElementsVertices);
+        glGetIntegerv(GL_MAX_FRAGMENT_ATOMIC_COUNTERS, &maxFragmentAtomicCounters);
+        glGetIntegerv(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS, &maxFragmentShaderStorageBlocks);
+        glGetIntegerv(GL_MAX_FRAGMENT_INPUT_COMPONENTS, &maxFragmentInputComponents);
+        glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &maxFragmentUniformComponents);
+        glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &maxFragmentUniformVectors);
+        glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &maxFragmentUniformBlocks);
+        glGetIntegerv(GL_MAX_FRAMEBUFFER_WIDTH, &maxFramebufferWidth);
+        glGetIntegerv(GL_MAX_FRAMEBUFFER_HEIGHT, &maxFramebufferHeight);
+        glGetIntegerv(GL_MAX_FRAMEBUFFER_LAYERS, &maxFramebufferLayers);
+        glGetIntegerv(GL_MAX_FRAMEBUFFER_SAMPLES, &maxFramebufferSamples);
+        glGetIntegerv(GL_MAX_GEOMETRY_ATOMIC_COUNTERS, &maxGeometryAtomicCounters);
+        glGetIntegerv(GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS, &maxGeometryShaderStorageBlocks);
+        glGetIntegerv(GL_MAX_GEOMETRY_INPUT_COMPONENTS, &maxGeometryInputComponents);
+        glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, &maxGeometryOutputComponents);
+        glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS, &maxGeometryTextureImageUnits);
+        glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &maxGeometryUniformBlocks);
+        glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS, &maxGeometryUniformComponents);
+        glGetIntegerv(GL_MAX_INTEGER_SAMPLES, &maxIntegerSamples);
+        glGetIntegerv(GL_MIN_MAP_BUFFER_ALIGNMENT, &minMapBufferAlignment);
+        glGetIntegerv(GL_MAX_LABEL_LENGTH, &maxLabelLength);
+        glGetIntegerv(GL_MAX_PROGRAM_TEXEL_OFFSET, &maxProgramTexelOffset);
+        glGetIntegerv(GL_MIN_PROGRAM_TEXEL_OFFSET, &minProgramTexelOffset);
+        glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &maxRectangleTextureSize);
+        glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderbufferSize);
+        glGetIntegerv(GL_MAX_SAMPLE_MASK_WORDS, &maxSampleMaskWords);
+        glGetInteger64v(GL_MAX_SERVER_WAIT_TIMEOUT, &maxServerWaitTimeout);
+        glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &maxShaderStorageBufferBindings);
+        glGetIntegerv(GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS, &maxTessControlAtomicCounters);
+        glGetIntegerv(GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS, &maxTessEvaluationAtomicCounters);
+        glGetIntegerv(GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS, &maxTessControlShaderStorageBlocks);
+        glGetIntegerv(GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS, &maxTessEvaluationShaderStorageBlocks);
+        glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &maxTextureBufferSize);
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureImageUnits);
+        glGetIntegerv(GL_MAX_TEXTURE_LOD_BIAS, &maxTextureLODBias);
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+        glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &maxUniformBufferBindings);
+        glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformBlockSize);
+        glGetIntegerv(GL_MAX_UNIFORM_LOCATIONS, &maxUniformLocations);
+        glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &maxVaryingComponents);
+        glGetIntegerv(GL_MAX_VARYING_VECTORS, &maxVaryingVectors);
+        glGetIntegerv(GL_MAX_VARYING_FLOATS, &maxVaryingFloats);
+        glGetIntegerv(GL_MAX_VERTEX_ATOMIC_COUNTERS, &maxVertexAtomicCounters);
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVertexAttribs);
+        glGetIntegerv(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS, &maxVertexShaderStorageBlocks);
+        glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maxVertexTextureImageUnits);
+        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &maxVertexUniformComponents);
+        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &maxVertexUniformVectors);
+        glGetIntegerv(GL_MAX_VERTEX_OUTPUT_COMPONENTS, &maxVertexOutputComponents);
+        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &maxVertexUniformBlocks);
+        glGetIntegerv(GL_MAX_VIEWPORT_DIMS, maxViewportDims);
+        glGetIntegerv(GL_MAX_VIEWPORTS, &maxViewports);
+        glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+        glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &numCompressedTextureFormats);
+        glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+        glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &numProgramBinaryFormats);
+        glGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &numShaderBinaryFormats);
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET, &maxVertexAttribRelativeOffset);
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &maxVertexAttribBindings);
+        glGetIntegerv(GL_MAX_ELEMENT_INDEX, &maxElementIndex);
 
         // at this point there may be errors due to unrecognized enums, pull
         // them off the queue.

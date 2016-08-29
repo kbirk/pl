@@ -25,7 +25,11 @@ class plCapIndices
         std::shared_ptr<plSSBO> defectCapIndexSSBO;
         std::shared_ptr<plSSBO> donorCapIndexSSBO;
 
-        plCapIndices() {};
+        plCapIndices()
+        {
+            defectCapIndexSSBO = std::make_shared<plSSBO>();
+            donorCapIndexSSBO = std::make_shared<plSSBO>();
+        };
 };
 
 class plRmsData
@@ -35,7 +39,11 @@ class plRmsData
         std::shared_ptr<plSSBO> rmsSSBO;
         std::shared_ptr<plSSBO> rotationSSBO;
 
-        plRmsData() {}
+        plRmsData()
+        {
+            rmsSSBO = std::make_shared<plSSBO>();
+            rotationSSBO = std::make_shared<plSSBO>();
+        }
 };
 
 class plDonorSolution
