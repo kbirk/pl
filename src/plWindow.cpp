@@ -205,7 +205,13 @@ namespace plWindow {
         SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
         // set the opengl context version
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        #ifdef __linux__
+            // linux has support for 4.3+
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+        #else
+            // OSX only supports up to 4.1
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         // set byte depths
         SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
