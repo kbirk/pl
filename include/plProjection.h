@@ -3,10 +3,10 @@
 #include "plCommon.h"
 #include "plMatrix44.h"
 
-#define PL_ASPECT_RATIO                          (1280.0f / 720.0f)
+#define PL_ASPECT_RATIO                          (4.0f / 3.0f)
 #define PL_NEAR_PLANE                            10.0f
-#define PL_FAR_PLANE                             15000.0f
-#define PL_FIELD_OF_VIEW                         7.0f
+#define PL_FAR_PLANE                             1000.0f
+#define PL_FIELD_OF_VIEW                         60.0f
 
 class plProjection
 {

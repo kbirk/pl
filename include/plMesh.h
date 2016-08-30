@@ -29,7 +29,7 @@ class plMesh
             const plVector3& up) const;
 
         virtual plIntersection rayIntersect(
-            const plVector3 &rayOrigin, const plVector3 &rayDirection,
+            const plVector3& rayOrigin, const plVector3& rayDirection,
             bool smoothNormal = false,
             bool ignoreBehindRay = false,
             bool backFaceCull = false) const;

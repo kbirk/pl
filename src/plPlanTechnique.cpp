@@ -13,6 +13,7 @@ void plPlanTechnique::render(const plRenderList& components) const
     fbo->bind();
     // bind shader
     shader->bind();
+    
 
     // set all draw buffers
     std::vector<GLenum> drawBuffers;

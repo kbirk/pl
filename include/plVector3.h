@@ -17,14 +17,14 @@ class plVector3
         plVector3(char* string);
         plVector3(const plString &str);
 
-        bool operator == (const plVector3 &p) const;
-        bool operator != (const plVector3 &p) const;
-        plVector3 operator + (const plVector3 &p) const;
-        plVector3 operator - (const plVector3 &p) const;
-        float32_t operator * (const plVector3 &p) const;
-        plVector3 operator ^ (const plVector3 &p) const;
+        bool operator== (const plVector3& p) const;
+        bool operator!= (const plVector3& p) const;
+        plVector3 operator+ (const plVector3& p) const;
+        plVector3 operator- (const plVector3& p) const;
+        float32_t operator* (const plVector3& p) const;
+        plVector3 operator^ (const plVector3& p) const;
 
-        plVector3& operator = (const plVector3 &p);
+        plVector3& operator= (const plVector3& p);
 
         plVector3 operator- () const;
 
@@ -36,8 +36,8 @@ class plVector3
 };
 
 // scalar multiplication
-plVector3 operator * (float32_t k, const plVector3 &p);
+plVector3 operator* (float32_t k, const plVector3& p);
 
 // I/O operators
-std::ostream& operator << (std::ostream& stream, const plVector3 &p);
-std::istream& operator >> (std::istream& stream, plVector3 &p);
+std::ostream& operator<< (std::ostream& stream, const plVector3& p);
+std::istream& operator>> (std::istream& stream, plVector3& p);

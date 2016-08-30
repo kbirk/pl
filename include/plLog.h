@@ -44,12 +44,12 @@ struct LogData {
 };
 
 template<typename Begin, typename Value>
-LogData<std::pair<Begin, const Value&>> operator << (LogData<Begin> begin, const Value& value) {
+LogData<std::pair<Begin, const Value&>> operator<< (LogData<Begin> begin, const Value& value) {
 	return {{begin.list, value}};
 }
 
 template<typename Begin, size_t n>
-LogData<std::pair<Begin, const char*>> operator << (LogData<Begin> begin, const char (&value)[n]) {
+LogData<std::pair<Begin, const char*>> operator<< (LogData<Begin> begin, const char (&value)[n]) {
 	return {{begin.list, value}};
 }
 

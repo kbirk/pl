@@ -60,7 +60,11 @@ void render()
     // set camera
     plCameraStack::load(*camera);
     // set perspective projection
-    plProjectionStack::load(plProjection(PL_FIELD_OF_VIEW , PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE));
+    plProjectionStack::load(plProjection(
+        PL_FIELD_OF_VIEW,
+        PL_ASPECT_RATIO,
+        PL_NEAR_PLANE,
+        PL_FAR_PLANE));
     // queue plan for drawing
     plRenderer::queue(*plan);
     // queue global coordinate axis

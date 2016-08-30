@@ -34,7 +34,7 @@ namespace plRenderer
     void queueCylinder(uint32_t technique, const plVector3& position, const plVector3& direction, float32_t radius, float32_t length);
     void queueDisk(uint32_t technique, const plVector3& position, const plVector3& direction, float32_t radius, bool flip = false);
     void queueCone(uint32_t technique, const plVector3& position, const plVector3& direction, float32_t topRadius, float32_t bottomRadius, float32_t length);
-    void queueArrow(uint32_t technique, const plVector3& position, const plVector3 &direction, float32_t length = 2.0f, float32_t scale = 1.0f);
+    void queueArrow(uint32_t technique, const plVector3& position, const plVector3& direction, float32_t length = 2.0f, float32_t scale = 1.0f);
     void queueAxis(uint32_t technique, const plVector3& position, const plVector3& x, const plVector3& y, float32_t scale = 1.0f);
     void queuePlane(uint32_t technique, const plVector3& position, const plVector3& normal, float32_t scale = 1.0f);
     void queueLine(uint32_t technique, const plVector3& p0, const plVector3& p1);

@@ -141,7 +141,7 @@ bool plString::compareCaseInsensitive(const plString& str) const
 }
 
 /*
-plString plString::operator + (const plString& s) const
+plString plString::operator+ (const plString& s) const
 {
     std::stringstream str;
     str << *this << s << "\0";

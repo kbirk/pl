@@ -83,7 +83,7 @@ class plMatrix44
 
 };
 
-std::ostream& operator << (std::ostream& stream, const plMatrix44& m);
+std::ostream& operator<< (std::ostream& stream, const plMatrix44& m);
 
-plVector4 operator * (const plVector4& v, const plMatrix44& m);
-plVector3 operator * (const plVector3& v, const plMatrix44& m);
+plVector4 operator* (const plVector4& v, const plMatrix44& m);
+plVector3 operator* (const plVector3& v, const plMatrix44& m);

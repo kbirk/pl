@@ -151,7 +151,7 @@ plTransform plTransform::operator* (const plMatrix44& matrix) const
 }
 
 
-std::ostream& operator << (std::ostream& out, const plTransform& t)
+std::ostream& operator<< (std::ostream& out, const plTransform& t)
 {
     out << t.origin() << "," << t.x() << "," << t.y();
     return out;

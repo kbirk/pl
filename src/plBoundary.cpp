@@ -411,7 +411,7 @@ void plBoundary::_generateVAO()
 }
 
 
-std::ostream& operator << (std::ostream& out, const plBoundary& b)
+std::ostream& operator<< (std::ostream& out, const plBoundary& b)
 {
     for (uint32_t j=0; j<b.size(); j++)
     {

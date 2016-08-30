@@ -23,10 +23,10 @@ class plOctreeMesh : public plMesh
         std::shared_ptr<plOctree> octree() const { return _octree; }
         void toggleOctreeVisibility() { _octree->toggleVisibility(); }
 
-        plVector3 getAverageNormal(float32_t radius, const plVector3 &origin, const plVector3 &up) const;
+        plVector3 getAverageNormal(float32_t radius, const plVector3& origin, const plVector3& up) const;
 
         plIntersection rayIntersect(
-            const plVector3 &rayOrigin, const plVector3 &rayDirection,
+            const plVector3& rayOrigin, const plVector3& rayDirection,
             bool smoothNormal = false,
             bool ignoreBehindRay = false,
             bool backFaceCull = false) const;

@@ -605,7 +605,7 @@ plMatrix44 plMatrix44::inverse() const
 }
 
 // I/O operators
-std::ostream& operator << (std::ostream& stream, const plMatrix44& m)
+std::ostream& operator<< (std::ostream& stream, const plMatrix44& m)
 {
     for (uint32_t i=0; i < 4; i++)
     {
@@ -615,7 +615,7 @@ std::ostream& operator << (std::ostream& stream, const plMatrix44& m)
     return stream;
 }
 
-plVector4 operator * (const plVector4& v, const plMatrix44& m)
+plVector4 operator* (const plVector4& v, const plMatrix44& m)
 {
     float32_t x = v.x * m(0,0) + v.y * m(1,0) + v.z * m(2,0) + v.w * m(3,0);
     float32_t y = v.x * m(0,1) + v.y * m(1,1) + v.z * m(2,1) + v.w * m(3,1);
@@ -625,7 +625,7 @@ plVector4 operator * (const plVector4& v, const plMatrix44& m)
     return plVector4(x,y,z,w);
 }
 
-plVector3 operator * (const plVector3& v, const plMatrix44& m)
+plVector3 operator* (const plVector3& v, const plMatrix44& m)
 {
     float32_t x = v.x * m(0,0) + v.y * m(1,0) + v.z * m(2,0) + m(3,0);
     float32_t y = v.x * m(0,1) + v.y * m(1,1) + v.z * m(2,1) + m(3,1);

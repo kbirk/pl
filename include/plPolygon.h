@@ -13,12 +13,12 @@ class plEdge
         plVector3 pt2;
 
         plEdge ();
-        plEdge (const plVector3 &v1, const plVector3 &v2);
+        plEdge (const plVector3& v1, const plVector3& v2);
 
         bool contains(const plVector3& point, float32_t epsilon = PL_EPSILON) const;
         plVector3 otherPt(const plVector3& point, float32_t epsilon = PL_EPSILON) const;
         bool equals(const plEdge& e2, float32_t epsilon = PL_EPSILON) const; // flexible epsilon
-        bool operator==(const plEdge& e2) const; // epsilon is absolute zero
+        bool operator== (const plEdge& e2) const; // epsilon is absolute zero
         plEdge& operator= (const plEdge& other);
 };
 

@@ -75,7 +75,4 @@ class plOctree : public plRenderable
 
         std::shared_ptr<plVAO> _generateVAO(float32_t halfWidth) const;
 
-        void _move(plOctree &&octree);
-        void _copy(const plOctree& octree);
-
 };

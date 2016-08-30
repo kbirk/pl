@@ -34,7 +34,7 @@ class plPointAndAngle
         {
         }
 
-        bool operator < (const plPointAndAngle& p) const
+        bool operator< (const plPointAndAngle& p) const
         {
             return angle < p.angle;
         }

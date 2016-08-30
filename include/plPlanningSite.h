@@ -19,7 +19,7 @@ class plPointAndNormal
             : point(p), normal(n)
         {}
 
-        bool operator < (const plPointAndNormal& pn) const
+        bool operator< (const plPointAndNormal& pn) const
         {
             if (point.x == pn.point.x)
             {

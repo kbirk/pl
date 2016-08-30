@@ -62,4 +62,4 @@ class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
 
 };
 
-std::ostream& operator << (std::ostream& out, const plBoundary& b);
+std::ostream& operator<< (std::ostream& out, const plBoundary& b);
