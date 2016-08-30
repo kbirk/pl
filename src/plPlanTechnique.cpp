@@ -13,7 +13,6 @@ void plPlanTechnique::render(const plRenderList& components) const
     fbo->bind();
     // bind shader
     shader->bind();
-    
 
     // set all draw buffers
     std::vector<GLenum> drawBuffers;
@@ -24,13 +23,14 @@ void plPlanTechnique::render(const plRenderList& components) const
     drawBuffers.push_back(GL_COLOR_ATTACHMENT4);
     fbo->setDrawBuffers(drawBuffers);
 
+    glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
+    LOG_OPENGL("glViewport");
+
     // clear fbo before individual draw buffers are set
     glClearColor(0, 0, 0, 0);
     LOG_OPENGL("glClearColor");
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     LOG_OPENGL("glClear");
-    glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
-    LOG_OPENGL("glViewport");
 
     // disable face culling
     glDisable(GL_CULL_FACE);

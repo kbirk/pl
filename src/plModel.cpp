@@ -60,7 +60,7 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
     // create render component
     auto component = std::make_shared<plRenderComponent>(_vao);
     // attached uniforms
-    component->attach(PL_MODEL_MATRIX_UNIFORM,std::make_shared<plUniform>(plModelStack::top()));
+    component->attach(PL_MODEL_MATRIX_UNIFORM, std::make_shared<plUniform>(plModelStack::top()));
     component->attach(PL_VIEW_MATRIX_UNIFORM, std::make_shared<plUniform>(plCameraStack::top()));
     component->attach(PL_PROJECTION_MATRIX_UNIFORM, std::make_shared<plUniform>(plProjectionStack::top()));
     component->attach(PL_LIGHT_POSITION_UNIFORM, std::make_shared<plUniform>(plVector3(PL_LIGHT_POSITION)));
