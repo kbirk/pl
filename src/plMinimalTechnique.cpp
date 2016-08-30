@@ -33,19 +33,11 @@ void plMinimalTechnique::render(const plRenderList& components) const
     glDisable(GL_DEPTH_TEST);
     LOG_OPENGL("glDisable");
 
-    // turn off writing to depth buffer
-    glDepthMask(false);
-    LOG_OPENGL("glDepthMask");
-
     // draw main render components
     for (auto component : components)
     {
         component->draw(*shader);
     }
-
-    // re-enable writing to depth buffer
-    glDepthMask(true);
-    LOG_OPENGL("glDepthMask");
 
     // re-enable depth testing
     glEnable(GL_DEPTH_TEST);
