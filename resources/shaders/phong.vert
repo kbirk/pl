@@ -37,6 +37,9 @@ void main()
     vViewNormal = mat3(modelView) * aNormal;
     //  vector to light source
     vViewLightDirection = uLightPosition - vec3(modelView * position);
+    // NOTE: the EXACT order of calculation must match that of the `outline`
+    // shader otherwise the GL_LEQUAL depth test for the outline will cause
+    // z-fighting.
     // write out position
     gl_Position = uProjectionMatrix * modelView * position;
 }

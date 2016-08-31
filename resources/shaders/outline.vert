@@ -10,5 +10,9 @@ uniform mat4 uProjectionMatrix;
 
 void main()
 {
-    gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aPosition, 1.0);
+    // NOTE: the EXACT order of calculation must match that of the `phong`
+    // shader otherwise the GL_LEQUAL depth test for the outline will cause
+    // z-fighting.
+    mat4 modelView = uViewMatrix * uModelMatrix;
+    gl_Position = uProjectionMatrix * modelView * vec4(aPosition, 1.0f);
 }
