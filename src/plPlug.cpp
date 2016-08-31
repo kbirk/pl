@@ -1,16 +1,17 @@
 #include "plPlug.h"
 
-plPlug::plPlug(uint32_t type)
-    : _type(type)
+plPlug::plPlug()
 {
 }
 
 
-plPlug::plPlug(const plMesh& mesh, uint32_t type, const plTransform& surfaceTransform, const plTransform& rotationalOffset)
-    :   plMeshSpecific(mesh),
-        _type(type),
-        _surfaceTransform(surfaceTransform),
-        _rotationalOffset(rotationalOffset)
+plPlug::plPlug(
+    std::shared_ptr<plMesh> mesh,
+    const plTransform& surfaceTransform,
+    const plTransform& rotationalOffset)
+    : plMeshSpecific(mesh),
+      _surfaceTransform(surfaceTransform),
+      _rotationalOffset(rotationalOffset)
 {
 }
 
@@ -64,7 +65,8 @@ void plPlug::rotate(const plVector3& y)
     }
 
     // get the rotation matrix
-    plMatrix44 rotation;     rotation.setRotation(surfaceNormal, finalY);
+    plMatrix44 rotation;
+    rotation.setRotation(surfaceNormal, finalY);
 
     _rotationalOffset = plTransform(rotation);
 }
@@ -72,6 +74,7 @@ void plPlug::rotate(const plVector3& y)
 
 void plPlug::rotate(float32_t angleDegrees)
 {
-    plMatrix44 rot;     rot.setRotationD(angleDegrees, _surfaceTransform.y());
+    plMatrix44 rot;
+    rot.setRotationD(angleDegrees, _surfaceTransform.y());
     _rotationalOffset = plTransform(rot * _rotationalOffset.matrix());
 }

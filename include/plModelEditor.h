@@ -39,7 +39,7 @@ class plModelEditor : public plEditor
     private:
 
         int32_t _editMode;
-        plModel* _selectedModel;
+        std::shared_ptr<plModel> _selectedModel;
 
         void _dragModel(int32_t x, int32_t y);
         void _extractMenuRenderComponents(plRenderMap& renderMap) const;

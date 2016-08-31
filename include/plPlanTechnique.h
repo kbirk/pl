@@ -11,7 +11,7 @@ class plPlanTechnique : public plRenderTechnique
 
         plPlanTechnique();
 
-        void render(const std::set<plRenderComponent >& componentSet) const;
+        void render(const plRenderList& components) const;
 
     private:
 

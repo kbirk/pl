@@ -5,16 +5,20 @@ plMinimalTechnique::plMinimalTechnique()
 }
 
 
-void plMinimalTechnique::render(const std::set<plRenderComponent >& componentSet) const
+void plMinimalTechnique::render(const plRenderList& components) const
 {
-    const std::shared_ptr<plFBO >&    fbo    = plRenderResources::fbos(PL_MAIN_FBO);
-    const std::shared_ptr<plShader >& shader = plRenderResources::shaders(PL_MINIMAL_SHADER);
+    auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
+    auto shader = plRenderResources::shaders(PL_MINIMAL_SHADER);
 
     // bind fbo
     fbo->bind();
 
+    // bind shader
+    shader->bind();
+
     // set viewport
     glViewport(0, 0, plWindow::viewportWidth(), plWindow::viewportHeight());
+    LOG_OPENGL("glViewport");
 
     // set draw buffers
     std::vector<GLenum> drawBuffers;
@@ -25,20 +29,19 @@ void plMinimalTechnique::render(const std::set<plRenderComponent >& componentSet
     drawBuffers.push_back(GL_COLOR_ATTACHMENT4);
     fbo->setDrawBuffers(drawBuffers);
 
-    // bind shader
-    shader->bind();
-
-    glDepthFunc(GL_ALWAYS);
-    //glDisable(GL_DEPTH_TEST);
+    // disable depth testing
+    glDisable(GL_DEPTH_TEST);
+    LOG_OPENGL("glDisable");
 
     // draw main render components
-    for (const plRenderComponent& component : componentSet)
+    for (auto component : components)
     {
-        component.draw(*shader);
+        component->draw(*shader);
     }
 
-    glDepthFunc(GL_LEQUAL);
-    //glEnable(GL_DEPTH_TEST);
+    // re-enable depth testing
+    glEnable(GL_DEPTH_TEST);
+    LOG_OPENGL("glEnable");
 
     // unbind shader
     shader->unbind();

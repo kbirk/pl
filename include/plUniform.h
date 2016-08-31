@@ -2,45 +2,28 @@
 
 #include "plCommon.h"
 
-#include <epoxy/gl.h>
-
 class plUniform
 {
     public:
 
         template<typename T>
-        plUniform(uint32_t type, const T& t);
+        plUniform(const T& t);
 
-        plUniform(plUniform&& uniform);
-        plUniform(const plUniform& uniform);
-
-        plUniform& operator= (plUniform&& uniform);
-        plUniform& operator= (const plUniform& uniform);
-
-        ~plUniform();
-
-        GLvoid* data() const      { return (GLvoid*)(_data); }
-        uint32_t type() const     { return _type; }
+        const uint8_t* data() const { return &_data[0]; }
         uint32_t numBytes() const { return _numBytes; }
 
     private:
 
-        uint32_t _type;
         uint32_t _numBytes;
-        uint8_t* _data;
-
-        void _copy(const plUniform& uniform);
-        void _move(plUniform&& uniform);
-
+        std::vector<uint8_t> _data;
 };
 
 
 template<typename T>
-plUniform::plUniform(uint32_t type, const T& t)
-    : _type(type),
-      _numBytes(sizeof(T))
+plUniform::plUniform(const T& t)
+    : _numBytes(sizeof(T))
 {
     _numBytes = sizeof(T);
-    _data = new uint8_t[_numBytes];
-    memcpy(_data, reinterpret_cast<const uint8_t*>(&t), _numBytes);
+    _data = std::vector<uint8_t>(_numBytes, 0);
+    std::memcpy(&_data[0], reinterpret_cast<const uint8_t*>(&t), _numBytes);
 }

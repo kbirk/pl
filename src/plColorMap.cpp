@@ -1,9 +1,9 @@
-#include "plColourMap.h"
+#include "plColorMap.h"
 
-namespace plColourMap
+namespace plColorMap
 {
 
-    uint32_t _colourMap[PL_COLOURMAP_SIZE][4] =
+    uint32_t _colorMap[PL_COLORMAP_SIZE][4] =
     {
       { 0, 0, 188, 128 },
       { 0, 0, 189, 128 },
@@ -523,11 +523,11 @@ namespace plColourMap
     {
         if (k > 1) k = 1;
         if (k < 0) k = 0;
-        int32_t i = int32_t(k * (PL_COLOURMAP_SIZE-1));
+        int32_t i = int32_t(k * (PL_COLORMAP_SIZE-1));
         return plVector3(
-            _colourMap[i][0]/255.0f,
-            _colourMap[i][1]/255.0f,
-            _colourMap[i][2]/255.0f);
+            _colorMap[i][0]/255.0f,
+            _colorMap[i][1]/255.0f,
+            _colorMap[i][2]/255.0f);
     }
 
 }

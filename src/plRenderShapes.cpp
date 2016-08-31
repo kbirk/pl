@@ -3,7 +3,7 @@
 namespace plRenderShapes
 {
 
-    plVAO sphereVAO(float32_t radius, int32_t slices, int32_t stacks)
+    std::shared_ptr<plVAO> sphereVAO(float32_t radius, int32_t slices, int32_t stacks)
     {
         float32_t rho, theta;
         float32_t x, y, z;
@@ -105,25 +105,24 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
-        plVAO vao;
-        vao.attach(vbo);
-        vao.attach(eabo);
+        std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
+        vao->attach(vbo);
+        vao->attach(eabo);
         // upload to gpu
-        vao.upload();
-
+        vao->upload();
         return vao;
     }
 
 
-    plVAO cylinderVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks)
+    std::shared_ptr<plVAO> cylinderVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks)
     {
         float32_t da = 2.0f * PL_PI / slices;
         float32_t dr = (topRadius - baseRadius) / stacks;
@@ -171,25 +170,24 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
-        plVAO vao;
-        vao.attach(vbo);
-        vao.attach(eabo);
+        std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
+        vao->attach(vbo);
+        vao->attach(eabo);
         // upload to gpu
-        vao.upload();
-
+        vao->upload();
         return vao;
     }
 
 
-    plVAO diskVAO(float32_t innerRadius, float32_t outerRadius, int32_t slices, int32_t loops, bool up)
+    std::shared_ptr<plVAO> diskVAO(float32_t innerRadius, float32_t outerRadius, int32_t slices, int32_t loops, bool up)
     {
         plVector3 normal = (up) ? plVector3(0.0f, 0.0f, 1.0f) : plVector3(0.0f, 0.0f, -1.0f);
 
@@ -200,7 +198,7 @@ namespace plRenderShapes
         float32_t r1 = innerRadius;
 
         std::vector<plVector3> vertices;
-        std::vector<uint32_t>    indices;
+        std::vector<uint32_t> indices;
 
         for (int32_t l = 0; l < loops; l++)
         {
@@ -257,25 +255,24 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
-        plVAO vao;
-        vao.attach(vbo);
-        vao.attach(eabo);
+        std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
+        vao->attach(vbo);
+        vao->attach(eabo);
         // upload to gpu
-        vao.upload();
-
+        vao->upload();
         return vao;
     }
 
 
-    plVAO coneVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks)
+    std::shared_ptr<plVAO> coneVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks)
     {
         float32_t da = 2.0f * PL_PI / slices;
         float32_t dr = (topRadius - baseRadius) / stacks;
@@ -287,7 +284,7 @@ namespace plRenderShapes
         float32_t r = baseRadius;
 
         std::vector<plVector3> vertices;
-        std::vector<uint32_t>    indices;
+        std::vector<uint32_t> indices;
 
         for (int32_t j = 0; j < stacks; j++)
         {
@@ -323,33 +320,34 @@ namespace plRenderShapes
         }
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
-        plVAO vao;
-        vao.attach(vbo);
-        vao.attach(eabo);
+        std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
+        vao->attach(vbo);
+        vao->attach(eabo);
         // upload to gpu
-        vao.upload();
-
+        vao->upload();
         return vao;
     }
 
-    plVAO quadVAO()
+    std::shared_ptr<plVAO> quadVAO()
     {
-        std::vector<plVector3> vertices;        vertices.reserve(8);
-        std::vector<uint32_t>    indices;         indices.reserve(6);
+        std::vector<plVector3> vertices;
+        vertices.reserve(8);
+        std::vector<uint32_t> indices;
+        indices.reserve(6);
 
-        // position                                     // normals
-        vertices.push_back(plVector3(-1, -1, 0));   vertices.push_back(plVector3(0,0,1));
+        // position                                   // normals
+        vertices.push_back(plVector3(-1, -1, 0));  vertices.push_back(plVector3(0,0,1));
         vertices.push_back(plVector3(1, -1, 0));   vertices.push_back(plVector3(0,0,1));
         vertices.push_back(plVector3(1,  1, 0));   vertices.push_back(plVector3(0,0,1));
-        vertices.push_back(plVector3(-1,  1, 0));   vertices.push_back(plVector3(0,0,1));
+        vertices.push_back(plVector3(-1,  1, 0));  vertices.push_back(plVector3(0,0,1));
 
         // indices
         indices.push_back(0);
@@ -361,27 +359,28 @@ namespace plRenderShapes
         indices.push_back(3);
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create and attach to vao
-        plVAO vao;
-        vao.attach(vbo);
-        vao.attach(eabo);
+        std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
+        vao->attach(vbo);
+        vao->attach(eabo);
         // upload to gpu
-        vao.upload();
-
+        vao->upload();
         return vao;
     }
 
-    plVAO lineVAO(const plVector3& p0, const plVector3& p1)
+    std::shared_ptr<plVAO> lineVAO(const plVector3& p0, const plVector3& p1)
     {
-        std::vector<plVector3> vertices;        vertices.reserve(2);
-        std::vector<uint32_t>    indices;         indices.reserve(2);
+        std::vector<plVector3> vertices;
+        vertices.reserve(2);
+        std::vector<uint32_t> indices;
+        indices.reserve(2);
 
         // position
         vertices.push_back(p0);
@@ -392,19 +391,18 @@ namespace plRenderShapes
         indices.push_back(1);
 
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 16, 0));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices, GL_LINES);
         // create and attach to vao
-        plVAO vao;
-        vao.attach(vbo);
-        vao.attach(eabo);
+        std::shared_ptr<plVAO> vao = std::make_shared<plVAO>();
+        vao->attach(vbo);
+        vao->attach(eabo);
         // upload to gpu
-        vao.upload();
-
+        vao->upload();
         return vao;
     }
 

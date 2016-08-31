@@ -11,42 +11,20 @@ plSSBO::plSSBO(uint32_t numBytes, const void *buffer)
 }
 
 
-plSSBO::plSSBO(const plSSBO& ssbo)
-{
-    _copy(ssbo);
-}
-
-
-plSSBO::plSSBO(plSSBO&& ssbo)
-{
-    _move(std::move(ssbo));
-}
-
-
-plSSBO& plSSBO::operator = (plSSBO&& ssbo)
-{
-    _move(std::move(ssbo));
-    return *this;
-}
-
-
-plSSBO& plSSBO::operator = (const plSSBO& ssbo)
-{
-    _copy(ssbo);
-    return *this;
-}
-
-
 void plSSBO::_create(uint32_t numBytes, const void *buffer)
 {
     // set bytes
     _numBytes = numBytes;
     // generate handle if needed
     if (!_id)
+    {
         glGenBuffers(1, &_id);
+        LOG_OPENGL("glGenBuffers");
+    }
 
     // bind and buffer data
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id);
+    LOG_OPENGL("glBindBuffer");
 
     if (!buffer)
     {
@@ -54,38 +32,16 @@ void plSSBO::_create(uint32_t numBytes, const void *buffer)
         uint32_t *temp = new uint32_t[numBytes];
         memset(temp, 0, numBytes);
         glBufferData(GL_SHADER_STORAGE_BUFFER, numBytes, temp, GL_STREAM_COPY);
+        LOG_OPENGL("glBufferData");
         delete [] temp;
     }
     else
     {
         glBufferData(GL_SHADER_STORAGE_BUFFER, numBytes, buffer, GL_STREAM_COPY);
+        LOG_OPENGL("glBufferData");
     }
 
     // unbind
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-
-}
-
-
-void plSSBO::_copy(const plSSBO &ssbo)
-{
-    // read data from previous ssbo
-    uint8_t *buffer = new uint8_t[_numBytes];
-    ssbo.readBytes(buffer, _numBytes);
-
-    // copy number of bytes and create buffer on gpu
-    _create(ssbo._numBytes, (void*)buffer);
-
-    // dealloc temp memory
-    delete [] buffer;
-}
-
-
-void plSSBO::_move(plSSBO&& ssbo)
-{
-    _numBytes = ssbo._numBytes;
-    _id = ssbo._id;
-    ssbo._numBytes = 0;
-    ssbo._id = 0;
+    LOG_OPENGL("glBindBuffer");
 }

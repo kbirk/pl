@@ -8,6 +8,7 @@
 #include "plAutomaticPlanner.h"
 #include "plVector3.h"
 #include "plWindow.h"
+#include "plOpenGLInfo.h"
 
 #define CAMERA_ROTATION_MODE    1
 #define CAMERA_TRANSLATION_MODE 2
@@ -22,7 +23,7 @@ plModelEditor modelEditor;
 
 // camera
 uint32_t cameraMode = CAMERA_ROTATION_MODE; // rotation or translation mode
-plCamera camera;
+std::shared_ptr<plCamera> camera;
 
 // interaction
 plVector3 previousMouse; // last mouse position
@@ -32,15 +33,18 @@ bool shift = false; // whether shift is currently down
 
 void init(int32_t argc, char** argv)
 {
+    // initialize the plan
     plan = std::make_shared<plPlan>(argc, argv);
-    camera = plCamera("./resources/view0");
+
+    // intialize the camera
+    camera = std::make_shared<plCamera>("./resources/view0");
 
     // initialize openGL specific objects
     plOpenGLInfo::init();
     plRenderer::init();
     plRenderResources::init();
 
-    // set initial size
+    // set initial size for buffers
     plRenderResources::reshape(
         plWindow::viewportWidth(),
         plWindow::viewportHeight());
@@ -54,9 +58,13 @@ void init(int32_t argc, char** argv)
 void render()
 {
     // set camera
-    plCameraStack::load(camera);
+    plCameraStack::load(*camera);
     // set perspective projection
-    plProjectionStack::load(plProjection(PL_FIELD_OF_VIEW , PL_ASPECT_RATIO, PL_NEAR_PLANE, PL_FAR_PLANE));
+    plProjectionStack::load(plProjection(
+        PL_FIELD_OF_VIEW,
+        PL_ASPECT_RATIO,
+        PL_NEAR_PLANE,
+        PL_FAR_PLANE));
     // queue plan for drawing
     plRenderer::queue(*plan);
     // queue global coordinate axis
@@ -158,24 +166,24 @@ void handleKeyPress(const WindowEvent& event)
         // uppercase keys
         switch (key)
         {
-            case SDLK_a:   /* UN-USED */ break;
-            case SDLK_b:   /* UN-USED */ break;
-            case SDLK_c:   /* UN-USED */ break;
+            case SDLK_a: /* UN-USED */ break;
+            case SDLK_b: /* UN-USED */ break;
+            case SDLK_c: /* UN-USED */ break;
             case SDLK_d:
 
                 // add a donor site
                 plan->addDonorSite(modelEditor.selectedModelID());
                 break;
 
-            case SDLK_e:   /* UN-USED */ break;
-            case SDLK_f:   /* UN-USED */ break;
-            case SDLK_g:   /* UN-USED */ break;
-            case SDLK_h:   /* UN-USED */ break;
-            case SDLK_i:   /* UN-USED */ break;
-            case SDLK_j:   /* UN-USED */ break;
-            case SDLK_k:   /* UN-USED */ break;
-            case SDLK_l:   /* UN-USED */ break;
-            case SDLK_m:   /* UN-USED */ break;
+            case SDLK_e: /* UN-USED */ break;
+            case SDLK_f: /* UN-USED */ break;
+            case SDLK_g: /* UN-USED */ break;
+            case SDLK_h: /* UN-USED */ break;
+            case SDLK_i: /* UN-USED */ break;
+            case SDLK_j: /* UN-USED */ break;
+            case SDLK_k: /* UN-USED */ break;
+            case SDLK_l: /* UN-USED */ break;
+            case SDLK_m: /* UN-USED */ break;
             case SDLK_n:
 
                 // clear plan, start new
@@ -197,11 +205,11 @@ void handleKeyPress(const WindowEvent& event)
                 plAutomaticPlanner::calculate(plan, 0);
                 break;
 
-            case SDLK_q:   /* UN-USED */ break;
+            case SDLK_q: /* UN-USED */ break;
             case SDLK_r:
 
                 // import view
-                camera.importViewParams("./resources/view" + std::to_string(currentView));
+                camera->importViewParams("./resources/view" + std::to_string(currentView));
                 break;
 
             case SDLK_s:
@@ -210,18 +218,18 @@ void handleKeyPress(const WindowEvent& event)
                 plan->addDefectSite(modelEditor.selectedModelID());
                 break;
 
-            case SDLK_t:   /* UN-USED */ break;
-            case SDLK_u:   /* UN-USED */ break;
-            case SDLK_v:   /* UN-USED */ break;
+            case SDLK_t: /* UN-USED */ break;
+            case SDLK_u: /* UN-USED */ break;
+            case SDLK_v: /* UN-USED */ break;
             case SDLK_w:
 
                 // export view
-                camera.exportViewParams("./resources/view" + std::to_string(currentView));
+                camera->exportViewParams("./resources/view" + std::to_string(currentView));
                 break;
 
-            case SDLK_x:   /* UN-USED */ break;
-            case SDLK_y:   /* UN-USED */ break;
-            case SDLK_z:   /* UN-USED */ break;
+            case SDLK_x: /* UN-USED */ break;
+            case SDLK_y: /* UN-USED */ break;
+            case SDLK_z: /* UN-USED */ break;
         }
 
     }
@@ -230,17 +238,17 @@ void handleKeyPress(const WindowEvent& event)
         // lowercase keys
         switch (key)
         {
-            case SDLK_a:   /* UN-USED */ break;
-            case SDLK_b:   /* UN-USED */ break;
-            case SDLK_c:   /* UN-USED */ break;
-            case SDLK_d:   /* UN-USED */ break;
-            case SDLK_e:   /* UN-USED */ break;
-            case SDLK_f:   /* UN-USED */ break;
-            case SDLK_g:   /* UN-USED */ break;
-            case SDLK_h:   /* UN-USED */ break;
-            case SDLK_i:   /* UN-USED */ break;
-            case SDLK_j:   /* UN-USED */ break;
-            case SDLK_k:   /* UN-USED */ break;
+            case SDLK_a: /* UN-USED */ break;
+            case SDLK_b: /* UN-USED */ break;
+            case SDLK_c: /* UN-USED */ break;
+            case SDLK_d: /* UN-USED */ break;
+            case SDLK_e: /* UN-USED */ break;
+            case SDLK_f: /* UN-USED */ break;
+            case SDLK_g: /* UN-USED */ break;
+            case SDLK_h: /* UN-USED */ break;
+            case SDLK_i: /* UN-USED */ break;
+            case SDLK_j: /* UN-USED */ break;
+            case SDLK_k: /* UN-USED */ break;
             case SDLK_l:
 
                 // set graft edit mode to length
@@ -253,13 +261,13 @@ void handleKeyPress(const WindowEvent& event)
                 plan->updateGraftMarkerPositions();
                 break;
 
-            case SDLK_n:   /* UN-USED */ break;
+            case SDLK_n: /* UN-USED */ break;
             case SDLK_o:
 
                 // toggle octree view for selected model
                 if (modelEditor.isModelSelected())
                 {
-                    plan->models(modelEditor.selectedModelID()).toggleOctreeVisibility();
+                    plan->models(modelEditor.selectedModelID())->toggleOctreeVisibility();
                 }
                 break;
 
@@ -269,21 +277,21 @@ void handleKeyPress(const WindowEvent& event)
                 plan->toggleVisibility();
                 break;
 
-            case SDLK_q:   /* UN-USED */ break;
+            case SDLK_q: /* UN-USED */ break;
             case SDLK_r:
 
                 // set graft edit mode to rotation
                 graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_ROTATE);
                 break;
 
-            case SDLK_s:   /* UN-USED */ break;
+            case SDLK_s: /* UN-USED */ break;
             case SDLK_t:
 
                 // set graft edit mode to translation
                 graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_TRANSLATE);
                 break;
 
-            case SDLK_u:   /* UN-USED */ break;
+            case SDLK_u: /* UN-USED */ break;
             case SDLK_v:
 
                 // toggle visibility of selected component (solid, transparent, invisible)
@@ -292,15 +300,15 @@ void handleKeyPress(const WindowEvent& event)
                 modelEditor.toggleSelectedVisibility();
                 break;
 
-            case SDLK_w:   /* UN-USED */ break;
-            case SDLK_x:   /* UN-USED */ break;
-            case SDLK_y:   /* UN-USED */ break;
+            case SDLK_w: /* UN-USED */ break;
+            case SDLK_x: /* UN-USED */ break;
+            case SDLK_y: /* UN-USED */ break;
             case SDLK_z:
 
                 // reset camera onto model
                 if (modelEditor.isModelSelected())
                 {
-                    camera.reset(plan->models(modelEditor.selectedModelID()).getCentroid());
+                    camera->reset(plan->models(modelEditor.selectedModelID())->getCentroid());
                 }
                 break;
         }
@@ -312,8 +320,8 @@ void handleMouseMove(const WindowEvent& event)
     auto mouseEvent = event.originalEvent->motion;
 
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
-    int32_t x = mouseEvent.x;
-    int32_t y = plWindow::height() - mouseEvent.y;
+    int32_t x = mouseEvent.x * plWindow::pixelRatio();
+    int32_t y = plWindow::height() - (mouseEvent.y * plWindow::pixelRatio());
 
     switch (button)
     {
@@ -328,7 +336,7 @@ void handleMouseMove(const WindowEvent& event)
         case SDL_BUTTON_MIDDLE:
 
             // zoom camera
-            camera.zoom(y - previousMouse.y);
+            camera->zoom(y - previousMouse.y);
             break;
 
         case SDL_BUTTON_RIGHT:
@@ -336,11 +344,11 @@ void handleMouseMove(const WindowEvent& event)
             // previous and current mouse coords should be very small
             if (cameraMode == CAMERA_ROTATION_MODE)
             {
-                camera.rotate(previousMouse.x, previousMouse.y, x, y);
+                camera->rotate(previousMouse.x, previousMouse.y, x, y);
             }
             else
             {
-                camera.translate(previousMouse.x - x, previousMouse.y - y);
+                camera->translate(previousMouse.x - x, previousMouse.y - y);
             }
             break;
     }
@@ -354,7 +362,7 @@ void handleMouseWheel(const WindowEvent& event)
 {
     const float32_t SCROLL_FACTOR = 5.0f;
     float32_t y = event.originalEvent->wheel.y;
-    camera.zoom(y * SCROLL_FACTOR);
+    camera->zoom(y * SCROLL_FACTOR);
 }
 
 void handleMousePress(const WindowEvent& event)
@@ -362,8 +370,8 @@ void handleMousePress(const WindowEvent& event)
     auto mouseEvent = event.originalEvent->button;
 
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
-    int32_t x = mouseEvent.x;
-    int32_t y = plWindow::height() - mouseEvent.y;
+    int32_t x = mouseEvent.x * plWindow::pixelRatio();
+    int32_t y = plWindow::height() - (mouseEvent.y * plWindow::pixelRatio());
 
     if (mouseEvent.button == SDL_BUTTON_LEFT) {
         if (ctrl)
@@ -389,8 +397,8 @@ void handleMouseRelease(const WindowEvent& event)
     auto mouseEvent = event.originalEvent->button;
 
     // convert from TOP-LEFT origin to BOTTOM-LEFT origin
-    int32_t x = mouseEvent.x;
-    int32_t y = plWindow::height() - mouseEvent.y;
+    int32_t x = mouseEvent.x * plWindow::pixelRatio();
+    int32_t y = plWindow::height() - (mouseEvent.y * plWindow::pixelRatio());
 
     // process mouse release
     graftEditor.processMouseRelease(x, y);
@@ -415,7 +423,6 @@ void handleResize(const WindowEvent& event)
 
 void handleSignal(int32_t signal)
 {
-    std::cout << "Caught signal: " << signal << ", shutting down..." << std::endl;
     exit(0);
 }
 
@@ -424,7 +431,7 @@ int32_t main(int32_t argc, char **argv)
     // check command line argument count
     if (argc < 2)
     {
-        std::cerr << "Required file inputs not provided, aborting" << std::endl;
+        LOG_WARN("Required file inputs not provided, aborting");
         exit(1);
     }
 
@@ -450,8 +457,6 @@ int32_t main(int32_t argc, char **argv)
         plWindow::handleEvents();
         // render
         render();
-        // set cursor
-        // setCursor();
     	// swap back buffer
     	plWindow::swapBuffers();
     }

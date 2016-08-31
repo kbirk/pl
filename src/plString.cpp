@@ -7,7 +7,7 @@ plString::plString()
 }
 
 
-plString::plString (const std::string &str)
+plString::plString (const std::string& str)
     : std::string(str)
 {
 
@@ -21,7 +21,7 @@ plString::plString (const char* s)
 }
 
 
-bool plString::importFile(const std::string &filename)
+bool plString::importFile(const std::string& filename)
 {
     std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
     if (in)
@@ -46,7 +46,7 @@ void plString::toLower()
 }
 
 
-bool plString::compare(const plString &str) const
+bool plString::compare(const plString& str) const
 {
     if (length() != str.length())
     {
@@ -65,7 +65,7 @@ bool plString::compare(const plString &str) const
 }
 
 
-bool plString::compare(const plString &str, uint32_t num) const
+bool plString::compare(const plString& str, uint32_t num) const
 {
     if (num > this->length() || num > str.length())
     {
@@ -84,7 +84,7 @@ bool plString::compare(const plString &str, uint32_t num) const
 }
 
 
-bool plString::compare(const plString &str, uint32_t index, uint32_t num) const
+bool plString::compare(const plString& str, uint32_t index, uint32_t num) const
 {
     if ((index+num) > this->length() || num > str.length())
     {
@@ -103,7 +103,7 @@ bool plString::compare(const plString &str, uint32_t index, uint32_t num) const
 
 }
 
-bool plString::compareCaseInsensitive(const plString &str, uint32_t num) const
+bool plString::compareCaseInsensitive(const plString& str, uint32_t num) const
 {
     if (num > this->length() || num > str.length())
     {
@@ -122,7 +122,7 @@ bool plString::compareCaseInsensitive(const plString &str, uint32_t num) const
 }
 
 
-bool plString::compareCaseInsensitive(const plString &str) const
+bool plString::compareCaseInsensitive(const plString& str) const
 {
     if (length() != str.length())
     {
@@ -141,7 +141,7 @@ bool plString::compareCaseInsensitive(const plString &str) const
 }
 
 /*
-plString plString::operator + (const plString &s) const
+plString plString::operator+ (const plString& s) const
 {
     std::stringstream str;
     str << *this << s << "\0";

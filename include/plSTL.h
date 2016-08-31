@@ -8,7 +8,5 @@
 
 namespace plSTL
 {
-    bool importFile(std::vector<plTriangle> &triangles, const plString &filename, bool verbose = false);
-    bool exportFileBinary(const std::vector<plTriangle> &triangles , const plString &filename);
-    bool exportFileASCII(const std::vector<plTriangle> &triangles , const plString &filename);
+    bool importFile(std::vector<plTriangle>& triangles, const plString& filename);
 }

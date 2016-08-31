@@ -10,5 +10,5 @@ class plOutlineTechnique : public plRenderTechnique
 
         plOutlineTechnique();
 
-        void render(const std::set<plRenderComponent >& componentSet) const;
+        void render(const plRenderList& components) const;
 };

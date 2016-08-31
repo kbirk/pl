@@ -6,48 +6,19 @@ plVAO::plVAO()
 }
 
 
-plVAO::plVAO(const plVAO& vao)
-    : _id(0)
-{
-    _copy(vao);
-}
-
-
-plVAO::plVAO(plVAO&& vao)
-    : _id(0)
-{
-    _move(std::move(vao));
-}
-
-
-plVAO& plVAO::operator = (const plVAO &vao)
-{
-    _copy(vao);
-    return *this;
-}
-
-
-plVAO& plVAO::operator= (plVAO&& vao)
-{
-    _move(std::move(vao));
-    return *this;
-}
-
-
 plVAO::~plVAO()
 {
     _destroy();
 }
 
 
-void plVAO::attach(const std::shared_ptr<plVBO >& vbo)
+void plVAO::attach(std::shared_ptr<plVBO> vbo)
 {
     _vbos.push_back(vbo);
-
 }
 
 
-void plVAO::attach(const std::shared_ptr<plEABO >& eabo)
+void plVAO::attach(std::shared_ptr<plEABO> eabo)
 {
     _eabo = eabo;
 }
@@ -66,10 +37,12 @@ void plVAO::draw() const
     {
         // bind vertex array object
         glBindVertexArray(_id);
+        LOG_OPENGL("glBindVertexArray");
         // draw
         _eabo->drawElements();
         // unbind vao
         glBindVertexArray(0);
+        LOG_OPENGL("glBindVertexArray");
     }
 }
 
@@ -78,21 +51,25 @@ void plVAO::upload()
 {
     if (!_eabo)
     {
-        std::cerr << " plVAO::upload() error: cannot upload to GPU, VAO has no EABO attached, command ignored " << std::endl;
+        LOG_WARN("Cannot upload, VAO has no EABO attached, command ignored");
         return;
     }
 
     if (_vbos.empty())
     {
-        std::cerr << " plVAO::upload() error: cannot upload to GPU, VAO has no VBOs attached, command ignored " << std::endl;
+        LOG_WARN("Cannot upload, VAO has no VBOs attached, command ignored");
         return;
     }
 
     // create and bind VAO
     if (!_id)
+    {
         glGenVertexArrays(1, &_id);
+        LOG_OPENGL("glGenVertexArrays");
+    }
 
     glBindVertexArray(_id);
+    LOG_OPENGL("glBindVertexArray");
 
     for (auto& vbo : _vbos)
     {
@@ -102,36 +79,13 @@ void plVAO::upload()
     _eabo->upload();
 
     glBindVertexArray(0);
-}
-
-
-void plVAO::_copy(const plVAO& vao)
-{
-    attach(std::make_shared<plEABO>(*vao._eabo));
-    for (auto& vbo : vao._vbos)
-    {
-        attach(std::make_shared<plVBO>(*vbo));
-    }
-
-    upload();
-}
-
-
-void plVAO::_move(plVAO&& vao)
-{
-    // move vao
-    _id = vao._id;
-
-    // move vbo and eabo
-    _vbos = std::move(vao._vbos);
-    _eabo = std::move(vao._eabo);
-
-    vao._id = 0;
+    LOG_OPENGL("glBindVertexArray");
 }
 
 
 void plVAO::_destroy()
 {
     glDeleteVertexArrays(1, &_id) ;    // delete vao
+    LOG_OPENGL("glDeleteVertexArrays");
     _id = 0;
 }

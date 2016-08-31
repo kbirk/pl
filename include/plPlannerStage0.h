@@ -23,7 +23,7 @@
 
 #define PL_STAGE_0_INITIAL_TEMPERATURE        1.0f
 #define PL_STAGE_0_STOPPING_TEMPERATURE       0.001f
-#define PL_STAGE_0_COOLING_RATE               0.015f //0.00175f
+#define PL_STAGE_0_COOLING_RATE               0.015f
 
 class plAnnealingGroup
 {
@@ -34,28 +34,34 @@ class plAnnealingGroup
         void bind();
         void unbind();
 
-        void getSolution(plDefectSolution &solution, const plPlanningBufferData &planningData);
-        void getLowestGroupInfo(uint32_t &index, float32_t &energy);
+        void getSolution(
+            std::shared_ptr<plDefectSolution> solution,
+            std::shared_ptr<plPlanningBufferData> planningData);
+        void getLowestGroupInfo(
+            uint32_t& index,
+            float32_t& energy);
 
     private:
 
-        plSSBO _invoEnergiesSSBO;
-        plSSBO _invoGraftPositionsSSBO;
-        plSSBO _invoGraftNormalsSSBO;
-        plSSBO _invoGraftRadiiSSBO;
-        plSSBO _invoGraftCountsSSBO;
+        std::shared_ptr<plSSBO> _invoEnergiesSSBO;
+        std::shared_ptr<plSSBO> _invoGraftPositionsSSBO;
+        std::shared_ptr<plSSBO> _invoGraftNormalsSSBO;
+        std::shared_ptr<plSSBO> _invoGraftRadiiSSBO;
+        std::shared_ptr<plSSBO> _invoGraftCountsSSBO;
 
-        plSSBO _groupEnergiesSSBO;
-        plSSBO _groupGraftPositionsSSBO;
-        plSSBO _groupGraftNormalsSSBO;
-        plSSBO _groupGraftRadiiSSBO;
-        plSSBO _groupGraftCountsSSBO;
+        std::shared_ptr<plSSBO> _groupEnergiesSSBO;
+        std::shared_ptr<plSSBO> _groupGraftPositionsSSBO;
+        std::shared_ptr<plSSBO> _groupGraftNormalsSSBO;
+        std::shared_ptr<plSSBO> _groupGraftRadiiSSBO;
+        std::shared_ptr<plSSBO> _groupGraftCountsSSBO;
 
 };
 
 namespace plPlannerStage0
 {
 
-    void run(plDefectSolution &state, const plPlanningBufferData &planningData);
+    void run(
+        std::shared_ptr<plDefectSolution> state,
+        std::shared_ptr<plPlanningBufferData> planningData);
 
 }

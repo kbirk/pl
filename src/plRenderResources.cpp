@@ -43,15 +43,15 @@ namespace plRenderResources
         // create main fbo
         _fbos[PL_MAIN_FBO] = std::make_shared<plFBO>();
 
-        // main render buffer
+        // color texture
         _fbos[PL_MAIN_FBO]->attach(
             GL_COLOR_ATTACHMENT0,
             std::make_shared<plTexture2D>(width, height, GL_RGBA8,  GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
 
-        // texture for outlining
+        // outline texture
         _fbos[PL_MAIN_FBO]->attach(
             GL_COLOR_ATTACHMENT1,
-            std::make_shared<plTexture2D>(width, height, GL_RGBA32I,  GL_RGBA_INTEGER, GL_INT, nullptr));
+            std::make_shared<plTexture2D>(width, height, GL_RGBA8I,  GL_RGBA_INTEGER, GL_INT, nullptr));
 
         // **CURRENTLY UN-USED**
         _fbos[PL_MAIN_FBO]->attach(
@@ -63,10 +63,10 @@ namespace plRenderResources
             GL_COLOR_ATTACHMENT3,
             std::make_shared<plTexture2D>(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
 
-        // colour picking texture
+        // picking texture
         _fbos[PL_MAIN_FBO]->attach(
             GL_COLOR_ATTACHMENT4,
-            std::make_shared<plTexture2D>(width, height, GL_RGB32I, GL_RGB_INTEGER, GL_INT, nullptr));
+            std::make_shared<plTexture2D>(width, height, GL_RGBA8I, GL_RGB_INTEGER, GL_INT, nullptr));
 
         // depth-stencil buffer texture
         _fbos[PL_MAIN_FBO]->attach(
@@ -79,10 +79,18 @@ namespace plRenderResources
     void _initShaders()
     {
         // create shader objects
-        _shaders[PL_MINIMAL_SHADER] = std::make_shared<plVertexFragmentShader>("./resources/shaders/minimal.vert", "./resources/shaders/minimal.frag");
-        _shaders[PL_PHONG_SHADER] = std::make_shared<plVertexFragmentShader>("./resources/shaders/phong.vert", "./resources/shaders/phong.frag");
-        _shaders[PL_OUTLINE_SHADER] = std::make_shared<plVertexFragmentShader>("./resources/shaders/outline.vert", "./resources/shaders/outline.frag");
-        _shaders[PL_FBO_SHADER] = std::make_shared<plVertexFragmentShader>("./resources/shaders/fbo.vert", "./resources/shaders/fbo.frag");
+        _shaders[PL_MINIMAL_SHADER] = std::make_shared<plVertexFragmentShader>(
+            "./resources/shaders/minimal.vert",
+            "./resources/shaders/minimal.frag");
+        _shaders[PL_PHONG_SHADER] = std::make_shared<plVertexFragmentShader>(
+            "./resources/shaders/phong.vert",
+            "./resources/shaders/phong.frag");
+        _shaders[PL_OUTLINE_SHADER] = std::make_shared<plVertexFragmentShader>(
+            "./resources/shaders/outline.vert",
+            "./resources/shaders/outline.frag");
+        _shaders[PL_FBO_SHADER] = std::make_shared<plVertexFragmentShader>(
+            "./resources/shaders/fbo.vert",
+            "./resources/shaders/fbo.frag");
     }
 
 }

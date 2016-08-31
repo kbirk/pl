@@ -1,13 +1,18 @@
 #include "plPlanningBufferData.h"
 
-plPlanningBufferData::plPlanningBufferData(const plDefectSite& defect, const std::vector<plDonorSite*>& donors)
+plPlanningBufferData::plPlanningBufferData(
+    std::shared_ptr<plDefectSite> defect,
+    const std::vector<std::shared_ptr<plDonorSite>>& donors)
 {
     // generate defect site and buffer
-    std::cout << "    Generating defect site planning data" << std::endl;
-    defectSite = plPlanningSite(defect.boundary.mesh().triangles(), defect.boundary, false);
+    LOG_INFO("  Generating defect site planning data");
+    defectSite = std::make_shared<plPlanningSite>(
+        defect->boundary->mesh()->triangles(),
+        defect->boundary,
+        false);
 
-    std::cout << "    Generating defect site SSBO" << std::endl;
-    defectSiteSSBO = defectSite.getSSBO();
+    LOG_INFO("  Generating defect site SSBO");
+    defectSiteSSBO = defectSite->getSSBO();
 
     // ensure number of sites remains within maximum
     uint32_t donorSiteCount = (donors.size() < PL_MAX_DONOR_SITES) ? donors.size()  : PL_MAX_DONOR_SITES;
@@ -15,61 +20,67 @@ plPlanningBufferData::plPlanningBufferData(const plDefectSite& defect, const std
     // generate donor sites and buffer
     for (uint32_t i=0; i<donorSiteCount; i++)
     {
-        std::cout << "    Generating donor site " << i << " planning data " << std::endl;
-        donorSites.push_back(
-            plPlanningSite(
-                donors[i]->boundary.mesh().triangles(),
-                donors[i]->boundary,
-                true));
+        LOG_INFO("  Generating donor site " << i << " planning data");
+        auto donorSite = std::make_shared<plPlanningSite>(
+            donors[i]->boundary->mesh()->triangles(),
+            donors[i]->boundary,
+            true);
+        donorSites.push_back(donorSite);
     }
-    std::cout << "    Generating donor sites SSBO" << std::endl;
+    LOG_INFO("  Generating donor sites SSBO");
     donorSitesSSBO = _getGroupSSBO();
 }
 
 
 bool plPlanningBufferData::good() const
 {
-    bool isGood = true;
-    for (uint32_t i=0; i < donorSites.size(); i++)
+    if (!defectSite->good())
     {
-        isGood &= donorSites[i].good();
+        return false;
     }
-
-    return isGood & defectSite.good();
+    for (auto donorSite : donorSites)
+    {
+        if (!donorSite->good())
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 
 uint32_t plPlanningBufferData::totalDonorGridPoints() const
 {
     uint32_t totalGridPoints = 0;
-    for (const plPlanningSite& donorSite : donorSites)
+    for (auto donorSite : donorSites)
     {
-        totalGridPoints +=  donorSite.gridPoints.size();
+        totalGridPoints += donorSite->gridPoints.size();
     }
     return totalGridPoints;
 }
 
 
-plSSBO plPlanningBufferData::_getGroupSSBO()
+std::shared_ptr<plSSBO> plPlanningBufferData::_getGroupSSBO()
 {
     // find total data size
     uint32_t dataSize = 0;
-    for (uint32_t i=0; i < donorSites.size(); i++)
+    for (auto donorSite : donorSites)
     {
-        dataSize += donorSites[i].totalSize();
+        dataSize += donorSite->totalSize();
     }
 
     // buffer all data
-    std::vector<plVector4> data;    data.reserve(dataSize);
+    std::vector<plVector4> data;
+    data.reserve(dataSize);
 
-    for (uint32_t i=0; i < donorSites.size(); i++)
+    for (auto donorSite : donorSites)
     {
-        donorSites[i].getData(data);
+        donorSite->getData(data);
     }
 
     uint32_t numBytes = dataSize * sizeof(plVector4);
 
-    std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;
+    LOG_INFO("    Total buffer size: " << numBytes << " bytes");
 
-    return plSSBO(numBytes, (void*)(&data[0]));
+    return std::make_shared<plSSBO>(numBytes, (void*)(&data[0]));
 }

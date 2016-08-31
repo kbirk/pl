@@ -43,8 +43,4 @@ namespace plUtility
     {
         return std::find(vector.begin(), vector.end(), t) != vector.end();
     }
-
-
-    void printProgressBar(float32_t percent, uint32_t length = 50);
-
 }

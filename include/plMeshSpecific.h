@@ -8,11 +8,11 @@ class plMeshSpecific
     public:
 
         plMeshSpecific();
-        plMeshSpecific(const plMesh& mesh);
+        plMeshSpecific(std::shared_ptr<plMesh> mesh);
 
-        virtual const plMesh& mesh() const { return *_mesh; }
+        virtual std::shared_ptr<plMesh> mesh() const { return _mesh; }
 
     protected:
 
-        const plMesh* _mesh;
+        std::shared_ptr<plMesh> _mesh;
 };

@@ -10,9 +10,9 @@ plModelEditor::plModelEditor()
 void plModelEditor::clearSelection()
 {
     _selectedModel = nullptr;
-    for (plModel* model : _plan->models())
+    for (auto model : _plan->models())
     {
-        _clearEditable(*model);
+        _clearEditable(model);
     }
 }
 
@@ -29,7 +29,7 @@ void plModelEditor::setEditMode(uint32_t editMode)
 
         default:
 
-            std::cerr << "plModelEditor::setEditMode() error: invalid edit mode enumeration provided" << std::endl;
+            LOG_WARN("Invalid edit mode enumeration provided");
             break;
     }
 }
@@ -85,7 +85,7 @@ void plModelEditor::selectModel(uint32_t index)
     clearSelection();
 
     _selectEditable(_plan->models(index));
-    _selectedModel = &_plan->models(index);
+    _selectedModel = _plan->models(index);
 }
 
 
@@ -167,7 +167,7 @@ void plModelEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
             plPickingStack::loadRed(PL_PICKING_TYPE_BONE);
             plPickingStack::loadGreen(i);
             plPickingStack::loadBlue(-1);
-            plColourStack::load(PL_MODEL_COLOUR);
+            plColorStack::load(PL_MODEL_COLOR);
 
             plRenderer::queueDisk(
                 PL_MINIMAL_TECHNIQUE,
@@ -175,7 +175,7 @@ void plModelEditor::_extractMenuRenderComponents(plRenderMap& renderMap) const
                 plVector3(0, 0, 1),
                 PL_EDITOR_MENU_CIRCLE_RADIUS);
 
-            if (_plan->models(i).isSelected())
+            if (_plan->models(i)->isSelected())
             {
                 // draw selection outline
                 plRenderer::queueDisk(
@@ -198,7 +198,7 @@ int32_t plModelEditor::selectedModelID() const
 {
     for (uint32_t i=0; i< _plan->models().size(); i++)
     {
-        if (_selectedModel == &_plan->models(i))
+        if (_selectedModel == _plan->models(i))
         {
             return i;
         }

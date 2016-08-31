@@ -9,10 +9,11 @@ plShader::plShader()
 plShader::~plShader()
 {
     glDeleteProgram(_id);
+    LOG_OPENGL("glDeleteProgram");
 }
 
 
-GLuint plShader::_createShader(const std::string &shaderFile, GLenum shaderType)
+GLuint plShader::_createShader(const std::string& shaderFile, GLenum shaderType)
 {
     // load shader file into memory
     const char *shaderSource = _readShaderFile(shaderFile);     // allocate memory to shaderSource
@@ -24,8 +25,10 @@ GLuint plShader::_createShader(const std::string &shaderFile, GLenum shaderType)
     }
     // create shader object
     GLuint shader = glCreateShader(shaderType);
+    LOG_OPENGL("glCreateShader");
     // set source code of shader object
     glShaderSource(shader, 1, &shaderSource, nullptr);
+    LOG_OPENGL("glShaderSource");
     delete [] shaderSource;                                     // deallocate memory from shaderSource
     // return shader object
     return shader;
@@ -56,9 +59,11 @@ GLuint plShader::_createShader(const std::vector<std::string> &shaderFiles, GLen
 
     // create shader object
     GLuint shader = glCreateShader(shaderType);
+    LOG_OPENGL("glCreateShader");
 
     // set source code of shader object
     glShaderSource(shader, sources.size(), &sources[0], nullptr);
+    LOG_OPENGL("glShaderSource");
     for (uint32_t i=0; i< shaderFiles.size(); i++)
     {
         delete [] sources[i];  // deallocate memory from shaderSource
@@ -88,7 +93,7 @@ char* plShader::_readShaderFile(const std::string& filename)
     }
 
     // print error message
-    std::cerr << "plShader::_readShaderFile() error: could not open shader file: " << filename << std::endl;
+    LOG_WARN("Could not open shader file: " << filename);
     return nullptr;
 }
 
@@ -97,9 +102,11 @@ bool plShader::_compileShader(GLuint shader)
 {
     // compile vertex shader
     glCompileShader(shader);
+    LOG_OPENGL("glCompileShader");
     // error check
     GLint result;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+    LOG_OPENGL("glGetShaderiv");
 
     if (result == GL_FALSE)
     {
@@ -107,6 +114,7 @@ bool plShader::_compileShader(GLuint shader)
         _printCompileError(shader);
         // delete current objects and abort constructor
         glDeleteShader(shader);
+        LOG_OPENGL("glDeleteShader");
         _id = 0;
         _good = false;
         return false;
@@ -115,7 +123,7 @@ bool plShader::_compileShader(GLuint shader)
 }
 
 
-GLuint plShader::_createAndCompileShader(const std::string &shaderFile, GLenum shaderType)
+GLuint plShader::_createAndCompileShader(const std::string& shaderFile, GLenum shaderType)
 {
     // create shader object
     GLuint shader = _createShader(shaderFile, shaderType);
@@ -142,11 +150,13 @@ void plShader::_printCompileError(GLuint shader)
     // get info log length
     GLint infoLogLength;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+    LOG_OPENGL("glGetShaderiv");
     // get error message
-    std::vector<char> errorMessage(infoLogLength);
-    glGetShaderInfoLog(shader, infoLogLength, nullptr, &errorMessage[0]);
+    std::vector<char> msg(infoLogLength);
+    glGetShaderInfoLog(shader, infoLogLength, nullptr, &msg[0]);
+    LOG_OPENGL("glGetShaderInfoLog");
     // print error message
-    fprintf(stdout, "Compilation errors:\n%s\n", &errorMessage[0]);
+    LOG_ERROR("Compilation errors: " << std::string(msg.begin(), msg.end()));
 }
 
 
@@ -154,9 +164,11 @@ bool plShader::_linkProgram()
 {
     // link shader program
     glLinkProgram(_id);
+    LOG_OPENGL("glLinkProgram");
     // error check
     GLint result;
     glGetProgramiv(_id, GL_LINK_STATUS, &result);
+    LOG_OPENGL("glGetProgramiv");
     // check for error
     if (result == GL_FALSE)
     {
@@ -175,9 +187,11 @@ void plShader::_printLinkError()
     // get info log length
     GLint infoLogLength;
     glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &infoLogLength);
+    LOG_OPENGL("glGetProgramiv");
     // get error message
-    std::vector<char> errorMessage(infoLogLength);
-    glGetProgramInfoLog(_id, infoLogLength, nullptr, &errorMessage[0]);
+    std::vector<char> msg(infoLogLength);
+    glGetProgramInfoLog(_id, infoLogLength, nullptr, &msg[0]);
+    LOG_OPENGL("glGetProgramInfoLog");
     // print error message
-    fprintf(stdout, "Linking errors:\n%s\n", &errorMessage[0]);
+    LOG_ERROR("Linking errors: " << std::string(msg.begin(), msg.end()));
 }

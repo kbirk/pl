@@ -11,32 +11,6 @@ plEABO::plEABO(const std::vector<GLuint>& data, uint32_t mode, uint32_t usage)
 }
 
 
-plEABO::plEABO(const plEABO& eabo)
-{
-    _copy(eabo);
-}
-
-
-plEABO::plEABO(plEABO&& eabo)
-{
-    _move(std::move(eabo));
-}
-
-
-plEABO& plEABO::operator = (const plEABO &eabo)
-{
-    _copy(eabo);
-    return *this;
-}
-
-
-plEABO& plEABO::operator= (plEABO&& eabo)
-{
-    _move(std::move(eabo));
-    return *this;
-}
-
-
 void plEABO::set(const std::vector<uint32_t>& data, uint32_t mode, uint32_t usage)
 {
     _data = data;
@@ -57,16 +31,21 @@ void plEABO::upload()
 {
     if (_data.empty())
     {
-        std::cerr << "plEABO::upload() error: data buffer empty, ignoring command" << std::endl;
+        LOG_WARN("Data buffer empty, ignoring command");
         return;
     }
 
     // if buffer not allocated, generate
     if (!_id)
+    {
         glGenBuffers(1, &_id);
+        LOG_OPENGL("glGenBuffers");
+    }
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id);
+    LOG_OPENGL("glBindBuffer");
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, _numBytes, &_data[0], _usage);
+    LOG_OPENGL("glBufferData");
 
     // do not unbind buffer as this will most likely be called from a vao
 }
@@ -75,25 +54,5 @@ void plEABO::upload()
 void plEABO::drawElements(uint32_t index) const
 {
     glDrawElements(_mode, _data.size(), _type, (GLbyte*)(nullptr) + (index));
-}
-
-
-void plEABO::_copy(const plEABO &eabo)
-{
-    set(eabo._data, eabo._mode, eabo._usage);
-}
-
-
-void plEABO::_move(plEABO&& eabo)
-{
-    _id = eabo._id;
-    _numBytes = eabo._numBytes;
-    _type = eabo._type;
-    _mode = eabo._mode;
-    _data = std::move(eabo._data);
-
-    eabo._id = 0;
-    eabo._numBytes = 0;
-    eabo._type = 0;
-    eabo._mode = 0;
+    LOG_OPENGL("glDrawElements");
 }

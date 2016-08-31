@@ -20,7 +20,7 @@ void plCamera::_defaultInit()
 {
     // set default position
     position = plVector3(0,0,50);
-    lookat = plVector3(0,0,0);
+    lookat = plVector3(0, 0, 0);
     up = plVector3(0,1,0);
 }
 
@@ -50,7 +50,7 @@ plMatrix44 plCamera::getMatrix() const
     return rot * trans;
 }
 
-void plCamera::reset(const plVector3 &point)
+void plCamera::reset(const plVector3& point)
 {
     plVector3 focus_centre = point;
     plVector3 separation = position - focus_centre;
@@ -62,13 +62,13 @@ void plCamera::reset(const plVector3 &point)
 }
 
 
-void plCamera::exportViewParams(const std::string &filename)
+void plCamera::exportViewParams(const std::string& filename)
 {
     std::ofstream out(filename.c_str());
 
     if (!out)
     {
-        std::cerr << "plCamera outputViewParams error: Failed to open the output file\n";
+        LOG_WARN("Failed to open the output file");
     }
     else
     {
@@ -79,13 +79,13 @@ void plCamera::exportViewParams(const std::string &filename)
 }
 
 
-void plCamera::importViewParams(const std::string &filename)
+void plCamera::importViewParams(const std::string& filename)
 {
     std::ifstream in(filename.c_str());
 
     if (!in)
     {
-        std::cerr << "plCamera readViewParams error: Failed to open the input file\n";
+        LOG_WARN("Failed to open the input file, loading default camera parameters");
         _defaultInit();
     }
     else

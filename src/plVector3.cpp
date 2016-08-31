@@ -22,46 +22,46 @@ plVector3::plVector3(char *str)
 {
     int filled = sscanf(str, "%f %f %f", &x, &y, &z);
     if (filled != 3) {
-        std::cerr << "Error occured while loading plVector3 from: `" << str << "`." << std::endl;
+        LOG_WARN("Error occured while loading plVector3 from: `" << str << "`.");
         exit(1);
     }
 }
 
-plVector3::plVector3(const plString &str)
+plVector3::plVector3(const plString& str)
 {
     int filled = sscanf(str.c_str(), "%f %f %f", &x, &y, &z);
     if (filled != 3) {
-        std::cerr << "Error occured while loading plVector3 from: `" << str << "`." << std::endl;
+        LOG_WARN("Error occured while loading plVector3 from: `" << str << "`.");
         exit(1);
     }
 }
 
-bool plVector3::operator == (const plVector3 &p) const
+bool plVector3::operator== (const plVector3& p) const
 {
     return x == p.x && y == p.y && z == p.z;
 }
 
-bool plVector3::operator != (const plVector3 &p) const
+bool plVector3::operator!= (const plVector3& p) const
 {
     return x != p.x || y != p.y || z != p.z;
 }
 
-plVector3 plVector3::operator + (const plVector3 &p) const
+plVector3 plVector3::operator+ (const plVector3& p) const
 {
     return plVector3(x+p.x, y+p.y, z+p.z);
 }
 
-plVector3 plVector3::operator - (const plVector3 &p) const
+plVector3 plVector3::operator- (const plVector3& p) const
 {
     return plVector3(x-p.x, y-p.y, z-p.z);
 }
 
-float32_t plVector3::operator * (const plVector3 &p) const     /* dot product */
+float32_t plVector3::operator* (const plVector3& p) const     /* dot product */
 {
     return x * p.x + y * p.y + z * p.z;
 }
 
-plVector3 plVector3::operator ^ (const plVector3 &p) const    /* cross product */
+plVector3 plVector3::operator^ (const plVector3& p) const    /* cross product */
 {
     return plVector3(y*p.z-p.y*z, -(x*p.z-p.x*z), x*p.y-p.x*y);
 }
@@ -82,15 +82,16 @@ plVector3& plVector3::operator=(const plVector3& other)
 
 plVector3 plVector3::normalize() const
 {
-    float32_t len;
-    len = sqrt(x*x + y*y + z*z);
-    if (len == 0)
+    float32_t len = sqrt(x*x + y*y + z*z);
+    if (len == 0.0)
     {
-        //std::cerr << "normalize error: length is 0\n";
-        return plVector3(0,0,0);
+        LOG_WARN("Length is 0, return zero vector");
+        return plVector3(0, 0, 0);
     }
     else
+    {
         return plVector3(x/len, y/len, z/len);
+    }
 }
 
 float32_t plVector3::length() const
@@ -119,7 +120,7 @@ float32_t plVector3::signedAngle(const plVector3 v, const plVector3& planeNormal
 }
 
 
-plVector3 operator * (float32_t k, const plVector3 &p)
+plVector3 operator* (float32_t k, const plVector3& p)
 {
     plVector3 q;
 
@@ -131,14 +132,14 @@ plVector3 operator * (float32_t k, const plVector3 &p)
 }
 
 
-std::ostream& operator << (std::ostream& stream, const plVector3 &p)
+std::ostream& operator<< (std::ostream& stream, const plVector3& p)
 {
   stream << p.x << " " << p.y << " " << p.z;
   return stream;
 }
 
 
-std::istream& operator >> (std::istream& stream, plVector3 & p)
+std::istream& operator>> (std::istream& stream, plVector3& p)
 {
   stream >> p.x >> p.y >> p.z;
   return stream;

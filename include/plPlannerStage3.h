@@ -23,24 +23,31 @@ class plGreedyGroup
 
         float32_t lowestRMS() const { return _lowestRMS; }
         void update();
-        void getSolution(plDonorSolution &solution, const plPlanningBufferData &planningData);
+        void getSolution(
+            uint32_t numGrafts,
+            std::shared_ptr<plDonorSolution> solution,
+            std::shared_ptr<plPlanningBufferData> planningData);
 
     private:
 
-        float32_t                _lowestRMS;
+        float32_t _lowestRMS;
         std::vector<plVector4> _lowestPositions;
         std::vector<plVector4> _lowestNormals;
         std::vector<plVector4> _lowestXAxes;
-        std::vector<uint32_t>    _lowestSiteIndices;
+        std::vector<uint32_t> _lowestSiteIndices;
 
-        plSSBO _donorSolutionPositionsSSBO;
-        plSSBO _donorSolutionNormalsSSBO;
-        plSSBO _donorSolutionXAxesSSBO;
-        plSSBO _donorSolutionSiteIndicesSSBO;
-        plSSBO _totalRmsSSBO;
+        std::shared_ptr<plSSBO> _donorSolutionPositionsSSBO;
+        std::shared_ptr<plSSBO> _donorSolutionNormalsSSBO;
+        std::shared_ptr<plSSBO> _donorSolutionXAxesSSBO;
+        std::shared_ptr<plSSBO> _donorSolutionSiteIndicesSSBO;
+        std::shared_ptr<plSSBO> _totalRmsSSBO;
 };
 
 namespace plPlannerStage3
 {
-    void run(plDonorSolution &donorSolution, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plRmsData &rmsInput);
+    void run(
+        std::shared_ptr<plDonorSolution> donorSolution,
+        std::shared_ptr<plPlanningBufferData> planningData,
+        std::shared_ptr<plDefectSolution> defectSolution,
+        std::shared_ptr<plRmsData> rmsInput);
 }

@@ -2,70 +2,58 @@
 
 plOctreeMesh::plOctreeMesh()
 {
+    _octree = std::make_shared<plOctree>();
 }
 
 
-plOctreeMesh::plOctreeMesh(const std::vector<plTriangle> &triangles, uint32_t depth, bool verbose)
+plOctreeMesh::plOctreeMesh(const std::vector<plTriangle>& triangles, uint32_t depth)
     : plMesh(triangles)
 {
-    _buildOctree(depth, verbose);
+    _octree = std::make_shared<plOctree>();
+    _buildOctree(depth);
 }
 
 
-plOctreeMesh::plOctreeMesh(std::vector<plTriangle>&& triangles, uint32_t depth, bool verbose)
+plOctreeMesh::plOctreeMesh(std::vector<plTriangle>&& triangles, uint32_t depth)
     : plMesh(std::move(triangles))
 {
-    _buildOctree(depth, verbose);
+    _octree = std::make_shared<plOctree>();
+    _buildOctree(depth);
 }
 
 
-plOctreeMesh::plOctreeMesh(const plOctreeMesh &mesh)
-    : plMesh(mesh._triangles)
+void plOctreeMesh::setTriangles(const std::vector<plTriangle>& triangles)
 {
-    _buildOctree(mesh.octree().depth(), false);  // must build a new octree to maintain proper coherency
+    _triangles = triangles;
+    _buildOctree(octree()->depth());
 }
 
 
-plOctreeMesh::plOctreeMesh(plOctreeMesh&& mesh)
-    : plMesh(std::move(mesh._triangles)), _octree(std::move(mesh._octree))
+void plOctreeMesh::setTriangles(std::vector<plTriangle>&& triangles)
 {
+    _triangles = std::move(triangles);
+    _buildOctree(octree()->depth());
 }
 
 
-plOctreeMesh& plOctreeMesh::operator= (const plOctreeMesh& mesh)
-{
-    _triangles = mesh._triangles;
-    _buildOctree(mesh.octree().depth(), false);  // must build a new octree to maintain proper coherency
-    return *this;
-}
-
-
-plOctreeMesh& plOctreeMesh::operator= (plOctreeMesh&& mesh)
-{
-    _triangles = std::move(mesh._triangles);
-    _octree    = std::move(mesh._octree);
-    return *this;
-}
-
-
-void plOctreeMesh::_buildOctree(uint32_t depth, bool verbose)
+void plOctreeMesh::_buildOctree(uint32_t depth)
 {
     // get min and max extents of model
     plVector3 min, max;
     getMinMax(min, max);
 
     // build octree
-    _octree.build(min, max, _triangles, depth, verbose);
+    _octree->build(min, max, _triangles, depth);
 }
 
 
-plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &origin, const plVector3 &normal) const
+plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3& origin, const plVector3& normal) const
 {
     // get potential triangles in radius from octree
-    std::set<const plTriangle* > triangles;
-    _octree.rayIntersect(triangles, origin, -normal, radius);
+    std::set<const plTriangle*> triangles;
+    _octree->rayIntersect(triangles, origin, -normal, radius);
 
-    plVector3 avgNormal(0,0,0);
+    plVector3 avgNormal(0, 0, 0);
     int32_t count = 0;
     float32_t radiusSquared = radius * radius;
 
@@ -92,7 +80,7 @@ plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &orig
     if (count == 0)
     {
         // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
-        //std::cout << "plOctreeMesh::getAverageNormal() warning: No normal found" << std::endl;
+        LOG_WARN("No normal found");
         return normal;
     }
 
@@ -100,11 +88,11 @@ plVector3 plOctreeMesh::getAverageNormal(float32_t radius, const plVector3 &orig
 }
 
 
-plIntersection plOctreeMesh::rayIntersect(const plVector3 &rayOrigin, const plVector3 &rayDirection, bool smoothNormal, bool ignoreBehindRay, bool backFaceCull) const
+plIntersection plOctreeMesh::rayIntersect(const plVector3& rayOrigin, const plVector3& rayDirection, bool smoothNormal, bool ignoreBehindRay, bool backFaceCull) const
 {
     // get potential triangles from octree
-    std::set<const plTriangle* > triangles;
-    _octree.rayIntersect(triangles, rayOrigin, rayDirection, 0.0f, ignoreBehindRay);
+    std::set<const plTriangle*> triangles;
+    _octree->rayIntersect(triangles, rayOrigin, rayDirection, 0.0f, ignoreBehindRay);
 
     plIntersection closestIntersection(false);
     float32_t min = FLT_MAX;

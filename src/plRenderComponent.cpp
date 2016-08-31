@@ -1,37 +1,51 @@
 #include "plRenderComponent.h"
 
-plRenderComponent::plRenderComponent(const std::shared_ptr<plVAO>& vao)
+plRenderComponent::plRenderComponent(std::shared_ptr<plVAO> vao)
     :   _vao (vao)
 {
 }
 
 
-bool plRenderComponent::operator< (const plRenderComponent& rc) const
+void plRenderComponent::attach(uint32_t type, std::shared_ptr<plUniform> uniform)
 {
-    // currently sorts by address
-    return this < &rc;
+    _uniforms[type] = uniform;
 }
 
 
-void plRenderComponent::attach(const plUniform& uniform)
+void plRenderComponent::attach(uint32_t type, std::shared_ptr<plTexture2D> texture)
 {
-    _uniforms.push_back(uniform);
+    _textures[type] = texture;
 }
 
 
 void plRenderComponent::draw(const plShader& shader) const
 {
-
-    _bindUniforms(shader);
-    _vao->draw();
+    if (_vao != nullptr)
+    {
+        _bindUniforms(shader);
+        _bindTextures(shader);
+        _vao->draw();
+    }
+    else
+    {
+        LOG_WARN("Attempting to draw null _vao");
+    }
 }
 
+void plRenderComponent::_bindTextures(const plShader& shader) const
+{
+    // set all textures
+    for (auto iter : _textures)
+    {
+        shader.setTexture(iter.first, iter.second);
+    }
+}
 
 void plRenderComponent::_bindUniforms(const plShader& shader) const
 {
     // set all uniforms
-    for (const plUniform& uniform : _uniforms)
+    for (auto iter : _uniforms)
     {
-        shader.setUniform(uniform);
+        shader.setUniform(iter.first, iter.second);
     }
 }

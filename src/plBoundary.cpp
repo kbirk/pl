@@ -1,19 +1,14 @@
 #include "plBoundary.h"
 
-plBoundary::plBoundary()
-    : _type(-1)
-{
-}
 
-
-plBoundary::plBoundary(uint32_t type, const plMesh& mesh)
+plBoundary::plBoundary(uint32_t type, std::shared_ptr<plMesh> mesh)
     : plMeshSpecific(mesh),
       _type(type)
 {
 }
 
 
-plBoundary::plBoundary(uint32_t type, const plMesh& mesh, const std::vector<plString> &row)
+plBoundary::plBoundary(uint32_t type, std::shared_ptr<plMesh> mesh, const std::vector<plString>& row)
     : plMeshSpecific(mesh),
       _type(type)
 {
@@ -34,7 +29,7 @@ void plBoundary::extractRenderComponents(plRenderMap& renderMap, uint32_t techni
         return;
 
     plPickingStack::loadRed(_type);
-    plColourStack::load(_getColour());
+    plColorStack::load(_getColor());
 
     // draw walls
     if (_points.size() > 1)
@@ -42,16 +37,16 @@ void plBoundary::extractRenderComponents(plRenderMap& renderMap, uint32_t techni
         plPickingStack::loadBlue(-1); // draw walls with index of -1
 
         // create render component
-        plRenderComponent component(_vao);
+        auto component = std::make_shared<plRenderComponent>(_vao);
         // attached uniforms
-        component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plMatrix44()));
-        component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
-        component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-        component.attach(plUniform(PL_COLOUR_UNIFORM,            plColourStack::top()));
-        component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
-        component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
+        component->attach(PL_MODEL_MATRIX_UNIFORM, std::make_shared<plUniform>(plMatrix44()));
+        component->attach(PL_VIEW_MATRIX_UNIFORM, std::make_shared<plUniform>(plCameraStack::top()));
+        component->attach(PL_PROJECTION_MATRIX_UNIFORM, std::make_shared<plUniform>(plProjectionStack::top()));
+        component->attach(PL_COLOR_UNIFORM, std::make_shared<plUniform>(plColorStack::top()));
+        component->attach(PL_PICKING_UNIFORM, std::make_shared<plUniform>(plPickingStack::top()));
+        component->attach(PL_LIGHT_POSITION_UNIFORM, std::make_shared<plUniform>(plVector3(PL_LIGHT_POSITION)));
         // insert into render map
-        renderMap[technique].insert(component);
+        renderMap[technique].push_back(component);
     }
 
     // draw points
@@ -88,7 +83,7 @@ void plBoundary::_extractPointRenderComponents(plRenderMap& renderMap, uint32_t 
 
 plVector3 plBoundary::getAverageNormal() const
 {
-    plVector3 n(0,0,0);
+    plVector3 n(0, 0, 0);
     for (uint32_t i=0; i < _normals.size(); i++)
     {
         n = n + _normals[i];
@@ -99,7 +94,7 @@ plVector3 plBoundary::getAverageNormal() const
 
 plVector3 plBoundary::getCentroid() const
 {
-    plVector3 p(0,0,0);
+    plVector3 p(0, 0, 0);
     for (uint32_t i=0; i < _points.size(); i++)
     {
         p = p + _points[i];
@@ -108,7 +103,7 @@ plVector3 plBoundary::getCentroid() const
 }
 
 
-uint32_t plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &normal)
+uint32_t plBoundary::addPointAndNormal(const plVector3& point, const plVector3& normal)
 {
     if (_points.size() < 2)
     {
@@ -208,7 +203,7 @@ uint32_t plBoundary::addPointAndNormal(const plVector3 &point, const plVector3 &
 }
 
 
-void plBoundary::movePointAndNormal(uint32_t index, const plVector3 &point, const plVector3 &normal)
+void plBoundary::movePointAndNormal(uint32_t index, const plVector3& point, const plVector3& normal)
 {
     _points[index] = point;
     _normals[index] = normal;
@@ -233,7 +228,7 @@ void plBoundary::clear()
 }
 
 
-plVector4 plBoundary::_getColour() const
+plVector4 plBoundary::_getColor() const
 {
     // not selected
     switch (_type)
@@ -241,16 +236,16 @@ plVector4 plBoundary::_getColour() const
         case PL_PICKING_TYPE_DEFECT_CORNERS:
         case PL_PICKING_TYPE_DEFECT_SPLINE:
             // defect spline / corners
-            return plVector4(PL_BOUNDARY_DEFECT_CORNER_COLOUR);
+            return plVector4(PL_BOUNDARY_DEFECT_CORNER_COLOR);
 
         case PL_PICKING_TYPE_DEFECT_BOUNDARY:
             // defect boundary
-            return plVector4(PL_BOUNDARY_DEFECT_BOUNDARY_COLOUR);
+            return plVector4(PL_BOUNDARY_DEFECT_BOUNDARY_COLOR);
 
         case PL_PICKING_TYPE_DONOR_BOUNDARY:
         default:
             // donor boundary
-            return plVector4(PL_BOUNDARY_DONOR_COLOUR);
+            return plVector4(PL_BOUNDARY_DONOR_COLOR);
     }
 
 }
@@ -259,12 +254,18 @@ plVector4 plBoundary::_getColour() const
 void plBoundary::_generateVAO()
 {
     if (_points.size() < 2)
+    {
+        _vao = nullptr;
         return;
+    }
 
     plVector3 n = getAverageNormal();
 
-    std::vector<plVector3> vertices;    vertices.reserve(_points.size() * 10);
-    std::vector<uint32_t>    indices;     indices.reserve (_points.size() * 6 * 4);
+    std::vector<plVector3> vertices;
+    vertices.reserve(_points.size() * 10);
+
+    std::vector<uint32_t> indices;
+    indices.reserve (_points.size() * 6 * 4);
 
     for (uint32_t i = 0; i < _points.size(); i++)
     {
@@ -394,12 +395,12 @@ void plBoundary::_generateVAO()
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    auto vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16)); // FOUR COMPONENT FLOATING POINT OFFSET
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    auto eabo = std::make_shared<plEABO>();
     eabo->set(indices);
     // attach to vao
     _vao = std::make_shared<plVAO>();
@@ -410,11 +411,14 @@ void plBoundary::_generateVAO()
 }
 
 
-std::ostream& operator << (std::ostream& out, const plBoundary &b)
+std::ostream& operator<< (std::ostream& out, const plBoundary& b)
 {
     for (uint32_t j=0; j<b.size(); j++)
     {
-        if (j != 0) out << ",";
+        if (j != 0)
+        {
+            out << ",";
+        }
         out << b.points(j) << "," << b.normals(j);
     }
     return out;

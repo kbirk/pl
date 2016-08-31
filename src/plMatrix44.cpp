@@ -9,42 +9,6 @@ plMatrix44::plMatrix44()
     setIdentity();
 }
 
-// openCV xml input file
-bool plMatrix44::importFile(const plString &file)
-{
-    plString xml;
-    if (xml.importFile(file))
-    {
-        plString values;
-        // find start position
-        plString::size_type startPos = xml.find("<data>");
-        if (startPos != std::string::npos)
-        {
-            startPos+=6; // start after "<data>".
-
-            // find end position;
-            plString::size_type endPos = xml.find("</data>");
-            if (endPos != std::string::npos)
-            {
-                values = xml.substr(startPos, endPos - startPos);
-            }
-        }
-        sscanf(values.c_str(), "%f %f %f %f "
-                               "%f %f %f %f "
-                               "%f %f %f %f "
-                               "%f %f %f %f",
-                               &_data[0], &_data[4], &_data[8],  &_data[12],
-                               &_data[1], &_data[5], &_data[9],  &_data[13],
-                               &_data[2], &_data[6], &_data[10], &_data[14],
-                               &_data[3], &_data[7], &_data[11], &_data[15]);
-    }
-    else
-    {
-        std::cerr << "plMatrix44::plMatrix44() error: xml file could not be opened\n";
-    }
-    return true;
-}
-
 // scale
 plMatrix44::plMatrix44(float32_t scale)
 {
@@ -58,19 +22,19 @@ plMatrix44::plMatrix44(float32_t x, float32_t y, float32_t z)
 }
 
 
-plMatrix44::plMatrix44(const plVector3 &translation)
+plMatrix44::plMatrix44(const plVector3& translation)
 {
     setTranslation(translation);
 }
 
 // rotation
-plMatrix44::plMatrix44(float32_t angle, const plVector3 &axis)
+plMatrix44::plMatrix44(float32_t angle, const plVector3& axis)
 {
     setRotation(angle, axis);
 }
 
 // affine transformation
-plMatrix44::plMatrix44(const plVector3 &x, const plVector3 &y, const plVector3 &z, const plVector3 &t)
+plMatrix44::plMatrix44(const plVector3& x, const plVector3& y, const plVector3& z, const plVector3& t)
 {
     _data[0] = x.x;    _data[4] = y.x;    _data[8]  = z.x;    _data[12] = t.x;
     _data[1] = x.y;    _data[5] = y.y;    _data[9]  = z.y;    _data[13] = t.y;
@@ -104,9 +68,9 @@ plMatrix44::plMatrix44(float32_t c1r1, float32_t c2r1, float32_t c3r1, float32_t
 
 
 // copy constructor
-plMatrix44::plMatrix44(const plMatrix44 &m)
+plMatrix44::plMatrix44(const plMatrix44& m)
 {
-    memcpy(_data, m._data, sizeof(float32_t)*16);
+    std::memcpy(_data, m._data, sizeof(float32_t)*16);
 }
 
 
@@ -180,7 +144,7 @@ void plMatrix44::setTranslation(float32_t x, float32_t y, float32_t z)
 }
 
 
-void plMatrix44::setTranslation(const plVector3 &t)
+void plMatrix44::setTranslation(const plVector3& t)
 {
     setTranslation(t.x, t.y, t.z);
 }
@@ -214,10 +178,10 @@ void plMatrix44::setScale(const plVector3 s)
 
 
 // assignment
-plMatrix44 &plMatrix44::operator=(const plMatrix44 &m)
+plMatrix44& plMatrix44::operator=(const plMatrix44& m)
 {
     // copy data
-    memcpy(_data, m._data, sizeof(float32_t)*16);
+    std::memcpy(_data, m._data, sizeof(float32_t)*16);
     return *this;
 }
 
@@ -232,7 +196,7 @@ plMatrix44 plMatrix44::operator-() const
 }
 
 // addition
-plMatrix44 plMatrix44::operator+(const plMatrix44 &m) const
+plMatrix44 plMatrix44::operator+(const plMatrix44& m) const
 {
     return plMatrix44(_data[0] + m._data[0], _data[1] + m._data[1], _data[2] + m._data[2], _data[3] + m._data[3],
                       _data[4] + m._data[4], _data[5] + m._data[5], _data[6] + m._data[6], _data[7] + m._data[7],
@@ -240,7 +204,7 @@ plMatrix44 plMatrix44::operator+(const plMatrix44 &m) const
                       _data[12] + m._data[12], _data[13] + m._data[13], _data[14] + m._data[14], _data[15] + m._data[15]);
 }
 // subtraction
-plMatrix44 plMatrix44::operator-(const plMatrix44 &m) const
+plMatrix44 plMatrix44::operator-(const plMatrix44& m) const
 {
     return plMatrix44(_data[0] - m._data[0],   _data[1] - m._data[1],   _data[2] - m._data[2],   _data[3] - m._data[3],
                       _data[4] - m._data[4],   _data[5] - m._data[5],   _data[6] - m._data[6],   _data[7] - m._data[7],
@@ -256,7 +220,7 @@ plMatrix44 plMatrix44::operator*(float32_t s) const
                       _data[12] * s, _data[13] * s, _data[14] * s, _data[15] * s);
 
 }
-plMatrix44 &plMatrix44::operator*=(float32_t s)
+plMatrix44& plMatrix44::operator*=(float32_t s)
 {
     _data[0] *= s;    _data[4] *= s;    _data[8]  *= s;    _data[12] *= s;
     _data[1] *= s;    _data[5] *= s;    _data[9]  *= s;    _data[13] *= s;
@@ -266,14 +230,14 @@ plMatrix44 &plMatrix44::operator*=(float32_t s)
 }
 
 // vector multiplication
-plVector3 plMatrix44::operator*(const plVector3 &v) const
+plVector3 plMatrix44::operator*(const plVector3& v) const
 {
     return plVector3((_data[0] * v.x) + (_data[4] * v.y) + (_data[8]  * v.z) + _data[12],
                      (_data[1] * v.x) + (_data[5] * v.y) + (_data[9]  * v.z) + _data[13],
                      (_data[2] * v.x) + (_data[6] * v.y) + (_data[10] * v.z) + _data[14]);
 }
 
-plVector4 plMatrix44::operator*(const plVector4 &v) const
+plVector4 plMatrix44::operator*(const plVector4& v) const
 {
     return plVector4((_data[0] * v.x) + (_data[4] * v.y) + (_data[8]  * v.z) + (_data[12] * v.w),
                      (_data[1] * v.x) + (_data[5] * v.y) + (_data[9]  * v.z) + (_data[13] * v.w),
@@ -282,7 +246,7 @@ plVector4 plMatrix44::operator*(const plVector4 &v) const
 }
 
 // triangle multiplication
-plTriangle plMatrix44::operator*(const plTriangle &tri) const
+plTriangle plMatrix44::operator*(const plTriangle& tri) const
 {
     plVector3 point0  = (*this) * tri.point0();
     plVector3 point1  = (*this) * tri.point1();
@@ -310,7 +274,7 @@ plMesh plMatrix44::operator*(const plMesh& mesh) const
 }
 
 
-std::vector<plTriangle> plMatrix44::operator*(const std::vector<plTriangle> &tris) const
+std::vector<plTriangle> plMatrix44::operator*(const std::vector<plTriangle>& tris) const
 {
     std::vector<plTriangle> output;
     for (uint32_t i = 0; i < tris.size(); i++)
@@ -322,7 +286,7 @@ std::vector<plTriangle> plMatrix44::operator*(const std::vector<plTriangle> &tri
 
 
 // matrix multiplication
-plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const
+plMatrix44 plMatrix44::operator*(const plMatrix44& m) const
 {
     plMatrix44 result;
     for (int32_t i = 0; i < 4; i++)
@@ -336,13 +300,13 @@ plMatrix44 plMatrix44::operator*(const plMatrix44 &m) const
 }
 
 
-void plMatrix44::setRotationD(float32_t angle_degree, const plVector3 &axis)
+void plMatrix44::setRotationD(float32_t angle_degree, const plVector3& axis)
 {
     setRotation(PL_DEG_TO_RAD(angle_degree), axis);
 }
 
 
-void plMatrix44::setRotation(float32_t angle, const plVector3 &axis)
+void plMatrix44::setRotation(float32_t angle, const plVector3& axis)
 {
     float32_t x = axis.x;
     float32_t y = axis.y;
@@ -401,7 +365,7 @@ void plMatrix44::setRotation(float32_t angle, const plVector3 &axis)
 }
 
 
-void plMatrix44::setRotation(const plVector4 &quat)
+void plMatrix44::setRotation(const plVector4& quat)
 {
     float32_t w,x,y,z;
     float32_t xs,ys,zs,wx,wy,wz,xx,yy,zz,xy,yz,xz;
@@ -454,7 +418,7 @@ void plMatrix44::setRotation(const plVector4 &quat)
 }
 
 
-void plMatrix44::setRotation(const plVector3 &from_vector, const plVector3 &to_vector)
+void plMatrix44::setRotation(const plVector3& from_vector, const plVector3& to_vector)
 {
     /*Builds the rotation matrix that rotates one vector into another.
 
@@ -641,17 +605,17 @@ plMatrix44 plMatrix44::inverse() const
 }
 
 // I/O operators
-std::ostream& operator << (std::ostream& stream, const plMatrix44 &m)
+std::ostream& operator<< (std::ostream& stream, const plMatrix44& m)
 {
     for (uint32_t i=0; i < 4; i++)
     {
-       stream << m(i,0) << "    " << m(i,1) << "    " << m(i,2) << "    " << m(i,3) << "\n";
+       stream << m(i,0) << " " << m(i,1) << " " << m(i,2) << " " << m(i,3) << std::endl;
     }
 
     return stream;
 }
 
-plVector4 operator * (const plVector4 &v, const plMatrix44 &m)
+plVector4 operator* (const plVector4& v, const plMatrix44& m)
 {
     float32_t x = v.x * m(0,0) + v.y * m(1,0) + v.z * m(2,0) + v.w * m(3,0);
     float32_t y = v.x * m(0,1) + v.y * m(1,1) + v.z * m(2,1) + v.w * m(3,1);
@@ -661,7 +625,7 @@ plVector4 operator * (const plVector4 &v, const plMatrix44 &m)
     return plVector4(x,y,z,w);
 }
 
-plVector3 operator * (const plVector3 &v, const plMatrix44 &m)
+plVector3 operator* (const plVector3& v, const plMatrix44& m)
 {
     float32_t x = v.x * m(0,0) + v.y * m(1,0) + v.z * m(2,0) + m(3,0);
     float32_t y = v.x * m(0,1) + v.y * m(1,1) + v.z * m(2,1) + m(3,1);

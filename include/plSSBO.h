@@ -1,9 +1,8 @@
 #pragma once
 
 #include "plCommon.h"
+#include "plOpenGLCommon.h"
 #include "plBufferObject.h"
-
-#include <epoxy/gl.h>
 
 class plSSBO : public plBufferObject
 {
@@ -13,14 +12,16 @@ class plSSBO : public plBufferObject
         plSSBO();
         plSSBO(uint32_t numBytes, const void *buffer = nullptr);
 
-        plSSBO(const plSSBO& ssbo);
-        plSSBO(plSSBO&& ssbo);
-
-        plSSBO& operator= (plSSBO&& ssbo);
-        plSSBO& operator= (const plSSBO& ssbo);
-
-        void bind(uint32_t location) const   { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, _id); }
-        void unbind(uint32_t location) const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, 0); }
+        void bind(uint32_t location) const
+        {
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, _id);
+            LOG_OPENGL("glBindBufferBase");
+        }
+        void unbind(uint32_t location) const
+        {
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, 0);
+            LOG_OPENGL("glBindBufferBase");
+        }
 
         // set
         template <typename T>
@@ -39,8 +40,6 @@ class plSSBO : public plBufferObject
     private:
 
         void _create(uint32_t numBytes, const void *buffer = nullptr);
-        void _copy(const plSSBO &ssbo);
-        void _move(plSSBO&& ssbo);
 };
 
 
@@ -49,10 +48,9 @@ void plSSBO::set(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t ss
 {
     if (count == 0)
     {
-        std::cerr << "plSSBO::set() warning: write count is 0, function ignored" << std::endl;
+        LOG_WARN("Write count is 0, function ignored");
         return;
     }
-
     setBytes(&ts[0], count*sizeof(T), index*sizeof(T), ssboIndex*sizeof(T));
 }
 
@@ -62,7 +60,7 @@ void plSSBO::setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ss
 {
     if (numBytes == 0)
     {
-        std::cerr << "plSSBO::setBytes() warning: numBytes is 0, function ignored" << std::endl;
+        LOG_WARN("Argument `numBytes` is 0, function ignored");
         return;
     }
 
@@ -74,14 +72,17 @@ void plSSBO::setBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t ss
     }
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id);
+    LOG_OPENGL("glBindBuffer");
     T *mappedBuffer = (T*) glMapBufferRange(
         GL_SHADER_STORAGE_BUFFER,
         ssboByteOffset,
         numBytes,
         GL_MAP_WRITE_BIT);
+    LOG_OPENGL("glMapBufferRange");
 
-    memcpy(mappedBuffer, reinterpret_cast<uint8_t*>(ts)+byteOffset, numBytes); // cast to char array to ensure bytewise increments
+    std::memcpy(mappedBuffer, reinterpret_cast<uint8_t*>(ts)+byteOffset, numBytes); // cast to char array to ensure bytewise increments
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+    LOG_OPENGL("glUnmapBuffer");
 }
 
 
@@ -90,24 +91,26 @@ void plSSBO::read(std::vector<T> &ts, uint32_t count, uint32_t index, uint32_t s
 {
     if (!_id)
     {
-        std::cerr << "plSSBO::read() error: SSBO buffer has not been generated" << std::endl;
+        LOG_WARN("SSBO buffer has not been generated");
         return;
     }
 
     if (count == 0)
     {
-        std::cerr << "plSSBO::read() warning: read count is 0, function ignored" << std::endl;
+        LOG_WARN("Argument `count` is 0, function ignored");
         return;
     }
 
     if (count*sizeof(T)> _numBytes)
     {
-        std::cerr << "plSSBO::read() error: requested read size larger than SSBO, function ignored" << std::endl;
+        LOG_WARN("Requested read size larger than SSBO, function ignored");
         return;
     }
 
     if (ts.size() < count)
-         ts.resize(count);
+    {
+        ts.resize(count);
+    }
 
     readBytes(&ts[0], count*sizeof(T), index*sizeof(T), ssboIndex*sizeof(T));
 }
@@ -118,28 +121,30 @@ void plSSBO::readBytes(T *ts, uint32_t numBytes, uint32_t byteOffset, uint32_t s
 {
     if (!_id)
     {
-        std::cerr << "plSSBO::readBytes() error: SSBO buffer has not been generated" << std::endl;
+        LOG_WARN("SSBO buffer has not been generated");
         return;
     }
 
     if (numBytes == 0)
     {
-        std::cerr << "plSSBO::readBytes() warning: numBytes is 0, function ignored" << std::endl;
+        LOG_WARN("Argument `numBytes` is 0, function ignored");
         return;
     }
 
     if (numBytes> _numBytes)
     {
-        std::cerr << "plSSBO::readBytes() error: requested read size larger than SSBO, function ignored" << std::endl;
+        LOG_WARN("Requested read size larger than SSBO, function ignored");
         return;
     }
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id);
     T *mappedBuffer = (T*) glMapBufferRange(GL_SHADER_STORAGE_BUFFER,
-                                             ssboByteOffset,
-                                             numBytes,
-                                             GL_MAP_READ_BIT);
+        ssboByteOffset,
+        numBytes,
+        GL_MAP_READ_BIT);
+    LOG_OPENGL("glBindBuffer");
 
-    memcpy(reinterpret_cast<uint8_t*>(ts)+byteOffset, &mappedBuffer[0], numBytes);
+    std::memcpy(reinterpret_cast<uint8_t*>(ts)+byteOffset, &mappedBuffer[0], numBytes);
     glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+    LOG_OPENGL("glUnmapBuffer");
 }

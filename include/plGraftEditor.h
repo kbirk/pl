@@ -30,7 +30,7 @@ class plGraftEditor : public plEditor
         void extractRenderComponents(plRenderMap& renderMap) const;
         void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        bool isGraftSelected() const { return (_selectedGraft != nullptr); }
+        bool isGraftSelected() const { return _selectedGraft != nullptr; }
 
         bool processMousePress(int32_t x, int32_t y);
         bool processMouseDrag(int32_t x, int32_t y);
@@ -42,7 +42,7 @@ class plGraftEditor : public plEditor
 
         int32_t _editMode;
         int32_t _selectedType;
-        plGraft *_selectedGraft;
+        std::shared_ptr<plGraft> _selectedGraft;
 
         void _dragHandle(int32_t x, int32_t y);
         void _dragMarker(int32_t x, int32_t y);

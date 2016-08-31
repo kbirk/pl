@@ -16,10 +16,10 @@
 
 namespace plRenderShapes
 {
-    plVAO sphereVAO(float32_t radius, int32_t slices, int32_t stacks);
-    plVAO cylinderVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks);
-    plVAO diskVAO(float32_t innerRadius, float32_t outerRadius, int32_t slices, int32_t loops, bool up = true);
-    plVAO coneVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks);
-    plVAO quadVAO();
-    plVAO lineVAO(const plVector3& p0, const plVector3& p1);
+    std::shared_ptr<plVAO> sphereVAO(float32_t radius, int32_t slices, int32_t stacks);
+    std::shared_ptr<plVAO> cylinderVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks);
+    std::shared_ptr<plVAO> diskVAO(float32_t innerRadius, float32_t outerRadius, int32_t slices, int32_t loops, bool up = true);
+    std::shared_ptr<plVAO> coneVAO(float32_t baseRadius, float32_t topRadius, float32_t height, int32_t slices, int32_t stacks);
+    std::shared_ptr<plVAO> quadVAO();
+    std::shared_ptr<plVAO> lineVAO(const plVector3& p0, const plVector3& p1);
 }

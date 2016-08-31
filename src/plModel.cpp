@@ -1,39 +1,37 @@
 #include "plModel.h"
 
-plModel::plModel(const std::vector<plTriangle> &triangles, const plString &file, uint32_t octreeDepth)
+plModel::plModel(const std::vector<plTriangle>& triangles, const plString& file, uint32_t octreeDepth)
     : filename(file)
 {
     if (octreeDepth > 1)
     {
         // use octree mesh
-        _mesh = std::make_shared<plOctreeMesh>(std::move(triangles), octreeDepth, true);
+        _mesh = std::make_shared<plOctreeMesh>(std::move(triangles), octreeDepth);
     }
     else
     {
         // use non-octree mesh
         _mesh = std::make_shared<plMesh>(std::move(triangles));
     }
-
     _generateVAO();
 }
 
 
-plModel::plModel(const plString &file, uint32_t octreeDepth)
+plModel::plModel(const plString& file, uint32_t octreeDepth)
     : filename(file)
 {
-    std::vector<plTriangle > triangles;
+    std::vector<plTriangle> triangles;
 
     // import triangles from STL file
-    if (!plSTL::importFile(triangles, filename, true))
+    if (!plSTL::importFile(triangles, filename))
     {
         exit(1);
     }
 
-
     if (octreeDepth > 1)
     {
         // use octree mesh
-        _mesh = std::make_shared<plOctreeMesh>(std::move(triangles), octreeDepth, true);
+        _mesh = std::make_shared<plOctreeMesh>(std::move(triangles), octreeDepth);
     }
     else
     {
@@ -53,33 +51,35 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
     // render octree
     if (std::dynamic_pointer_cast<plOctreeMesh>(_mesh))
     {
-        std::dynamic_pointer_cast<plOctreeMesh>(_mesh)->octree().extractRenderComponents(renderMap);
+        std::dynamic_pointer_cast<plOctreeMesh>(_mesh)->octree()->extractRenderComponents(renderMap);
     }
 
     if (!_isVisible)
         return;
 
     // create render component
-    plRenderComponent component(_vao);
+    auto component = std::make_shared<plRenderComponent>(_vao);
     // attached uniforms
-    component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()));
-    component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
-    component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-    component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
-    component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
+    component->attach(PL_MODEL_MATRIX_UNIFORM, std::make_shared<plUniform>(plModelStack::top()));
+    component->attach(PL_VIEW_MATRIX_UNIFORM, std::make_shared<plUniform>(plCameraStack::top()));
+    component->attach(PL_PROJECTION_MATRIX_UNIFORM, std::make_shared<plUniform>(plProjectionStack::top()));
+    component->attach(PL_LIGHT_POSITION_UNIFORM, std::make_shared<plUniform>(plVector3(PL_LIGHT_POSITION)));
+    component->attach(PL_PICKING_UNIFORM, std::make_shared<plUniform>(plPickingStack::top()));
 
     if (!_isTransparent)
     {
-        component.attach(plUniform(PL_COLOUR_UNIFORM, plColourStack::top()));
+        component->attach(PL_COLOR_UNIFORM, std::make_shared<plUniform>(plColorStack::top()));
         // insert into render map
-        renderMap[technique].insert(component);
+        renderMap[technique].push_back(component);
     }
     else
     {
         // sort by distance
         plVector3 viewDir = plCameraStack::direction();
 
-        std::vector<plOrderPair> order;     order.reserve(_mesh->triangles().size());
+        std::vector<plOrderPair> order;
+        order.reserve(_mesh->triangles().size());
+
         uint32_t index = 0;
         for (const plTriangle& triangle : _mesh->triangles())
         {
@@ -87,7 +87,8 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
         }
         std::sort(order.begin(), order.end());
 
-        std::vector<uint32_t> indices;    indices.reserve(_mesh->triangles().size()*3);
+        std::vector<uint32_t> indices;
+        indices.reserve(_mesh->triangles().size()*3);
         for (uint32_t i = 0; i < order.size(); i++)
         {
             indices.push_back(order[i].index*3);
@@ -96,23 +97,24 @@ void plModel::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
         }
 
         // dirty const_cast
-        const_cast< std::shared_ptr<plVAO >&>(_vao)->eabo()->set(indices);
-        const_cast< std::shared_ptr<plVAO >&>(_vao)->upload();
+        const_cast<std::shared_ptr<plVAO>&>(_vao)->eabo()->set(indices);
+        const_cast<std::shared_ptr<plVAO>&>(_vao)->upload();
 
-        component.attach(plUniform(PL_COLOUR_UNIFORM, plVector4(plColourStack::top().x, plColourStack::top().y, plColourStack::top().z, 0.7f)));
+        auto color = plColorStack::top();
+        auto alpha = 0.7f;
+        component->attach(PL_COLOR_UNIFORM, std::make_shared<plUniform>(plVector4(color.x, color.y, color.z, alpha)));
 
         // insert into render map
         if (technique == PL_PLAN_TECHNIQUE)
         {
             // if originally meant to be rendered using plan technique
-            renderMap[PL_TRANSPARENCY_TECHNIQUE].insert(component);
+            renderMap[PL_TRANSPARENCY_TECHNIQUE].push_back(component);
         }
         else
         {
-            renderMap[technique].insert(component);
+            renderMap[technique].push_back(component);
         }
     }
-
 }
 
 
@@ -157,12 +159,12 @@ void plModel::_generateVAO()
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO> vbo = std::make_shared<plVBO>();
+    auto vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    auto eabo = std::make_shared<plEABO>();
     eabo->set(indices);
     // create vao, attach eabo and vbo, upload to gpu
     _vao = std::make_shared<plVAO>();

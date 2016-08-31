@@ -11,14 +11,13 @@ class plDonorSite : public plRenderable
 {
     public:
 
-        plDonorSite();
-        plDonorSite(const plMesh& mesh);
-        plDonorSite(const plBoundary &boundary);
+        plDonorSite(std::shared_ptr<plMesh> mesh);
+        plDonorSite(std::shared_ptr<plBoundary> boundary);
 
         virtual ~plDonorSite();
 
         void extractRenderComponents(plRenderMap& renderMap) const;
         void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        plBoundary boundary;
+        std::shared_ptr<plBoundary> boundary;
 };

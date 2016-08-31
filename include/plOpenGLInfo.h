@@ -9,8 +9,7 @@ namespace plOpenGLInfo
 
     void init();
     void print();
-    uint32_t sizeOfType(uint32_t enumType);
-    void reportError(const std::string &str);
+    std::string errorToString(GLenum errorCode);
 
     extern GLint maxComputeShaderStorageBlocks,
         maxCombinedShaderStorageBlocks,
@@ -106,5 +105,4 @@ namespace plOpenGLInfo
         maxVertexAttribRelativeOffset,
         maxVertexAttribBindings,
         maxElementIndex;
-
 }

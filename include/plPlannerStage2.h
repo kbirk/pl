@@ -11,5 +11,9 @@
 
 namespace plPlannerStage2
 {
-    void run(plRmsData &rmsData, const plPlanningBufferData &planningData, const plDefectSolution &defectSolution, const plCapIndices &capIndices);
+    void run(
+        std::shared_ptr<plRmsData> rmsData,
+        std::shared_ptr<plPlanningBufferData> planningData,
+        std::shared_ptr<plDefectSolution> defectSolution,
+        std::shared_ptr<plCapIndices> capIndices);
 }

@@ -9,21 +9,21 @@ class plPlannerShader : public plShader
 {
     public:
 
-        plPlannerShader(const std::vector<std::string > &sourceFiles);
+        plPlannerShader(const std::vector<std::string>& sourceFiles);
 
         // global uniform setters
-        void setDefectSiteUniforms     (const plPlanningSite &defectSite) const;
-        void setDonorSiteUniforms      (const std::vector<plPlanningSite> &donorSites) const;
-        void setDefectSolutionUniforms (const plDefectSolution &solution) const;
+        void setDefectSiteUniforms(std::shared_ptr<plPlanningSite> defectSite) const;
+        void setDonorSiteUniforms(const std::vector<std::shared_ptr<plPlanningSite>>& donorSites) const;
+        void setDefectSolutionUniforms(std::shared_ptr<plDefectSolution> solution) const;
         void setSeedUniform() const;
 
         // stage0 uniform setters
-        void setTemperatureUniform (float32_t temperature) const;
-        void setLocalLoadUniform   (uint32_t loadLocal) const;
+        void setTemperatureUniform(float32_t temperature) const;
+        void setLocalLoadUniform(uint32_t loadLocal) const;
 
         // stage2-3 uniform setters
-        void setRotationAngleUniforms (uint32_t numDirections) const;
-        void setRotationIndexUniform  (uint32_t rotationIndex) const;
+        void setRotationAngleUniforms(uint32_t numDirections) const;
+        void setRotationIndexUniform(uint32_t rotationIndex) const;
 
     protected:
 

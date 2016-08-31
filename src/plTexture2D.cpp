@@ -7,37 +7,9 @@ plTexture2D::plTexture2D(uint32_t width, uint32_t height, uint32_t internalForma
 }
 
 
-plTexture2D::plTexture2D(const plTexture2D& texture)
-    : _id(0)
-{
-    _copy(texture);
-}
-
-
-plTexture2D::plTexture2D(plTexture2D&& texture)
-    : _id(0)
-{
-    _move(std::move(texture));
-}
-
-
 plTexture2D::~plTexture2D()
 {
     _destroy();
-}
-
-
-plTexture2D& plTexture2D::operator= (const plTexture2D& texture)
-{
-    _copy(texture);
-    return *this;
-}
-
-
-plTexture2D& plTexture2D::operator= (plTexture2D&& texture)
-{
-    _move(std::move(texture));
-    return *this;
 }
 
 
@@ -45,6 +17,7 @@ void plTexture2D::bind() const
 {
     // bind textures AFTER binding shader AND BEFORE drawing arrays
     glBindTexture(GL_TEXTURE_2D, _id);
+    LOG_OPENGL("glBindTexture");
 }
 
 
@@ -52,6 +25,7 @@ void plTexture2D::unbind() const
 {
     // unbind textures after drawing
     glBindTexture(GL_TEXTURE_2D, 0);
+    LOG_OPENGL("glBindTexture");
 }
 
 
@@ -70,53 +44,49 @@ void plTexture2D::set(uint32_t width, uint32_t height, uint32_t internalFormat, 
     _type = type;
 
     if (!_id)
+    {
         glGenTextures(1, &_id);
+        LOG_OPENGL("glGenTextures");
+    }
 
     glBindTexture(GL_TEXTURE_2D, _id);
-
-    // THIS IS OPENCV TYPE: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_BGR, GL_UNSIGNED_BYTE, image);
+    LOG_OPENGL("glBindTexture");
     glTexImage2D(GL_TEXTURE_2D, 0, _internalFormat, _width, _height, 0, _format, _type, image);
+    LOG_OPENGL("glTexImage2D");
 
     // default linear interpolate
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    LOG_OPENGL("glTexParameterf");
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    LOG_OPENGL("glTexParameterf");
 
     // default repeat wrap
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    LOG_OPENGL("glTexParameteri");
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    LOG_OPENGL("glTexParameteri");
 
     glBindTexture(GL_TEXTURE_2D, 0);
+    LOG_OPENGL("glBindTexture");
 }
 
 
 void plTexture2D::setParameter(uint32_t pname, uint32_t param)
 {
     glBindTexture(GL_TEXTURE_2D, _id);
+    LOG_OPENGL("glBindTexture");
     glTexParameteri(GL_TEXTURE_2D, pname, param);
+    LOG_OPENGL("glTexParameteri");
     glBindTexture(GL_TEXTURE_2D, 0);
+    LOG_OPENGL("glBindTexture");
 }
 
 
 void plTexture2D::_destroy()
 {
     glDeleteTextures(1, &_id);
+    LOG_OPENGL("glDeleteTextures");
     _id = 0;
-}
-
-
-void plTexture2D::_copy(const plTexture2D &texture)
-{
-    uint8_t *buffer = new uint8_t[texture._width * texture._height * texture._getFormatSize()];
-
-    // copy vertex data
-    glBindTexture(GL_TEXTURE_2D, texture._id);
-    glGetTexImage(GL_TEXTURE_2D, 0, texture._format, texture._type, buffer);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // set texture
-    set(texture._width, texture._height, texture._internalFormat, texture._format, texture._type, buffer);
-
-    delete [] buffer;
 }
 
 
@@ -180,17 +150,4 @@ uint32_t plTexture2D::_getFormatSize() const
     }
 
     return multiplier * size;
-}
-
-
-void plTexture2D::_move(plTexture2D&& texture)
-{
-    _id = texture._id;
-    _width = texture._width;
-    _height = texture._height;
-    _internalFormat = texture._internalFormat;
-    _format = texture._format;
-    _type = texture._type;
-
-    texture._id = 0;
 }

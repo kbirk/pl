@@ -8,18 +8,25 @@
 namespace plMath
 {
 
-    void _concavePolysToTrisHelper(std::vector<plTriangle> &triangles, float32_t &minSurfaceArea, const plPolygon &polygon);
+    void _concavePolysToTris(
+        std::vector<plTriangle>& triangles,
+        float32_t& minSurfaceArea,
+        const plPolygon& polygon);
 
 
-    plVector3 projectVectorOnPlane(const plVector3 &vector, const plVector3 &plane_normal)
+    plVector3 projectVectorOnPlane(
+        const plVector3& vector,
+        const plVector3& plane_normal)
     {
         float32_t dist = vector * plane_normal;
-
         return vector - (dist * plane_normal);
     }
 
 
-    plVector3 closestPointOnSegment(const plVector3 &point, const plVector3 &a, const plVector3 &b)
+    plVector3 closestPointOnSegment(
+        const plVector3& point,
+        const plVector3& a,
+        const plVector3& b)
     {
         plVector3 ab = b - a;
         // Project c onto ab, computing parameterized position d(t) = a + t*(b * a)
@@ -32,45 +39,16 @@ namespace plMath
     }
 
 
-    plVector3 closestPointOnLine(const plVector3 &point, const plVector3 &lineOrigin, const plVector3& lineDirection)
+    plVector3 closestPointOnLine(
+        const plVector3& point,
+        const plVector3& lineOrigin,
+        const plVector3& lineDirection)
     {
         // Project c onto ab, computing parameterized position d(t) = a + t*(b * a)
         float32_t t = ((point - lineOrigin) * lineDirection) / (lineDirection * lineDirection);
         // If outside segment, clamp t (and therefore d) to the closest endpoint
         // Compute projected position from the clamped t
         return lineOrigin + t * lineDirection;
-    }
-
-
-    bool closestPointsBetweenSegments(
-        const plVector3 &edge1Point1,
-        const plVector3 &edge1Point2,
-        const plVector3 &edge2Point1,
-        const plVector3 &edge2Point2,
-        plVector3& closestPointEdge1,
-        plVector3& closestPointEdge2,
-        float32_t& distanceBetweenLines)
-    {
-        plVector3 edge1Direction = edge1Point2 - edge1Point1;
-        plVector3 edge2Direction = edge2Point2 - edge2Point1;
-        float32_t t1, t2;
-        if (!intersectTwoLines(edge1Point1, edge2Point1, edge1Direction, edge2Direction, t1,t2))
-            return false;
-
-        if (t1 < 0.f)
-            t1 = 0.f;
-        else if (t1 > 1.f)
-            t1 = 1.f;
-        if (t2 < 0.f)
-            t2 = 0.f;
-        else if (t2 > 1.f)
-            t2 = 1.f;
-
-        closestPointEdge1 = edge1Point1 + (t1 * edge1Direction);
-        closestPointEdge2 = edge2Point1 + (t2 * edge2Direction);
-        distanceBetweenLines = (closestPointEdge1 - closestPointEdge2).length();
-
-        return true;
     }
 
 
@@ -98,88 +76,10 @@ namespace plMath
     }
 
 
-    plVector3 closestPointOnPlane(const plVector3 &lineDirection, const plVector3 &linePoint, const plVector3 &planeNormal, const plVector3 &planePoint)
-    {
-        float32_t t = ((planePoint - linePoint)*planeNormal)/(lineDirection*planeNormal);
-        return (t * lineDirection) + linePoint;
-    }
-
-
-    bool intersectTwoLines(const plVector3 &edge1Point, const plVector3 &edge2Point, const plVector3 &edge1Direction, const plVector3 &edge2Direction, float32_t &edge1Param, float32_t &edge2Param)
-    {
-        // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-        edge1Param = 0.f;
-        edge2Param = 0.f;
-        plVector3 crossProductRightSideEdge1 ((edge2Point-edge1Point)^edge2Direction);
-        plVector3 crossProductRightSideEdge2 ((edge2Point-edge1Point)^edge1Direction);
-        plVector3 crossProductLeftSide  (edge1Direction^edge2Direction);
-        float32_t   numCalculations(0.f);
-        if (fabs(crossProductLeftSide.x) > PL_EPSILON)
-        {
-            edge1Param += crossProductRightSideEdge1.x/crossProductLeftSide.x;
-            edge2Param += crossProductRightSideEdge2.x/crossProductLeftSide.x;
-            numCalculations+=1.f;
-        }
-        if (fabs(crossProductLeftSide.y) > PL_EPSILON)
-        {
-            edge1Param += crossProductRightSideEdge1.y/crossProductLeftSide.y;
-            edge2Param += crossProductRightSideEdge2.y/crossProductLeftSide.y;
-            numCalculations+=1.f;
-        }
-        if (fabs(crossProductLeftSide.z) > PL_EPSILON)
-        {
-            edge1Param += crossProductRightSideEdge1.z/crossProductLeftSide.z;
-            edge2Param += crossProductRightSideEdge2.z/crossProductLeftSide.z;
-            numCalculations+=1.f;
-        }
-        if (numCalculations == 0.f) // lines are parallel and do not intersect
-            return false;
-
-        edge1Param /= numCalculations;
-        edge2Param /= numCalculations;
-
-        return true;
-    }
-
-    // another version of the above function that may be worth trying, may be more accurate and/or faster
-    /*bool intersectTwoLines(const plVector3 &edge1Point, const plVector3 &edge2Point, const plVector3 &edge1Direction, const plVector3 &edge2Direction, float32_t &edge1Param, float32_t &edge2Param)
-    {
-        // method obtained from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-        edge1Param = 0.f;
-        edge2Param = 0.f;
-        plVector3 crossProductRightSideEdge1 ((edge2Point-edge1Point)^edge2Direction);
-        plVector3 crossProductRightSideEdge2 ((edge2Point-edge1Point)^edge1Direction);
-        plVector3 crossProductLeftSide  (edge1Direction^edge2Direction);
-        float32_t   maximumSolution(0.f);
-        if (fabs(crossProductLeftSide.x) > PL_EPSILON && fabs(crossProductLeftSide.x) > maximumSolution)
-        {
-            maximumSolution = fabs(crossProductLeftSide.x);
-            edge1Param = crossProductRightSideEdge1.x/crossProductLeftSide.x;
-            edge2Param = crossProductRightSideEdge2.x/crossProductLeftSide.x;
-        }
-        if (fabs(crossProductLeftSide.y) > PL_EPSILON && fabs(crossProductLeftSide.y) > maximumSolution)
-        {
-            maximumSolution = fabs(crossProductLeftSide.y);
-            edge1Param = crossProductRightSideEdge1.y/crossProductLeftSide.y;
-            edge2Param = crossProductRightSideEdge2.y/crossProductLeftSide.y;
-        }
-        if (fabs(crossProductLeftSide.z) > PL_EPSILON && fabs(crossProductLeftSide.z) > maximumSolution)
-        {
-            maximumSolution = fabs(crossProductLeftSide.z);
-            edge1Param = crossProductRightSideEdge1.z/crossProductLeftSide.z;
-            edge2Param = crossProductRightSideEdge2.z/crossProductLeftSide.z;
-        }
-        if (maximumSolution <= PL_EPSILON) // lines are parallel and do not intersect
-            return false;
-
-        return true;
-    }*/
-
-
     plIntersection rayIntersect(
         const std::vector<plTriangle>& triangles,
-        const plVector3 &rayOrigin,
-        const plVector3 &rayDirection,
+        const plVector3& rayOrigin,
+        const plVector3& rayDirection,
         bool smoothNormal,
         bool ignoreBehindRay,
         bool backFaceCull)
@@ -201,14 +101,20 @@ namespace plMath
             }
         }
 
-        if (smoothNormal)
+        if (closestIntersection.exists && smoothNormal)
+        {
             closestIntersection.normal = plMath::getAverageNormal(triangles, PL_NORMAL_SMOOTHING_RADIUS, closestIntersection.point, closestIntersection.normal);
+        }
 
         return closestIntersection;
     }
 
 
-    plIntersection rayIntersect(const plVector3 &rayOrigin, const plVector3 &rayDirection, const plVector3& planePoint, const plVector3& planeNormal)
+    plIntersection rayIntersect(
+        const plVector3& rayOrigin,
+        const plVector3& rayDirection,
+        const plVector3& planePoint,
+        const plVector3& planeNormal)
     {
         if (planeNormal * rayDirection == 0)
             return plIntersection(false);
@@ -220,7 +126,11 @@ namespace plMath
     }
 
 
-    plVector3 getAverageNormal(const std::vector<plTriangle>& triangles, float32_t radius, const plVector3 &origin, const plVector3 &normal)
+    plVector3 getAverageNormal(
+        const std::vector<plTriangle>& triangles,
+        float32_t radius,
+        const plVector3& origin,
+        const plVector3& normal)
     {
         plVector3 avgNormal(0, 0, 0);
         int32_t count = 0;
@@ -248,8 +158,8 @@ namespace plMath
 
         if (count == 0)
         {
-            // no triangles in radial sphere, just assume previous normal, (this can be bad.....)
-            //std::cout << "plMath::getAverageNormal() warning: No normal found" << std::endl;
+            // no triangles in radial sphere, just return previous normal
+            LOG_WARN("No normal found");
             return normal;
         }
 
@@ -257,7 +167,10 @@ namespace plMath
     }
 
 
-    plIntersection getClosestPointToRay(const std::vector<plTriangle>& triangles, const plVector3 &rayOrigin, const plVector3 &rayDirection)
+    plIntersection getClosestPointToRay(
+        const std::vector<plTriangle>& triangles,
+        const plVector3& rayOrigin,
+        const plVector3& rayDirection)
     {
         plIntersection intersection(false);
 
@@ -285,7 +198,9 @@ namespace plMath
     }
 
 
-    void convexPolysToTris(std::vector<plTriangle> &tris, const std::vector<plPolygon> &polys)
+    void convexPolysToTris(
+        std::vector<plTriangle>& tris,
+        const std::vector<plPolygon>& polys)
     {
         tris.clear();
         for (uint32_t i = 0; i < polys.size(); i++)
@@ -305,20 +220,22 @@ namespace plMath
             }
             else // must be an invalid polygon
             {
-                std::cerr << " plMath::convexPolysToTris() error: polygon with less than three vertices detected: " << polys[i].points.size() << std::endl;
+                LOG_WARN("Polygon contains less than three vertices");
             }
         }
     }
 
 
-    void concavePolysToTris(std::vector<plTriangle> &tris, const std::vector<plPolygon> &polys)
+    void concavePolysToTris(
+        std::vector<plTriangle>& tris,
+        const std::vector<plPolygon>& polys)
     {
         tris.clear();
         for (uint32_t i = 0; i < polys.size(); i++)
         {
             std::vector<plTriangle> polyConverted;
             float32_t area = FLT_MAX;
-            _concavePolysToTrisHelper(polyConverted, area, polys[i]);
+            _concavePolysToTris(polyConverted, area, polys[i]);
             for (uint32_t j = 0; j < polyConverted.size(); j++)
             {
                 tris.push_back(polyConverted[j]);
@@ -326,39 +243,55 @@ namespace plMath
         }
     }
 
-    // take as input a polygon
-    // iterate through each possible triangle involving the vertices at indices 0 and 1 (so 0-1-2, 0-1-3, and so on, basically we have 0-1-X)
-    // there will be two polygons remaining:
-    // the one from index 1 to X
-    // the one from index X to 0
-    // recursively call this function for each of these smaller polygons
-    // store only the sequence of triangles that results in the smallest surface area
-    // also store the surface area of the triangulation
-    // INITIAL VALUE FOR triangles SHOULD BE AN EMPTY std::vector!
-    // INITIAL VALUE FOR minSurfaceArea SHOULD BE THE MAXIMUM VALUE FOR A FLOATING POINT
-    void _concavePolysToTrisHelper(std::vector<plTriangle> &triangles, float32_t &minSurfaceArea, const plPolygon &polygon)
+
+    void _concavePolysToTris(
+        std::vector<plTriangle>& triangles, // should be empty
+        float32_t& minSurfaceArea, // should be FLT_MAX
+        const plPolygon& polygon)
     {
-        const float32_t epsilon(0.0001f);
-
-        if (polygon.points.size() <= 2) { // base case
-            minSurfaceArea = 0.f;
-            return;
-        }
-        // three points lie on a line
-        if (polygon.points.size() == 3 && (polygon.points[2]^polygon.points[0]).length() <= epsilon && (polygon.points[2]-polygon.points[1]).length() <= epsilon)
+        /**
+         * Take a polygon as input.
+         * Iterate through each possible triangle involving the vertices at
+         * indices 0 and 1 (0-1-2, 0-1-3, and so on to 0-1-N). There will be two
+         * polygons remaining:
+         *  - the one from index 1 to X
+         *  - the one from index X to 0
+         * Recursively call this function for each of these smaller polygons
+         * store only the sequence of triangles that results in the smallest
+         * surface area also store the surface area of the triangulation
+         */
+        if (polygon.points.size() <= 2)
         {
-            minSurfaceArea = FLT_MAX/2.f;
+            // base case
+            minSurfaceArea = 0.0f;
             return;
         }
 
-        // try all permutations of triangles involving the edge between points[0] and points[1]
+        // three points lie on a line
+        if (polygon.points.size() == 3 &&
+            (polygon.points[2]^polygon.points[0]).length() <= PL_EPSILON &&
+            (polygon.points[2]-polygon.points[1]).length() <= PL_EPSILON)
+        {
+            minSurfaceArea = FLT_MAX / 2.0f;
+            return;
+        }
+
+        // try all permutations of triangles involving the edge between
+        // points[0] and points[1]
         for (uint32_t i = 2; i < polygon.points.size(); i++)
         {
-            plTriangle bisectingTriangle(polygon.points[0], polygon.points[1], polygon.points[i]);
-            float32_t    bisectingTriangleArea = bisectingTriangle.getArea();
+            plTriangle bisectingTriangle(
+                polygon.points[0],
+                polygon.points[1],
+                polygon.points[i]);
 
-            if (bisectingTriangleArea <= epsilon)
-                continue; // bad triangle
+            float32_t bisectingTriangleArea = bisectingTriangle.getArea();
+
+            if (bisectingTriangleArea <= PL_EPSILON)
+            {
+                // bad triangle
+                continue;
+            }
 
             // first polygon
             plPolygon poly0;
@@ -367,8 +300,8 @@ namespace plMath
                 poly0.points.push_back(polygon.points[j]);
             }
             std::vector<plTriangle> poly0Tris;
-            float32_t           poly0Area = FLT_MAX;
-            _concavePolysToTrisHelper(poly0Tris, poly0Area, poly0);
+            float32_t poly0Area = FLT_MAX;
+            _concavePolysToTris(poly0Tris, poly0Area, poly0);
 
             // second polygon
             plPolygon poly1;
@@ -378,11 +311,11 @@ namespace plMath
                 poly1.points.push_back(polygon.points[j]);
             }
             std::vector<plTriangle> poly1Tris;
-            float32_t           poly1Area = FLT_MAX;
-            _concavePolysToTrisHelper(poly1Tris, poly1Area, poly1);
+            float32_t poly1Area = FLT_MAX;
+            _concavePolysToTris(poly1Tris, poly1Area, poly1);
 
             // calculate current surface
-            float32_t currentSurfaceArea(bisectingTriangleArea + poly0Area + poly1Area);
+            float32_t currentSurfaceArea = bisectingTriangleArea + poly0Area + poly1Area;
 
             // update the output if necessary
             if (currentSurfaceArea < minSurfaceArea)

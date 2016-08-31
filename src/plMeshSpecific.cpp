@@ -1,4 +1,4 @@
-#include "plMeshSpecific.h" 
+#include "plMeshSpecific.h"
 
 plMeshSpecific::plMeshSpecific()
     : _mesh(nullptr)
@@ -6,7 +6,7 @@ plMeshSpecific::plMeshSpecific()
 }
 
 
-plMeshSpecific::plMeshSpecific(const plMesh& mesh)
-    : _mesh(&mesh)
+plMeshSpecific::plMeshSpecific(std::shared_ptr<plMesh> mesh)
+    : _mesh(mesh)
 {
 }

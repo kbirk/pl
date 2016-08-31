@@ -15,7 +15,7 @@ find_package(SDL2 REQUIRED)
 
 # Warning pedantic flags for all
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS "-Wall -Werror -pedantic -Wfatal-errors -O2 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Wall -Werror -pedantic -Wfatal-errors -O3 ${CMAKE_CXX_FLAGS}")
 
 # Dependencies and include locations
 include_directories("include")
@@ -28,12 +28,11 @@ include_directories(${SDL2_INCLUDE_DIR})
 # Add source files
 set(sources
     "src/plAutomaticPlanner"
-    "src/plBoneAndCartilage"
     "src/plBoundary"
     "src/plBoundaryEditor"
     "src/plBufferObject"
     "src/plCamera"
-    "src/plColourMap"
+    "src/plColorMap"
     "src/plCSV"
     "src/plDefectSite"
     "src/plDonorSite"
@@ -44,6 +43,7 @@ set(sources
     "src/plGraft"
     "src/plGraftCap"
     "src/plGraftEditor"
+    "src/plLog"
     "src/plMath"
     "src/plMatrix44"
     "src/plMatrixStack"
@@ -69,6 +69,7 @@ set(sources
     "src/plPlanTechnique"
     "src/plPlug"
     "src/plPolygon"
+    "src/plProgress"
     "src/plProjection"
     "src/plRenderComponent"
     "src/plRenderResources"
@@ -89,7 +90,6 @@ set(sources
     "src/plTransparencyTechnique"
     "src/plTransparentRenderable"
     "src/plTriangle"
-    "src/plUtility"
     "src/plUniform"
     "src/plVAO"
     "src/plVBO"

@@ -83,10 +83,25 @@ namespace plWindow {
         return y - _viewportY;
     }
 
+	int32_t pixelRatio() {
+        int32_t vWidth, vHeight, sWidth, sHeight;
+        SDL_GL_GetDrawableSize(window, &vWidth, &vHeight);
+        SDL_GetWindowSize(window, &sWidth, &sHeight);
+        int32_t horizontalRatio = vWidth / sWidth;
+        int32_t verticalRatio = vHeight / sHeight;
+        if (horizontalRatio != verticalRatio) {
+            LOG_WARN("Horizontal pixel ratio of "
+                << horizontalRatio
+                << " is not equal to vertical pixel ratio of "
+                << verticalRatio
+                << ", this will cause picking errors");
+        }
+        return horizontalRatio;
+    }
 
     plVector3 mouseToWorld(int32_t x, int32_t y, int32_t z)
     {
-        plMatrix44 mvp = (plProjectionStack::top() * plCameraStack::top() * plModelStack::top());
+        plMatrix44 mvp = plProjectionStack::top() * plCameraStack::top() * plModelStack::top();
         plMatrix44 mvpInverse = mvp.inverse();
 
         // map window coords to range [0 .. 1]
@@ -105,7 +120,7 @@ namespace plWindow {
 
         if (output.w == 0.0f)
         {
-             std::cerr << "plWindow::mouseToWorld() error, w == 0" << std::endl;
+             LOG_WARN("w == 0");
              return plVector3();
         }
 
@@ -122,7 +137,7 @@ namespace plWindow {
 
         if (projected.w == 0.0f)
         {
-            std::cerr << "plWindow::mouseToWorld() error, w == 0" << std::endl;
+            LOG_WARN("w == 0");
             return plVector3();
         }
 
@@ -150,7 +165,7 @@ namespace plWindow {
     }
 
 
-    void cameraToMouseRay(plVector3 &rayOrigin, plVector3 &rayDirection, int32_t x, int32_t y)
+    void cameraToMouseRay(plVector3& rayOrigin, plVector3& rayDirection, int32_t x, int32_t y)
     {
         plVector3 mouseInWorld = mouseToWorld(x, y, 0);
 
@@ -190,7 +205,13 @@ namespace plWindow {
         SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
         // set the opengl context version
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        #ifdef __linux__
+            // linux has support for 4.3+
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+        #else
+            // OSX only supports up to 4.1
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         // set byte depths
         SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -213,7 +234,7 @@ namespace plWindow {
         if (window == nullptr)
         {
             // In the event that the window could not be made...
-            std::cout << "Could not create window: " << SDL_GetError() << std::endl;
+            LOG_INFO("Could not create window: " << SDL_GetError());
             return;
         }
         // create the OpenGL context

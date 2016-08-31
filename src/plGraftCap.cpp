@@ -8,23 +8,23 @@ plGraftCap::plGraftCap()
 void plGraftCap::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
     plPickingStack::loadRed(PL_PICKING_TYPE_GRAFT);
-    plColourStack::load(_getColour());
+    plColorStack::load(_getColor());
 
     // if empty, do not draw
     if (triangles.empty())
         return;
 
     // create render component
-    plRenderComponent component(_vao);
+    auto component = std::make_shared<plRenderComponent>(_vao);
     // attached uniforms
-    component.attach(plUniform(PL_MODEL_MATRIX_UNIFORM,      plModelStack::top()));
-    component.attach(plUniform(PL_VIEW_MATRIX_UNIFORM,       plCameraStack::top()));
-    component.attach(plUniform(PL_PROJECTION_MATRIX_UNIFORM, plProjectionStack::top()));
-    component.attach(plUniform(PL_COLOUR_UNIFORM,            plColourStack::top()));
-    component.attach(plUniform(PL_PICKING_UNIFORM,           plPickingStack::top()));
-    component.attach(plUniform(PL_LIGHT_POSITION_UNIFORM,    plVector3(PL_LIGHT_POSITION)));
+    component->attach(PL_MODEL_MATRIX_UNIFORM, std::make_shared<plUniform>(plModelStack::top()));
+    component->attach(PL_VIEW_MATRIX_UNIFORM, std::make_shared<plUniform>(plCameraStack::top()));
+    component->attach(PL_PROJECTION_MATRIX_UNIFORM, std::make_shared<plUniform>(plProjectionStack::top()));
+    component->attach(PL_COLOR_UNIFORM, std::make_shared<plUniform>(plColorStack::top()));
+    component->attach(PL_PICKING_UNIFORM, std::make_shared<plUniform>(plPickingStack::top()));
+    component->attach(PL_LIGHT_POSITION_UNIFORM, std::make_shared<plUniform>(plVector3(PL_LIGHT_POSITION)));
     // insert into render map
-    renderMap[technique].insert(component);
+    renderMap[technique].push_back(component);
 }
 
 
@@ -34,14 +34,14 @@ void plGraftCap::extractRenderComponents(plRenderMap& renderMap) const
 }
 
 
-void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transform, const float32_t radius)
+void plGraftCap::generateCap(std::shared_ptr<plOctreeMesh> mesh, const plTransform& transform, float32_t radius)
 {
     // clear previous cap incase
     triangles.clear();
     perimeter.clear();
 
     std::set<const plTriangle*> potentialTriangles;
-    mesh.octree().rayIntersect(potentialTriangles, transform.origin(), transform.y(), radius);
+    mesh->octree()->rayIntersect(potentialTriangles, transform.origin(), transform.y(), radius);
 
     // reserve for max number of triangles
     triangles.reserve(triangles.size());
@@ -61,9 +61,9 @@ void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transf
 
     for (uint32_t i=0; i<triangles.size(); i++)
     {
-        const plVector3 &p0 = triangles[i].point0();
-        const plVector3 &p1 = triangles[i].point1();
-        const plVector3 &p2 = triangles[i].point2();
+        const plVector3& p0 = triangles[i].point0();
+        const plVector3& p1 = triangles[i].point1();
+        const plVector3& p2 = triangles[i].point2();
 
         // if point is very close to radius, assume perimeter point
         if ((p0.x*p0.x + p0.z*p0.z) > subSquaredRadius)
@@ -74,13 +74,11 @@ void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transf
 
         if ((p2.x*p2.x + p2.z*p2.z) > subSquaredRadius)
             angles.insert(plPointAndAngle(atan2(p2.x, p2.z), p2));
-
     }
 
     if (angles.size() > 0)
     {
         perimeter.reserve(angles.size());  // reserve size
-
         for (const plPointAndAngle& angle : angles)
         {
             perimeter.push_back(angle);
@@ -89,7 +87,7 @@ void plGraftCap::generateCap(const plOctreeMesh& mesh, const plTransform& transf
 }
 
 
-bool plGraftCap::_isBeyondHeightThresholds(const plVector3 &p0, const plVector3 &p1, const plVector3 &p2, const plTransform& transform) const
+bool plGraftCap::_isBeyondHeightThresholds(const plVector3& p0, const plVector3& p1, const plVector3& p2, const plTransform& transform) const
 {
     const float32_t VERTICAL_THRESHOLD = 8.0f;
     float32_t proj0 = transform.projectedDistOnAxis(p0);
@@ -125,7 +123,8 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], c
     if (d[1] < radiusSquared) insideEdges.push_back(1);
     if (d[2] < radiusSquared) insideEdges.push_back(2);
 
-    std::vector<plVector3> points;      points.reserve(4);
+    std::vector<plVector3> points;
+    points.reserve(4);
 
     switch (insideEdges.size())
     {
@@ -137,17 +136,17 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], c
         case 1:
         {
             // one edge overlaps
-            plVector3 &m0 = e[insideEdges[0]];
-            plVector3 &m1 = e[(insideEdges[0]+1) % 3];
-            plVector3 &m2 = e[(insideEdges[0]+2) % 3];
+            plVector3& m0 = e[insideEdges[0]];
+            plVector3& m1 = e[(insideEdges[0]+1) % 3];
+            plVector3& m2 = e[(insideEdges[0]+2) % 3];
 
             // points before and after inside closest point
-            plVector3 &m0p0 = verts[insideEdges[0]];
-            plVector3 &m0p1 = verts[(insideEdges[0]+1) % 3];
+            plVector3& m0p0 = verts[insideEdges[0]];
+            plVector3& m0p1 = verts[(insideEdges[0]+1) % 3];
 
             points.emplace_back(_pointOnCircumference(m0, m0p1, radius));
-            points.emplace_back(_pointOnCircumference(m1, m0,   radius));
-            points.emplace_back(_pointOnCircumference(m2, m0,   radius));
+            points.emplace_back(_pointOnCircumference(m1, m0, radius));
+            points.emplace_back(_pointOnCircumference(m2, m0, radius));
             points.emplace_back(_pointOnCircumference(m0p0, m0, radius));
 
             break;
@@ -161,15 +160,15 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], c
                 plUtility::swap(insideEdges[0], insideEdges[1]);
             }
 
-            plVector3 &m0 = e[insideEdges[0]];
-            plVector3 &m1 = e[insideEdges[1]];
+            plVector3& m0 = e[insideEdges[0]];
+            plVector3& m1 = e[insideEdges[1]];
 
             // points before the two closest points
-            plVector3 &m0p0 = verts[insideEdges[0]];
-            plVector3 &m1p0 = verts[insideEdges[1]];
+            plVector3& m0p0 = verts[insideEdges[0]];
+            plVector3& m1p0 = verts[insideEdges[1]];
             // points after the two closest points
-            plVector3 &m0p1 = verts[(insideEdges[0]+1) % 3];
-            plVector3 &m1p1 = verts[(insideEdges[1]+1) % 3];
+            plVector3& m0p1 = verts[(insideEdges[0]+1) % 3];
+            plVector3& m1p1 = verts[(insideEdges[1]+1) % 3];
 
             points.emplace_back(_pointOnCircumference(m0, m0p1, radius));
             points.emplace_back(_pointOnCircumference(m1p0, m1, radius));
@@ -180,7 +179,8 @@ std::vector<plVector3> plGraftCap::_pointsOutsideTriangles(plVector3 verts[3], c
         }
         case 3:
         {
-            // three edges overlap, results in 6 triangles, TODO
+            // three edges overlap, results in 6 triangles,
+            // TODO: impl this
             break;
         }
     }
@@ -219,7 +219,8 @@ std::vector<plVector3> plGraftCap::_pointsInsideTriangles(plVector3 verts[3], fl
 
     bool prevInside = true; // always starts as true (ds[0] <= radiusSquared)
 
-    std::vector<plVector3> points;      points.reserve(5);
+    std::vector<plVector3> points;
+    points.reserve(5);
 
     for (int32_t i=0; i<3; i++)
     {
@@ -264,7 +265,7 @@ std::vector<plVector3> plGraftCap::_pointsInsideTriangles(plVector3 verts[3], fl
 }
 
 
-bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTransform& transform, float32_t radius)
+bool plGraftCap::_triangleIntersection(const plTriangle& triangle, const plTransform& transform, float32_t radius)
 {
     // if triangle is overlapping cap, cut it (if necessary) and add it to cap triangle list
     if (triangle.normal() * transform.y() < 0)
@@ -302,7 +303,8 @@ bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTrans
         return true;
     }
 
-    std::vector<plVector3> points;      points.reserve(6);
+    std::vector<plVector3> points;
+    points.reserve(6);
 
     if (minDist > radiusSquared)
     {
@@ -335,7 +337,7 @@ bool plGraftCap::_triangleIntersection(const plTriangle &triangle, const plTrans
 }
 
 
-plVector3 plGraftCap::_pointOnCircumference(const plVector3 &u, const plVector3 &v, float32_t radius) const
+plVector3 plGraftCap::_pointOnCircumference(const plVector3& u, const plVector3& v, float32_t radius) const
 {
     plVector3 uProj(u.x, 0.0f, u.z); // ignore component along y axis
     plVector3 vProj(v.x, 0.0f, v.z);
@@ -350,8 +352,8 @@ plVector3 plGraftCap::_pointOnCircumference(const plVector3 &u, const plVector3 
 
     if (radical < 0)
     {
-        std::cout << "plGraft::_pointOnCircumference() error: radical = " << radical << std::endl;
-        return plVector3(0,0,0);    // error
+        LOG_WARN("Radical = " << radical);
+        return plVector3(0, 0, 0);
     }
 
     float32_t root = sqrt(radical);
@@ -370,12 +372,10 @@ plVector3 plGraftCap::_pointOnCircumference(const plVector3 &u, const plVector3 
     }
     else
     {
-        std::cout << "plGraft::_pointOnCircumference() error: t1 = " << t1 << ", t2 = " << t2 << std::endl;
-        return plVector3(0,0,0);    // error
+        LOG_WARN("t1 = " << t1 << ", t2 = " << t2);
+        return plVector3(0, 0, 0);
     }
-
     return u + t*(v-u);
-
 }
 
 
@@ -384,15 +384,15 @@ plCartilageCap::plCartilageCap()
 }
 
 
-plVector4 plCartilageCap::_getColour() const
+plVector4 plCartilageCap::_getColor() const
 {
     if (plPickingStack::topBlue() == PL_PICKING_INDEX_GRAFT_DEFECT)
     {
-        return plVector4(PL_GRAFT_DEFECT_CARTILAGE_COLOUR);
+        return plVector4(PL_GRAFT_DEFECT_CARTILAGE_COLOR);
     }
     else
     {
-        return plVector4(PL_GRAFT_DONOR_CARTILAGE_COLOUR);
+        return plVector4(PL_GRAFT_DONOR_CARTILAGE_COLOR);
     }
 }
 
@@ -405,19 +405,22 @@ void plCartilageCap::extractRenderComponents(plRenderMap& renderMap, uint32_t te
 
 void plCartilageCap::generateVAO(float32_t radius, float32_t length, const std::vector<plPointAndAngle>& bonePerimeter)
 {
-    const plVector3 y(0,1,0);                // y is cylinder axis (pointing upward)
+    // y is cylinder axis (pointing upward)
+    const plVector3 y(0,1,0);
 
-    std::vector<plVector3> vertices;     vertices.reserve(triangles.size()*6 + (perimeter.size() + bonePerimeter.size())*6);
-    std::vector<uint32_t>    indices;      indices.reserve(triangles.size()*3 + (perimeter.size() + bonePerimeter.size())*3);
+    std::vector<plVector3> vertices;
+    vertices.reserve(triangles.size()*6 + (perimeter.size() + bonePerimeter.size())*6);
+    std::vector<uint32_t> indices;
+    indices.reserve(triangles.size()*3 + (perimeter.size() + bonePerimeter.size())*3);
 
     for (uint32_t i = 0; i < triangles.size(); i++)
     {
         int32_t base = vertices.size()/2;
 
-        const plVector3 &p0 = triangles[i].point0();
-        const plVector3 &p1 = triangles[i].point1();
-        const plVector3 &p2 = triangles[i].point2();
-        const plVector3 &n  = triangles[i].normal();
+        const plVector3& p0 = triangles[i].point0();
+        const plVector3& p1 = triangles[i].point1();
+        const plVector3& p2 = triangles[i].point2();
+        const plVector3& n  = triangles[i].normal();
 
         vertices.push_back(p0  + PL_CAP_OFFSET);  // position
         vertices.push_back(n);                    // normal
@@ -494,12 +497,12 @@ void plCartilageCap::generateVAO(float32_t radius, float32_t length, const std::
     if (indices.size() > 0)
     {
         // set vbo and attach attribute pointers
-        std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+        auto vbo = std::make_shared<plVBO>();
         vbo->set(vertices);
         vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
         vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
         // set eabo
-        std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+        auto eabo = std::make_shared<plEABO>();
         eabo->set(indices);
         // create vao, attach eabo and vbo, upload to gpu
         _vao = std::make_shared<plVAO>();
@@ -507,7 +510,6 @@ void plCartilageCap::generateVAO(float32_t radius, float32_t length, const std::
         _vao->attach(eabo);
         // upload to gpu
         _vao->upload();
-
         _generateProjectionVAO(radius, length, bonePerimeter);
     }
 }
@@ -515,20 +517,20 @@ void plCartilageCap::generateVAO(float32_t radius, float32_t length, const std::
 
 void plCartilageCap::_generateProjectionVAO(float32_t radius, float32_t length, const std::vector<plPointAndAngle>& bonePerimeter)
 {
-
-    const plVector3 y(0,1,0);        // y is cylinder axis (pointing upward)
-
-    std::vector<plVector3> vertices;     vertices.reserve(triangles.size()*6 + (perimeter.size() + bonePerimeter.size())*6);
-    std::vector<uint32_t>    indices;      indices.reserve(triangles.size()*3 + (perimeter.size() + bonePerimeter.size())*3);
+    const plVector3 y(0, 1, 0);        // y is cylinder axis (pointing upward)
+    std::vector<plVector3> vertices;
+    vertices.reserve(triangles.size()*6 + (perimeter.size() + bonePerimeter.size())*6);
+    std::vector<uint32_t> indices;
+    indices.reserve(triangles.size()*3 + (perimeter.size() + bonePerimeter.size())*3);
 
     for (uint32_t i = 0; i < triangles.size(); i++)
     {
         int32_t base = vertices.size()/2;
 
-        const plVector3 &p0 = triangles[i].point0();
-        const plVector3 &p1 = triangles[i].point1();
-        const plVector3 &p2 = triangles[i].point2();
-        const plVector3 &n  = triangles[i].normal();
+        const plVector3& p0 = triangles[i].point0();
+        const plVector3& p1 = triangles[i].point1();
+        const plVector3& p2 = triangles[i].point2();
+        const plVector3& n  = triangles[i].normal();
 
         vertices.push_back(p0 + PL_CAP_OFFSET); // position
         vertices.push_back(n);                  // normal
@@ -545,12 +547,12 @@ void plCartilageCap::_generateProjectionVAO(float32_t radius, float32_t length, 
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    auto vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    auto eabo = std::make_shared<plEABO>();
     eabo->set(indices);
     // create vao, attach eabo and vbo, upload to gpu
     _capVAO = std::make_shared<plVAO>();
@@ -581,10 +583,10 @@ void plCartilageCap::_generateProjectionVAO(float32_t radius, float32_t length, 
 
         // bottom side
         vertices.push_back(prevBot); // position
-        vertices.push_back(n);        // normal
+        vertices.push_back(n);       // normal
         // top side
         vertices.push_back(prevTop); // position
-        vertices.push_back(n);        // normal
+        vertices.push_back(n);       // normal
 
         for (uint32_t i=0; i< perimeter.size(); i++)
         {
@@ -595,18 +597,18 @@ void plCartilageCap::_generateProjectionVAO(float32_t radius, float32_t length, 
             plVector3 n = (cos(theta) * z + sin(theta) * x).normalize();
             // bottom side
             vertices.push_back(bot); // position
-            vertices.push_back(n);    // normal
+            vertices.push_back(n);   // normal
             // top side
             vertices.push_back(top); // position
-            vertices.push_back(n);    // normal
+            vertices.push_back(n);   // normal
         }
 
         // bottom side
         vertices.push_back(prevBot); // position
-        vertices.push_back(n);        // normal
+        vertices.push_back(n);       // normal
         // top side
         vertices.push_back(prevTop); // position
-        vertices.push_back(n);        // normal
+        vertices.push_back(n);       // normal
 
         for (uint32_t j = 0; j <= perimeter.size()*2; j+=2)
         {
@@ -645,15 +647,15 @@ plBoneCap::plBoneCap()
 }
 
 
-plVector4 plBoneCap::_getColour() const
+plVector4 plBoneCap::_getColor() const
 {
     if (plPickingStack::topBlue() == PL_PICKING_INDEX_GRAFT_DEFECT)
     {
-        return plVector4(PL_GRAFT_DEFECT_BONE_COLOUR);
+        return plVector4(PL_GRAFT_DEFECT_BONE_COLOR);
     }
     else
     {
-        return plVector4(PL_GRAFT_DONOR_BONE_COLOUR);
+        return plVector4(PL_GRAFT_DONOR_BONE_COLOR);
     }
 }
 
@@ -662,27 +664,30 @@ void plBoneCap::generateVAO(float32_t radius, float32_t length)
 {
     const plVector3 y(0,1,0);                // y is cylinder axis (pointing upward)
 
-    std::vector<plVector3> vertices;     vertices.reserve(triangles.size()*6 + perimeter.size()*6 + 14);
-    std::vector<uint32_t>    indices;      indices.reserve(triangles.size()*3 + perimeter.size() * 9);
+    std::vector<plVector3> vertices;
+    vertices.reserve(triangles.size()*6 + perimeter.size()*6 + 14);
+
+    std::vector<uint32_t> indices;
+    indices.reserve(triangles.size()*3 + perimeter.size() * 9);
 
     // generate surface vertices for cap
     for (uint32_t i = 0; i < triangles.size(); i++)
     {
         int32_t base = vertices.size()/2;
 
-        const plVector3 &p0 = triangles[i].point0();
-        const plVector3 &p1 = triangles[i].point1();
-        const plVector3 &p2 = triangles[i].point2();
-        const plVector3 &n  = triangles[i].normal();
+        const plVector3& p0 = triangles[i].point0();
+        const plVector3& p1 = triangles[i].point1();
+        const plVector3& p2 = triangles[i].point2();
+        const plVector3& n  = triangles[i].normal();
 
         vertices.emplace_back(p0 + (0.5f * PL_CAP_OFFSET)); // position
-        vertices.push_back(n);                                // normal
+        vertices.push_back(n);                              // normal
 
         vertices.emplace_back(p1 + (0.5f * PL_CAP_OFFSET)); // position
-        vertices.push_back(n);                                // normal
+        vertices.push_back(n);                              // normal
 
         vertices.emplace_back(p2 + (0.5f * PL_CAP_OFFSET)); // position
-        vertices.push_back(n);                                // normal
+        vertices.push_back(n);                              // normal
 
         indices.push_back(base+0);
         indices.push_back(base+1);
@@ -706,13 +711,13 @@ void plBoneCap::generateVAO(float32_t radius, float32_t length)
 
         // top side
         vertices.push_back(prevTop); // position
-        vertices.push_back(n);        // normal
+        vertices.push_back(n);       // normal
         // bottom side
         vertices.push_back(prevBot); // position
-        vertices.push_back(n);        // normal
+        vertices.push_back(n);       // normal
         // bottom bottom
         vertices.push_back(prevBot); // position
-        vertices.push_back(-y);       // normal
+        vertices.push_back(-y);      // normal
 
         for (uint32_t i=0; i< perimeter.size(); i++)
         {
@@ -734,13 +739,13 @@ void plBoneCap::generateVAO(float32_t radius, float32_t length)
 
         // top side
         vertices.push_back(prevTop); // position
-        vertices.push_back(n);        // normal
+        vertices.push_back(n);       // normal
         // bottom side
         vertices.push_back(prevBot); // position
-        vertices.push_back(n);        // normal
+        vertices.push_back(n);       // normal
         // bottom bottom
         vertices.push_back(prevBot); // position
-        vertices.push_back(-y);       // normal
+        vertices.push_back(-y);      // normal
         // bottom centre point
         vertices.push_back(centreBottom);   // position
         vertices.push_back(-y);             // normal
@@ -764,12 +769,12 @@ void plBoneCap::generateVAO(float32_t radius, float32_t length)
     }
 
     // set vbo and attach attribute pointers
-    std::shared_ptr<plVBO > vbo = std::make_shared<plVBO>();
+    auto vbo = std::make_shared<plVBO>();
     vbo->set(vertices);
     vbo->set(plVertexAttributePointer(PL_POSITION_ATTRIBUTE, 32, 0));
     vbo->set(plVertexAttributePointer(PL_NORMAL_ATTRIBUTE,   32, 16));
     // set eabo
-    std::shared_ptr<plEABO> eabo = std::make_shared<plEABO>();
+    auto eabo = std::make_shared<plEABO>();
     eabo->set(indices);
     // create vao, attach eabo and vbo, upload to gpu
     _vao = std::make_shared<plVAO>();

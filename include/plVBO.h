@@ -1,17 +1,16 @@
 #pragma once
 
 #include "plCommon.h"
+#include "plOpenGLCommon.h"
 #include "plVertexSpecBuffer.h"
 #include "plVector4.h"
-
-#include <epoxy/gl.h>
 
 // attribute locations, set by VBOs and mirrored in shader files
 enum plVertexAttributeIndexEnum
 {
     PL_POSITION_ATTRIBUTE = 0,
     PL_NORMAL_ATTRIBUTE,
-    PL_COLOUR_ATTRIBUTE,
+    PL_COLOR_ATTRIBUTE,
     PL_TEXCOORD_ATTRIBUTE
 };
 
@@ -34,12 +33,9 @@ class plVBO : public plVertexSpecBuffer
     public:
 
         plVBO();
-        plVBO(const std::vector<plVector4>& data, uint32_t usage = GL_STATIC_DRAW);
-        plVBO(const plVBO& vbo);
-        plVBO(plVBO&& vbo);
-
-        plVBO& operator= (const plVBO& vbo);
-        plVBO& operator= (plVBO&& vbo);
+        plVBO(
+            const std::vector<plVector4>& data,
+            uint32_t usage = GL_STATIC_DRAW);
 
         void set(const std::vector<plVector3>& data, uint32_t usage = GL_STATIC_DRAW);
         void set(const std::vector<plVector4>& data, uint32_t usage = GL_STATIC_DRAW);
@@ -47,8 +43,16 @@ class plVBO : public plVertexSpecBuffer
 
         void clear();
 
-        void bind() const { glBindBuffer(GL_ARRAY_BUFFER, _id); }
-        void unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
+        void bind() const
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, _id);
+            LOG_OPENGL("glBindBuffer");
+        }
+        void unbind() const
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            LOG_OPENGL("glBindBuffer");
+        }
 
         void upload();
 
@@ -58,7 +62,4 @@ class plVBO : public plVertexSpecBuffer
 
         std::vector<plVector4> _data;
         std::vector<plVertexAttributePointer> _attributePointers;
-
-        void _copy(const plVBO& vbo);
-        void _move(plVBO&& vbo);
 };

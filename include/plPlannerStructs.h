@@ -9,11 +9,11 @@ class plDefectSolution
 {
     public:
 
-        uint32_t                  graftCount;
-        std::vector<plVector4>  graftPositions;
-        std::vector<plVector4>  graftNormals;         // normal / direction of graft
-        std::vector<plVector4>  graftSurfaceNormals;  // actual normal of the surface
-        std::vector<float32_t>    graftRadii;
+        uint32_t graftCount;
+        std::vector<plVector4> graftPositions;
+        std::vector<plVector4> graftNormals;         // normal / direction of graft
+        std::vector<plVector4> graftSurfaceNormals;  // actual normal of the surface
+        std::vector<float32_t> graftRadii;
 
         plDefectSolution() {};
 };
@@ -22,32 +22,40 @@ class plCapIndices
 {
     public:
 
-        plSSBO defectCapIndexSSBO;
-        plSSBO donorCapIndexSSBO;
+        std::shared_ptr<plSSBO> defectCapIndexSSBO;
+        std::shared_ptr<plSSBO> donorCapIndexSSBO;
 
-        plCapIndices() {};
+        plCapIndices()
+        {
+            defectCapIndexSSBO = std::make_shared<plSSBO>();
+            donorCapIndexSSBO = std::make_shared<plSSBO>();
+        };
 };
 
 class plRmsData
 {
     public:
 
-        plSSBO rmsSSBO;
-        plSSBO rotationSSBO;
+        std::shared_ptr<plSSBO> rmsSSBO;
+        std::shared_ptr<plSSBO> rotationSSBO;
 
-        plRmsData() {}
+        plRmsData()
+        {
+            rmsSSBO = std::make_shared<plSSBO>();
+            rotationSSBO = std::make_shared<plSSBO>();
+        }
 };
 
 class plDonorSolution
 {
     public:
 
-        std::vector<plVector4>  graftPositions;
-        std::vector<plVector4>  graftNormals;
-        std::vector<plVector4>  graftSurfaceNormals;
-        std::vector<plVector4>  graftXAxes;
-        std::vector<uint32_t>     graftSiteIndices;
-        float32_t                   rms;
+        std::vector<plVector4> graftPositions;
+        std::vector<plVector4> graftNormals;
+        std::vector<plVector4> graftSurfaceNormals;
+        std::vector<plVector4> graftXAxes;
+        std::vector<uint32_t> graftSiteIndices;
+        float32_t rms;
 
         plDonorSolution() {};
 

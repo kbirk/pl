@@ -1,11 +1,9 @@
 #include "plPlanningSite.h"
 
-plPlanningSite::plPlanningSite()
-{
-}
-
-
-plPlanningSite::plPlanningSite(const std::vector<plTriangle> &tris, const plBoundary &boundary, bool fineGrain)
+plPlanningSite::plPlanningSite(
+    const std::vector<plTriangle>& tris,
+    std::shared_ptr<plBoundary> boundary,
+    bool fineGrain)
 {
     // generate interior triangles
     plMeshCutter::findInteriorMesh(triangles, tris, boundary);
@@ -21,64 +19,43 @@ plPlanningSite::plPlanningSite(const std::vector<plTriangle> &tris, const plBoun
     _calcArea();
     _calcNormal();
 
-    std::cout << "\t\t" <<  triangles.size()  << " triangles calculated \n";
-    std::cout << "\t\t" <<  gridPoints.size() << " grid points calculated \n";
+    LOG_INFO("    " <<  triangles.size()  << " triangles calculated");
+    LOG_INFO("    " <<  gridPoints.size() << " grid points calculated");
 
     if (triangles.size() == 0 || gridPoints.size() == 0)
     {
-        std::cerr << "plPlanningSite::plPlanningSite() error: planning data buffer empty, please REMOVE all empty boundaries before proceeding with planner" << std::endl;
+        LOG_WARN("Planning data buffer empty, please REMOVE all empty boundaries before proceeding with planner");
     }
-}
-
-
-plPlanningSite::plPlanningSite(plPlanningSite&& site)
-    : triangles      (std::move(site.triangles)),
-      gridPoints     (std::move(site.gridPoints)),
-      gridNormals    (std::move(site.gridNormals)),
-      boundaryPoints (std::move(site.boundaryPoints)),
-      boundaryNormals(std::move(site.boundaryNormals)),
-      area           (site.area),
-      avgNormal      (site.avgNormal)
-{
-}
-
-
-plPlanningSite& plPlanningSite::operator= (plPlanningSite&& site)
-{
-    triangles       = std::move(site.triangles);
-    gridPoints      = std::move(site.gridPoints);
-    gridNormals     = std::move(site.gridNormals);
-    boundaryPoints  = std::move(site.boundaryPoints);
-    boundaryNormals = std::move(site.boundaryNormals);
-    area            = site.area;
-    avgNormal       = site.avgNormal;
-    return *this;
 }
 
 
 bool plPlanningSite::good() const
 {
     return !(gridPoints.size() == 0  ||
-              gridNormals.size() == 0 ||
-              triangles.size() == 0   ||
-              boundaryPoints.size() == 0 ||
-              boundaryNormals.size() == 0 ||
-              area == 0.0f ||
-              avgNormal.length() == 0.0f);
+        gridNormals.size() == 0 ||
+        triangles.size() == 0   ||
+        boundaryPoints.size() == 0 ||
+        boundaryNormals.size() == 0 ||
+        area == 0.0f ||
+        avgNormal.length() == 0.0f);
 }
 
 
-void plPlanningSite::_bufferGridData(std::vector<plVector4> &data) const
+void plPlanningSite::_bufferGridData(std::vector<plVector4>& data) const
 {
     for (uint32_t i=0; i < gridPoints.size(); i++)
+    {
         data.push_back(gridPoints[i]);
+    }
 
     for (uint32_t i=0; i < gridNormals.size(); i++)
+    {
         data.push_back(gridNormals[i]);
+    }
 }
 
 
-void plPlanningSite::_bufferMeshData(std::vector<plVector4> &data) const
+void plPlanningSite::_bufferMeshData(std::vector<plVector4>& data) const
 {
     for (uint32_t i=0; i < triangles.size(); i++)
     {
@@ -90,7 +67,7 @@ void plPlanningSite::_bufferMeshData(std::vector<plVector4> &data) const
 }
 
 
-void plPlanningSite::_bufferBoundaryData(std::vector<plVector4> &data) const
+void plPlanningSite::_bufferBoundaryData(std::vector<plVector4>& data) const
 {
     for (uint32_t i=0; i < boundaryPoints.size(); i++)
         data.push_back(boundaryPoints[i]);
@@ -100,9 +77,10 @@ void plPlanningSite::_bufferBoundaryData(std::vector<plVector4> &data) const
 }
 
 
-plSSBO plPlanningSite::getSSBO() const
+std::shared_ptr<plSSBO> plPlanningSite::getSSBO() const
 {
-    std::vector<plVector4> data;    data.reserve(totalSize());
+    std::vector<plVector4> data;
+    data.reserve(totalSize());
 
     _bufferGridData(data);
     _bufferMeshData(data);
@@ -110,9 +88,9 @@ plSSBO plPlanningSite::getSSBO() const
 
     uint32_t numBytes = totalSize() * sizeof(plVector4);
 
-    std::cout << "\t\tTotal buffer size: " << numBytes << " bytes " << std::endl;
+    LOG_INFO("    Total buffer size: " << numBytes << " bytes");
 
-    return plSSBO(numBytes, (void*)(&data[0]));
+    return std::make_shared<plSSBO>(numBytes, (void*)(&data[0]));
 }
 
 
@@ -208,26 +186,26 @@ void plPlanningSite::_generateFineGridPoints()
 
     for (const plPointAndNormal& pointNormal : pointsAndNormals)
     {
-        gridPoints.push_back(plVector4(pointNormal.point,  1));
+        gridPoints.push_back(plVector4(pointNormal.point, 1));
         gridNormals.push_back(plVector4(pointNormal.normal, 1));
     }
 
 }
 
 
-void plPlanningSite::_generateBoundaryPoints(const plBoundary &boundary)
+void plPlanningSite::_generateBoundaryPoints(std::shared_ptr<plBoundary> boundary)
 {
-    uint32_t size = boundary.size();
+    uint32_t size = boundary->size();
 
     for (uint32_t i=0; i < size; i++)
     {
-        boundaryPoints.push_back(plVector4(boundary.points(i), 1));
+        boundaryPoints.push_back(plVector4(boundary->points(i), 1));
     }
 
     for (uint32_t i=0; i < size; i++)
     {
-        plVector3 d = boundary.points((i+1)%size) - boundary.points(i);
-        plVector3 n = 0.5f * (boundary.normals((i+1)%size) + boundary.normals(i));
+        plVector3 d = boundary->points((i+1)%size) - boundary->points(i);
+        plVector3 n = 0.5f * (boundary->normals((i+1)%size) + boundary->normals(i));
         boundaryNormals.push_back(plVector4((d ^ n).normalize(), 1.0f));
     }
 }
@@ -240,7 +218,7 @@ void plPlanningSite::_calcArea()
     {
         area += triangles[i].getArea();
     }
-    std::cout << "\t\tSite area: " << area << "\n";
+    LOG_INFO("    Site area: " << area << "");
 }
 
 

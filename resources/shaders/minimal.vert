@@ -1,7 +1,7 @@
 #version 330
 
-layout(location = 0) in vec3 vPosition;
-layout(location = 1) in vec3 vNormal;
+layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec3 aNormal;
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
@@ -9,5 +9,5 @@ uniform mat4 uProjectionMatrix;
 
 void main()
 {
-    gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(vPosition, 1);
+    gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aPosition, 1.0);
 }
