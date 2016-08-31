@@ -21,22 +21,15 @@ sudo aptitude install libepoxy-dev
 
 ## Build
 
-Clone the repo:
-
-```bash
-git clone git@github.com:kbirk/pl.git
-```
-
 Build the makefiles:
 
 ```bash
-cd pl
 mkdir build
 cd build
-cmake ../
+cmake ..
 ```
 
-Build the executable:
+Compile and link the executable:
 
 ```bash
 make
