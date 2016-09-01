@@ -4,6 +4,9 @@
 
 ## Dependencies
 
+- Requires a C++11 compatible Compiler
+- GPU driver support for OpenGL 4.3+
+
 #### Linux
 
 Install CMake:

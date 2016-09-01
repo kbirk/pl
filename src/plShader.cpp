@@ -77,9 +77,9 @@ GLuint plShader::_createShader(const std::vector<std::string> &shaderFiles, GLen
 char* plShader::_readShaderFile(const std::string& filename)
 {
     // THIS FUNCTION DOES NOT DE-ALLOCATE HEAP MEMORY!
-    std::ifstream stream (filename, std::ifstream::in |         // input stream
-                                    std::ifstream::binary |     // consider stream as binary
-                                    std::ifstream::ate);        // set position indicator at end of stream
+    std::ifstream stream(filename, std::ifstream::in |         // input stream
+                                   std::ifstream::binary |     // consider stream as binary
+                                   std::ifstream::ate);        // set position indicator at end of stream
     char *string;
     if (stream.is_open())
     {
@@ -128,7 +128,7 @@ GLuint plShader::_createAndCompileShader(const std::string& shaderFile, GLenum s
     // create shader object
     GLuint shader = _createShader(shaderFile, shaderType);
     // compile shader object, check for error
-    if(!_compileShader(shader))
+    if (!_compileShader(shader))
         return 0;
     return shader;
 }
@@ -139,7 +139,7 @@ GLuint plShader::_createAndCompileShader(const std::vector<std::string> &shaderF
     // create shader object
     GLuint shader = _createShader(shaderFiles, shaderType);
     // compile shader object, check for error
-    if(!_compileShader(shader))
+    if (!_compileShader(shader))
         return 0;
     return shader;
 }

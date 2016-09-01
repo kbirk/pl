@@ -95,7 +95,7 @@ void closestPointsOnTwoSegments(inout vec3 c0, inout vec3 c1, in vec3 position0,
     // If t in [0,1] done. Else clamp t, recompute s for the new value
     // of t using s = Dot((P2 + D2*t) - P1,D1) / Dot(D1,D1)= (t*b - c) / a
     // and clamp s to [0, 1]
-    if(t < 0.0)
+    if (t < 0.0)
     {
         t = 0.0;
         s = clamp(-c / a, 0.0, 1.0);

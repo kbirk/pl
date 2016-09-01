@@ -313,19 +313,19 @@ bool plOctree::rayIntersect(std::set<const plTriangle*>& triangles, const plVect
     // check if ray origin is inside box
     plVector3 diff = rayOrigin - _centre;
 
-    if(ignoreBehindRay)
+    if (ignoreBehindRay)
     {
-        if(fabs(diff.x) > boxExtents && diff.x*rayDirection.x >= 0.0f)    return false;
-        if(fabs(diff.y) > boxExtents && diff.y*rayDirection.y >= 0.0f)    return false;
-        if(fabs(diff.z) > boxExtents && diff.z*rayDirection.z >= 0.0f)    return false;
+        if (fabs(diff.x) > boxExtents && diff.x*rayDirection.x >= 0.0f)    return false;
+        if (fabs(diff.y) > boxExtents && diff.y*rayDirection.y >= 0.0f)    return false;
+        if (fabs(diff.z) > boxExtents && diff.z*rayDirection.z >= 0.0f)    return false;
     }
 
     plVector3 absDirection(fabs(rayDirection.x), fabs(rayDirection.y), fabs(rayDirection.z));
 
     float32_t f;
-    f = rayDirection.y * diff.z - rayDirection.z * diff.y;    if(fabs(f) > boxExtents*absDirection.z + boxExtents*absDirection.y) return false;
-    f = rayDirection.z * diff.x - rayDirection.x * diff.z;    if(fabs(f) > boxExtents*absDirection.z + boxExtents*absDirection.x) return false;
-    f = rayDirection.x * diff.y - rayDirection.y * diff.x;    if(fabs(f) > boxExtents*absDirection.y + boxExtents*absDirection.x) return false;
+    f = rayDirection.y * diff.z - rayDirection.z * diff.y;    if (fabs(f) > boxExtents*absDirection.z + boxExtents*absDirection.y) return false;
+    f = rayDirection.z * diff.x - rayDirection.x * diff.z;    if (fabs(f) > boxExtents*absDirection.z + boxExtents*absDirection.x) return false;
+    f = rayDirection.x * diff.y - rayDirection.y * diff.x;    if (fabs(f) > boxExtents*absDirection.y + boxExtents*absDirection.x) return false;
 
     // intersection exists, recurse further
     uint32_t childCount = 0;
