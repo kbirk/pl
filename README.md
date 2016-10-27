@@ -22,6 +22,23 @@ sudo aptitude install libsdl2-dev
 sudo aptitude install libepoxy-dev
 ```
 
+#### OSX
+
+Install CMake:
+
+```bash
+brew install cmake
+```
+
+Install Dependencies:
+
+```bash
+brew install sdl2
+brew install libepoxy
+```
+
+**NOTE:** OSX only has driver support for OpenGL 4.1, therefore the GPU planning functionality is disabled.
+
 ## Build
 
 Build the makefiles:
