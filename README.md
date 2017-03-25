@@ -10,7 +10,7 @@ This codebase represents an implementation of [cartilage surface prediction](
 http://research.cs.queensu.ca/home/jstewart/papers/surfacePrediction.pdf) and [automated planning of mosaic arthroplasty](http://research.cs.queensu.ca/home/jstewart/papers/planning.pdf) developed by the
 [Joints and Connective Tissues Laboratory](http://research.cs.queensu.ca/home/jstewart/research.html) under the supervision and guidance of [James Stewart](http://research.cs.queensu.ca/home/jstewart/).
 
-<img width="600" src="https://rawgit.com/kbirk/pl/master/screenshort.png" alt="pl" />
+<img width="600" src="https://rawgit.com/kbirk/pl/master/screenshot.png" alt="pl" />
 
 ## Dependencies
 
