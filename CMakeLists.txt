@@ -15,7 +15,7 @@ find_package(SDL2 REQUIRED)
 
 # Warning pedantic flags for all
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS "-Wall -Werror -pedantic -Wfatal-errors -O3 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Wall -Werror -Wpedantic -Wfatal-errors -O3 ${CMAKE_CXX_FLAGS}")
 
 # Dependencies and include locations
 include_directories("include")

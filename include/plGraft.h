@@ -54,7 +54,7 @@ class plGraft : public plRenderable, public plEditable
         float32_t _radius;
         float32_t _length;
 
-        plVector3 _markDirection;      // marker direction in graft space
+        plVector3 _markDirection; // marker direction in graft space
         plVector3 _markPositions[4];
 
         plBoneCap _boneCap;

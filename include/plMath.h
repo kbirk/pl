@@ -25,7 +25,6 @@ namespace plMath
         const plVector3& lineOrigin,
         const plVector3& lineDirection);
 
-    float32_t fsqrt(float32_t x);
     float32_t clamp(float32_t val, float32_t min = -1, float32_t max = 1);
 
     void convexPolysToTris(

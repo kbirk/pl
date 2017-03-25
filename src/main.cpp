@@ -435,31 +435,31 @@ int32_t main(int32_t argc, char **argv)
         exit(1);
     }
 
-	std::signal(SIGINT, handleSignal);
-	std::signal(SIGQUIT, handleSignal);
-	std::signal(SIGTERM, handleSignal);
+    std::signal(SIGINT, handleSignal);
+    std::signal(SIGQUIT, handleSignal);
+    std::signal(SIGTERM, handleSignal);
 
     plWindow::setup();
 
     init(argc, argv);
 
     plWindow::on(WindowEventType::MOUSE_PRESS, handleMousePress);
-	plWindow::on(WindowEventType::MOUSE_RELEASE, handleMouseRelease);
-	plWindow::on(WindowEventType::MOUSE_MOVE, handleMouseMove);
-	plWindow::on(WindowEventType::MOUSE_WHEEL, handleMouseWheel);
-	plWindow::on(WindowEventType::KEY_PRESS, handleKeyPress);
-	plWindow::on(WindowEventType::KEY_RELEASE, handleKeyRelease);
-	plWindow::on(WindowEventType::RESIZE, handleResize);
-	plWindow::on(WindowEventType::CLOSE, handleClose);
+    plWindow::on(WindowEventType::MOUSE_RELEASE, handleMouseRelease);
+    plWindow::on(WindowEventType::MOUSE_MOVE, handleMouseMove);
+    plWindow::on(WindowEventType::MOUSE_WHEEL, handleMouseWheel);
+    plWindow::on(WindowEventType::KEY_PRESS, handleKeyPress);
+    plWindow::on(WindowEventType::KEY_RELEASE, handleKeyRelease);
+    plWindow::on(WindowEventType::RESIZE, handleResize);
+    plWindow::on(WindowEventType::CLOSE, handleClose);
 
     while (true) {
         // handle events
         plWindow::handleEvents();
         // render
         render();
-    	// swap back buffer
-    	plWindow::swapBuffers();
+        // swap back buffer
+        plWindow::swapBuffers();
     }
 
-	plWindow::teardown();
+    plWindow::teardown();
 }

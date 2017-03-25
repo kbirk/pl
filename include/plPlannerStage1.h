@@ -8,7 +8,7 @@
 #include "plPlannerShader.h"
 #include "plSSBO.h"
 
-#define PL_STAGE_1_GROUP_SIZE                   1024
+#define PL_STAGE_1_GROUP_SIZE 1024
 
 namespace plPlannerStage1
 {

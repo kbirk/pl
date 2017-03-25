@@ -7,10 +7,10 @@
 #include "plPlannerStage2.h"
 #include "plPlannerShader.h"
 
-#define PL_STAGE_3_ITERATIONS                 8
-#define PL_STAGE_3_GROUP_SIZE                 64
-#define PL_STAGE_3_NUM_GROUPS                 1
-#define PL_STAGE_3_INVOCATIONS                PL_STAGE_3_NUM_GROUPS*PL_STAGE_3_GROUP_SIZE
+#define PL_STAGE_3_ITERATIONS  8
+#define PL_STAGE_3_GROUP_SIZE  64
+#define PL_STAGE_3_NUM_GROUPS  1
+#define PL_STAGE_3_INVOCATIONS PL_STAGE_3_NUM_GROUPS*PL_STAGE_3_GROUP_SIZE
 
 class plGreedyGroup
 {

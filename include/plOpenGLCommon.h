@@ -13,13 +13,13 @@
  * OpenGL logging macro
  */
 #ifdef LOGGING_ENABLED
-	#define LOG_OPENGL(x) \
-	{ \
-		GLuint error = glGetError(); \
-		if (error != GL_NO_ERROR) { \
-			LOG_ERROR(x << " " << plOpenGLInfo::errorToString(error)); \
-		} \
-	}
+    #define LOG_OPENGL(x) \
+    { \
+        GLuint error = glGetError(); \
+        if (error != GL_NO_ERROR) { \
+            LOG_ERROR(x << " " << plOpenGLInfo::errorToString(error)); \
+        } \
+    }
 #else
-	#define LOG_OPENGL(x)
+    #define LOG_OPENGL(x)
 #endif

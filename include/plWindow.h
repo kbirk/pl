@@ -9,20 +9,20 @@
 
 enum class WindowEventType
 {
-	KEY_PRESS,
-	KEY_RELEASE,
-	MOUSE_PRESS,
-	MOUSE_RELEASE,
-	MOUSE_MOVE,
-	MOUSE_WHEEL,
-	RESIZE,
-	CLOSE
+    KEY_PRESS,
+    KEY_RELEASE,
+    MOUSE_PRESS,
+    MOUSE_RELEASE,
+    MOUSE_MOVE,
+    MOUSE_WHEEL,
+    RESIZE,
+    CLOSE
 };
 
 struct WindowEvent
 {
-	WindowEventType type;
-	SDL_Event* originalEvent;
+    WindowEventType type;
+    SDL_Event* originalEvent;
 };
 
 typedef std::function<void(const WindowEvent&)> WindowEventFunc;
@@ -37,7 +37,7 @@ namespace plWindow
     uint32_t viewportY();
     int32_t windowToViewportX(int32_t x);
     int32_t windowToViewportY(int32_t y);
-	int32_t pixelRatio();
+    int32_t pixelRatio();
 
     void setup();
     void teardown();

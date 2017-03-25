@@ -60,22 +60,6 @@ namespace plMath
     }
 
 
-    float32_t fsqrt(float32_t x)
-    {
-        #define SQRT_MAGIC_F 0x5f3759df
-        const float32_t xhalf = 0.5f*x;
-
-        union // get bits for floating value
-        {
-            float32_t x;
-            int32_t i;
-        } u;
-        u.x = x;
-        u.i = SQRT_MAGIC_F - (u.i >> 1);        // gives initial guess y0
-        return x*u.x*(1.5f - xhalf*u.x*u.x);    // Newton step, repeating increases accuracy
-    }
-
-
     plIntersection rayIntersect(
         const std::vector<plTriangle>& triangles,
         const plVector3& rayOrigin,

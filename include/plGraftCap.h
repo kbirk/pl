@@ -28,7 +28,9 @@ class plPointAndAngle
         plVector3 point;
 
         plPointAndAngle()
-        {}
+        {
+        }
+
         plPointAndAngle(float32_t angle, const plVector3& point)
             : angle(angle), point(point)
         {
@@ -62,7 +64,7 @@ class plGraftCap : public plRenderable, public plEditable
         virtual plVector4 _getColor() const = 0;
 
         std::vector<plVector3> _pointsOutsideTriangles(plVector3 verts[3], const plTransform& transform, float32_t radius) const;
-        std::vector<plVector3> _pointsInsideTriangles (plVector3 verts[3], float32_t dist[3], const plTransform& transform, float32_t radius) const;
+        std::vector<plVector3> _pointsInsideTriangles(plVector3 verts[3], float32_t dist[3], const plTransform& transform, float32_t radius) const;
 
         bool _triangleIntersection(const plTriangle& triangle, const plTransform& transform, float32_t radius);
         plVector3 _pointOnCircumference(const plVector3& a, const plVector3& b, float32_t radius) const;

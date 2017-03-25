@@ -7,7 +7,7 @@
 #include "plPlannerStage1.h"
 #include "plPlannerShader.h"
 
-#define PL_STAGE_2_GROUP_SIZE                   1024
+#define PL_STAGE_2_GROUP_SIZE 1024
 
 namespace plPlannerStage2
 {

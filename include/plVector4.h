@@ -22,6 +22,8 @@ class plVector4
         plVector4 operator- (const plVector4 &p) const;
         float32_t operator* (const plVector4 &p) const;
 
+        plVector4& operator= (const plVector4& p);
+
         plVector4 operator-() const;
 
         plVector4 normalize() const;

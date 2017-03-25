@@ -6,8 +6,6 @@
 namespace plProgress
 {
     void startProgress();
-
     void endProgress();
-
     void printProgress(float32_t percent);
 }

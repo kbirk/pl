@@ -55,7 +55,7 @@ class plMatrix44
         void setRotation(const plVector3& from, const plVector3& to);
 
         void setOrthographic(float32_t xMin, float32_t xMax, float32_t yMin, float32_t yMax, float32_t zMin, float32_t zMax);
-        void setPerspective (float32_t fov, float32_t aspect, float32_t nearPlane, float32_t farPlane);
+        void setPerspective(float32_t fov, float32_t aspect, float32_t nearPlane, float32_t farPlane);
 
         plMatrix44 inverse() const;
 

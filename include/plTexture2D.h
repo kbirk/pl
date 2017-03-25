@@ -36,7 +36,6 @@ class plTexture2D
             uint32_t type,
             GLvoid* image = nullptr);
 
-
         ~plTexture2D();
 
         void bind() const;   // bind textures AFTER binding shader AND BEFORE drawing arrays

@@ -28,7 +28,7 @@ class plModelEditor : public plEditor
         void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
         bool isModelSelected() const { return (_selectedModel != nullptr); }
-        int32_t  selectedModelID() const;
+        int32_t selectedModelID() const;
 
         bool processMousePress(int32_t x, int32_t y);
         bool processMouseDrag(int32_t x, int32_t y);

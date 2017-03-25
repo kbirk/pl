@@ -17,9 +17,9 @@ class plProjection
 
         plMatrix44 matrix() const { return plMatrix44(_fov, _aspect, _nearPlane, _farPlane); }
 
-        void fov(float32_t fov) { _fov = fov; }
-        void nearPlane(float32_t nearPlane) { _nearPlane = nearPlane; }
-        void farPlane(float32_t farPlane) { _farPlane = farPlane; }
+        void fov(float32_t fov)                 { _fov = fov; }
+        void nearPlane(float32_t nearPlane)     { _nearPlane = nearPlane; }
+        void farPlane(float32_t farPlane)       { _farPlane = farPlane; }
         void aspectRatio(float32_t aspectRatio) { _aspect = aspectRatio; }
 
     private:

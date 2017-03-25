@@ -40,6 +40,6 @@ class plEABO : public plVertexSpecBuffer
     private:
 
         std::vector<uint32_t> _data;
-        uint32_t _type;           // eventually use this for templated version of class
+        uint32_t _type;
         uint32_t _mode;
 };

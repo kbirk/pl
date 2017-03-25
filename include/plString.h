@@ -2,7 +2,7 @@
 
 #include "plCommon.h"
 
-class plString : public std::string // technically unsafe as std::string does not have a virtual destructor, but that's just how I roll'
+class plString : public std::string // technically unsafe as std::string does not have a virtual destructor
 {
     public:
 

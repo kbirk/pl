@@ -17,7 +17,8 @@ class plPointAndNormal
 
         plPointAndNormal(const plVector3& p, const plVector3& n)
             : point(p), normal(n)
-        {}
+        {
+        }
 
         bool operator< (const plPointAndNormal& pn) const
         {

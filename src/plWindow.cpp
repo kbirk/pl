@@ -83,7 +83,7 @@ namespace plWindow {
         return y - _viewportY;
     }
 
-	int32_t pixelRatio() {
+    int32_t pixelRatio() {
         int32_t vWidth, vHeight, sWidth, sHeight;
         SDL_GL_GetDrawableSize(window, &vWidth, &vHeight);
         SDL_GetWindowSize(window, &sWidth, &sHeight);

@@ -18,7 +18,7 @@ class plCamera
         plCamera();
         plCamera(plString filename);
 
-        plVector3  getDirection() const  { return (lookat - position).normalize(); }
+        plVector3  getDirection() const { return (lookat - position).normalize(); }
         plMatrix44 getMatrix() const;
 
         void importViewParams(const std::string& filename);

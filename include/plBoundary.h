@@ -37,7 +37,7 @@ class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
         void extractRenderComponents(plRenderMap& renderMap) const;
         void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        const plVector3& points (uint32_t index) const { return _points[index];  }
+        const plVector3& points(uint32_t index) const { return _points[index];  }
         const plVector3& normals(uint32_t index) const { return _normals[index]; }
 
         plVector3 getAverageNormal() const;
@@ -51,7 +51,7 @@ class plBoundary : public plRenderable, public plEditable, public plMeshSpecific
     protected:
 
         int32_t _type;
-        std::vector<plVector3> _points;       // always in counterclockwise direction
+        std::vector<plVector3> _points; // always in counterclockwise direction
         std::vector<plVector3> _normals;
         std::shared_ptr<plVAO> _vao;
 

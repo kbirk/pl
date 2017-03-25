@@ -58,11 +58,19 @@ float32_t plVector4::operator* (const plVector4& p) const     /* dot product */
     return x * p.x + y * p.y + z * p.z + w * p.w;
 }
 
-
 plVector4 plVector4::operator-() const
 {
     // return negated vector
     return plVector4(-x, -y, -z, -w);
+}
+
+plVector4& plVector4::operator=(const plVector4& other)
+{
+    x = other.x;
+    y = other.y;
+    z = other.z;
+    w = other.w;
+    return *this;
 }
 
 plVector4 plVector4::normalize() const
