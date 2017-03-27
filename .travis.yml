@@ -1,0 +1,23 @@
+notifications:
+  email: false
+os: linux
+dist: trusty
+sudo: required
+language: cpp
+compiler: gcc
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5
+env:
+  - CXX_COMPILER=g++-5
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install libsdl2-dev
+  - sudo apt-get install libepoxy-dev
+script:
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_CXX_COMPILER=$CXX_COMPILER .. && make

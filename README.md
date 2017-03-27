@@ -1,5 +1,7 @@
 # pl
 
+[![Build Status](https://travis-ci.org/kbirk/pl.svg?branch=master)](https://travis-ci.org/kbirk/pl)
+
 > Mosaic Arthroplasty Surgery Planner
 
 ## Description
@@ -10,11 +12,13 @@ This codebase represents an implementation of [cartilage surface prediction](
 http://research.cs.queensu.ca/home/jstewart/papers/surfacePrediction.pdf) and [automated planning of mosaic arthroplasty](http://research.cs.queensu.ca/home/jstewart/papers/planning.pdf) developed by the
 [Joints and Connective Tissues Laboratory](http://research.cs.queensu.ca/home/jstewart/research.html) under the supervision and guidance of [James Stewart](http://research.cs.queensu.ca/home/jstewart/).
 
-<img width="600" src="https://rawgit.com/kbirk/pl/master/screenshot.png" alt="pl" />
+<p align="center">
+    <img width="600" src="https://rawgit.com/kbirk/pl/master/screenshot.png" alt="pl" />
+</p>
 
 ## Dependencies
 
-- C++11 Compiler
+- C++11 compiler (g++ 5.1+ or clang 3.8+)
 - GPU driver support for OpenGL 4.3+
 
 #### Linux
@@ -25,7 +29,7 @@ Install CMake:
 sudo aptitude install cmake
 ```
 
-Install Dependencies:
+Install dependencies:
 
 ```bash
 sudo aptitude install libsdl2-dev
@@ -40,7 +44,7 @@ Install CMake:
 brew install cmake
 ```
 
-Install Dependencies:
+Install dependencies:
 
 ```bash
 brew install sdl2
