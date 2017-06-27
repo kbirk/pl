@@ -6,12 +6,10 @@ plFBO::plFBO()
     _create();
 }
 
-
 plFBO::~plFBO()
 {
     _destroy();
 }
-
 
 void plFBO::attach(uint32_t attachment, std::shared_ptr<plTexture2D> texture)
 {
@@ -23,8 +21,7 @@ void plFBO::attach(uint32_t attachment, std::shared_ptr<plTexture2D> texture)
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture->_id, 0);
     LOG_OPENGL("glFramebufferTexture2D");
 
-    if (_checkAttachmentError())
-    {
+    if (_checkAttachmentError()) {
         // successful, add to map
         _textureAttachments[attachment] = texture;
     }
@@ -33,7 +30,6 @@ void plFBO::attach(uint32_t attachment, std::shared_ptr<plTexture2D> texture)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     LOG_OPENGL("glBindFramebuffer");
 }
-
 
 void plFBO::attach(uint32_t attachment0, uint32_t attachment1, std::shared_ptr<plTexture2D> texture)
 {
@@ -47,8 +43,7 @@ void plFBO::attach(uint32_t attachment0, uint32_t attachment1, std::shared_ptr<p
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment1, GL_TEXTURE_2D, texture->_id, 0);
     LOG_OPENGL("glFramebufferTexture2D");
 
-    if (_checkAttachmentError())
-    {
+    if (_checkAttachmentError()) {
         // successful, add to map
         _textureAttachments[attachment0] = texture;
         _textureAttachments[attachment1] = texture;
@@ -59,19 +54,16 @@ void plFBO::attach(uint32_t attachment0, uint32_t attachment1, std::shared_ptr<p
     LOG_OPENGL("glBindFramebuffer");
 }
 
-
 bool plFBO::_checkAttachmentError() const
 {
     // check for errors
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (status != GL_FRAMEBUFFER_COMPLETE)
-    {
+    if (status != GL_FRAMEBUFFER_COMPLETE) {
         LOG_WARN("Framebuffer status error: " << status);
         return false;
     }
     return true;
 }
-
 
 void plFBO::bind() const
 {
@@ -79,25 +71,21 @@ void plFBO::bind() const
     LOG_OPENGL("glBindFramebuffer");
 }
 
-
 void plFBO::unbind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     LOG_OPENGL("glBindFramebuffer");
 }
 
-
 std::shared_ptr<plTexture2D> plFBO::texture2DAttachment(uint32_t attachment) const
 {
     auto iter = _textureAttachments.find(attachment);
-    if (iter == _textureAttachments.end())
-    {
+    if (iter == _textureAttachments.end()) {
         LOG_WARN("Attachment enumeration `" << attachment << "` does not exist for this fbo");
         return nullptr;
     }
     return iter->second;
 }
-
 
 void plFBO::setDrawBuffers(const std::vector<GLenum>& buffers) const
 {
@@ -105,16 +93,13 @@ void plFBO::setDrawBuffers(const std::vector<GLenum>& buffers) const
     LOG_OPENGL("glDrawBuffers");
 }
 
-
 void plFBO::_create()
 {
-    if (!_id)
-    {
+    if (!_id) {
         glGenFramebuffers(1, &_id);
         LOG_OPENGL("glGenFramebuffers");
     }
 }
-
 
 void plFBO::_destroy()
 {

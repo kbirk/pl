@@ -2,55 +2,50 @@
 
 #include "plCommon.h"
 #include "plOpenGLCommon.h"
-#include "plVector3.h"
-#include "plTexture2D.h"
 #include "plOpenGLInfo.h"
+#include "plTexture2D.h"
+#include "plVector3.h"
 
-class plFBO
-{
-    public:
+class plFBO {
+public:
+    plFBO();
+    ~plFBO();
 
-        plFBO();
-        ~plFBO();
+    void bind() const;
+    void unbind() const;
 
-        void bind() const;
-        void unbind() const;
+    void setDrawBuffers(const std::vector<GLenum>& buffers) const;
 
-        void setDrawBuffers(const std::vector<GLenum>& buffers) const;
+    std::shared_ptr<plTexture2D> texture2DAttachment(uint32_t attachment) const;
 
-        std::shared_ptr<plTexture2D> texture2DAttachment(uint32_t attachment) const;
+    template <typename T>
+    plPixel<T> readPixel(GLenum attachment, uint32_t x, uint32_t y) const;
 
-        template<typename T>
-        plPixel<T> readPixel(GLenum attachment, uint32_t x, uint32_t y) const;
+    void attach(
+        uint32_t attachment,
+        std::shared_ptr<plTexture2D> texture);
+    void attach(
+        uint32_t attachment0,
+        uint32_t attachment1,
+        std::shared_ptr<plTexture2D> texture); // depth-stencil shared texture
 
-        void attach(
-            uint32_t attachment,
-            std::shared_ptr<plTexture2D> texture);
-        void attach(
-            uint32_t attachment0,
-            uint32_t attachment1,
-            std::shared_ptr<plTexture2D> texture); // depth-stencil shared texture
+private:
+    GLuint _id;
 
-    private:
+    std::map<GLenum, std::shared_ptr<plTexture2D> > _textureAttachments;
 
-        GLuint _id;
+    bool _checkAttachmentError() const;
 
-        std::map<GLenum, std::shared_ptr<plTexture2D>> _textureAttachments;
-
-        bool _checkAttachmentError() const;
-
-        void _create();
-        void _destroy();
+    void _create();
+    void _destroy();
 };
 
-
-template<typename T>
+template <typename T>
 plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
 {
     // get texture by the attachment
     auto iter = _textureAttachments.find(attachment);
-    if (iter == _textureAttachments.end())
-    {
+    if (iter == _textureAttachments.end()) {
         LOG_WARN("Attachment `" << attachment << "` does not exist");
         return plPixel<T>();
     }
@@ -61,8 +56,7 @@ plPixel<T> plFBO::readPixel(GLenum attachment, uint32_t x, uint32_t y) const
     uint32_t type = texture->_type;
     uint32_t size = texture->_getFormatSize();
 
-    if (sizeof(plPixel<T>) < size)
-    {
+    if (sizeof(plPixel<T>) < size) {
         LOG_WARN("Specified pixel type is too small for respective texture format");
         return plPixel<T>();
     }

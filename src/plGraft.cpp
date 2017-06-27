@@ -12,21 +12,19 @@ plGraft::plGraft(
     float32_t radius,
     float32_t length,
     const plVector3& markDirection)
-    : _recipient(recipient),
-      _harvest(harvest),
-      _radius(radius),
-      _length(length),
-      _markDirection(markDirection)
+    : _recipient(recipient)
+    , _harvest(harvest)
+    , _radius(radius)
+    , _length(length)
+    , _markDirection(markDirection)
 {
     _generateCaps();
     snapMarkDirection();
 }
 
-
 plGraft::~plGraft()
 {
 }
-
 
 void plGraft::extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
@@ -46,12 +44,10 @@ void plGraft::extractRenderComponents(plRenderMap& renderMap, uint32_t technique
     plModelStack::pop();
 }
 
-
 void plGraft::extractRenderComponents(plRenderMap& renderMap) const
 {
     extractRenderComponents(renderMap, PL_PLAN_TECHNIQUE);
 }
-
 
 void plGraft::_extractGraftRenderComponents(plRenderMap& renderMap, uint32_t technique) const
 {
@@ -67,7 +63,6 @@ void plGraft::_extractGraftRenderComponents(plRenderMap& renderMap, uint32_t tec
     plRenderer::queueSphere(technique, _markPositions[0], 0.5f);
 }
 
-
 void plGraft::_generateCaps()
 {
     // generate cap polygons
@@ -79,14 +74,12 @@ void plGraft::_generateCaps()
     _boneCap.generateVAO(_radius, _length);
 }
 
-
 void plGraft::setMarkDirection(const plVector3& direction)
 {
     // ensure direction is orthogonal
     _markDirection = plVector3(direction.x, 0.0f, direction.z).normalize();
     _generateMarkPositions();
 }
-
 
 void plGraft::snapMarkDirection()
 {
@@ -121,17 +114,16 @@ void plGraft::snapMarkDirection()
     float32_t recipientAngle = (upRecipientProj).signedAngle(recipientDirection, _recipient->surfaceTransform().y());
 
     plMatrix44 rotation;
-    rotation.setRotation(-recipientAngle/2.0f , plVector3(0, 1, 0));
+    rotation.setRotation(-recipientAngle / 2.0f, plVector3(0, 1, 0));
 
     setMarkDirection(rotation * graftZ);
 }
 
-
 void plGraft::_generateMarkPositions()
 {
-    for (uint32_t i=0; i < 4; i++)
-    {
-        plMatrix44 rotation;  rotation.setRotationD(i*-90.0f,  plVector3(0, 1, 0));
+    for (uint32_t i = 0; i < 4; i++) {
+        plMatrix44 rotation;
+        rotation.setRotationD(i * -90.0f, plVector3(0, 1, 0));
 
         // Mark at tool alignment direction on cartilage
         _markPositions[i] = _radius * (rotation * _markDirection).normalize();
@@ -142,12 +134,10 @@ void plGraft::_generateMarkPositions()
 
         const std::vector<plPointAndAngle>& perimeter = (_cartilageCap.triangles.empty()) ? _boneCap.perimeter : _cartilageCap.perimeter;
 
-        for (uint32_t j=0; j<perimeter.size(); j++)
-        {
+        for (uint32_t j = 0; j < perimeter.size(); j++) {
             const plVector3& v = perimeter[j].point;
-            float32_t dist = (v.x-_markPositions[i].x)*(v.x-_markPositions[i].x) + (v.z-_markPositions[i].z)*(v.z-_markPositions[i].z);
-            if (dist < minDist)
-            {
+            float32_t dist = (v.x - _markPositions[i].x) * (v.x - _markPositions[i].x) + (v.z - _markPositions[i].z) * (v.z - _markPositions[i].z);
+            if (dist < minDist) {
                 minDist = dist;
                 minY = v.y;
             }
@@ -158,95 +148,87 @@ void plGraft::_generateMarkPositions()
     }
 }
 
-
 std::shared_ptr<plPlug> plGraft::plug(uint32_t type) const
 {
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:
-            return _harvest;
+    switch (type) {
+    case PL_PICKING_INDEX_GRAFT_DONOR:
+        return _harvest;
 
-        case PL_PICKING_INDEX_GRAFT_DEFECT:
-            return _recipient;
+    case PL_PICKING_INDEX_GRAFT_DEFECT:
+        return _recipient;
 
-        default:
-            LOG_WARN("Invalid type enumeration `" << type << "` provided, defaulting to recipient");
-            return _recipient;
+    default:
+        LOG_WARN("Invalid type enumeration `" << type << "` provided, defaulting to recipient");
+        return _recipient;
     }
 }
-
 
 void plGraft::move(uint32_t type, const plVector3& origin, const plVector3& y)
 {
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:
+    switch (type) {
+    case PL_PICKING_INDEX_GRAFT_DONOR:
 
-            _harvest->move(origin, y);
-            _generateCaps();
-            break;
+        _harvest->move(origin, y);
+        _generateCaps();
+        break;
 
-        case PL_PICKING_INDEX_GRAFT_DEFECT:
+    case PL_PICKING_INDEX_GRAFT_DEFECT:
 
-            _recipient->move(origin, y);
-            break;
+        _recipient->move(origin, y);
+        break;
 
-        default:
+    default:
 
-            LOG_WARN("Invalid type enumeration provided");
-            break;
+        LOG_WARN("Invalid type enumeration provided");
+        break;
     }
 
     // update the marker position
     _generateMarkPositions();
 }
-
 
 void plGraft::rotate(uint32_t type, const plVector3& y)
 {
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:
+    switch (type) {
+    case PL_PICKING_INDEX_GRAFT_DONOR:
 
-            _harvest->rotate(y);
-            _generateCaps();
-            break;
+        _harvest->rotate(y);
+        _generateCaps();
+        break;
 
-        case PL_PICKING_INDEX_GRAFT_DEFECT:
+    case PL_PICKING_INDEX_GRAFT_DEFECT:
 
-            _recipient->rotate(y);
-            break;
+        _recipient->rotate(y);
+        break;
 
-        default:
+    default:
 
-            LOG_WARN("Invalid type enumeration provided");
-            break;
+        LOG_WARN("Invalid type enumeration provided");
+        break;
     }
 
     // update the marker position
     _generateMarkPositions();
 }
 
-
 void plGraft::rotate(uint32_t type, float32_t angleDegrees)
 {
-    switch (type)
-    {
-        case PL_PICKING_INDEX_GRAFT_DONOR:
+    switch (type) {
+    case PL_PICKING_INDEX_GRAFT_DONOR:
 
-            _harvest->rotate(angleDegrees);
-            _generateCaps();
-            break;
+        _harvest->rotate(angleDegrees);
+        _generateCaps();
+        break;
 
-        case PL_PICKING_INDEX_GRAFT_DEFECT:
+    case PL_PICKING_INDEX_GRAFT_DEFECT:
 
-            _recipient->rotate(angleDegrees);
-            break;
+        _recipient->rotate(angleDegrees);
+        break;
 
-        default:
+    default:
 
-            LOG_WARN("Invalid type enumeration provided");
-            break;
+        LOG_WARN("Invalid type enumeration provided");
+        break;
     }
 
     // update the marker position

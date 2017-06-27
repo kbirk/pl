@@ -4,7 +4,6 @@ plRenderTechnique::plRenderTechnique()
 {
 }
 
-
 plRenderTechnique::~plRenderTechnique()
 {
 }

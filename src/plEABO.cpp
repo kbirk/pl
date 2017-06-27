@@ -4,12 +4,10 @@ plEABO::plEABO()
 {
 }
 
-
 plEABO::plEABO(const std::vector<GLuint>& data, uint32_t mode, uint32_t usage)
 {
     set(data, mode, usage);
 }
-
 
 void plEABO::set(const std::vector<uint32_t>& data, uint32_t mode, uint32_t usage)
 {
@@ -20,24 +18,20 @@ void plEABO::set(const std::vector<uint32_t>& data, uint32_t mode, uint32_t usag
     _usage = usage;
 }
 
-
 void plEABO::clear()
 {
     _data.clear();
 }
 
-
 void plEABO::upload()
 {
-    if (_data.empty())
-    {
+    if (_data.empty()) {
         LOG_WARN("Data buffer empty, ignoring command");
         return;
     }
 
     // if buffer not allocated, generate
-    if (!_id)
-    {
+    if (!_id) {
         glGenBuffers(1, &_id);
         LOG_OPENGL("glGenBuffers");
     }
@@ -49,7 +43,6 @@ void plEABO::upload()
 
     // do not unbind buffer as this will most likely be called from a vao
 }
-
 
 void plEABO::drawElements(uint32_t index) const
 {

@@ -2,14 +2,10 @@
 
 #include "plCommon.h"
 
-class plTimer
-{
-    public:
+class plTimer {
+public:
+    static std::time_t now();
 
-        static std::time_t now();
-
-    private:
-
-        plTimer();
-
+private:
+    plTimer();
 };

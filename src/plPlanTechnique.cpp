@@ -57,8 +57,7 @@ void plPlanTechnique::render(const plRenderList& components) const
     LOG_OPENGL("glStencilOp");
 
     // draw main render components
-    for (auto component : components)
-    {
+    for (auto component : components) {
         component->draw(*shader);
     }
 

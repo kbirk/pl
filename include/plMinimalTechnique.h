@@ -1,19 +1,15 @@
 #pragma once
 
 #include "plCommon.h"
-#include "plRenderTechnique.h"
 #include "plRenderResources.h"
+#include "plRenderTechnique.h"
 
-class plMinimalTechnique : public plRenderTechnique
-{
-    public:
+class plMinimalTechnique : public plRenderTechnique {
+public:
+    plMinimalTechnique();
 
-        plMinimalTechnique();
+    void render(const plRenderList& components) const;
 
-        void render(const plRenderList& components) const;
-
-    private:
-
-        void _initState() const;
-
+private:
+    void _initState() const;
 };

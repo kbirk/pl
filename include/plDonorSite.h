@@ -1,23 +1,21 @@
 #pragma once
 
-#include "plCommon.h"
-#include "plVector3.h"
-#include "plMeshSpecific.h"
 #include "plBoundary.h"
-#include "plRenderable.h"
+#include "plCommon.h"
+#include "plMeshSpecific.h"
 #include "plPicking.h"
+#include "plRenderable.h"
+#include "plVector3.h"
 
-class plDonorSite : public plRenderable
-{
-    public:
+class plDonorSite : public plRenderable {
+public:
+    plDonorSite(std::shared_ptr<plMesh> mesh);
+    plDonorSite(std::shared_ptr<plBoundary> boundary);
 
-        plDonorSite(std::shared_ptr<plMesh> mesh);
-        plDonorSite(std::shared_ptr<plBoundary> boundary);
+    virtual ~plDonorSite();
 
-        virtual ~plDonorSite();
+    void extractRenderComponents(plRenderMap& renderMap) const;
+    void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
-
-        std::shared_ptr<plBoundary> boundary;
+    std::shared_ptr<plBoundary> boundary;
 };

@@ -4,7 +4,6 @@ plTransparencyTechnique::plTransparencyTechnique()
 {
 }
 
-
 void plTransparencyTechnique::render(const plRenderList& components) const
 {
     auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
@@ -22,7 +21,7 @@ void plTransparencyTechnique::render(const plRenderList& components) const
     drawBuffers.push_back(GL_NONE);
     drawBuffers.push_back(GL_NONE);
     drawBuffers.push_back(GL_NONE);
-    drawBuffers.push_back(GL_NONE);   // no picking output
+    drawBuffers.push_back(GL_NONE); // no picking output
     fbo->setDrawBuffers(drawBuffers);
 
     // set viewport
@@ -34,8 +33,7 @@ void plTransparencyTechnique::render(const plRenderList& components) const
     LOG_OPENGL("glDepthMask");
 
     // draw render components to color buffer
-    for (auto component : components)
-    {
+    for (auto component : components) {
         component->draw(*shader);
     }
 
@@ -59,8 +57,7 @@ void plTransparencyTechnique::render(const plRenderList& components) const
     fbo->setDrawBuffers(drawBuffers);
 
     // draw render components to picking buffer
-    for (auto component : components)
-    {
+    for (auto component : components) {
         component->draw(*shader);
     }
 

@@ -1,54 +1,49 @@
 #pragma once
 
 #include "plCommon.h"
-
-#include "plVector3.h"
-#include "plPlan.h"
 #include "plEditor.h"
-#include "plWindow.h"
+#include "plPlan.h"
 #include "plRenderer.h"
+#include "plVector3.h"
+#include "plWindow.h"
 
-class plBoundaryEditor : public plEditor
-{
-    public:
+class plBoundaryEditor : public plEditor {
+public:
+    plBoundaryEditor();
 
-        plBoundaryEditor();
+    void clearSelection();
+    void selectBoundary(uint32_t boundaryType, uint32_t boundaryIndex, uint32_t pointIndex);
 
-        void clearSelection();
-        void selectBoundary(uint32_t boundaryType, uint32_t boundaryIndex, uint32_t pointIndex);
+    bool isBoundarySelected() const { return _selectedBoundary != nullptr; }
 
-        bool isBoundarySelected() const { return _selectedBoundary != nullptr; }
+    bool processMousePress(int32_t x, int32_t y);
+    bool processMouseDrag(int32_t x, int32_t y);
+    bool processMouseRelease(int32_t x, int32_t y);
 
-        bool processMousePress(int32_t x, int32_t y);
-        bool processMouseDrag(int32_t x, int32_t y);
-        bool processMouseRelease(int32_t x, int32_t y);
+    void addPoint(uint32_t x, uint32_t y, bool selectNewPoint = true);
+    void moveSelectedPoint(uint32_t x, uint32_t y);
+    void removeSelectedPoint();
+    void clearSelectedBoundary();
+    void removeSelectedSite();
+    void toggleSelectedVisibility();
 
-        void addPoint(uint32_t x, uint32_t y, bool selectNewPoint = true);
-        void moveSelectedPoint(uint32_t x, uint32_t y);
-        void removeSelectedPoint();
-        void clearSelectedBoundary();
-        void removeSelectedSite();
-        void toggleSelectedVisibility();
+    void extractRenderComponents(plRenderMap& renderMap) const;
+    void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
 
-        void extractRenderComponents(plRenderMap& renderMap) const;
-        void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const;
+private:
+    int32_t _selectedSiteIndex;
+    std::shared_ptr<plBoundary> _selectedBoundary;
+    int32_t _selectedPointIndex;
 
-    private:
+    void _clearSiteBoundaries();
 
-        int32_t _selectedSiteIndex;
-        std::shared_ptr<plBoundary> _selectedBoundary;
-        int32_t _selectedPointIndex;
+    void _selectBoundary(std::shared_ptr<plBoundary> boundary, uint32_t boundaryIndex, uint32_t pointIndex);
 
-        void _clearSiteBoundaries();
+    void _selectDefectSiteSpline(uint32_t boundaryIndex, uint32_t pointIndex);
+    void _selectDefectSiteBoundary(uint32_t boundaryIndex, uint32_t pointIndex);
+    void _selectDonorSiteBoundary(uint32_t boundaryIndex, uint32_t pointIndex);
 
-        void _selectBoundary(std::shared_ptr<plBoundary> boundary, uint32_t boundaryIndex, uint32_t pointIndex);
+    plIntersection _getBoundaryIntersection(uint32_t x, uint32_t y);
 
-        void _selectDefectSiteSpline(uint32_t boundaryIndex, uint32_t pointIndex);
-        void _selectDefectSiteBoundary(uint32_t boundaryIndex, uint32_t pointIndex);
-        void _selectDonorSiteBoundary(uint32_t boundaryIndex, uint32_t pointIndex);
-
-        plIntersection _getBoundaryIntersection(uint32_t x, uint32_t y);
-
-        void _extractMenuRenderComponents(plRenderMap& renderMap) const;
-
+    void _extractMenuRenderComponents(plRenderMap& renderMap) const;
 };

@@ -1,6 +1,7 @@
 #include "plLog.h"
 
-std::string getTime() {
+std::string getTime()
+{
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
     std::ostringstream oss;

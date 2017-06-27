@@ -3,21 +3,18 @@
 #include "plCommon.h"
 #include "plRenderComponent.h"
 
-class plEditable
-{
-    public:
+class plEditable {
+public:
+    plEditable();
 
-        plEditable();
+    bool isSelected() const { return _isSelected; }
 
-        bool isSelected() const { return _isSelected; }
+    // only editors can see the private variables
+    friend class plEditor;
 
-        // only editors can see the private variables
-        friend class plEditor;
+protected:
+    uint32_t _selectedValue;
+    bool _isSelected;
 
-    protected:
-
-        uint32_t _selectedValue;
-        bool _isSelected;
-
-        virtual void _clearSelection();
+    virtual void _clearSelection();
 };

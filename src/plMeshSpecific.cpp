@@ -5,7 +5,6 @@ plMeshSpecific::plMeshSpecific()
 {
 }
 
-
 plMeshSpecific::plMeshSpecific(std::shared_ptr<plMesh> mesh)
     : _mesh(mesh)
 {

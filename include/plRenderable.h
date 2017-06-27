@@ -1,26 +1,22 @@
 #pragma once
 
 #include "plCommon.h"
-#include "plVector3.h"
 #include "plRenderComponent.h"
+#include "plVector3.h"
 
-class plRenderable
-{
-    public:
+class plRenderable {
+public:
+    plRenderable();
 
-        plRenderable();
+    bool isVisible() const;
 
-        bool isVisible() const;
+    virtual void toggleVisibility();
+    virtual void setVisible();
+    virtual void setInvisible();
 
-        virtual void toggleVisibility();
-        virtual void setVisible();
-        virtual void setInvisible();
+    virtual void extractRenderComponents(plRenderMap& renderMap) const = 0;
+    virtual void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const = 0;
 
-        virtual void extractRenderComponents(plRenderMap& renderMap) const = 0;
-        virtual void extractRenderComponents(plRenderMap& renderMap, uint32_t technique) const = 0;
-
-    protected:
-
-        bool _isVisible;
-
+protected:
+    bool _isVisible;
 };

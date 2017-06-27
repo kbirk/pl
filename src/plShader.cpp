@@ -1,10 +1,10 @@
 #include "plShader.h"
 
 plShader::plShader()
-    :   _id(0), _good(true)
+    : _id(0)
+    , _good(true)
 {
 }
-
 
 plShader::~plShader()
 {
@@ -12,15 +12,13 @@ plShader::~plShader()
     LOG_OPENGL("glDeleteProgram");
 }
 
-
 GLuint plShader::_createShader(const std::string& shaderFile, GLenum shaderType)
 {
     // load shader file into memory
-    const char *shaderSource = _readShaderFile(shaderFile);     // allocate memory to shaderSource
+    const char* shaderSource = _readShaderFile(shaderFile); // allocate memory to shaderSource
     // check for error
-    if (!shaderSource)
-    {
-        delete [] shaderSource;
+    if (!shaderSource) {
+        delete[] shaderSource;
         return 0;
     }
     // create shader object
@@ -29,32 +27,28 @@ GLuint plShader::_createShader(const std::string& shaderFile, GLenum shaderType)
     // set source code of shader object
     glShaderSource(shader, 1, &shaderSource, nullptr);
     LOG_OPENGL("glShaderSource");
-    delete [] shaderSource;                                     // deallocate memory from shaderSource
+    delete[] shaderSource; // deallocate memory from shaderSource
     // return shader object
     return shader;
 }
 
-
-GLuint plShader::_createShader(const std::vector<std::string> &shaderFiles, GLenum shaderType)
+GLuint plShader::_createShader(const std::vector<std::string>& shaderFiles, GLenum shaderType)
 {
     std::vector<const char*> sources;
 
-    for (uint32_t i=0; i< shaderFiles.size(); i++)
-    {
+    for (uint32_t i = 0; i < shaderFiles.size(); i++) {
         // load shader file into memory
-        const char *shaderSource = _readShaderFile(shaderFiles[i]);  // allocate memory to shaderSource
+        const char* shaderSource = _readShaderFile(shaderFiles[i]); // allocate memory to shaderSource
 
         // check for error
-        if (!shaderSource)
-        {
+        if (!shaderSource) {
             // deallocate previous arrays
-            for (uint32_t j=0; j<i; j++)
-            {
-                delete [] sources[j];
+            for (uint32_t j = 0; j < i; j++) {
+                delete[] sources[j];
             }
             return 0;
         }
-        sources.push_back(_readShaderFile(shaderFiles[i]));  // allocate memory to shaderSource
+        sources.push_back(_readShaderFile(shaderFiles[i])); // allocate memory to shaderSource
     }
 
     // create shader object
@@ -64,31 +58,28 @@ GLuint plShader::_createShader(const std::vector<std::string> &shaderFiles, GLen
     // set source code of shader object
     glShaderSource(shader, sources.size(), &sources[0], nullptr);
     LOG_OPENGL("glShaderSource");
-    for (uint32_t i=0; i< shaderFiles.size(); i++)
-    {
-        delete [] sources[i];  // deallocate memory from shaderSource
+    for (uint32_t i = 0; i < shaderFiles.size(); i++) {
+        delete[] sources[i]; // deallocate memory from shaderSource
     }
 
     // return shader object
     return shader;
 }
 
-
 char* plShader::_readShaderFile(const std::string& filename)
 {
     // THIS FUNCTION DOES NOT DE-ALLOCATE HEAP MEMORY!
-    std::ifstream stream(filename, std::ifstream::in |         // input stream
-                                   std::ifstream::binary |     // consider stream as binary
-                                   std::ifstream::ate);        // set position indicator at end of stream
-    char *string;
-    if (stream.is_open())
-    {
+    std::ifstream stream(filename, std::ifstream::in | // input stream
+            std::ifstream::binary | // consider stream as binary
+            std::ifstream::ate); // set position indicator at end of stream
+    char* string;
+    if (stream.is_open()) {
         std::streamoff size = stream.tellg();
-        string = new char[static_cast<uint32_t>(size)+1];            // ** allocates memory but does NOT deallocate **
-        stream.seekg(0, std::ios::beg);                         // set position indicator back to beginning of stream
+        string = new char[static_cast<uint32_t>(size) + 1]; // ** allocates memory but does NOT deallocate **
+        stream.seekg(0, std::ios::beg); // set position indicator back to beginning of stream
         stream.read(string, size);
         stream.close();
-        string[size] = '\0';                                    // nullptr terminate
+        string[size] = '\0'; // nullptr terminate
         return string;
     }
 
@@ -96,7 +87,6 @@ char* plShader::_readShaderFile(const std::string& filename)
     LOG_WARN("Could not open shader file: " << filename);
     return nullptr;
 }
-
 
 bool plShader::_compileShader(GLuint shader)
 {
@@ -108,8 +98,7 @@ bool plShader::_compileShader(GLuint shader)
     glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
     LOG_OPENGL("glGetShaderiv");
 
-    if (result == GL_FALSE)
-    {
+    if (result == GL_FALSE) {
         // print error
         _printCompileError(shader);
         // delete current objects and abort constructor
@@ -122,7 +111,6 @@ bool plShader::_compileShader(GLuint shader)
     return true;
 }
 
-
 GLuint plShader::_createAndCompileShader(const std::string& shaderFile, GLenum shaderType)
 {
     // create shader object
@@ -133,8 +121,7 @@ GLuint plShader::_createAndCompileShader(const std::string& shaderFile, GLenum s
     return shader;
 }
 
-
-GLuint plShader::_createAndCompileShader(const std::vector<std::string> &shaderFiles, GLenum shaderType)
+GLuint plShader::_createAndCompileShader(const std::vector<std::string>& shaderFiles, GLenum shaderType)
 {
     // create shader object
     GLuint shader = _createShader(shaderFiles, shaderType);
@@ -143,7 +130,6 @@ GLuint plShader::_createAndCompileShader(const std::vector<std::string> &shaderF
         return 0;
     return shader;
 }
-
 
 void plShader::_printCompileError(GLuint shader)
 {
@@ -159,7 +145,6 @@ void plShader::_printCompileError(GLuint shader)
     LOG_ERROR("Compilation errors: " << std::string(msg.begin(), msg.end()));
 }
 
-
 bool plShader::_linkProgram()
 {
     // link shader program
@@ -170,8 +155,7 @@ bool plShader::_linkProgram()
     glGetProgramiv(_id, GL_LINK_STATUS, &result);
     LOG_OPENGL("glGetProgramiv");
     // check for error
-    if (result == GL_FALSE)
-    {
+    if (result == GL_FALSE) {
         // print error
         _printLinkError();
         _id = 0;
@@ -180,7 +164,6 @@ bool plShader::_linkProgram()
     }
     return true;
 }
-
 
 void plShader::_printLinkError()
 {

@@ -2,24 +2,20 @@
 
 #include "plCommon.h"
 
-class plUniform
-{
-    public:
+class plUniform {
+public:
+    template <typename T>
+    plUniform(const T& t);
 
-        template<typename T>
-        plUniform(const T& t);
+    const uint8_t* data() const { return &_data[0]; }
+    uint32_t numBytes() const { return _numBytes; }
 
-        const uint8_t* data() const { return &_data[0]; }
-        uint32_t numBytes() const { return _numBytes; }
-
-    private:
-
-        uint32_t _numBytes;
-        std::vector<uint8_t> _data;
+private:
+    uint32_t _numBytes;
+    std::vector<uint8_t> _data;
 };
 
-
-template<typename T>
+template <typename T>
 plUniform::plUniform(const T& t)
     : _numBytes(sizeof(T))
 {

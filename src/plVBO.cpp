@@ -4,12 +4,10 @@ plVBO::plVBO()
 {
 }
 
-
 plVBO::plVBO(const std::vector<plVector4>& data, uint32_t usage)
 {
     set(data, usage);
 }
-
 
 void plVBO::set(const std::vector<plVector4>& data, uint32_t usage)
 {
@@ -18,42 +16,35 @@ void plVBO::set(const std::vector<plVector4>& data, uint32_t usage)
     _usage = usage;
 }
 
-
 void plVBO::set(const std::vector<plVector3>& data, uint32_t usage)
 {
     set(std::vector<plVector4>(data.begin(), data.end()), usage);
 }
-
 
 void plVBO::set(const plVertexAttributePointer& attributePointer)
 {
     _attributePointers.push_back(attributePointer);
 }
 
-
 void plVBO::clear()
 {
     _data.clear();
 }
 
-
 void plVBO::upload()
 {
-    if (_data.empty())
-    {
+    if (_data.empty()) {
         LOG_WARN("Data buffer empty, ignoring command");
         return;
     }
 
-    if (_attributePointers.empty())
-    {
+    if (_attributePointers.empty()) {
         LOG_WARN("Vertex attribute pointers unspecified, ignoring command");
         return;
     }
 
     // if buffer not allocated, generate
-    if (!_id)
-    {
+    if (!_id) {
         glGenBuffers(1, &_id);
         LOG_OPENGL("glGenBuffers");
     }
@@ -63,8 +54,7 @@ void plVBO::upload()
     glBufferData(GL_ARRAY_BUFFER, _numBytes, &_data[0], _usage);
     LOG_OPENGL("glBufferData");
 
-    for (auto attributePointer : _attributePointers)
-    {
+    for (auto attributePointer : _attributePointers) {
         // set position pointer, offset and stride
         glEnableVertexAttribArray(attributePointer.index);
         LOG_OPENGL("glEnableVertexAttribArray");

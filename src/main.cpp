@@ -1,16 +1,15 @@
-#include "plCommon.h"
+#include "plAutomaticPlanner.h"
 #include "plBoundaryEditor.h"
-#include "plCommon.h"
 #include "plCamera.h"
+#include "plCommon.h"
 #include "plGraftEditor.h"
 #include "plModelEditor.h"
+#include "plOpenGLInfo.h"
 #include "plPlan.h"
-#include "plAutomaticPlanner.h"
 #include "plVector3.h"
 #include "plWindow.h"
-#include "plOpenGLInfo.h"
 
-#define CAMERA_ROTATION_MODE    1
+#define CAMERA_ROTATION_MODE 1
 #define CAMERA_TRANSLATION_MODE 2
 
 // planner
@@ -86,19 +85,18 @@ void handleKeyRelease(const WindowEvent& event)
     auto key = event.originalEvent->key.keysym.sym;
 
     // unmodifiable keys
-    switch (key)
-    {
-        case SDLK_LCTRL:
-        case SDLK_RCTRL:
-            // ctrl
-            ctrl = false;
-            break;
+    switch (key) {
+    case SDLK_LCTRL:
+    case SDLK_RCTRL:
+        // ctrl
+        ctrl = false;
+        break;
 
-        case SDLK_LSHIFT:
-        case SDLK_RSHIFT:
-            // shift
-            shift = false;
-            break;
+    case SDLK_LSHIFT:
+    case SDLK_RSHIFT:
+        // shift
+        shift = false;
+        break;
     }
 }
 
@@ -109,208 +107,234 @@ void handleKeyPress(const WindowEvent& event)
     auto key = event.originalEvent->key.keysym.sym;
 
     // unmodifiable keys
-    switch (key)
-    {
-        case SDLK_ESCAPE:
-            // esc
-            exit(0);
+    switch (key) {
+    case SDLK_ESCAPE:
+        // esc
+        exit(0);
 
-        case SDLK_SPACE:
-            // spacebar
-            cameraMode = (cameraMode == CAMERA_ROTATION_MODE) ? CAMERA_TRANSLATION_MODE : CAMERA_ROTATION_MODE;
-            break;
+    case SDLK_SPACE:
+        // spacebar
+        cameraMode = (cameraMode == CAMERA_ROTATION_MODE) ? CAMERA_TRANSLATION_MODE : CAMERA_ROTATION_MODE;
+        break;
 
-        case SDLK_LCTRL:
-        case SDLK_RCTRL:
-            // ctrl
-            ctrl = true;
-            break;
+    case SDLK_LCTRL:
+    case SDLK_RCTRL:
+        // ctrl
+        ctrl = true;
+        break;
 
-        case SDLK_LSHIFT:
-        case SDLK_RSHIFT:
-            // shift
-            shift = true;
-            break;
+    case SDLK_LSHIFT:
+    case SDLK_RSHIFT:
+        // shift
+        shift = true;
+        break;
 
-        case SDLK_DELETE:
-            // delete
-            if (ctrl)
-            {
-                // delete boundary
-                boundaryEditor.removeSelectedSite();
-            }
-            else
-            {
-                // delete point
-                boundaryEditor.removeSelectedPoint();
-            }
-            break;
+    case SDLK_DELETE:
+        // delete
+        if (ctrl) {
+            // delete boundary
+            boundaryEditor.removeSelectedSite();
+        } else {
+            // delete point
+            boundaryEditor.removeSelectedPoint();
+        }
+        break;
 
-        case SDLK_0:
-        case SDLK_1:
-        case SDLK_2:
-        case SDLK_3:
-        case SDLK_4:
-        case SDLK_5:
-        case SDLK_6:
-        case SDLK_7:
-        case SDLK_8:
-        case SDLK_9:
-            // 0-9
-            currentView = (int32_t)(key - '0');
-            break;
+    case SDLK_0:
+    case SDLK_1:
+    case SDLK_2:
+    case SDLK_3:
+    case SDLK_4:
+    case SDLK_5:
+    case SDLK_6:
+    case SDLK_7:
+    case SDLK_8:
+    case SDLK_9:
+        // 0-9
+        currentView = (int32_t)(key - '0');
+        break;
     }
 
-    if (shift)
-    {
+    if (shift) {
         // uppercase keys
-        switch (key)
-        {
-            case SDLK_a: /* UN-USED */ break;
-            case SDLK_b: /* UN-USED */ break;
-            case SDLK_c: /* UN-USED */ break;
-            case SDLK_d:
+        switch (key) {
+        case SDLK_a: /* UN-USED */
+            break;
+        case SDLK_b: /* UN-USED */
+            break;
+        case SDLK_c: /* UN-USED */
+            break;
+        case SDLK_d:
 
-                // add a donor site
-                plan->addDonorSite(modelEditor.selectedModelID());
-                break;
+            // add a donor site
+            plan->addDonorSite(modelEditor.selectedModelID());
+            break;
 
-            case SDLK_e: /* UN-USED */ break;
-            case SDLK_f: /* UN-USED */ break;
-            case SDLK_g: /* UN-USED */ break;
-            case SDLK_h: /* UN-USED */ break;
-            case SDLK_i: /* UN-USED */ break;
-            case SDLK_j: /* UN-USED */ break;
-            case SDLK_k: /* UN-USED */ break;
-            case SDLK_l: /* UN-USED */ break;
-            case SDLK_m: /* UN-USED */ break;
-            case SDLK_n:
+        case SDLK_e: /* UN-USED */
+            break;
+        case SDLK_f: /* UN-USED */
+            break;
+        case SDLK_g: /* UN-USED */
+            break;
+        case SDLK_h: /* UN-USED */
+            break;
+        case SDLK_i: /* UN-USED */
+            break;
+        case SDLK_j: /* UN-USED */
+            break;
+        case SDLK_k: /* UN-USED */
+            break;
+        case SDLK_l: /* UN-USED */
+            break;
+        case SDLK_m: /* UN-USED */
+            break;
+        case SDLK_n:
 
-                // clear plan, start new
-                plan->clear();
-                graftEditor.clearSelection();
-                boundaryEditor.clearSelection();
-                modelEditor.clearSelection();
-                break;
+            // clear plan, start new
+            plan->clear();
+            graftEditor.clearSelection();
+            boundaryEditor.clearSelection();
+            modelEditor.clearSelection();
+            break;
 
-            case SDLK_o:
+        case SDLK_o:
 
-                // export plan file
-                plan->exportFile("plan");
-                break;
+            // export plan file
+            plan->exportFile("plan");
+            break;
 
-            case SDLK_p:
+        case SDLK_p:
 
-                // calculate plan
-                plAutomaticPlanner::calculate(plan, 0);
-                break;
+            // calculate plan
+            plAutomaticPlanner::calculate(plan, 0);
+            break;
 
-            case SDLK_q: /* UN-USED */ break;
-            case SDLK_r:
+        case SDLK_q: /* UN-USED */
+            break;
+        case SDLK_r:
 
-                // import view
-                camera->importViewParams("./resources/view" + std::to_string(currentView));
-                break;
+            // import view
+            camera->importViewParams("./resources/view" + std::to_string(currentView));
+            break;
 
-            case SDLK_s:
+        case SDLK_s:
 
-                // add defect site
-                plan->addDefectSite(modelEditor.selectedModelID());
-                break;
+            // add defect site
+            plan->addDefectSite(modelEditor.selectedModelID());
+            break;
 
-            case SDLK_t: /* UN-USED */ break;
-            case SDLK_u: /* UN-USED */ break;
-            case SDLK_v: /* UN-USED */ break;
-            case SDLK_w:
+        case SDLK_t: /* UN-USED */
+            break;
+        case SDLK_u: /* UN-USED */
+            break;
+        case SDLK_v: /* UN-USED */
+            break;
+        case SDLK_w:
 
-                // export view
-                camera->exportViewParams("./resources/view" + std::to_string(currentView));
-                break;
+            // export view
+            camera->exportViewParams("./resources/view" + std::to_string(currentView));
+            break;
 
-            case SDLK_x: /* UN-USED */ break;
-            case SDLK_y: /* UN-USED */ break;
-            case SDLK_z: /* UN-USED */ break;
+        case SDLK_x: /* UN-USED */
+            break;
+        case SDLK_y: /* UN-USED */
+            break;
+        case SDLK_z: /* UN-USED */
+            break;
         }
 
-    }
-    else
-    {
+    } else {
         // lowercase keys
-        switch (key)
-        {
-            case SDLK_a: /* UN-USED */ break;
-            case SDLK_b: /* UN-USED */ break;
-            case SDLK_c: /* UN-USED */ break;
-            case SDLK_d: /* UN-USED */ break;
-            case SDLK_e: /* UN-USED */ break;
-            case SDLK_f: /* UN-USED */ break;
-            case SDLK_g: /* UN-USED */ break;
-            case SDLK_h: /* UN-USED */ break;
-            case SDLK_i: /* UN-USED */ break;
-            case SDLK_j: /* UN-USED */ break;
-            case SDLK_k: /* UN-USED */ break;
-            case SDLK_l:
+        switch (key) {
+        case SDLK_a: /* UN-USED */
+            break;
+        case SDLK_b: /* UN-USED */
+            break;
+        case SDLK_c: /* UN-USED */
+            break;
+        case SDLK_d: /* UN-USED */
+            break;
+        case SDLK_e: /* UN-USED */
+            break;
+        case SDLK_f: /* UN-USED */
+            break;
+        case SDLK_g: /* UN-USED */
+            break;
+        case SDLK_h: /* UN-USED */
+            break;
+        case SDLK_i: /* UN-USED */
+            break;
+        case SDLK_j: /* UN-USED */
+            break;
+        case SDLK_k: /* UN-USED */
+            break;
+        case SDLK_l:
 
-                // set graft edit mode to length
-                graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_LENGTH);
-                break;
+            // set graft edit mode to length
+            graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_LENGTH);
+            break;
 
-            case SDLK_m:
+        case SDLK_m:
 
-                // re-align graft markers based on camera position
-                plan->updateGraftMarkerPositions();
-                break;
+            // re-align graft markers based on camera position
+            plan->updateGraftMarkerPositions();
+            break;
 
-            case SDLK_n: /* UN-USED */ break;
-            case SDLK_o:
+        case SDLK_n: /* UN-USED */
+            break;
+        case SDLK_o:
 
-                // toggle octree view for selected model
-                if (modelEditor.isModelSelected())
-                {
-                    plan->models(modelEditor.selectedModelID())->toggleOctreeVisibility();
-                }
-                break;
+            // toggle octree view for selected model
+            if (modelEditor.isModelSelected()) {
+                plan->models(modelEditor.selectedModelID())->toggleOctreeVisibility();
+            }
+            break;
 
-            case SDLK_p:
+        case SDLK_p:
 
-                // toggle plan visibility
-                plan->toggleVisibility();
-                break;
+            // toggle plan visibility
+            plan->toggleVisibility();
+            break;
 
-            case SDLK_q: /* UN-USED */ break;
-            case SDLK_r:
+        case SDLK_q: /* UN-USED */
+            break;
+        case SDLK_r:
 
-                // set graft edit mode to rotation
-                graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_ROTATE);
-                break;
+            // set graft edit mode to rotation
+            graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_ROTATE);
+            break;
 
-            case SDLK_s: /* UN-USED */ break;
-            case SDLK_t:
+        case SDLK_s: /* UN-USED */
+            break;
+        case SDLK_t:
 
-                // set graft edit mode to translation
-                graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_TRANSLATE);
-                break;
+            // set graft edit mode to translation
+            graftEditor.setEditMode(PL_GRAFT_EDIT_MODE_TRANSLATE);
+            break;
 
-            case SDLK_u: /* UN-USED */ break;
-            case SDLK_v:
+        case SDLK_u: /* UN-USED */
+            break;
+        case SDLK_v:
 
-                // toggle visibility of selected component (solid, transparent, invisible)
-                graftEditor.toggleSelectedVisibility();
-                boundaryEditor.toggleSelectedVisibility();
-                modelEditor.toggleSelectedVisibility();
-                break;
+            // toggle visibility of selected component (solid, transparent, invisible)
+            graftEditor.toggleSelectedVisibility();
+            boundaryEditor.toggleSelectedVisibility();
+            modelEditor.toggleSelectedVisibility();
+            break;
 
-            case SDLK_w: /* UN-USED */ break;
-            case SDLK_x: /* UN-USED */ break;
-            case SDLK_y: /* UN-USED */ break;
-            case SDLK_z:
+        case SDLK_w: /* UN-USED */
+            break;
+        case SDLK_x: /* UN-USED */
+            break;
+        case SDLK_y: /* UN-USED */
+            break;
+        case SDLK_z:
 
-                // reset camera onto model
-                if (modelEditor.isModelSelected())
-                {
-                    camera->reset(plan->models(modelEditor.selectedModelID())->getCentroid());
-                }
-                break;
+            // reset camera onto model
+            if (modelEditor.isModelSelected()) {
+                camera->reset(plan->models(modelEditor.selectedModelID())->getCentroid());
+            }
+            break;
         }
     }
 }
@@ -323,34 +347,30 @@ void handleMouseMove(const WindowEvent& event)
     int32_t x = mouseEvent.x * plWindow::pixelRatio();
     int32_t y = plWindow::height() - (mouseEvent.y * plWindow::pixelRatio());
 
-    switch (button)
-    {
-        case SDL_BUTTON_LEFT:
+    switch (button) {
+    case SDL_BUTTON_LEFT:
 
-            // process drag movements
-            graftEditor.processMouseDrag(x, y);
-            boundaryEditor.processMouseDrag(x, y);
-            modelEditor.processMouseDrag(x, y);
-            break;
+        // process drag movements
+        graftEditor.processMouseDrag(x, y);
+        boundaryEditor.processMouseDrag(x, y);
+        modelEditor.processMouseDrag(x, y);
+        break;
 
-        case SDL_BUTTON_MIDDLE:
+    case SDL_BUTTON_MIDDLE:
 
-            // zoom camera
-            camera->zoom(y - previousMouse.y);
-            break;
+        // zoom camera
+        camera->zoom(y - previousMouse.y);
+        break;
 
-        case SDL_BUTTON_RIGHT:
+    case SDL_BUTTON_RIGHT:
 
-            // previous and current mouse coords should be very small
-            if (cameraMode == CAMERA_ROTATION_MODE)
-            {
-                camera->rotate(previousMouse.x, previousMouse.y, x, y);
-            }
-            else
-            {
-                camera->translate(previousMouse.x - x, previousMouse.y - y);
-            }
-            break;
+        // previous and current mouse coords should be very small
+        if (cameraMode == CAMERA_ROTATION_MODE) {
+            camera->rotate(previousMouse.x, previousMouse.y, x, y);
+        } else {
+            camera->translate(previousMouse.x - x, previousMouse.y - y);
+        }
+        break;
     }
 
     // update mouse position on drag
@@ -374,13 +394,10 @@ void handleMousePress(const WindowEvent& event)
     int32_t y = plWindow::height() - (mouseEvent.y * plWindow::pixelRatio());
 
     if (mouseEvent.button == SDL_BUTTON_LEFT) {
-        if (ctrl)
-        {
+        if (ctrl) {
             // add new point
             boundaryEditor.addPoint(x, y);
-        }
-        else
-        {
+        } else {
             // process mouse clicks
             graftEditor.processMousePress(x, y);
             boundaryEditor.processMousePress(x, y);
@@ -426,11 +443,10 @@ void handleSignal(int32_t signal)
     exit(0);
 }
 
-int32_t main(int32_t argc, char **argv)
+int32_t main(int32_t argc, char** argv)
 {
     // check command line argument count
-    if (argc < 2)
-    {
+    if (argc < 2) {
         LOG_WARN("Required file inputs not provided, aborting");
         exit(1);
     }

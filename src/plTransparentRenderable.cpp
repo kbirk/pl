@@ -5,23 +5,16 @@ plTransparentRenderable::plTransparentRenderable()
     _isTransparent = false;
 }
 
-
 void plTransparentRenderable::toggleVisibility()
 {
-    if (_isTransparent)
-    {
+    if (_isTransparent) {
         setInvisible();
-    }
-    else if (!_isVisible)
-    {
+    } else if (!_isVisible) {
         setVisible();
-    }
-    else
-    {
+    } else {
         setTransparent();
     }
 }
-
 
 void plTransparentRenderable::setVisible()
 {
@@ -29,21 +22,17 @@ void plTransparentRenderable::setVisible()
     _isTransparent = false;
 }
 
-
 void plTransparentRenderable::setTransparent()
 {
     _isVisible = true;
     _isTransparent = true;
 }
 
-
 void plTransparentRenderable::setInvisible()
 {
     _isVisible = false;
     _isTransparent = false;
 }
-
-
 
 bool plTransparentRenderable::isTransparent() const
 {

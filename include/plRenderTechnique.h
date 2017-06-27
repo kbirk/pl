@@ -1,17 +1,15 @@
 #pragma once
 
 #include "plCommon.h"
-#include "plRenderable.h"
 #include "plRenderComponent.h"
+#include "plRenderable.h"
 #include "plWindow.h"
 
-class plRenderTechnique
-{
-    public:
+class plRenderTechnique {
+public:
+    plRenderTechnique();
 
-        plRenderTechnique();
+    virtual ~plRenderTechnique();
 
-        virtual ~plRenderTechnique();
-
-        virtual void render(const plRenderList& components) const = 0;
+    virtual void render(const plRenderList& components) const = 0;
 };

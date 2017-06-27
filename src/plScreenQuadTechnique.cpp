@@ -4,7 +4,6 @@ plScreenQuadTechnique::plScreenQuadTechnique()
 {
 }
 
-
 void plScreenQuadTechnique::render(const plRenderList& components) const
 {
     auto shader = plRenderResources::shaders(PL_FBO_SHADER);
@@ -30,7 +29,6 @@ void plScreenQuadTechnique::render(const plRenderList& components) const
     shader->unbind();
 }
 
-
 std::shared_ptr<plVAO> plScreenQuadTechnique::_generateQuad() const
 {
     std::vector<plVector3> vertices;
@@ -40,14 +38,22 @@ std::shared_ptr<plVAO> plScreenQuadTechnique::_generateQuad() const
     indices.reserve(6);
 
     // position                               // texture coord
-    vertices.push_back(plVector3(-1, -1, 0)); vertices.push_back(plVector3(0,0,0));
-    vertices.push_back(plVector3(1, -1, 0));  vertices.push_back(plVector3(1,0,0));
-    vertices.push_back(plVector3(1, 1, 0));   vertices.push_back(plVector3(1,1,0));
-    vertices.push_back(plVector3(-1, 1, 0));  vertices.push_back(plVector3(0,1,0));
+    vertices.push_back(plVector3(-1, -1, 0));
+    vertices.push_back(plVector3(0, 0, 0));
+    vertices.push_back(plVector3(1, -1, 0));
+    vertices.push_back(plVector3(1, 0, 0));
+    vertices.push_back(plVector3(1, 1, 0));
+    vertices.push_back(plVector3(1, 1, 0));
+    vertices.push_back(plVector3(-1, 1, 0));
+    vertices.push_back(plVector3(0, 1, 0));
 
     // indices
-    indices.push_back(0);   indices.push_back(1);   indices.push_back(2);
-    indices.push_back(0);   indices.push_back(2);   indices.push_back(3);
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(2);
+    indices.push_back(0);
+    indices.push_back(2);
+    indices.push_back(3);
 
     // set vbo and attach attribute pointers
     auto vbo = std::make_shared<plVBO>();
@@ -66,7 +72,6 @@ std::shared_ptr<plVAO> plScreenQuadTechnique::_generateQuad() const
     vao->upload();
     return vao;
 }
-
 
 std::shared_ptr<plRenderComponent> plScreenQuadTechnique::_generateComponent() const
 {

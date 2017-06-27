@@ -3,24 +3,20 @@
 #include "plCommon.h"
 #include "plRenderable.h"
 
-class plTransparentRenderable : public plRenderable
-{
+class plTransparentRenderable : public plRenderable {
 
-    public:
+public:
+    plTransparentRenderable();
 
-        plTransparentRenderable();
+    virtual void toggleVisibility();
+    virtual void setVisible();
+    virtual void setTransparent();
+    virtual void setInvisible();
 
-        virtual void toggleVisibility();
-        virtual void setVisible();
-        virtual void setTransparent();
-        virtual void setInvisible();
+    bool isTransparent() const;
 
-        bool isTransparent() const;
+    virtual void extractRenderComponents(plRenderMap& renderMap) const = 0;
 
-        virtual void extractRenderComponents(plRenderMap& renderMap) const = 0;
-
-    protected:
-
-        bool _isTransparent;
-
+protected:
+    bool _isTransparent;
 };

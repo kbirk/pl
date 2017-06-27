@@ -4,68 +4,68 @@
 #include "plOpenGLCommon.h"
 #include "plVector3.h"
 
-template<typename T>
-class plPixel
-{
-    public:
+template <typename T>
+class plPixel {
+public:
+    T r, g, b, a;
 
-        T r, g, b, a;
+    plPixel()
+        : r(T())
+        , g(T())
+        , b(T())
+        , a(T())
+    {
+    }
 
-        plPixel()
-            : r(T()), g(T()), b(T()), a(T())
-        {
-        }
-
-        plPixel(T red, T green, T blue, T alpha)
-            : r(red), g(green), b(blue), a(alpha)
-        {
-        }
+    plPixel(T red, T green, T blue, T alpha)
+        : r(red)
+        , g(green)
+        , b(blue)
+        , a(alpha)
+    {
+    }
 };
 
+class plTexture2D {
 
-class plTexture2D
-{
+public:
+    plTexture2D(
+        uint32_t width,
+        uint32_t height,
+        uint32_t internalFormat,
+        uint32_t format,
+        uint32_t type,
+        GLvoid* image = nullptr);
 
-    public:
+    ~plTexture2D();
 
-        plTexture2D(
-            uint32_t width,
-            uint32_t height,
-            uint32_t internalFormat,
-            uint32_t format,
-            uint32_t type,
-            GLvoid* image = nullptr);
+    void bind() const; // bind textures AFTER binding shader AND BEFORE drawing arrays
+    void unbind() const;
 
-        ~plTexture2D();
+    uint32_t width() const { return _width; }
+    uint32_t height() const { return _height; }
 
-        void bind() const;   // bind textures AFTER binding shader AND BEFORE drawing arrays
-        void unbind() const;
+    void set(uint32_t width, uint32_t height, GLvoid* image = nullptr);
+    void set(
+        uint32_t width,
+        uint32_t height,
+        uint32_t internalFormat,
+        uint32_t format,
+        uint32_t type,
+        GLvoid* image = nullptr);
+    void setParameter(uint32_t pname, uint32_t param);
 
-        uint32_t width() const  { return _width;  }
-        uint32_t height() const { return _height; }
+    friend class plFBO;
 
-        void set(uint32_t width, uint32_t height, GLvoid* image = nullptr);
-        void set(
-            uint32_t width,
-            uint32_t height,
-            uint32_t internalFormat,
-            uint32_t format,
-            uint32_t type,
-            GLvoid* image = nullptr);
-        void setParameter(uint32_t pname, uint32_t param);
+private:
+    GLuint _id;
+    GLuint _width;
+    GLuint _height;
+    GLuint _internalFormat;
+    GLuint _format;
+    GLuint _type;
 
-        friend class plFBO;
+    uint32_t _getFormatSize() const;
 
-    private:
-
-        GLuint _id;
-        GLuint _width;
-        GLuint _height;
-        GLuint _internalFormat;
-        GLuint _format;
-        GLuint _type;
-
-        uint32_t _getFormatSize() const;
-
-        void _destroy();
+    void _destroy();
 };

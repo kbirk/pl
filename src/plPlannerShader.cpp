@@ -24,7 +24,6 @@ plPlannerShader::plPlannerShader(const std::vector<std::string>& sourceFiles)
     _getUniformLocations();
 }
 
-
 void plPlannerShader::_getUniformLocations()
 {
     _defectSiteGridPointCountID = glGetUniformLocation(_id, "uDefectSiteGridPointCount");
@@ -70,12 +69,11 @@ void plPlannerShader::_getUniformLocations()
     _loadLocalID = glGetUniformLocation(_id, "uLoadLocal");
     LOG_OPENGL("glGetUniformLocation");
 
-    _rotationIndexID  = glGetUniformLocation(_id, "uRotationIndex");
+    _rotationIndexID = glGetUniformLocation(_id, "uRotationIndex");
     LOG_OPENGL("glGetUniformLocation");
     _rotationAnglesID = glGetUniformLocation(_id, "uRotationAngles");
     LOG_OPENGL("glGetUniformLocation");
 }
-
 
 void plPlannerShader::setDefectSiteUniforms(std::shared_ptr<plPlanningSite> defectSite) const
 {
@@ -91,8 +89,7 @@ void plPlannerShader::setDefectSiteUniforms(std::shared_ptr<plPlanningSite> defe
     LOG_OPENGL("glUniform4fv");
 }
 
-
-void plPlannerShader::setDonorSiteUniforms(const std::vector<std::shared_ptr<plPlanningSite>>& donorSites) const
+void plPlannerShader::setDonorSiteUniforms(const std::vector<std::shared_ptr<plPlanningSite> >& donorSites) const
 {
     uint32_t totalGridPoints = 0;
     uint32_t dataIndexOffset = 0;
@@ -101,8 +98,7 @@ void plPlannerShader::setDonorSiteUniforms(const std::vector<std::shared_ptr<plP
     std::vector<uint32_t> boundaryPointCounts;
     std::vector<uint32_t> dataOffsets;
 
-    for (auto donorSite : donorSites)
-    {
+    for (auto donorSite : donorSites) {
         totalGridPoints += donorSite->gridPoints.size();
         gridPointCounts.push_back(donorSite->gridPoints.size());
         triangleCounts.push_back(donorSite->triangles.size());
@@ -125,7 +121,6 @@ void plPlannerShader::setDonorSiteUniforms(const std::vector<std::shared_ptr<plP
     LOG_OPENGL("glUniform1uiv");
 }
 
-
 void plPlannerShader::setDefectSolutionUniforms(std::shared_ptr<plDefectSolution> solution) const
 {
     glUniform1ui(_defectSolutionGraftCountID, solution->graftCount);
@@ -140,13 +135,11 @@ void plPlannerShader::setDefectSolutionUniforms(std::shared_ptr<plDefectSolution
     LOG_OPENGL("glUniform4fv");
 }
 
-
 void plPlannerShader::setSeedUniform() const
 {
     glUniform1ui(_seedID, rand());
     LOG_OPENGL("glUniform1ui");
 }
-
 
 void plPlannerShader::setTemperatureUniform(float32_t temperature) const
 {
@@ -154,27 +147,23 @@ void plPlannerShader::setTemperatureUniform(float32_t temperature) const
     LOG_OPENGL("glUniform1f");
 }
 
-
 void plPlannerShader::setLocalLoadUniform(uint32_t loadLocal) const
 {
     glUniform1ui(_loadLocalID, loadLocal);
     LOG_OPENGL("glUniform1ui");
 }
 
-
 void plPlannerShader::setRotationAngleUniforms(uint32_t numDirections) const
 {
     // get rotation angles
     std::vector<float32_t> rotationAngles;
     float32_t da = 360.0f / (float32_t)(numDirections);
-    for (uint32_t i=0; i < numDirections; i++)
-    {
+    for (uint32_t i = 0; i < numDirections; i++) {
         rotationAngles.push_back(da * i);
     }
     glUniform1fv(_rotationAnglesID, rotationAngles.size(), &rotationAngles[0]);
     LOG_OPENGL("glUniform1fv");
 }
-
 
 void plPlannerShader::setRotationIndexUniform(uint32_t rotationIndex) const
 {

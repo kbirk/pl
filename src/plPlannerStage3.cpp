@@ -3,21 +3,20 @@
 #include "plProgress.h"
 
 plGreedyGroup::plGreedyGroup()
-    : _lowestRMS(FLT_MAX),
-      _lowestPositions(PL_MAX_GRAFTS_PER_SOLUTION, plVector4(0, 0, 0)),
-      _lowestNormals(PL_MAX_GRAFTS_PER_SOLUTION, plVector4(0, 0, 0)),
-      _lowestXAxes(PL_MAX_GRAFTS_PER_SOLUTION, plVector4(0, 0, 0))
+    : _lowestRMS(FLT_MAX)
+    , _lowestPositions(PL_MAX_GRAFTS_PER_SOLUTION, plVector4(0, 0, 0))
+    , _lowestNormals(PL_MAX_GRAFTS_PER_SOLUTION, plVector4(0, 0, 0))
+    , _lowestXAxes(PL_MAX_GRAFTS_PER_SOLUTION, plVector4(0, 0, 0))
 {
-    _donorSolutionPositionsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
-    _donorSolutionNormalsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
-    _donorSolutionXAxesSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(plVector4));
-    _donorSolutionSiteIndicesSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*PL_MAX_GRAFTS_PER_SOLUTION*sizeof(uint32_t));
-    _totalRmsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS*sizeof(float32_t));
+    _donorSolutionPositionsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS * PL_MAX_GRAFTS_PER_SOLUTION * sizeof(plVector4));
+    _donorSolutionNormalsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS * PL_MAX_GRAFTS_PER_SOLUTION * sizeof(plVector4));
+    _donorSolutionXAxesSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS * PL_MAX_GRAFTS_PER_SOLUTION * sizeof(plVector4));
+    _donorSolutionSiteIndicesSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS * PL_MAX_GRAFTS_PER_SOLUTION * sizeof(uint32_t));
+    _totalRmsSSBO = std::make_shared<plSSBO>(PL_STAGE_3_INVOCATIONS * sizeof(float32_t));
     // initialize all rms to -1
     std::vector<float32_t> totalRMS(PL_STAGE_3_INVOCATIONS, -1.0f);
     _totalRmsSSBO->set(totalRMS, totalRMS.size());
 }
-
 
 void plGreedyGroup::bind()
 {
@@ -28,7 +27,6 @@ void plGreedyGroup::bind()
     _totalRmsSSBO->bind(7);
 }
 
-
 void plGreedyGroup::unbind()
 {
     _donorSolutionPositionsSSBO->unbind(3);
@@ -37,7 +35,6 @@ void plGreedyGroup::unbind()
     _donorSolutionSiteIndicesSSBO->bind(6);
     _totalRmsSSBO->unbind(7);
 }
-
 
 void plGreedyGroup::update()
 {
@@ -49,27 +46,22 @@ void plGreedyGroup::update()
     int32_t minIndex = -1;
 
     // get lowest rms index
-    for (uint32_t i=0; i < PL_STAGE_3_INVOCATIONS; i++)
-    {
-        if (totalRMS[i] > 0 && totalRMS[i] < minRMS)
-        {
+    for (uint32_t i = 0; i < PL_STAGE_3_INVOCATIONS; i++) {
+        if (totalRMS[i] > 0 && totalRMS[i] < minRMS) {
             minRMS = totalRMS[i];
             minIndex = i;
         }
     }
 
     // is it better than global solution?
-    if (minIndex != -1 && minRMS < _lowestRMS)
-    {
+    if (minIndex != -1 && minRMS < _lowestRMS) {
         _lowestRMS = minRMS;
-        _donorSolutionPositionsSSBO->read(_lowestPositions, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
-        _donorSolutionNormalsSSBO->read(_lowestNormals, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
-        _donorSolutionXAxesSSBO->read(_lowestXAxes, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
-        _donorSolutionSiteIndicesSSBO->read(_lowestSiteIndices, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex*PL_MAX_GRAFTS_PER_SOLUTION);
+        _donorSolutionPositionsSSBO->read(_lowestPositions, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex * PL_MAX_GRAFTS_PER_SOLUTION);
+        _donorSolutionNormalsSSBO->read(_lowestNormals, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex * PL_MAX_GRAFTS_PER_SOLUTION);
+        _donorSolutionXAxesSSBO->read(_lowestXAxes, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex * PL_MAX_GRAFTS_PER_SOLUTION);
+        _donorSolutionSiteIndicesSSBO->read(_lowestSiteIndices, PL_MAX_GRAFTS_PER_SOLUTION, 0, minIndex * PL_MAX_GRAFTS_PER_SOLUTION);
     }
-
 }
-
 
 void plGreedyGroup::getSolution(
     uint32_t numGrafts,
@@ -82,8 +74,7 @@ void plGreedyGroup::getSolution(
     solution->graftSiteIndices = _lowestSiteIndices;
     solution->rms = _lowestRMS;
 
-    for (uint32_t i=0; i < numGrafts; i++)
-    {
+    for (uint32_t i = 0; i < numGrafts; i++) {
         auto graftSiteIndex = solution->graftSiteIndices[i];
         // intersect surface
         plIntersection intersection = plMath::rayIntersect(
@@ -96,95 +87,91 @@ void plGreedyGroup::getSolution(
     }
 }
 
+namespace plPlannerStage3 {
 
-namespace plPlannerStage3
+void run(
+    std::shared_ptr<plDonorSolution> donorSolution,
+    std::shared_ptr<plPlanningBufferData> planningData,
+    std::shared_ptr<plDefectSolution> defectSolution,
+    std::shared_ptr<plRmsData> rmsData)
 {
+    std::vector<std::string> shaderfiles;
 
-    void run(
-        std::shared_ptr<plDonorSolution> donorSolution,
-        std::shared_ptr<plPlanningBufferData> planningData,
-        std::shared_ptr<plDefectSolution> defectSolution,
-        std::shared_ptr<plRmsData> rmsData)
-    {
-        std::vector<std::string> shaderfiles;
+    shaderfiles.push_back("./resources/shaders/planning/defines.h");
+    shaderfiles.push_back("./resources/shaders/planning/geometry.h");
+    shaderfiles.push_back("./resources/shaders/planning/defectSite.h");
+    shaderfiles.push_back("./resources/shaders/planning/donorSites.h");
+    shaderfiles.push_back("./resources/shaders/planning/defectSolution.h");
+    shaderfiles.push_back("./resources/shaders/planning/donorSolution.h");
+    shaderfiles.push_back("./resources/shaders/planning/rms.h");
+    shaderfiles.push_back("./resources/shaders/planning/rand.h");
+    shaderfiles.push_back("./resources/shaders/planning/stage3.h");
 
-        shaderfiles.push_back("./resources/shaders/planning/defines.h");
-        shaderfiles.push_back("./resources/shaders/planning/geometry.h");
-        shaderfiles.push_back("./resources/shaders/planning/defectSite.h");
-        shaderfiles.push_back("./resources/shaders/planning/donorSites.h");
-        shaderfiles.push_back("./resources/shaders/planning/defectSolution.h");
-        shaderfiles.push_back("./resources/shaders/planning/donorSolution.h");
-        shaderfiles.push_back("./resources/shaders/planning/rms.h");
-        shaderfiles.push_back("./resources/shaders/planning/rand.h");
-        shaderfiles.push_back("./resources/shaders/planning/stage3.h");
+    shaderfiles.push_back("./resources/shaders/planning/geometry.comp");
+    shaderfiles.push_back("./resources/shaders/planning/defectSite.comp");
+    shaderfiles.push_back("./resources/shaders/planning/donorSites.comp");
+    shaderfiles.push_back("./resources/shaders/planning/defectSolution.comp");
+    shaderfiles.push_back("./resources/shaders/planning/donorSolution.comp");
+    shaderfiles.push_back("./resources/shaders/planning/rms.comp");
+    shaderfiles.push_back("./resources/shaders/planning/rand.comp");
+    shaderfiles.push_back("./resources/shaders/planning/stage3.comp");
 
-        shaderfiles.push_back("./resources/shaders/planning/geometry.comp");
-        shaderfiles.push_back("./resources/shaders/planning/defectSite.comp");
-        shaderfiles.push_back("./resources/shaders/planning/donorSites.comp");
-        shaderfiles.push_back("./resources/shaders/planning/defectSolution.comp");
-        shaderfiles.push_back("./resources/shaders/planning/donorSolution.comp");
-        shaderfiles.push_back("./resources/shaders/planning/rms.comp");
-        shaderfiles.push_back("./resources/shaders/planning/rand.comp");
-        shaderfiles.push_back("./resources/shaders/planning/stage3.comp");
+    // compile / link stage 2 shader
+    plPlannerShader stage3Shader(shaderfiles);
 
-        // compile / link stage 2 shader
-        plPlannerShader stage3Shader(shaderfiles);
+    if (!stage3Shader.good())
+        return;
 
-        if (!stage3Shader.good())
-            return;
+    stage3Shader.bind();
 
-        stage3Shader.bind();
+    // set uniforms
+    stage3Shader.setDefectSiteUniforms(planningData->defectSite);
+    stage3Shader.setDonorSiteUniforms(planningData->donorSites);
+    stage3Shader.setDefectSolutionUniforms(defectSolution);
+    stage3Shader.setRotationAngleUniforms(PL_NUM_COMPARISION_DIRECTIONS);
 
-        // set uniforms
-        stage3Shader.setDefectSiteUniforms(planningData->defectSite);
-        stage3Shader.setDonorSiteUniforms(planningData->donorSites);
-        stage3Shader.setDefectSolutionUniforms(defectSolution);
-        stage3Shader.setRotationAngleUniforms(PL_NUM_COMPARISION_DIRECTIONS);
+    // create and initialize cap indices SSBOs to 0
+    auto greedyBuffers = std::make_shared<plGreedyGroup>();
 
-        // create and initialize cap indices SSBOs to 0
-        auto greedyBuffers = std::make_shared<plGreedyGroup>();
+    // bind SSBOs
+    planningData->defectSiteSSBO->bind(0);
+    planningData->donorSitesSSBO->bind(1);
+    rmsData->rmsSSBO->bind(2);
+    greedyBuffers->bind(); // 3, 4, 5, 6, 7
 
-        // bind SSBOs
-        planningData->defectSiteSSBO->bind(0);
-        planningData->donorSitesSSBO->bind(1);
-        rmsData->rmsSSBO->bind(2);
-        greedyBuffers->bind(); // 3, 4, 5, 6, 7
+    for (uint32_t i = 0; i < PL_STAGE_3_ITERATIONS; i++) {
+        // update seed uniform
+        stage3Shader.setSeedUniform();
 
-        for (uint32_t i=0; i<PL_STAGE_3_ITERATIONS; i++)
-        {
-            // update seed uniform
-            stage3Shader.setSeedUniform();
+        // call compute shader with 1D workgrouping
+        glDispatchCompute(PL_STAGE_3_NUM_GROUPS, 1, 1);
+        LOG_OPENGL("glDispatchCompute");
 
-            // call compute shader with 1D workgrouping
-            glDispatchCompute(PL_STAGE_3_NUM_GROUPS, 1, 1);
-            LOG_OPENGL("glDispatchCompute");
+        // memory barrier
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        LOG_OPENGL("glMemoryBarrier");
 
-            // memory barrier
-            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-            LOG_OPENGL("glMemoryBarrier");
+        // check latest solution
+        greedyBuffers->update();
 
-            // check latest solution
-            greedyBuffers->update();
-
-            plProgress::printProgress(i / (float32_t)PL_STAGE_3_ITERATIONS);
-        }
-
-        // load the greedy solution to the donor solution
-        greedyBuffers->getSolution(
-            defectSolution->graftCount,
-            donorSolution,
-            planningData);
-
-        // no state found
-        if (donorSolution->rms == FLT_MAX)
-        {
-            LOG_WARN("Unable to find suitable harvest locations");
-        }
-
-        // unbind and delete site and rms buffers
-        planningData->defectSiteSSBO->unbind(0);
-        planningData->donorSitesSSBO->unbind(1);
-        rmsData->rmsSSBO->unbind(2);
-        greedyBuffers->unbind();
+        plProgress::printProgress(i / (float32_t)PL_STAGE_3_ITERATIONS);
     }
+
+    // load the greedy solution to the donor solution
+    greedyBuffers->getSolution(
+        defectSolution->graftCount,
+        donorSolution,
+        planningData);
+
+    // no state found
+    if (donorSolution->rms == FLT_MAX) {
+        LOG_WARN("Unable to find suitable harvest locations");
+    }
+
+    // unbind and delete site and rms buffers
+    planningData->defectSiteSSBO->unbind(0);
+    planningData->donorSitesSSBO->unbind(1);
+    rmsData->rmsSSBO->unbind(2);
+    greedyBuffers->unbind();
+}
 }

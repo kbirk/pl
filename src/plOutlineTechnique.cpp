@@ -4,7 +4,6 @@ plOutlineTechnique::plOutlineTechnique()
 {
 }
 
-
 void plOutlineTechnique::render(const plRenderList& components) const
 {
     auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
@@ -36,8 +35,7 @@ void plOutlineTechnique::render(const plRenderList& components) const
     // LOG_OPENGL("glPolygonOffset");
 
     // draw main render components
-    for (auto component : components)
-    {
+    for (auto component : components) {
         component->draw(*shader);
     }
 

@@ -3,24 +3,21 @@
 #include "plCommon.h"
 #include "plOpenGLCommon.h"
 
-class plVertexSpecBuffer
-{
-    public:
+class plVertexSpecBuffer {
+public:
+    plVertexSpecBuffer();
 
-        plVertexSpecBuffer();
+    virtual ~plVertexSpecBuffer();
 
-        virtual ~plVertexSpecBuffer();
+    uint32_t id() const { return _id; }
 
-        uint32_t id() const { return _id; }
+    virtual void bind() const = 0;
+    virtual void unbind() const = 0;
 
-        virtual void bind() const = 0;
-        virtual void unbind() const = 0;
+protected:
+    GLuint _id;
+    GLuint _numBytes;
+    GLuint _usage;
 
-    protected:
-
-        GLuint _id;
-        GLuint _numBytes;
-        GLuint _usage;
-
-        virtual void _destroy();
+    virtual void _destroy();
 };

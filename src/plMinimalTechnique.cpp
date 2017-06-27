@@ -4,7 +4,6 @@ plMinimalTechnique::plMinimalTechnique()
 {
 }
 
-
 void plMinimalTechnique::render(const plRenderList& components) const
 {
     auto fbo = plRenderResources::fbos(PL_MAIN_FBO);
@@ -34,8 +33,7 @@ void plMinimalTechnique::render(const plRenderList& components) const
     LOG_OPENGL("glDisable");
 
     // draw main render components
-    for (auto component : components)
-    {
+    for (auto component : components) {
         component->draw(*shader);
     }
 

@@ -3,29 +3,22 @@
 plString::plString()
     : std::string()
 {
-
 }
 
-
-plString::plString (const std::string& str)
+plString::plString(const std::string& str)
     : std::string(str)
 {
-
 }
 
-
-plString::plString (const char* s)
+plString::plString(const char* s)
     : std::string(s)
 {
-
 }
-
 
 bool plString::importFile(const std::string& filename)
 {
     std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
-    if (in)
-    {
+    if (in) {
         std::string contents;
         in.seekg(0, std::ios::end);
         this->resize(in.tellg());
@@ -36,46 +29,36 @@ bool plString::importFile(const std::string& filename)
     return true;
 }
 
-
 void plString::toLower()
 {
-    for (uint32_t i = 0; i < length(); i++)
-    {
+    for (uint32_t i = 0; i < length(); i++) {
         (*this)[i] = tolower((*this)[i]);
     }
 }
 
-
 bool plString::compare(const plString& str) const
 {
-    if (length() != str.length())
-    {
+    if (length() != str.length()) {
         return false;
     }
 
-    for (uint32_t i = 0; i < length(); i++)
-    {
-        if ((*this)[i] != str[i])
-        {
+    for (uint32_t i = 0; i < length(); i++) {
+        if ((*this)[i] != str[i]) {
             return false;
         }
     }
 
     return true;
 }
-
 
 bool plString::compare(const plString& str, uint32_t num) const
 {
-    if (num > this->length() || num > str.length())
-    {
+    if (num > this->length() || num > str.length()) {
         return false;
     }
 
-    for (uint32_t i = 0; i < num; i++)
-    {
-        if ((*this)[i] != str[i])
-        {
+    for (uint32_t i = 0; i < num; i++) {
+        if ((*this)[i] != str[i]) {
             return false;
         }
     }
@@ -83,37 +66,29 @@ bool plString::compare(const plString& str, uint32_t num) const
     return true;
 }
 
-
 bool plString::compare(const plString& str, uint32_t index, uint32_t num) const
 {
-    if ((index+num) > this->length() || num > str.length())
-    {
+    if ((index + num) > this->length() || num > str.length()) {
         return false;
     }
 
-    for (uint32_t i = 0; i < num; i++)
-    {
-        if ((*this)[i+index] != str[i])
-        {
+    for (uint32_t i = 0; i < num; i++) {
+        if ((*this)[i + index] != str[i]) {
             return false;
         }
     }
 
     return true;
-
 }
 
 bool plString::compareCaseInsensitive(const plString& str, uint32_t num) const
 {
-    if (num > this->length() || num > str.length())
-    {
+    if (num > this->length() || num > str.length()) {
         return false;
     }
 
-    for (uint32_t i = 0; i < num; i++)
-    {
-        if (tolower((*this)[i]) != tolower(str[i]))
-        {
+    for (uint32_t i = 0; i < num; i++) {
+        if (tolower((*this)[i]) != tolower(str[i])) {
             return false;
         }
     }
@@ -121,18 +96,14 @@ bool plString::compareCaseInsensitive(const plString& str, uint32_t num) const
     return true;
 }
 
-
 bool plString::compareCaseInsensitive(const plString& str) const
 {
-    if (length() != str.length())
-    {
+    if (length() != str.length()) {
         return false;
     }
 
-    for (uint32_t i = 0; i < length(); i++)
-    {
-        if (tolower((*this)[i]) != tolower(str[i]))
-        {
+    for (uint32_t i = 0; i < length(); i++) {
+        if (tolower((*this)[i]) != tolower(str[i])) {
             return false;
         }
     }
@@ -154,14 +125,12 @@ void plString::stripCharacter(char c)
     erase(std::remove(begin(), end(), c), end());
 }
 
-
 void plString::stripPreceedingWhitespace()
 {
     size_t startpos = find_first_not_of("     ");
     if (startpos < length())
         *this = substr(startpos);
 }
-
 
 plString plString::withoutFilepath() const
 {
@@ -171,7 +140,6 @@ plString plString::withoutFilepath() const
     else
         return *this;
 }
-
 
 bool plString::isOnlyWhitespace() const
 {

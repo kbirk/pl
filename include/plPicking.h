@@ -3,8 +3,7 @@
 #include "plCommon.h"
 #include "plRenderResources.h"
 
-enum plPickingRedEnums
-{
+enum plPickingRedEnums {
     PL_PICKING_TYPE_NONE = 0,
     PL_PICKING_TYPE_BONE,
     PL_PICKING_TYPE_CARTILAGE,
@@ -18,34 +17,33 @@ enum plPickingRedEnums
     PL_PICKING_TYPE_DONOR_BOUNDARY
 };
 
-enum plPickingBlueEnums
-{
+enum plPickingBlueEnums {
     PL_PICKING_INDEX_GRAFT_DONOR = 1,
     PL_PICKING_INDEX_GRAFT_DEFECT
 };
 
+class plPickingInfo {
+public:
+    int32_t r;
+    int32_t g;
+    int32_t b;
 
-class plPickingInfo
-{
-    public:
+    plPickingInfo()
+        : r(-1)
+        , g(-1)
+        , b(-1)
+    {
+    }
 
-        int32_t r;
-        int32_t g;
-        int32_t b;
-
-        plPickingInfo()
-            : r(-1), g(-1), b(-1)
-        {
-        }
-
-        plPickingInfo(int32_t red, int32_t green, int32_t blue)
-            : r(red), g(green), b(blue)
-        {
-        }
+    plPickingInfo(int32_t red, int32_t green, int32_t blue)
+        : r(red)
+        , g(green)
+        , b(blue)
+    {
+    }
 };
 
-namespace plPicking
-{
-    const plPickingInfo& previousPick();
-    const plPickingInfo& pickPixel(uint32_t x, uint32_t y);
+namespace plPicking {
+const plPickingInfo& previousPick();
+const plPickingInfo& pickPixel(uint32_t x, uint32_t y);
 }

@@ -1,17 +1,13 @@
 #pragma once
 
 #include "plCommon.h"
-#include "plRenderTechnique.h"
 #include "plRenderResources.h"
+#include "plRenderTechnique.h"
 
+class plTransparencyTechnique : public plRenderTechnique {
 
-class plTransparencyTechnique : public plRenderTechnique
-{
+public:
+    plTransparencyTechnique();
 
-    public:
-
-        plTransparencyTechnique();
-
-        void render(const plRenderList& components) const;
-
+    void render(const plRenderList& components) const;
 };
